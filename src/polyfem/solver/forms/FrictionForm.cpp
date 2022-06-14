@@ -1,39 +1,43 @@
-#pragma once
+#include "FrictionForm.hpp"
 
-#include <polyfem/utils/Types.hpp>
+#include <ipc/ipc.hpp>
 
 namespace polyfem
 {
 	namespace solver
 	{
-		FrictionForm::FrictionForm()
+		FrictionForm::FrictionForm(const double epsv, const double mu, const ipc::CollisionMesh &collision_mesh)
+			: epsv_(epsv), mu_(mu), collision_mesh_(collision_mesh)
 		{
-			_epsv = state.args["contact"]["epsv"];
-			assert(_epsv > 0);
-			_mu = state.args["contact"]["friction_coefficient"];
-			assert(_mu > 0);
+			//TODO
+			// epsv_ = state.args["contact"]["epsv"];
+			assert(epsv_ > 0);
+			// mu_ = state.args["contact"]["friction_coefficient"];
+			assert(mu_ > 0);
 		}
 
 		double FrictionForm::value(const Eigen::VectorXd &x)
 		{
 			return ipc::compute_friction_potential(
-				state.collision_mesh, state.collision_mesh.vertices(displaced_prev()),
-				displaced_surface, _friction_constraint_set, _epsv * dt());
+				collision_mesh_, collision_mesh_.vertices(displaced_prev()),
+				displaced_surface, friction_constraint_set_, epsv_ * dt());
 		}
 		void FrictionForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
 			Eigen::VectorXd grad_friction = ipc::compute_friction_potential_gradient(
-				state.collision_mesh, displaced_surface_prev, displaced_surface,
-				_friction_constraint_set, _epsv * dt());
-			grad += state.collision_mesh.to_full_dof(grad_friction);
+				collision_mesh_, displaced_surface_prev, displaced_surface,
+				friction_constraint_set_, epsv_ * dt());
+			gradv = collision_mesh_.to_full_dof(grad_friction);
 		}
+
 		void FrictionForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			POLYFEM_SCOPED_TIMER("\t\tfriction hessian time");
-			friction_hessian = ipc::compute_friction_potential_hessian(
-				state.collision_mesh, displaced_surface_prev, displaced_surface,
-				_friction_constraint_set, _epsv * dt(), project_to_psd);
-			friction_hessian = state.collision_mesh.to_full_dof(friction_hessian);
+			hessian = ipc::compute_friction_potential_hessian(
+				collision_mesh_, displaced_surface_prev, displaced_surface,
+				friction_constraint_set_, epsv_ * dt(), project_to_psd_);
+
+			hessian = collision_mesh_.to_full_dof(hessian);
 		}
 
 		//more than one step?
@@ -44,12 +48,12 @@ namespace polyfem
 
 		void FrictionForm::update_lagging(const Eigen::VectorXd &x)
 		{
-			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+			Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(displaced);
 
 			update_constraint_set(displaced_surface);
-			ipc::construct_friction_constraint_set(
-				state.collision_mesh, displaced_surface, _constraint_set,
-				_dhat, _barrier_stiffness, _mu, _friction_constraint_set);
+			ipc::constructfriction_constraint_set_(
+				collision_mesh_, displaced_surface, _constraint_set,
+				_dhat, _barrier_stiffness, mu_, friction_constraint_set_);
 		}
 
 	} // namespace solver

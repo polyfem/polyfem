@@ -2,21 +2,20 @@
 
 #include <polyfem/utils/Types.hpp>
 
+#include <ipc/collision_mesh.hpp>
+
 namespace polyfem
 {
 	namespace solver
 	{
-		class Form
+		class FrictionForm
 		{
 		public:
-			Form();
+			FrictionForm(const double epsv, const double mu, const ipc::CollisionMesh &collision_mesh);
 
-			virtual ~Form() {}
-
-			virtual void init(const Eigen::VectorXd &x) {}
+			virtual void init(const Eigen::VectorXd &displacement) {}
 
 			virtual double value(const Eigen::VectorXd &x) = 0;
-			//First and Second derivative
 			virtual void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
 			virtual void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) { hessian.resize(0, 0); }
 
@@ -28,7 +27,7 @@ namespace polyfem
 
 			virtual void post_step(const int iter_num, const Eigen::VectorXd &x) {}
 
-			virtual void solution_changed(const Eigen::VectorXd &newX) {}
+			virtual void solution_changed(const Eigen::VectorXd &newX){};
 
 			virtual void update_quantities(const double t, const Eigen::VectorXd &x) = 0;
 
@@ -39,8 +38,11 @@ namespace polyfem
 			void set_project_to_psd(bool val) { project_to_psd_ = val; }
 			bool is_project_to_psd() const { return project_to_psd_; }
 
-		protected:
-			bool project_to_psd_;
+		private:
+			const double epsv_;
+			const double mu_;
+			const ipc::CollisionMesh &collision_mesh_;
+			ipc::FrictionConstraints friction_constraint_set_;
 		};
 	} // namespace solver
 } // namespace polyfem
