@@ -1,52 +1,55 @@
-#pragma once
+#include "ElasticForm.hpp"
 
-#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 namespace polyfem
 {
 	namespace solver
 	{
 
-		ElasticForm::ElasticForm()
+		ElasticForm::ElasticForm(const State &state)
+			: state_(state), assembler_(state.assembler), formulation_(state_.formulation())
 		{
 		}
 
 		double ElasticForm::value(const Eigen::VectorXd &x)
 		{
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-			const double energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, state.ass_vals_cache, full);
+			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
+			const double energy = assembler_.assemble_energy(formulation_, state_.mesh->is_volume(), state_.bases, gbases, state_.ass_vals_cache, x);
 
 			return energy;
 		}
 
 		void ElasticForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-			assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
+			Eigen::MatrixXd grad;
+			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
+			assembler_.assemble_energy_gradient(formulation_, state_.mesh->is_volume(), state_.n_bases, state_.bases, gbases, state_.ass_vals_cache, x, grad);
+			gradv = grad;
 		}
 
-		virtual void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		void ElasticForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			const auto full_size = x.size();
-			hessian.rezie(full_size, full_size);
+			hessian.resize(full_size, full_size);
 			POLYFEM_SCOPED_TIMER("\telastic hessian time");
 
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-			if (assembler.is_linear(rhs_assembler.formulation()))
+			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
+			if (assembler_.is_linear(formulation_))
 			{
 				compute_cached_stiffness();
-				hessian = cached_stiffness;
+				hessian = cached_stiffness_;
 			}
 			else
 			{
-				assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, hessian);
+				assembler_.assemble_energy_hessian(formulation_, state_.mesh->is_volume(), state_.n_bases, project_to_psd_, state_.bases, gbases, state_.ass_vals_cache, x, mat_cache_, hessian);
 			}
 		}
 
-		bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+		bool ElasticForm::is_step_valid(const Eigen::VectorXd &, const Eigen::VectorXd &x1)
 		{
-			TVector grad = TVector::Zero(reduced_size);
-			gradient(x1, grad, true);
+			Eigen::VectorXd grad(x1.size());
+			gradient(x1, grad);
 
 			if (std::isnan(grad.norm()))
 				return false;
@@ -56,18 +59,18 @@ namespace polyfem
 			//          This causes small step lengths in the LS.
 			// TVector x1_full;
 			// reduced_to_full(x1, x1_full);
-			// return state.check_scalar_value(x1_full, true, false);
+			// return state_.check_scalar_value(x1_full, true, false);
 			return true;
 		}
 
-		void NLProblem::compute_cached_stiffness()
+		void ElasticForm::compute_cached_stiffness()
 		{
-			if (cached_stiffness.size() == 0)
+			if (cached_stiffness_.size() == 0)
 			{
-				const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-				if (assembler.is_linear(state.formulation()))
+				const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
+				if (assembler_.is_linear(state_.formulation()))
 				{
-					assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, cached_stiffness);
+					assembler_.assemble_problem(formulation_, state_.mesh->is_volume(), state_.n_bases, state_.bases, gbases, state_.ass_vals_cache, cached_stiffness_);
 				}
 			}
 		}
