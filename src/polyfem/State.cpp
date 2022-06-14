@@ -191,9 +191,10 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (!is_param_valid(args, "body_params"))
+		if (!is_param_valid(args, "materials"))
 			return;
 
+		//FIXME with the new stuff
 		const json default_material = R"({
 			"id": -1,
 			"E": 100,
@@ -999,8 +1000,8 @@ namespace polyfem
 
 		igl::Timer timer;
 		// std::string rhs_path = "";
-		// if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs") && args["boundary_conditions"]["rhs"].is_string())
-		// 	rhs_path = args["boundary_conditions"]["rhs"];
+		// if (args["boundary_conditions"]["rhs"].is_string())
+		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
 		p_params["formulation"] = formulation();

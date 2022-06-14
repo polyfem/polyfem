@@ -174,8 +174,6 @@ void polyfem::UIState::draw_settings()
 
 	// }
 	// ImGui::SameLine();
-	ImGui::Text("%s", state.mesh_path().c_str());
-	ImGui::Spacing();
 
 	bool use_splines = state.args["use_spline"];
 	ImGui::Checkbox("spline basis", &use_splines);

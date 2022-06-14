@@ -49,11 +49,11 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 
-			save_vtu(resolve_output_path(fmt::format(step_name + "_{:d}.vtu", t)), time);
+			save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
 
 			save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
-				[step_name](int i) { return fmt::format(step_name + "_{:d}.vtm", i); },
+				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
 				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 		}
 	}
@@ -453,45 +453,6 @@ namespace polyfem
 				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 			}
 
-			//TODO Zach
-			// if (args["min_component"] > 0)
-			// {
-			// 	Eigen::SparseMatrix<int> adj;
-			// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
-			// 	Eigen::MatrixXi C, counts;
-			// 	igl::connected_components(adj, C, counts);
-
-			// 	std::vector<int> valid;
-			// 	const int min_count = args["min_component"];
-
-			// 	for (int i = 0; i < counts.size(); ++i)
-			// 	{
-			// 		if (counts(i) >= min_count)
-			// 		{
-			// 			valid.push_back(i);
-			// 		}
-			// 	}
-
-			// 	tris.clear();
-			// 	for (int i = 0; i < C.size(); ++i)
-			// 	{
-			// 		for (int v : valid)
-			// 		{
-			// 			if (v == C(i))
-			// 			{
-			// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-
-			// 	boundary_triangles.resize(tris.size(), 3);
-			// 	for (int i = 0; i < tris.size(); ++i)
-			// 	{
-			// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
-			// 	}
-			// }
-
 			if (boundary_triangles.rows() > 0)
 			{
 				igl::edges(boundary_triangles, boundary_edges);
@@ -593,8 +554,6 @@ namespace polyfem
 		logger().info("Saving json...");
 
 		j["args"] = args;
-
-		j["mesh_path"] = mesh_path();
 
 		j["geom_order"] = mesh->orders().size() > 0 ? mesh->orders().maxCoeff() : 1;
 		j["geom_order_min"] = mesh->orders().size() > 0 ? mesh->orders().minCoeff() : 1;
@@ -759,7 +718,7 @@ namespace polyfem
 		if (tend <= 0)
 			tend = 1;
 
-		if (!vis_mesh_path.empty())
+		if (!vis_mesh_path.empty() && args["time"].is_null())
 		{
 			save_vtu(vis_mesh_path, tend);
 		}

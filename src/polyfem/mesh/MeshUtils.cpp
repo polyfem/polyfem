@@ -1177,7 +1177,7 @@ void polyfem::mesh::extract_triangle_surface_from_tets(
 	}
 }
 
-void polyfem::mesh::read_surface_mesh(
+bool polyfem::mesh::read_surface_mesh(
 	const std::string &mesh_path,
 	Eigen::MatrixXd &vertices,
 	Eigen::VectorXi &codim_vertices,
@@ -1202,7 +1202,7 @@ void polyfem::mesh::read_surface_mesh(
 		if (!MshReader::load(mesh_path, vertices, cells, elements, weights, body_ids))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
-			return;
+			return false;
 		}
 
 		if (cells.cols() == 1)
@@ -1224,7 +1224,7 @@ void polyfem::mesh::read_surface_mesh(
 		if (!OBJReader::load(mesh_path, vertices, codim_edges, faces))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
-			return;
+			return false;
 		}
 	}
 	else if (!igl::read_triangle_mesh(mesh_path, vertices, faces))
@@ -1233,7 +1233,7 @@ void polyfem::mesh::read_surface_mesh(
 		if (!GEO::mesh_load(mesh_path, mesh))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
-			return;
+			return false;
 		}
 
 		int dim = is_planar(mesh) ? 2 : 3;
@@ -1262,6 +1262,8 @@ void polyfem::mesh::read_surface_mesh(
 	}
 
 	find_codim_vertices(vertices, codim_edges, faces, codim_vertices);
+
+	return true;
 }
 
 void polyfem::mesh::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
