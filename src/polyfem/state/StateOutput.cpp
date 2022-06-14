@@ -49,11 +49,11 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 
-			save_vtu(resolve_output_path(fmt::format(step_name + "_{:d}.vtu", t)), time);
+			save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
 
 			save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
-				[step_name](int i) { return fmt::format(step_name + "_{:d}.vtm", i); },
+				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
 				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 		}
 	}
@@ -718,7 +718,7 @@ namespace polyfem
 		if (tend <= 0)
 			tend = 1;
 
-		if (!vis_mesh_path.empty())
+		if (!vis_mesh_path.empty() && args["time"].is_null())
 		{
 			save_vtu(vis_mesh_path, tend);
 		}

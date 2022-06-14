@@ -83,10 +83,10 @@ namespace polyfem
 		// if (!skip_boundary_sideset)
 		// 	mesh->compute_boundary_ids(boundary_marker);
 		// BoxSetter::set_sidesets(args, *mesh);
-		// set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-		// 	assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-		// 	density.init_multimaterial(rhos);
-		// });
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -173,10 +173,10 @@ namespace polyfem
 		// 		mesh->load_boundary_ids(bc_tag_path);
 		// }
 		// BoxSetter::set_sidesets(args, *mesh);
-		// set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-		// 	assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-		// 	density.init_multimaterial(rhos);
-		// });
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

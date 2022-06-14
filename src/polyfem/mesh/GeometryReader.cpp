@@ -296,7 +296,7 @@ namespace polyfem::mesh
 
 		////////////////////////////////////////////////////////////////////////////
 
-		if (!jmesh["advanced"]["force_linear_geometry"].get<bool>())
+		if (jmesh["advanced"]["force_linear_geometry"].get<bool>())
 			log_and_throw_error("Option \"force_linear_geometry\" in geometry not implement yet!");
 
 		// Shift vertex ids in elements

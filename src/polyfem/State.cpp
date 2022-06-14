@@ -191,9 +191,10 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (!is_param_valid(args, "body_params"))
+		if (!is_param_valid(args, "materials"))
 			return;
 
+		//FIXME with the new stuff
 		const json default_material = R"({
 			"id": -1,
 			"E": 100,
