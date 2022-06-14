@@ -95,7 +95,7 @@ namespace polyfem
 		logger().info("Loading obstacles...");
 		mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], obstacle);
+			args["root_path"], mesh->dimension(), obstacle);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -187,7 +187,7 @@ namespace polyfem
 		logger().info("Loading obstacles...");
 		mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], obstacle, names, vertices, cells);
+			args["root_path"], mesh->dimension(), obstacle, names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
@@ -201,7 +201,7 @@ namespace polyfem
 		logger().info("Loading obstacles...");
 		mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], obstacle);
+			args["root_path"], mesh->dimension(), obstacle);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

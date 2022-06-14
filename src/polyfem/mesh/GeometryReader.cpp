@@ -152,6 +152,7 @@ namespace polyfem::mesh
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::string &root_path,
+		const int dim,
 		Obstacle &obstacle,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
@@ -222,6 +223,7 @@ namespace polyfem::mesh
 					complete_geometry, root_path, vertices, codim_vertices,
 					codim_edges, faces);
 
+				vertices.conservativeResize(vertices.rows(), dim);
 				obstacle.append_mesh(
 					vertices, codim_vertices, codim_edges, faces, displacements[obstacle_i - 1]);
 			}

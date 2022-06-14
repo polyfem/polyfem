@@ -36,6 +36,7 @@ namespace polyfem::mesh
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::string &root_path,
+		const int dim,
 		Obstacle &obstacle,
 		const std::vector<std::string> &names = std::vector<std::string>(),
 		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
