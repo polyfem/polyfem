@@ -388,8 +388,8 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				b_orders[b_discr_orders[i]["body_id"]] = b_discr_orders[i]["discr"];
-				logger().trace("bid {}, discr {}", b_discr_orders[i]["body_id"], b_discr_orders[i]["discr"]);
+				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
+				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
 			}
 
 			for (int e = 0; e < mesh->n_elements(); ++e)
@@ -998,9 +998,9 @@ namespace polyfem
 		}
 
 		igl::Timer timer;
-		std::string rhs_path = "";
-		if (args["boundary_conditions"]["rhs"].is_string())
-			rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
+		// std::string rhs_path = "";
+		// if (args["boundary_conditions"]["rhs"].is_string())
+		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
 		p_params["formulation"] = formulation();
@@ -1037,21 +1037,21 @@ namespace polyfem
 			args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		if (!rhs_path.empty() || rhs_in.size() > 0)
-		{
-			logger().debug("Loading rhs...");
+		// if (!rhs_path.empty() || rhs_in.size() > 0)
+		// {
+		// 	logger().debug("Loading rhs...");
 
-			if (rhs_in.size())
-				rhs = rhs_in;
-			else
-				read_matrix(rhs_path, rhs);
+		// 	if (rhs_in.size())
+		// 		rhs = rhs_in;
+		// 	else
+		// 		read_matrix(rhs_path, rhs);
 
-			StiffnessMatrix tmp_mass;
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
-			rhs = tmp_mass * rhs;
-			logger().debug("done!");
-		}
-		else
+		// 	StiffnessMatrix tmp_mass;
+		// 	assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
+		// 	rhs = tmp_mass * rhs;
+		// 	logger().debug("done!");
+		// }
+		// else
 		{
 			step_data.rhs_assembler->assemble(density, rhs);
 			rhs *= -1;

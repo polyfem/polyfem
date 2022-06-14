@@ -198,6 +198,12 @@ namespace polyfem
 							"obstacle_displacements": []
 						}
 
+						"initial_conditions": {
+							"solution": null,
+							"velocity": null,
+							"acceleration": null
+						},
+
 						"output": {
 							"json" : "",
 
@@ -220,6 +226,11 @@ namespace polyfem
 									"friction_forces" : false,
 									"velocity" : false,
 									"acceleration" : false
+								},
+
+								"reference": {
+									"solution": null,
+									"gradient": null
 								}
 							},
 
@@ -376,11 +387,9 @@ namespace polyfem
 			}
 			// important for the BC
 			problem->set_parameters(args["boundary_conditions"]);
-			if (args.contains("initial_conditions"))
-				problem->set_parameters(args["initial_conditions"]);
+			problem->set_parameters(args["initial_conditions"]);
 
-			if (args["output"].contains("reference"))
-				problem->set_parameters(args["output"]["reference"]);
+			problem->set_parameters(args["output"]);
 		}
 		else
 		{
