@@ -197,7 +197,6 @@ namespace polyfem::mesh
 			geometries = geometry.get<std::vector<json>>();
 		}
 
-		int obstacle_i = 0;
 		for (int i = 0; i < geometries.size(); i++)
 		{
 			json complete_geometry;
@@ -206,8 +205,6 @@ namespace polyfem::mesh
 
 			if (!complete_geometry["is_obstacle"].get<bool>())
 				continue;
-
-			obstacle_i++;
 
 			if (!complete_geometry["enabled"].get<bool>())
 				continue;
@@ -218,14 +215,28 @@ namespace polyfem::mesh
 				Eigen::VectorXi codim_vertices;
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
-				std::string displacements_interpolation;
 				read_obstacle_mesh(
 					complete_geometry, root_path, vertices, codim_vertices,
 					codim_edges, faces);
 
 				vertices.conservativeResize(vertices.rows(), dim);
+
+				json displacement = "[0, 0, 0]"_json;
+				if (is_param_valid(complete_geometry, "surface_selection"))
+				{
+					const int id = complete_geometry["surface_selection"];
+					for (const json &disp : displacements)
+					{
+						if (displacement["id"].get<int>() == id)
+						{
+							displacement = disp;
+							break;
+						}
+					}
+				}
+
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacements[obstacle_i - 1]);
+					vertices, codim_vertices, codim_edges, faces, displacement);
 			}
 			else if (complete_geometry["type"] == "plane")
 			{

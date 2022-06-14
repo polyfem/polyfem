@@ -205,7 +205,8 @@ namespace polyfem
 			"E": 100,
 			"nu": 0.3,
 			"rho": 1,
-			"density": 1
+			"density": 1,
+			"type": null
 		})"_json;
 
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
@@ -217,7 +218,7 @@ namespace polyfem
 		for (int i = 0; i < body_params.size(); ++i)
 		{
 			//TODO fix and check me
-			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
+			check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
 			json mat = default_material;
 			mat.merge_patch(body_params[i]);
 
