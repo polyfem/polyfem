@@ -1500,7 +1500,7 @@ namespace polyfem
 				rhos.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			writer.add_field("llambda", lambdas);
+			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
 			writer.add_field("E", Es);
 			writer.add_field("nu", nus);

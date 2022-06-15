@@ -331,7 +331,7 @@ int main(int argc, char **argv)
 		{
 			if (!in_args.contains("output"))
 				in_args["output"]["options"] = {};
-			in_args["output"]["options"]["material"] = true;
+			in_args["output"]["paraview"]["options"]["material"] = true;
 		}
 
 		if (has_arg(command_line, "f_delta"))
