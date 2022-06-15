@@ -797,10 +797,10 @@ namespace polyfem
 			sol.setZero();
 		}
 
-		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
+		const std::string u_path = resolve_input_path(args["input"]["data"]["u_path"]);
 		//TODO fix import
 		if (!u_path.empty())
-			import_matrix(u_path, args["import"], sol);
+			import_matrix(u_path, args["input"]["data"]["u_path"], sol);
 
 		// if (args["use_al"] || args["contact"]["enabled"])
 		// {

@@ -6,6 +6,7 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
@@ -120,9 +121,12 @@ namespace polyfem
 				logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 			}
 			_prev_distance = -1;
-			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-			_time_integrator->set_parameters(state.args["time"]["BDF"]);
-			_time_integrator->set_parameters(state.args["time"]["newmark"]);
+			if (utils::is_param_valid(state.args, "time"))
+			{
+				_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+				_time_integrator->set_parameters(state.args["time"]["BDF"]);
+				_time_integrator->set_parameters(state.args["time"]["newmark"]);
+			}
 
 			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
 			_ccd_tolerance = state.args["solver"]["contact"]["CCD"]["tolerance"];
@@ -179,7 +183,8 @@ namespace polyfem
 		void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 		{
 			assert(dt > 0);
-			_time_integrator->init(x_prev, v_prev, a_prev, dt);
+			if (_time_integrator)
+				_time_integrator->init(x_prev, v_prev, a_prev, dt);
 		}
 
 		void NLProblem::init_lagging(const TVector &x)

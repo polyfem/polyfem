@@ -196,8 +196,13 @@ namespace polyfem
 
 			const double &dt() const
 			{
-				assert(time_integrator()->dt() > 0);
-				return time_integrator()->dt();
+				if (_time_integrator)
+				{
+					assert(time_integrator()->dt() > 0);
+					return time_integrator()->dt();
+				}
+				else
+					return 1;
 			}
 
 			ipc::Constraints _constraint_set;
