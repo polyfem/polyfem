@@ -112,6 +112,7 @@ def PolyFEM_convert(old):
     # Space
     j["space"] = {}
     copy_entry("discr_order", old, j["space"])
+    rename_entry("bodies_discr_order", old, "discr_order", j["space"])
     copy_entry("pressure_discr_order", old, j["space"])
     copy_entry("use_p_ref", old, j["space"])
 
@@ -386,7 +387,8 @@ def PolyFEM_convert(old):
         copy_entry("a_path", old["import"], j["input"]["data"])
 
     # Body_ids are global and are added to volume selections
-    selection_entries = ["id", "axis", 'position', 'relative', 'normal', 'point', 'center', 'radius', 'box', 'offset']
+    selection_entries = ["id", "axis", 'position', 'relative',
+                         'normal', 'point', 'center', 'radius', 'box', 'offset']
 
     if "body_ids" in old:
         for t in j["geometry"]:
@@ -405,7 +407,7 @@ def PolyFEM_convert(old):
     if "boundary_sidesets" in old:
         for t in j["geometry"]:
             if "is_obstacle" in t and t["is_obstacle"]:
-                    continue
+                continue
             t["surface_selection"] = []
 
         for o in old["boundary_sidesets"]:
