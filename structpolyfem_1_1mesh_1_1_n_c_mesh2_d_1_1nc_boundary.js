@@ -9,7 +9,6 @@ var structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary =
     [ "remove_element", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a89355db78553b076299506d897f6d1b4", null ],
     [ "boundary_id", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a1303ce2fc17b1087eebe6bc053b682ea", null ],
     [ "elem_list", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aaf4c3e0d60e5e2976084bef9ec437f48", null ],
-    [ "flag", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a8e766fa2f32b840dda7cd32f712406b1", null ],
     [ "followers", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aee8d03577c94f239b62f65ebe70b6bd7", null ],
     [ "global_ids", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a994f3ac144b91ff8dbd134de91fcef8d", null ],
     [ "isboundary", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aea289bb704d64a36e2290e314ebcbc46", null ],

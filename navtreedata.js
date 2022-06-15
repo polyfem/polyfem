@@ -72,21 +72,21 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_l_n_l_problem_8cpp.html",
-"_maybe_parallel_for_8tpp.html",
-"_saint_venant_elasticity_8cpp.html",
-"classp__bases_1_1_lagrange.html#a081c397de8ed3299f57e0a99cc84cfd5",
-"classpolyfem_1_1_u_i_state.html#a227c3de531c1fa523f7ca1f0b38ddaab",
-"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a7c8d8b1aa4064d963e4ad26266466cf5",
-"classpolyfem_1_1assembler_1_1_rhs_assembler.html#a989d4db0509380b2393a71a0247f4f1c",
-"classpolyfem_1_1mesh_1_1_mesh.html#a126480d889cb05c7a5f87dce1cec6179",
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b",
-"classpolyfem_1_1problem_1_1_elastic_problem.html#abe03f6ea9df9d1807060fb11a69f2bc4",
-"classpolyfem_1_1problem_1_1_stokes_law_problem.html#a63f2e9304cbcb682f407e706c3833211",
-"classpolyfem_1_1solver_1_1_n_l_problem.html#af9a1e29b49c9bac86d05da9da827b0f3",
-"classpolyfem_1_1utils_1_1_ref_element_sampler.html",
-"functions_t.html",
-"q__bases_8py.html#ae5567cc3ff8c51169b59f2d6fdb8b962",
-"structpolyfem_1_1mesh_1_1_vertex.html#a4addda86740ef529091c4935e4a62fa2"
+"_maybe_parallel_for_8hpp.html#ad20302c105652db61d40fbfcb81847ae",
+"_refinement_8hpp_source.html",
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#ad981db542a2923317daa1fea9bb3adf9",
+"classpolyfem_1_1_u_i_state.html#a0fb50f35dfc1b4b3f60fb794ff4ece29",
+"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a5b5b9871faca53cfe2f24f3896004e1f",
+"classpolyfem_1_1assembler_1_1_rhs_assembler.html#a5b343c891a021a28b2e97d85d451d6d8",
+"classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3cbd9bb6834702fde4e2c8e88b83559f",
+"classpolyfem_1_1mesh_1_1_mesh_nodes.html#aafc383aca92ce25e74913662514e4ec5",
+"classpolyfem_1_1mesh_1_1_obstacle.html#a5604d5fa6fc1d18835c06b4b68d16ce7",
+"classpolyfem_1_1problem_1_1_kovnaszy.html#a7883a5de03e21cbfe08b6fd6d07b1407",
+"classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#ae170f1047a6c61d414075fdb02620aa9",
+"classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ade83a13fd06d36a236fdad9d4c4a15b5",
+"classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8",
+"namespacemembers_func_v.html",
+"struct_d_scalar2.html#a73afde2f7f8de6d69e669d9bfdc88a75"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

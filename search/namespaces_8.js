@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['tetrahedron_2312',['tetrahedron',['../namespacetetrahedron.html',1,'']]],
-  ['triangle_2313',['triangle',['../namespacetriangle.html',1,'']]]
+  ['tetrahedron_2341',['tetrahedron',['../namespacetetrahedron.html',1,'']]],
+  ['triangle_2342',['triangle',['../namespacetriangle.html',1,'']]]
 ];

@@ -1,5 +1,11 @@
 var NAVTREEINDEX3 =
 {
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#ad981db542a2923317daa1fea9bb3adf9":[7,0,0,2,0],
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e":[7,0,0,2,8],
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3":[7,0,0,2,6],
+"classes.html":[7,1],
+"classp__bases_1_1_lagrange.html":[7,0,2,0],
+"classp__bases_1_1_lagrange.html#a04e32b1aa59b0068c7c054f975371809":[7,0,2,0,5],
 "classp__bases_1_1_lagrange.html#a081c397de8ed3299f57e0a99cc84cfd5":[7,0,2,0,6],
 "classp__bases_1_1_lagrange.html#a27cb3499317e4f48e28666ea44d8c5be":[7,0,2,0,1],
 "classp__bases_1_1_lagrange.html#a2aa24d0d4233c46d69fddf025e494ef2":[7,0,2,0,3],
@@ -243,11 +249,5 @@ var NAVTREEINDEX3 =
 "classpolyfem_1_1_u_i_state.html#a06f32ded5decb7174129917e8bee91ae":[7,0,3,19,18],
 "classpolyfem_1_1_u_i_state.html#a0c5604bfa26889fa4dc8de37e1ae9fb6":[7,0,3,19,16],
 "classpolyfem_1_1_u_i_state.html#a0cb3eca211173317956331132ff9d655":[7,0,3,19,77],
-"classpolyfem_1_1_u_i_state.html#a0f823f46af197dce12fbf4bd4b07f5d3":[7,0,3,19,42],
-"classpolyfem_1_1_u_i_state.html#a0fb50f35dfc1b4b3f60fb794ff4ece29":[7,0,3,19,54],
-"classpolyfem_1_1_u_i_state.html#a116716154f0897031f7972980060c6d0":[7,0,3,19,53],
-"classpolyfem_1_1_u_i_state.html#a120f9d2217a651c689b7f8b78ac317e6":[7,0,3,19,34],
-"classpolyfem_1_1_u_i_state.html#a12c491f76131f86fdce639699279c851":[7,0,3,19,21],
-"classpolyfem_1_1_u_i_state.html#a1558372e7119599777410d542193f51b":[7,0,3,19,10],
-"classpolyfem_1_1_u_i_state.html#a19cc2ba81afde785516f2b56f0641495":[7,0,3,19,29]
+"classpolyfem_1_1_u_i_state.html#a0f823f46af197dce12fbf4bd4b07f5d3":[7,0,3,19,42]
 };

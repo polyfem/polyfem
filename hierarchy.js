@@ -3,6 +3,8 @@ var hierarchy =
     [ "nlohmann::adl_serializer< RowVector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
     [ "nlohmann::adl_serializer< Vector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
     [ "polyfem::mesh::NCMesh2D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html", null ],
+    [ "polyfem::mesh::NCMesh3D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html", null ],
+    [ "polyfem::mesh::NCMesh3D::ArrayHasher3D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html", null ],
     [ "polyfem::assembler::Assembler< LocalAssembler >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::Assembler< polyfem::assembler::BilaplacianAux >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::Assembler< polyfem::assembler::BilaplacianMain >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
@@ -47,7 +49,9 @@ var hierarchy =
     [ "polyfem::basis::FEBasis3d", "classpolyfem_1_1basis_1_1_f_e_basis3d.html", null ],
     [ "polyfem::utils::FEBioReader", "classpolyfem_1_1utils_1_1_f_e_bio_reader.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html", null ],
+    [ "polyfem::mesh::NCMesh3D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
+    [ "polyfem::mesh::NCMesh3D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html", null ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
     [ "std::hash< Eigen::Matrix< Scalar, Rows, Cols > >", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html", null ],
@@ -103,7 +107,10 @@ var hierarchy =
         [ "polyfem::mesh::CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html", null ],
         [ "polyfem::mesh::NCMesh2D", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html", null ]
       ] ],
-      [ "polyfem::mesh::Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html", null ]
+      [ "polyfem::mesh::Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html", [
+        [ "polyfem::mesh::CMesh3D", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html", null ],
+        [ "polyfem::mesh::NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", null ]
+      ] ]
     ] ],
     [ "polyfem::mesh::Mesh3DStorage", "structpolyfem_1_1mesh_1_1_mesh3_d_storage.html", null ],
     [ "polyfem::mesh::Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", null ],
@@ -120,8 +127,11 @@ var hierarchy =
     [ "polyfem::assembler::NavierStokesVelocity< false >", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],
     [ "polyfem::assembler::NavierStokesVelocity< true >", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncBoundary", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html", null ],
+    [ "polyfem::mesh::NCMesh3D::ncBoundary", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncElem", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html", null ],
+    [ "polyfem::mesh::NCMesh3D::ncElem", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncVert", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html", null ],
+    [ "polyfem::mesh::NCMesh3D::ncVert", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html", null ],
     [ "polyfem::assembler::NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", null ],
     [ "polyfem::assembler::NLAssembler< LocalAssembler >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
     [ "polyfem::assembler::NLAssembler< polyfem::assembler::LinearElasticity >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
@@ -209,8 +219,8 @@ var hierarchy =
     [ "polyfem::basis::RBFWithQuadratic", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html", null ],
     [ "polyfem::basis::RBFWithQuadraticLagrange", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html", null ],
     [ "polyfem::utils::RefElementSampler", "classpolyfem_1_1utils_1_1_ref_element_sampler.html", null ],
-    [ "q_bases.ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", null ],
     [ "p_bases.ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", null ],
+    [ "q_bases.ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", null ],
     [ "polyfem::assembler::RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", null ],
     [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ],
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [
