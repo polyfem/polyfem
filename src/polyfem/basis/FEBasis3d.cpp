@@ -190,7 +190,7 @@ namespace
 	int lowest_order_elem_on_edge(const polyfem::mesh::NCMesh3D &mesh, const Eigen::VectorXi &discr_orders, const int eid)
 	{
 		auto elem_list = mesh.edge_neighs(eid);
-		int min = 1e10;
+		int min = std::numeric_limits<int>::max();
 		int elem = -1;
 		for (const auto e : elem_list)
 			if (discr_orders[e] < min)
