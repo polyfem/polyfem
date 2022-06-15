@@ -1,22 +1,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <polyfem/TriQuadrature.hpp>
-#include <polyfem/TetQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
 
-#include <polyfem/QuadQuadrature.hpp>
-#include <polyfem/HexQuadrature.hpp>
+#include <polyfem/quadrature/QuadQuadrature.hpp>
+#include <polyfem/quadrature/HexQuadrature.hpp>
 
-#include <polyfem/FEBasis3d.hpp>
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/basis/FEBasis3d.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/MVPolygonalBasis2d.hpp>
 
 #include <catch2/catch.hpp>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
+using namespace polyfem::quadrature;
 
 /////////////////////////////////////////
 constexpr std::array<std::array<int, 2>, 8> linear_tri_local_node = {{

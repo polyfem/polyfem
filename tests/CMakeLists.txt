@@ -15,6 +15,7 @@ set(test_sources
 	test_solver.cpp
 	test_tbb.cpp
 	test_utils.cpp
+  verify_run.cpp
 )
 
 add_executable(unit_tests ${test_sources})

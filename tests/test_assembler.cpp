@@ -4,14 +4,24 @@
 #include <iostream>
 
 using namespace polyfem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
+using namespace polyfem::utils;
 
 TEST_CASE("hessian_lin", "[assembler]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = json({});
-	in_args["mesh"] = path + "/circle2.msh";
+	in_args["geometry"] = {};
+	in_args["geometry"]["mesh"] = path + "/circle2.msh";
 	in_args["force_linear_geometry"] = true;
-	in_args["problem"] = "ElasticExact";
+
+	in_args["preset_problem"] = {};
+	in_args["preset_problem"]["name"] = "ElasticExact";
+
+	in_args["materials"] = {};
+	in_args["materials"]["type"] = "LinearElasticity";
 
 	State state;
 	state.init_logger("", 6, false);

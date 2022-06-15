@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -10,7 +10,7 @@
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
 
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <catch2/catch.hpp>
 
@@ -18,34 +18,49 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
 
 TEST_CASE("ncmesh2d", "[ncmesh]")
 {
+	//TODO UNCOMMENT ME!
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
 		{
 			"problem": "GenericScalar",
-			"scalar_formulation": "Laplacian",
-            "export":{
-                "high_order_mesh": false
-            },
-			"n_refs": 0,
-			"discr_order": 2,
-			"iso_parametric": false,
-            "bc_method": "sample",
-			"problem_params": {
+			"materials": {"type": "Laplacian"},
+
+			"geometry": [{
+				"mesh": "",
+				"enabled": true,
+				"type": "mesh"
+			}],
+
+			"space":{
+				"discr_order": 2,
+				"advanced": {
+					"isoparametric": false
+				}
+			},
+
+			"boundary_conditions": {
 				"dirichlet_boundary": [{
 					"id": "all",
 					"value": "x^2+y^2"
 				}],
-                "exact": "x^2+y^2",
-                "exact_grad": ["2*x","2*y"],
 				"rhs": 4
 			},
-			"vismesh_rel_area": 1.0
+
+			"output": {
+				"reference": {
+	            	"solution": "x^2+y^2",
+	            	"gradient": ["2*x","2*y"]
+				}
+			}
 		}
 	)"_json;
-	in_args["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 	State state(8);
 	state.init_logger("", 6, false);

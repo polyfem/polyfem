@@ -1,13 +1,3 @@
-# Copy PolyFEM header files into the build directory
-function(polyfem_copy_headers)
-	foreach(filepath IN ITEMS ${ARGN})
-		get_filename_component(filename "${filepath}" NAME)
-		if(${filename} MATCHES ".*\.(hpp|h|ipp|tpp)$")
-			configure_file(${filepath} ${PROJECT_BINARY_DIR}/include/polyfem/${filename})
-		endif()
-	endforeach()
-endfunction()
-
 # Set source group for IDE like Visual Studio or XCode
 function(polyfem_set_source_group)
 	foreach(filepath IN ITEMS ${ARGN})
@@ -20,7 +10,6 @@ endfunction()
 # Autogen helper function
 function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 	if(NOT POLYFEM_REGENERATE_AUTOGEN)
-		polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 		return()
 	endif()
 	find_package(PythonInterp 3 QUIET)
@@ -33,7 +22,6 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 		if(NOT PYTHON_VERSION)
 			MESSAGE(WARNING "Unable to run python, ${PYTHON_SCRIPT} not running")
-			polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 			return()
 		endif()
 
@@ -41,7 +29,6 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 		if(NOT IS_PYTHON3)
 			MESSAGE(WARNING "Unable to find python 3, ${PYTHON_SCRIPT} not running")
-			polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 			return()
 		else()
 			SET(PYTHON_EXECUTABLE "python")
@@ -55,7 +42,6 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 	if(NOT PYTHON_HAS_LIBS)
 		MESSAGE(WARNING "Unable to find sympy and/or numpy, ${PYTHON_SCRIPT} not running")
-		polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 		return()
 	endif()
 
