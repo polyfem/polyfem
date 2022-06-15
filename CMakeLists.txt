@@ -68,8 +68,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
-option(POLYFEM_NO_UI            "Disables the user interface" OFF)
-option(POLYFEM_BUILD_DOCS       "Build doxygen"               OFF)
+option(POLYFEM_NO_UI            "Disables the user interface"       OFF)
+option(POLYFEM_BUILD_DOCS       "Build documentation using Doxygen" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
@@ -328,18 +328,18 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         if (DOXYGEN_FOUND)
             # set input and output files
             set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-            set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+            set(DOXYGEN_OUT ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
 
             # request to configure the file
             configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
             message("Doxygen build started")
 
             # note the option ALL which allows to build the docs together with the application
-            add_custom_target( polyfem_doc_doxygen ALL
+            add_custom_target(polyfem_doc_doxygen ALL
                 COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
                 COMMENT "Generating API documentation with Doxygen"
-                VERBATIM )
+                VERBATIM)
         else (DOXYGEN_FOUND)
             message("Doxygen need to be installed to generate the doxygen documentation")
         endif (DOXYGEN_FOUND)

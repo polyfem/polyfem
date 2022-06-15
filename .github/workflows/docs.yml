@@ -1,0 +1,51 @@
+name: Generate and Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - docs
+
+permissions: 
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Doxygen
+        run: sudo apt-get update; sudo apt-get install doxygen -y
+        shell: bash
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release   \
+            -DPOLYFEM_BUILD_DOCS=ON      \
+            -DPOLYFEM_NO_UI=ON           \
+            -DPOLYFEM_WITH_TESTS=OFF     \
+            -DPOLYFEM_WITH_CLIPPER=OFF   \
+            -DPOLYSOLVE_WITH_CHOLMOD=OFF \
+            -DPOLYSOLVE_WITH_UMFPACK=OFF \
+            -DPOLYSOLVE_WITH_SUPERLU=OFF \
+            -DPOLYSOLVE_WITH_MKL=OFF     \ 
+            -DPOLYSOLVE_WITH_HYPRE=OFF   \
+            -DPOLYSOLVE_WITH_AMGCL=OFF   \
+
+      - name: Build
+        run: cd build; make -j2
+
+      - name: Create .nojekyll
+        run: touch docs/html/.nojekyll
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages # The branch the action should deploy to.
+          folder: docs/html # The folder the action should deploy.
