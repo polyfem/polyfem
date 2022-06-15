@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PolyFEM: PolyFEM</title>
+<title>PolyFEM: README.md File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('index.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('_r_e_a_d_m_e_8md.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -113,91 +113,18 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </iframe>
 </div>
 
-<div class="PageDoc"><div class="header">
+<div class="header">
   <div class="headertitle">
-<div class="title">PolyFEM </div>  </div>
+<div class="title">README.md File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><object type="image/svg+xml" data="https://github.com/polyfem/polyfem/workflows/Build/badge.svg" style="pointer-events: none;">Build</object></p>
-<p><em>A polyvalent C++ FEM library.</em></p>
-<p><img src="https://polyfem.github.io/img/polyfem.png" alt="Logo" class="inline"/></p>
-<h1><a class="anchor" id="autotoc_md0"></a>
-Compilation</h1>
-<p>All the C++ dependencies required to build the code are included. It should work on Windows, macOS, and Linux, and it should build out-of-the-box with CMake: </p><pre class="fragment">mkdir build
-cd build
-cmake ..
-make -j4
-</pre><p>On Linux, <code>zenity</code> is required for the file dialog window to work. On macOS and Windows, the native windows are used directly.</p>
-<h2><a class="anchor" id="autotoc_md1"></a>
-Optional</h2>
-<p>The formula for higher-order bases is optionally computed at CMake time using an external python script. Consequently, PolyFEM might requires a working installation of Python and some additional packages to build correctly:</p>
-<ul>
-<li><code>numpy</code> and <code>sympy</code> (optional)</li>
-<li><code>quadpy</code> (optional)</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md2"></a>
-Usage</h1>
-<p>The main executable, <code>./PolyFEM_bin</code>, can be called with a GUI or through a command-line interface. Simply run: </p><pre class="fragment">./PolyFEM_bin
-</pre><p>A more detailed documentation can be found on the <a href="https://polyfem.github.io/">website</a>.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
-Documentation</h1>
-<p>The full documentation can be found at <a href="https://polyfem.github.io/">https://polyfem.github.io/</a></p>
-<h1><a class="anchor" id="autotoc_md4"></a>
-License</h1>
-<p>The code of PolyFEM itself is licensed under [MIT License](LICENSE). However, please be mindful of third-party libraries which are used by PolyFEM and may be available under a different license.</p>
-<h1><a class="anchor" id="autotoc_md5"></a>
-Citation</h1>
-<p>If you use PolyFEM in your project, please consider citing our work:</p>
-<div class="fragment"><div class="line">@misc{polyfem,</div>
-<div class="line">  author = {Teseo Schneider and Jérémie Dumas and Xifeng Gao and Denis Zorin and Daniele Panozzo},</div>
-<div class="line">  title = {{Polyfem}},</div>
-<div class="line">  howpublished = &quot;\url{https://polyfem.github.io/}&quot;,</div>
-<div class="line">  year = {2019},</div>
-<div class="line">}</div>
-</div><!-- fragment --><div class="fragment"><div class="line">@article{Schneider:2019:PFM,</div>
-<div class="line">  author = {Schneider, Teseo and Dumas, J{\&#39;e}r{\&#39;e}mie and Gao, Xifeng and Botsch, Mario and Panozzo, Daniele and Zorin, Denis},</div>
-<div class="line">  title = {Poly-Spline Finite-Element Method},</div>
-<div class="line">  journal = {ACM Trans. Graph.},</div>
-<div class="line">  volume = {38},</div>
-<div class="line">  number = {3},</div>
-<div class="line">  month = mar,</div>
-<div class="line">  year = {2019},</div>
-<div class="line">  url = {http://doi.acm.org/10.1145/3313797},</div>
-<div class="line">  publisher = {ACM}</div>
-<div class="line">}</div>
-</div><!-- fragment --><div class="fragment"><div class="line">@article{Schneider:2018:DSA,</div>
-<div class="line">    author = {Teseo Schneider and Yixin Hu and Jérémie Dumas and Xifeng Gao and Daniele Panozzo and Denis Zorin},</div>
-<div class="line">    journal = {ACM Transactions on Graphics},</div>
-<div class="line">    link = {},</div>
-<div class="line">    month = {10},</div>
-<div class="line">    number = {6},</div>
-<div class="line">    publisher = {Association for Computing Machinery (ACM)},</div>
-<div class="line">    title = {Decoupling Simulation Accuracy from Mesh Quality},</div>
-<div class="line">    volume = {37},</div>
-<div class="line">    year = {2018}</div>
-<div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md6"></a>
-Acknowledgments &amp; Funding</h1>
-<p>The software is being developed in the <a href="https://cims.nyu.edu/gcl/index.html">Geometric Computing Lab</a> at NYU Courant Institute of Mathematical Sciences and the University of Victoria, Canada.</p>
-<p>This work was partially supported by:</p>
-<ul>
-<li>the NSF CAREER award 1652515</li>
-<li>the NSF grant IIS-1320635</li>
-<li>the NSF grant DMS-1436591</li>
-<li>the NSF grant 1835712</li>
-<li>the SNSF grant P2TIP2_175859</li>
-<li>the NSERC grant RGPIN-2021-03707</li>
-<li>the NSERC grant DGECR-2021-00461</li>
-<li>Adobe Research</li>
-<li>nTopology </li>
-</ul>
-</div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="_r_e_a_d_m_e_8md.html">README.md</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>

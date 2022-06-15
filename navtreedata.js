@@ -23,6 +23,14 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "PolyFEM", "index.html", [
+    [ "Compilation", "index.html#autotoc_md0", [
+      [ "Optional", "index.html#autotoc_md1", null ]
+    ] ],
+    [ "Usage", "index.html#autotoc_md2", null ],
+    [ "Documentation", "index.html#autotoc_md3", null ],
+    [ "License", "index.html#autotoc_md4", null ],
+    [ "Citation", "index.html#autotoc_md5", null ],
+    [ "Acknowledgments & Funding", "index.html#autotoc_md6", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -77,8 +85,8 @@ var NAVTREEINDEX =
 "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac412c9a8edc16b1fce734457790df4bf",
 "classpolyfem_1_1utils_1_1_ref_element_sampler.html#a80b41e801c0ba5bd41dc3b8d61bd4cd2",
 "functions_vars_i.html",
-"struct_d_scalar1.html#a396cd72d25c6f32d30540b857f1c7c39",
-"triangle_8py.html#a2ef3f501f213fb6d2ba5ec927a44fc7e"
+"struct_d_scalar1.html#a111c0123bbb7730e76ca9192246d3c0d",
+"tetrahedron_8py.html#a17a7bd7db0e17083ba27e5ca1bef1853"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
