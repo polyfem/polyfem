@@ -535,12 +535,12 @@ namespace polyfem::mesh
 		if (geometry_in.contains("is_obstacle") && geometry_in["is_obstacle"].get<bool>())
 		{
 			check_for_unknown_args(obstacle_defaults, geometry_in, path_prefix);
-			geometry_out = mesh_defaults;
+			geometry_out = obstacle_defaults;
 		}
 		else
 		{
 			check_for_unknown_args(mesh_defaults, geometry_in, path_prefix);
-			geometry_out = obstacle_defaults;
+			geometry_out = mesh_defaults;
 		}
 		geometry_out.merge_patch(geometry_in);
 	}
