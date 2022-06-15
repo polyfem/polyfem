@@ -18,15 +18,6 @@ var dir_db543a2fc901b00946a595a25d020389 =
       [ "FrankeProblem", "classpolyfem_1_1problem_1_1_franke_problem.html", "classpolyfem_1_1problem_1_1_franke_problem" ],
       [ "FrankeProblemOld", "classpolyfem_1_1problem_1_1_franke_problem_old.html", "classpolyfem_1_1problem_1_1_franke_problem_old" ]
     ] ],
-    [ "GenericProblem.cpp", "_generic_problem_8cpp.html", null ],
-    [ "GenericProblem.hpp", "_generic_problem_8hpp.html", [
-      [ "Interpolation", "classpolyfem_1_1problem_1_1_interpolation.html", "classpolyfem_1_1problem_1_1_interpolation" ],
-      [ "NoInterpolation", "classpolyfem_1_1problem_1_1_no_interpolation.html", "classpolyfem_1_1problem_1_1_no_interpolation" ],
-      [ "LinearInterpolation", "classpolyfem_1_1problem_1_1_linear_interpolation.html", "classpolyfem_1_1problem_1_1_linear_interpolation" ],
-      [ "LinearRamp", "classpolyfem_1_1problem_1_1_linear_ramp.html", "classpolyfem_1_1problem_1_1_linear_ramp" ],
-      [ "GenericTensorProblem", "classpolyfem_1_1problem_1_1_generic_tensor_problem.html", "classpolyfem_1_1problem_1_1_generic_tensor_problem" ],
-      [ "GenericScalarProblem", "classpolyfem_1_1problem_1_1_generic_scalar_problem.html", "classpolyfem_1_1problem_1_1_generic_scalar_problem" ]
-    ] ],
     [ "KernelProblem.cpp", "_kernel_problem_8cpp.html", null ],
     [ "KernelProblem.hpp", "_kernel_problem_8hpp.html", [
       [ "KernelProblem", "classpolyfem_1_1problem_1_1_kernel_problem.html", "classpolyfem_1_1problem_1_1_kernel_problem" ]
@@ -52,9 +43,8 @@ var dir_db543a2fc901b00946a595a25d020389 =
       [ "PointBasedTensorProblem", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html", "classpolyfem_1_1problem_1_1_point_based_tensor_problem" ],
       [ "BCValue", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value" ]
     ] ],
-    [ "Problem.cpp", "_problem_8cpp.html", null ],
-    [ "Problem.hpp", "_problem_8hpp.html", [
-      [ "Problem", "classpolyfem_1_1problem_1_1_problem.html", "classpolyfem_1_1problem_1_1_problem" ],
+    [ "ProblemFactory.cpp", "_problem_factory_8cpp.html", null ],
+    [ "ProblemFactory.hpp", "_problem_factory_8hpp.html", [
       [ "ProblemFactory", "classpolyfem_1_1problem_1_1_problem_factory.html", "classpolyfem_1_1problem_1_1_problem_factory" ]
     ] ],
     [ "ProblemWithSolution.cpp", "_problem_with_solution_8cpp.html", null ],

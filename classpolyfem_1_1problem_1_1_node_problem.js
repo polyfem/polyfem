@@ -2,7 +2,7 @@ var classpolyfem_1_1problem_1_1_node_problem =
 [
     [ "NodeProblem", "classpolyfem_1_1problem_1_1_node_problem.html#a0c96b9f95639dfba3fbeab2ebf30f3f5", null ],
     [ "all_dimensions_dirichlet", "classpolyfem_1_1problem_1_1_node_problem.html#af3c9e0af7322af8806b209a1d50ce60e", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_node_problem.html#a1838c40da9b5442fd41074d4c0e848ad", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_node_problem.html#a64666969b7cccf95a5142795eaeb3c14", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_node_problem.html#a033811e50f74ea7ac776047a69cbc9cc", null ],
     [ "init", "classpolyfem_1_1problem_1_1_node_problem.html#a051c2a6f8b9d4043682539fde7159d14", null ],
     [ "is_dimension_dirichet", "classpolyfem_1_1problem_1_1_node_problem.html#a072e1011ae2c244b029fe781b37efdc6", null ],

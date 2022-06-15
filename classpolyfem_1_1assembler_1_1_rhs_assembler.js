@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_rhs_assembler =
 [
-    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a2c5b8025acc7baf60a74c3690a465d0b", null ],
+    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a56bfb0b993d12832b321d5752be4beff", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad", null ],
     [ "compute_energy_grad", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a717039c1647c3261c8acc5ab68caac54", null ],
@@ -24,7 +24,7 @@ var classpolyfem_1_1assembler_1_1_rhs_assembler =
     [ "n_basis_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a39a825e996487157c35b072370d06373", null ],
     [ "obstacle_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#aadf285b97992411c93f3bf94fe0cb76b", null ],
     [ "preconditioner_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0e7f15c317f4cce8a96bc9e9459645d4", null ],
-    [ "problem_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a010d55fe78fde14a912192de55439740", null ],
+    [ "problem_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#af08d7be34b6adcf4c5a89aacf89e3868", null ],
     [ "size_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a5b343c891a021a28b2e97d85d451d6d8", null ],
     [ "solver_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ae3394d956ef1c607b6a5879cfecab4fb", null ],
     [ "solver_params_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#aaf95310c955e08dd3c4aa60756b8235b", null ]

@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_stokes_law_problem =
 [
     [ "StokesLawProblem", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a19ad474a85e5f2d5f98ee1b4df71a2b6", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a9f302f3843e03c11fb948742a1dbe07d", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#ab84f7f22be3af69d41b8f9317bde0188", null ],
     [ "exact", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a7d34103f628d61eae01a6f2a08b3363c", null ],
     [ "exact_grad", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a6867b96981193d2ae9ad4f97ea01b7c9", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_stokes_law_problem.html#ae599b0c77e53be13364e0cc5b54478c3", null ],

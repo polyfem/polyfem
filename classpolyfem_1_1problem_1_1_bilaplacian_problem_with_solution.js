@@ -2,7 +2,7 @@ var classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution =
 [
     [ "BilaplacianProblemWithSolution", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a43d39a6e7a396ef07f1f6b70a77800ef", null ],
     [ "~BilaplacianProblemWithSolution", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#ab1069d2fb4487d17c975c22bc34def72", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a5a64e06da6ac73e83573eb475464a64b", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#aa64f5cb59c2c7345891e1f3bcf2ee0d7", null ],
     [ "exact", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a3a05d4e6dccd33ae0934ad32009803de", null ],
     [ "exact_grad", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a2b51dae158870c31791608f353e14a86", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a902b107e8911623470cefbd3dd058c94", null ],

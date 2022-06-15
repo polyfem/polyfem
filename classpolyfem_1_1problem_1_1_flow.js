@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_flow =
 [
     [ "Flow", "classpolyfem_1_1problem_1_1_flow.html#ab0a4414cc6c6c8a9ffca6429fe9ae5d6", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_flow.html#a85f77631246738822a45cab8c9c6996d", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_flow.html#a00a7e1ba9dbd484f4e8f7f169c695186", null ],
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_flow.html#a7417cfd167bb1f5455550982cb840259", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_flow.html#a795a86c9f7add6763458491a7daa681b", null ],
     [ "set_parameters", "classpolyfem_1_1problem_1_1_flow.html#a587f23ded2e4d42f129186b9399845b0", null ],

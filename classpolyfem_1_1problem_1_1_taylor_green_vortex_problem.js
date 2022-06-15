@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_taylor_green_vortex_problem =
 [
     [ "TaylorGreenVortexProblem", "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3614e15446131f68e9c657b73010e5f6", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a0fc491172ccb168d6dd2c9d0da403e6d", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a8f1a4ab79e6305dfdf2fd0224ec44f91", null ],
     [ "exact", "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a7799888b83710dea0bcfb3aff1d5da3a", null ],
     [ "exact_grad", "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3a1d8c693e13cb1b9edd9a95bf20ed8b", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ad9ea5e46b905708f8c053fc943d44e21", null ],

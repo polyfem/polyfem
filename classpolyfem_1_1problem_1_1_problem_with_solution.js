@@ -2,7 +2,7 @@ var classpolyfem_1_1problem_1_1_problem_with_solution =
 [
     [ "ProblemWithSolution", "classpolyfem_1_1problem_1_1_problem_with_solution.html#af656c84ef26e0161c5fed1ec7feba07d", null ],
     [ "~ProblemWithSolution", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a3c02bef20f52ba9e5fee8c62d29a8f34", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_problem_with_solution.html#ab557fbe57e686406c2d260b14d9fff76", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a7b0a5bced75f5295ce5aee7750d8ec16", null ],
     [ "eval_fun", "classpolyfem_1_1problem_1_1_problem_with_solution.html#aae577273688cdc5133ac2f7ca9259d70", null ],
     [ "eval_fun", "classpolyfem_1_1problem_1_1_problem_with_solution.html#ab35a9234eb3695fa30c4bc1491f7a950", null ],
     [ "eval_fun", "classpolyfem_1_1problem_1_1_problem_with_solution.html#ab7ef1ebf3e2800bddc0aa1a6e27acafa", null ],

@@ -73,20 +73,19 @@ var NAVTREEINDEX =
 [
 "_a_l_n_l_problem_8cpp.html",
 "_mesh3_d_storage_8hpp.html#a1786d2b6b9b3bda8c6667456f9b1f5caa11b8c9e9feec9bfa3206f5dffb736b9b",
-"_singularities_8hpp_source.html",
-"classpolyfem_1_1_auto_diff_allocator.html#ae4cc4806ec54710a852a952187618056",
-"classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef",
-"classpolyfem_1_1assembler_1_1_mixed_assembler.html#a235ec6d9af00a18297b0f0fd07733403",
-"classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00",
-"classpolyfem_1_1mesh_1_1_mesh3_d.html#aa9b4de6f73067dda27d14e2e1a444a03",
-"classpolyfem_1_1problem_1_1_airfoil.html#a8a7d581f4ef603f11782354f084ae17d",
-"classpolyfem_1_1problem_1_1_gravity_problem.html#afa364fdba6449f94ca4062434e7cdca2",
-"classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ace99069135e004b01402fa82a82d3a87",
-"classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac412c9a8edc16b1fce734457790df4bf",
-"classpolyfem_1_1utils_1_1_ref_element_sampler.html#a80b41e801c0ba5bd41dc3b8d61bd4cd2",
-"functions_vars_i.html",
-"struct_d_scalar1.html#a111c0123bbb7730e76ca9192246d3c0d",
-"tetrahedron_8py.html#a17a7bd7db0e17083ba27e5ca1bef1853"
+"_singularities_8hpp.html#a78a20bc192a325efd376142bae8605c0",
+"classp__bases_1_1_reference_simplex.html#a474f4eeae04795f75c16c00a24c1c258",
+"classpolyfem_1_1_u_i_state.html#a3ce2712bfac04b5e6e159ac9418a06bd",
+"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aac7fed540f21e4a52b54f689571e5b04",
+"classpolyfem_1_1assembler_1_1_rhs_assembler.html#ad4cc2fad5130fc413d4349928ae88831",
+"classpolyfem_1_1mesh_1_1_mesh.html#a1d11f3bb4a658d850c906dc5e073f08b",
+"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a51b410a8030398484e54b956ec511776",
+"classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a8b2cf255fb3cc83c2055b51b5337fe4e",
+"classpolyfem_1_1problem_1_1_test_problem.html#aae98484dfc16233700584678ba62c7f6",
+"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a40d763cda56ab6d6d45b7605bcd58a1d",
+"classpolyfem_1_1utils_1_1_selection.html",
+"functions_vars_x.html",
+"struct_d_scalar1.html#a763a6ae05504a9fcc208b31f6b04cf1d"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

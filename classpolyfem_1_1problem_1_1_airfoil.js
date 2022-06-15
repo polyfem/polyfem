@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_airfoil =
 [
     [ "Airfoil", "classpolyfem_1_1problem_1_1_airfoil.html#a863f2ea436b509d28f2a043197bbd785", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_airfoil.html#a7d2f0c0d3b7b456a0d8f90ba130f79c7", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_airfoil.html#aca2410cf141830a5f8163369b01a8253", null ],
     [ "exact", "classpolyfem_1_1problem_1_1_airfoil.html#ab2d9c1564afed6b23ee9da25dbb3cb47", null ],
     [ "exact_grad", "classpolyfem_1_1problem_1_1_airfoil.html#a8a7d581f4ef603f11782354f084ae17d", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_airfoil.html#a496ece0d3fd9158c1061e054c0724872", null ],

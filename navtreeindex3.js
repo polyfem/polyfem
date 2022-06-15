@@ -1,5 +1,8 @@
 var NAVTREEINDEX3 =
 {
+"classp__bases_1_1_reference_simplex.html#a474f4eeae04795f75c16c00a24c1c258":[7,0,2,1,0],
+"classp__bases_1_1_reference_simplex.html#a9aa8384d88fefb9130694de92ffdbbcb":[7,0,2,1,3],
+"classpolyfem_1_1_auto_diff_allocator.html":[7,0,3,9],
 "classpolyfem_1_1_auto_diff_allocator.html#ae4cc4806ec54710a852a952187618056":[7,0,3,9,0],
 "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html":[7,0,3,10],
 "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html#a9e91c625dc246e14880a833b2d57698a":[7,0,3,10,0],
@@ -78,7 +81,6 @@ var NAVTREEINDEX3 =
 "classpolyfem_1_1_state.html#a24fdc1040e81e6600289728a3a2ac11e":[7,0,3,17,41],
 "classpolyfem_1_1_state.html#a25700f70149e461c119febc056c7a5bb":[7,0,3,17,4],
 "classpolyfem_1_1_state.html#a26d825e766fdf0e188962391b0eab2f3":[7,0,3,17,155],
-"classpolyfem_1_1_state.html#a2c04cb0675830584abdc7b773a61f6d6":[7,0,3,17,154],
 "classpolyfem_1_1_state.html#a2c30674733746185004044209edf6055":[7,0,3,17,56],
 "classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48":[7,0,3,17,175],
 "classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a":[7,0,3,17,58],
@@ -126,6 +128,7 @@ var NAVTREEINDEX3 =
 "classpolyfem_1_1_state.html#a75a923360b34f2fde320fc23b5afde47":[7,0,3,17,30],
 "classpolyfem_1_1_state.html#a75b702eb832ecfd6e8e26738867d265b":[7,0,3,17,26],
 "classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b":[7,0,3,17,5],
+"classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6":[7,0,3,17,154],
 "classpolyfem_1_1_state.html#a7da0cf56a2c0aa8f7a360776b7397596":[7,0,3,17,16],
 "classpolyfem_1_1_state.html#a7fb37778facc0a5ecb5ac65d28fb8f1b":[7,0,3,17,148],
 "classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4":[7,0,3,17,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX3 =
 "classpolyfem_1_1_u_i_state.html#a2c619e9552bffd5d7aea123b939861de":[7,0,3,19,66],
 "classpolyfem_1_1_u_i_state.html#a2f42acb3072fd3ce7f09f7f22c3077b3":[7,0,3,19,31],
 "classpolyfem_1_1_u_i_state.html#a2fb4bd15f2b7d2d5cdc70b8e750d92cb":[7,0,3,19,57],
-"classpolyfem_1_1_u_i_state.html#a3521d7081f48fdc47e4f981d9a48f972":[7,0,3,19,28],
-"classpolyfem_1_1_u_i_state.html#a3ce2712bfac04b5e6e159ac9418a06bd":[7,0,3,19,60],
-"classpolyfem_1_1_u_i_state.html#a3fdc4ac5c9c4f62ea507c6b0941880c9":[7,0,3,19,71],
-"classpolyfem_1_1_u_i_state.html#a400178abf525f361e45ef2d609a20787":[7,0,3,19,39]
+"classpolyfem_1_1_u_i_state.html#a3521d7081f48fdc47e4f981d9a48f972":[7,0,3,19,28]
 };

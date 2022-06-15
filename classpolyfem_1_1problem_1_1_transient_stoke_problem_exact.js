@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_transient_stoke_problem_exact =
 [
     [ "TransientStokeProblemExact", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a8439f22b86024329e0dda80d7dbd50b1", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a83db5258e25787aacc1998d1150c3bed", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#aeee7eb0214ffedd0e2b0ddca26403551", null ],
     [ "exact", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a5882a1709f0ed70c0edfdd702d778fb4", null ],
     [ "exact_grad", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#afae64ff7804e103b1eabaeaedb33898f", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#adacbe4e4288eb61b86caacac935b2c38", null ],

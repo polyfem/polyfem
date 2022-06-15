@@ -9,7 +9,7 @@ var classpolyfem_1_1problem_1_1_point_based_tensor_problem =
     [ "add_function", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a1e23449b43b873eb1566a02db5ef3591", null ],
     [ "add_function", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a60f27a54009c4196ea43c3d6c5fac6fe", null ],
     [ "all_dimensions_dirichlet", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a55666aae9bf7e95a86ca4282d363b74f", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a3006ec54542e3db7758c8088025d5908", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#aade7992014680acdf07588496c35e8f9", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ae52c3df204c90e59973150565c7be06c", null ],
     [ "is_dimension_dirichet", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#abc23a5a8355e1f00fb8c6f7c45b8326f", null ],
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#abeff2f754f43ae499dbc413de4a2b42f", null ],

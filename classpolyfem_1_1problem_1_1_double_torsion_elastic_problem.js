@@ -1,8 +1,7 @@
 var classpolyfem_1_1problem_1_1_double_torsion_elastic_problem =
 [
     [ "DoubleTorsionElasticProblem", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a457990059b760d8b9bdef0b65c1c6da7", null ],
-    [ "acceleration_bc", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a8628ce1cf1d1c35052a34b178e7bf536", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#aac2137a1320ee8926fe3b3d61f67966c", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a79630fd223460e7712958391ea80742e", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a71972c29d44bb72d4a4192e5d7647868", null ],
     [ "initial_acceleration", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a34d66b7a1d7873f92fda6f713c6fcc0f", null ],
     [ "initial_solution", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a13a159860632cf2308315ba0fde0eb59", null ],
@@ -13,7 +12,6 @@ var classpolyfem_1_1problem_1_1_double_torsion_elastic_problem =
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a8ea0df5b56a863b2660bca9409c74466", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a9955252849f125f6860d4aa08a0c5f04", null ],
     [ "set_parameters", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a74a792109624c6117b0a5904870192ea", null ],
-    [ "velocity_bc", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a78bd4cf8d0298168c089a4f11cf90ea0", null ],
     [ "angular_v0_", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a3e4075a5d4aba86b9c3811c6021c442f", null ],
     [ "angular_v1_", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a58ce4d96db7534496b56e38c4a465f60", null ],
     [ "coordiante_0_", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a81fd54ee9437b27e18e823fb273a34f5", null ],

@@ -67,14 +67,14 @@ var hierarchy =
     [ "polyfem::assembler::IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", null ],
     [ "polyfem::assembler::IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", null ],
     [ "polyfem::assembler::IncompressibleLinearElasticityPressure", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html", null ],
-    [ "polyfem::mesh::Navigation3D::Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", null ],
     [ "polyfem::mesh::Navigation::Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", null ],
+    [ "polyfem::mesh::Navigation3D::Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", null ],
     [ "polyfem::basis::InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", null ],
     [ "polyfem::utils::InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", null ],
-    [ "polyfem::problem::Interpolation", "classpolyfem_1_1problem_1_1_interpolation.html", [
-      [ "polyfem::problem::LinearInterpolation", "classpolyfem_1_1problem_1_1_linear_interpolation.html", null ],
-      [ "polyfem::problem::LinearRamp", "classpolyfem_1_1problem_1_1_linear_ramp.html", null ],
-      [ "polyfem::problem::NoInterpolation", "classpolyfem_1_1problem_1_1_no_interpolation.html", null ]
+    [ "polyfem::assembler::Interpolation", "classpolyfem_1_1assembler_1_1_interpolation.html", [
+      [ "polyfem::assembler::LinearInterpolation", "classpolyfem_1_1assembler_1_1_linear_interpolation.html", null ],
+      [ "polyfem::assembler::LinearRamp", "classpolyfem_1_1assembler_1_1_linear_ramp.html", null ],
+      [ "polyfem::assembler::NoInterpolation", "classpolyfem_1_1assembler_1_1_no_interpolation.html", null ]
     ] ],
     [ "ISolver", null, [
       [ "cppoptlib::NonlinearSolver< ProblemType >", "classcppoptlib_1_1_nonlinear_solver.html", [
@@ -141,19 +141,14 @@ var hierarchy =
     [ "polyfem::basis::PolygonalBasis3d", "classpolyfem_1_1basis_1_1_polygonal_basis3d.html", null ],
     [ "polyfem::quadrature::PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", null ],
     [ "polyfem::quadrature::PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ],
-    [ "Problem", null, [
-      [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
-        [ "polyfem::solver::ALNLProblem", "classpolyfem_1_1solver_1_1_a_l_n_l_problem.html", null ]
-      ] ]
-    ] ],
-    [ "polyfem::problem::Problem", "classpolyfem_1_1problem_1_1_problem.html", [
+    [ "polyfem::assembler::Problem", "classpolyfem_1_1assembler_1_1_problem.html", [
+      [ "polyfem::assembler::GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", null ],
+      [ "polyfem::assembler::GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", null ],
       [ "polyfem::problem::Airfoil", "classpolyfem_1_1problem_1_1_airfoil.html", null ],
       [ "polyfem::problem::BilaplacianProblemWithSolution", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html", null ],
       [ "polyfem::problem::DoubleTorsionElasticProblem", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html", null ],
       [ "polyfem::problem::ElasticProblem", "classpolyfem_1_1problem_1_1_elastic_problem.html", null ],
       [ "polyfem::problem::ElasticProblemZeroBC", "classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html", null ],
-      [ "polyfem::problem::GenericScalarProblem", "classpolyfem_1_1problem_1_1_generic_scalar_problem.html", null ],
-      [ "polyfem::problem::GenericTensorProblem", "classpolyfem_1_1problem_1_1_generic_tensor_problem.html", null ],
       [ "polyfem::problem::GravityProblem", "classpolyfem_1_1problem_1_1_gravity_problem.html", null ],
       [ "polyfem::problem::Kovnaszy", "classpolyfem_1_1problem_1_1_kovnaszy.html", null ],
       [ "polyfem::problem::MinSurfProblem", "classpolyfem_1_1problem_1_1_min_surf_problem.html", null ],
@@ -196,6 +191,11 @@ var hierarchy =
       [ "polyfem::problem::TransientStokeProblemExact", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html", null ],
       [ "polyfem::problem::WalkProblem", "classpolyfem_1_1problem_1_1_walk_problem.html", null ]
     ] ],
+    [ "Problem", null, [
+      [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
+        [ "polyfem::solver::ALNLProblem", "classpolyfem_1_1solver_1_1_a_l_n_l_problem.html", null ]
+      ] ]
+    ] ],
     [ "polyfem::problem::ProblemFactory", "classpolyfem_1_1problem_1_1_problem_factory.html", null ],
     [ "polyfem::renderer::Program", "classpolyfem_1_1renderer_1_1_program.html", null ],
     [ "polyfem::quadrature::QuadQuadrature", "classpolyfem_1_1quadrature_1_1_quad_quadrature.html", null ],
@@ -208,8 +208,8 @@ var hierarchy =
     [ "polyfem::basis::RBFWithQuadratic", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html", null ],
     [ "polyfem::basis::RBFWithQuadraticLagrange", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html", null ],
     [ "polyfem::utils::RefElementSampler", "classpolyfem_1_1utils_1_1_ref_element_sampler.html", null ],
-    [ "p_bases.ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", null ],
     [ "q_bases.ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", null ],
+    [ "p_bases.ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", null ],
     [ "polyfem::assembler::RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", null ],
     [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ],
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [

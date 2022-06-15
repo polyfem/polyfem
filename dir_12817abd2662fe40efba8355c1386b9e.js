@@ -27,6 +27,15 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "ElementAssemblyValues.hpp", "_element_assembly_values_8hpp.html", [
       [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ]
     ] ],
+    [ "GenericProblem.cpp", "_generic_problem_8cpp.html", null ],
+    [ "GenericProblem.hpp", "_generic_problem_8hpp.html", [
+      [ "Interpolation", "classpolyfem_1_1assembler_1_1_interpolation.html", "classpolyfem_1_1assembler_1_1_interpolation" ],
+      [ "NoInterpolation", "classpolyfem_1_1assembler_1_1_no_interpolation.html", "classpolyfem_1_1assembler_1_1_no_interpolation" ],
+      [ "LinearInterpolation", "classpolyfem_1_1assembler_1_1_linear_interpolation.html", "classpolyfem_1_1assembler_1_1_linear_interpolation" ],
+      [ "LinearRamp", "classpolyfem_1_1assembler_1_1_linear_ramp.html", "classpolyfem_1_1assembler_1_1_linear_ramp" ],
+      [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
+      [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ]
+    ] ],
     [ "Helmholtz.cpp", "_helmholtz_8cpp.html", null ],
     [ "Helmholtz.hpp", "_helmholtz_8hpp.html", [
       [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ]
@@ -68,6 +77,10 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "OgdenElasticity.cpp", "_ogden_elasticity_8cpp.html", null ],
     [ "OgdenElasticity.hpp", "_ogden_elasticity_8hpp.html", [
       [ "OgdenElasticity", "classpolyfem_1_1assembler_1_1_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_ogden_elasticity" ]
+    ] ],
+    [ "Problem.cpp", "_problem_8cpp.html", null ],
+    [ "Problem.hpp", "_problem_8hpp.html", [
+      [ "Problem", "classpolyfem_1_1assembler_1_1_problem.html", "classpolyfem_1_1assembler_1_1_problem" ]
     ] ],
     [ "RhsAssembler.cpp", "_rhs_assembler_8cpp.html", "_rhs_assembler_8cpp" ],
     [ "RhsAssembler.hpp", "_rhs_assembler_8hpp.html", [

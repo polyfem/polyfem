@@ -154,7 +154,7 @@ var classpolyfem_1_1_state =
     [ "pressure_bases", "classpolyfem_1_1_state.html#aae871a565c4281f4ba731ecef8130f9c", null ],
     [ "pressure_boundary_nodes", "classpolyfem_1_1_state.html#a4230959fa25c50f0dac42f71ad8d8897", null ],
     [ "primitive_to_node", "classpolyfem_1_1_state.html#a61c34442c1476d0469a1c14cff35c906", null ],
-    [ "problem", "classpolyfem_1_1_state.html#a2c04cb0675830584abdc7b773a61f6d6", null ],
+    [ "problem", "classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6", null ],
     [ "ref_element_sampler", "classpolyfem_1_1_state.html#a26d825e766fdf0e188962391b0eab2f3", null ],
     [ "regular_boundary_count", "classpolyfem_1_1_state.html#aff11471ca6233036475550f1020fd3cc", null ],
     [ "regular_count", "classpolyfem_1_1_state.html#a59cd79b2b4d013be870aaec916e38643", null ],

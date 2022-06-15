@@ -1,7 +1,7 @@
 var classpolyfem_1_1problem_1_1_kovnaszy =
 [
     [ "Kovnaszy", "classpolyfem_1_1problem_1_1_kovnaszy.html#a852ff56bd75f951540d42120499d5cb1", null ],
-    [ "bc", "classpolyfem_1_1problem_1_1_kovnaszy.html#a48d28d73cb28d667b0dfda082964f2fe", null ],
+    [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_kovnaszy.html#ae17b1368acdf82fc636dcc57857ff5fb", null ],
     [ "exact", "classpolyfem_1_1problem_1_1_kovnaszy.html#a7883a5de03e21cbfe08b6fd6d07b1407", null ],
     [ "exact_grad", "classpolyfem_1_1problem_1_1_kovnaszy.html#a5804dc9dd5b4805e0f0d134e6cade6a4", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_kovnaszy.html#a0dc27e1393814294ed6a5cf0abfc5440", null ],
