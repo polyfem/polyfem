@@ -1,6 +1,6 @@
 #include "FEBioReader.hpp"
 
-#include <polyfem/problem/GenericProblem.hpp>
+#include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/utils/RBFInterpolation.hpp>
 
@@ -14,7 +14,8 @@
 
 namespace polyfem
 {
-	using namespace problem;
+	using namespace assembler;
+
 	namespace utils
 	{
 		namespace
@@ -788,7 +789,7 @@ namespace polyfem
 				return 0;
 			});
 
-			state.problem = ProblemFactory::factory().get_problem("GenericTensor");
+			state.problem = std::make_shared<GenericTensorProblem>("GenericTensor");
 			GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(state.problem.get());
 			gproblem.set_time_dependent(time_dependent);
 

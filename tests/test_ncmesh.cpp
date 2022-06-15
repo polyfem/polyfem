@@ -18,7 +18,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
-using namespace polyfem::problem;
 using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
