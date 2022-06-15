@@ -23,12 +23,12 @@ namespace polyfem
 			return energy;
 		}
 
-		void InertiaForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		void InertiaForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
 			gradv = (mass_ * (x - time_integrator_.x_tilde())) / time_integrator_.acceleration_scaling();
 		}
 
-		void InertiaForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		void InertiaForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			hessian = mass_ / time_integrator_.acceleration_scaling();
 		}

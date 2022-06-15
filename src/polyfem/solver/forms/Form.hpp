@@ -17,8 +17,8 @@ namespace polyfem
 
 			virtual double value(const Eigen::VectorXd &x) = 0;
 			//First and Second derivative
-			virtual void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
-			virtual void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) { hessian.resize(0, 0); }
+			virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
+			virtual void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) { hessian.resize(0, 0); }
 
 			virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 			virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }

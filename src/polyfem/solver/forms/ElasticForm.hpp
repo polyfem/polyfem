@@ -15,8 +15,8 @@ namespace polyfem
 			ElasticForm(const State &state);
 
 			double value(const Eigen::VectorXd &x) override;
-			void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-			void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+			void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 			bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 

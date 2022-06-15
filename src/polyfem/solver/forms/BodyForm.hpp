@@ -15,7 +15,7 @@ namespace polyfem
 			BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler);
 
 			double value(const Eigen::VectorXd &x) override;
-			void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 
 			void update_quantities(const double t, const Eigen::VectorXd &x) override;
 

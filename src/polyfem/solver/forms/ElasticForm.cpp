@@ -20,7 +20,7 @@ namespace polyfem
 			return energy;
 		}
 
-		void ElasticForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		void ElasticForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
 			Eigen::MatrixXd grad;
 			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
@@ -28,7 +28,7 @@ namespace polyfem
 			gradv = grad;
 		}
 
-		void ElasticForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		void ElasticForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			const auto full_size = x.size();
 			hessian.resize(full_size, full_size);
@@ -49,7 +49,7 @@ namespace polyfem
 		bool ElasticForm::is_step_valid(const Eigen::VectorXd &, const Eigen::VectorXd &x1)
 		{
 			Eigen::VectorXd grad(x1.size());
-			gradient(x1, grad);
+			first_derivative(x1, grad);
 
 			if (std::isnan(grad.norm()))
 				return false;

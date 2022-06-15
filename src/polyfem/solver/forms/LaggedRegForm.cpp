@@ -18,12 +18,12 @@ namespace polyfem
 			return lagged_damping_weight_ * (x - x_lagged_).squaredNorm();
 		}
 
-		void LaggedRegForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		void LaggedRegForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
 			gradv = lagged_damping_weight_ * (x - x_lagged_);
 		}
 
-		void LaggedRegForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		void LaggedRegForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			hessian = lagged_damping_weight_ * utils::sparse_identity(x.size(), x.size());
 		}

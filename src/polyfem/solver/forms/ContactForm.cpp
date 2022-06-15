@@ -43,7 +43,7 @@ namespace polyfem
 
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 			update_constraint_set(displaced_surface);
-			Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
+			Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_first_derivative(
 				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 			grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
 
@@ -73,7 +73,7 @@ namespace polyfem
 			cached_displaced_surface = displaced_surface;
 		}
 
-		void ContactForm::init(const Eigen::VectorXd &displacement)
+		void ContactForm::init(const Eigen::VectorXd &x)
 		{
 			if (use_adaptive_barrier_stiffness)
 			{
@@ -85,16 +85,16 @@ namespace polyfem
 		{
 			return _barrier_stiffness * ipc::compute_barrier_potential(state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 		}
-		virtual void ContactForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		virtual void ContactForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
-			grad_barrier = _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.collision_mesh, displaced_surface, _constraint_set, _dhat);
+			grad_barrier = _barrier_stiffness * ipc::compute_barrier_potential_first_derivative(state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 			grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
 		}
 
-		virtual void ContactForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		virtual void ContactForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time");
-			barrier_hessian = _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.collision_mesh, displaced_surface, _constraint_set, _dhat, project_to_psd);
+			barrier_hessian = _barrier_stiffness * ipc::compute_barrier_potential_second_derivative(state.collision_mesh, displaced_surface, _constraint_set, _dhat, project_to_psd);
 			barrier_hessian = state.collision_mesh.to_full_dof(barrier_hessian);
 		}
 

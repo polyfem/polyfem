@@ -27,7 +27,7 @@ namespace polyfem
 				collision_mesh_, collision_mesh_.vertices(displaced_prev_),
 				displaced_surface, friction_constraint_set_, epsv_ * dt_);
 		}
-		void FrictionForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		void FrictionForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
 			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
 			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
@@ -39,7 +39,7 @@ namespace polyfem
 			gradv = collision_mesh_.to_full_dof(grad_friction);
 		}
 
-		void FrictionForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		void FrictionForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			POLYFEM_SCOPED_TIMER("\t\tfriction hessian time");
 			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());

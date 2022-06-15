@@ -19,8 +19,8 @@ namespace polyfem
 			FrictionForm(const State &state, const double epsv, const double mu, const double dt, const ipc::CollisionMesh &collision_mesh);
 
 			double value(const Eigen::VectorXd &x) override;
-			void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-			void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+			void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 			void init_lagging(const Eigen::VectorXd &x) override;
 			void update_lagging(const Eigen::VectorXd &x) override;

@@ -17,7 +17,7 @@ namespace polyfem
 			return rhs_assembler_.compute_energy(x, state_.local_neumann_boundary, state_.density, state_.n_boundary_samples(), t_);
 		}
 
-		void BodyForm::gradient(const Eigen::VectorXd &, Eigen::VectorXd &gradv)
+		void BodyForm::first_derivative(const Eigen::VectorXd &, Eigen::VectorXd &gradv)
 		{
 			//REMEMBER -!!!!!
 			gradv = current_rhs();
