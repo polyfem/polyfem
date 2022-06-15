@@ -92,19 +92,8 @@ namespace polyfem
 			displacements_.emplace_back();
 			for (size_t d = 0; d < dim_; ++d)
 			{
-				if (displacement.is_array())
-				{
-					displacements_.back()[d].init(displacement[d]);
-				}
-				else if (displacement.contains("value"))
-				{
-					assert(displacement["value"].is_array());
-					displacements_.back()[d].init(displacement["value"][d]);
-				}
-				else
-				{
-					displacements_.back()[d].init(0);
-				}
+				assert(displacement["value"].is_array());
+				displacements_.back()[d].init(displacement["value"][d]);
 			}
 
 			if (displacement.contains("interpolation"))

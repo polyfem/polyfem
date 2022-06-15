@@ -221,7 +221,7 @@ namespace polyfem::mesh
 
 				vertices.conservativeResize(vertices.rows(), dim);
 
-				json displacement = "[0, 0, 0]"_json;
+				json displacement = "{\"value\":[0, 0, 0]}"_json;
 				if (is_param_valid(complete_geometry, "surface_selection"))
 				{
 					if (!complete_geometry["surface_selection"].is_number())
