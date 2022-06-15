@@ -123,7 +123,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		logger().info("Authenticating..");
 		auto authen = in_args.at(authent1);
 		auto margin = authen.at("margin").get<double>();
-		margin = 1e-8;
+		margin = 1e-5;
 		for (auto &el : out.items())
 		{
 			auto gt_val = authen[el.key()].get<double>();
