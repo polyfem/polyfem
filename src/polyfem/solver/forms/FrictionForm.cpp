@@ -2,14 +2,17 @@
 
 #include <polyfem/utils/Timer.hpp>
 
-#include <ipc/ipc.hpp>
-
 namespace polyfem
 {
 	namespace solver
 	{
-		FrictionForm::FrictionForm(const State &state, const double epsv, const double mu, const double dt, const ipc::CollisionMesh &collision_mesh)
-			: epsv_(epsv), mu_(mu), dt_(dt), collision_mesh_(collision_mesh), state_(state)
+		FrictionForm::FrictionForm(const State &state,
+								   const double epsv, const double mu,
+								   const double dhat, const double &barrier_stiffness, const ipc::BroadPhaseMethod broad_phase_method,
+								   const double dt, const ipc::CollisionMesh &collision_mesh)
+			: epsv_(epsv), mu_(mu), dt_(dt),
+			  dhat_(dhat), barrier_stiffness_(barrier_stiffness),
+			  collision_mesh_(collision_mesh), broad_phase_method_(broad_phase_method), state_(state)
 		{
 			//TODO
 			// epsv_ = state_.args["contact"]["epsv"];
@@ -65,12 +68,15 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(displaced);
 
-			//TODO fix me
-			// update_constraint_set(displaced_surface);
+			ipc::Constraints constraint_set;
 
-			// ipc::constructfriction_constraint_set(
-			// 	collision_mesh_, displaced_surface, _constraint_set,
-			// 	_dhat, _barrier_stiffness, mu_, friction_constraint_set_);
+			ipc::construct_constraint_set(
+				collision_mesh_, displaced_surface, dhat_,
+				constraint_set, /*dmin=*/0, broad_phase_method_);
+
+			ipc::construct_friction_constraint_set(
+				collision_mesh_, displaced_surface, constraint_set,
+				dhat_, barrier_stiffness_, mu_, friction_constraint_set_);
 		}
 
 	} // namespace solver
