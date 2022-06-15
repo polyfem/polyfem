@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/solver/NavierStokesSolver.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,73 +118,109 @@ $(document).ready(function(){initNavTree('_navier_stokes_solver_8hpp_source.html
 <div class="title">NavierStokesSolver.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_navier_stokes_solver_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;polyfem/State.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_state_8hpp.html">polyfem/State.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;polysolve/LinearSolver.hpp&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Logger.hpp&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_logger_8hpp.html">polyfem/utils/Logger.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;{</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keyword">namespace </span>solver</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    {</div>
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html">   16</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html">NavierStokesSolver</a></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html">NavierStokesSolver</a>(<span class="keyword">const</span> json &amp;solver_param);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ae54d75ce86f084072d6e7b8e81b8454c">NavierStokesSolver</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cee2cef566eae693fcbe0d31c5a19e0">solver_param</a>);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <span class="keywordtype">void</span> minimize(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_state.html">State</a> &amp;state, <span class="keyword">const</span> Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;x);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keywordtype">void</span> getInfo(json &amp;params)</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ab58a99278ee7f7d03d015a1fa5641513">minimize</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_state.html">State</a> &amp;state, <span class="keyword">const</span> Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aeef166133f4267ff549d39cda638bbc3">   22</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aeef166133f4267ff549d39cda638bbc3">getInfo</a>(<a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params)</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                params = solver_info;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                params = <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4389527c8d9a46cfeef3be734ca5f8fb">solver_info</a>;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            }</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keywordtype">int</span> error_code()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#afd8ab0b8c9f58d7d951a5a3dddd5830c">   27</a></span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#afd8ab0b8c9f58d7d951a5a3dddd5830c">error_code</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 0; }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordtype">int</span> minimize_aux(<span class="keyword">const</span> std::string &amp;formulation, <span class="keyword">const</span> std::vector&lt;int&gt; &amp;skipping, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_state.html">State</a> &amp;state,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                             <span class="keyword">const</span> StiffnessMatrix &amp;velocity_stiffness, <span class="keyword">const</span> StiffnessMatrix &amp;mixed_stiffness, <span class="keyword">const</span> StiffnessMatrix &amp;pressure_stiffness,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4fe5c191d714ecae4e6aafd300976452">minimize_aux</a>(<span class="keyword">const</span> std::string &amp;formulation, <span class="keyword">const</span> std::vector&lt;int&gt; &amp;skipping, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_state.html">State</a> &amp;state,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                             <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                             <span class="keyword">const</span> Eigen::VectorXd &amp;rhs, <span class="keyword">const</span> <span class="keywordtype">double</span> grad_norm,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                             std::unique_ptr&lt;polysolve::LinearSolver&gt; &amp;solver,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                             <span class="keywordtype">double</span> &amp;nl_res_norm, Eigen::VectorXd &amp;x);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                             <span class="keywordtype">double</span> &amp;nl_res_norm, Eigen::VectorXd &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keyword">const</span> json solver_param;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="keyword">const</span> std::string solver_type;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keyword">const</span> std::string precond_type;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cee2cef566eae693fcbe0d31c5a19e0">   36</a></span>&#160;            <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cee2cef566eae693fcbe0d31c5a19e0">solver_param</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a512530cd22cceb23e841c546a446d02c">   37</a></span>&#160;            <span class="keyword">const</span> std::string <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a512530cd22cceb23e841c546a446d02c">solver_type</a>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a83bb56bea2377973ef9a300d545d8b96">   38</a></span>&#160;            <span class="keyword">const</span> std::string <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a83bb56bea2377973ef9a300d545d8b96">precond_type</a>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keywordtype">double</span> gradNorm;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keywordtype">int</span> iterations;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a7edb18d72295feeb690808b2c7b9cd2f">   40</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a7edb18d72295feeb690808b2c7b9cd2f">gradNorm</a>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a417a0005e1d694353faa1fc5de741b4a">   41</a></span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a417a0005e1d694353faa1fc5de741b4a">iterations</a>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            json solver_info;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4389527c8d9a46cfeef3be734ca5f8fb">   43</a></span>&#160;            <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4389527c8d9a46cfeef3be734ca5f8fb">solver_info</a>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            json internal_solver = json::array();</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac412c9a8edc16b1fce734457790df4bf">   45</a></span>&#160;            <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac412c9a8edc16b1fce734457790df4bf">internal_solver</a> = json::array();</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">double</span> assembly_time;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordtype">double</span> inverting_time;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keywordtype">double</span> stokes_matrix_time;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">double</span> stokes_solve_time;</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a0f049372026f86d49156c3e15f1a5266">   47</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a0f049372026f86d49156c3e15f1a5266">assembly_time</a>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a5613cf3385df821cd909783e401b2a42">   48</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a5613cf3385df821cd909783e401b2a42">inverting_time</a>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a73dd4341c1c556b639772831f63c8219">   49</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a73dd4341c1c556b639772831f63c8219">stokes_matrix_time</a>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aea40007816230a3bb0e8b4f251b0a8a5">   50</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aea40007816230a3bb0e8b4f251b0a8a5">stokes_solve_time</a>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordtype">bool</span> has_nans(<span class="keyword">const</span> polyfem::StiffnessMatrix &amp;hessian);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac2f048ba2e31b7481aa8dac656e5785e">has_nans</a>(<span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> &amp;hessian);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        };</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    } <span class="comment">// namespace solver</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a4cee2cef566eae693fcbe0d31c5a19e0"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cee2cef566eae693fcbe0d31c5a19e0">polyfem::solver::NavierStokesSolver::solver_param</a></div><div class="ttdeci">const json solver_param</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:36</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_aea40007816230a3bb0e8b4f251b0a8a5"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aea40007816230a3bb0e8b4f251b0a8a5">polyfem::solver::NavierStokesSolver::stokes_solve_time</a></div><div class="ttdeci">double stokes_solve_time</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:50</div></div>
+<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> Types.hpp:20</div></div>
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a4389527c8d9a46cfeef3be734ca5f8fb"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4389527c8d9a46cfeef3be734ca5f8fb">polyfem::solver::NavierStokesSolver::solver_info</a></div><div class="ttdeci">json solver_info</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:43</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_ac412c9a8edc16b1fce734457790df4bf"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac412c9a8edc16b1fce734457790df4bf">polyfem::solver::NavierStokesSolver::internal_solver</a></div><div class="ttdeci">json internal_solver</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:45</div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a0f049372026f86d49156c3e15f1a5266"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a0f049372026f86d49156c3e15f1a5266">polyfem::solver::NavierStokesSolver::assembly_time</a></div><div class="ttdeci">double assembly_time</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:47</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_aeef166133f4267ff549d39cda638bbc3"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aeef166133f4267ff549d39cda638bbc3">polyfem::solver::NavierStokesSolver::getInfo</a></div><div class="ttdeci">void getInfo(json &amp;params)</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:22</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a83bb56bea2377973ef9a300d545d8b96"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a83bb56bea2377973ef9a300d545d8b96">polyfem::solver::NavierStokesSolver::precond_type</a></div><div class="ttdeci">const std::string precond_type</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:38</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a4fe5c191d714ecae4e6aafd300976452"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4fe5c191d714ecae4e6aafd300976452">polyfem::solver::NavierStokesSolver::minimize_aux</a></div><div class="ttdeci">int minimize_aux(const std::string &amp;formulation, const std::vector&lt; int &gt; &amp;skipping, const State &amp;state, const StiffnessMatrix &amp;velocity_stiffness, const StiffnessMatrix &amp;mixed_stiffness, const StiffnessMatrix &amp;pressure_stiffness, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;solver, double &amp;nl_res_norm, Eigen::VectorXd &amp;x)</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.cpp:113</div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html"><div class="ttname"><a href="classpolyfem_1_1_state.html">polyfem::State</a></div><div class="ttdef"><b>Definition:</b> State.hpp:79</div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html">polyfem::solver::NavierStokesSolver</a></div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:16</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_afd8ab0b8c9f58d7d951a5a3dddd5830c"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#afd8ab0b8c9f58d7d951a5a3dddd5830c">polyfem::solver::NavierStokesSolver::error_code</a></div><div class="ttdeci">int error_code() const</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:27</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_ac2f048ba2e31b7481aa8dac656e5785e"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac2f048ba2e31b7481aa8dac656e5785e">polyfem::solver::NavierStokesSolver::has_nans</a></div><div class="ttdeci">bool has_nans(const polyfem::StiffnessMatrix &amp;hessian)</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.cpp:200</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a5613cf3385df821cd909783e401b2a42"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a5613cf3385df821cd909783e401b2a42">polyfem::solver::NavierStokesSolver::inverting_time</a></div><div class="ttdeci">double inverting_time</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:48</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a512530cd22cceb23e841c546a446d02c"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a512530cd22cceb23e841c546a446d02c">polyfem::solver::NavierStokesSolver::solver_type</a></div><div class="ttdeci">const std::string solver_type</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:37</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a7edb18d72295feeb690808b2c7b9cd2f"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a7edb18d72295feeb690808b2c7b9cd2f">polyfem::solver::NavierStokesSolver::gradNorm</a></div><div class="ttdeci">double gradNorm</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:40</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_ab58a99278ee7f7d03d015a1fa5641513"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ab58a99278ee7f7d03d015a1fa5641513">polyfem::solver::NavierStokesSolver::minimize</a></div><div class="ttdeci">void minimize(const State &amp;state, const Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;x)</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.cpp:34</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a417a0005e1d694353faa1fc5de741b4a"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a417a0005e1d694353faa1fc5de741b4a">polyfem::solver::NavierStokesSolver::iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:41</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_ae54d75ce86f084072d6e7b8e81b8454c"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ae54d75ce86f084072d6e7b8e81b8454c">polyfem::solver::NavierStokesSolver::NavierStokesSolver</a></div><div class="ttdeci">NavierStokesSolver(const json &amp;solver_param)</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1_navier_stokes_solver_html_a73dd4341c1c556b639772831f63c8219"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a73dd4341c1c556b639772831f63c8219">polyfem::solver::NavierStokesSolver::stokes_matrix_time</a></div><div class="ttdeci">double stokes_matrix_time</div><div class="ttdef"><b>Definition:</b> NavierStokesSolver.hpp:49</div></div>
+<div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
+<div class="ttc" id="a_state_8hpp_html"><div class="ttname"><a href="_state_8hpp.html">State.hpp</a></div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><b>NavierStokesSolver.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="_navier_stokes_solver_8hpp.html">NavierStokesSolver.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

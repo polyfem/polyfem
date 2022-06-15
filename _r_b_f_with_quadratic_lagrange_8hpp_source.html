@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/basis/function/RBFWithQuadraticLagrange.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,13 +118,13 @@ $(document).ready(function(){initNavTree('_r_b_f_with_quadratic_lagrange_8hpp_so
 <div class="title">RBFWithQuadraticLagrange.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_r_b_f_with_quadratic_lagrange_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/quadrature/Quadrature.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;polyfem/assembler/AssemblerUtils.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_quadrature_8hpp.html">polyfem/quadrature/Quadrature.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_assembler_utils_8hpp.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keyword">namespace </span>basis</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    {</div>
@@ -107,59 +139,83 @@ $(document).ready(function(){initNavTree('_r_b_f_with_quadratic_lagrange_8hpp_so
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                     <span class="keyword">const</span> Eigen::MatrixXd &amp;local_basis_integral, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr,</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                     Eigen::MatrixXd &amp;rhs, <span class="keywordtype">bool</span> with_constraints = <span class="keyword">true</span>);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a687de8eec89bd8d5d1c575b4d121d579">basis</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a687de8eec89bd8d5d1c575b4d121d579">basis</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a48b88c1b7465f1da1b3eb2c52ad8f50e">grad</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a48b88c1b7465f1da1b3eb2c52ad8f50e">grad</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a443e46941f94f2b8e3dc0398caf2ed0d">bases_values</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a443e46941f94f2b8e3dc0398caf2ed0d">bases_values</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a14bc20f54259d897845191ba729f93f0">bases_grads</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> axis, <span class="keyword">const</span> Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a14bc20f54259d897845191ba729f93f0">bases_grads</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> axis, <span class="keyword">const</span> Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <span class="keywordtype">bool</span> is_volume()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> centers_.cols() == 3; }</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a63972dd4793f1a28439deb2540a5f0d9">   82</a></span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a63972dd4793f1a28439deb2540a5f0d9">is_volume</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a01f86f8d5e6ccaa61091885c5a2ec0d1">centers_</a>.cols() == 3; }</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <span class="comment">// Computes the matrix that evaluates the kernels + polynomial terms on the given sample points</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keywordtype">void</span> compute_kernels_matrix(<span class="keyword">const</span> Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#aef67494d48db57dd68e206a42f628307">compute_kernels_matrix</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            <span class="comment">// Computes the constraint matrix C that we want to impose (C w = d)</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            <span class="keywordtype">void</span> compute_constraints_matrix_2d_old(<span class="keyword">const</span> <span class="keywordtype">int</span> num_bases, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;C) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            <span class="keywordtype">void</span> compute_constraints_matrix_2d(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, <span class="keyword">const</span> std::string &amp;assembler_name, <span class="keyword">const</span> <span class="keywordtype">int</span> num_bases, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;C) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a0e96c407c359f7f7e463c60b8f805eae">compute_constraints_matrix_2d_old</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> num_bases, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;C) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a61842784d6c64d7db66e9c86d7cbc781">compute_constraints_matrix_2d</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, <span class="keyword">const</span> std::string &amp;assembler_name, <span class="keyword">const</span> <span class="keywordtype">int</span> num_bases, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;C) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            <span class="comment">// Computes the constraint matrix C that we want to impose (C w = d)</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordtype">void</span> compute_constraints_matrix_3d(<span class="keyword">const</span> <span class="keywordtype">int</span> num_bases, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;C) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a50f2ba59b1749bae8c5b1c385c40984d">compute_constraints_matrix_3d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> num_bases, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;C) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            <span class="comment">// Computes the weights by solving a (possibly constrained) linear least square</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="keywordtype">void</span> compute_weights(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, <span class="keyword">const</span> std::string &amp;assembler_name, <span class="keyword">const</span> Eigen::MatrixXd &amp;collocation_points,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a71610d3e72efc5b4a2b479146053992d">compute_weights</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, <span class="keyword">const</span> std::string &amp;assembler_name, <span class="keyword">const</span> Eigen::MatrixXd &amp;collocation_points,</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                                 <span class="keyword">const</span> Eigen::MatrixXd &amp;local_basis_integral, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr,</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                                 Eigen::MatrixXd &amp;rhs, <span class="keywordtype">bool</span> with_constraints);</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            <span class="comment">// #C x dim matrix of kernel center positions</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            Eigen::MatrixXd centers_;</div>
+<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a01f86f8d5e6ccaa61091885c5a2ec0d1">  101</a></span>&#160;            Eigen::MatrixXd <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a01f86f8d5e6ccaa61091885c5a2ec0d1">centers_</a>;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            <span class="comment">// (#C + dim + 1) x #B matrix of weights extending the #B bases that are non-vanishing on the polytope</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            Eigen::MatrixXd weights_;</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a7c5362111737a80a468adba41c030584">  104</a></span>&#160;            Eigen::MatrixXd <a class="code" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a7c5362111737a80a468adba41c030584">weights_</a>;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        };</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    } <span class="comment">// namespace basis</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a01f86f8d5e6ccaa61091885c5a2ec0d1"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a01f86f8d5e6ccaa61091885c5a2ec0d1">polyfem::basis::RBFWithQuadraticLagrange::centers_</a></div><div class="ttdeci">Eigen::MatrixXd centers_</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.hpp:101</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a687de8eec89bd8d5d1c575b4d121d579"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a687de8eec89bd8d5d1c575b4d121d579">polyfem::basis::RBFWithQuadraticLagrange::basis</a></div><div class="ttdeci">void basis(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</div><div class="ttdoc">{ Evaluates one RBF function over a list of coordinates }</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:96</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a61842784d6c64d7db66e9c86d7cbc781"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a61842784d6c64d7db66e9c86d7cbc781">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d</a></div><div class="ttdeci">void compute_constraints_matrix_2d(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const quadrature::Quadrature &amp;quadr, Eigen::MatrixXd &amp;C) const</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:265</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_aef67494d48db57dd68e206a42f628307"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#aef67494d48db57dd68e206a42f628307">polyfem::basis::RBFWithQuadraticLagrange::compute_kernels_matrix</a></div><div class="ttdeci">void compute_kernels_matrix(const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) const</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:166</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_utils_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler_utils.html">polyfem::assembler::AssemblerUtils</a></div><div class="ttdef"><b>Definition:</b> AssemblerUtils.hpp:33</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a71610d3e72efc5b4a2b479146053992d"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a71610d3e72efc5b4a2b479146053992d">polyfem::basis::RBFWithQuadraticLagrange::compute_weights</a></div><div class="ttdeci">void compute_weights(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const quadrature::Quadrature &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:457</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a7c5362111737a80a468adba41c030584"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a7c5362111737a80a468adba41c030584">polyfem::basis::RBFWithQuadraticLagrange::weights_</a></div><div class="ttdeci">Eigen::MatrixXd weights_</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.hpp:104</div></div>
 <div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_quadrature_html"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_quadrature.html">polyfem::quadrature::Quadrature</a></div><div class="ttdef"><b>Definition:</b> Quadrature.hpp:9</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a0e96c407c359f7f7e463c60b8f805eae"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a0e96c407c359f7f7e463c60b8f805eae">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old</a></div><div class="ttdeci">void compute_constraints_matrix_2d_old(const int num_bases, const quadrature::Quadrature &amp;quadr, Eigen::MatrixXd &amp;C) const</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:195</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a14bc20f54259d897845191ba729f93f0"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a14bc20f54259d897845191ba729f93f0">polyfem::basis::RBFWithQuadraticLagrange::bases_grads</a></div><div class="ttdeci">void bases_grads(const int axis, const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) const</div><div class="ttdoc">{ Batch evaluates the gradient of the RBF + polynomials on a set of sample points }</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:131</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html">polyfem::basis::RBFWithQuadraticLagrange</a></div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.hpp:15</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a50f2ba59b1749bae8c5b1c385c40984d"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a50f2ba59b1749bae8c5b1c385c40984d">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_3d</a></div><div class="ttdeci">void compute_constraints_matrix_3d(const int num_bases, const quadrature::Quadrature &amp;quadr, Eigen::MatrixXd &amp;C) const</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:370</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a443e46941f94f2b8e3dc0398caf2ed0d"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a443e46941f94f2b8e3dc0398caf2ed0d">polyfem::basis::RBFWithQuadraticLagrange::bases_values</a></div><div class="ttdeci">void bases_values(const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) const</div><div class="ttdoc">{ Batch evaluates the RBF + polynomials on a set of sample points }</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:119</div></div>
+<div class="ttc" id="a_assembler_utils_8hpp_html"><div class="ttname"><a href="_assembler_utils_8hpp.html">AssemblerUtils.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a63972dd4793f1a28439deb2540a5f0d9"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a63972dd4793f1a28439deb2540a5f0d9">polyfem::basis::RBFWithQuadraticLagrange::is_volume</a></div><div class="ttdeci">bool is_volume() const</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.hpp:82</div></div>
+<div class="ttc" id="a_assembler_8cpp_html_a3c8bc0bb4f045bfe78d1196cb786792c"><div class="ttname"><a href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a></div><div class="ttdeci">double val</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:87</div></div>
+<div class="ttc" id="a_quadrature_8hpp_html"><div class="ttname"><a href="_quadrature_8hpp.html">Quadrature.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a5d54323cbdb409ac12b532c6bb83a7c1"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a5d54323cbdb409ac12b532c6bb83a7c1">polyfem::basis::RBFWithQuadraticLagrange::RBFWithQuadraticLagrange</a></div><div class="ttdeci">RBFWithQuadraticLagrange(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;centers, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const quadrature::Quadrature &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints=true)</div><div class="ttdoc">{ Initialize RBF functions over a polytope element. }</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:79</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange_html_a48b88c1b7465f1da1b3eb2c52ad8f50e"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a48b88c1b7465f1da1b3eb2c52ad8f50e">polyfem::basis::RBFWithQuadraticLagrange::grad</a></div><div class="ttdeci">void grad(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</div><div class="ttdoc">{ Evaluates the gradient of one RBF function over a list of coordinates }</div><div class="ttdef"><b>Definition:</b> RBFWithQuadraticLagrange.cpp:105</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_13510bfc8d6c882cc83f48e81fc78b9e.html">basis</a></li><li class="navelem"><a class="el" href="dir_139e29326adc6ff55c23eda1e203610b.html">function</a></li><li class="navelem"><b>RBFWithQuadraticLagrange.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_13510bfc8d6c882cc83f48e81fc78b9e.html">basis</a></li><li class="navelem"><a class="el" href="dir_139e29326adc6ff55c23eda1e203610b.html">function</a></li><li class="navelem"><a class="el" href="_r_b_f_with_quadratic_lagrange_8hpp.html">RBFWithQuadraticLagrange.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

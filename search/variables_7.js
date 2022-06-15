@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['g_5fbasis_5fvalues_5fcache_5f_3750',['g_basis_values_cache_',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#a6d25809476f9acbaf3918d9cce8b49dc',1,'polyfem::assembler::ElementAssemblyValues']]],
+  ['gamma_3751',['gamma',['../classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a1531ea057a2cc32994edd331f89f9e27',1,'polyfem::time_integrator::ImplicitNewmark']]],
+  ['gbases_5f_3752',['gbases_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481',1,'polyfem::assembler::RhsAssembler']]],
+  ['geom_5fbases_3753',['geom_bases',['../classpolyfem_1_1_state.html#a01a4dad6f731acfcb3322dd119a9b64f',1,'polyfem::State']]],
+  ['geom_5fvertices_3754',['geom_vertices',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab12dd8964258595195a150b69e434d3e',1,'polyfem::mesh::NCMesh2D::ncElem']]],
+  ['global_3755',['global',['../classpolyfem_1_1assembler_1_1_assembly_values.html#a3a6afd7356f63fa091fd508a6c88a047',1,'polyfem::assembler::AssemblyValues']]],
+  ['global_5f_3756',['global_',['../classpolyfem_1_1basis_1_1_basis.html#ad4b24c0d8a1e14e5f471f20b7d3119e6',1,'polyfem::basis::Basis']]],
+  ['global_5felement_5fid_5f_3757',['global_element_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a3243a8c158121e32492682332726f840',1,'polyfem::mesh::LocalBoundary']]],
+  ['global_5fids_3758',['global_ids',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a994f3ac144b91ff8dbd134de91fcef8d',1,'polyfem::mesh::NCMesh2D::ncBoundary']]],
+  ['global_5fprimitive_5fid_5f_3759',['global_primitive_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a798235b3c3624c42e89a456295ceee6b',1,'polyfem::mesh::LocalBoundary']]],
+  ['grad_3760',['grad',['../classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d',1,'polyfem::assembler::AssemblyValues::grad()'],['../struct_d_scalar1.html#ab47f13cbffdaff53d8d630a9abba26b0',1,'DScalar1::grad()'],['../struct_d_scalar2.html#ab6a69ad53cc7b6a98f20559e8875a005',1,'DScalar2::grad()']]],
+  ['grad_5f_3761',['grad_',['../classpolyfem_1_1basis_1_1_basis.html#ac9c1076cc0b4631159f5e6d02a07e8cc',1,'polyfem::basis::Basis']]],
+  ['grad_5fmax_5ferr_3762',['grad_max_err',['../classpolyfem_1_1_state.html#aa9aa2964469dc482b76396db2465070f',1,'polyfem::State']]],
+  ['grad_5ft_5fm_3763',['grad_t_m',['../classpolyfem_1_1assembler_1_1_assembly_values.html#aafc00c4359176133c0d65d930c8918d6',1,'polyfem::assembler::AssemblyValues']]],
+  ['grad_5ftime_3764',['grad_time',['../classcppoptlib_1_1_nonlinear_solver.html#af29c29fba5a56d0c9e64e69281f5d5a9',1,'cppoptlib::NonlinearSolver']]],
+  ['gradnorm_3765',['gradNorm',['../classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a7edb18d72295feeb690808b2c7b9cd2f',1,'polyfem::solver::NavierStokesSolver::gradNorm()'],['../classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ade83a13fd06d36a236fdad9d4c4a15b5',1,'polyfem::solver::TransientNavierStokesSolver::gradNorm()']]],
+  ['grid_5fcell_5fnum_3766',['grid_cell_num',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a921337bef2f24255ff5b7c9f401f1555',1,'polyfem::solver::OperatorSplittingSolver']]],
+  ['grid_5fpoints_3767',['grid_points',['../classpolyfem_1_1_state.html#add0c9912e96fc647c6c61793c59427f6',1,'polyfem::State']]],
+  ['grid_5fpoints_5fbc_3768',['grid_points_bc',['../classpolyfem_1_1_state.html#a05797a3e363ec1c26e7be944e4e5593c',1,'polyfem::State']]],
+  ['grid_5fpoints_5fto_5felements_3769',['grid_points_to_elements',['../classpolyfem_1_1_state.html#ab3f66c0e66efce3068565415ce0e389b',1,'polyfem::State']]],
+  ['group_5f_3770',['group_',['../classpolyfem_1_1utils_1_1base64_layer.html#aab8d988f19847a2f1925c912bc40d74d',1,'polyfem::utils::base64Layer']]],
+  ['grouplen_5f_3771',['groupLen_',['../classpolyfem_1_1utils_1_1base64_layer.html#a8df5f8735638dd57e90a7b9fe5caa977',1,'polyfem::utils::base64Layer']]]
+];

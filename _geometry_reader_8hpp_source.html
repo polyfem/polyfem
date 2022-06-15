@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/mesh/GeometryReader.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,32 +118,32 @@ $(document).ready(function(){initNavTree('_geometry_reader_8hpp_source.html','')
 <div class="title">GeometryReader.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_geometry_reader_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Types.hpp&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polyfem/mesh/Mesh.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;polyfem/mesh/Obstacle.hpp&gt;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Selection.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_types_8hpp.html">polyfem/utils/Types.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_mesh_8hpp.html">polyfem/mesh/Mesh.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_obstacle_8hpp.html">polyfem/mesh/Obstacle.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_selection_8hpp.html">polyfem/utils/Selection.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">namespace </span>mesh</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html">   11</a></span>&#160;    <span class="keyword">namespace </span>mesh</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        <span class="keywordtype">void</span> load_geometry(</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;            <span class="keyword">const</span> json &amp;geometry,</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1mesh.html#ad904e715bfa832bf235080ac76351f33">load_geometry</a>(</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;            <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry,</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            <span class="keyword">const</span> std::string &amp;root_path,</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            std::unique_ptr&lt;Mesh&gt; &amp;mesh,</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            Obstacle &amp;obstacle,</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;names = std::vector&lt;std::string&gt;(),</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <span class="keyword">const</span> std::vector&lt;Eigen::MatrixXd&gt; &amp;vertices = std::vector&lt;Eigen::MatrixXd&gt;(),</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            <a class="code" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> &amp;obstacle,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;<a class="code" href="namespaceelasticity__rhs.html#a2afe245d94a65301fae60f68fb6e49c3">names</a> = std::vector&lt;std::string&gt;(),</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <span class="keyword">const</span> std::vector&lt;Eigen::MatrixXd&gt; &amp;<a class="code" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a> = std::vector&lt;Eigen::MatrixXd&gt;(),</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;            <span class="keyword">const</span> std::vector&lt;Eigen::MatrixXi&gt; &amp;cells = std::vector&lt;Eigen::MatrixXi&gt;(),</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">bool</span> non_conforming = <span class="keyword">false</span>);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="keywordtype">void</span> load_mesh(</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">const</span> json &amp;jmesh,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1mesh.html#a0cae0dcc473dc0f45c46dd62901e2269">load_mesh</a>(</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;jmesh,</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="keyword">const</span> std::string &amp;root_path,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            Eigen::MatrixXd &amp;vertices,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            Eigen::MatrixXd &amp;<a class="code" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a>,</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            Eigen::MatrixXi &amp;cells,</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;elements,</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;weights,</div>
@@ -119,14 +151,14 @@ $(document).ready(function(){initNavTree('_geometry_reader_8hpp_source.html','')
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;            std::vector&lt;std::shared_ptr&lt;polyfem::utils::Selection&gt;&gt; &amp;surface_selections,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            std::vector&lt;std::shared_ptr&lt;polyfem::utils::Selection&gt;&gt; &amp;volume_selections);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">void</span> apply_default_geometry_parameters(</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keyword">const</span> json &amp;geometry_in, json &amp;geometry_out, <span class="keyword">const</span> std::string &amp;path_prefix = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33">apply_default_geometry_parameters</a>(</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry_in, <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry_out, <span class="keyword">const</span> std::string &amp;path_prefix = <span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordtype">void</span> transform_mesh_from_json(<span class="keyword">const</span> json &amp;transform, Eigen::MatrixXd &amp;vertices);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2">transform_mesh_from_json</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;transform, Eigen::MatrixXd &amp;<a class="code" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a>);</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">void</span> append_selections(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keyword">const</span> json &amp;new_selections,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keyword">const</span> polyfem::utils::Selection::BBox &amp;bbox,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1mesh.html#addb1327313435ccafb35bb476b034425">append_selections</a>(</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;new_selections,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">polyfem::utils::Selection::BBox</a> &amp;bbox,</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">size_t</span> &amp;start_element_id,</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">size_t</span> &amp;end_element_id,</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            std::vector&lt;std::shared_ptr&lt;polyfem::utils::Selection&gt;&gt; &amp;selections);</div>
@@ -135,14 +167,42 @@ $(document).ready(function(){initNavTree('_geometry_reader_8hpp_source.html','')
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_obstacle_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_obstacle.html">polyfem::mesh::Obstacle</a></div><div class="ttdef"><b>Definition:</b> Obstacle.hpp:13</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a0cae0dcc473dc0f45c46dd62901e2269"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a0cae0dcc473dc0f45c46dd62901e2269">polyfem::mesh::load_mesh</a></div><div class="ttdeci">void load_mesh(const json &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;weights, size_t &amp;num_faces, std::vector&lt; std::shared_ptr&lt; polyfem::utils::Selection &gt;&gt; &amp;surface_selections, std::vector&lt; std::shared_ptr&lt; polyfem::utils::Selection &gt;&gt; &amp;volume_selections)</div></div>
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a8465d134d77a8f8dfeaffdde17950e54"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">polyfem::utils::Selection::BBox</a></div><div class="ttdeci">std::array&lt; RowVectorNd, 2 &gt; BBox</div><div class="ttdef"><b>Definition:</b> Selection.hpp:13</div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_addb1327313435ccafb35bb476b034425"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#addb1327313435ccafb35bb476b034425">polyfem::mesh::append_selections</a></div><div class="ttdeci">void append_selections(const json &amp;new_selections, const polyfem::utils::Selection::BBox &amp;bbox, const size_t &amp;start_element_id, const size_t &amp;end_element_id, std::vector&lt; std::shared_ptr&lt; polyfem::utils::Selection &gt;&gt; &amp;selections)</div></div>
+<div class="ttc" id="a_mesh_8hpp_html"><div class="ttname"><a href="_mesh_8hpp.html">Mesh.hpp</a></div></div>
+<div class="ttc" id="anamespaceelasticity__rhs_html_a2afe245d94a65301fae60f68fb6e49c3"><div class="ttname"><a href="namespaceelasticity__rhs.html#a2afe245d94a65301fae60f68fb6e49c3">elasticity_rhs.names</a></div><div class="ttdeci">list names</div><div class="ttdef"><b>Definition:</b> elasticity_rhs.py:157</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ad904e715bfa832bf235080ac76351f33"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ad904e715bfa832bf235080ac76351f33">polyfem::mesh::load_geometry</a></div><div class="ttdeci">void load_geometry(const json &amp;geometry, const std::string &amp;root_path, std::unique_ptr&lt; Mesh &gt; &amp;mesh, Obstacle &amp;obstacle, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</div><div class="ttdef"><b>Definition:</b> GeometryReader.cpp:28</div></div>
+<div class="ttc" id="anamespacep__bases_html_a6e09a924d6202680eb9918f91c1e504b"><div class="ttname"><a href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">p_bases.vertices</a></div><div class="ttdeci">list vertices</div><div class="ttdef"><b>Definition:</b> p_bases.py:211</div></div>
+<div class="ttc" id="a_selection_8hpp_html"><div class="ttname"><a href="_selection_8hpp.html">Selection.hpp</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a6039e86ea6e80037d8fe94e72181ada2"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2">polyfem::mesh::transform_mesh_from_json</a></div><div class="ttdeci">void transform_mesh_from_json(const json &amp;transform, Eigen::MatrixXd &amp;vertices)</div><div class="ttdoc">Transform a mesh inplace using json parameters including scaling, rotation, and translation.</div><div class="ttdef"><b>Definition:</b> GeometryReader.cpp:287</div></div>
+<div class="ttc" id="a_types_8hpp_html"><div class="ttname"><a href="_types_8hpp.html">Types.hpp</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_aa6d084b6f52a0af47a0f7b9d1e11fc33"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33">polyfem::mesh::apply_default_geometry_parameters</a></div><div class="ttdeci">void apply_default_geometry_parameters(const json &amp;geometry_in, json &amp;geometry_out, const std::string &amp;path_prefix=&quot;&quot;)</div><div class="ttdoc">Fill in missing json geometry parameters with the default values.</div><div class="ttdef"><b>Definition:</b> GeometryReader.cpp:246</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="a_obstacle_8hpp_html"><div class="ttname"><a href="_obstacle_8hpp.html">Obstacle.hpp</a></div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_15d4893607df4bf7106bb9ed16128612.html">mesh</a></li><li class="navelem"><b>GeometryReader.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_15d4893607df4bf7106bb9ed16128612.html">mesh</a></li><li class="navelem"><a class="el" href="_geometry_reader_8hpp.html">GeometryReader.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

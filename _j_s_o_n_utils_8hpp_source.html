@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/JSONUtils.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,51 +118,51 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8hpp_source.html',''); 
 <div class="title">JSONUtils.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_j_s_o_n_utils_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;igl/PI.h&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keyword">namespace </span>utils</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        <span class="keywordtype">void</span> apply_default_params(json &amp;args);</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1utils.html#a3018867117b00d4899d44a7d14bed2d4">apply_default_params</a>(<a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="code" href="namespaceeigs.html#abe44e904f63d6b59924f947d7ab47875">args</a>);</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        <span class="comment">// Templated degree to radians so a scalar or vector can be given</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;        <span class="keyword">inline</span> T deg2rad(T deg)</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">   15</a></span>&#160;        <span class="keyword">inline</span> T <a class="code" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">deg2rad</a>(T deg)</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            <span class="keywordflow">return</span> deg / 180 * igl::PI;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        }</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="comment">// Converts a JSON rotation expressed in the given rotation mode to a 3D rotation matrix.</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="comment">// NOTE: mode is a copy because the mode will be transformed to be case insensitive</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        Eigen::Matrix3d to_rotation_matrix(<span class="keyword">const</span> json &amp;jr, std::string mode = <span class="stringliteral">&quot;xyz&quot;</span>);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        Eigen::Matrix3d <a class="code" href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">to_rotation_matrix</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;jr, std::string mode = <span class="stringliteral">&quot;xyz&quot;</span>);</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordtype">bool</span> check_for_unknown_args(<span class="keyword">const</span> json &amp;args, <span class="keyword">const</span> json &amp;args_in, <span class="keyword">const</span> std::string &amp;path_prefix = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordtype">bool</span> <a class="code" href="namespacepolyfem_1_1utils.html#a3e38f1639608dfcaf2d6940d8d0680aa">check_for_unknown_args</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="code" href="namespaceeigs.html#abe44e904f63d6b59924f947d7ab47875">args</a>, <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;args_in, <span class="keyword">const</span> std::string &amp;path_prefix = <span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordtype">bool</span> is_param_valid(<span class="keyword">const</span> json &amp;params, <span class="keyword">const</span> std::string &amp;key);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordtype">bool</span> <a class="code" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">is_param_valid</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params, <span class="keyword">const</span> std::string &amp;key);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span>nlohmann</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="namespacenlohmann.html">   30</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenlohmann.html">nlohmann</a></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> max_dim = dim&gt;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">using</span> Vector = Eigen::Matrix&lt;T, dim, 1, Eigen::ColMajor, max_dim, 1&gt;;</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">   33</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">Vector</a> = Eigen::Matrix&lt;T, dim, 1, Eigen::ColMajor, max_dim, 1&gt;;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> max_dim = dim&gt;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">using</span> RowVector = Eigen::Matrix&lt;T, 1, dim, Eigen::RowMajor, 1, max_dim&gt;;</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">   35</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">RowVector</a> = Eigen::Matrix&lt;T, 1, dim, Eigen::RowMajor, 1, max_dim&gt;;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> max_dim&gt;</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html">   38</a></span>&#160;    <span class="keyword">struct </span>adl_serializer&lt;Vector&lt;T, dim, max_dim&gt;&gt;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html">   38</a></span>&#160;    <span class="keyword">struct </span>adl_serializer&lt;<a class="code" href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">Vector</a>&lt;T, dim, max_dim&gt;&gt;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> to_json(json &amp;j, <span class="keyword">const</span> Vector&lt;T, dim, max_dim&gt; &amp;v)</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a265d0b9057358f5245b05c8036b427f9">   40</a></span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a265d0b9057358f5245b05c8036b427f9">to_json</a>(<a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;j, <span class="keyword">const</span> <a class="code" href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">Vector&lt;T, dim, max_dim&gt;</a> &amp;v)</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            j = std::vector&lt;T&gt;(v.data(), v.data() + v.size());</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        }</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> from_json(<span class="keyword">const</span> json &amp;j, Vector&lt;T, dim, max_dim&gt; &amp;v)</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a717a4b4300f04e2551c680f1441ef623">   45</a></span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a717a4b4300f04e2551c680f1441ef623">from_json</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;j, <a class="code" href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">Vector&lt;T, dim, max_dim&gt;</a> &amp;v)</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        {</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keyword">auto</span> jv = j.get&lt;std::vector&lt;T&gt;&gt;();</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            v = Eigen::Map&lt;Vector&lt;T, dim, max_dim&gt;&gt;(jv.data(), long(jv.size()));</div>
@@ -138,14 +170,14 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8hpp_source.html',''); 
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    };</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> max_dim&gt;</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html">   53</a></span>&#160;    <span class="keyword">struct </span>adl_serializer&lt;RowVector&lt;T, dim, max_dim&gt;&gt;</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html">   53</a></span>&#160;    <span class="keyword">struct </span>adl_serializer&lt;<a class="code" href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">RowVector</a>&lt;T, dim, max_dim&gt;&gt;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> to_json(json &amp;j, <span class="keyword">const</span> RowVector&lt;T, dim, max_dim&gt; &amp;v)</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#ada89d58a6bdeb9c5453eabc77de0864a">   55</a></span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#ada89d58a6bdeb9c5453eabc77de0864a">to_json</a>(<a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;j, <span class="keyword">const</span> <a class="code" href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">RowVector&lt;T, dim, max_dim&gt;</a> &amp;v)</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            j = std::vector&lt;T&gt;(v.data(), v.data() + v.size());</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        }</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> from_json(<span class="keyword">const</span> json &amp;j, RowVector&lt;T, dim, max_dim&gt; &amp;v)</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a7b1e706deb67f22f466cc46ef4411708">   60</a></span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a7b1e706deb67f22f466cc46ef4411708">from_json</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;j, <a class="code" href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">RowVector&lt;T, dim, max_dim&gt;</a> &amp;v)</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        {</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            <span class="keyword">auto</span> jv = j.get&lt;std::vector&lt;T&gt;&gt;();</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            v = Eigen::Map&lt;Vector&lt;T, dim, max_dim&gt;&gt;(jv.data(), long(jv.size()));</div>
@@ -154,14 +186,42 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8hpp_source.html',''); 
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;} <span class="comment">// namespace nlohmann</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="anamespacenlohmann_html"><div class="ttname"><a href="namespacenlohmann.html">nlohmann</a></div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:30</div></div>
+<div class="ttc" id="anamespaceeigs_html_abe44e904f63d6b59924f947d7ab47875"><div class="ttname"><a href="namespaceeigs.html#abe44e904f63d6b59924f947d7ab47875">eigs.args</a></div><div class="ttdeci">def args</div><div class="ttdef"><b>Definition:</b> eigs.py:78</div></div>
+<div class="ttc" id="anamespacenlohmann_html_ac6d5d984326c96a62a1b14db054e31bc"><div class="ttname"><a href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">nlohmann::Vector</a></div><div class="ttdeci">Eigen::Matrix&lt; T, dim, 1, Eigen::ColMajor, max_dim, 1 &gt; Vector</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:33</div></div>
+<div class="ttc" id="anamespacenlohmann_html_acf63a157949686c4a9dd40c56e7e70c2"><div class="ttname"><a href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">nlohmann::RowVector</a></div><div class="ttdeci">Eigen::Matrix&lt; T, 1, dim, Eigen::RowMajor, 1, max_dim &gt; RowVector</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:35</div></div>
+<div class="ttc" id="astructnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4_html_ada89d58a6bdeb9c5453eabc77de0864a"><div class="ttname"><a href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#ada89d58a6bdeb9c5453eabc77de0864a">nlohmann::adl_serializer&lt; RowVector&lt; T, dim, max_dim &gt; &gt;::to_json</a></div><div class="ttdeci">static void to_json(json &amp;j, const RowVector&lt; T, dim, max_dim &gt; &amp;v)</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:55</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a3e38f1639608dfcaf2d6940d8d0680aa"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a3e38f1639608dfcaf2d6940d8d0680aa">polyfem::utils::check_for_unknown_args</a></div><div class="ttdeci">bool check_for_unknown_args(const json &amp;args, const json &amp;args_in, const std::string &amp;path_prefix)</div><div class="ttdef"><b>Definition:</b> JSONUtils.cpp:104</div></div>
+<div class="ttc" id="astructnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4_html_a265d0b9057358f5245b05c8036b427f9"><div class="ttname"><a href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a265d0b9057358f5245b05c8036b427f9">nlohmann::adl_serializer&lt; Vector&lt; T, dim, max_dim &gt; &gt;::to_json</a></div><div class="ttdeci">static void to_json(json &amp;j, const Vector&lt; T, dim, max_dim &gt; &amp;v)</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:40</div></div>
+<div class="ttc" id="astructnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4_html_a717a4b4300f04e2551c680f1441ef623"><div class="ttname"><a href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a717a4b4300f04e2551c680f1441ef623">nlohmann::adl_serializer&lt; Vector&lt; T, dim, max_dim &gt; &gt;::from_json</a></div><div class="ttdeci">static void from_json(const json &amp;j, Vector&lt; T, dim, max_dim &gt; &amp;v)</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:45</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a839770ed1facd0a5f30ef708ddf03b15"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">polyfem::utils::to_rotation_matrix</a></div><div class="ttdeci">Eigen::Matrix3d to_rotation_matrix(const json &amp;jr, std::string mode)</div><div class="ttdef"><b>Definition:</b> JSONUtils.cpp:38</div></div>
+<div class="ttc" id="astructnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4_html_a7b1e706deb67f22f466cc46ef4411708"><div class="ttname"><a href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html#a7b1e706deb67f22f466cc46ef4411708">nlohmann::adl_serializer&lt; RowVector&lt; T, dim, max_dim &gt; &gt;::from_json</a></div><div class="ttdeci">static void from_json(const json &amp;j, RowVector&lt; T, dim, max_dim &gt; &amp;v)</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:60</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_aa57e548cd0726262758fcc6b16fe0b0a"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">polyfem::utils::is_param_valid</a></div><div class="ttdeci">bool is_param_valid(const json &amp;params, const std::string &amp;key)</div><div class="ttdef"><b>Definition:</b> JSONUtils.cpp:131</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a9f16cddaaf4c88645ca864f4e99beb19"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">polyfem::utils::deg2rad</a></div><div class="ttdeci">T deg2rad(T deg)</div><div class="ttdef"><b>Definition:</b> JSONUtils.hpp:15</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a3018867117b00d4899d44a7d14bed2d4"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a3018867117b00d4899d44a7d14bed2d4">polyfem::utils::apply_default_params</a></div><div class="ttdeci">void apply_default_params(json &amp;args)</div><div class="ttdef"><b>Definition:</b> JSONUtils.cpp:14</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>JSONUtils.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="_j_s_o_n_utils_8hpp.html">JSONUtils.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

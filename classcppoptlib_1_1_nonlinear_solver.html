@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: cppoptlib::NonlinearSolver&lt; ProblemType &gt; Class Template Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -92,143 +124,1049 @@ $(document).ready(function(){initNavTree('classcppoptlib_1_1_nonlinear_solver.ht
 <div class="title">cppoptlib::NonlinearSolver&lt; ProblemType &gt; Class Template Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_nonlinear_solver_8hpp_source.html">NonlinearSolver.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for cppoptlib::NonlinearSolver&lt; ProblemType &gt;:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classcppoptlib_1_1_nonlinear_solver.png" usemap="#cppoptlib::NonlinearSolver_3C_20ProblemType_20_3E_map" alt=""/>
-  <map id="cppoptlib::NonlinearSolver_3C_20ProblemType_20_3E_map" name="cppoptlib::NonlinearSolver_3C_20ProblemType_20_3E_map">
-<area href="classcppoptlib_1_1_l_b_f_g_s_solver.html" alt="cppoptlib::LBFGSSolver&lt; ProblemType &gt;" shape="rect" coords="0,112,332,136"/>
-<area href="classcppoptlib_1_1_sparse_newton_descent_solver.html" alt="cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;" shape="rect" coords="342,112,674,136"/>
-  </map>
-</div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classcppoptlib_1_1_nonlinear_solver__inherit__graph.svg" width="710" height="118"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for cppoptlib::NonlinearSolver&lt; ProblemType &gt;:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classcppoptlib_1_1_nonlinear_solver__coll__graph.svg" width="206" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:abf3c5030a82da3958bc23c1ee205b581"><td class="memItemLeft" align="right" valign="top"><a id="abf3c5030a82da3958bc23c1ee205b581"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ErrorCode</b> { <b>NanEncountered</b> = -10, 
-<b>StepTooSmall</b> = -1, 
-<b>Success</b> = 0
+<tr class="memitem:abf3c5030a82da3958bc23c1ee205b581"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581">ErrorCode</a> { <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581ae5ca52e49ab45484befdae67d5b9b3c2">ErrorCode::NanEncountered</a> = -10, 
+<a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581a2cf9518900cf219b1e12526c715d3865">ErrorCode::StepTooSmall</a> = -1, 
+<a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581a505a83f220c02df2f85c3810cd9ceb38">ErrorCode::Success</a> = 0
  }</td></tr>
 <tr class="separator:abf3c5030a82da3958bc23c1ee205b581"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa848ff8acc24d5cb997cdf2dfcd5f0ae"><td class="memItemLeft" align="right" valign="top"><a id="aa848ff8acc24d5cb997cdf2dfcd5f0ae"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Superclass</b> = ISolver&lt; ProblemType, -1 &gt;</td></tr>
+<tr class="memitem:aa848ff8acc24d5cb997cdf2dfcd5f0ae"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae">Superclass</a> = ISolver&lt; ProblemType, -1 &gt;</td></tr>
 <tr class="separator:aa848ff8acc24d5cb997cdf2dfcd5f0ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a674d52b06a2d7e482bdf31b5bc8ee2a5"><td class="memItemLeft" align="right" valign="top"><a id="a674d52b06a2d7e482bdf31b5bc8ee2a5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NonlinearSolver</b> (const json &amp;solver_params)</td></tr>
+<tr class="memitem:a674d52b06a2d7e482bdf31b5bc8ee2a5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a674d52b06a2d7e482bdf31b5bc8ee2a5">NonlinearSolver</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a>)</td></tr>
 <tr class="separator:a674d52b06a2d7e482bdf31b5bc8ee2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe4300acf51ac72a5904c65d091bd8c5"><td class="memItemLeft" align="right" valign="top"><a id="abe4300acf51ac72a5904c65d091bd8c5"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const =0</td></tr>
+<tr class="memitem:abe4300acf51ac72a5904c65d091bd8c5"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abe4300acf51ac72a5904c65d091bd8c5">name</a> () const =0</td></tr>
 <tr class="separator:abe4300acf51ac72a5904c65d091bd8c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcaf21162462720060e720e1075cfc62"><td class="memItemLeft" align="right" valign="top"><a id="afcaf21162462720060e720e1075cfc62"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setLineSearch</b> (const std::string &amp;line_search_name)</td></tr>
+<tr class="memitem:afcaf21162462720060e720e1075cfc62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#afcaf21162462720060e720e1075cfc62">setLineSearch</a> (const std::string &amp;line_search_name)</td></tr>
 <tr class="separator:afcaf21162462720060e720e1075cfc62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a2eac95950c8cf06c7d4eebc1d5568c"><td class="memItemLeft" align="right" valign="top"><a id="a1a2eac95950c8cf06c7d4eebc1d5568c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>minimize</b> (ProblemType &amp;objFunc, TVector &amp;x)</td></tr>
+<tr class="memitem:a1a2eac95950c8cf06c7d4eebc1d5568c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a1a2eac95950c8cf06c7d4eebc1d5568c">minimize</a> (ProblemType &amp;objFunc, TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:a1a2eac95950c8cf06c7d4eebc1d5568c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affd4086830d52d7538efdc184fdc9731"><td class="memItemLeft" align="right" valign="top"><a id="affd4086830d52d7538efdc184fdc9731"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>line_search</b> (const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc)</td></tr>
+<tr class="memitem:affd4086830d52d7538efdc184fdc9731"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#affd4086830d52d7538efdc184fdc9731">line_search</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const TVector &amp;delta_x, ProblemType &amp;objFunc)</td></tr>
 <tr class="separator:affd4086830d52d7538efdc184fdc9731"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b7ae05693f1d3e64f7b1eca273b7b2d"><td class="memItemLeft" align="right" valign="top"><a id="a8b7ae05693f1d3e64f7b1eca273b7b2d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getInfo</b> (json &amp;params)</td></tr>
+<tr class="memitem:a8b7ae05693f1d3e64f7b1eca273b7b2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a8b7ae05693f1d3e64f7b1eca273b7b2d">getInfo</a> (<a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params)</td></tr>
 <tr class="separator:a8b7ae05693f1d3e64f7b1eca273b7b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a073699ab4394c5b66dba8ad4e1acb827"><td class="memItemLeft" align="right" valign="top"><a id="a073699ab4394c5b66dba8ad4e1acb827"></a>
-ErrorCode&#160;</td><td class="memItemRight" valign="bottom"><b>error_code</b> () const</td></tr>
+<tr class="memitem:a073699ab4394c5b66dba8ad4e1acb827"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581">ErrorCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a073699ab4394c5b66dba8ad4e1acb827">error_code</a> () const</td></tr>
 <tr class="separator:a073699ab4394c5b66dba8ad4e1acb827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ab1651c7dcd4f7269ba77b4d55335a351"><td class="memItemLeft" align="right" valign="top"><a id="ab1651c7dcd4f7269ba77b4d55335a351"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> (const ProblemType &amp;objFunc, const TVector &amp;x)</td></tr>
+<tr class="memitem:ab1651c7dcd4f7269ba77b4d55335a351"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#ab1651c7dcd4f7269ba77b4d55335a351">reset</a> (const ProblemType &amp;objFunc, const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:ab1651c7dcd4f7269ba77b4d55335a351"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ae1ef959df52fddb792fb9880e9f80"><td class="memItemLeft" align="right" valign="top"><a id="a50ae1ef959df52fddb792fb9880e9f80"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>compute_update_direction</b> (ProblemType &amp;objFunc, const TVector &amp;x_vec, const TVector &amp;grad, TVector &amp;direction)=0</td></tr>
+<tr class="memitem:a50ae1ef959df52fddb792fb9880e9f80"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a50ae1ef959df52fddb792fb9880e9f80">compute_update_direction</a> (ProblemType &amp;objFunc, const TVector &amp;x_vec, const TVector &amp;grad, TVector &amp;direction)=0</td></tr>
 <tr class="separator:a50ae1ef959df52fddb792fb9880e9f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a5108b56a7a989b5edc1c455c09d36b"><td class="memItemLeft" align="right" valign="top"><a id="a2a5108b56a7a989b5edc1c455c09d36b"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>default_descent_strategy</b> ()=0</td></tr>
+<tr class="memitem:a2a5108b56a7a989b5edc1c455c09d36b"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a2a5108b56a7a989b5edc1c455c09d36b">default_descent_strategy</a> ()=0</td></tr>
 <tr class="separator:a2a5108b56a7a989b5edc1c455c09d36b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add8f592c83e28ed9b4d7967518248cde"><td class="memItemLeft" align="right" valign="top"><a id="add8f592c83e28ed9b4d7967518248cde"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>increase_descent_strategy</b> ()=0</td></tr>
+<tr class="memitem:add8f592c83e28ed9b4d7967518248cde"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#add8f592c83e28ed9b4d7967518248cde">increase_descent_strategy</a> ()=0</td></tr>
 <tr class="separator:add8f592c83e28ed9b4d7967518248cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70ecc9f4b8a29111c8aae889f2ad77f3"><td class="memItemLeft" align="right" valign="top"><a id="a70ecc9f4b8a29111c8aae889f2ad77f3"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>descent_strategy_name</b> (int descent_strategy) const =0</td></tr>
+<tr class="memitem:a70ecc9f4b8a29111c8aae889f2ad77f3"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a70ecc9f4b8a29111c8aae889f2ad77f3">descent_strategy_name</a> (int <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>) const =0</td></tr>
 <tr class="separator:a70ecc9f4b8a29111c8aae889f2ad77f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a107a4558ff1894a3373b8ef1ae408b91"><td class="memItemLeft" align="right" valign="top"><a id="a107a4558ff1894a3373b8ef1ae408b91"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>descent_strategy_name</b> () const</td></tr>
+<tr class="memitem:a107a4558ff1894a3373b8ef1ae408b91"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">descent_strategy_name</a> () const</td></tr>
 <tr class="separator:a107a4558ff1894a3373b8ef1ae408b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5404ccd80ca403e5b781db58456afc1"><td class="memItemLeft" align="right" valign="top"><a id="af5404ccd80ca403e5b781db58456afc1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_times</b> ()</td></tr>
+<tr class="memitem:af5404ccd80ca403e5b781db58456afc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#af5404ccd80ca403e5b781db58456afc1">reset_times</a> ()</td></tr>
 <tr class="separator:af5404ccd80ca403e5b781db58456afc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08c477575ee1b685c81be5ac62090e24"><td class="memItemLeft" align="right" valign="top"><a id="a08c477575ee1b685c81be5ac62090e24"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_solver_info</b> ()</td></tr>
+<tr class="memitem:a08c477575ee1b685c81be5ac62090e24"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a08c477575ee1b685c81be5ac62090e24">update_solver_info</a> ()</td></tr>
 <tr class="separator:a08c477575ee1b685c81be5ac62090e24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab17c6e91d53cd79ebc45e2bb9a840b0d"><td class="memItemLeft" align="right" valign="top"><a id="ab17c6e91d53cd79ebc45e2bb9a840b0d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>log_times</b> ()</td></tr>
+<tr class="memitem:ab17c6e91d53cd79ebc45e2bb9a840b0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#ab17c6e91d53cd79ebc45e2bb9a840b0d">log_times</a> ()</td></tr>
 <tr class="separator:ab17c6e91d53cd79ebc45e2bb9a840b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a39b6bc5367dce3b91fe799a91921f1d9"><td class="memItemLeft" align="right" valign="top"><a id="a39b6bc5367dce3b91fe799a91921f1d9"></a>
-const json&#160;</td><td class="memItemRight" valign="bottom"><b>solver_params</b></td></tr>
+<tr class="memitem:a39b6bc5367dce3b91fe799a91921f1d9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a></td></tr>
 <tr class="separator:a39b6bc5367dce3b91fe799a91921f1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31ee775ddddd9bafc9fc30284e4801bb"><td class="memItemLeft" align="right" valign="top"><a id="a31ee775ddddd9bafc9fc30284e4801bb"></a>
-std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_line_search</b></td></tr>
+<tr class="memitem:a31ee775ddddd9bafc9fc30284e4801bb"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a31ee775ddddd9bafc9fc30284e4801bb">m_line_search</a></td></tr>
 <tr class="separator:a31ee775ddddd9bafc9fc30284e4801bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fde555a657401aa47a76322b1d86e37"><td class="memItemLeft" align="right" valign="top"><a id="a7fde555a657401aa47a76322b1d86e37"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>descent_strategy</b></td></tr>
+<tr class="memitem:a7fde555a657401aa47a76322b1d86e37"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a></td></tr>
 <tr class="separator:a7fde555a657401aa47a76322b1d86e37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7579c108dbaaef164468133f727c5156"><td class="memItemLeft" align="right" valign="top"><a id="a7579c108dbaaef164468133f727c5156"></a>
-ErrorCode&#160;</td><td class="memItemRight" valign="bottom"><b>m_error_code</b></td></tr>
+<tr class="memitem:a7579c108dbaaef164468133f727c5156"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581">ErrorCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a7579c108dbaaef164468133f727c5156">m_error_code</a></td></tr>
 <tr class="separator:a7579c108dbaaef164468133f727c5156"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88fc44fd970ccb961b97091c59b39316"><td class="memItemLeft" align="right" valign="top"><a id="a88fc44fd970ccb961b97091c59b39316"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>use_gradient_norm</b></td></tr>
+<tr class="memitem:a88fc44fd970ccb961b97091c59b39316"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a88fc44fd970ccb961b97091c59b39316">use_gradient_norm</a></td></tr>
 <tr class="separator:a88fc44fd970ccb961b97091c59b39316"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad31a6ea29115f16e763f97487baa6300"><td class="memItemLeft" align="right" valign="top"><a id="ad31a6ea29115f16e763f97487baa6300"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>normalize_gradient</b></td></tr>
+<tr class="memitem:ad31a6ea29115f16e763f97487baa6300"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#ad31a6ea29115f16e763f97487baa6300">normalize_gradient</a></td></tr>
 <tr class="separator:ad31a6ea29115f16e763f97487baa6300"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8322ad0593df168fa29fc7275cc8853b"><td class="memItemLeft" align="right" valign="top"><a id="a8322ad0593df168fa29fc7275cc8853b"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>use_grad_norm_tol</b></td></tr>
+<tr class="memitem:a8322ad0593df168fa29fc7275cc8853b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a8322ad0593df168fa29fc7275cc8853b">use_grad_norm_tol</a></td></tr>
 <tr class="separator:a8322ad0593df168fa29fc7275cc8853b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88253269546f44a143e1d051528bb911"><td class="memItemLeft" align="right" valign="top"><a id="a88253269546f44a143e1d051528bb911"></a>
-json&#160;</td><td class="memItemRight" valign="bottom"><b>solver_info</b></td></tr>
+<tr class="memitem:a88253269546f44a143e1d051528bb911"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a88253269546f44a143e1d051528bb911">solver_info</a></td></tr>
 <tr class="separator:a88253269546f44a143e1d051528bb911"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fbf183b59d21d5a5de5490329653c9b"><td class="memItemLeft" align="right" valign="top"><a id="a4fbf183b59d21d5a5de5490329653c9b"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>total_time</b></td></tr>
+<tr class="memitem:a4fbf183b59d21d5a5de5490329653c9b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a4fbf183b59d21d5a5de5490329653c9b">total_time</a></td></tr>
 <tr class="separator:a4fbf183b59d21d5a5de5490329653c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af29c29fba5a56d0c9e64e69281f5d5a9"><td class="memItemLeft" align="right" valign="top"><a id="af29c29fba5a56d0c9e64e69281f5d5a9"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>grad_time</b></td></tr>
+<tr class="memitem:af29c29fba5a56d0c9e64e69281f5d5a9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#af29c29fba5a56d0c9e64e69281f5d5a9">grad_time</a></td></tr>
 <tr class="separator:af29c29fba5a56d0c9e64e69281f5d5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9bc129fb40312b11fb73f982d4e127c5"><td class="memItemLeft" align="right" valign="top"><a id="a9bc129fb40312b11fb73f982d4e127c5"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>assembly_time</b></td></tr>
+<tr class="memitem:a9bc129fb40312b11fb73f982d4e127c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a9bc129fb40312b11fb73f982d4e127c5">assembly_time</a></td></tr>
 <tr class="separator:a9bc129fb40312b11fb73f982d4e127c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8d818be91b1395bc6eeb920bf92ebc5"><td class="memItemLeft" align="right" valign="top"><a id="ad8d818be91b1395bc6eeb920bf92ebc5"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>inverting_time</b></td></tr>
+<tr class="memitem:ad8d818be91b1395bc6eeb920bf92ebc5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#ad8d818be91b1395bc6eeb920bf92ebc5">inverting_time</a></td></tr>
 <tr class="separator:ad8d818be91b1395bc6eeb920bf92ebc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8857f4990c2e1d493b753feeead53b8"><td class="memItemLeft" align="right" valign="top"><a id="ab8857f4990c2e1d493b753feeead53b8"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>line_search_time</b></td></tr>
+<tr class="memitem:ab8857f4990c2e1d493b753feeead53b8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#ab8857f4990c2e1d493b753feeead53b8">line_search_time</a></td></tr>
 <tr class="separator:ab8857f4990c2e1d493b753feeead53b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a672065a5cd3466edda0e143f08922aaa"><td class="memItemLeft" align="right" valign="top"><a id="a672065a5cd3466edda0e143f08922aaa"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_set_update_time</b></td></tr>
+<tr class="memitem:a672065a5cd3466edda0e143f08922aaa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a672065a5cd3466edda0e143f08922aaa">constraint_set_update_time</a></td></tr>
 <tr class="separator:a672065a5cd3466edda0e143f08922aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b7058680a67c72a2a6c06639d49cced"><td class="memItemLeft" align="right" valign="top"><a id="a8b7058680a67c72a2a6c06639d49cced"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>obj_fun_time</b></td></tr>
+<tr class="memitem:a8b7058680a67c72a2a6c06639d49cced"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a8b7058680a67c72a2a6c06639d49cced">obj_fun_time</a></td></tr>
 <tr class="separator:a8b7058680a67c72a2a6c06639d49cced"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="aa848ff8acc24d5cb997cdf2dfcd5f0ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa848ff8acc24d5cb997cdf2dfcd5f0ae">&#9670;&nbsp;</a></span>Superclass</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::<a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae">Superclass</a> =  ISolver&lt;ProblemType, -1&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="abf3c5030a82da3958bc23c1ee205b581"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf3c5030a82da3958bc23c1ee205b581">&#9670;&nbsp;</a></span>ErrorCode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581">cppoptlib::NonlinearSolver::ErrorCode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abf3c5030a82da3958bc23c1ee205b581ae5ca52e49ab45484befdae67d5b9b3c2"></a>NanEncountered&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abf3c5030a82da3958bc23c1ee205b581a2cf9518900cf219b1e12526c715d3865"></a>StepTooSmall&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abf3c5030a82da3958bc23c1ee205b581a505a83f220c02df2f85c3810cd9ceb38"></a>Success&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a674d52b06a2d7e482bdf31b5bc8ee2a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a674d52b06a2d7e482bdf31b5bc8ee2a5">&#9670;&nbsp;</a></span>NonlinearSolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::<a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver_params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a50ae1ef959df52fddb792fb9880e9f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50ae1ef959df52fddb792fb9880e9f80">&#9670;&nbsp;</a></span>compute_update_direction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::compute_update_direction </td>
+          <td>(</td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const TVector &amp;&#160;</td>
+          <td class="paramname"><em>x_vec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const TVector &amp;&#160;</td>
+          <td class="paramname"><em>grad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TVector &amp;&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>, and <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa4908d8716a99eb8ac3e67b1427680e9">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a2a5108b56a7a989b5edc1c455c09d36b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a5108b56a7a989b5edc1c455c09d36b">&#9670;&nbsp;</a></span>default_descent_strategy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::default_descent_strategy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a3bbc88f9f0f024f718f3bd23875a2e7b">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>, and <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab2b94a0d16385cb24a4951d86ea24235">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a107a4558ff1894a3373b8ef1ae408b91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a107a4558ff1894a3373b8ef1ae408b91">&#9670;&nbsp;</a></span>descent_strategy_name() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::descent_strategy_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a70ecc9f4b8a29111c8aae889f2ad77f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70ecc9f4b8a29111c8aae889f2ad77f3">&#9670;&nbsp;</a></span>descent_strategy_name() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::descent_strategy_name </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>descent_strategy</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a54202b43d98e7d53422c2b601309b487">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>, and <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aa57081d7bebeabd07be89f4fc2c9a88d">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a073699ab4394c5b66dba8ad4e1acb827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a073699ab4394c5b66dba8ad4e1acb827">&#9670;&nbsp;</a></span>error_code()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581">ErrorCode</a> <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::error_code </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b7ae05693f1d3e64f7b1eca273b7b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7ae05693f1d3e64f7b1eca273b7b2d">&#9670;&nbsp;</a></span>getInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::getInfo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="add8f592c83e28ed9b4d7967518248cde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add8f592c83e28ed9b4d7967518248cde">&#9670;&nbsp;</a></span>increase_descent_strategy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::increase_descent_strategy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>, and <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a7b199d828b86ad904419717e4584d9a9">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="affd4086830d52d7538efdc184fdc9731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affd4086830d52d7538efdc184fdc9731">&#9670;&nbsp;</a></span>line_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::line_search </td>
+          <td>(</td>
+          <td class="paramtype">const TVector &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const TVector &amp;&#160;</td>
+          <td class="paramname"><em>delta_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab17c6e91d53cd79ebc45e2bb9a840b0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab17c6e91d53cd79ebc45e2bb9a840b0d">&#9670;&nbsp;</a></span>log_times()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::log_times </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a2eac95950c8cf06c7d4eebc1d5568c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2eac95950c8cf06c7d4eebc1d5568c">&#9670;&nbsp;</a></span>minimize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::minimize </td>
+          <td>(</td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TVector &amp;&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe4300acf51ac72a5904c65d091bd8c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4300acf51ac72a5904c65d091bd8c5">&#9670;&nbsp;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#abff7a650655eb86d5251ca45bf3922b3">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>, and <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="ab1651c7dcd4f7269ba77b4d55335a351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1651c7dcd4f7269ba77b4d55335a351">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::reset </td>
+          <td>(</td>
+          <td class="paramtype">const ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const TVector &amp;&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aab624bcd7e4c8fb967b417b6790858fd">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>, and <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a9d9c660a129f7f362786c0886406c7b4">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="af5404ccd80ca403e5b781db58456afc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5404ccd80ca403e5b781db58456afc1">&#9670;&nbsp;</a></span>reset_times()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::reset_times </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afcaf21162462720060e720e1075cfc62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcaf21162462720060e720e1075cfc62">&#9670;&nbsp;</a></span>setLineSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::setLineSearch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>line_search_name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08c477575ee1b685c81be5ac62090e24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08c477575ee1b685c81be5ac62090e24">&#9670;&nbsp;</a></span>update_solver_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::update_solver_info </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a9bc129fb40312b11fb73f982d4e127c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc129fb40312b11fb73f982d4e127c5">&#9670;&nbsp;</a></span>assembly_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::assembly_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a672065a5cd3466edda0e143f08922aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a672065a5cd3466edda0e143f08922aaa">&#9670;&nbsp;</a></span>constraint_set_update_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::constraint_set_update_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7fde555a657401aa47a76322b1d86e37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fde555a657401aa47a76322b1d86e37">&#9670;&nbsp;</a></span>descent_strategy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::descent_strategy</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af29c29fba5a56d0c9e64e69281f5d5a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af29c29fba5a56d0c9e64e69281f5d5a9">&#9670;&nbsp;</a></span>grad_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::grad_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad8d818be91b1395bc6eeb920bf92ebc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8d818be91b1395bc6eeb920bf92ebc5">&#9670;&nbsp;</a></span>inverting_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::inverting_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab8857f4990c2e1d493b753feeead53b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8857f4990c2e1d493b753feeead53b8">&#9670;&nbsp;</a></span>line_search_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::line_search_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7579c108dbaaef164468133f727c5156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7579c108dbaaef164468133f727c5156">&#9670;&nbsp;</a></span>m_error_code</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abf3c5030a82da3958bc23c1ee205b581">ErrorCode</a> <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::m_error_code</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a31ee775ddddd9bafc9fc30284e4801bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31ee775ddddd9bafc9fc30284e4801bb">&#9670;&nbsp;</a></span>m_line_search</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt;ProblemType&gt; &gt; <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::m_line_search</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad31a6ea29115f16e763f97487baa6300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad31a6ea29115f16e763f97487baa6300">&#9670;&nbsp;</a></span>normalize_gradient</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::normalize_gradient</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b7058680a67c72a2a6c06639d49cced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7058680a67c72a2a6c06639d49cced">&#9670;&nbsp;</a></span>obj_fun_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::obj_fun_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a88253269546f44a143e1d051528bb911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88253269546f44a143e1d051528bb911">&#9670;&nbsp;</a></span>solver_info</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::solver_info</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a39b6bc5367dce3b91fe799a91921f1d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39b6bc5367dce3b91fe799a91921f1d9">&#9670;&nbsp;</a></span>solver_params</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::solver_params</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4fbf183b59d21d5a5de5490329653c9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fbf183b59d21d5a5de5490329653c9b">&#9670;&nbsp;</a></span>total_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::total_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8322ad0593df168fa29fc7275cc8853b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8322ad0593df168fa29fc7275cc8853b">&#9670;&nbsp;</a></span>use_grad_norm_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::use_grad_norm_tol</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a88fc44fd970ccb961b97091c59b39316"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88fc44fd970ccb961b97091c59b39316">&#9670;&nbsp;</a></span>use_gradient_norm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt;::use_gradient_norm</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/polyfem/solver/<a class="el" href="_nonlinear_solver_8hpp_source.html">NonlinearSolver.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>cppoptlib</b></li><li class="navelem"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacecppoptlib.html">cppoptlib</a></li><li class="navelem"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/raster.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,7 +118,7 @@ $(document).ready(function(){initNavTree('raster_8hpp_source.html',''); initResi
 <div class="title">raster.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="raster_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
@@ -94,25 +126,25 @@ $(document).ready(function(){initNavTree('raster_8hpp_source.html',''); initResi
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">namespace </span>renderer</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    {</div>
 <div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structpolyfem_1_1renderer_1_1_material.html">   13</a></span>&#160;        <span class="keyword">struct </span><a class="code" href="structpolyfem_1_1renderer_1_1_material.html">Material</a></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            Eigen::Vector3d diffuse_color;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            Eigen::Vector3d specular_color;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            <span class="keywordtype">double</span> specular_exponent;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structpolyfem_1_1renderer_1_1_material.html#a5ed213374953871f8d88adf5cd299025">   15</a></span>&#160;            Eigen::Vector3d <a class="code" href="structpolyfem_1_1renderer_1_1_material.html#a5ed213374953871f8d88adf5cd299025">diffuse_color</a>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structpolyfem_1_1renderer_1_1_material.html#a2824f296c229b13333fec4971dc6fba0">   16</a></span>&#160;            Eigen::Vector3d <a class="code" href="structpolyfem_1_1renderer_1_1_material.html#a2824f296c229b13333fec4971dc6fba0">specular_color</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="structpolyfem_1_1renderer_1_1_material.html#a065a303d09686dfe9b2078cacd333430">   17</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="structpolyfem_1_1renderer_1_1_material.html#a065a303d09686dfe9b2078cacd333430">specular_exponent</a>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        };</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">   19</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a>(<span class="keywordtype">double</span> x = 0, <span class="keywordtype">double</span> y = 0, <span class="keywordtype">double</span> z = 0, <span class="keywordtype">double</span> w = 1)</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a9128d9d85f1d19069550e84a63df15dd">   22</a></span>&#160;            <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a9128d9d85f1d19069550e84a63df15dd">VertexAttributes</a>(<span class="keywordtype">double</span> <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0, <span class="keywordtype">double</span> <a class="code" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0, <span class="keywordtype">double</span> <a class="code" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = 0, <span class="keywordtype">double</span> w = 1)</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                position &lt;&lt; x, y, z, w;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a> &lt;&lt; <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, w;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            }</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keyword">static</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> interpolate(</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a428f33703957c4be5f04b69254730b6f">   27</a></span>&#160;            <span class="keyword">static</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a428f33703957c4be5f04b69254730b6f">interpolate</a>(</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;a,</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;b,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;c,</div>
@@ -121,58 +153,58 @@ $(document).ready(function(){initNavTree('raster_8hpp_source.html',''); initResi
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">double</span> gamma)</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> r;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                r.position = alpha * (a.position / a.position(3)) + beta * (b.position / b.position(3)) + gamma * (c.position / c.position(3));</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                r.color = alpha * a.color + beta * b.color + gamma * c.color;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                r.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a> = alpha * (a.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a> / a.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a>(3)) + beta * (b.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a> / b.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a>(3)) + gamma * (c.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a> / c.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a>(3));</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                r.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">color</a> = alpha * a.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">color</a> + beta * b.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">color</a> + gamma * c.<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">color</a>;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                <span class="keywordflow">return</span> r;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            }</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            Eigen::Vector4d position;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            Eigen::Vector3d normal;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            Eigen::Vector3d color;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <a class="code" href="structpolyfem_1_1renderer_1_1_material.html">Material</a> material;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">   41</a></span>&#160;            Eigen::Vector4d <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a3575408115a8af0357277c66db850be4">   42</a></span>&#160;            Eigen::Vector3d <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a3575408115a8af0357277c66db850be4">normal</a>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">   43</a></span>&#160;            Eigen::Vector3d <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">color</a>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a424d67579ad2f94f1eb6bd731469102b">   44</a></span>&#160;            <a class="code" href="structpolyfem_1_1renderer_1_1_material.html">Material</a> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a424d67579ad2f94f1eb6bd731469102b">material</a>;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        };</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
 <div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">   47</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">FragmentAttributes</a></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">FragmentAttributes</a>(<span class="keywordtype">double</span> r = 0, <span class="keywordtype">double</span> g = 0, <span class="keywordtype">double</span> b = 0, <span class="keywordtype">double</span> a = 1)</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a54244ef6dde684a564e7b0e339e7bd2e">   50</a></span>&#160;            <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a54244ef6dde684a564e7b0e339e7bd2e">FragmentAttributes</a>(<span class="keywordtype">double</span> r = 0, <span class="keywordtype">double</span> g = 0, <span class="keywordtype">double</span> b = 0, <span class="keywordtype">double</span> a = 1)</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                color &lt;&lt; r, g, b, a;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a675e05c50a43fbecc029c208d2ab8df3">color</a> &lt;&lt; r, g, b, a;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordtype">double</span> depth;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            Eigen::Vector4d color;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a25247919176044c9860b1e27a9fa4c02">   54</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a25247919176044c9860b1e27a9fa4c02">depth</a>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a675e05c50a43fbecc029c208d2ab8df3">   55</a></span>&#160;            Eigen::Vector4d <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a675e05c50a43fbecc029c208d2ab8df3">color</a>;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        };</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
 <div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">   58</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">FrameBufferAttributes</a></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        {</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">FrameBufferAttributes</a>(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255)</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#af3c2a072c88f16a5421771616c1e27b3">   61</a></span>&#160;            <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#af3c2a072c88f16a5421771616c1e27b3">FrameBufferAttributes</a>(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255)</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                color &lt;&lt; r, g, b, a;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                depth = 2;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a9cdd583177fdf7f40a44837d8ffd9e61">color</a> &lt;&lt; r, g, b, a;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a2a81b7dde3eb178337ea00864e48d59d">depth</a> = 2;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            <span class="keywordtype">double</span> depth;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            Eigen::Matrix&lt;uint8_t, 4, 1&gt; color;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a2a81b7dde3eb178337ea00864e48d59d">   66</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a2a81b7dde3eb178337ea00864e48d59d">depth</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a9cdd583177fdf7f40a44837d8ffd9e61">   67</a></span>&#160;            Eigen::Matrix&lt;uint8_t, 4, 1&gt; <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a9cdd583177fdf7f40a44837d8ffd9e61">color</a>;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        };</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
 <div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">   70</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">UniformAttributes</a></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            Eigen::Matrix4d M_cam;</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#adfa481ee238a758bbf41fdde647c3659">   73</a></span>&#160;            Eigen::Matrix4d <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#adfa481ee238a758bbf41fdde647c3659">M_cam</a>;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            Eigen::Matrix4d M_orth;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            Eigen::Matrix4d M;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#addaef9bca66e9418a626fed4caa1868c">   75</a></span>&#160;            Eigen::Matrix4d <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#addaef9bca66e9418a626fed4caa1868c">M_orth</a>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa">   76</a></span>&#160;            Eigen::Matrix4d <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa">M</a>;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        };</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
 <div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_program.html">   79</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1renderer_1_1_program.html">Program</a></div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        {</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            std::function&lt;<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">UniformAttributes</a> &amp;)&gt; VertexShader;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            std::function&lt;<a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">FragmentAttributes</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">UniformAttributes</a> &amp;)&gt; FragmentShader;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            std::function&lt;<a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">FrameBufferAttributes</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">FragmentAttributes</a> &amp;, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">FrameBufferAttributes</a> &amp;)&gt; BlendingShader;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_program.html#ad92e3e8482bef85ffdc4908f1e63fb43">   82</a></span>&#160;            std::function&lt;<a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">UniformAttributes</a> &amp;)&gt; <a class="code" href="classpolyfem_1_1renderer_1_1_program.html#ad92e3e8482bef85ffdc4908f1e63fb43">VertexShader</a>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_program.html#a5cbcd183ca5560d03740532134640029">   83</a></span>&#160;            std::function&lt;<a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">FragmentAttributes</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">UniformAttributes</a> &amp;)&gt; <a class="code" href="classpolyfem_1_1renderer_1_1_program.html#a5cbcd183ca5560d03740532134640029">FragmentShader</a>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classpolyfem_1_1renderer_1_1_program.html#af8854e9b101095dff631285ada650e7c">   84</a></span>&#160;            std::function&lt;<a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">FrameBufferAttributes</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">FragmentAttributes</a> &amp;, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">FrameBufferAttributes</a> &amp;)&gt; <a class="code" href="classpolyfem_1_1renderer_1_1_program.html#af8854e9b101095dff631285ada650e7c">BlendingShader</a>;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        };</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        std::vector&lt;uint8_t&gt; render(<span class="keyword">const</span> Eigen::MatrixXd &amp;vertices, <span class="keyword">const</span> Eigen::MatrixXi &amp;faces, <span class="keyword">const</span> Eigen::MatrixXi &amp;faces_id,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        std::vector&lt;uint8_t&gt; <a class="code" href="namespacepolyfem_1_1renderer.html#a6d4ba3980ec36335024c3a9a2ffe6530">render</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a>, <span class="keyword">const</span> Eigen::MatrixXi &amp;faces, <span class="keyword">const</span> Eigen::MatrixXi &amp;faces_id,</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                    <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height,</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                    <span class="keyword">const</span> Eigen::Vector3d &amp;camera_position, <span class="keyword">const</span> <span class="keywordtype">double</span> camera_fov, <span class="keyword">const</span> <span class="keywordtype">double</span> camera_near, <span class="keyword">const</span> <span class="keywordtype">double</span> camera_far, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_perspective, <span class="keyword">const</span> Eigen::Vector3d &amp;lookat, <span class="keyword">const</span> Eigen::Vector3d &amp;up,</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                                    <span class="keyword">const</span> Eigen::Vector3d &amp;ambient_light, <span class="keyword">const</span> std::vector&lt;std::pair&lt;Eigen::MatrixXd, Eigen::MatrixXd&gt;&gt; &amp;lights,</div>
@@ -181,20 +213,59 @@ $(document).ready(function(){initNavTree('raster_8hpp_source.html',''); initResi
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_program_html_ad92e3e8482bef85ffdc4908f1e63fb43"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_program.html#ad92e3e8482bef85ffdc4908f1e63fb43">polyfem::renderer::Program::VertexShader</a></div><div class="ttdeci">std::function&lt; VertexAttributes(const VertexAttributes &amp;, const UniformAttributes &amp;)&gt; VertexShader</div><div class="ttdef"><b>Definition:</b> raster.hpp:82</div></div>
 <div class="ttc" id="aclasspolyfem_1_1renderer_1_1_program_html"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_program.html">polyfem::renderer::Program</a></div><div class="ttdef"><b>Definition:</b> raster.hpp:79</div></div>
 <div class="ttc" id="astructpolyfem_1_1renderer_1_1_material_html"><div class="ttname"><a href="structpolyfem_1_1renderer_1_1_material.html">polyfem::renderer::Material</a></div><div class="ttdef"><b>Definition:</b> raster.hpp:13</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_fragment_attributes_html_a25247919176044c9860b1e27a9fa4c02"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a25247919176044c9860b1e27a9fa4c02">polyfem::renderer::FragmentAttributes::depth</a></div><div class="ttdeci">double depth</div><div class="ttdef"><b>Definition:</b> raster.hpp:54</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_frame_buffer_attributes_html_a2a81b7dde3eb178337ea00864e48d59d"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a2a81b7dde3eb178337ea00864e48d59d">polyfem::renderer::FrameBufferAttributes::depth</a></div><div class="ttdeci">double depth</div><div class="ttdef"><b>Definition:</b> raster.hpp:66</div></div>
+<div class="ttc" id="astructpolyfem_1_1renderer_1_1_material_html_a5ed213374953871f8d88adf5cd299025"><div class="ttname"><a href="structpolyfem_1_1renderer_1_1_material.html#a5ed213374953871f8d88adf5cd299025">polyfem::renderer::Material::diffuse_color</a></div><div class="ttdeci">Eigen::Vector3d diffuse_color</div><div class="ttdef"><b>Definition:</b> raster.hpp:15</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html_a9128d9d85f1d19069550e84a63df15dd"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a9128d9d85f1d19069550e84a63df15dd">polyfem::renderer::VertexAttributes::VertexAttributes</a></div><div class="ttdeci">VertexAttributes(double x=0, double y=0, double z=0, double w=1)</div><div class="ttdef"><b>Definition:</b> raster.hpp:22</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_program_html_af8854e9b101095dff631285ada650e7c"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_program.html#af8854e9b101095dff631285ada650e7c">polyfem::renderer::Program::BlendingShader</a></div><div class="ttdeci">std::function&lt; FrameBufferAttributes(const FragmentAttributes &amp;, const FrameBufferAttributes &amp;)&gt; BlendingShader</div><div class="ttdef"><b>Definition:</b> raster.hpp:84</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_uniform_attributes_html_a36c697eaa40c9a42d50d92ef713099aa"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa">polyfem::renderer::UniformAttributes::M</a></div><div class="ttdeci">Eigen::Matrix4d M</div><div class="ttdef"><b>Definition:</b> raster.hpp:76</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html_a3575408115a8af0357277c66db850be4"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a3575408115a8af0357277c66db850be4">polyfem::renderer::VertexAttributes::normal</a></div><div class="ttdeci">Eigen::Vector3d normal</div><div class="ttdef"><b>Definition:</b> raster.hpp:42</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_uniform_attributes_html_addaef9bca66e9418a626fed4caa1868c"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#addaef9bca66e9418a626fed4caa1868c">polyfem::renderer::UniformAttributes::M_orth</a></div><div class="ttdeci">Eigen::Matrix4d M_orth</div><div class="ttdef"><b>Definition:</b> raster.hpp:75</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="astructpolyfem_1_1renderer_1_1_material_html_a2824f296c229b13333fec4971dc6fba0"><div class="ttname"><a href="structpolyfem_1_1renderer_1_1_material.html#a2824f296c229b13333fec4971dc6fba0">polyfem::renderer::Material::specular_color</a></div><div class="ttdeci">Eigen::Vector3d specular_color</div><div class="ttdef"><b>Definition:</b> raster.hpp:16</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html_a428f33703957c4be5f04b69254730b6f"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a428f33703957c4be5f04b69254730b6f">polyfem::renderer::VertexAttributes::interpolate</a></div><div class="ttdeci">static VertexAttributes interpolate(const VertexAttributes &amp;a, const VertexAttributes &amp;b, const VertexAttributes &amp;c, const double alpha, const double beta, const double gamma)</div><div class="ttdef"><b>Definition:</b> raster.hpp:27</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_fragment_attributes_html_a54244ef6dde684a564e7b0e339e7bd2e"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a54244ef6dde684a564e7b0e339e7bd2e">polyfem::renderer::FragmentAttributes::FragmentAttributes</a></div><div class="ttdeci">FragmentAttributes(double r=0, double g=0, double b=0, double a=1)</div><div class="ttdef"><b>Definition:</b> raster.hpp:50</div></div>
+<div class="ttc" id="anamespacep__bases_html_a6e09a924d6202680eb9918f91c1e504b"><div class="ttname"><a href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">p_bases.vertices</a></div><div class="ttdeci">list vertices</div><div class="ttdef"><b>Definition:</b> p_bases.py:211</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html_ad9b521b96b49a1f3ef5044742af89c2c"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">polyfem::renderer::VertexAttributes::color</a></div><div class="ttdeci">Eigen::Vector3d color</div><div class="ttdef"><b>Definition:</b> raster.hpp:43</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_frame_buffer_attributes_html_a9cdd583177fdf7f40a44837d8ffd9e61"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a9cdd583177fdf7f40a44837d8ffd9e61">polyfem::renderer::FrameBufferAttributes::color</a></div><div class="ttdeci">Eigen::Matrix&lt; uint8_t, 4, 1 &gt; color</div><div class="ttdef"><b>Definition:</b> raster.hpp:67</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
 <div class="ttc" id="aclasspolyfem_1_1renderer_1_1_frame_buffer_attributes_html"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html">polyfem::renderer::FrameBufferAttributes</a></div><div class="ttdef"><b>Definition:</b> raster.hpp:58</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html_a424d67579ad2f94f1eb6bd731469102b"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a424d67579ad2f94f1eb6bd731469102b">polyfem::renderer::VertexAttributes::material</a></div><div class="ttdeci">Material material</div><div class="ttdef"><b>Definition:</b> raster.hpp:44</div></div>
+<div class="ttc" id="astructpolyfem_1_1renderer_1_1_material_html_a065a303d09686dfe9b2078cacd333430"><div class="ttname"><a href="structpolyfem_1_1renderer_1_1_material.html#a065a303d09686dfe9b2078cacd333430">polyfem::renderer::Material::specular_exponent</a></div><div class="ttdeci">double specular_exponent</div><div class="ttdef"><b>Definition:</b> raster.hpp:17</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_program_html_a5cbcd183ca5560d03740532134640029"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_program.html#a5cbcd183ca5560d03740532134640029">polyfem::renderer::Program::FragmentShader</a></div><div class="ttdeci">std::function&lt; FragmentAttributes(const VertexAttributes &amp;, const UniformAttributes &amp;)&gt; FragmentShader</div><div class="ttdef"><b>Definition:</b> raster.hpp:83</div></div>
 <div class="ttc" id="aclasspolyfem_1_1renderer_1_1_uniform_attributes_html"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_uniform_attributes.html">polyfem::renderer::UniformAttributes</a></div><div class="ttdef"><b>Definition:</b> raster.hpp:70</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_uniform_attributes_html_adfa481ee238a758bbf41fdde647c3659"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_uniform_attributes.html#adfa481ee238a758bbf41fdde647c3659">polyfem::renderer::UniformAttributes::M_cam</a></div><div class="ttdeci">Eigen::Matrix4d M_cam</div><div class="ttdef"><b>Definition:</b> raster.hpp:73</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html_a903b714b28e264af924f31886fd0f667"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">polyfem::renderer::VertexAttributes::position</a></div><div class="ttdeci">Eigen::Vector4d position</div><div class="ttdef"><b>Definition:</b> raster.hpp:41</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_fragment_attributes_html_a675e05c50a43fbecc029c208d2ab8df3"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_fragment_attributes.html#a675e05c50a43fbecc029c208d2ab8df3">polyfem::renderer::FragmentAttributes::color</a></div><div class="ttdeci">Eigen::Vector4d color</div><div class="ttdef"><b>Definition:</b> raster.hpp:55</div></div>
 <div class="ttc" id="aclasspolyfem_1_1renderer_1_1_fragment_attributes_html"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_fragment_attributes.html">polyfem::renderer::FragmentAttributes</a></div><div class="ttdef"><b>Definition:</b> raster.hpp:47</div></div>
+<div class="ttc" id="aclasspolyfem_1_1renderer_1_1_frame_buffer_attributes_html_af3c2a072c88f16a5421771616c1e27b3"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#af3c2a072c88f16a5421771616c1e27b3">polyfem::renderer::FrameBufferAttributes::FrameBufferAttributes</a></div><div class="ttdeci">FrameBufferAttributes(uint8_t r=0, uint8_t g=0, uint8_t b=0, uint8_t a=255)</div><div class="ttdef"><b>Definition:</b> raster.hpp:61</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1renderer_html_a6d4ba3980ec36335024c3a9a2ffe6530"><div class="ttname"><a href="namespacepolyfem_1_1renderer.html#a6d4ba3980ec36335024c3a9a2ffe6530">polyfem::renderer::render</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; render(const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;faces, const Eigen::MatrixXi &amp;faces_id, int width, int height, const Eigen::Vector3d &amp;camera_position, const double camera_fov, const double camera_near, const double camera_far, const bool is_perspective, const Eigen::Vector3d &amp;lookat, const Eigen::Vector3d &amp;up, const Eigen::Vector3d &amp;ambient_light, const std::vector&lt; std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXd &gt;&gt; &amp;lights, std::vector&lt; Material &gt; &amp;materials)</div><div class="ttdef"><b>Definition:</b> raster.cpp:155</div></div>
 <div class="ttc" id="aclasspolyfem_1_1renderer_1_1_vertex_attributes_html"><div class="ttname"><a href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">polyfem::renderer::VertexAttributes</a></div><div class="ttdef"><b>Definition:</b> raster.hpp:19</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>raster.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="raster_8hpp.html">raster.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

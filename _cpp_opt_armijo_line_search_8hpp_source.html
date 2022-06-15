@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/solver/line_search/CppOptArmijoLineSearch.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,13 +118,13 @@ $(document).ready(function(){initNavTree('_cpp_opt_armijo_line_search_8hpp_sourc
 <div class="title">CppOptArmijoLineSearch.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_cpp_opt_armijo_line_search_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;LineSearch.hpp&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_line_search_8hpp.html">LineSearch.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;cppoptlib/linesearch/armijo.h&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keyword">namespace </span>solver</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    {</div>
@@ -102,16 +134,16 @@ $(document).ready(function(){initNavTree('_cpp_opt_armijo_line_search_8hpp_sourc
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html">   14</a></span>&#160;            <span class="keyword">class </span><a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html">CppOptArmijoLineSearch</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a>&lt;ProblemType&gt;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                <span class="keyword">using</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">Superclass</a> = <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch&lt;ProblemType&gt;</a>;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::Scalar;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::TVector;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html#a2aa2ebbbdcea70b597c6b258894cdda4">   17</a></span>&#160;                <span class="keyword">using</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">Superclass</a> = <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch&lt;ProblemType&gt;</a>;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aab06bc92bfecad365ffeda27b28651c7">Superclass::Scalar</a>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">Superclass::TVector</a>;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                <span class="keywordtype">double</span> line_search(</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                    <span class="keyword">const</span> TVector &amp;x,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                    <span class="keyword">const</span> TVector &amp;searchDir,</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html#ab8968b3929fa21704b3ddd9f2c666dc3">   21</a></span>&#160;                <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html#ab8968b3929fa21704b3ddd9f2c666dc3">line_search</a>(</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                    <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                    <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;searchDir,</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                    ProblemType &amp;objFunc)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">                </span>{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                    <span class="keywordflow">return</span> cppoptlib::Armijo&lt;ProblemType, 1&gt;::linesearch(x, searchDir, objFunc);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                    <span class="keywordflow">return</span> cppoptlib::Armijo&lt;ProblemType, 1&gt;::linesearch(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, searchDir, objFunc);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            };</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        } <span class="comment">// namespace line_search</span></div>
@@ -120,15 +152,33 @@ $(document).ready(function(){initNavTree('_cpp_opt_armijo_line_search_8hpp_sourc
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a></div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:10</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_aab06bc92bfecad365ffeda27b28651c7"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aab06bc92bfecad365ffeda27b28651c7">polyfem::solver::line_search::LineSearch::Scalar</a></div><div class="ttdeci">typename ProblemType::Scalar Scalar</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:13</div></div>
+<div class="ttc" id="a_line_search_8hpp_html"><div class="ttname"><a href="_line_search_8hpp.html">LineSearch.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search_html_ab8968b3929fa21704b3ddd9f2c666dc3"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html#ab8968b3929fa21704b3ddd9f2c666dc3">polyfem::solver::line_search::CppOptArmijoLineSearch::line_search</a></div><div class="ttdeci">double line_search(const TVector &amp;x, const TVector &amp;searchDir, ProblemType &amp;objFunc) override</div><div class="ttdef"><b>Definition:</b> CppOptArmijoLineSearch.hpp:21</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a17ffbdf8087400684d3d3609d20d09bf"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">polyfem::solver::line_search::LineSearch::TVector</a></div><div class="ttdeci">typename ProblemType::TVector TVector</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:14</div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html">polyfem::solver::line_search::CppOptArmijoLineSearch</a></div><div class="ttdef"><b>Definition:</b> CppOptArmijoLineSearch.hpp:14</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="dir_02b5be155cc4b176060eb5eeb551f9cc.html">line_search</a></li><li class="navelem"><b>CppOptArmijoLineSearch.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="dir_02b5be155cc4b176060eb5eeb551f9cc.html">line_search</a></li><li class="navelem"><a class="el" href="_cpp_opt_armijo_line_search_8hpp.html">CppOptArmijoLineSearch.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

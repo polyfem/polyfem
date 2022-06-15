@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::basis::ElementBases Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -102,23 +134,18 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_element_base
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a7941ab977bae52e122b7c528f856d474"><td class="memItemLeft" align="right" valign="top"><a id="a7941ab977bae52e122b7c528f856d474"></a>
-typedef std::function&lt; Eigen::VectorXi(const int local_index, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>LocalNodeFromPrimitiveFunc</b></td></tr>
+<tr class="memitem:a7941ab977bae52e122b7c528f856d474"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; Eigen::VectorXi(const int local_index, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474">LocalNodeFromPrimitiveFunc</a></td></tr>
 <tr class="separator:a7941ab977bae52e122b7c528f856d474"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeeada219c048b38a032bd67c9b538024"><td class="memItemLeft" align="right" valign="top"><a id="aeeada219c048b38a032bd67c9b538024"></a>
-typedef std::function&lt; void(const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>EvalBasesFunc</b></td></tr>
+<tr class="memitem:aeeada219c048b38a032bd67c9b538024"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a></td></tr>
 <tr class="separator:aeeada219c048b38a032bd67c9b538024"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae4e7d17943ce89d3f714e3bfb23cbbf"><td class="memItemLeft" align="right" valign="top"><a id="aae4e7d17943ce89d3f714e3bfb23cbbf"></a>
-typedef std::function&lt; void(<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>QuadratureFunction</b></td></tr>
+<tr class="memitem:aae4e7d17943ce89d3f714e3bfb23cbbf"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf">QuadratureFunction</a></td></tr>
 <tr class="separator:aae4e7d17943ce89d3f714e3bfb23cbbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3fe910141a6dd62e404d5eededafb547"><td class="memItemLeft" align="right" valign="top"><a id="a3fe910141a6dd62e404d5eededafb547"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_quadrature</b> (<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature) const</td></tr>
+<tr class="memitem:a3fe910141a6dd62e404d5eededafb547"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a3fe910141a6dd62e404d5eededafb547">compute_quadrature</a> (<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature) const</td></tr>
 <tr class="separator:a3fe910141a6dd62e404d5eededafb547"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fde226f98331cb0c54e13baa95d5a98"><td class="memItemLeft" align="right" valign="top"><a id="a9fde226f98331cb0c54e13baa95d5a98"></a>
-Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>local_nodes_for_primitive</b> (const int local_index, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh) const</td></tr>
+<tr class="memitem:a9fde226f98331cb0c54e13baa95d5a98"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a9fde226f98331cb0c54e13baa95d5a98">local_nodes_for_primitive</a> (const int local_index, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh) const</td></tr>
 <tr class="separator:a9fde226f98331cb0c54e13baa95d5a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47d52083f050e4cb34eeab5656a86523"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">eval_geom_mapping</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;mapped) const</td></tr>
 <tr class="memdesc:a47d52083f050e4cb34eeab5656a86523"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Map the sample positions in the parametric domain to the object domain (if the element has no parameterization, e.g. harmonic bases, then the parametric domain = object domain, and the mapping is identity) }  <a href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">More...</a><br /></td></tr>
@@ -126,71 +153,124 @@ Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>local_node
 <tr class="memitem:aa6ed093f463318ed61f89280cd7c2e55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aa6ed093f463318ed61f89280cd7c2e55">eval_geom_mapping_grads</a> (const Eigen::MatrixXd &amp;samples, std::vector&lt; Eigen::MatrixXd &gt; &amp;grads) const</td></tr>
 <tr class="memdesc:aa6ed093f463318ed61f89280cd7c2e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Evaluate the gradients of the geometric mapping defined above }  <a href="classpolyfem_1_1basis_1_1_element_bases.html#aa6ed093f463318ed61f89280cd7c2e55">More...</a><br /></td></tr>
 <tr class="separator:aa6ed093f463318ed61f89280cd7c2e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e17ce1a3d515a82126d02a84ff94a49"><td class="memItemLeft" align="right" valign="top"><a id="a6e17ce1a3d515a82126d02a84ff94a49"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a6e17ce1a3d515a82126d02a84ff94a49">is_complete</a> () const</td></tr>
-<tr class="memdesc:a6e17ce1a3d515a82126d02a84ff94a49"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Checks if all the bases are complete } <br /></td></tr>
+<tr class="memitem:a6e17ce1a3d515a82126d02a84ff94a49"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a6e17ce1a3d515a82126d02a84ff94a49">is_complete</a> () const</td></tr>
+<tr class="memdesc:a6e17ce1a3d515a82126d02a84ff94a49"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Checks if all the bases are complete }  <a href="classpolyfem_1_1basis_1_1_element_bases.html#a6e17ce1a3d515a82126d02a84ff94a49">More...</a><br /></td></tr>
 <tr class="separator:a6e17ce1a3d515a82126d02a84ff94a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f199c4f37379930fb492028060f9a1c"><td class="memItemLeft" align="right" valign="top"><a id="a2f199c4f37379930fb492028060f9a1c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_quadrature</b> (const QuadratureFunction &amp;fun)</td></tr>
+<tr class="memitem:a2f199c4f37379930fb492028060f9a1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a2f199c4f37379930fb492028060f9a1c">set_quadrature</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf">QuadratureFunction</a> &amp;fun)</td></tr>
 <tr class="separator:a2f199c4f37379930fb492028060f9a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6936d345f21ed506227618ef65dba6a6"><td class="memItemLeft" align="right" valign="top"><a id="a6936d345f21ed506227618ef65dba6a6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate_bases</b> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
+<tr class="memitem:a6936d345f21ed506227618ef65dba6a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6">evaluate_bases</a> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
 <tr class="separator:a6936d345f21ed506227618ef65dba6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a731d20029949bd0255c9af1f91dfa74c"><td class="memItemLeft" align="right" valign="top"><a id="a731d20029949bd0255c9af1f91dfa74c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate_grads</b> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
+<tr class="memitem:a731d20029949bd0255c9af1f91dfa74c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c">evaluate_grads</a> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
 <tr class="separator:a731d20029949bd0255c9af1f91dfa74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a352d6eecadbe30bf82d8cc475dfeef"><td class="memItemLeft" align="right" valign="top"><a id="a0a352d6eecadbe30bf82d8cc475dfeef"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_bases_func</b> (EvalBasesFunc fun)</td></tr>
+<tr class="memitem:a0a352d6eecadbe30bf82d8cc475dfeef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a0a352d6eecadbe30bf82d8cc475dfeef">set_bases_func</a> (<a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a> fun)</td></tr>
 <tr class="separator:a0a352d6eecadbe30bf82d8cc475dfeef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5af92cc96cae3fdb89dbbaf20524f33"><td class="memItemLeft" align="right" valign="top"><a id="aa5af92cc96cae3fdb89dbbaf20524f33"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_grads_func</b> (EvalBasesFunc fun)</td></tr>
+<tr class="memitem:aa5af92cc96cae3fdb89dbbaf20524f33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aa5af92cc96cae3fdb89dbbaf20524f33">set_grads_func</a> (<a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a> fun)</td></tr>
 <tr class="separator:aa5af92cc96cae3fdb89dbbaf20524f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d8eaf01d57981f0e7449692a742ceb4"><td class="memItemLeft" align="right" valign="top"><a id="a4d8eaf01d57981f0e7449692a742ceb4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_local_node_from_primitive_func</b> (LocalNodeFromPrimitiveFunc fun)</td></tr>
+<tr class="memitem:a4d8eaf01d57981f0e7449692a742ceb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a4d8eaf01d57981f0e7449692a742ceb4">set_local_node_from_primitive_func</a> (<a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474">LocalNodeFromPrimitiveFunc</a> fun)</td></tr>
 <tr class="separator:a4d8eaf01d57981f0e7449692a742ceb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ab3e049455c895d613294cfd10a1bbd9e"><td class="memItemLeft" align="right" valign="top"><a id="ab3e049455c895d613294cfd10a1bbd9e"></a>
-std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bases</b></td></tr>
+<tr class="memitem:ab3e049455c895d613294cfd10a1bbd9e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#ab3e049455c895d613294cfd10a1bbd9e">bases</a></td></tr>
 <tr class="separator:ab3e049455c895d613294cfd10a1bbd9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc2650e04db97cab021eb730be84d215"><td class="memItemLeft" align="right" valign="top"><a id="acc2650e04db97cab021eb730be84d215"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_parameterization</b> = true</td></tr>
+<tr class="memitem:acc2650e04db97cab021eb730be84d215"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#acc2650e04db97cab021eb730be84d215">has_parameterization</a> = true</td></tr>
 <tr class="separator:acc2650e04db97cab021eb730be84d215"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a9d6e4fd2a6d6491fed600c2a26680d89"><td class="memItemLeft" align="right" valign="top"><a id="a9d6e4fd2a6d6491fed600c2a26680d89"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate_bases_default</b> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
+<tr class="memitem:a9d6e4fd2a6d6491fed600c2a26680d89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89">evaluate_bases_default</a> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
 <tr class="separator:a9d6e4fd2a6d6491fed600c2a26680d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae3b739e75920739799e866e4b0c448c"><td class="memItemLeft" align="right" valign="top"><a id="aae3b739e75920739799e866e4b0c448c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate_grads_default</b> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
+<tr class="memitem:aae3b739e75920739799e866e4b0c448c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c">evaluate_grads_default</a> (const Eigen::MatrixXd &amp;uv, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;basis_values) const</td></tr>
 <tr class="separator:aae3b739e75920739799e866e4b0c448c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a4e780b2e0aa26209bd5ed6e60e841ba8"><td class="memItemLeft" align="right" valign="top"><a id="a4e780b2e0aa26209bd5ed6e60e841ba8"></a>
-EvalBasesFunc&#160;</td><td class="memItemRight" valign="bottom"><b>eval_bases_func_</b></td></tr>
+<tr class="memitem:a4e780b2e0aa26209bd5ed6e60e841ba8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a4e780b2e0aa26209bd5ed6e60e841ba8">eval_bases_func_</a></td></tr>
 <tr class="separator:a4e780b2e0aa26209bd5ed6e60e841ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af991f80d3057d11973733b07f13e644d"><td class="memItemLeft" align="right" valign="top"><a id="af991f80d3057d11973733b07f13e644d"></a>
-EvalBasesFunc&#160;</td><td class="memItemRight" valign="bottom"><b>eval_grads_func_</b></td></tr>
+<tr class="memitem:af991f80d3057d11973733b07f13e644d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#af991f80d3057d11973733b07f13e644d">eval_grads_func_</a></td></tr>
 <tr class="separator:af991f80d3057d11973733b07f13e644d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a624d4469689656631ac92a9eebf6fadb"><td class="memItemLeft" align="right" valign="top"><a id="a624d4469689656631ac92a9eebf6fadb"></a>
-QuadratureFunction&#160;</td><td class="memItemRight" valign="bottom"><b>quadrature_builder_</b></td></tr>
+<tr class="memitem:a624d4469689656631ac92a9eebf6fadb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf">QuadratureFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a624d4469689656631ac92a9eebf6fadb">quadrature_builder_</a></td></tr>
 <tr class="separator:a624d4469689656631ac92a9eebf6fadb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9df0ed812e27f48018349b2f283a08ee"><td class="memItemLeft" align="right" valign="top"><a id="a9df0ed812e27f48018349b2f283a08ee"></a>
-LocalNodeFromPrimitiveFunc&#160;</td><td class="memItemRight" valign="bottom"><b>local_node_from_primitive_</b></td></tr>
+<tr class="memitem:a9df0ed812e27f48018349b2f283a08ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474">LocalNodeFromPrimitiveFunc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a9df0ed812e27f48018349b2f283a08ee">local_node_from_primitive_</a></td></tr>
 <tr class="separator:a9df0ed812e27f48018349b2f283a08ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:ae632007f9317ed5883533f791dbc3aa4"><td class="memItemLeft" align="right" valign="top"><a id="ae632007f9317ed5883533f791dbc3aa4"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;obj)</td></tr>
+<tr class="memitem:ae632007f9317ed5883533f791dbc3aa4"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#ae632007f9317ed5883533f791dbc3aa4">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;obj)</td></tr>
 <tr class="separator:ae632007f9317ed5883533f791dbc3aa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Stores the basis functions for a given element in a mesh (facet in 2d, cell in 3d). </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="aeeada219c048b38a032bd67c9b538024"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeada219c048b38a032bd67c9b538024">&#9670;&nbsp;</a></span>EvalBasesFunc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::function&lt;void(const Eigen::MatrixXd &amp;uv, std::vector&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a>&gt; &amp;basis_values)&gt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">polyfem::basis::ElementBases::EvalBasesFunc</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7941ab977bae52e122b7c528f856d474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7941ab977bae52e122b7c528f856d474">&#9670;&nbsp;</a></span>LocalNodeFromPrimitiveFunc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::function&lt;Eigen::VectorXi(const int local_index, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh)&gt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474">polyfem::basis::ElementBases::LocalNodeFromPrimitiveFunc</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae4e7d17943ce89d3f714e3bfb23cbbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae4e7d17943ce89d3f714e3bfb23cbbf">&#9670;&nbsp;</a></span>QuadratureFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::function&lt;void(<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature)&gt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf">polyfem::basis::ElementBases::QuadratureFunction</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3fe910141a6dd62e404d5eededafb547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fe910141a6dd62e404d5eededafb547">&#9670;&nbsp;</a></span>compute_quadrature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::compute_quadrature </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadrature</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a47d52083f050e4cb34eeab5656a86523"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a47d52083f050e4cb34eeab5656a86523">&#9670;&nbsp;</a></span>eval_geom_mapping()</h2>
 
@@ -265,20 +345,489 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 
 </div>
 </div>
+<a id="a6936d345f21ed506227618ef65dba6a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6936d345f21ed506227618ef65dba6a6">&#9670;&nbsp;</a></span>evaluate_bases()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::evaluate_bases </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>basis_values</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d6e4fd2a6d6491fed600c2a26680d89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d6e4fd2a6d6491fed600c2a26680d89">&#9670;&nbsp;</a></span>evaluate_bases_default()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::evaluate_bases_default </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>basis_values</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a731d20029949bd0255c9af1f91dfa74c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a731d20029949bd0255c9af1f91dfa74c">&#9670;&nbsp;</a></span>evaluate_grads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::evaluate_grads </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>basis_values</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae3b739e75920739799e866e4b0c448c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae3b739e75920739799e866e4b0c448c">&#9670;&nbsp;</a></span>evaluate_grads_default()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::evaluate_grads_default </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_values.html">assembler::AssemblyValues</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>basis_values</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e17ce1a3d515a82126d02a84ff94a49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e17ce1a3d515a82126d02a84ff94a49">&#9670;&nbsp;</a></span>is_complete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::basis::ElementBases::is_complete </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>{ Checks if all the bases are complete } </p>
+
+</div>
+</div>
+<a id="a9fde226f98331cb0c54e13baa95d5a98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fde226f98331cb0c54e13baa95d5a98">&#9670;&nbsp;</a></span>local_nodes_for_primitive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::basis::ElementBases::local_nodes_for_primitive </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>local_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0a352d6eecadbe30bf82d8cc475dfeef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a352d6eecadbe30bf82d8cc475dfeef">&#9670;&nbsp;</a></span>set_bases_func()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::set_bases_func </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a>&#160;</td>
+          <td class="paramname"><em>fun</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa5af92cc96cae3fdb89dbbaf20524f33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5af92cc96cae3fdb89dbbaf20524f33">&#9670;&nbsp;</a></span>set_grads_func()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::set_grads_func </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a>&#160;</td>
+          <td class="paramname"><em>fun</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d8eaf01d57981f0e7449692a742ceb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d8eaf01d57981f0e7449692a742ceb4">&#9670;&nbsp;</a></span>set_local_node_from_primitive_func()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::set_local_node_from_primitive_func </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474">LocalNodeFromPrimitiveFunc</a>&#160;</td>
+          <td class="paramname"><em>fun</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f199c4f37379930fb492028060f9a1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f199c4f37379930fb492028060f9a1c">&#9670;&nbsp;</a></span>set_quadrature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::ElementBases::set_quadrature </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf">QuadratureFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>fun</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="ae632007f9317ed5883533f791dbc3aa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae632007f9317ed5883533f791dbc3aa4">&#9670;&nbsp;</a></span>operator&lt;&lt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>obj</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ab3e049455c895d613294cfd10a1bbd9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3e049455c895d613294cfd10a1bbd9e">&#9670;&nbsp;</a></span>bases</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a>&gt; polyfem::basis::ElementBases::bases</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4e780b2e0aa26209bd5ed6e60e841ba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e780b2e0aa26209bd5ed6e60e841ba8">&#9670;&nbsp;</a></span>eval_bases_func_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a> polyfem::basis::ElementBases::eval_bases_func_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af991f80d3057d11973733b07f13e644d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af991f80d3057d11973733b07f13e644d">&#9670;&nbsp;</a></span>eval_grads_func_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024">EvalBasesFunc</a> polyfem::basis::ElementBases::eval_grads_func_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acc2650e04db97cab021eb730be84d215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc2650e04db97cab021eb730be84d215">&#9670;&nbsp;</a></span>has_parameterization</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::basis::ElementBases::has_parameterization = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9df0ed812e27f48018349b2f283a08ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9df0ed812e27f48018349b2f283a08ee">&#9670;&nbsp;</a></span>local_node_from_primitive_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474">LocalNodeFromPrimitiveFunc</a> polyfem::basis::ElementBases::local_node_from_primitive_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a624d4469689656631ac92a9eebf6fadb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a624d4469689656631ac92a9eebf6fadb">&#9670;&nbsp;</a></span>quadrature_builder_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf">QuadratureFunction</a> polyfem::basis::ElementBases::quadrature_builder_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/<a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a></li>
-<li>src/polyfem/basis/ElementBases.cpp</li>
+<li>src/polyfem/basis/<a class="el" href="_element_bases_8cpp.html">ElementBases.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>basis</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1basis.html">basis</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

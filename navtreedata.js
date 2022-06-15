@@ -23,37 +23,62 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "PolyFEM", "index.html", [
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", "namespacemembers_dup" ],
+        [ "Functions", "namespacemembers_func.html", "namespacemembers_func" ],
+        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ],
+        [ "Enumerations", "namespacemembers_enum.html", null ],
+        [ "Enumerator", "namespacemembers_eval.html", null ]
+      ] ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions", "functions_func.html", "functions_func" ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
+        [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ]
+      [ "File List", "files.html", "files_dup" ],
+      [ "File Members", "globals.html", [
+        [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Macros", "globals_defs.html", null ]
+      ] ]
     ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-".html",
-"classpolyfem_1_1_lame_parameters.html#a217a7a5e25658be6cb79de42e4e94609",
-"classpolyfem_1_1_u_i_state.html#a71636a66d0716ed64e678764570e7419",
-"classpolyfem_1_1assembler_1_1_n_l_assembler.html#a3eec4b5ea57adcc4d0493738731b8e18",
-"classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#aef67494d48db57dd68e206a42f628307",
-"classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html#a6914bb173420b2c024118d9c4b40e68f",
-"classpolyfem_1_1problem_1_1_corner_flow.html",
-"classpolyfem_1_1problem_1_1_kovnaszy.html#a48d28d73cb28d667b0dfda082964f2fe",
-"classpolyfem_1_1problem_1_1_time_depentend_stokes_problem.html#a5d0fcb3e0dac1b4d707feacf07d07d3b",
-"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a7bb48a9ac9ec047080babfc71238c5c8",
-"classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a0189658a911ff68705e9ef87b8e4b3d0",
-"structpolyfem_1_1mesh_1_1_edge.html#ad4d9504b8f494f6cdafa1ec586983470"
+"_a_l_n_l_problem_8cpp.html",
+"_mesh3_d_storage_8hpp.html#a1786d2b6b9b3bda8c6667456f9b1f5caa11b8c9e9feec9bfa3206f5dffb736b9b",
+"_singularities_8hpp_source.html",
+"classpolyfem_1_1_auto_diff_allocator.html#ae4cc4806ec54710a852a952187618056",
+"classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef",
+"classpolyfem_1_1assembler_1_1_mixed_assembler.html#a235ec6d9af00a18297b0f0fd07733403",
+"classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00",
+"classpolyfem_1_1mesh_1_1_mesh3_d.html#aa9b4de6f73067dda27d14e2e1a444a03",
+"classpolyfem_1_1problem_1_1_airfoil.html#a8a7d581f4ef603f11782354f084ae17d",
+"classpolyfem_1_1problem_1_1_gravity_problem.html#afa364fdba6449f94ca4062434e7cdca2",
+"classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ace99069135e004b01402fa82a82d3a87",
+"classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac412c9a8edc16b1fce734457790df4bf",
+"classpolyfem_1_1utils_1_1_ref_element_sampler.html#a80b41e801c0ba5bd41dc3b8d61bd4cd2",
+"functions_vars_i.html",
+"struct_d_scalar1.html#a396cd72d25c6f32d30540b857f1c7c39",
+"triangle_8py.html#a2ef3f501f213fb6d2ba5ec927a44fc7e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

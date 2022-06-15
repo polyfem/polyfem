@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::renderer::VertexAttributes Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -91,47 +123,228 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1renderer_1_1_vertex_at
 <div class="title">polyfem::renderer::VertexAttributes Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="raster_8hpp_source.html">raster.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for polyfem::renderer::VertexAttributes:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1renderer_1_1_vertex_attributes__coll__graph.svg" width="158" height="156"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9128d9d85f1d19069550e84a63df15dd"><td class="memItemLeft" align="right" valign="top"><a id="a9128d9d85f1d19069550e84a63df15dd"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VertexAttributes</b> (double x=0, double y=0, double z=0, double w=1)</td></tr>
+<tr class="memitem:a9128d9d85f1d19069550e84a63df15dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a9128d9d85f1d19069550e84a63df15dd">VertexAttributes</a> (double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>=0, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>=0, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>=0, double w=1)</td></tr>
 <tr class="separator:a9128d9d85f1d19069550e84a63df15dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a428f33703957c4be5f04b69254730b6f"><td class="memItemLeft" align="right" valign="top"><a id="a428f33703957c4be5f04b69254730b6f"></a>
-static <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a>&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate</b> (const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;a, const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;b, const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;c, const double alpha, const double beta, const double gamma)</td></tr>
+<tr class="memitem:a428f33703957c4be5f04b69254730b6f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a428f33703957c4be5f04b69254730b6f">interpolate</a> (const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;a, const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;b, const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;c, const double alpha, const double beta, const double gamma)</td></tr>
 <tr class="separator:a428f33703957c4be5f04b69254730b6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a903b714b28e264af924f31886fd0f667"><td class="memItemLeft" align="right" valign="top"><a id="a903b714b28e264af924f31886fd0f667"></a>
-Eigen::Vector4d&#160;</td><td class="memItemRight" valign="bottom"><b>position</b></td></tr>
+<tr class="memitem:a903b714b28e264af924f31886fd0f667"><td class="memItemLeft" align="right" valign="top">Eigen::Vector4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667">position</a></td></tr>
 <tr class="separator:a903b714b28e264af924f31886fd0f667"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3575408115a8af0357277c66db850be4"><td class="memItemLeft" align="right" valign="top"><a id="a3575408115a8af0357277c66db850be4"></a>
-Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>normal</b></td></tr>
+<tr class="memitem:a3575408115a8af0357277c66db850be4"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a3575408115a8af0357277c66db850be4">normal</a></td></tr>
 <tr class="separator:a3575408115a8af0357277c66db850be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9b521b96b49a1f3ef5044742af89c2c"><td class="memItemLeft" align="right" valign="top"><a id="ad9b521b96b49a1f3ef5044742af89c2c"></a>
-Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>color</b></td></tr>
+<tr class="memitem:ad9b521b96b49a1f3ef5044742af89c2c"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#ad9b521b96b49a1f3ef5044742af89c2c">color</a></td></tr>
 <tr class="separator:ad9b521b96b49a1f3ef5044742af89c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a424d67579ad2f94f1eb6bd731469102b"><td class="memItemLeft" align="right" valign="top"><a id="a424d67579ad2f94f1eb6bd731469102b"></a>
-<a class="el" href="structpolyfem_1_1renderer_1_1_material.html">Material</a>&#160;</td><td class="memItemRight" valign="bottom"><b>material</b></td></tr>
+<tr class="memitem:a424d67579ad2f94f1eb6bd731469102b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpolyfem_1_1renderer_1_1_material.html">Material</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html#a424d67579ad2f94f1eb6bd731469102b">material</a></td></tr>
 <tr class="separator:a424d67579ad2f94f1eb6bd731469102b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9128d9d85f1d19069550e84a63df15dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9128d9d85f1d19069550e84a63df15dd">&#9670;&nbsp;</a></span>VertexAttributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::renderer::VertexAttributes::VertexAttributes </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>w</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a428f33703957c4be5f04b69254730b6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428f33703957c4be5f04b69254730b6f">&#9670;&nbsp;</a></span>interpolate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> polyfem::renderer::VertexAttributes::interpolate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>gamma</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad9b521b96b49a1f3ef5044742af89c2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9b521b96b49a1f3ef5044742af89c2c">&#9670;&nbsp;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector3d polyfem::renderer::VertexAttributes::color</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a424d67579ad2f94f1eb6bd731469102b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a424d67579ad2f94f1eb6bd731469102b">&#9670;&nbsp;</a></span>material</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpolyfem_1_1renderer_1_1_material.html">Material</a> polyfem::renderer::VertexAttributes::material</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3575408115a8af0357277c66db850be4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3575408115a8af0357277c66db850be4">&#9670;&nbsp;</a></span>normal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector3d polyfem::renderer::VertexAttributes::normal</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a903b714b28e264af924f31886fd0f667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a903b714b28e264af924f31886fd0f667">&#9670;&nbsp;</a></span>position</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector4d polyfem::renderer::VertexAttributes::position</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/polyfem/utils/<a class="el" href="raster_8hpp_source.html">raster.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>renderer</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1renderer.html">renderer</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1renderer_1_1_vertex_attributes.html">VertexAttributes</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

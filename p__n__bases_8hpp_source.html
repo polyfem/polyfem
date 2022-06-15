@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/autogen/p_n_bases.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,32 +118,56 @@ $(document).ready(function(){initNavTree('p__n__bases_8hpp_source.html',''); ini
 <div class="title">p_n_bases.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="p__n__bases_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span>polyfem {</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a> {</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>autogen {</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;Eigen::Vector3i convert_local_index_to_ijk(<span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> <span class="keywordtype">int</span> p);</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;Eigen::ArrayXd P(<span class="keyword">const</span> <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> Eigen::ArrayXd &amp;z);</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;Eigen::ArrayXd P_prime(<span class="keyword">const</span> <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> Eigen::ArrayXd &amp;z);</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keywordtype">void</span> p_n_nodes_2d(<span class="keyword">const</span> <span class="keywordtype">int</span> p, Eigen::MatrixXd &amp;val);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> p_n_basis_value_2d(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val);</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> p_n_basis_grad_value_2d(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> p_n_nodes_3d(<span class="keyword">const</span> <span class="keywordtype">int</span> p, Eigen::MatrixXd &amp;val);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">void</span> p_n_basis_value_3d(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">void</span> p_n_basis_grad_value_3d(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val);</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;Eigen::Vector3i <a class="code" href="namespacepolyfem_1_1autogen.html#ac52a919ee75e5b46c7792683f227a0d1">convert_local_index_to_ijk</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> <span class="keywordtype">int</span> p);</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;Eigen::ArrayXd <a class="code" href="namespacepolyfem_1_1autogen.html#a832e81b4c3013ffb8938489be8a33814">P</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> Eigen::ArrayXd &amp;<a class="code" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;Eigen::ArrayXd <a class="code" href="namespacepolyfem_1_1autogen.html#af3ae2da6aa68917e5419e2e036a8fadc">P_prime</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> Eigen::ArrayXd &amp;<a class="code" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1autogen.html#ae638aa088cd1fdcfc3e3f0e60ef6d7ad">p_n_nodes_2d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> p, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>);</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1autogen.html#abf34ff57c89a6cc07241c08bace6d98c">p_n_basis_value_2d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>);</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1autogen.html#a4ed466f5717b1e96c5fd9f788f84249d">p_n_basis_grad_value_2d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>);</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1autogen.html#a354a4b5cbfcf4c5768a35a8ed4f2cdb7">p_n_nodes_3d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> p, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>);</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1autogen.html#aab8bb6c415cf933dc68bf229c831677e">p_n_basis_value_3d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1autogen.html#a59e4d15426e8e12b64356ba88fcac224">p_n_basis_grad_value_3d</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> p, <span class="keyword">const</span> <span class="keywordtype">int</span> local_index, <span class="keyword">const</span> Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="code" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>);</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_abf34ff57c89a6cc07241c08bace6d98c"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#abf34ff57c89a6cc07241c08bace6d98c">polyfem::autogen::p_n_basis_value_2d</a></div><div class="ttdeci">void p_n_basis_value_2d(const int p, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:166</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_a4ed466f5717b1e96c5fd9f788f84249d"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#a4ed466f5717b1e96c5fd9f788f84249d">polyfem::autogen::p_n_basis_grad_value_2d</a></div><div class="ttdeci">void p_n_basis_grad_value_2d(const int p, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:192</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_a59e4d15426e8e12b64356ba88fcac224"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#a59e4d15426e8e12b64356ba88fcac224">polyfem::autogen::p_n_basis_grad_value_3d</a></div><div class="ttdeci">void p_n_basis_grad_value_3d(const int p, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:175</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_af3ae2da6aa68917e5419e2e036a8fadc"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#af3ae2da6aa68917e5419e2e036a8fadc">polyfem::autogen::P_prime</a></div><div class="ttdeci">Eigen::ArrayXd P_prime(const int m, const int p, const Eigen::ArrayXd &amp;z)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:56</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_aab8bb6c415cf933dc68bf229c831677e"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#aab8bb6c415cf933dc68bf229c831677e">polyfem::autogen::p_n_basis_value_3d</a></div><div class="ttdeci">void p_n_basis_value_3d(const int p, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:156</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_a354a4b5cbfcf4c5768a35a8ed4f2cdb7"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#a354a4b5cbfcf4c5768a35a8ed4f2cdb7">polyfem::autogen::p_n_nodes_3d</a></div><div class="ttdeci">void p_n_nodes_3d(const int p, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:80</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_ac52a919ee75e5b46c7792683f227a0d1"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#ac52a919ee75e5b46c7792683f227a0d1">polyfem::autogen::convert_local_index_to_ijk</a></div><div class="ttdeci">Eigen::Vector3i convert_local_index_to_ijk(const int local_index, const int p)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:8</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="a_assembler_8cpp_html_a3c8bc0bb4f045bfe78d1196cb786792c"><div class="ttname"><a href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a></div><div class="ttdeci">double val</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:87</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_ae638aa088cd1fdcfc3e3f0e60ef6d7ad"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#ae638aa088cd1fdcfc3e3f0e60ef6d7ad">polyfem::autogen::p_n_nodes_2d</a></div><div class="ttdeci">void p_n_nodes_2d(const int p, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:129</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1autogen_html_a832e81b4c3013ffb8938489be8a33814"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#a832e81b4c3013ffb8938489be8a33814">polyfem::autogen::P</a></div><div class="ttdeci">Eigen::ArrayXd P(const int m, const int p, const Eigen::ArrayXd &amp;z)</div><div class="ttdef"><b>Definition:</b> p_n_bases.cpp:41</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_203a0b4429a33981429312ec216e7182.html">autogen</a></li><li class="navelem"><b>p_n_bases.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_203a0b4429a33981429312ec216e7182.html">autogen</a></li><li class="navelem"><a class="el" href="p__n__bases_8hpp.html">p_n_bases.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::basis::FEBasis3d Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,6 +122,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_f_e_basis3d.
 <div class="title">polyfem::basis::FEBasis3d Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_f_e_basis3d_8hpp_source.html">FEBasis3d.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -99,20 +133,16 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a231a5333145c1602e2a240c8ea429fad"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a231a5333145c1602e2a240c8ea429fad">build_bases</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, const int quadrature_order, const Eigen::VectorXi &amp;discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;poly_face_to_data, std::vector&lt; int &gt; &amp;primitive_to_node)</td></tr>
 <tr class="memdesc:a231a5333145c1602e2a240c8ea429fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class.  <a href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a231a5333145c1602e2a240c8ea429fad">More...</a><br /></td></tr>
 <tr class="separator:a231a5333145c1602e2a240c8ea429fad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a265df67955a0a057c3355bdce8e7d25f"><td class="memItemLeft" align="right" valign="top"><a id="a265df67955a0a057c3355bdce8e7d25f"></a>
-static Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>tet_face_local_nodes</b> (const int p, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
+<tr class="memitem:a265df67955a0a057c3355bdce8e7d25f"><td class="memItemLeft" align="right" valign="top">static Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a265df67955a0a057c3355bdce8e7d25f">tet_face_local_nodes</a> (const int p, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
 <tr class="separator:a265df67955a0a057c3355bdce8e7d25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7a94ca631f9a4cdb5d5600e25f84815"><td class="memItemLeft" align="right" valign="top"><a id="af7a94ca631f9a4cdb5d5600e25f84815"></a>
-static Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>hex_face_local_nodes</b> (const bool serendipity, const int q, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
+<tr class="memitem:af7a94ca631f9a4cdb5d5600e25f84815"><td class="memItemLeft" align="right" valign="top">static Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#af7a94ca631f9a4cdb5d5600e25f84815">hex_face_local_nodes</a> (const bool serendipity, const int q, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
 <tr class="separator:af7a94ca631f9a4cdb5d5600e25f84815"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
-<tr class="memitem:a00d8d4a5f07b0523a5aaa621fdf6b8a1"><td class="memItemLeft" align="right" valign="top"><a id="a00d8d4a5f07b0523a5aaa621fdf6b8a1"></a>
-static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>linear_hex_face_local_nodes_coordinates</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
+<tr class="memitem:a00d8d4a5f07b0523a5aaa621fdf6b8a1"><td class="memItemLeft" align="right" valign="top">static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a00d8d4a5f07b0523a5aaa621fdf6b8a1">linear_hex_face_local_nodes_coordinates</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
 <tr class="separator:a00d8d4a5f07b0523a5aaa621fdf6b8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc4f11a99a3bb579ae0f8f46179de7df"><td class="memItemLeft" align="right" valign="top"><a id="abc4f11a99a3bb579ae0f8f46179de7df"></a>
-static Eigen::RowVector3d&#160;</td><td class="memItemRight" valign="bottom"><b>quadr_hex_local_node_coordinates</b> (int local_index)</td></tr>
+<tr class="memitem:abc4f11a99a3bb579ae0f8f46179de7df"><td class="memItemLeft" align="right" valign="top">static Eigen::RowVector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#abc4f11a99a3bb579ae0f8f46179de7df">quadr_hex_local_node_coordinates</a> (int local_index)</td></tr>
 <tr class="separator:abc4f11a99a3bb579ae0f8f46179de7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -318,20 +348,184 @@ static Eigen::RowVector3d&#160;</td><td class="memItemRight" valign="bottom"><b>
 
 </div>
 </div>
+<a id="af7a94ca631f9a4cdb5d5600e25f84815"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7a94ca631f9a4cdb5d5600e25f84815">&#9670;&nbsp;</a></span>hex_face_local_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi FEBasis3d::hex_face_local_nodes </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>serendipity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a>&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a00d8d4a5f07b0523a5aaa621fdf6b8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00d8d4a5f07b0523a5aaa621fdf6b8a1">&#9670;&nbsp;</a></span>linear_hex_face_local_nodes_coordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Eigen::MatrixXd polyfem::basis::FEBasis3d::linear_hex_face_local_nodes_coordinates </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a>&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc4f11a99a3bb579ae0f8f46179de7df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc4f11a99a3bb579ae0f8f46179de7df">&#9670;&nbsp;</a></span>quadr_hex_local_node_coordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Eigen::RowVector3d polyfem::basis::FEBasis3d::quadr_hex_local_node_coordinates </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>local_index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a265df67955a0a057c3355bdce8e7d25f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a265df67955a0a057c3355bdce8e7d25f">&#9670;&nbsp;</a></span>tet_face_local_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi FEBasis3d::tet_face_local_nodes </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a>&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/<a class="el" href="_f_e_basis3d_8hpp_source.html">FEBasis3d.hpp</a></li>
-<li>src/polyfem/basis/FEBasis3d.cpp</li>
+<li>src/polyfem/basis/<a class="el" href="_f_e_basis3d_8cpp.html">FEBasis3d.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>basis</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html">FEBasis3d</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1basis.html">basis</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html">FEBasis3d</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

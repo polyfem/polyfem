@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/assembler/Assembler.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,12 +118,12 @@ $(document).ready(function(){initNavTree('_assembler_8hpp_source.html',''); init
 <div class="title">Assembler.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_assembler_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;AssemblyValsCache.hpp&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_assembly_vals_cache_8hpp.html">AssemblyValsCache.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polyfem/assembler/ElementAssemblyValues.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/MatrixUtils.hpp&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_element_assembly_values_8hpp.html">polyfem/assembler/ElementAssemblyValues.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_matrix_utils_8hpp.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;Eigen/Sparse&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
@@ -101,7 +133,7 @@ $(document).ready(function(){initNavTree('_assembler_8hpp_source.html',''); init
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">//this casses are instantiated in the cpp, cannot be used with generic assembler</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">//without adding template instantiation</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">namespace </span>assembler</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    {</div>
@@ -113,20 +145,20 @@ $(document).ready(function(){initNavTree('_assembler_8hpp_source.html',''); init
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="comment">//assembler stiffness matrix, is the mesh is volumetric, number of bases and bases (FE and geom)</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="comment">//gbases and bases can be the same (ie isoparametric)</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keywordtype">void</span> assemble(</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler.html#a5b4615748f11afd0c78d472b789fdcc0">assemble</a>(</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> n_basis,</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;bases,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;gbases,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;cache,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                StiffnessMatrix &amp;stiffness) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="code" href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a>,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="comment">//references to local assemblers</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="keyword">inline</span> LocalAssembler &amp;local_assembler() { <span class="keywordflow">return</span> local_assembler_; }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keyword">inline</span> <span class="keyword">const</span> LocalAssembler &amp;local_assembler()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> local_assembler_; }</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_assembler.html#ab6eaaa7dba542f79cf0342dd9a9603f0">   37</a></span>&#160;            <span class="keyword">inline</span> LocalAssembler &amp;<a class="code" href="classpolyfem_1_1assembler_1_1_assembler.html#ab6eaaa7dba542f79cf0342dd9a9603f0">local_assembler</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler.html#a9d660b9c4c9022bc3df123992cde735c">local_assembler_</a>; }</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_assembler.html#ae07277503ef97f4d593c91219a99586f">   38</a></span>&#160;            <span class="keyword">inline</span> <span class="keyword">const</span> LocalAssembler &amp;<a class="code" href="classpolyfem_1_1assembler_1_1_assembler.html#ae07277503ef97f4d593c91219a99586f">local_assembler</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembler.html#a9d660b9c4c9022bc3df123992cde735c">local_assembler_</a>; }</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            LocalAssembler local_assembler_;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_assembler.html#a9d660b9c4c9022bc3df123992cde735c">   41</a></span>&#160;            LocalAssembler <a class="code" href="classpolyfem_1_1assembler_1_1_assembler.html#a9d660b9c4c9022bc3df123992cde735c">local_assembler_</a>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        };</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="comment">//mixed formulation assembler</span></div>
@@ -136,7 +168,7 @@ $(document).ready(function(){initNavTree('_assembler_8hpp_source.html',''); init
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="comment">//this assembler takes two bases: psi_bases are the scalar ones, phi_bases are the tensor ones</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="comment">//both have the same geometric mapping</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">void</span> assemble(</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#aa0db6bf620b821764c4bd3e0c92adb70">assemble</a>(</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume,</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> n_psi_basis,</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> n_phi_basis,</div>
@@ -145,13 +177,13 @@ $(document).ready(function(){initNavTree('_assembler_8hpp_source.html',''); init
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;gbases,</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;psi_cache,</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;phi_cache,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                StiffnessMatrix &amp;stiffness) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            <span class="keyword">inline</span> LocalAssembler &amp;local_assembler() { <span class="keywordflow">return</span> local_assembler_; }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keyword">inline</span> <span class="keyword">const</span> LocalAssembler &amp;local_assembler()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> local_assembler_; }</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#aa80e68651e66c5faafa44a31f1ab2d23">   62</a></span>&#160;            <span class="keyword">inline</span> LocalAssembler &amp;<a class="code" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#aa80e68651e66c5faafa44a31f1ab2d23">local_assembler</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#acef576bc41efa72e5f77b9dc627ab7d5">local_assembler_</a>; }</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#a235ec6d9af00a18297b0f0fd07733403">   63</a></span>&#160;            <span class="keyword">inline</span> <span class="keyword">const</span> LocalAssembler &amp;<a class="code" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#a235ec6d9af00a18297b0f0fd07733403">local_assembler</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#acef576bc41efa72e5f77b9dc627ab7d5">local_assembler_</a>; }</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            LocalAssembler local_assembler_;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#acef576bc41efa72e5f77b9dc627ab7d5">   66</a></span>&#160;            LocalAssembler <a class="code" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#acef576bc41efa72e5f77b9dc627ab7d5">local_assembler_</a>;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        };</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="comment">//non-linear assembler (eg neohookean elasticity)</span></div>
@@ -160,57 +192,89 @@ $(document).ready(function(){initNavTree('_assembler_8hpp_source.html',''); init
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        {</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            <span class="comment">//assemble gradient of energy (rhs)</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keywordtype">void</span> assemble_grad(</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a8f8929f6d244f5f0d0e24ccfdbb92aa1">assemble_grad</a>(</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume,</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> n_basis,</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;bases,</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;gbases,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;cache,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="code" href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a>,</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                <span class="keyword">const</span> Eigen::MatrixXd &amp;displacement,</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                Eigen::MatrixXd &amp;rhs) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            <span class="comment">//assemble hessian of energy (grad)</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <span class="keywordtype">void</span> assemble_hessian(</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a3eec4b5ea57adcc4d0493738731b8e18">assemble_hessian</a>(</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume,</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> n_basis,</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">bool</span> project_to_psd,</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;bases,</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;gbases,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;cache,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="code" href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a>,</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                <span class="keyword">const</span> Eigen::MatrixXd &amp;displacement,</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                <a class="code" href="classpolyfem_1_1utils_1_1_spare_matrix_cache.html">utils::SpareMatrixCache</a> &amp;mat_cache,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                StiffnessMatrix &amp;grad) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;grad) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="comment">//assemble energy</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            <span class="keywordtype">double</span> assemble(</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5fbe585e69b68e836f57946467f44e30">assemble</a>(</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume,</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;bases,</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                <span class="keyword">const</span> std::vector&lt;basis::ElementBases&gt; &amp;gbases,</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;cache,</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="code" href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a>,</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                <span class="keyword">const</span> Eigen::MatrixXd &amp;displacement) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            <span class="keyword">inline</span> LocalAssembler &amp;local_assembler() { <span class="keywordflow">return</span> local_assembler_; }</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            <span class="keyword">inline</span> <span class="keyword">const</span> LocalAssembler &amp;local_assembler()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> local_assembler_; }</div>
+<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#ab36358366d322ee21c850b845d52c0cf">  103</a></span>&#160;            <span class="keyword">inline</span> LocalAssembler &amp;<a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#ab36358366d322ee21c850b845d52c0cf">local_assembler</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a09e4f134f1810691c99100bed02b9ece">local_assembler_</a>; }</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a2c7994ef50c4c8d8aceba819cfbb5309">  104</a></span>&#160;            <span class="keyword">inline</span> <span class="keyword">const</span> LocalAssembler &amp;<a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a2c7994ef50c4c8d8aceba819cfbb5309">local_assembler</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a09e4f134f1810691c99100bed02b9ece">local_assembler_</a>; }</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            LocalAssembler local_assembler_;</div>
+<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a09e4f134f1810691c99100bed02b9ece">  107</a></span>&#160;            LocalAssembler <a class="code" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a09e4f134f1810691c99100bed02b9ece">local_assembler_</a>;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        };</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    } <span class="comment">// namespace assembler</span></div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> Types.hpp:20</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mixed_assembler_html_aa80e68651e66c5faafa44a31f1ab2d23"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#aa80e68651e66c5faafa44a31f1ab2d23">polyfem::assembler::MixedAssembler::local_assembler</a></div><div class="ttdeci">LocalAssembler &amp; local_assembler()</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:62</div></div>
+<div class="ttc" id="a_assembler_8cpp_html_a75b8caa5c3e5e68853e282a4792eeb95"><div class="ttname"><a href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a></div><div class="ttdeci">SpareMatrixCache cache</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:38</div></div>
+<div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html_a2c7994ef50c4c8d8aceba819cfbb5309"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a2c7994ef50c4c8d8aceba819cfbb5309">polyfem::assembler::NLAssembler::local_assembler</a></div><div class="ttdeci">const LocalAssembler &amp; local_assembler() const</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:104</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_html_ae07277503ef97f4d593c91219a99586f"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler.html#ae07277503ef97f4d593c91219a99586f">polyfem::assembler::Assembler::local_assembler</a></div><div class="ttdeci">const LocalAssembler &amp; local_assembler() const</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:38</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_html_a5b4615748f11afd0c78d472b789fdcc0"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler.html#a5b4615748f11afd0c78d472b789fdcc0">polyfem::assembler::Assembler::assemble</a></div><div class="ttdeci">void assemble(const bool is_volume, const int n_basis, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, StiffnessMatrix &amp;stiffness) const</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:99</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html_a5fbe585e69b68e836f57946467f44e30"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5fbe585e69b68e836f57946467f44e30">polyfem::assembler::NLAssembler::assemble</a></div><div class="ttdeci">double assemble(const bool is_volume, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, const Eigen::MatrixXd &amp;displacement) const</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:622</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">polyfem::assembler::NLAssembler</a></div><div class="ttdef"><b>Definition:</b> Assembler.hpp:71</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mixed_assembler_html_acef576bc41efa72e5f77b9dc627ab7d5"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#acef576bc41efa72e5f77b9dc627ab7d5">polyfem::assembler::MixedAssembler::local_assembler_</a></div><div class="ttdeci">LocalAssembler local_assembler_</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:66</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mixed_assembler_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mixed_assembler.html">polyfem::assembler::MixedAssembler</a></div><div class="ttdef"><b>Definition:</b> Assembler.hpp:46</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mixed_assembler_html_aa0db6bf620b821764c4bd3e0c92adb70"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#aa0db6bf620b821764c4bd3e0c92adb70">polyfem::assembler::MixedAssembler::assemble</a></div><div class="ttdeci">void assemble(const bool is_volume, const int n_psi_basis, const int n_phi_basis, const std::vector&lt; basis::ElementBases &gt; &amp;psi_bases, const std::vector&lt; basis::ElementBases &gt; &amp;phi_bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;psi_cache, const AssemblyValsCache &amp;phi_cache, StiffnessMatrix &amp;stiffness) const</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:311</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mixed_assembler_html_a235ec6d9af00a18297b0f0fd07733403"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#a235ec6d9af00a18297b0f0fd07733403">polyfem::assembler::MixedAssembler::local_assembler</a></div><div class="ttdeci">const LocalAssembler &amp; local_assembler() const</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:63</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembly_vals_cache_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">polyfem::assembler::AssemblyValsCache</a></div><div class="ttdef"><b>Definition:</b> AssemblyValsCache.hpp:9</div></div>
+<div class="ttc" id="a_element_assembly_values_8hpp_html"><div class="ttname"><a href="_element_assembly_values_8hpp.html">ElementAssemblyValues.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html_a09e4f134f1810691c99100bed02b9ece"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a09e4f134f1810691c99100bed02b9ece">polyfem::assembler::NLAssembler::local_assembler_</a></div><div class="ttdeci">LocalAssembler local_assembler_</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:107</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html_a3eec4b5ea57adcc4d0493738731b8e18"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a3eec4b5ea57adcc4d0493738731b8e18">polyfem::assembler::NLAssembler::assemble_hessian</a></div><div class="ttdeci">void assemble_hessian(const bool is_volume, const int n_basis, const bool project_to_psd, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, const Eigen::MatrixXd &amp;displacement, utils::SpareMatrixCache &amp;mat_cache, StiffnessMatrix &amp;grad) const</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:492</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html_ab36358366d322ee21c850b845d52c0cf"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#ab36358366d322ee21c850b845d52c0cf">polyfem::assembler::NLAssembler::local_assembler</a></div><div class="ttdeci">LocalAssembler &amp; local_assembler()</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:103</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></div><div class="ttdef"><b>Definition:</b> Assembler.hpp:23</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_html_ab6eaaa7dba542f79cf0342dd9a9603f0"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler.html#ab6eaaa7dba542f79cf0342dd9a9603f0">polyfem::assembler::Assembler::local_assembler</a></div><div class="ttdeci">LocalAssembler &amp; local_assembler()</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:37</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_spare_matrix_cache_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_spare_matrix_cache.html">polyfem::utils::SpareMatrixCache</a></div><div class="ttdef"><b>Definition:</b> MatrixUtils.hpp:60</div></div>
+<div class="ttc" id="a_assembly_vals_cache_8hpp_html"><div class="ttname"><a href="_assembly_vals_cache_8hpp.html">AssemblyValsCache.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_html_a9d660b9c4c9022bc3df123992cde735c"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler.html#a9d660b9c4c9022bc3df123992cde735c">polyfem::assembler::Assembler::local_assembler_</a></div><div class="ttdeci">LocalAssembler local_assembler_</div><div class="ttdef"><b>Definition:</b> Assembler.hpp:41</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_n_l_assembler_html_a8f8929f6d244f5f0d0e24ccfdbb92aa1"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a8f8929f6d244f5f0d0e24ccfdbb92aa1">polyfem::assembler::NLAssembler::assemble_grad</a></div><div class="ttdeci">void assemble_grad(const bool is_volume, const int n_basis, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;rhs) const</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:419</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_12817abd2662fe40efba8355c1386b9e.html">assembler</a></li><li class="navelem"><b>Assembler.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_12817abd2662fe40efba8355c1386b9e.html">assembler</a></li><li class="navelem"><a class="el" href="_assembler_8hpp.html">Assembler.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

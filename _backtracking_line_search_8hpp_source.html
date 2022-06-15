@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/solver/line_search/BacktrackingLineSearch.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,15 +118,15 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="title">BacktrackingLineSearch.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_backtracking_line_search_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;LineSearch.hpp&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_line_search_8hpp.html">LineSearch.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Timer.hpp&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_timer_8hpp.html">polyfem/utils/Timer.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;cfenv&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">namespace </span>solver</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    {</div>
@@ -104,19 +136,19 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html">   16</a></span>&#160;            <span class="keyword">class </span><a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html">BacktrackingLineSearch</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a>&lt;ProblemType&gt;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                <span class="keyword">using</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">Superclass</a> = <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch&lt;ProblemType&gt;</a>;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::Scalar;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::TVector;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#ae2f7b89667788334e6883dbed4193808">   19</a></span>&#160;                <span class="keyword">using</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">Superclass</a> = <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch&lt;ProblemType&gt;</a>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aab06bc92bfecad365ffeda27b28651c7">Superclass::Scalar</a>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                <span class="keyword">using</span> <span class="keyword">typename</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">Superclass::TVector</a>;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html">BacktrackingLineSearch</a>()</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#af4153d240f7e314bab10b943f4308ab9">   23</a></span>&#160;                <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#af4153d240f7e314bab10b943f4308ab9">BacktrackingLineSearch</a>()</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                    this-&gt;min_step_size = 0;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                    this-&gt;max_step_size_iter = 100; <span class="comment">// std::numeric_limits&lt;int&gt;::max();</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                    this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137">min_step_size</a> = 0;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                    this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b">max_step_size_iter</a> = 100; <span class="comment">// std::numeric_limits&lt;int&gt;::max();</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                <span class="keywordtype">double</span> line_search(</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                    <span class="keyword">const</span> TVector &amp;x,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                    <span class="keyword">const</span> TVector &amp;delta_x,</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#acd54aa6e4ba54937fb54346b453cc094">   29</a></span>&#160;                <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#acd54aa6e4ba54937fb54346b453cc094">line_search</a>(</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                    <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                    <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;delta_x,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                    ProblemType &amp;objFunc)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">                </span>{</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                    <span class="comment">// ----------------</span></div>
@@ -125,14 +157,14 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                    <span class="keywordtype">double</span> old_energy, step_size;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;LS begin&quot;</span>);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;LS begin&quot;</span>);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                        this-&gt;cur_iter = 0;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                        this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928">cur_iter</a> = 0;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                        old_energy = objFunc.value(x);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                        old_energy = objFunc.value(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                        <span class="keywordflow">if</span> (std::isnan(old_energy))</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                        {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                            utils::logger().error(<span class="stringliteral">&quot;Original energy in line search is nan!&quot;</span>);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                            <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">utils::logger</a>().error(<span class="stringliteral">&quot;Original energy in line search is nan!&quot;</span>);</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                            <span class="keywordflow">return</span> std::nan(<span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                        }</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
@@ -144,8 +176,8 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                    <span class="comment">// ----------------------------</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                    {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;LS compute finite energy step size&quot;</span>, this-&gt;checking_for_nan_inf_time);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                        step_size = this-&gt;compute_nan_free_step_size(x, delta_x, objFunc, step_size, 0.5);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;LS compute finite energy step size&quot;</span>, this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4d8c9054c23fe46766eb28bef54fcf1a">checking_for_nan_inf_time</a>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                        step_size = this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59">compute_nan_free_step_size</a>(x, delta_x, objFunc, step_size, 0.5);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                        <span class="keywordflow">if</span> (std::isnan(step_size))</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                            <span class="keywordflow">return</span> std::nan(<span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    }</div>
@@ -157,15 +189,15 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                    <span class="comment">// -----------------------------</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                    {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;CCD broad-phase&quot;</span>, this-&gt;broad_phase_ccd_time);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                        TVector new_x = x + step_size * delta_x;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                        objFunc.line_search_begin(x, new_x);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;CCD broad-phase&quot;</span>, this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5cfb5b4f209cc03e3a36fa8c36f823e1">broad_phase_ccd_time</a>);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                        <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> new_x = <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + step_size * delta_x;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                        objFunc.line_search_begin(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, new_x);</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                    }</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                    {</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;CCD narrow-phase&quot;</span>, this-&gt;ccd_time);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                        utils::logger().trace(<span class="stringliteral">&quot;Performing narrow-phase CCD&quot;</span>);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                        step_size = this-&gt;compute_collision_free_step_size(x, delta_x, objFunc, step_size);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;CCD narrow-phase&quot;</span>, this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5903e76e0529bcdc7c3a67cf6802cceb">ccd_time</a>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                        <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">utils::logger</a>().trace(<span class="stringliteral">&quot;Performing narrow-phase CCD&quot;</span>);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                        step_size = this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a07bc05931512b5257fd28bffe4fb7efc">compute_collision_free_step_size</a>(x, delta_x, objFunc, step_size);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                        <span class="keywordflow">if</span> (std::isnan(step_size))</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                            <span class="keywordflow">return</span> std::nan(<span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                    }</div>
@@ -177,8 +209,8 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                    <span class="comment">// ----------------------</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                    {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;energy min in LS&quot;</span>, this-&gt;classical_line_search_time);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                        step_size = compute_descent_step_size(x, delta_x, objFunc, old_energy, step_size);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;energy min in LS&quot;</span>, this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4ff6b46a559be85cd56736d1d44dbf5a">classical_line_search_time</a>);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                        step_size = <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a7b003ae59a66e3cf44c2836b6b5d6292">compute_descent_step_size</a>(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, delta_x, objFunc, old_energy, step_size);</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                        <span class="keywordflow">if</span> (std::isnan(step_size))</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                        {</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                            <span class="comment">// Superclass::save_sampled_values(&quot;failed-line-search-values.csv&quot;, x, delta_x, objFunc);</span></div>
@@ -194,19 +226,19 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                    <span class="comment">// -------------</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                    {</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;safeguard in LS&quot;</span>);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                        step_size = this-&gt;compute_debug_collision_free_step_size(x, delta_x, objFunc, step_size, 0.5);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;safeguard in LS&quot;</span>);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                        step_size = this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a6d5d9b20058cad6c6f1adad54362d846">compute_debug_collision_free_step_size</a>(x, delta_x, objFunc, step_size, 0.5);</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                    }</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">double</span> debug_collision_free_step_size = step_size;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                    {</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                        POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;LS end&quot;</span>);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                        <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;LS end&quot;</span>);</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                        objFunc.line_search_end();</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                    }</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                    utils::logger().debug(</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                    <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">utils::logger</a>().debug(</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                        <span class="stringliteral">&quot;Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})&quot;</span>,</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                        nan_free_step_size, collision_free_step_size, descent_step_size, step_size);</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
@@ -214,32 +246,32 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;            <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                <span class="keywordtype">double</span> compute_descent_step_size(</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                    <span class="keyword">const</span> TVector &amp;x,</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                    <span class="keyword">const</span> TVector &amp;delta_x,</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a7b003ae59a66e3cf44c2836b6b5d6292">  129</a></span>&#160;                <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a7b003ae59a66e3cf44c2836b6b5d6292">compute_descent_step_size</a>(</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                    <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>,</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                    <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;delta_x,</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                    ProblemType &amp;objFunc,</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">double</span> old_energy_in,</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">double</span> starting_step_size = 1)</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                {</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                    <span class="keywordtype">double</span> step_size = starting_step_size;</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; </div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                    TVector grad(x.rows());</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                    objFunc.gradient(x, grad);</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">bool</span> use_grad_norm = grad.norm() &lt; this-&gt;use_grad_norm_tol;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                    <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> grad(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.rows());</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                    objFunc.gradient(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, grad);</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">bool</span> use_grad_norm = grad.norm() &lt; this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d">use_grad_norm_tol</a>;</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                    <span class="keyword">const</span> <span class="keywordtype">double</span> old_energy = use_grad_norm ? grad.squaredNorm() : old_energy_in;</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                    <span class="comment">// Find step that reduces the energy</span></div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                    <span class="keywordtype">double</span> cur_energy = std::nan(<span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                    <span class="keywordtype">bool</span> is_step_valid = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                    <span class="keywordflow">while</span> (step_size &gt; this-&gt;min_step_size &amp;&amp; this-&gt;cur_iter &lt; this-&gt;max_step_size_iter)</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                    <span class="keywordflow">while</span> (step_size &gt; this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137">min_step_size</a> &amp;&amp; this-&gt;cur_iter &lt; this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b">max_step_size_iter</a>)</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                    {</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                        this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537">iterations</a>++;</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                        TVector new_x = x + step_size * delta_x;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                        <a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> new_x = <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + step_size * delta_x;</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                        {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                            POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;constraint set update in LS&quot;</span>, this-&gt;constraint_set_update_time);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                            <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;constraint set update in LS&quot;</span>, this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a816d662fcc4601478ecf961b89d88304">constraint_set_update_time</a>);</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                            objFunc.solution_changed(new_x);</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                        }</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; </div>
@@ -251,9 +283,9 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;                        <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                            cur_energy = objFunc.value(new_x);</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; </div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;                        is_step_valid = objFunc.is_step_valid(x, new_x);</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;                        is_step_valid = objFunc.is_step_valid(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, new_x);</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                        utils::logger().trace(<span class="stringliteral">&quot;ls it: {} delta: {} invalid: {} &quot;</span>, this-&gt;cur_iter, (cur_energy - old_energy), !is_step_valid);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                        <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">utils::logger</a>().trace(<span class="stringliteral">&quot;ls it: {} delta: {} invalid: {} &quot;</span>, this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928">cur_iter</a>, (cur_energy - old_energy), !is_step_valid);</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;                        <span class="comment">// if (!std::isfinite(cur_energy) || (cur_energy &gt;= old_energy &amp;&amp; fabs(cur_energy - old_energy) &gt; 1e-12) || !is_step_valid)</span></div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;                        <span class="keywordflow">if</span> (!std::isfinite(cur_energy) || cur_energy &gt; old_energy || !is_step_valid)</div>
@@ -266,12 +298,12 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;                        {</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;                            <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;                        }</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                        this-&gt;cur_iter++;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                        this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928">cur_iter</a>++;</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                    }</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160; </div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                    <span class="keywordflow">if</span> (this-&gt;cur_iter &gt;= this-&gt;max_step_size_iter || step_size &lt;= this-&gt;min_step_size)</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                    <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928">cur_iter</a> &gt;= this-&gt;max_step_size_iter || step_size &lt;= this-&gt;<a class="code" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137">min_step_size</a>)</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                    {</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                        utils::logger().warn(</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                        <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">utils::logger</a>().warn(</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                            <span class="stringliteral">&quot;Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})&quot;</span>,</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                            old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;                            is_step_valid ? <span class="stringliteral">&quot;true&quot;</span> : <span class="stringliteral">&quot;false&quot;</span>, this-&gt;cur_iter);</div>
@@ -288,16 +320,51 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a7c5d42309d9f8dba4ab89b8d7eff8537"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537">polyfem::solver::line_search::LineSearch::iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdoc">total number of backtracking iterations done</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:43</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_ae82b98abb213a3a79a64299bffa4a36b"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b">polyfem::solver::line_search::LineSearch::max_step_size_iter</a></div><div class="ttdeci">int max_step_size_iter</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:54</div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a></div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:10</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search_html_acd54aa6e4ba54937fb54346b453cc094"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#acd54aa6e4ba54937fb54346b453cc094">polyfem::solver::line_search::BacktrackingLineSearch::line_search</a></div><div class="ttdeci">double line_search(const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc) override</div><div class="ttdef"><b>Definition:</b> BacktrackingLineSearch.hpp:29</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_aab06bc92bfecad365ffeda27b28651c7"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aab06bc92bfecad365ffeda27b28651c7">polyfem::solver::line_search::LineSearch::Scalar</a></div><div class="ttdeci">typename ProblemType::Scalar Scalar</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:13</div></div>
+<div class="ttc" id="a_line_search_8hpp_html"><div class="ttname"><a href="_line_search_8hpp.html">LineSearch.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a5cfb5b4f209cc03e3a36fa8c36f823e1"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5cfb5b4f209cc03e3a36fa8c36f823e1">polyfem::solver::line_search::LineSearch::broad_phase_ccd_time</a></div><div class="ttdeci">double broad_phase_ccd_time</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:45</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a353761915b4eabc0739af54992a66928"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928">polyfem::solver::line_search::LineSearch::cur_iter</a></div><div class="ttdeci">int cur_iter</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:55</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a816d662fcc4601478ecf961b89d88304"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a816d662fcc4601478ecf961b89d88304">polyfem::solver::line_search::LineSearch::constraint_set_update_time</a></div><div class="ttdeci">double constraint_set_update_time</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:47</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a4d8c9054c23fe46766eb28bef54fcf1a"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4d8c9054c23fe46766eb28bef54fcf1a">polyfem::solver::line_search::LineSearch::checking_for_nan_inf_time</a></div><div class="ttdeci">double checking_for_nan_inf_time</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:44</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a4ff6b46a559be85cd56736d1d44dbf5a"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4ff6b46a559be85cd56736d1d44dbf5a">polyfem::solver::line_search::LineSearch::classical_line_search_time</a></div><div class="ttdeci">double classical_line_search_time</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:48</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search_html_af4153d240f7e314bab10b943f4308ab9"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#af4153d240f7e314bab10b943f4308ab9">polyfem::solver::line_search::BacktrackingLineSearch::BacktrackingLineSearch</a></div><div class="ttdeci">BacktrackingLineSearch()</div><div class="ttdef"><b>Definition:</b> BacktrackingLineSearch.hpp:23</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a07bc05931512b5257fd28bffe4fb7efc"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a07bc05931512b5257fd28bffe4fb7efc">polyfem::solver::line_search::LineSearch::compute_collision_free_step_size</a></div><div class="ttdeci">double compute_collision_free_step_size(const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size)</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a17ffbdf8087400684d3d3609d20d09bf"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">polyfem::solver::line_search::LineSearch::TVector</a></div><div class="ttdeci">typename ProblemType::TVector TVector</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:14</div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html">polyfem::solver::line_search::BacktrackingLineSearch</a></div><div class="ttdef"><b>Definition:</b> BacktrackingLineSearch.hpp:16</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a75548d7d1b779d37c20b68d508094137"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137">polyfem::solver::line_search::LineSearch::min_step_size</a></div><div class="ttdeci">double min_step_size</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:53</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_af35a5d0f24305a5400176e5bc8669d59"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59">polyfem::solver::line_search::LineSearch::compute_nan_free_step_size</a></div><div class="ttdeci">double compute_nan_free_step_size(const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size, const double rate)</div></div>
+<div class="ttc" id="a_timer_8hpp_html_a9b9dcda2187614bc17a1a91c5de80b56"><div class="ttname"><a href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a></div><div class="ttdeci">#define POLYFEM_SCOPED_TIMER(...)</div><div class="ttdef"><b>Definition:</b> Timer.hpp:5</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a2456056f352b15603bf9f8bc2948a14f"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdef"><b>Definition:</b> Logger.cpp:23</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a5903e76e0529bcdc7c3a67cf6802cceb"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5903e76e0529bcdc7c3a67cf6802cceb">polyfem::solver::line_search::LineSearch::ccd_time</a></div><div class="ttdeci">double ccd_time</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:46</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search_html_a7b003ae59a66e3cf44c2836b6b5d6292"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a7b003ae59a66e3cf44c2836b6b5d6292">polyfem::solver::line_search::BacktrackingLineSearch::compute_descent_step_size</a></div><div class="ttdeci">double compute_descent_step_size(const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc, const double old_energy_in, const double starting_step_size=1)</div><div class="ttdef"><b>Definition:</b> BacktrackingLineSearch.hpp:129</div></div>
+<div class="ttc" id="a_timer_8hpp_html"><div class="ttname"><a href="_timer_8hpp.html">Timer.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a0e63e913fd1df2799151f88d8233096d"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d">polyfem::solver::line_search::LineSearch::use_grad_norm_tol</a></div><div class="ttdeci">double use_grad_norm_tol</div><div class="ttdef"><b>Definition:</b> LineSearch.hpp:50</div></div>
+<div class="ttc" id="aclasspolyfem_1_1solver_1_1line__search_1_1_line_search_html_a6d5d9b20058cad6c6f1adad54362d846"><div class="ttname"><a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a6d5d9b20058cad6c6f1adad54362d846">polyfem::solver::line_search::LineSearch::compute_debug_collision_free_step_size</a></div><div class="ttdeci">double compute_debug_collision_free_step_size(const typename ProblemType::TVector &amp;x, const typename ProblemType::TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size, const double rate)</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="dir_02b5be155cc4b176060eb5eeb551f9cc.html">line_search</a></li><li class="navelem"><b>BacktrackingLineSearch.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="dir_02b5be155cc4b176060eb5eeb551f9cc.html">line_search</a></li><li class="navelem"><a class="el" href="_backtracking_line_search_8hpp.html">BacktrackingLineSearch.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

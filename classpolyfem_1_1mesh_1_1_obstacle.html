@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::mesh::Obstacle Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -91,6 +123,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1mesh_1_1_obstacle.html
 <div class="title">polyfem::mesh::Obstacle Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -99,120 +133,926 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afed96a4e6a29cd5169c97bda9ca9a1e7"><td class="memItemLeft" align="right" valign="top"><a id="afed96a4e6a29cd5169c97bda9ca9a1e7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>append_mesh</b> (const Eigen::MatrixXd &amp;vertices, const Eigen::VectorXi &amp;codim_vertices, const Eigen::MatrixXi &amp;codim_edges, const Eigen::MatrixXi &amp;faces)</td></tr>
+<tr class="memitem:afed96a4e6a29cd5169c97bda9ca9a1e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#afed96a4e6a29cd5169c97bda9ca9a1e7">append_mesh</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::VectorXi &amp;codim_vertices, const Eigen::MatrixXi &amp;codim_edges, const Eigen::MatrixXi &amp;faces)</td></tr>
 <tr class="separator:afed96a4e6a29cd5169c97bda9ca9a1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a129cf729ea7db45f58ee5cf107301670"><td class="memItemLeft" align="right" valign="top"><a id="a129cf729ea7db45f58ee5cf107301670"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>append_plane</b> (const VectorNd &amp;origin, const VectorNd &amp;normal)</td></tr>
+<tr class="memitem:a129cf729ea7db45f58ee5cf107301670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a129cf729ea7db45f58ee5cf107301670">append_plane</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;origin, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;normal)</td></tr>
 <tr class="separator:a129cf729ea7db45f58ee5cf107301670"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a030857d0f71ae2a88692d988fab8db"><td class="memItemLeft" align="right" valign="top"><a id="a0a030857d0f71ae2a88692d988fab8db"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>n_vertices</b> () const</td></tr>
+<tr class="memitem:a0a030857d0f71ae2a88692d988fab8db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a> () const</td></tr>
 <tr class="separator:a0a030857d0f71ae2a88692d988fab8db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3aea8e9023d4e1d88799dbe1a6e93da"><td class="memItemLeft" align="right" valign="top"><a id="ad3aea8e9023d4e1d88799dbe1a6e93da"></a>
-const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>v</b> () const</td></tr>
+<tr class="memitem:ad3aea8e9023d4e1d88799dbe1a6e93da"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#ad3aea8e9023d4e1d88799dbe1a6e93da">v</a> () const</td></tr>
 <tr class="separator:ad3aea8e9023d4e1d88799dbe1a6e93da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a391864bebe3943e5ebcd8f6958038840"><td class="memItemLeft" align="right" valign="top"><a id="a391864bebe3943e5ebcd8f6958038840"></a>
-const Eigen::VectorXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>codim_v</b> () const</td></tr>
+<tr class="memitem:a391864bebe3943e5ebcd8f6958038840"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a391864bebe3943e5ebcd8f6958038840">codim_v</a> () const</td></tr>
 <tr class="separator:a391864bebe3943e5ebcd8f6958038840"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a905428119087538313bab848e8e6d382"><td class="memItemLeft" align="right" valign="top"><a id="a905428119087538313bab848e8e6d382"></a>
-const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>f</b> () const</td></tr>
+<tr class="memitem:a905428119087538313bab848e8e6d382"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a905428119087538313bab848e8e6d382">f</a> () const</td></tr>
 <tr class="separator:a905428119087538313bab848e8e6d382"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5604d5fa6fc1d18835c06b4b68d16ce7"><td class="memItemLeft" align="right" valign="top"><a id="a5604d5fa6fc1d18835c06b4b68d16ce7"></a>
-const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>e</b> () const</td></tr>
+<tr class="memitem:a5604d5fa6fc1d18835c06b4b68d16ce7"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a5604d5fa6fc1d18835c06b4b68d16ce7">e</a> () const</td></tr>
 <tr class="separator:a5604d5fa6fc1d18835c06b4b68d16ce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac349144bf99fac2abee6722176a74b87"><td class="memItemLeft" align="right" valign="top"><a id="ac349144bf99fac2abee6722176a74b87"></a>
-const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_face_connectivity</b> () const</td></tr>
+<tr class="memitem:ac349144bf99fac2abee6722176a74b87"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#ac349144bf99fac2abee6722176a74b87">get_face_connectivity</a> () const</td></tr>
 <tr class="separator:ac349144bf99fac2abee6722176a74b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22f3580cf6b585c8edb95139af5d1f61"><td class="memItemLeft" align="right" valign="top"><a id="a22f3580cf6b585c8edb95139af5d1f61"></a>
-const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_edge_connectivity</b> () const</td></tr>
+<tr class="memitem:a22f3580cf6b585c8edb95139af5d1f61"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a22f3580cf6b585c8edb95139af5d1f61">get_edge_connectivity</a> () const</td></tr>
 <tr class="separator:a22f3580cf6b585c8edb95139af5d1f61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72497c2b16a967c3a88b8312fbe4127b"><td class="memItemLeft" align="right" valign="top"><a id="a72497c2b16a967c3a88b8312fbe4127b"></a>
-const Eigen::VectorXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_vertex_connectivity</b> () const</td></tr>
+<tr class="memitem:a72497c2b16a967c3a88b8312fbe4127b"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a72497c2b16a967c3a88b8312fbe4127b">get_vertex_connectivity</a> () const</td></tr>
 <tr class="separator:a72497c2b16a967c3a88b8312fbe4127b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4af7ef9d0340e16640347dded4b395e9"><td class="memItemLeft" align="right" valign="top"><a id="a4af7ef9d0340e16640347dded4b395e9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>change_displacement</b> (const int oid, const Eigen::RowVector3d &amp;val, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a> &gt;())</td></tr>
+<tr class="memitem:a4af7ef9d0340e16640347dded4b395e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a4af7ef9d0340e16640347dded4b395e9">change_displacement</a> (const int oid, const Eigen::RowVector3d &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a> &gt;())</td></tr>
 <tr class="separator:a4af7ef9d0340e16640347dded4b395e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98c9b1b5a49bbe66e3d289bf3c9d8c8f"><td class="memItemLeft" align="right" valign="top"><a id="a98c9b1b5a49bbe66e3d289bf3c9d8c8f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>change_displacement</b> (const int oid, const std::function&lt; Eigen::MatrixXd(double x, double y, double z, double t)&gt; &amp;func, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a> &gt;())</td></tr>
+<tr class="memitem:a98c9b1b5a49bbe66e3d289bf3c9d8c8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a98c9b1b5a49bbe66e3d289bf3c9d8c8f">change_displacement</a> (const int oid, const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;func, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a> &gt;())</td></tr>
 <tr class="separator:a98c9b1b5a49bbe66e3d289bf3c9d8c8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89f447248eacba670526522e5aa2dd07"><td class="memItemLeft" align="right" valign="top"><a id="a89f447248eacba670526522e5aa2dd07"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>change_displacement</b> (const int oid, const json &amp;val, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a> &gt;())</td></tr>
+<tr class="memitem:a89f447248eacba670526522e5aa2dd07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a89f447248eacba670526522e5aa2dd07">change_displacement</a> (const int oid, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a> &gt;())</td></tr>
 <tr class="separator:a89f447248eacba670526522e5aa2dd07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41eba5cf29f17570dd4a380beb30acc7"><td class="memItemLeft" align="right" valign="top"><a id="a41eba5cf29f17570dd4a380beb30acc7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>change_displacement</b> (const int oid, const Eigen::RowVector3d &amp;val, const std::string &amp;interp=&quot;&quot;)</td></tr>
+<tr class="memitem:a41eba5cf29f17570dd4a380beb30acc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a41eba5cf29f17570dd4a380beb30acc7">change_displacement</a> (const int oid, const Eigen::RowVector3d &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interp=&quot;&quot;)</td></tr>
 <tr class="separator:a41eba5cf29f17570dd4a380beb30acc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ecef024c6157fccaf31d12cb74b5644"><td class="memItemLeft" align="right" valign="top"><a id="a8ecef024c6157fccaf31d12cb74b5644"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>change_displacement</b> (const int oid, const std::function&lt; Eigen::MatrixXd(double x, double y, double z, double t)&gt; &amp;func, const std::string &amp;interp=&quot;&quot;)</td></tr>
+<tr class="memitem:a8ecef024c6157fccaf31d12cb74b5644"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a8ecef024c6157fccaf31d12cb74b5644">change_displacement</a> (const int oid, const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;func, const std::string &amp;interp=&quot;&quot;)</td></tr>
 <tr class="separator:a8ecef024c6157fccaf31d12cb74b5644"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45403c93a14a94ead1fc629cacabfec5"><td class="memItemLeft" align="right" valign="top"><a id="a45403c93a14a94ead1fc629cacabfec5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>change_displacement</b> (const int oid, const json &amp;val, const std::string &amp;interp=&quot;&quot;)</td></tr>
+<tr class="memitem:a45403c93a14a94ead1fc629cacabfec5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a45403c93a14a94ead1fc629cacabfec5">change_displacement</a> (const int oid, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interp=&quot;&quot;)</td></tr>
 <tr class="separator:a45403c93a14a94ead1fc629cacabfec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f676c678626887e7fef558a70a19467"><td class="memItemLeft" align="right" valign="top"><a id="a7f676c678626887e7fef558a70a19467"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update_displacement</b> (const double t, Eigen::MatrixXd &amp;sol) const</td></tr>
+<tr class="memitem:a7f676c678626887e7fef558a70a19467"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a7f676c678626887e7fef558a70a19467">update_displacement</a> (const double t, Eigen::MatrixXd &amp;sol) const</td></tr>
 <tr class="separator:a7f676c678626887e7fef558a70a19467"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e1e78c30df24229f0e9409cc5445580"><td class="memItemLeft" align="right" valign="top"><a id="a6e1e78c30df24229f0e9409cc5445580"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_zero</b> (Eigen::MatrixXd &amp;sol) const</td></tr>
+<tr class="memitem:a6e1e78c30df24229f0e9409cc5445580"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a6e1e78c30df24229f0e9409cc5445580">set_zero</a> (Eigen::MatrixXd &amp;sol) const</td></tr>
 <tr class="separator:a6e1e78c30df24229f0e9409cc5445580"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a353aeb9db0e01931ac5e87499c59df86"><td class="memItemLeft" align="right" valign="top"><a id="a353aeb9db0e01931ac5e87499c59df86"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:a353aeb9db0e01931ac5e87499c59df86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a353aeb9db0e01931ac5e87499c59df86">clear</a> ()</td></tr>
 <tr class="separator:a353aeb9db0e01931ac5e87499c59df86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8339bbf85c0cfc1361801b75e8ca37fe"><td class="memItemLeft" align="right" valign="top"><a id="a8339bbf85c0cfc1361801b75e8ca37fe"></a>
-const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>planes</b> () const</td></tr>
+<tr class="memitem:a8339bbf85c0cfc1361801b75e8ca37fe"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a8339bbf85c0cfc1361801b75e8ca37fe">planes</a> () const</td></tr>
 <tr class="separator:a8339bbf85c0cfc1361801b75e8ca37fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a258741c32d8cfe95694afae9b3ca42eb"><td class="memItemLeft" align="right" valign="top"><a id="a258741c32d8cfe95694afae9b3ca42eb"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>dim_</b></td></tr>
+<tr class="memitem:a258741c32d8cfe95694afae9b3ca42eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a258741c32d8cfe95694afae9b3ca42eb">dim_</a></td></tr>
 <tr class="separator:a258741c32d8cfe95694afae9b3ca42eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a679ec28b24e43f8dbc4dfd8aa2762a41"><td class="memItemLeft" align="right" valign="top"><a id="a679ec28b24e43f8dbc4dfd8aa2762a41"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>v_</b></td></tr>
+<tr class="memitem:a679ec28b24e43f8dbc4dfd8aa2762a41"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a679ec28b24e43f8dbc4dfd8aa2762a41">v_</a></td></tr>
 <tr class="separator:a679ec28b24e43f8dbc4dfd8aa2762a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78f476dc85aaecc66c046da879b060ec"><td class="memItemLeft" align="right" valign="top"><a id="a78f476dc85aaecc66c046da879b060ec"></a>
-Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>codim_v_</b></td></tr>
+<tr class="memitem:a78f476dc85aaecc66c046da879b060ec"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a78f476dc85aaecc66c046da879b060ec">codim_v_</a></td></tr>
 <tr class="separator:a78f476dc85aaecc66c046da879b060ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23a3ff04445c07d4a4e72a5b4f78a619"><td class="memItemLeft" align="right" valign="top"><a id="a23a3ff04445c07d4a4e72a5b4f78a619"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>f_</b></td></tr>
+<tr class="memitem:a23a3ff04445c07d4a4e72a5b4f78a619"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a23a3ff04445c07d4a4e72a5b4f78a619">f_</a></td></tr>
 <tr class="separator:a23a3ff04445c07d4a4e72a5b4f78a619"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2517abcf6fae9e92a6ddbdf7884923bd"><td class="memItemLeft" align="right" valign="top"><a id="a2517abcf6fae9e92a6ddbdf7884923bd"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>e_</b></td></tr>
+<tr class="memitem:a2517abcf6fae9e92a6ddbdf7884923bd"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a2517abcf6fae9e92a6ddbdf7884923bd">e_</a></td></tr>
 <tr class="separator:a2517abcf6fae9e92a6ddbdf7884923bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab413e5a9aaa89745873b12b586f06676"><td class="memItemLeft" align="right" valign="top"><a id="ab413e5a9aaa89745873b12b586f06676"></a>
-Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>in_v_</b></td></tr>
+<tr class="memitem:ab413e5a9aaa89745873b12b586f06676"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#ab413e5a9aaa89745873b12b586f06676">in_v_</a></td></tr>
 <tr class="separator:ab413e5a9aaa89745873b12b586f06676"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63bdd32bf085c3733b0f5dbe9089c3f1"><td class="memItemLeft" align="right" valign="top"><a id="a63bdd32bf085c3733b0f5dbe9089c3f1"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>in_f_</b></td></tr>
+<tr class="memitem:a63bdd32bf085c3733b0f5dbe9089c3f1"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a63bdd32bf085c3733b0f5dbe9089c3f1">in_f_</a></td></tr>
 <tr class="separator:a63bdd32bf085c3733b0f5dbe9089c3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa35cc8ae04c53128557cd9fbaef0ebab"><td class="memItemLeft" align="right" valign="top"><a id="aa35cc8ae04c53128557cd9fbaef0ebab"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>in_e_</b></td></tr>
+<tr class="memitem:aa35cc8ae04c53128557cd9fbaef0ebab"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#aa35cc8ae04c53128557cd9fbaef0ebab">in_e_</a></td></tr>
 <tr class="separator:aa35cc8ae04c53128557cd9fbaef0ebab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5606d8566048007aa908dd850389ce3b"><td class="memItemLeft" align="right" valign="top"><a id="a5606d8566048007aa908dd850389ce3b"></a>
-std::vector&lt; std::array&lt; <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>, 3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>displacements_</b></td></tr>
+<tr class="memitem:a5606d8566048007aa908dd850389ce3b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::array&lt; <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>, 3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a5606d8566048007aa908dd850389ce3b">displacements_</a></td></tr>
 <tr class="separator:a5606d8566048007aa908dd850389ce3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79b4a6e9c1040e9269065afc8903260"><td class="memItemLeft" align="right" valign="top"><a id="aa79b4a6e9c1040e9269065afc8903260"></a>
-std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>displacements_interpolation_</b></td></tr>
+<tr class="memitem:aa79b4a6e9c1040e9269065afc8903260"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#aa79b4a6e9c1040e9269065afc8903260">displacements_interpolation_</a></td></tr>
 <tr class="separator:aa79b4a6e9c1040e9269065afc8903260"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2cd9c7a670deec1fb861da3aa6559ca"><td class="memItemLeft" align="right" valign="top"><a id="ad2cd9c7a670deec1fb861da3aa6559ca"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>endings_</b></td></tr>
+<tr class="memitem:ad2cd9c7a670deec1fb861da3aa6559ca"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#ad2cd9c7a670deec1fb861da3aa6559ca">endings_</a></td></tr>
 <tr class="separator:ad2cd9c7a670deec1fb861da3aa6559ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14aadf9d021f34032e52291a0a0a262d"><td class="memItemLeft" align="right" valign="top"><a id="a14aadf9d021f34032e52291a0a0a262d"></a>
-std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>planes_</b></td></tr>
+<tr class="memitem:a14aadf9d021f34032e52291a0a0a262d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a14aadf9d021f34032e52291a0a0a262d">planes_</a></td></tr>
 <tr class="separator:a14aadf9d021f34032e52291a0a0a262d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="afed96a4e6a29cd5169c97bda9ca9a1e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afed96a4e6a29cd5169c97bda9ca9a1e7">&#9670;&nbsp;</a></span>append_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::append_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>codim_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>codim_edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>faces</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a129cf729ea7db45f58ee5cf107301670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a129cf729ea7db45f58ee5cf107301670">&#9670;&nbsp;</a></span>append_plane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::append_plane </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4af7ef9d0340e16640347dded4b395e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4af7ef9d0340e16640347dded4b395e9">&#9670;&nbsp;</a></span>change_displacement() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::change_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::RowVector3d &amp;&#160;</td>
+          <td class="paramname"><em>val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>interp</em> = <code>std::make_shared&lt;&#160;<a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a>&#160;&gt;()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41eba5cf29f17570dd4a380beb30acc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41eba5cf29f17570dd4a380beb30acc7">&#9670;&nbsp;</a></span>change_displacement() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::change_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::RowVector3d &amp;&#160;</td>
+          <td class="paramname"><em>val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>interp</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89f447248eacba670526522e5aa2dd07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89f447248eacba670526522e5aa2dd07">&#9670;&nbsp;</a></span>change_displacement() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::change_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>interp</em> = <code>std::make_shared&lt;&#160;<a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a>&#160;&gt;()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45403c93a14a94ead1fc629cacabfec5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45403c93a14a94ead1fc629cacabfec5">&#9670;&nbsp;</a></span>change_displacement() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::change_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>interp</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a98c9b1b5a49bbe66e3d289bf3c9d8c8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c9b1b5a49bbe66e3d289bf3c9d8c8f">&#9670;&nbsp;</a></span>change_displacement() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::change_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>interp</em> = <code>std::make_shared&lt;&#160;<a class="el" href="classpolyfem_1_1problem_1_1_no_interpolation.html">problem::NoInterpolation</a>&#160;&gt;()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8ecef024c6157fccaf31d12cb74b5644"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ecef024c6157fccaf31d12cb74b5644">&#9670;&nbsp;</a></span>change_displacement() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::change_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>oid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>interp</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a353aeb9db0e01931ac5e87499c59df86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a353aeb9db0e01931ac5e87499c59df86">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a391864bebe3943e5ebcd8f6958038840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a391864bebe3943e5ebcd8f6958038840">&#9670;&nbsp;</a></span>codim_v()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::VectorXi&amp; polyfem::mesh::Obstacle::codim_v </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5604d5fa6fc1d18835c06b4b68d16ce7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5604d5fa6fc1d18835c06b4b68d16ce7">&#9670;&nbsp;</a></span>e()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXi&amp; polyfem::mesh::Obstacle::e </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a905428119087538313bab848e8e6d382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a905428119087538313bab848e8e6d382">&#9670;&nbsp;</a></span>f()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXi&amp; polyfem::mesh::Obstacle::f </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a22f3580cf6b585c8edb95139af5d1f61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f3580cf6b585c8edb95139af5d1f61">&#9670;&nbsp;</a></span>get_edge_connectivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXi&amp; polyfem::mesh::Obstacle::get_edge_connectivity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac349144bf99fac2abee6722176a74b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac349144bf99fac2abee6722176a74b87">&#9670;&nbsp;</a></span>get_face_connectivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXi&amp; polyfem::mesh::Obstacle::get_face_connectivity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72497c2b16a967c3a88b8312fbe4127b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72497c2b16a967c3a88b8312fbe4127b">&#9670;&nbsp;</a></span>get_vertex_connectivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::VectorXi&amp; polyfem::mesh::Obstacle::get_vertex_connectivity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0a030857d0f71ae2a88692d988fab8db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a030857d0f71ae2a88692d988fab8db">&#9670;&nbsp;</a></span>n_vertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::mesh::Obstacle::n_vertices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8339bbf85c0cfc1361801b75e8ca37fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8339bbf85c0cfc1361801b75e8ca37fe">&#9670;&nbsp;</a></span>planes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a>&gt;&amp; polyfem::mesh::Obstacle::planes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e1e78c30df24229f0e9409cc5445580"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e1e78c30df24229f0e9409cc5445580">&#9670;&nbsp;</a></span>set_zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::set_zero </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f676c678626887e7fef558a70a19467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f676c678626887e7fef558a70a19467">&#9670;&nbsp;</a></span>update_displacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::Obstacle::update_displacement </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad3aea8e9023d4e1d88799dbe1a6e93da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3aea8e9023d4e1d88799dbe1a6e93da">&#9670;&nbsp;</a></span>v()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXd&amp; polyfem::mesh::Obstacle::v </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a78f476dc85aaecc66c046da879b060ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78f476dc85aaecc66c046da879b060ec">&#9670;&nbsp;</a></span>codim_v_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::mesh::Obstacle::codim_v_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a258741c32d8cfe95694afae9b3ca42eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a258741c32d8cfe95694afae9b3ca42eb">&#9670;&nbsp;</a></span>dim_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::mesh::Obstacle::dim_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5606d8566048007aa908dd850389ce3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5606d8566048007aa908dd850389ce3b">&#9670;&nbsp;</a></span>displacements_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::array&lt;<a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>, 3&gt; &gt; polyfem::mesh::Obstacle::displacements_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa79b4a6e9c1040e9269065afc8903260"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa79b4a6e9c1040e9269065afc8903260">&#9670;&nbsp;</a></span>displacements_interpolation_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1problem_1_1_interpolation.html">problem::Interpolation</a>&gt; &gt; polyfem::mesh::Obstacle::displacements_interpolation_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2517abcf6fae9e92a6ddbdf7884923bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2517abcf6fae9e92a6ddbdf7884923bd">&#9670;&nbsp;</a></span>e_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::mesh::Obstacle::e_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad2cd9c7a670deec1fb861da3aa6559ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2cd9c7a670deec1fb861da3aa6559ca">&#9670;&nbsp;</a></span>endings_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::mesh::Obstacle::endings_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a23a3ff04445c07d4a4e72a5b4f78a619"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23a3ff04445c07d4a4e72a5b4f78a619">&#9670;&nbsp;</a></span>f_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::mesh::Obstacle::f_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa35cc8ae04c53128557cd9fbaef0ebab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa35cc8ae04c53128557cd9fbaef0ebab">&#9670;&nbsp;</a></span>in_e_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::mesh::Obstacle::in_e_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a63bdd32bf085c3733b0f5dbe9089c3f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63bdd32bf085c3733b0f5dbe9089c3f1">&#9670;&nbsp;</a></span>in_f_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::mesh::Obstacle::in_f_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab413e5a9aaa89745873b12b586f06676"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab413e5a9aaa89745873b12b586f06676">&#9670;&nbsp;</a></span>in_v_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::mesh::Obstacle::in_v_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14aadf9d021f34032e52291a0a0a262d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14aadf9d021f34032e52291a0a0a262d">&#9670;&nbsp;</a></span>planes_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a>&gt; polyfem::mesh::Obstacle::planes_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a679ec28b24e43f8dbc4dfd8aa2762a41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679ec28b24e43f8dbc4dfd8aa2762a41">&#9670;&nbsp;</a></span>v_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::mesh::Obstacle::v_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/mesh/<a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a></li>
-<li>src/polyfem/mesh/Obstacle.cpp</li>
+<li>src/polyfem/mesh/<a class="el" href="_obstacle_8cpp.html">Obstacle.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>mesh</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1mesh.html">mesh</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

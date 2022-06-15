@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/time_integrator/ImplicitTimeIntegrator.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,7 +118,7 @@ $(document).ready(function(){initNavTree('_implicit_time_integrator_8hpp_source.
 <div class="title">ImplicitTimeIntegrator.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_implicit_time_integrator_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
@@ -95,61 +127,97 @@ $(document).ready(function(){initNavTree('_implicit_time_integrator_8hpp_source.
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keyword">namespace </span>time_integrator</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    {</div>
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">   14</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">ImplicitTimeIntegrator</a></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;        {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">ImplicitTimeIntegrator</a>() {}</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="keyword">virtual</span> ~<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">ImplicitTimeIntegrator</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab7167f5a3ddbf2372da4c4e624ed3693">   17</a></span>&#160;            <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab7167f5a3ddbf2372da4c4e624ed3693">ImplicitTimeIntegrator</a>() {}</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a74403eb9fc355ac9c5231e8bc7f6c46c">~ImplicitTimeIntegrator</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_parameters(<span class="keyword">const</span> nlohmann::json &amp;params) {}</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">   20</a></span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">set_parameters</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">nlohmann::json</a> &amp;params) {}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> init(<span class="keyword">const</span> Eigen::VectorXd &amp;x_prev, <span class="keyword">const</span> Eigen::VectorXd &amp;v_prev, <span class="keyword">const</span> Eigen::VectorXd &amp;a_prev, <span class="keywordtype">double</span> dt);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">init</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad2535e18a224b7b354659eab86f0a889">x_prev</a>, <span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7e8ea6acb32b3a3870907ad9917eb4b4">v_prev</a>, <span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ade3c83b4e8902af9b344a076ffbc58c1">a_prev</a>, <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af4dcca22a4bd33a54b8016c127c51850">dt</a>);</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> update_quantities(<span class="keyword">const</span> Eigen::VectorXd &amp;x) = 0;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">update_quantities</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) = 0;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">virtual</span> Eigen::VectorXd x_tilde() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">virtual</span> Eigen::VectorXd <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">x_tilde</a>() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">double</span> acceleration_scaling() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">acceleration_scaling</a>() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">double</span> &amp;dt()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _dt; }</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af4dcca22a4bd33a54b8016c127c51850">   30</a></span>&#160;            <span class="keyword">const</span> <span class="keywordtype">double</span> &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af4dcca22a4bd33a54b8016c127c51850">dt</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3f5241e5e26d7a7d17249b646f64ccba">_dt</a>; }</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> save_raw(<span class="keyword">const</span> std::string &amp;x_path, <span class="keyword">const</span> std::string &amp;v_path, <span class="keyword">const</span> std::string &amp;a_path) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5d2edb575418d564867ea6cfb8879d85">save_raw</a>(<span class="keyword">const</span> std::string &amp;x_path, <span class="keyword">const</span> std::string &amp;v_path, <span class="keyword">const</span> std::string &amp;a_path) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keyword">static</span> std::shared_ptr&lt;ImplicitTimeIntegrator&gt; construct_time_integrator(<span class="keyword">const</span> std::string &amp;name);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;get_time_integrator_names();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keyword">static</span> std::shared_ptr&lt;ImplicitTimeIntegrator&gt; <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa497c8d40d82387396ea901dcaa5c5e8">construct_time_integrator</a>(<span class="keyword">const</span> std::string &amp;name);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed403206a56f26109dc703c811a471b2">get_time_integrator_names</a>();</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="comment">// Convenience functions for getting the most recent previous values</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keyword">const</span> Eigen::VectorXd &amp;x_prev()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> x_prevs.front(); }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keyword">const</span> Eigen::VectorXd &amp;v_prev()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> v_prevs.front(); }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keyword">const</span> Eigen::VectorXd &amp;a_prev()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> a_prevs.front(); }</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad2535e18a224b7b354659eab86f0a889">   38</a></span>&#160;            <span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad2535e18a224b7b354659eab86f0a889">x_prev</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2390e777c5c9d3a5576ba4e24caac3e6">x_prevs</a>.front(); }</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7e8ea6acb32b3a3870907ad9917eb4b4">   39</a></span>&#160;            <span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7e8ea6acb32b3a3870907ad9917eb4b4">v_prev</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a0d8646c5bd44268789e64250235ac382">v_prevs</a>.front(); }</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ade3c83b4e8902af9b344a076ffbc58c1">   40</a></span>&#160;            <span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ade3c83b4e8902af9b344a076ffbc58c1">a_prev</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c">a_prevs</a>.front(); }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordtype">double</span> _dt = 1; <span class="comment">// default of one for static sims, this should be set using init()</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3f5241e5e26d7a7d17249b646f64ccba">   43</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3f5241e5e26d7a7d17249b646f64ccba">_dt</a> = 1; <span class="comment">// default of one for static sims, this should be set using init()</span></div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <span class="comment">// Store the necessary previous values for single or multi-step integration</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            std::deque&lt;Eigen::VectorXd&gt; x_prevs, v_prevs, a_prevs;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2390e777c5c9d3a5576ba4e24caac3e6">   45</a></span>&#160;            std::deque&lt;Eigen::VectorXd&gt; <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2390e777c5c9d3a5576ba4e24caac3e6">x_prevs</a>, <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a0d8646c5bd44268789e64250235ac382">v_prevs</a>, <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c">a_prevs</a>;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="comment">// Convenience functions for getting the most recent previous values</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            Eigen::VectorXd &amp;x_prev() { <span class="keywordflow">return</span> x_prevs.front(); }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            Eigen::VectorXd &amp;v_prev() { <span class="keywordflow">return</span> v_prevs.front(); }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            Eigen::VectorXd &amp;a_prev() { <span class="keywordflow">return</span> a_prevs.front(); }</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7178b8ccd3ff739a026704bbd98651b2">   48</a></span>&#160;            Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7178b8ccd3ff739a026704bbd98651b2">x_prev</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2390e777c5c9d3a5576ba4e24caac3e6">x_prevs</a>.front(); }</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5ff1d5adf0d45f5473304daa587512d3">   49</a></span>&#160;            Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5ff1d5adf0d45f5473304daa587512d3">v_prev</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a0d8646c5bd44268789e64250235ac382">v_prevs</a>.front(); }</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a42a586b0d10aaf3fb89b07c7d71d9750">   50</a></span>&#160;            Eigen::VectorXd &amp;<a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a42a586b0d10aaf3fb89b07c7d71d9750">a_prev</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c">a_prevs</a>.front(); }</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        };</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    } <span class="comment">// namespace time_integrator</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a7d653f4e96217b478314dbabd3fd3d1c"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">polyfem::time_integrator::ImplicitTimeIntegrator::update_quantities</a></div><div class="ttdeci">virtual void update_quantities(const Eigen::VectorXd &amp;x)=0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_ade3c83b4e8902af9b344a076ffbc58c1"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ade3c83b4e8902af9b344a076ffbc58c1">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev</a></div><div class="ttdeci">const Eigen::VectorXd &amp; a_prev() const</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:40</div></div>
 <div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">polyfem::time_integrator::ImplicitTimeIntegrator</a></div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:14</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_ad34ead24a22cb3aaf95daacefeddf40c"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c">polyfem::time_integrator::ImplicitTimeIntegrator::a_prevs</a></div><div class="ttdeci">std::deque&lt; Eigen::VectorXd &gt; a_prevs</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:45</div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_aed403206a56f26109dc703c811a471b2"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed403206a56f26109dc703c811a471b2">polyfem::time_integrator::ImplicitTimeIntegrator::get_time_integrator_names</a></div><div class="ttdeci">static const std::vector&lt; std::string &gt; &amp; get_time_integrator_names()</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.cpp:65</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_aed3a8c4dec0c01f69caefae756cb2999"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">polyfem::time_integrator::ImplicitTimeIntegrator::acceleration_scaling</a></div><div class="ttdeci">virtual double acceleration_scaling() const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_ab7167f5a3ddbf2372da4c4e624ed3693"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab7167f5a3ddbf2372da4c4e624ed3693">polyfem::time_integrator::ImplicitTimeIntegrator::ImplicitTimeIntegrator</a></div><div class="ttdeci">ImplicitTimeIntegrator()</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:17</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a2390e777c5c9d3a5576ba4e24caac3e6"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2390e777c5c9d3a5576ba4e24caac3e6">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a></div><div class="ttdeci">std::deque&lt; Eigen::VectorXd &gt; x_prevs</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:45</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_af4dcca22a4bd33a54b8016c127c51850"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af4dcca22a4bd33a54b8016c127c51850">polyfem::time_integrator::ImplicitTimeIntegrator::dt</a></div><div class="ttdeci">const double &amp; dt() const</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:30</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a0d8646c5bd44268789e64250235ac382"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a0d8646c5bd44268789e64250235ac382">polyfem::time_integrator::ImplicitTimeIntegrator::v_prevs</a></div><div class="ttdeci">std::deque&lt; Eigen::VectorXd &gt; v_prevs</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:45</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a42a586b0d10aaf3fb89b07c7d71d9750"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a42a586b0d10aaf3fb89b07c7d71d9750">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev</a></div><div class="ttdeci">Eigen::VectorXd &amp; a_prev()</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:50</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a7e8ea6acb32b3a3870907ad9917eb4b4"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7e8ea6acb32b3a3870907ad9917eb4b4">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev</a></div><div class="ttdeci">const Eigen::VectorXd &amp; v_prev() const</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:39</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_aa19b9d1885d166f24557a23e1612b2af"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">polyfem::time_integrator::ImplicitTimeIntegrator::init</a></div><div class="ttdeci">virtual void init(const Eigen::VectorXd &amp;x_prev, const Eigen::VectorXd &amp;v_prev, const Eigen::VectorXd &amp;a_prev, double dt)</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.cpp:17</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a5d2edb575418d564867ea6cfb8879d85"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5d2edb575418d564867ea6cfb8879d85">polyfem::time_integrator::ImplicitTimeIntegrator::save_raw</a></div><div class="ttdeci">virtual void save_raw(const std::string &amp;x_path, const std::string &amp;v_path, const std::string &amp;a_path) const</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.cpp:32</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_af69b612efd4bd4ceee5b8c05a8b023cc"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator::x_tilde</a></div><div class="ttdeci">virtual Eigen::VectorXd x_tilde() const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a3f5241e5e26d7a7d17249b646f64ccba"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3f5241e5e26d7a7d17249b646f64ccba">polyfem::time_integrator::ImplicitTimeIntegrator::_dt</a></div><div class="ttdeci">double _dt</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:43</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_ac8ff8c31ac09bb424aaf80d59c234fbf"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">polyfem::time_integrator::ImplicitTimeIntegrator::set_parameters</a></div><div class="ttdeci">virtual void set_parameters(const nlohmann::json &amp;params)</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:20</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_aa497c8d40d82387396ea901dcaa5c5e8"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa497c8d40d82387396ea901dcaa5c5e8">polyfem::time_integrator::ImplicitTimeIntegrator::construct_time_integrator</a></div><div class="ttdeci">static std::shared_ptr&lt; ImplicitTimeIntegrator &gt; construct_time_integrator(const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.cpp:44</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_ad2535e18a224b7b354659eab86f0a889"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad2535e18a224b7b354659eab86f0a889">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev</a></div><div class="ttdeci">const Eigen::VectorXd &amp; x_prev() const</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:38</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a74403eb9fc355ac9c5231e8bc7f6c46c"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a74403eb9fc355ac9c5231e8bc7f6c46c">polyfem::time_integrator::ImplicitTimeIntegrator::~ImplicitTimeIntegrator</a></div><div class="ttdeci">virtual ~ImplicitTimeIntegrator()=default</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a5ff1d5adf0d45f5473304daa587512d3"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5ff1d5adf0d45f5473304daa587512d3">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev</a></div><div class="ttdeci">Eigen::VectorXd &amp; v_prev()</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:49</div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html_a7178b8ccd3ff739a026704bbd98651b2"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7178b8ccd3ff739a026704bbd98651b2">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev</a></div><div class="ttdeci">Eigen::VectorXd &amp; x_prev()</div><div class="ttdef"><b>Definition:</b> ImplicitTimeIntegrator.hpp:48</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_b17ff10821c231211eb9dc3a971728a7.html">time_integrator</a></li><li class="navelem"><b>ImplicitTimeIntegrator.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_b17ff10821c231211eb9dc3a971728a7.html">time_integrator</a></li><li class="navelem"><a class="el" href="_implicit_time_integrator_8hpp.html">ImplicitTimeIntegrator.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

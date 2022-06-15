@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/Selection.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,136 +118,136 @@ $(document).ready(function(){initNavTree('_selection_8hpp_source.html',''); init
 <div class="title">Selection.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_selection_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/mesh/Mesh.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_mesh_8hpp.html">polyfem/mesh/Mesh.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;{</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    <span class="keyword">namespace </span>utils</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    {</div>
 <div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html">   10</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;            <span class="keyword">typedef</span> std::array&lt;RowVectorNd, 2&gt; BBox;</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">   13</a></span>&#160;            <span class="keyword">typedef</span> std::array&lt;RowVectorNd, 2&gt; <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a>;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a>(</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a3434f0886a61fb7c3782af15cf7ea609">Selection</a>(</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span>,</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;            <span class="keyword">virtual</span> ~<a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a>() {}</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894">   20</a></span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894">~Selection</a>() {}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">bool</span> inside(</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> RowVectorNd &amp;p) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">int</span> id(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a15693545140baece5e4decb6e8d8ef57">inside</a>(</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">   24</a></span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7">id_</a>; }</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">static</span> std::shared_ptr&lt;Selection&gt; build(</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                <span class="keyword">const</span> json &amp;selection,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keyword">const</span> BBox &amp;mesh_bbox,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">static</span> std::shared_ptr&lt;Selection&gt; <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#aef8ce1cc0a8d7fbb13142099a52074c6">build</a>(</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;selection,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox,</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keywordtype">size_t</span> id_;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keywordtype">size_t</span> start_element_id_;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keywordtype">size_t</span> end_element_id_;</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7">   33</a></span>&#160;            <span class="keywordtype">size_t</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7">id_</a>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html#a77e6a4d17024e7fd6ea503e52142a709">   34</a></span>&#160;            <span class="keywordtype">size_t</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a77e6a4d17024e7fd6ea503e52142a709">start_element_id_</a>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_selection.html#a82a6524f5824e28a800771baf30b9e45">   35</a></span>&#160;            <span class="keywordtype">size_t</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a82a6524f5824e28a800771baf30b9e45">end_element_id_</a>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        };</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_box_selection.html">   40</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_box_selection.html">BoxSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_box_selection.html">BoxSelection</a>(</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                <span class="keyword">const</span> json &amp;selection,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                <span class="keyword">const</span> BBox &amp;mesh_bbox,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_box_selection.html#a4c7e3f700f2107515ac43ef440350a92">BoxSelection</a>(</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;selection,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox,</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordtype">bool</span> inside(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> RowVectorNd &amp;p) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1_box_selection.html#a76bf29344c1c55cfb41f471d0623180b">inside</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            BBox bbox_;</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_box_selection.html#a3f9e686ca4085ea2bc7fff9e6642cd0e">   51</a></span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> <a class="code" href="classpolyfem_1_1utils_1_1_box_selection.html#a3f9e686ca4085ea2bc7fff9e6642cd0e">bbox_</a>;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        };</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
 <div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_sphere_selection.html">   56</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_sphere_selection.html">SphereSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        {</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_sphere_selection.html">SphereSelection</a>(</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                <span class="keyword">const</span> json &amp;selection,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                <span class="keyword">const</span> BBox &amp;mesh_bbox,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a87b4703466a0a211cdd078a2243047f8">SphereSelection</a>(</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;selection,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            <span class="keywordtype">bool</span> inside(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> RowVectorNd &amp;p) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a14ccad7fc6475a4d728503f01dfdc2b5">inside</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            RowVectorNd center_;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            <span class="keywordtype">double</span> radius2_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd">   67</a></span>&#160;            <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd">center_</a>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7">   68</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7">radius2_</a>;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        };</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
 <div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html">   73</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html">AxisPlaneSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        {</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html">AxisPlaneSelection</a>(</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                <span class="keyword">const</span> json &amp;selection,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                <span class="keyword">const</span> BBox &amp;mesh_bbox,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#a412a8142392fdc8fde5bcfe75acdb7ea">AxisPlaneSelection</a>(</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;selection,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox,</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            <span class="keywordtype">bool</span> inside(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> RowVectorNd &amp;p) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#ae335abfac88ee04abd88a9ef2030c90a">inside</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <span class="keywordtype">int</span> axis_;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keywordtype">double</span> position_;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8">   84</a></span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8">axis_</a>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#aab44eb9fd4a83d151f5aab19e8fc68e8">   85</a></span>&#160;            <span class="keywordtype">double</span> <a class="code" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#aab44eb9fd4a83d151f5aab19e8fc68e8">position_</a>;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        };</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_plane_selection.html">   90</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_plane_selection.html">PlaneSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        {</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_plane_selection.html">PlaneSelection</a>(</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                <span class="keyword">const</span> json &amp;selection,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                <span class="keyword">const</span> BBox &amp;mesh_bbox,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_plane_selection.html#a96fe5a99034ca656398bdaca12a69725">PlaneSelection</a>(</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;selection,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox,</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            <span class="keywordtype">bool</span> inside(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> RowVectorNd &amp;p) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1_plane_selection.html#ab2818147c8cead59c91639a9da9c2610">inside</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            RowVectorNd normal_;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            RowVectorNd point_;</div>
+<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_plane_selection.html#ac10c6de70127c405ba88bbf6a92465c0">  101</a></span>&#160;            <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1utils_1_1_plane_selection.html#ac10c6de70127c405ba88bbf6a92465c0">normal_</a>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_plane_selection.html#a945ac175837b39c3bf785ba7154b23c8">  102</a></span>&#160;            <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1utils_1_1_plane_selection.html#a945ac175837b39c3bf785ba7154b23c8">point_</a>;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        };</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
 <div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_uniform_selection.html">  107</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_uniform_selection.html">UniformSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        {</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_uniform_selection.html">UniformSelection</a>(</div>
+<div class="line"><a name="l00110"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_uniform_selection.html#a5a088a343fec4c8e4c8c25d39cd69a7a">  110</a></span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_uniform_selection.html#a5a088a343fec4c8e4c8c25d39cd69a7a">UniformSelection</a>(</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span>,</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max())</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                : <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a>(<span class="keywordtype">id</span>, start_element_id, end_element_id) {}</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                : <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a>(<a class="code" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a>, start_element_id, end_element_id) {}</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        };</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
 <div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_specified_selection.html">  119</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_specified_selection.html">SpecifiedSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a></div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        {</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_specified_selection.html">SpecifiedSelection</a>(</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_specified_selection.html#aa30e5f9c55a8c6ef878ff53e2a47ffdc">SpecifiedSelection</a>(</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                <span class="keyword">const</span> std::vector&lt;int&gt; &amp;ids,</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            <span class="keywordtype">int</span> id(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1utils_1_1_specified_selection.html#a227e40188af18bd7f9c2cca7d566b604">id</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> element_id) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;            std::vector&lt;int&gt; ids_;</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_specified_selection.html#a4014a71b80f5bdb3d85894af38c6c0fd">  129</a></span>&#160;            std::vector&lt;int&gt; <a class="code" href="classpolyfem_1_1utils_1_1_specified_selection.html#a4014a71b80f5bdb3d85894af38c6c0fd">ids_</a>;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        };</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
 <div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_file_selection.html">  134</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_file_selection.html">FileSelection</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1utils_1_1_specified_selection.html">SpecifiedSelection</a></div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        {</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_file_selection.html">FileSelection</a>(</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_file_selection.html#adc4b144ce90187469bb597b0709a808e">FileSelection</a>(</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                <span class="keyword">const</span> std::string &amp;file_path,</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> start_element_id = 0,</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">size_t</span> end_element_id = std::numeric_limits&lt;size_t&gt;::max());</div>
@@ -225,21 +257,67 @@ $(document).ready(function(){initNavTree('_selection_8hpp_source.html',''); init
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_file_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_file_selection.html">polyfem::utils::FileSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:134</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a82a6524f5824e28a800771baf30b9e45"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a82a6524f5824e28a800771baf30b9e45">polyfem::utils::Selection::end_element_id_</a></div><div class="ttdeci">size_t end_element_id_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:35</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a8b5e11bad5215f5f08b23b7c551c75a7"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7">polyfem::utils::Selection::id_</a></div><div class="ttdeci">size_t id_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:33</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a77e6a4d17024e7fd6ea503e52142a709"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a77e6a4d17024e7fd6ea503e52142a709">polyfem::utils::Selection::start_element_id_</a></div><div class="ttdeci">size_t start_element_id_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:34</div></div>
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_specified_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_specified_selection.html">polyfem::utils::SpecifiedSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:119</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_sphere_selection_html_a87b4703466a0a211cdd078a2243047f8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_sphere_selection.html#a87b4703466a0a211cdd078a2243047f8">polyfem::utils::SphereSelection::SphereSelection</a></div><div class="ttdeci">SphereSelection(const json &amp;selection, const BBox &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:98</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a8465d134d77a8f8dfeaffdde17950e54"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">polyfem::utils::Selection::BBox</a></div><div class="ttdeci">std::array&lt; RowVectorNd, 2 &gt; BBox</div><div class="ttdef"><b>Definition:</b> Selection.hpp:13</div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_axis_plane_selection_html_ae335abfac88ee04abd88a9ef2030c90a"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#ae335abfac88ee04abd88a9ef2030c90a">polyfem::utils::AxisPlaneSelection::inside</a></div><div class="ttdeci">bool inside(const size_t element_id, const RowVectorNd &amp;p) const override</div><div class="ttdef"><b>Definition:</b> Selection.cpp:163</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_file_selection_html_adc4b144ce90187469bb597b0709a808e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_file_selection.html#adc4b144ce90187469bb597b0709a808e">polyfem::utils::FileSelection::FileSelection</a></div><div class="ttdeci">FileSelection(const std::string &amp;file_path, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:228</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_abd627ad856653ef2b453bc69fdc25c0f"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">polyfem::utils::Selection::id</a></div><div class="ttdeci">virtual int id(const size_t element_id) const</div><div class="ttdef"><b>Definition:</b> Selection.hpp:24</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_uniform_selection_html_a5a088a343fec4c8e4c8c25d39cd69a7a"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_uniform_selection.html#a5a088a343fec4c8e4c8c25d39cd69a7a">polyfem::utils::UniformSelection::UniformSelection</a></div><div class="ttdeci">UniformSelection(const int id, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.hpp:110</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_box_selection_html_a76bf29344c1c55cfb41f471d0623180b"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_box_selection.html#a76bf29344c1c55cfb41f471d0623180b">polyfem::utils::BoxSelection::inside</a></div><div class="ttdeci">bool inside(const size_t element_id, const RowVectorNd &amp;p) const override</div><div class="ttdef"><b>Definition:</b> Selection.cpp:75</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_box_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_box_selection.html">polyfem::utils::BoxSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:40</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_box_selection_html_a4c7e3f700f2107515ac43ef440350a92"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_box_selection.html#a4c7e3f700f2107515ac43ef440350a92">polyfem::utils::BoxSelection::BoxSelection</a></div><div class="ttdeci">BoxSelection(const json &amp;selection, const BBox &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_plane_selection_html_ac10c6de70127c405ba88bbf6a92465c0"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_plane_selection.html#ac10c6de70127c405ba88bbf6a92465c0">polyfem::utils::PlaneSelection::normal_</a></div><div class="ttdeci">RowVectorNd normal_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:101</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_specified_selection_html_a227e40188af18bd7f9c2cca7d566b604"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_specified_selection.html#a227e40188af18bd7f9c2cca7d566b604">polyfem::utils::SpecifiedSelection::id</a></div><div class="ttdeci">int id(const size_t element_id) const override</div><div class="ttdef"><b>Definition:</b> Selection.cpp:219</div></div>
+<div class="ttc" id="a_mesh_8hpp_html"><div class="ttname"><a href="_mesh_8hpp.html">Mesh.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_sphere_selection_html_a96ba38f29cce554202b1d2986f3cd5b7"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7">polyfem::utils::SphereSelection::radius2_</a></div><div class="ttdeci">double radius2_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:68</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a15693545140baece5e4decb6e8d8ef57"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a15693545140baece5e4decb6e8d8ef57">polyfem::utils::Selection::inside</a></div><div class="ttdeci">virtual bool inside(const size_t element_id, const RowVectorNd &amp;p) const</div><div class="ttdef"><b>Definition:</b> Selection.cpp:24</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_uniform_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_uniform_selection.html">polyfem::utils::UniformSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:107</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:10</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_specified_selection_html_aa30e5f9c55a8c6ef878ff53e2a47ffdc"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_specified_selection.html#aa30e5f9c55a8c6ef878ff53e2a47ffdc">polyfem::utils::SpecifiedSelection::SpecifiedSelection</a></div><div class="ttdeci">SpecifiedSelection(const std::vector&lt; int &gt; &amp;ids, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:209</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_plane_selection_html_a96fe5a99034ca656398bdaca12a69725"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_plane_selection.html#a96fe5a99034ca656398bdaca12a69725">polyfem::utils::PlaneSelection::PlaneSelection</a></div><div class="ttdeci">PlaneSelection(const json &amp;selection, const BBox &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:178</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_axis_plane_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_axis_plane_selection.html">polyfem::utils::AxisPlaneSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:73</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_sphere_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_sphere_selection.html">polyfem::utils::SphereSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:56</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_axis_plane_selection_html_ac865674ee812f0adc22a3e89cc2150e8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8">polyfem::utils::AxisPlaneSelection::axis_</a></div><div class="ttdeci">int axis_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:84</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_specified_selection_html_a4014a71b80f5bdb3d85894af38c6c0fd"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_specified_selection.html#a4014a71b80f5bdb3d85894af38c6c0fd">polyfem::utils::SpecifiedSelection::ids_</a></div><div class="ttdeci">std::vector&lt; int &gt; ids_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:129</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_axis_plane_selection_html_aab44eb9fd4a83d151f5aab19e8fc68e8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#aab44eb9fd4a83d151f5aab19e8fc68e8">polyfem::utils::AxisPlaneSelection::position_</a></div><div class="ttdeci">double position_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:85</div></div>
+<div class="ttc" id="anamespacepolyfem_html_abe6f92d10f655cb8c4ded3f58a6dc321"><div class="ttname"><a href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">polyfem::RowVectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3 &gt; RowVectorNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:12</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_box_selection_html_a3f9e686ca4085ea2bc7fff9e6642cd0e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_box_selection.html#a3f9e686ca4085ea2bc7fff9e6642cd0e">polyfem::utils::BoxSelection::bbox_</a></div><div class="ttdeci">BBox bbox_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:51</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_axis_plane_selection_html_a412a8142392fdc8fde5bcfe75acdb7ea"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#a412a8142392fdc8fde5bcfe75acdb7ea">polyfem::utils::AxisPlaneSelection::AxisPlaneSelection</a></div><div class="ttdeci">AxisPlaneSelection(const json &amp;selection, const BBox &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:132</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_plane_selection_html_a945ac175837b39c3bf785ba7154b23c8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_plane_selection.html#a945ac175837b39c3bf785ba7154b23c8">polyfem::utils::PlaneSelection::point_</a></div><div class="ttdeci">RowVectorNd point_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:102</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_aef8ce1cc0a8d7fbb13142099a52074c6"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#aef8ce1cc0a8d7fbb13142099a52074c6">polyfem::utils::Selection::build</a></div><div class="ttdeci">static std::shared_ptr&lt; Selection &gt; build(const json &amp;selection, const BBox &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:29</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_plane_selection_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_plane_selection.html">polyfem::utils::PlaneSelection</a></div><div class="ttdef"><b>Definition:</b> Selection.hpp:90</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_sphere_selection_html_a36745ef44b0743e77f899b8c9bfa54dd"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd">polyfem::utils::SphereSelection::center_</a></div><div class="ttdeci">RowVectorNd center_</div><div class="ttdef"><b>Definition:</b> Selection.hpp:67</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_a3434f0886a61fb7c3782af15cf7ea609"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#a3434f0886a61fb7c3782af15cf7ea609">polyfem::utils::Selection::Selection</a></div><div class="ttdeci">Selection(const int id, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</div><div class="ttdef"><b>Definition:</b> Selection.cpp:14</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_sphere_selection_html_a14ccad7fc6475a4d728503f01dfdc2b5"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_sphere_selection.html#a14ccad7fc6475a4d728503f01dfdc2b5">polyfem::utils::SphereSelection::inside</a></div><div class="ttdeci">bool inside(const size_t element_id, const RowVectorNd &amp;p) const override</div><div class="ttdef"><b>Definition:</b> Selection.cpp:120</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_plane_selection_html_ab2818147c8cead59c91639a9da9c2610"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_plane_selection.html#ab2818147c8cead59c91639a9da9c2610">polyfem::utils::PlaneSelection::inside</a></div><div class="ttdeci">bool inside(const size_t element_id, const RowVectorNd &amp;p) const override</div><div class="ttdef"><b>Definition:</b> Selection.cpp:197</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_selection_html_afb6aaafa0f609198f966c6bce2442894"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894">polyfem::utils::Selection::~Selection</a></div><div class="ttdeci">virtual ~Selection()</div><div class="ttdef"><b>Definition:</b> Selection.hpp:20</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>Selection.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="_selection_8hpp.html">Selection.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::utils::ExpressionValue Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,78 +122,481 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1utils_1_1_expression_v
 <div class="title">polyfem::utils::ExpressionValue Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac69b660ef83fc044fa4a2b3af35d546a"><td class="memItemLeft" align="right" valign="top"><a id="ac69b660ef83fc044fa4a2b3af35d546a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const json &amp;vals)</td></tr>
+<tr class="memitem:a76dc675f0165ead06fae6a1b4cd3510f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a76dc675f0165ead06fae6a1b4cd3510f">ExpressionValue</a> ()</td></tr>
+<tr class="separator:a76dc675f0165ead06fae6a1b4cd3510f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac69b660ef83fc044fa4a2b3af35d546a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#ac69b660ef83fc044fa4a2b3af35d546a">init</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>)</td></tr>
 <tr class="separator:ac69b660ef83fc044fa4a2b3af35d546a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8effe5364a3f6cd7c2468f71e0cda632"><td class="memItemLeft" align="right" valign="top"><a id="a8effe5364a3f6cd7c2468f71e0cda632"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const double val)</td></tr>
+<tr class="memitem:a8effe5364a3f6cd7c2468f71e0cda632"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a8effe5364a3f6cd7c2468f71e0cda632">init</a> (const double <a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)</td></tr>
 <tr class="separator:a8effe5364a3f6cd7c2468f71e0cda632"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e168e1a2eec419d4937ba8c46a6683d"><td class="memItemLeft" align="right" valign="top"><a id="a0e168e1a2eec419d4937ba8c46a6683d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const Eigen::MatrixXd &amp;val)</td></tr>
+<tr class="memitem:a0e168e1a2eec419d4937ba8c46a6683d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a0e168e1a2eec419d4937ba8c46a6683d">init</a> (const Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)</td></tr>
 <tr class="separator:a0e168e1a2eec419d4937ba8c46a6683d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c91d2b63cdbbe2ade03b3df44262b4b"><td class="memItemLeft" align="right" valign="top"><a id="a7c91d2b63cdbbe2ade03b3df44262b4b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::string &amp;expr)</td></tr>
+<tr class="memitem:a7c91d2b63cdbbe2ade03b3df44262b4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a7c91d2b63cdbbe2ade03b3df44262b4b">init</a> (const std::string &amp;expr)</td></tr>
 <tr class="separator:a7c91d2b63cdbbe2ade03b3df44262b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07dd930467d04f9f1fcc3435356c0dc3"><td class="memItemLeft" align="right" valign="top"><a id="a07dd930467d04f9f1fcc3435356c0dc3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::function&lt; double(double x, double y, double z)&gt; &amp;func)</td></tr>
+<tr class="memitem:a07dd930467d04f9f1fcc3435356c0dc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a07dd930467d04f9f1fcc3435356c0dc3">init</a> (const std::function&lt; double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)&gt; &amp;func)</td></tr>
 <tr class="separator:a07dd930467d04f9f1fcc3435356c0dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d148ffde046825335f8228ec0d2bd16"><td class="memItemLeft" align="right" valign="top"><a id="a2d148ffde046825335f8228ec0d2bd16"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::function&lt; Eigen::MatrixXd(double x, double y, double z)&gt; &amp;func, const int coo)</td></tr>
+<tr class="memitem:a2d148ffde046825335f8228ec0d2bd16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a2d148ffde046825335f8228ec0d2bd16">init</a> (const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)&gt; &amp;func, const int coo)</td></tr>
 <tr class="separator:a2d148ffde046825335f8228ec0d2bd16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57c2b120be6cb9d8bca77880d1da6f17"><td class="memItemLeft" align="right" valign="top"><a id="a57c2b120be6cb9d8bca77880d1da6f17"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::function&lt; double(double x, double y, double z, double t)&gt; &amp;func)</td></tr>
+<tr class="memitem:a57c2b120be6cb9d8bca77880d1da6f17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a57c2b120be6cb9d8bca77880d1da6f17">init</a> (const std::function&lt; double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;func)</td></tr>
 <tr class="separator:a57c2b120be6cb9d8bca77880d1da6f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cb32f01d47125307f889b1290bdfbbe"><td class="memItemLeft" align="right" valign="top"><a id="a6cb32f01d47125307f889b1290bdfbbe"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::function&lt; Eigen::MatrixXd(double x, double y, double z, double t)&gt; &amp;func, const int coo)</td></tr>
+<tr class="memitem:a6cb32f01d47125307f889b1290bdfbbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a6cb32f01d47125307f889b1290bdfbbe">init</a> (const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;func, const int coo)</td></tr>
 <tr class="separator:a6cb32f01d47125307f889b1290bdfbbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad762696d2188a5d149b0b5f78141261f"><td class="memItemLeft" align="right" valign="top"><a id="ad762696d2188a5d149b0b5f78141261f"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (double x, double y, double z=0, double t=0, int index=-1) const</td></tr>
+<tr class="memitem:ad762696d2188a5d149b0b5f78141261f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#ad762696d2188a5d149b0b5f78141261f">operator()</a> (double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>=0, double t=0, int index=-1) const</td></tr>
 <tr class="separator:ad762696d2188a5d149b0b5f78141261f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab58a9fdaa5507a7773a5f448022daf4a"><td class="memItemLeft" align="right" valign="top"><a id="ab58a9fdaa5507a7773a5f448022daf4a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:ab58a9fdaa5507a7773a5f448022daf4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#ab58a9fdaa5507a7773a5f448022daf4a">clear</a> ()</td></tr>
 <tr class="separator:ab58a9fdaa5507a7773a5f448022daf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cc0294637e7eb6eb9cf43d839f49f35"><td class="memItemLeft" align="right" valign="top"><a id="a9cc0294637e7eb6eb9cf43d839f49f35"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_zero</b> () const</td></tr>
+<tr class="memitem:a9cc0294637e7eb6eb9cf43d839f49f35"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a9cc0294637e7eb6eb9cf43d839f49f35">is_zero</a> () const</td></tr>
 <tr class="separator:a9cc0294637e7eb6eb9cf43d839f49f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:aa58fa238116610d899a6b422a6eb9da5"><td class="memItemLeft" align="right" valign="top"><a id="aa58fa238116610d899a6b422a6eb9da5"></a>
-std::function&lt; double(double x, double y, double z, double t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sfunc_</b></td></tr>
+<tr class="memitem:aa58fa238116610d899a6b422a6eb9da5"><td class="memItemLeft" align="right" valign="top">std::function&lt; double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5">sfunc_</a></td></tr>
 <tr class="separator:aa58fa238116610d899a6b422a6eb9da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1e94718a12856488932068e599ddc0d"><td class="memItemLeft" align="right" valign="top"><a id="aa1e94718a12856488932068e599ddc0d"></a>
-std::function&lt; Eigen::MatrixXd(double x, double y, double z, double t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tfunc_</b></td></tr>
+<tr class="memitem:aa1e94718a12856488932068e599ddc0d"><td class="memItemLeft" align="right" valign="top">std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d">tfunc_</a></td></tr>
 <tr class="separator:aa1e94718a12856488932068e599ddc0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fc6c8daab0ed01e76542d310e873b20"><td class="memItemLeft" align="right" valign="top"><a id="a4fc6c8daab0ed01e76542d310e873b20"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>tfunc_coo_</b></td></tr>
+<tr class="memitem:a4fc6c8daab0ed01e76542d310e873b20"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a4fc6c8daab0ed01e76542d310e873b20">tfunc_coo_</a></td></tr>
 <tr class="separator:a4fc6c8daab0ed01e76542d310e873b20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98484d50dcbca8e955f04ae8f7bd17ee"><td class="memItemLeft" align="right" valign="top"><a id="a98484d50dcbca8e955f04ae8f7bd17ee"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>expr_</b></td></tr>
+<tr class="memitem:a98484d50dcbca8e955f04ae8f7bd17ee"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee">expr_</a></td></tr>
 <tr class="separator:a98484d50dcbca8e955f04ae8f7bd17ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a334b1e3fce0065123090b2ce1a0bbf6b"><td class="memItemLeft" align="right" valign="top"><a id="a334b1e3fce0065123090b2ce1a0bbf6b"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>value_</b></td></tr>
+<tr class="memitem:a334b1e3fce0065123090b2ce1a0bbf6b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#a334b1e3fce0065123090b2ce1a0bbf6b">value_</a></td></tr>
 <tr class="separator:a334b1e3fce0065123090b2ce1a0bbf6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acba4698f4d7b6185c254e2ecc5643231"><td class="memItemLeft" align="right" valign="top"><a id="acba4698f4d7b6185c254e2ecc5643231"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>mat_</b></td></tr>
+<tr class="memitem:acba4698f4d7b6185c254e2ecc5643231"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html#acba4698f4d7b6185c254e2ecc5643231">mat_</a></td></tr>
 <tr class="separator:acba4698f4d7b6185c254e2ecc5643231"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a76dc675f0165ead06fae6a1b4cd3510f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76dc675f0165ead06fae6a1b4cd3510f">&#9670;&nbsp;</a></span>ExpressionValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::utils::ExpressionValue::ExpressionValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab58a9fdaa5507a7773a5f448022daf4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab58a9fdaa5507a7773a5f448022daf4a">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8effe5364a3f6cd7c2468f71e0cda632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8effe5364a3f6cd7c2468f71e0cda632">&#9670;&nbsp;</a></span>init() <span class="overload">[1/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0e168e1a2eec419d4937ba8c46a6683d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e168e1a2eec419d4937ba8c46a6683d">&#9670;&nbsp;</a></span>init() <span class="overload">[2/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac69b660ef83fc044fa4a2b3af35d546a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac69b660ef83fc044fa4a2b3af35d546a">&#9670;&nbsp;</a></span>init() <span class="overload">[3/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a07dd930467d04f9f1fcc3435356c0dc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07dd930467d04f9f1fcc3435356c0dc3">&#9670;&nbsp;</a></span>init() <span class="overload">[4/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57c2b120be6cb9d8bca77880d1da6f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c2b120be6cb9d8bca77880d1da6f17">&#9670;&nbsp;</a></span>init() <span class="overload">[5/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d148ffde046825335f8228ec0d2bd16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d148ffde046825335f8228ec0d2bd16">&#9670;&nbsp;</a></span>init() <span class="overload">[6/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>coo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6cb32f01d47125307f889b1290bdfbbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cb32f01d47125307f889b1290bdfbbe">&#9670;&nbsp;</a></span>init() <span class="overload">[7/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>coo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c91d2b63cdbbe2ade03b3df44262b4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c91d2b63cdbbe2ade03b3df44262b4b">&#9670;&nbsp;</a></span>init() <span class="overload">[8/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::ExpressionValue::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>expr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9cc0294637e7eb6eb9cf43d839f49f35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cc0294637e7eb6eb9cf43d839f49f35">&#9670;&nbsp;</a></span>is_zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::ExpressionValue::is_zero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad762696d2188a5d149b0b5f78141261f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad762696d2188a5d149b0b5f78141261f">&#9670;&nbsp;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::ExpressionValue::operator() </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a98484d50dcbca8e955f04ae8f7bd17ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98484d50dcbca8e955f04ae8f7bd17ee">&#9670;&nbsp;</a></span>expr_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::utils::ExpressionValue::expr_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acba4698f4d7b6185c254e2ecc5643231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acba4698f4d7b6185c254e2ecc5643231">&#9670;&nbsp;</a></span>mat_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::utils::ExpressionValue::mat_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa58fa238116610d899a6b422a6eb9da5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa58fa238116610d899a6b422a6eb9da5">&#9670;&nbsp;</a></span>sfunc_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; polyfem::utils::ExpressionValue::sfunc_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa1e94718a12856488932068e599ddc0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1e94718a12856488932068e599ddc0d">&#9670;&nbsp;</a></span>tfunc_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;Eigen::MatrixXd(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; polyfem::utils::ExpressionValue::tfunc_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4fc6c8daab0ed01e76542d310e873b20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc6c8daab0ed01e76542d310e873b20">&#9670;&nbsp;</a></span>tfunc_coo_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::utils::ExpressionValue::tfunc_coo_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a334b1e3fce0065123090b2ce1a0bbf6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a334b1e3fce0065123090b2ce1a0bbf6b">&#9670;&nbsp;</a></span>value_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::ExpressionValue::value_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_expression_value_8hpp_source.html">ExpressionValue.hpp</a></li>
-<li>src/polyfem/utils/ExpressionValue.cpp</li>
+<li>src/polyfem/utils/<a class="el" href="_expression_value_8cpp.html">ExpressionValue.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">ExpressionValue</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1utils.html">utils</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">ExpressionValue</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

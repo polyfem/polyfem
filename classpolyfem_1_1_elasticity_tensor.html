@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::ElasticityTensor Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,61 +122,398 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_elasticity_tensor.htm
 <div class="title">polyfem::ElasticityTensor Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4ee91fa8fb9d2aebc875e37ad8b06a91"><td class="memItemLeft" align="right" valign="top"><a id="a4ee91fa8fb9d2aebc875e37ad8b06a91"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (const int size)</td></tr>
+<tr class="memitem:a4ee91fa8fb9d2aebc875e37ad8b06a91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a4ee91fa8fb9d2aebc875e37ad8b06a91">resize</a> (const int size)</td></tr>
 <tr class="separator:a4ee91fa8fb9d2aebc875e37ad8b06a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e9f39c5516c90409a9f784e1abcfbbd"><td class="memItemLeft" align="right" valign="top"><a id="a4e9f39c5516c90409a9f784e1abcfbbd"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (int i, int j) const</td></tr>
+<tr class="memitem:a4e9f39c5516c90409a9f784e1abcfbbd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a4e9f39c5516c90409a9f784e1abcfbbd">operator()</a> (int i, int j) const</td></tr>
 <tr class="separator:a4e9f39c5516c90409a9f784e1abcfbbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a856bb2a446a43b523b0953da331ea853"><td class="memItemLeft" align="right" valign="top"><a id="a856bb2a446a43b523b0953da331ea853"></a>
-double &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (int i, int j)</td></tr>
+<tr class="memitem:a856bb2a446a43b523b0953da331ea853"><td class="memItemLeft" align="right" valign="top">double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a856bb2a446a43b523b0953da331ea853">operator()</a> (int i, int j)</td></tr>
 <tr class="separator:a856bb2a446a43b523b0953da331ea853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad50c73bf54e7e4cfe324fa0758d6eb96"><td class="memItemLeft" align="right" valign="top"><a id="ad50c73bf54e7e4cfe324fa0758d6eb96"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_from_entries</b> (const std::vector&lt; double &gt; &amp;entries)</td></tr>
+<tr class="memitem:ad50c73bf54e7e4cfe324fa0758d6eb96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#ad50c73bf54e7e4cfe324fa0758d6eb96">set_from_entries</a> (const std::vector&lt; double &gt; &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>)</td></tr>
 <tr class="separator:ad50c73bf54e7e4cfe324fa0758d6eb96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2b87cff1b2765a5bccca525b364be58"><td class="memItemLeft" align="right" valign="top"><a id="ac2b87cff1b2765a5bccca525b364be58"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_from_lambda_mu</b> (const double lambda, const double mu)</td></tr>
+<tr class="memitem:ac2b87cff1b2765a5bccca525b364be58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#ac2b87cff1b2765a5bccca525b364be58">set_from_lambda_mu</a> (const double lambda, const double mu)</td></tr>
 <tr class="separator:ac2b87cff1b2765a5bccca525b364be58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51d7746954da06122bab9ec57287f203"><td class="memItemLeft" align="right" valign="top"><a id="a51d7746954da06122bab9ec57287f203"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_from_young_poisson</b> (const double young, const double poisson)</td></tr>
+<tr class="memitem:a51d7746954da06122bab9ec57287f203"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a51d7746954da06122bab9ec57287f203">set_from_young_poisson</a> (const double young, const double poisson)</td></tr>
 <tr class="separator:a51d7746954da06122bab9ec57287f203"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e9770eed4468614dab493d7e4bc8e6f"><td class="memItemLeft" align="right" valign="top"><a id="a8e9770eed4468614dab493d7e4bc8e6f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_orthotropic</b> (double Ex, double Ey, double Ez, double nuYX, double nuZX, double nuZY, double muYZ, double muZX, double muXY)</td></tr>
+<tr class="memitem:a8e9770eed4468614dab493d7e4bc8e6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a8e9770eed4468614dab493d7e4bc8e6f">set_orthotropic</a> (double Ex, double Ey, double Ez, double nuYX, double nuZX, double nuZY, double muYZ, double muZX, double muXY)</td></tr>
 <tr class="separator:a8e9770eed4468614dab493d7e4bc8e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aceeae7a73f8f73040879fb0b2c7157b1"><td class="memItemLeft" align="right" valign="top"><a id="aceeae7a73f8f73040879fb0b2c7157b1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_orthotropic</b> (double Ex, double Ey, double nuYX, double muXY)</td></tr>
+<tr class="memitem:aceeae7a73f8f73040879fb0b2c7157b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#aceeae7a73f8f73040879fb0b2c7157b1">set_orthotropic</a> (double Ex, double Ey, double nuYX, double muXY)</td></tr>
 <tr class="separator:aceeae7a73f8f73040879fb0b2c7157b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a404363e5d9bae3f95214fc750155391f"><td class="memTemplParams" colspan="2"><a id="a404363e5d9bae3f95214fc750155391f"></a>
-template&lt;int DIM&gt; </td></tr>
-<tr class="memitem:a404363e5d9bae3f95214fc750155391f"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><b>compute_stress</b> (const std::array&lt; double, DIM &gt; &amp;strain, const int j) const</td></tr>
+<tr class="memitem:a404363e5d9bae3f95214fc750155391f"><td class="memTemplParams" colspan="2">template&lt;int DIM&gt; </td></tr>
+<tr class="memitem:a404363e5d9bae3f95214fc750155391f"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a404363e5d9bae3f95214fc750155391f">compute_stress</a> (const std::array&lt; double, DIM &gt; &amp;strain, const int j) const</td></tr>
 <tr class="separator:a404363e5d9bae3f95214fc750155391f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a9418a73c2ef3ac7c027dd18a47bca6b1"><td class="memItemLeft" align="right" valign="top"><a id="a9418a73c2ef3ac7c027dd18a47bca6b1"></a>
-Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stifness_tensor_</b></td></tr>
+<tr class="memitem:a9418a73c2ef3ac7c027dd18a47bca6b1"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a9418a73c2ef3ac7c027dd18a47bca6b1">stifness_tensor_</a></td></tr>
 <tr class="separator:a9418a73c2ef3ac7c027dd18a47bca6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e01f177c6a8d2268949d2a6a1c583c9"><td class="memItemLeft" align="right" valign="top"><a id="a0e01f177c6a8d2268949d2a6a1c583c9"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
+<tr class="memitem:a0e01f177c6a8d2268949d2a6a1c583c9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a0e01f177c6a8d2268949d2a6a1c583c9">size_</a></td></tr>
 <tr class="separator:a0e01f177c6a8d2268949d2a6a1c583c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a404363e5d9bae3f95214fc750155391f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a404363e5d9bae3f95214fc750155391f">&#9670;&nbsp;</a></span>compute_stress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int DIM&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">template double polyfem::ElasticityTensor::compute_stress&lt; 6 &gt; </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; double, DIM &gt; &amp;&#160;</td>
+          <td class="paramname"><em>strain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>j</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a856bb2a446a43b523b0953da331ea853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a856bb2a446a43b523b0953da331ea853">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double &amp; polyfem::ElasticityTensor::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4e9f39c5516c90409a9f784e1abcfbbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e9f39c5516c90409a9f784e1abcfbbd">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::ElasticityTensor::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ee91fa8fb9d2aebc875e37ad8b06a91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ee91fa8fb9d2aebc875e37ad8b06a91">&#9670;&nbsp;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::ElasticityTensor::resize </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad50c73bf54e7e4cfe324fa0758d6eb96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad50c73bf54e7e4cfe324fa0758d6eb96">&#9670;&nbsp;</a></span>set_from_entries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::ElasticityTensor::set_from_entries </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>entries</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac2b87cff1b2765a5bccca525b364be58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2b87cff1b2765a5bccca525b364be58">&#9670;&nbsp;</a></span>set_from_lambda_mu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::ElasticityTensor::set_from_lambda_mu </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>lambda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>mu</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a51d7746954da06122bab9ec57287f203"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d7746954da06122bab9ec57287f203">&#9670;&nbsp;</a></span>set_from_young_poisson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::ElasticityTensor::set_from_young_poisson </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>young</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>poisson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8e9770eed4468614dab493d7e4bc8e6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e9770eed4468614dab493d7e4bc8e6f">&#9670;&nbsp;</a></span>set_orthotropic() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::ElasticityTensor::set_orthotropic </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ez</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>nuYX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>nuZX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>nuZY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>muYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>muZX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>muXY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aceeae7a73f8f73040879fb0b2c7157b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceeae7a73f8f73040879fb0b2c7157b1">&#9670;&nbsp;</a></span>set_orthotropic() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::ElasticityTensor::set_orthotropic </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>nuYX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>muXY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a0e01f177c6a8d2268949d2a6a1c583c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e01f177c6a8d2268949d2a6a1c583c9">&#9670;&nbsp;</a></span>size_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::ElasticityTensor::size_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9418a73c2ef3ac7c027dd18a47bca6b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9418a73c2ef3ac7c027dd18a47bca6b1">&#9670;&nbsp;</a></span>stifness_tensor_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6&gt; polyfem::ElasticityTensor::stifness_tensor_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a></li>
-<li>src/polyfem/utils/ElasticityUtils.cpp</li>
+<li>src/polyfem/utils/<a class="el" href="_elasticity_utils_8cpp.html">ElasticityUtils.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html">ElasticityTensor</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html">ElasticityTensor</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

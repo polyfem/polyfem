@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::utils::BoundarySampler Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -89,81 +121,1047 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1utils_1_1_boundary_sam
 <div class="title">polyfem::utils::BoundarySampler Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_boundary_sampler_8hpp_source.html">BoundarySampler.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac12965de419a6fe6b793263d39d94895"><td class="memItemLeft" align="right" valign="top"><a id="ac12965de419a6fe6b793263d39d94895"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>sample_parametric_quad_edge</b> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
+<tr class="memitem:ac12965de419a6fe6b793263d39d94895"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#ac12965de419a6fe6b793263d39d94895">sample_parametric_quad_edge</a> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
 <tr class="separator:ac12965de419a6fe6b793263d39d94895"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedbf480f1e32d3fad5ee6e2946b91099"><td class="memItemLeft" align="right" valign="top"><a id="aedbf480f1e32d3fad5ee6e2946b91099"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>sample_parametric_tri_edge</b> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
+<tr class="memitem:aedbf480f1e32d3fad5ee6e2946b91099"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#aedbf480f1e32d3fad5ee6e2946b91099">sample_parametric_tri_edge</a> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
 <tr class="separator:aedbf480f1e32d3fad5ee6e2946b91099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fb7f42d906df7cd9332811512fef43d"><td class="memItemLeft" align="right" valign="top"><a id="a9fb7f42d906df7cd9332811512fef43d"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>sample_parametric_quad_face</b> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
+<tr class="memitem:a9fb7f42d906df7cd9332811512fef43d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a9fb7f42d906df7cd9332811512fef43d">sample_parametric_quad_face</a> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
 <tr class="separator:a9fb7f42d906df7cd9332811512fef43d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a762ea74cf87bbaff2f6877765eea7821"><td class="memItemLeft" align="right" valign="top"><a id="a762ea74cf87bbaff2f6877765eea7821"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>sample_parametric_tri_face</b> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
+<tr class="memitem:a762ea74cf87bbaff2f6877765eea7821"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a762ea74cf87bbaff2f6877765eea7821">sample_parametric_tri_face</a> (int index, int n_samples, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
 <tr class="separator:a762ea74cf87bbaff2f6877765eea7821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb587c61b43b393260dba4a5a95c090b"><td class="memItemLeft" align="right" valign="top"><a id="acb587c61b43b393260dba4a5a95c090b"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>sample_polygon_edge</b> (int face_id, int edge_id, int n_samples, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
+<tr class="memitem:acb587c61b43b393260dba4a5a95c090b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#acb587c61b43b393260dba4a5a95c090b">sample_polygon_edge</a> (int face_id, int <a class="el" href="_spline_basis3d_8cpp.html#a40d6c0e56d9f4a8c9e12db17362bbf3c">edge_id</a>, int n_samples, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples)</td></tr>
 <tr class="separator:acb587c61b43b393260dba4a5a95c090b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a282676a00275bf4a0e51d8638f9558f8"><td class="memItemLeft" align="right" valign="top"><a id="a282676a00275bf4a0e51d8638f9558f8"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>quadrature_for_quad_edge</b> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
+<tr class="memitem:a282676a00275bf4a0e51d8638f9558f8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a282676a00275bf4a0e51d8638f9558f8">quadrature_for_quad_edge</a> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
 <tr class="separator:a282676a00275bf4a0e51d8638f9558f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec92b1bb3ff635fb517a2c26882d98a9"><td class="memItemLeft" align="right" valign="top"><a id="aec92b1bb3ff635fb517a2c26882d98a9"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>quadrature_for_tri_edge</b> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
+<tr class="memitem:aec92b1bb3ff635fb517a2c26882d98a9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#aec92b1bb3ff635fb517a2c26882d98a9">quadrature_for_tri_edge</a> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
 <tr class="separator:aec92b1bb3ff635fb517a2c26882d98a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14b39f9323abc114920975d012d11511"><td class="memItemLeft" align="right" valign="top"><a id="a14b39f9323abc114920975d012d11511"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>quadrature_for_quad_face</b> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
+<tr class="memitem:a14b39f9323abc114920975d012d11511"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a14b39f9323abc114920975d012d11511">quadrature_for_quad_face</a> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
 <tr class="separator:a14b39f9323abc114920975d012d11511"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f92b1c04be7c25cbb65f7c40bce8a4d"><td class="memItemLeft" align="right" valign="top"><a id="a4f92b1c04be7c25cbb65f7c40bce8a4d"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>quadrature_for_tri_face</b> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
+<tr class="memitem:a4f92b1c04be7c25cbb65f7c40bce8a4d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a4f92b1c04be7c25cbb65f7c40bce8a4d">quadrature_for_tri_face</a> (int index, int order, const int gid, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
 <tr class="separator:a4f92b1c04be7c25cbb65f7c40bce8a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02cf0bca8805defe581ac1902403ced2"><td class="memItemLeft" align="right" valign="top"><a id="a02cf0bca8805defe581ac1902403ced2"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>quadrature_for_polygon_edge</b> (int face_id, int edge_id, int order, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
+<tr class="memitem:a02cf0bca8805defe581ac1902403ced2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a02cf0bca8805defe581ac1902403ced2">quadrature_for_polygon_edge</a> (int face_id, int <a class="el" href="_spline_basis3d_8cpp.html#a40d6c0e56d9f4a8c9e12db17362bbf3c">edge_id</a>, int order, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::VectorXd &amp;weights)</td></tr>
 <tr class="separator:a02cf0bca8805defe581ac1902403ced2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fe4e23eb3764fe8f7b25db3e4209fad"><td class="memItemLeft" align="right" valign="top"><a id="a2fe4e23eb3764fe8f7b25db3e4209fad"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>normal_for_quad_edge</b> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
+<tr class="memitem:a2fe4e23eb3764fe8f7b25db3e4209fad"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a2fe4e23eb3764fe8f7b25db3e4209fad">normal_for_quad_edge</a> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
 <tr class="separator:a2fe4e23eb3764fe8f7b25db3e4209fad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cb05c15f577e549c9ec1aff534bfccf"><td class="memItemLeft" align="right" valign="top"><a id="a3cb05c15f577e549c9ec1aff534bfccf"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>normal_for_tri_edge</b> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
+<tr class="memitem:a3cb05c15f577e549c9ec1aff534bfccf"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a3cb05c15f577e549c9ec1aff534bfccf">normal_for_tri_edge</a> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
 <tr class="separator:a3cb05c15f577e549c9ec1aff534bfccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58d1aa4acd871a4a38e5197f9dcdf13b"><td class="memItemLeft" align="right" valign="top"><a id="a58d1aa4acd871a4a38e5197f9dcdf13b"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>normal_for_quad_face</b> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
+<tr class="memitem:a58d1aa4acd871a4a38e5197f9dcdf13b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a58d1aa4acd871a4a38e5197f9dcdf13b">normal_for_quad_face</a> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
 <tr class="separator:a58d1aa4acd871a4a38e5197f9dcdf13b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ba642e0745173decb0b36d4af7e7d17"><td class="memItemLeft" align="right" valign="top"><a id="a9ba642e0745173decb0b36d4af7e7d17"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>normal_for_tri_face</b> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
+<tr class="memitem:a9ba642e0745173decb0b36d4af7e7d17"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a9ba642e0745173decb0b36d4af7e7d17">normal_for_tri_face</a> (int index, Eigen::MatrixXd &amp;normal)</td></tr>
 <tr class="separator:a9ba642e0745173decb0b36d4af7e7d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa925326e2e2dfa5e305959154ed99ca5"><td class="memItemLeft" align="right" valign="top"><a id="aa925326e2e2dfa5e305959154ed99ca5"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>normal_for_polygon_edge</b> (int face_id, int edge_id, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;normal)</td></tr>
+<tr class="memitem:aa925326e2e2dfa5e305959154ed99ca5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5">normal_for_polygon_edge</a> (int face_id, int <a class="el" href="_spline_basis3d_8cpp.html#a40d6c0e56d9f4a8c9e12db17362bbf3c">edge_id</a>, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, Eigen::MatrixXd &amp;normal)</td></tr>
 <tr class="separator:aa925326e2e2dfa5e305959154ed99ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab61e5d9274a1b87dd7d11110fd33f324"><td class="memItemLeft" align="right" valign="top"><a id="ab61e5d9274a1b87dd7d11110fd33f324"></a>
-static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>tet_local_node_coordinates_from_face</b> (int lf)</td></tr>
+<tr class="memitem:ab61e5d9274a1b87dd7d11110fd33f324"><td class="memItemLeft" align="right" valign="top">static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#ab61e5d9274a1b87dd7d11110fd33f324">tet_local_node_coordinates_from_face</a> (int lf)</td></tr>
 <tr class="separator:ab61e5d9274a1b87dd7d11110fd33f324"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d837e24efe5b9e75db8487e39f4c8a9"><td class="memItemLeft" align="right" valign="top"><a id="a7d837e24efe5b9e75db8487e39f4c8a9"></a>
-static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>hex_local_node_coordinates_from_face</b> (int lf)</td></tr>
+<tr class="memitem:a7d837e24efe5b9e75db8487e39f4c8a9"><td class="memItemLeft" align="right" valign="top">static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a7d837e24efe5b9e75db8487e39f4c8a9">hex_local_node_coordinates_from_face</a> (int lf)</td></tr>
 <tr class="separator:a7d837e24efe5b9e75db8487e39f4c8a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21ae5defcab5faf5539c6d776f5c10b8"><td class="memItemLeft" align="right" valign="top"><a id="a21ae5defcab5faf5539c6d776f5c10b8"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>sample_boundary</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;local_boundary, const int n_samples, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool skip_computation, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples, Eigen::VectorXi &amp;global_primitive_ids)</td></tr>
+<tr class="memitem:a21ae5defcab5faf5539c6d776f5c10b8"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a21ae5defcab5faf5539c6d776f5c10b8">sample_boundary</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;local_boundary, const int n_samples, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool skip_computation, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;samples, Eigen::VectorXi &amp;global_primitive_ids)</td></tr>
 <tr class="separator:a21ae5defcab5faf5539c6d776f5c10b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add6e33ea8fafcdfd2580f0949a7df48d"><td class="memItemLeft" align="right" valign="top"><a id="add6e33ea8fafcdfd2580f0949a7df48d"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_quadrature</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;local_boundary, const int order, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool skip_computation, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::MatrixXd &amp;normals, Eigen::VectorXd &amp;weights, Eigen::VectorXi &amp;global_primitive_ids)</td></tr>
+<tr class="memitem:add6e33ea8fafcdfd2580f0949a7df48d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#add6e33ea8fafcdfd2580f0949a7df48d">boundary_quadrature</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;local_boundary, const int order, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool skip_computation, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::MatrixXd &amp;normals, Eigen::VectorXd &amp;weights, Eigen::VectorXi &amp;global_primitive_ids)</td></tr>
 <tr class="separator:add6e33ea8fafcdfd2580f0949a7df48d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="add6e33ea8fafcdfd2580f0949a7df48d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add6e33ea8fafcdfd2580f0949a7df48d">&#9670;&nbsp;</a></span>boundary_quadrature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::BoundarySampler::boundary_quadrature </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>skip_computation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>global_primitive_ids</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d837e24efe5b9e75db8487e39f4c8a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d837e24efe5b9e75db8487e39f4c8a9">&#9670;&nbsp;</a></span>hex_local_node_coordinates_from_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::utils::BoundarySampler::hex_local_node_coordinates_from_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lf</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa925326e2e2dfa5e305959154ed99ca5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa925326e2e2dfa5e305959154ed99ca5">&#9670;&nbsp;</a></span>normal_for_polygon_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::normal_for_polygon_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>edge_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2fe4e23eb3764fe8f7b25db3e4209fad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fe4e23eb3764fe8f7b25db3e4209fad">&#9670;&nbsp;</a></span>normal_for_quad_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::normal_for_quad_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a58d1aa4acd871a4a38e5197f9dcdf13b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58d1aa4acd871a4a38e5197f9dcdf13b">&#9670;&nbsp;</a></span>normal_for_quad_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::normal_for_quad_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3cb05c15f577e549c9ec1aff534bfccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cb05c15f577e549c9ec1aff534bfccf">&#9670;&nbsp;</a></span>normal_for_tri_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::normal_for_tri_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9ba642e0745173decb0b36d4af7e7d17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba642e0745173decb0b36d4af7e7d17">&#9670;&nbsp;</a></span>normal_for_tri_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::normal_for_tri_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a02cf0bca8805defe581ac1902403ced2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02cf0bca8805defe581ac1902403ced2">&#9670;&nbsp;</a></span>quadrature_for_polygon_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::quadrature_for_polygon_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>edge_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a282676a00275bf4a0e51d8638f9558f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a282676a00275bf4a0e51d8638f9558f8">&#9670;&nbsp;</a></span>quadrature_for_quad_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::quadrature_for_quad_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14b39f9323abc114920975d012d11511"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14b39f9323abc114920975d012d11511">&#9670;&nbsp;</a></span>quadrature_for_quad_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::quadrature_for_quad_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec92b1bb3ff635fb517a2c26882d98a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec92b1bb3ff635fb517a2c26882d98a9">&#9670;&nbsp;</a></span>quadrature_for_tri_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::quadrature_for_tri_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f92b1c04be7c25cbb65f7c40bce8a4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f92b1c04be7c25cbb65f7c40bce8a4d">&#9670;&nbsp;</a></span>quadrature_for_tri_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::quadrature_for_tri_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a21ae5defcab5faf5539c6d776f5c10b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21ae5defcab5faf5539c6d776f5c10b8">&#9670;&nbsp;</a></span>sample_boundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::BoundarySampler::sample_boundary </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>skip_computation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>global_primitive_ids</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac12965de419a6fe6b793263d39d94895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac12965de419a6fe6b793263d39d94895">&#9670;&nbsp;</a></span>sample_parametric_quad_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::sample_parametric_quad_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9fb7f42d906df7cd9332811512fef43d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb7f42d906df7cd9332811512fef43d">&#9670;&nbsp;</a></span>sample_parametric_quad_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::sample_parametric_quad_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aedbf480f1e32d3fad5ee6e2946b91099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedbf480f1e32d3fad5ee6e2946b91099">&#9670;&nbsp;</a></span>sample_parametric_tri_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::sample_parametric_tri_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a762ea74cf87bbaff2f6877765eea7821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a762ea74cf87bbaff2f6877765eea7821">&#9670;&nbsp;</a></span>sample_parametric_tri_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::sample_parametric_tri_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acb587c61b43b393260dba4a5a95c090b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb587c61b43b393260dba4a5a95c090b">&#9670;&nbsp;</a></span>sample_polygon_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::BoundarySampler::sample_polygon_edge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>edge_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab61e5d9274a1b87dd7d11110fd33f324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab61e5d9274a1b87dd7d11110fd33f324">&#9670;&nbsp;</a></span>tet_local_node_coordinates_from_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::utils::BoundarySampler::tet_local_node_coordinates_from_face </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lf</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_boundary_sampler_8hpp_source.html">BoundarySampler.hpp</a></li>
-<li>src/polyfem/utils/BoundarySampler.cpp</li>
+<li>src/polyfem/utils/<a class="el" href="_boundary_sampler_8cpp.html">BoundarySampler.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html">BoundarySampler</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1utils.html">utils</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html">BoundarySampler</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

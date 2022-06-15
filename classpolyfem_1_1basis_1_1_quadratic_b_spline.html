@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::basis::QuadraticBSpline Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,48 +122,243 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_quadratic_b_
 <div class="title">polyfem::basis::QuadraticBSpline Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_quadratic_b_spline_8hpp_source.html">QuadraticBSpline.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7c6b55fb875945ac57ed60c359f12e22"><td class="memItemLeft" align="right" valign="top"><a id="a7c6b55fb875945ac57ed60c359f12e22"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>QuadraticBSpline</b> (const std::array&lt; double, 4 &gt; &amp;knots)</td></tr>
+<tr class="memitem:a64f6ea8586440136c008841eacdaf74b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a64f6ea8586440136c008841eacdaf74b">QuadraticBSpline</a> ()</td></tr>
+<tr class="separator:a64f6ea8586440136c008841eacdaf74b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c6b55fb875945ac57ed60c359f12e22"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a7c6b55fb875945ac57ed60c359f12e22">QuadraticBSpline</a> (const std::array&lt; double, 4 &gt; &amp;knots)</td></tr>
 <tr class="separator:a7c6b55fb875945ac57ed60c359f12e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08f1ec5c60a13589cc129479e14e83f9"><td class="memItemLeft" align="right" valign="top"><a id="a08f1ec5c60a13589cc129479e14e83f9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::array&lt; double, 4 &gt; &amp;knots)</td></tr>
+<tr class="memitem:a08f1ec5c60a13589cc129479e14e83f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a08f1ec5c60a13589cc129479e14e83f9">init</a> (const std::array&lt; double, 4 &gt; &amp;knots)</td></tr>
 <tr class="separator:a08f1ec5c60a13589cc129479e14e83f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29e9bd02780bf46faa2384cf93bf0fd9"><td class="memItemLeft" align="right" valign="top"><a id="a29e9bd02780bf46faa2384cf93bf0fd9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate</b> (const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="memitem:a29e9bd02780bf46faa2384cf93bf0fd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a29e9bd02780bf46faa2384cf93bf0fd9">interpolate</a> (const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</td></tr>
 <tr class="separator:a29e9bd02780bf46faa2384cf93bf0fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c47e1508e1f2d5a5645d78b6be4e51a"><td class="memItemLeft" align="right" valign="top"><a id="a3c47e1508e1f2d5a5645d78b6be4e51a"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate</b> (const double t) const</td></tr>
+<tr class="memitem:a3c47e1508e1f2d5a5645d78b6be4e51a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a3c47e1508e1f2d5a5645d78b6be4e51a">interpolate</a> (const double t) const</td></tr>
 <tr class="separator:a3c47e1508e1f2d5a5645d78b6be4e51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae155943a730782f90fa6fd4086d1a836"><td class="memItemLeft" align="right" valign="top"><a id="ae155943a730782f90fa6fd4086d1a836"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>derivative</b> (const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="memitem:ae155943a730782f90fa6fd4086d1a836"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#ae155943a730782f90fa6fd4086d1a836">derivative</a> (const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</td></tr>
 <tr class="separator:ae155943a730782f90fa6fd4086d1a836"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03bbf47fa74a38ae4dc6d8578d3ed2ea"><td class="memItemLeft" align="right" valign="top"><a id="a03bbf47fa74a38ae4dc6d8578d3ed2ea"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>derivative</b> (const double t) const</td></tr>
+<tr class="memitem:a03bbf47fa74a38ae4dc6d8578d3ed2ea"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a03bbf47fa74a38ae4dc6d8578d3ed2ea">derivative</a> (const double t) const</td></tr>
 <tr class="separator:a03bbf47fa74a38ae4dc6d8578d3ed2ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:afbb473c4a6348979923cb838277d31f6"><td class="memItemLeft" align="right" valign="top"><a id="afbb473c4a6348979923cb838277d31f6"></a>
-std::array&lt; double, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>knots_</b></td></tr>
+<tr class="memitem:afbb473c4a6348979923cb838277d31f6"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#afbb473c4a6348979923cb838277d31f6">knots_</a></td></tr>
 <tr class="separator:afbb473c4a6348979923cb838277d31f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a64f6ea8586440136c008841eacdaf74b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64f6ea8586440136c008841eacdaf74b">&#9670;&nbsp;</a></span>QuadraticBSpline() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::basis::QuadraticBSpline::QuadraticBSpline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c6b55fb875945ac57ed60c359f12e22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6b55fb875945ac57ed60c359f12e22">&#9670;&nbsp;</a></span>QuadraticBSpline() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::basis::QuadraticBSpline::QuadraticBSpline </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; double, 4 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>knots</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a03bbf47fa74a38ae4dc6d8578d3ed2ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03bbf47fa74a38ae4dc6d8578d3ed2ea">&#9670;&nbsp;</a></span>derivative() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::basis::QuadraticBSpline::derivative </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae155943a730782f90fa6fd4086d1a836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae155943a730782f90fa6fd4086d1a836">&#9670;&nbsp;</a></span>derivative() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::QuadraticBSpline::derivative </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08f1ec5c60a13589cc129479e14e83f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f1ec5c60a13589cc129479e14e83f9">&#9670;&nbsp;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::QuadraticBSpline::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; double, 4 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>knots</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c47e1508e1f2d5a5645d78b6be4e51a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c47e1508e1f2d5a5645d78b6be4e51a">&#9670;&nbsp;</a></span>interpolate() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::basis::QuadraticBSpline::interpolate </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29e9bd02780bf46faa2384cf93bf0fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e9bd02780bf46faa2384cf93bf0fd9">&#9670;&nbsp;</a></span>interpolate() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::QuadraticBSpline::interpolate </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="afbb473c4a6348979923cb838277d31f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbb473c4a6348979923cb838277d31f6">&#9670;&nbsp;</a></span>knots_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 4&gt; polyfem::basis::QuadraticBSpline::knots_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/function/<a class="el" href="_quadratic_b_spline_8hpp_source.html">QuadraticBSpline.hpp</a></li>
-<li>src/polyfem/basis/function/QuadraticBSpline.cpp</li>
+<li>src/polyfem/basis/function/<a class="el" href="_quadratic_b_spline_8cpp.html">QuadraticBSpline.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>basis</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html">QuadraticBSpline</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1basis.html">basis</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html">QuadraticBSpline</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

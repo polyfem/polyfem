@@ -1,4 +1,29 @@
 var searchData=
 [
-  ['iterations_486',['iterations',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537',1,'polyfem::solver::line_search::LineSearch']]]
+  ['a_5fprevs_3555',['a_prevs',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
+  ['adj_5fprepared_3556',['adj_prepared',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ac3f35889cad958a2653f6e0d94c58689',1,'polyfem::mesh::NCMesh2D']]],
+  ['all_5fdimensions_5fdirichlet_5f_3557',['all_dimensions_dirichlet_',['../classpolyfem_1_1problem_1_1_generic_tensor_problem.html#abbd3647a3ee11421a18fbb7f7396f93a',1,'polyfem::problem::GenericTensorProblem::all_dimensions_dirichlet_()'],['../classpolyfem_1_1problem_1_1_node_problem.html#a93d79faf07bc473b67121486f644ea46',1,'polyfem::problem::NodeProblem::all_dimensions_dirichlet_()'],['../classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a479103b753f879cd765eccf8958117ec',1,'polyfem::problem::PointBasedTensorProblem::all_dimensions_dirichlet_()']]],
+  ['all_5fto_5fvalid_5fedgemap_3558',['all_to_valid_edgeMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ab5cda88a56b22785808d8fa2801dad4d',1,'polyfem::mesh::NCMesh2D']]],
+  ['all_5fto_5fvalid_5felemmap_3559',['all_to_valid_elemMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a441a2867a465b75ad7d1150b5cf02662',1,'polyfem::mesh::NCMesh2D']]],
+  ['all_5fto_5fvalid_5fvertexmap_3560',['all_to_valid_vertexMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ab79d944ce28ecf37c6ab902faf0537b5',1,'polyfem::mesh::NCMesh2D']]],
+  ['alnl_5fproblem_3561',['alnl_problem',['../classpolyfem_1_1_step_data.html#aa92f65ee11622b332bb96620f01cc9b6',1,'polyfem::StepData']]],
+  ['alphas_5f_3562',['alphas_',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#ae45a94a6a17e1535a4d6d97195c3c6f0',1,'polyfem::assembler::OgdenElasticity']]],
+  ['ambient_5focclusion_3563',['ambient_occlusion',['../classpolyfem_1_1_u_i_state.html#a98a7f4b78d8a6d6675dc103f3eebd90d',1,'polyfem::UIState']]],
+  ['ambient_5focclusion_5fmat_3564',['ambient_occlusion_mat',['../classpolyfem_1_1_u_i_state.html#ac39a8ce2e2753a0a7897988a409e2edb',1,'polyfem::UIState']]],
+  ['angular_5fv0_5f_3565',['angular_v0_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a3e4075a5d4aba86b9c3811c6021c442f',1,'polyfem::problem::DoubleTorsionElasticProblem']]],
+  ['angular_5fv1_5f_3566',['angular_v1_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a58ce4d96db7534496b56e38c4a465f60',1,'polyfem::problem::DoubleTorsionElasticProblem']]],
+  ['area_5fparam_5f_3567',['area_param_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#ae967c290f0bef453a0b0aef5b8dbda0d',1,'polyfem::utils::RefElementSampler']]],
+  ['args_3568',['args',['../classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99',1,'polyfem::State::args()'],['../namespaceeigs.html#abe44e904f63d6b59924f947d7ab47875',1,'eigs.args()'],['../namespaceelasticity__rhs.html#a0dd79f2bfbe4805cbf6d54ea774638b7',1,'elasticity_rhs.args()'],['../namespacep__bases.html#ab68186280e491151e5558132210dc1be',1,'p_bases.args()'],['../namespaceq__bases.html#a2360a2c83912aad89610988623a146a4',1,'q_bases.args()']]],
+  ['ass_5fvals_5fcache_3569',['ass_vals_cache',['../classpolyfem_1_1_state.html#a0c6908cbfd6971f8b61316bea21bd19d',1,'polyfem::State']]],
+  ['ass_5fvals_5fcache_5f_3570',['ass_vals_cache_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a9c4ec03cf633a572d577ca7abdc2ccff',1,'polyfem::assembler::RhsAssembler']]],
+  ['assembler_3571',['assembler',['../classpolyfem_1_1solver_1_1_n_l_problem.html#aea69d335881cbc1e00c5a785c2b7d8b0',1,'polyfem::solver::NLProblem::assembler()'],['../classpolyfem_1_1_state.html#a2dddd7453575af5cd8f6a27f33cb66dc',1,'polyfem::State::assembler()']]],
+  ['assembler_5f_3572',['assembler_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a989d4db0509380b2393a71a0247f4f1c',1,'polyfem::assembler::RhsAssembler']]],
+  ['assembling_5fstiffness_5fmat_5ftime_3573',['assembling_stiffness_mat_time',['../classpolyfem_1_1_state.html#a7334d8bf4af50f741148966be7af784e',1,'polyfem::State']]],
+  ['assembly_5ftime_3574',['assembly_time',['../classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a0f049372026f86d49156c3e15f1a5266',1,'polyfem::solver::NavierStokesSolver::assembly_time()'],['../classcppoptlib_1_1_nonlinear_solver.html#a9bc129fb40312b11fb73f982d4e127c5',1,'cppoptlib::NonlinearSolver::assembly_time()'],['../classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ae8b06a52e018026c840bb14e272aaf55',1,'polyfem::solver::TransientNavierStokesSolver::assembly_time()']]],
+  ['assigning_5frhs_5ftime_3575',['assigning_rhs_time',['../classpolyfem_1_1_state.html#a83c3a6a73a56d587145bc8fa5616bbaf',1,'polyfem::State']]],
+  ['available_5fvisualizations_3576',['available_visualizations',['../classpolyfem_1_1_u_i_state.html#adc8c98a345501bd37aecf13482a9c7e8',1,'polyfem::UIState']]],
+  ['ave_5fjacobian_3577',['ave_Jacobian',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#ae54002c5edd88d2a404f34c9237475d4',1,'polyfem::mesh::Mesh_Quality']]],
+  ['average_5fedge_5flength_3578',['average_edge_length',['../classpolyfem_1_1_state.html#a6005d556261e7ba25dea1b1c45c14cec',1,'polyfem::State']]],
+  ['avg_5fmass_3579',['avg_mass',['../classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096',1,'polyfem::State']]],
+  ['axis_5f_3580',['axis_',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8',1,'polyfem::utils::AxisPlaneSelection']]]
 ];

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/solver/LBFGSSolver.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,45 +118,45 @@ $(document).ready(function(){initNavTree('_l_b_f_g_s_solver_8hpp_source.html',''
 <div class="title">LBFGSSolver.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// L-BFGS solver (Using the LBFGSpp under MIT License).</span></div>
+<a href="_l_b_f_g_s_solver_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// L-BFGS solver (Using the LBFGSpp under MIT License).</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;NonlinearSolver.hpp&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_nonlinear_solver_8hpp.html">NonlinearSolver.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;polysolve/LinearSolver.hpp&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/MatrixUtils.hpp&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_matrix_utils_8hpp.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Logger.hpp&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_logger_8hpp.html">polyfem/utils/Logger.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;igl/Timer.h&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;LBFGSpp/BFGSMat.h&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>cppoptlib</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="namespacecppoptlib.html">   16</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacecppoptlib.html">cppoptlib</a></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ProblemType&gt;</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html">   19</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html">LBFGSSolver</a> : <span class="keyword">public</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver</a>&lt;ProblemType&gt;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keyword">using</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">Superclass</a> = <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver&lt;ProblemType&gt;</a>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a0aef5ce6596639e38020973e955ada16">   22</a></span>&#160;        <span class="keyword">using</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">Superclass</a> = <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver&lt;ProblemType&gt;</a>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::Scalar;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::TVector;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html">LBFGSSolver</a>(<span class="keyword">const</span> json &amp;solver_params)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            : <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">Superclass</a>(solver_params)</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aba224462bfe385d37df3656762458ebc">   26</a></span>&#160;        <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aba224462bfe385d37df3656762458ebc">LBFGSSolver</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a>)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            : <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">Superclass</a>(<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a>)</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        }</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        std::string name()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;L-BFGS&quot;</span>; }</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#abff7a650655eb86d5251ca45bf3922b3">   31</a></span>&#160;        std::string <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#abff7a650655eb86d5251ca45bf3922b3">name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;L-BFGS&quot;</span>; }</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> default_descent_strategy()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> 1; }</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a3bbc88f9f0f024f718f3bd23875a2e7b">   34</a></span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a3bbc88f9f0f024f718f3bd23875a2e7b">default_descent_strategy</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> 1; }</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keyword">using</span> Superclass::descent_strategy_name;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        std::string descent_strategy_name(<span class="keywordtype">int</span> descent_strategy)<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keyword">using</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">Superclass::descent_strategy_name</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a54202b43d98e7d53422c2b601309b487">   37</a></span>&#160;        std::string <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a54202b43d98e7d53422c2b601309b487">descent_strategy_name</a>(<span class="keywordtype">int</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>)<span class="keyword"> const override</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keywordflow">switch</span> (descent_strategy)</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keywordflow">switch</span> (<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>)</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keywordflow">case</span> 1:</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                <span class="keywordflow">return</span> <span class="stringliteral">&quot;L-BFGS&quot;</span>;</div>
@@ -135,43 +167,43 @@ $(document).ready(function(){initNavTree('_l_b_f_g_s_solver_8hpp_source.html',''
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            }</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        }</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordtype">void</span> increase_descent_strategy()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a7b199d828b86ad904419717e4584d9a9">   50</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a7b199d828b86ad904419717e4584d9a9">increase_descent_strategy</a>()<span class="keyword"> override</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordflow">if</span> (this-&gt;descent_strategy == 1)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                this-&gt;descent_strategy++;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 1)</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>++;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            m_bfgs.reset(m_prev_x.size(), <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a>);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a>.reset(<a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a>.size(), <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a>);</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            assert(this-&gt;descent_strategy &lt;= 2);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            assert(this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> &lt;= 2);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        }</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        LBFGSpp::BFGSMat&lt;Scalar&gt; m_bfgs; <span class="comment">// Approximation to the Hessian matrix</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">   61</a></span>&#160;        LBFGSpp::BFGSMat&lt;Scalar&gt; <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a>; <span class="comment">// Approximation to the Hessian matrix</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
 <div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">   69</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a> = 6;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        TVector m_prev_x;    <span class="comment">// Previous x</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        TVector m_prev_grad; <span class="comment">// Previous gradient</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">   71</a></span>&#160;        TVector <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a>;    <span class="comment">// Previous x</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#afb8e13e274ed288084b0ae8e03077e21">   72</a></span>&#160;        TVector <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#afb8e13e274ed288084b0ae8e03077e21">m_prev_grad</a>; <span class="comment">// Previous gradient</span></div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordtype">void</span> reset(<span class="keyword">const</span> ProblemType &amp;objFunc, <span class="keyword">const</span> TVector &amp;x)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a9d9c660a129f7f362786c0886406c7b4">   74</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a9d9c660a129f7f362786c0886406c7b4">reset</a>(<span class="keyword">const</span> ProblemType &amp;objFunc, <span class="keyword">const</span> TVector &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            Superclass::reset(objFunc, x);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#ab1651c7dcd4f7269ba77b4d55335a351">Superclass::reset</a>(objFunc, <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            m_bfgs.reset(x.size(), <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a>);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            m_prev_x.resize(x.size());</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            m_prev_grad.resize(x.size());</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a>.reset(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size(), <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a>.resize(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size());</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#afb8e13e274ed288084b0ae8e03077e21">m_prev_grad</a>.resize(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.size());</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <span class="comment">// Use gradient descent for first iteration</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            this-&gt;descent_strategy = 2;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> = 2;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> compute_update_direction(</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa4908d8716a99eb8ac3e67b1427680e9">   86</a></span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa4908d8716a99eb8ac3e67b1427680e9">compute_update_direction</a>(</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            ProblemType &amp;objFunc,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            <span class="keyword">const</span> TVector &amp;x,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            <span class="keyword">const</span> TVector &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>,</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            <span class="keyword">const</span> TVector &amp;grad,</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            TVector &amp;direction)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordflow">if</span> (this-&gt;descent_strategy == 2)</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 2)</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            {</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                <span class="comment">// Use gradient descent in the first iteration or if the previous iteration failed</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                direction = -grad;</div>
@@ -181,14 +213,14 @@ $(document).ready(function(){initNavTree('_l_b_f_g_s_solver_8hpp_source.html',''
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                <span class="comment">// Update s and y</span></div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                <span class="comment">// s_{i+1} = x_{i+1} - x_i</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                <span class="comment">// y_{i+1} = g_{i+1} - g_i</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                m_bfgs.add_correction(x - m_prev_x, grad - m_prev_grad);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a>.add_correction(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> - <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a>, grad - <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#afb8e13e274ed288084b0ae8e03077e21">m_prev_grad</a>);</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                <span class="comment">// Recursive formula to compute d = -H * g</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                m_bfgs.apply_Hv(grad, -Scalar(1), direction);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a>.apply_Hv(grad, -Scalar(1), direction);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            }</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            m_prev_x = x;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            m_prev_grad = grad;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a> = <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            <a class="code" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#afb8e13e274ed288084b0ae8e03077e21">m_prev_grad</a> = grad;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        }</div>
@@ -196,17 +228,50 @@ $(document).ready(function(){initNavTree('_l_b_f_g_s_solver_8hpp_source.html',''
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;} <span class="comment">// namespace cppoptlib</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_ab1651c7dcd4f7269ba77b4d55335a351"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#ab1651c7dcd4f7269ba77b4d55335a351">cppoptlib::NonlinearSolver::reset</a></div><div class="ttdeci">virtual void reset(const ProblemType &amp;objFunc, const TVector &amp;x)</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:316</div></div>
 <div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html">cppoptlib::LBFGSSolver</a></div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:19</div></div>
+<div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_a3bbc88f9f0f024f718f3bd23875a2e7b"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a3bbc88f9f0f024f718f3bd23875a2e7b">cppoptlib::LBFGSSolver::default_descent_strategy</a></div><div class="ttdeci">virtual int default_descent_strategy() override</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:34</div></div>
 <div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a></div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:16</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_addb84c8025e0aacd6f587448e280718d"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">cppoptlib::LBFGSSolver::m_bfgs</a></div><div class="ttdeci">LBFGSpp::BFGSMat&lt; Scalar &gt; m_bfgs</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:61</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_a7b199d828b86ad904419717e4584d9a9"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a7b199d828b86ad904419717e4584d9a9">cppoptlib::LBFGSSolver::increase_descent_strategy</a></div><div class="ttdeci">void increase_descent_strategy() override</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:50</div></div>
+<div class="ttc" id="a_nonlinear_solver_8hpp_html"><div class="ttname"><a href="_nonlinear_solver_8hpp.html">NonlinearSolver.hpp</a></div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_aa1b0b66c3406dd4407cac203a50e01dd"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">cppoptlib::LBFGSSolver::m_prev_x</a></div><div class="ttdeci">TVector m_prev_x</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:71</div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_afb8e13e274ed288084b0ae8e03077e21"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#afb8e13e274ed288084b0ae8e03077e21">cppoptlib::LBFGSSolver::m_prev_grad</a></div><div class="ttdeci">TVector m_prev_grad</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:72</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a7fde555a657401aa47a76322b1d86e37"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">cppoptlib::NonlinearSolver::descent_strategy</a></div><div class="ttdeci">int descent_strategy</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:338</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a107a4558ff1894a3373b8ef1ae408b91"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">cppoptlib::NonlinearSolver::descent_strategy_name</a></div><div class="ttdeci">virtual std::string descent_strategy_name() const</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:334</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_aba224462bfe385d37df3656762458ebc"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aba224462bfe385d37df3656762458ebc">cppoptlib::LBFGSSolver::LBFGSSolver</a></div><div class="ttdeci">LBFGSSolver(const json &amp;solver_params)</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:26</div></div>
 <div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_aa741292644bb9a929b34394594516c99"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">cppoptlib::LBFGSSolver::m_history_size</a></div><div class="ttdeci">int m_history_size</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:69</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a39b6bc5367dce3b91fe799a91921f1d9"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">cppoptlib::NonlinearSolver::solver_params</a></div><div class="ttdeci">const json solver_params</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:328</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_a9d9c660a129f7f362786c0886406c7b4"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a9d9c660a129f7f362786c0886406c7b4">cppoptlib::LBFGSSolver::reset</a></div><div class="ttdeci">void reset(const ProblemType &amp;objFunc, const TVector &amp;x) override</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:74</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_aa4908d8716a99eb8ac3e67b1427680e9"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa4908d8716a99eb8ac3e67b1427680e9">cppoptlib::LBFGSSolver::compute_update_direction</a></div><div class="ttdeci">virtual bool compute_update_direction(ProblemType &amp;objFunc, const TVector &amp;x, const TVector &amp;grad, TVector &amp;direction) override</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:86</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_a54202b43d98e7d53422c2b601309b487"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#a54202b43d98e7d53422c2b601309b487">cppoptlib::LBFGSSolver::descent_strategy_name</a></div><div class="ttdeci">std::string descent_strategy_name(int descent_strategy) const override</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:37</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_l_b_f_g_s_solver_html_abff7a650655eb86d5251ca45bf3922b3"><div class="ttname"><a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#abff7a650655eb86d5251ca45bf3922b3">cppoptlib::LBFGSSolver::name</a></div><div class="ttdeci">std::string name() const override</div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:31</div></div>
+<div class="ttc" id="anamespacecppoptlib_html"><div class="ttname"><a href="namespacecppoptlib.html">cppoptlib</a></div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:16</div></div>
+<div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><b>LBFGSSolver.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="_l_b_f_g_s_solver_8hpp.html">LBFGSSolver.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

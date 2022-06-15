@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['kernelproblem_113',['KernelProblem',['../classpolyfem_1_1problem_1_1_kernel_problem.html',1,'polyfem::problem']]],
-  ['kovnaszy_114',['Kovnaszy',['../classpolyfem_1_1problem_1_1_kovnaszy.html',1,'polyfem::problem']]]
+  ['jac_5fit_918',['jac_it',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06',1,'polyfem::assembler::ElementAssemblyValues']]],
+  ['jacobian_5fprecision_919',['Jacobian_Precision',['../_mesh_processing3_d_8hpp.html#a0ab8f6000eeb9444b3d045fe97cfec62',1,'MeshProcessing3D.hpp']]],
+  ['json_920',['json',['../_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d',1,'Common.hpp']]],
+  ['jsonutils_2ecpp_921',['JSONUtils.cpp',['../_j_s_o_n_utils_8cpp.html',1,'']]],
+  ['jsonutils_2ehpp_922',['JSONUtils.hpp',['../_j_s_o_n_utils_8hpp.html',1,'']]]
 ];

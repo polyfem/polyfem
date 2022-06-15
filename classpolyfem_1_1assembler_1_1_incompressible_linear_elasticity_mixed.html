@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::assembler::IncompressibleLinearElasticityMixed Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,54 +122,293 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_incompre
 <div class="title">polyfem::assembler::IncompressibleLinearElasticityMixed Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a81f20354f69cfb812f6c53244a90bc77"><td class="memItemLeft" align="right" valign="top"><a id="a81f20354f69cfb812f6c53244a90bc77"></a>
-Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>assemble</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;psi_vals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;phi_vals, const int i, const int j, const QuadratureVector &amp;da) const</td></tr>
+<tr class="memitem:a81f20354f69cfb812f6c53244a90bc77"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#a81f20354f69cfb812f6c53244a90bc77">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;psi_vals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;phi_vals, const int i, const int j, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
 <tr class="separator:a81f20354f69cfb812f6c53244a90bc77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b0aacfd14b6e73f0c7f2b3517ddc13a"><td class="memItemLeft" align="right" valign="top"><a id="a9b0aacfd14b6e73f0c7f2b3517ddc13a"></a>
-Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>compute_rhs</b> (const AutodiffHessianPt &amp;pt) const</td></tr>
+<tr class="memitem:a9b0aacfd14b6e73f0c7f2b3517ddc13a"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#a9b0aacfd14b6e73f0c7f2b3517ddc13a">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const</td></tr>
 <tr class="separator:a9b0aacfd14b6e73f0c7f2b3517ddc13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae31d3e460fe6ebcaee59a3553f8f6798"><td class="memItemLeft" align="right" valign="top"><a id="ae31d3e460fe6ebcaee59a3553f8f6798"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_size</b> (const int size)</td></tr>
+<tr class="memitem:ae31d3e460fe6ebcaee59a3553f8f6798"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#ae31d3e460fe6ebcaee59a3553f8f6798">set_size</a> (const int size)</td></tr>
 <tr class="separator:ae31d3e460fe6ebcaee59a3553f8f6798"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5de2733779e920d4c7a3d445c6ac21d"><td class="memItemLeft" align="right" valign="top"><a id="ab5de2733779e920d4c7a3d445c6ac21d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>rows</b> () const</td></tr>
+<tr class="memitem:ab5de2733779e920d4c7a3d445c6ac21d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#ab5de2733779e920d4c7a3d445c6ac21d">rows</a> () const</td></tr>
 <tr class="separator:ab5de2733779e920d4c7a3d445c6ac21d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae07fb5cda02efe857fc40e36d994aef5"><td class="memItemLeft" align="right" valign="top"><a id="ae07fb5cda02efe857fc40e36d994aef5"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>cols</b> () const</td></tr>
+<tr class="memitem:ae07fb5cda02efe857fc40e36d994aef5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#ae07fb5cda02efe857fc40e36d994aef5">cols</a> () const</td></tr>
 <tr class="separator:ae07fb5cda02efe857fc40e36d994aef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb5452acbba619d1c179d0ca8d5ffcf5"><td class="memItemLeft" align="right" valign="top"><a id="abb5452acbba619d1c179d0ca8d5ffcf5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_parameters</b> (const json &amp;params)</td></tr>
+<tr class="memitem:abb5452acbba619d1c179d0ca8d5ffcf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#abb5452acbba619d1c179d0ca8d5ffcf5">set_parameters</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params)</td></tr>
 <tr class="separator:abb5452acbba619d1c179d0ca8d5ffcf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a537bd4f694089898fed7844edf09e915"><td class="memItemLeft" align="right" valign="top"><a id="a537bd4f694089898fed7844edf09e915"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init_multimaterial</b> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
+<tr class="memitem:a537bd4f694089898fed7844edf09e915"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#a537bd4f694089898fed7844edf09e915">init_multimaterial</a> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
 <tr class="separator:a537bd4f694089898fed7844edf09e915"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38d9a4bd0f5221f8bd2e3d4f77fead98"><td class="memItemLeft" align="right" valign="top"><a id="a38d9a4bd0f5221f8bd2e3d4f77fead98"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_params</b> (const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;params)</td></tr>
+<tr class="memitem:a38d9a4bd0f5221f8bd2e3d4f77fead98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#a38d9a4bd0f5221f8bd2e3d4f77fead98">set_params</a> (const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;params)</td></tr>
 <tr class="separator:a38d9a4bd0f5221f8bd2e3d4f77fead98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a08165279b425d70294fd50b6dea4d2ab"><td class="memItemLeft" align="right" valign="top"><a id="a08165279b425d70294fd50b6dea4d2ab"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b> = -1</td></tr>
+<tr class="memitem:a08165279b425d70294fd50b6dea4d2ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#a08165279b425d70294fd50b6dea4d2ab">size_</a> = -1</td></tr>
 <tr class="separator:a08165279b425d70294fd50b6dea4d2ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a81f20354f69cfb812f6c53244a90bc77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f20354f69cfb812f6c53244a90bc77">&#9670;&nbsp;</a></span>assemble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; polyfem::assembler::IncompressibleLinearElasticityMixed::assemble </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>psi_vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>phi_vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae07fb5cda02efe857fc40e36d994aef5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae07fb5cda02efe857fc40e36d994aef5">&#9670;&nbsp;</a></span>cols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::assembler::IncompressibleLinearElasticityMixed::cols </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9b0aacfd14b6e73f0c7f2b3517ddc13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b0aacfd14b6e73f0c7f2b3517ddc13a">&#9670;&nbsp;</a></span>compute_rhs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; polyfem::assembler::IncompressibleLinearElasticityMixed::compute_rhs </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;&#160;</td>
+          <td class="paramname"><em>pt</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a537bd4f694089898fed7844edf09e915"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a537bd4f694089898fed7844edf09e915">&#9670;&nbsp;</a></span>init_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::IncompressibleLinearElasticityMixed::init_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>Es</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>nus</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab5de2733779e920d4c7a3d445c6ac21d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5de2733779e920d4c7a3d445c6ac21d">&#9670;&nbsp;</a></span>rows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::assembler::IncompressibleLinearElasticityMixed::rows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abb5452acbba619d1c179d0ca8d5ffcf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb5452acbba619d1c179d0ca8d5ffcf5">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::IncompressibleLinearElasticityMixed::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a38d9a4bd0f5221f8bd2e3d4f77fead98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38d9a4bd0f5221f8bd2e3d4f77fead98">&#9670;&nbsp;</a></span>set_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::IncompressibleLinearElasticityMixed::set_params </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae31d3e460fe6ebcaee59a3553f8f6798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae31d3e460fe6ebcaee59a3553f8f6798">&#9670;&nbsp;</a></span>set_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::IncompressibleLinearElasticityMixed::set_size </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a08165279b425d70294fd50b6dea4d2ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08165279b425d70294fd50b6dea4d2ab">&#9670;&nbsp;</a></span>size_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::assembler::IncompressibleLinearElasticityMixed::size_ = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a></li>
-<li>src/polyfem/assembler/IncompressibleLinElast.cpp</li>
+<li>src/polyfem/assembler/<a class="el" href="_incompressible_lin_elast_8cpp.html">IncompressibleLinElast.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>assembler</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html">IncompressibleLinearElasticityMixed</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1assembler.html">assembler</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html">IncompressibleLinearElasticityMixed</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/MshReader.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,22 +118,22 @@ $(document).ready(function(){initNavTree('_msh_reader_8hpp_source.html',''); ini
 <div class="title">MshReader.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_msh_reader_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keyword">namespace </span>utils</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    {</div>
 <div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_msh_reader.html">   11</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_msh_reader.html">MshReader</a></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">bool</span> load(</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                <span class="keyword">const</span> std::string &amp;path,</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                Eigen::MatrixXd &amp;vertices,</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1_msh_reader.html#a9d67e7fe7b8108e1c8891fc09112fca2">load</a>(</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                <span class="keyword">const</span> std::string &amp;<a class="code" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>,</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                Eigen::MatrixXd &amp;<a class="code" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a>,</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                Eigen::MatrixXi &amp;cells,</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                std::vector&lt;std::vector&lt;int&gt;&gt; &amp;elements,</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                std::vector&lt;std::vector&lt;double&gt;&gt; &amp;weights,</div>
@@ -111,15 +143,31 @@ $(document).ready(function(){initNavTree('_msh_reader_8hpp_source.html',''); ini
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_msh_reader_html_a9d67e7fe7b8108e1c8891fc09112fca2"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_msh_reader.html#a9d67e7fe7b8108e1c8891fc09112fca2">polyfem::utils::MshReader::load</a></div><div class="ttdeci">static bool load(const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</div><div class="ttdef"><b>Definition:</b> MshReader.cpp:31</div></div>
+<div class="ttc" id="anamespacep__bases_html_a6e09a924d6202680eb9918f91c1e504b"><div class="ttname"><a href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">p_bases.vertices</a></div><div class="ttdeci">list vertices</div><div class="ttdef"><b>Definition:</b> p_bases.py:211</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="anamespaceeigs_html_a9fe38deb6414bc39f39d8ed436b42d3e"><div class="ttname"><a href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">eigs.path</a></div><div class="ttdeci">path</div><div class="ttdef"><b>Definition:</b> eigs.py:128</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_msh_reader_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_msh_reader.html">polyfem::utils::MshReader</a></div><div class="ttdef"><b>Definition:</b> MshReader.hpp:11</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>MshReader.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="_msh_reader_8hpp.html">MshReader.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

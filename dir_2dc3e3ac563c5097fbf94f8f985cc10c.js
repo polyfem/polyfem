@@ -7,9 +7,17 @@ var dir_2dc3e3ac563c5097fbf94f8f985cc10c =
     [ "problem", "dir_db543a2fc901b00946a595a25d020389.html", "dir_db543a2fc901b00946a595a25d020389" ],
     [ "quadrature", "dir_28e20ee8d73aef910b60f97bead953cb.html", "dir_28e20ee8d73aef910b60f97bead953cb" ],
     [ "solver", "dir_10fb13321304f63ea5f7ee0a82e63ce8.html", "dir_10fb13321304f63ea5f7ee0a82e63ce8" ],
+    [ "state", "dir_4dfdc3ae128380bc639a8f52263041e7.html", "dir_4dfdc3ae128380bc639a8f52263041e7" ],
     [ "time_integrator", "dir_b17ff10821c231211eb9dc3a971728a7.html", "dir_b17ff10821c231211eb9dc3a971728a7" ],
     [ "utils", "dir_45751013e7de66cb9317c15709b40c18.html", "dir_45751013e7de66cb9317c15709b40c18" ],
     [ "viewer", "dir_666928e39818db812eb9eed7ed84faf5.html", "dir_666928e39818db812eb9eed7ed84faf5" ],
-    [ "Common.hpp", "_common_8hpp_source.html", null ],
-    [ "State.hpp", "_state_8hpp_source.html", null ]
+    [ "Common.hpp", "_common_8hpp.html", "_common_8hpp" ],
+    [ "main.cpp", "main_8cpp.html", "main_8cpp" ],
+    [ "State.cpp", "_state_8cpp.html", "_state_8cpp" ],
+    [ "State.hpp", "_state_8hpp.html", [
+      [ "NonlinearSolver", "classcppoptlib_1_1_nonlinear_solver.html", "classcppoptlib_1_1_nonlinear_solver" ],
+      [ "SolutionFrame", "classpolyfem_1_1_solution_frame.html", "classpolyfem_1_1_solution_frame" ],
+      [ "StepData", "classpolyfem_1_1_step_data.html", "classpolyfem_1_1_step_data" ],
+      [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ]
+    ] ]
 ];

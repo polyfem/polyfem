@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: Class Members</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -82,14 +114,50 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 </div>
 
 <div class="contents">
-<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
+<div class="textblock">Here is a list of all class members with links to the classes they belong to:</div>
 
 <h3><a id="index__5F"></a>- _ -</h3><ul>
+<li>__init__()
+: <a class="el" href="classp__bases_1_1_lagrange.html#abe47c9933a83cf25f3cec39779c1dc39">p_bases.Lagrange</a>
+, <a class="el" href="classp__bases_1_1_reference_simplex.html#a474f4eeae04795f75c16c00a24c1c258">p_bases.ReferenceSimplex</a>
+, <a class="el" href="classq__bases_1_1_lagrange.html#a2e3622741c80784e39806c7783ec5655">q_bases.Lagrange</a>
+, <a class="el" href="classq__bases_1_1_reference_simplex.html#a1dd7fbeeb5e334697ca46a4bbc2d63a1">q_bases.ReferenceSimplex</a>
+</li>
+<li>_barrier_stiffness
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a52e11ea6ea2e70b78f80643ac73775d6">polyfem::solver::NLProblem</a>
+</li>
+<li>_broad_phase_method
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a2ebbe1e8c7b1433022d5a2248cc51825">polyfem::solver::NLProblem</a>
+</li>
+<li>_candidates
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ac90afdec0a75da6bd0c7c169288acd44">polyfem::solver::NLProblem</a>
+</li>
+<li>_ccd_max_iterations
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#aae00e8cad067c57dce568ad17a63bbb4">polyfem::solver::NLProblem</a>
+</li>
+<li>_ccd_tolerance
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ad5be5d00ad2599b4b3b5c9e82fe4a482">polyfem::solver::NLProblem</a>
+</li>
+<li>_constraint_set
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a300d95457e62e72eb9eebe399c942c48">polyfem::solver::NLProblem</a>
+</li>
+<li>_current_rhs
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a65cd5e2dea562aa9b6f796c046660386">polyfem::solver::NLProblem</a>
+</li>
+<li>_dhat
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a528f3ccf024cb9ecf21a1781198547d7">polyfem::solver::NLProblem</a>
+</li>
 <li>_displaced_prev
 : <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a3ee61af3917f0e0b14f08858fecdbaec">polyfem::solver::NLProblem</a>
 </li>
+<li>_dt
+: <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3f5241e5e26d7a7d17249b646f64ccba">polyfem::time_integrator::ImplicitTimeIntegrator</a>
+</li>
 <li>_epsv
 : <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ae4303e0ef484fa0232534c240f5a84ca">polyfem::solver::NLProblem</a>
+</li>
+<li>_friction_constraint_set
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a55703debe510d9d6e7202d94a46aaec8">polyfem::solver::NLProblem</a>
 </li>
 <li>_lagged_damping_weight
 : <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a25dac1bec60ed469a2930251672b9fae">polyfem::solver::NLProblem</a>
@@ -97,160 +165,37 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 <li>_mu
 : <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a1518bf8c55004e597ba71bf68f840436">polyfem::solver::NLProblem</a>
 </li>
-</ul>
-
-
-<h3><a id="index_a"></a>- a -</h3><ul>
-<li>assemble()
-: <a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad6245dafdbf88f156265eaa119c2c2be">polyfem::assembler::LinearElasticity</a>
+<li>_prev_distance
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ac13de48c22c15751b511f5b3f34ac0d8">polyfem::solver::NLProblem</a>
 </li>
-</ul>
-
-
-<h3><a id="index_b"></a>- b -</h3><ul>
-<li>bases_grads()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#afa40ad3884f69ea106c439bfa9d49d5e">polyfem::basis::RBFWithLinear</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a4f23527b0e433b12c941007b6623a099">polyfem::basis::RBFWithQuadratic</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a14bc20f54259d897845191ba729f93f0">polyfem::basis::RBFWithQuadraticLagrange</a>
+<li>_time_integrator
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#af472f4554c0b7215838731e244418297">polyfem::solver::NLProblem</a>
 </li>
-<li>bases_values()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a5125dbd2cec8ea3a597b3452526bb822">polyfem::basis::RBFWithLinear</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a423295c4a8d424c9572f15221b4c52e8">polyfem::basis::RBFWithQuadratic</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a443e46941f94f2b8e3dc0398caf2ed0d">polyfem::basis::RBFWithQuadraticLagrange</a>
-</li>
-<li>basis()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#ab60f858eefdd193a7e9277f8578e94b2">polyfem::basis::RBFWithLinear</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00">polyfem::basis::RBFWithQuadratic</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a687de8eec89bd8d5d1c575b4d121d579">polyfem::basis::RBFWithQuadraticLagrange</a>
-</li>
-<li>build_bases()
-: <a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#a6a7728e6ff9fa8c4f4abbdcb9861fe9d">polyfem::basis::FEBasis2d</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#af1f9672263a3f17c910d24feb2ccc189">polyfem::basis::FEBasis3d</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis2d.html#aa8d348e8e9800d665160b7cc290ea1e6">polyfem::basis::PolygonalBasis2d</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#ac1e4731b8df4d9d529bb995056cbc568">polyfem::basis::PolygonalBasis3d</a>
-</li>
-</ul>
-
-
-<h3><a id="index_d"></a>- d -</h3><ul>
-<li>DScalar1()
-: <a class="el" href="struct_d_scalar1.html#ab9fcadabd823c5d16bc93dfb104583d1">DScalar1&lt; _Scalar, _Gradient &gt;</a>
-</li>
-<li>DScalar2()
-: <a class="el" href="struct_d_scalar2.html#aa232359c01e296442d3c4a999e6e7c9a">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;</a>
-</li>
-</ul>
-
-
-<h3><a id="index_e"></a>- e -</h3><ul>
-<li>eval_basis()
-: <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">polyfem::basis::Basis</a>
-</li>
-<li>eval_geom_mapping()
-: <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">polyfem::basis::ElementBases</a>
-</li>
-<li>eval_geom_mapping_grads()
-: <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aa6ed093f463318ed61f89280cd7c2e55">polyfem::basis::ElementBases</a>
-</li>
-<li>eval_grad()
-: <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">polyfem::basis::Basis</a>
-</li>
-</ul>
-
-
-<h3><a id="index_g"></a>- g -</h3><ul>
-<li>get_quadrature()
-: <a class="el" href="classpolyfem_1_1quadrature_1_1_polygon_quadrature.html#a4e0ef6a256af3def81c64c05c6e5691f">polyfem::quadrature::PolygonQuadrature</a>
-, <a class="el" href="classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html#a01e616aaa62b158c76d3e966232e06d8">polyfem::quadrature::PolyhedronQuadrature</a>
-</li>
-<li>getVariableCount()
-: <a class="el" href="struct_diff_scalar_base.html#a663329a7a315a38a711116c4dd056995">DiffScalarBase</a>
-</li>
-<li>grad()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a9ff247faa934bfbe0370516fe8e5249a">polyfem::basis::RBFWithLinear</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#aecdf265e10eaa4c031447615db9c1e6f">polyfem::basis::RBFWithQuadratic</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a48b88c1b7465f1da1b3eb2c52ad8f50e">polyfem::basis::RBFWithQuadraticLagrange</a>
-</li>
-</ul>
-
-
-<h3><a id="index_i"></a>- i -</h3><ul>
-<li>init()
-: <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#abb4c4cb17788261d7dcc02b5e7a445d1">polyfem::basis::Basis</a>
-</li>
-<li>is_complete()
-: <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8">polyfem::basis::Basis</a>
-, <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a6e17ce1a3d515a82126d02a84ff94a49">polyfem::basis::ElementBases</a>
-</li>
-<li>iterations
-: <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537">polyfem::solver::line_search::LineSearch&lt; ProblemType &gt;</a>
-</li>
-</ul>
-
-
-<h3><a id="index_l"></a>- l -</h3><ul>
-<li>load()
-: <a class="el" href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#ab5d0ad38579df411215a8b5b8768100f">polyfem::utils::OBJReader</a>
-</li>
-</ul>
-
-
-<h3><a id="index_m"></a>- m -</h3><ul>
-<li>m_history_size
-: <a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">cppoptlib::LBFGSSolver&lt; ProblemType &gt;</a>
-</li>
-</ul>
-
-
-<h3><a id="index_o"></a>- o -</h3><ul>
-<li>operator*
-: <a class="el" href="struct_d_scalar2.html#aad3ad65fd6e2b4076b9486898e242986">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;</a>
-</li>
-</ul>
-
-
-<h3><a id="index_r"></a>- r -</h3><ul>
-<li>RBFWithLinear()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a7f17ff3317a53590038a11fa75eb49a4">polyfem::basis::RBFWithLinear</a>
-</li>
-<li>RBFWithQuadratic()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a6e9070c30c8f0862727db6998a7edd2b">polyfem::basis::RBFWithQuadratic</a>
-</li>
-<li>RBFWithQuadraticLagrange()
-: <a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html#a5d54323cbdb409ac12b532c6bb83a7c1">polyfem::basis::RBFWithQuadraticLagrange</a>
-</li>
-</ul>
-
-
-<h3><a id="index_s"></a>- s -</h3><ul>
-<li>setVariableCount()
-: <a class="el" href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7">DiffScalarBase</a>
-</li>
-</ul>
-
-
-<h3><a id="index_v"></a>- v -</h3><ul>
-<li>vector()
-: <a class="el" href="struct_d_scalar1.html#a9bf4e0891229ebbc3fd94f50d4d3df71">DScalar1&lt; _Scalar, _Gradient &gt;</a>
-, <a class="el" href="struct_d_scalar2.html#a82c6ecfdd6734ee9e36784402fb42d2b">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;</a>
-</li>
-</ul>
-
-
-<h3><a id="index_x"></a>- x -</h3><ul>
-<li>x_lagged
-: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a1c814bca3c9728d43db8f74d9134fbc6">polyfem::solver::NLProblem</a>
+<li>_use_cached_candidates
+: <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ab1a2af0e578c57ac97ea77068b2c27dc">polyfem::solver::NLProblem</a>
 </li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

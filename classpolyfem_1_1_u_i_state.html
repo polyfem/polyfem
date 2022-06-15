@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::UIState Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -89,327 +121,2256 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_u_i_state.html',''); 
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#pri-types">Private Types</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1_u_i_state-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">polyfem::UIState Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_u_i_state_8hpp_source.html">UIState.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for polyfem::UIState:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classpolyfem_1_1_u_i_state.png" alt=""/>
- </div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_u_i_state__inherit__graph.svg" width="154" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for polyfem::UIState:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_u_i_state__coll__graph.svg" width="2262" height="1666"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9ae6765e622f779720a8283d7f3bc09f"><td class="memItemLeft" align="right" valign="top"><a id="a9ae6765e622f779720a8283d7f3bc09f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>launch</b> (const std::string &amp;log_file, int log_level, const bool is_quiet, const json &amp;args, const std::string &amp;febio)</td></tr>
+<tr class="memitem:a9ae6765e622f779720a8283d7f3bc09f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a9ae6765e622f779720a8283d7f3bc09f">launch</a> (const std::string &amp;log_file, int log_level, const bool is_quiet, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;args, const std::string &amp;febio)</td></tr>
 <tr class="separator:a9ae6765e622f779720a8283d7f3bc09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f42acb3072fd3ce7f09f7f22c3077b3"><td class="memItemLeft" align="right" valign="top"><a id="a2f42acb3072fd3ce7f09f7f22c3077b3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>sertialize</b> (const std::string &amp;name)</td></tr>
+<tr class="memitem:a2f42acb3072fd3ce7f09f7f22c3077b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a2f42acb3072fd3ce7f09f7f22c3077b3">sertialize</a> (const std::string &amp;name)</td></tr>
 <tr class="separator:a2f42acb3072fd3ce7f09f7f22c3077b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a404330d8b2c92dd882016bc7b92b9eef"><td class="memItemLeft" align="right" valign="top"><a id="a404330d8b2c92dd882016bc7b92b9eef"></a>
-igl::opengl::ViewerData &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>debug_data</b> ()</td></tr>
+<tr class="memitem:a404330d8b2c92dd882016bc7b92b9eef"><td class="memItemLeft" align="right" valign="top">igl::opengl::ViewerData &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef">debug_data</a> ()</td></tr>
 <tr class="separator:a404330d8b2c92dd882016bc7b92b9eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7065fd79d3848c2145dd91d9ac94cd9b"><td class="memItemLeft" align="right" valign="top"><a id="a7065fd79d3848c2145dd91d9ac94cd9b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>load</b> (std::string mesh_file_name_string) override</td></tr>
+<tr class="memitem:a7065fd79d3848c2145dd91d9ac94cd9b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a7065fd79d3848c2145dd91d9ac94cd9b">load</a> (std::string mesh_file_name_string) override</td></tr>
 <tr class="separator:a7065fd79d3848c2145dd91d9ac94cd9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeef6a19ec06d8305bf04e8613b08b27c"><td class="memItemLeft" align="right" valign="top"><a id="aeef6a19ec06d8305bf04e8613b08b27c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>save</b> (std::string mesh_file_name_string) override</td></tr>
+<tr class="memitem:aeef6a19ec06d8305bf04e8613b08b27c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#aeef6a19ec06d8305bf04e8613b08b27c">save</a> (std::string mesh_file_name_string) override</td></tr>
 <tr class="separator:aeef6a19ec06d8305bf04e8613b08b27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a76cb637cdb23194d564b236a072615f0"><td class="memItemLeft" align="right" valign="top"><a id="a76cb637cdb23194d564b236a072615f0"></a>
-static <a class="el" href="classpolyfem_1_1_u_i_state.html">UIState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ui_state</b> ()</td></tr>
+<tr class="memitem:a76cb637cdb23194d564b236a072615f0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classpolyfem_1_1_u_i_state.html">UIState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a76cb637cdb23194d564b236a072615f0">ui_state</a> ()</td></tr>
 <tr class="separator:a76cb637cdb23194d564b236a072615f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9cde8e57db9039cb891a9923c350c6a3"><td class="memItemLeft" align="right" valign="top"><a id="a9cde8e57db9039cb891a9923c350c6a3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>skip_visualization</b> = false</td></tr>
+<tr class="memitem:a9cde8e57db9039cb891a9923c350c6a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a9cde8e57db9039cb891a9923c350c6a3">skip_visualization</a> = false</td></tr>
 <tr class="separator:a9cde8e57db9039cb891a9923c350c6a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab85bb040611acf497ce0ab42b701206d"><td class="memItemLeft" align="right" valign="top"><a id="ab85bb040611acf497ce0ab42b701206d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>show_funs_in_3d</b> = false</td></tr>
+<tr class="memitem:ab85bb040611acf497ce0ab42b701206d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ab85bb040611acf497ce0ab42b701206d">show_funs_in_3d</a> = false</td></tr>
 <tr class="separator:ab85bb040611acf497ce0ab42b701206d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25a1743ba0ff76af7be7ee4e72a2e454"><td class="memItemLeft" align="right" valign="top"><a id="a25a1743ba0ff76af7be7ee4e72a2e454"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>vis_basis</b> = 0</td></tr>
+<tr class="memitem:a25a1743ba0ff76af7be7ee4e72a2e454"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a25a1743ba0ff76af7be7ee4e72a2e454">vis_basis</a> = 0</td></tr>
 <tr class="separator:a25a1743ba0ff76af7be7ee4e72a2e454"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9767e9fa875993556bdd48228ed4b7a9"><td class="memItemLeft" align="right" valign="top"><a id="a9767e9fa875993556bdd48228ed4b7a9"></a>
-igl::opengl::glfw::Viewer&#160;</td><td class="memItemRight" valign="bottom"><b>viewer</b></td></tr>
+<tr class="memitem:a9767e9fa875993556bdd48228ed4b7a9"><td class="memItemLeft" align="right" valign="top">igl::opengl::glfw::Viewer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a9767e9fa875993556bdd48228ed4b7a9">viewer</a></td></tr>
 <tr class="separator:a9767e9fa875993556bdd48228ed4b7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acac2fd95a8d2547828a96711a23d0684"><td class="memItemLeft" align="right" valign="top"><a id="acac2fd95a8d2547828a96711a23d0684"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>element_ranges</b></td></tr>
+<tr class="memitem:acac2fd95a8d2547828a96711a23d0684"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#acac2fd95a8d2547828a96711a23d0684">element_ranges</a></td></tr>
 <tr class="separator:acac2fd95a8d2547828a96711a23d0684"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40e9bc798ebb08c1fe796cc753a7baa7"><td class="memItemLeft" align="right" valign="top"><a id="a40e9bc798ebb08c1fe796cc753a7baa7"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vis_element_ranges</b></td></tr>
+<tr class="memitem:a40e9bc798ebb08c1fe796cc753a7baa7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a40e9bc798ebb08c1fe796cc753a7baa7">vis_element_ranges</a></td></tr>
 <tr class="separator:a40e9bc798ebb08c1fe796cc753a7baa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fdc4ac5c9c4f62ea507c6b0941880c9"><td class="memItemLeft" align="right" valign="top"><a id="a3fdc4ac5c9c4f62ea507c6b0941880c9"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>tri_faces</b></td></tr>
+<tr class="memitem:a3fdc4ac5c9c4f62ea507c6b0941880c9"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a3fdc4ac5c9c4f62ea507c6b0941880c9">tri_faces</a></td></tr>
 <tr class="separator:a3fdc4ac5c9c4f62ea507c6b0941880c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8db08b8f351b68564a00c20e54a68d53"><td class="memItemLeft" align="right" valign="top"><a id="a8db08b8f351b68564a00c20e54a68d53"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>vis_faces</b></td></tr>
+<tr class="memitem:a8db08b8f351b68564a00c20e54a68d53"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a8db08b8f351b68564a00c20e54a68d53">vis_faces</a></td></tr>
 <tr class="separator:a8db08b8f351b68564a00c20e54a68d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0a393514139dade66a66384b52ce565"><td class="memItemLeft" align="right" valign="top"><a id="ad0a393514139dade66a66384b52ce565"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>tri_pts</b></td></tr>
+<tr class="memitem:ad0a393514139dade66a66384b52ce565"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ad0a393514139dade66a66384b52ce565">tri_pts</a></td></tr>
 <tr class="separator:ad0a393514139dade66a66384b52ce565"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a889ee8dabeaefd71e8c050ee4e7e6525"><td class="memItemLeft" align="right" valign="top"><a id="a889ee8dabeaefd71e8c050ee4e7e6525"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>vis_pts</b></td></tr>
+<tr class="memitem:a889ee8dabeaefd71e8c050ee4e7e6525"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a889ee8dabeaefd71e8c050ee4e7e6525">vis_pts</a></td></tr>
 <tr class="separator:a889ee8dabeaefd71e8c050ee4e7e6525"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cb3eca211173317956331132ff9d655"><td class="memItemLeft" align="right" valign="top"><a id="a0cb3eca211173317956331132ff9d655"></a>
-std::map&lt; int, Eigen::MatrixXi &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vis_faces_poly</b></td></tr>
+<tr class="memitem:a0cb3eca211173317956331132ff9d655"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, Eigen::MatrixXi &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a0cb3eca211173317956331132ff9d655">vis_faces_poly</a></td></tr>
 <tr class="separator:a0cb3eca211173317956331132ff9d655"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c3e98eeb331db8fc6a13682df90fbf5"><td class="memItemLeft" align="right" valign="top"><a id="a9c3e98eeb331db8fc6a13682df90fbf5"></a>
-std::map&lt; int, Eigen::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vis_pts_poly</b></td></tr>
+<tr class="memitem:a9c3e98eeb331db8fc6a13682df90fbf5"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, Eigen::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a9c3e98eeb331db8fc6a13682df90fbf5">vis_pts_poly</a></td></tr>
 <tr class="separator:a9c3e98eeb331db8fc6a13682df90fbf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a20412cd3d30f61f5fbf1ed3789f431"><td class="memItemLeft" align="right" valign="top"><a id="a5a20412cd3d30f61f5fbf1ed3789f431"></a>
-igl::ColorMapType&#160;</td><td class="memItemRight" valign="bottom"><b>color_map</b> = igl::COLOR_MAP_TYPE_VIRIDIS</td></tr>
+<tr class="memitem:a5a20412cd3d30f61f5fbf1ed3789f431"><td class="memItemLeft" align="right" valign="top">igl::ColorMapType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a5a20412cd3d30f61f5fbf1ed3789f431">color_map</a> = igl::COLOR_MAP_TYPE_VIRIDIS</td></tr>
 <tr class="separator:a5a20412cd3d30f61f5fbf1ed3789f431"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fb4bd15f2b7d2d5cdc70b8e750d92cb"><td class="memItemLeft" align="right" valign="top"><a id="a2fb4bd15f2b7d2d5cdc70b8e750d92cb"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>min_val</b> = 0</td></tr>
+<tr class="memitem:a2fb4bd15f2b7d2d5cdc70b8e750d92cb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a2fb4bd15f2b7d2d5cdc70b8e750d92cb">min_val</a> = 0</td></tr>
 <tr class="separator:a2fb4bd15f2b7d2d5cdc70b8e750d92cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e68532fe629dbe170b082a8c3b5e080"><td class="memItemLeft" align="right" valign="top"><a id="a6e68532fe629dbe170b082a8c3b5e080"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>max_val</b> = 0</td></tr>
+<tr class="memitem:a6e68532fe629dbe170b082a8c3b5e080"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a6e68532fe629dbe170b082a8c3b5e080">max_val</a> = 0</td></tr>
 <tr class="separator:a6e68532fe629dbe170b082a8c3b5e080"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b9612a6943fff273cf706fe0f08a52b"><td class="memItemLeft" align="right" valign="top"><a id="a5b9612a6943fff273cf706fe0f08a52b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>slice_coord</b> = 0</td></tr>
+<tr class="memitem:a5b9612a6943fff273cf706fe0f08a52b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a5b9612a6943fff273cf706fe0f08a52b">slice_coord</a> = 0</td></tr>
 <tr class="separator:a5b9612a6943fff273cf706fe0f08a52b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fb50f35dfc1b4b3f60fb794ff4ece29"><td class="memItemLeft" align="right" valign="top"><a id="a0fb50f35dfc1b4b3f60fb794ff4ece29"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_slicing</b> = false</td></tr>
+<tr class="memitem:a0fb50f35dfc1b4b3f60fb794ff4ece29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a0fb50f35dfc1b4b3f60fb794ff4ece29">is_slicing</a> = false</td></tr>
 <tr class="separator:a0fb50f35dfc1b4b3f60fb794ff4ece29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a536db6eb999692b1f5a38d9f689f74d4"><td class="memItemLeft" align="right" valign="top"><a id="a536db6eb999692b1f5a38d9f689f74d4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>show_grad_error</b> = false</td></tr>
+<tr class="memitem:a536db6eb999692b1f5a38d9f689f74d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a536db6eb999692b1f5a38d9f689f74d4">show_grad_error</a> = false</td></tr>
 <tr class="separator:a536db6eb999692b1f5a38d9f689f74d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e754548cc36c6fcf5da976e2e6fe909"><td class="memItemLeft" align="right" valign="top"><a id="a6e754548cc36c6fcf5da976e2e6fe909"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>slice_position</b> = 1</td></tr>
+<tr class="memitem:a6e754548cc36c6fcf5da976e2e6fe909"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a6e754548cc36c6fcf5da976e2e6fe909">slice_position</a> = 1</td></tr>
 <tr class="separator:a6e754548cc36c6fcf5da976e2e6fe909"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98a7f4b78d8a6d6675dc103f3eebd90d"><td class="memItemLeft" align="right" valign="top"><a id="a98a7f4b78d8a6d6675dc103f3eebd90d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ambient_occlusion</b> = false</td></tr>
+<tr class="memitem:a98a7f4b78d8a6d6675dc103f3eebd90d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a98a7f4b78d8a6d6675dc103f3eebd90d">ambient_occlusion</a> = false</td></tr>
 <tr class="separator:a98a7f4b78d8a6d6675dc103f3eebd90d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4771af32913e388aa5e8953a2bd92c47"><td class="memItemLeft" align="right" valign="top"><a id="a4771af32913e388aa5e8953a2bd92c47"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>light_enabled</b> = true</td></tr>
+<tr class="memitem:a4771af32913e388aa5e8953a2bd92c47"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a4771af32913e388aa5e8953a2bd92c47">light_enabled</a> = true</td></tr>
 <tr class="separator:a4771af32913e388aa5e8953a2bd92c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66dcd4b7a723682eb09c46f08e75e52d"><td class="memItemLeft" align="right" valign="top"><a id="a66dcd4b7a723682eb09c46f08e75e52d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>show_isolines</b> = true</td></tr>
+<tr class="memitem:a66dcd4b7a723682eb09c46f08e75e52d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a66dcd4b7a723682eb09c46f08e75e52d">show_isolines</a> = true</td></tr>
 <tr class="separator:a66dcd4b7a723682eb09c46f08e75e52d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71ae7fac864251b9259758d6094f3c9f"><td class="memItemLeft" align="right" valign="top"><a id="a71ae7fac864251b9259758d6094f3c9f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>show_element_id</b> = false</td></tr>
+<tr class="memitem:a71ae7fac864251b9259758d6094f3c9f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a71ae7fac864251b9259758d6094f3c9f">show_element_id</a> = false</td></tr>
 <tr class="separator:a71ae7fac864251b9259758d6094f3c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c619e9552bffd5d7aea123b939861de"><td class="memItemLeft" align="right" valign="top"><a id="a2c619e9552bffd5d7aea123b939861de"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>show_vertex_id</b> = false</td></tr>
+<tr class="memitem:a2c619e9552bffd5d7aea123b939861de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a2c619e9552bffd5d7aea123b939861de">show_vertex_id</a> = false</td></tr>
 <tr class="separator:a2c619e9552bffd5d7aea123b939861de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac30b68f04a6d24d615a5f078cfab3a28"><td class="memItemLeft" align="right" valign="top"><a id="ac30b68f04a6d24d615a5f078cfab3a28"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>show_node_id</b> = false</td></tr>
+<tr class="memitem:ac30b68f04a6d24d615a5f078cfab3a28"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ac30b68f04a6d24d615a5f078cfab3a28">show_node_id</a> = false</td></tr>
 <tr class="separator:ac30b68f04a6d24d615a5f078cfab3a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4818d3b5e1903205ce39678c6435909a"><td class="memItemLeft" align="right" valign="top"><a id="a4818d3b5e1903205ce39678c6435909a"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>screenshot</b> = &quot;&quot;</td></tr>
+<tr class="memitem:a4818d3b5e1903205ce39678c6435909a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a4818d3b5e1903205ce39678c6435909a">screenshot</a> = &quot;&quot;</td></tr>
 <tr class="separator:a4818d3b5e1903205ce39678c6435909a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61429195423f5a2ed9f22a287644e794"><td class="memItemLeft" align="right" valign="top"><a id="a61429195423f5a2ed9f22a287644e794"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>normalized_barycenter</b></td></tr>
+<tr class="memitem:a61429195423f5a2ed9f22a287644e794"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a61429195423f5a2ed9f22a287644e794">normalized_barycenter</a></td></tr>
 <tr class="separator:a61429195423f5a2ed9f22a287644e794"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac39a8ce2e2753a0a7897988a409e2edb"><td class="memItemLeft" align="right" valign="top"><a id="ac39a8ce2e2753a0a7897988a409e2edb"></a>
-Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>ambient_occlusion_mat</b></td></tr>
+<tr class="memitem:ac39a8ce2e2753a0a7897988a409e2edb"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ac39a8ce2e2753a0a7897988a409e2edb">ambient_occlusion_mat</a></td></tr>
 <tr class="separator:ac39a8ce2e2753a0a7897988a409e2edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ce2712bfac04b5e6e159ac9418a06bd"><td class="memItemLeft" align="right" valign="top"><a id="a3ce2712bfac04b5e6e159ac9418a06bd"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>selected_elements</b></td></tr>
+<tr class="memitem:a3ce2712bfac04b5e6e159ac9418a06bd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a3ce2712bfac04b5e6e159ac9418a06bd">selected_elements</a></td></tr>
 <tr class="separator:a3ce2712bfac04b5e6e159ac9418a06bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44cca0ed4899020f03b20f551994fcdd"><td class="memItemLeft" align="right" valign="top"><a id="a44cca0ed4899020f03b20f551994fcdd"></a>
-<a class="el" href="classpolyfem_1_1_state.html">State</a>&#160;</td><td class="memItemRight" valign="bottom"><b>state</b></td></tr>
+<tr class="memitem:a44cca0ed4899020f03b20f551994fcdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_state.html">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a44cca0ed4899020f03b20f551994fcdd">state</a></td></tr>
 <tr class="separator:a44cca0ed4899020f03b20f551994fcdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a1558372e7119599777410d542193f51b"><td class="memItemLeft" align="right" valign="top"><a id="a1558372e7119599777410d542193f51b"></a>
-igl::opengl::ViewerData &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> (const Visualizations &amp;layer)</td></tr>
+<tr class="memitem:a1558372e7119599777410d542193f51b"><td class="memItemLeft" align="right" valign="top">igl::opengl::ViewerData &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a1558372e7119599777410d542193f51b">data</a> (const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer)</td></tr>
 <tr class="separator:a1558372e7119599777410d542193f51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19cc2ba81afde785516f2b56f0641495"><td class="memItemLeft" align="right" valign="top"><a id="a19cc2ba81afde785516f2b56f0641495"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_flags</b> (const Visualizations &amp;layer, bool clear=true)</td></tr>
+<tr class="memitem:a19cc2ba81afde785516f2b56f0641495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a19cc2ba81afde785516f2b56f0641495">reset_flags</a> (const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, bool <a class="el" href="classpolyfem_1_1_u_i_state.html#a96f232d921f018b369921d6fc18cac16">clear</a>=true)</td></tr>
 <tr class="separator:a19cc2ba81afde785516f2b56f0641495"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06f32ded5decb7174129917e8bee91ae"><td class="memItemLeft" align="right" valign="top"><a id="a06f32ded5decb7174129917e8bee91ae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>hide_data</b> (const Visualizations &amp;layer)</td></tr>
+<tr class="memitem:a06f32ded5decb7174129917e8bee91ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a06f32ded5decb7174129917e8bee91ae">hide_data</a> (const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer)</td></tr>
 <tr class="separator:a06f32ded5decb7174129917e8bee91ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a120f9d2217a651c689b7f8b78ac317e6"><td class="memItemLeft" align="right" valign="top"><a id="a120f9d2217a651c689b7f8b78ac317e6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_data</b> (const Visualizations &amp;layer)</td></tr>
+<tr class="memitem:a120f9d2217a651c689b7f8b78ac317e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a120f9d2217a651c689b7f8b78ac317e6">show_data</a> (const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer)</td></tr>
 <tr class="separator:a120f9d2217a651c689b7f8b78ac317e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96f232d921f018b369921d6fc18cac16"><td class="memItemLeft" align="right" valign="top"><a id="a96f232d921f018b369921d6fc18cac16"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:a96f232d921f018b369921d6fc18cac16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a96f232d921f018b369921d6fc18cac16">clear</a> ()</td></tr>
 <tr class="separator:a96f232d921f018b369921d6fc18cac16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3521d7081f48fdc47e4f981d9a48f972"><td class="memItemLeft" align="right" valign="top"><a id="a3521d7081f48fdc47e4f981d9a48f972"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>redraw</b> ()</td></tr>
+<tr class="memitem:a3521d7081f48fdc47e4f981d9a48f972"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a3521d7081f48fdc47e4f981d9a48f972">redraw</a> ()</td></tr>
 <tr class="separator:a3521d7081f48fdc47e4f981d9a48f972"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7be715bd0081e1407aa191b3aa30d5fd"><td class="memItemLeft" align="right" valign="top"><a id="a7be715bd0081e1407aa191b3aa30d5fd"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_menu</b> () override</td></tr>
+<tr class="memitem:a7be715bd0081e1407aa191b3aa30d5fd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a7be715bd0081e1407aa191b3aa30d5fd">draw_menu</a> () override</td></tr>
 <tr class="separator:a7be715bd0081e1407aa191b3aa30d5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c5604bfa26889fa4dc8de37e1ae9fb6"><td class="memItemLeft" align="right" valign="top"><a id="a0c5604bfa26889fa4dc8de37e1ae9fb6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_settings</b> ()</td></tr>
+<tr class="memitem:a0c5604bfa26889fa4dc8de37e1ae9fb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a0c5604bfa26889fa4dc8de37e1ae9fb6">draw_settings</a> ()</td></tr>
 <tr class="separator:a0c5604bfa26889fa4dc8de37e1ae9fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2396a61f7c7560c589190268e78843d5"><td class="memItemLeft" align="right" valign="top"><a id="a2396a61f7c7560c589190268e78843d5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_debug</b> ()</td></tr>
+<tr class="memitem:a2396a61f7c7560c589190268e78843d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a2396a61f7c7560c589190268e78843d5">draw_debug</a> ()</td></tr>
 <tr class="separator:a2396a61f7c7560c589190268e78843d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bfef06749a3ad6f7219a47e5f868553"><td class="memItemLeft" align="right" valign="top"><a id="a8bfef06749a3ad6f7219a47e5f868553"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_screenshot</b> ()</td></tr>
+<tr class="memitem:a8bfef06749a3ad6f7219a47e5f868553"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a8bfef06749a3ad6f7219a47e5f868553">draw_screenshot</a> ()</td></tr>
 <tr class="separator:a8bfef06749a3ad6f7219a47e5f868553"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c45a310bd98789b4f6582373fbe444f"><td class="memItemLeft" align="right" valign="top"><a id="a8c45a310bd98789b4f6582373fbe444f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_elasticity_bc</b> ()</td></tr>
+<tr class="memitem:a8c45a310bd98789b4f6582373fbe444f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a8c45a310bd98789b4f6582373fbe444f">draw_elasticity_bc</a> ()</td></tr>
 <tr class="separator:a8c45a310bd98789b4f6582373fbe444f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71636a66d0716ed64e678764570e7419"><td class="memItemLeft" align="right" valign="top"><a id="a71636a66d0716ed64e678764570e7419"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_mesh</b> ()</td></tr>
+<tr class="memitem:a71636a66d0716ed64e678764570e7419"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a71636a66d0716ed64e678764570e7419">show_mesh</a> ()</td></tr>
 <tr class="separator:a71636a66d0716ed64e678764570e7419"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a538531bafb1788f6caadb07d3a101e55"><td class="memItemLeft" align="right" valign="top"><a id="a538531bafb1788f6caadb07d3a101e55"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_sidesets</b> ()</td></tr>
+<tr class="memitem:a538531bafb1788f6caadb07d3a101e55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a538531bafb1788f6caadb07d3a101e55">show_sidesets</a> ()</td></tr>
 <tr class="separator:a538531bafb1788f6caadb07d3a101e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f823f46af197dce12fbf4bd4b07f5d3"><td class="memItemLeft" align="right" valign="top"><a id="a0f823f46af197dce12fbf4bd4b07f5d3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_vis_mesh</b> ()</td></tr>
+<tr class="memitem:a0f823f46af197dce12fbf4bd4b07f5d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a0f823f46af197dce12fbf4bd4b07f5d3">show_vis_mesh</a> ()</td></tr>
 <tr class="separator:a0f823f46af197dce12fbf4bd4b07f5d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab773214c7e9f3cf6b44b927c5de3c8f8"><td class="memItemLeft" align="right" valign="top"><a id="ab773214c7e9f3cf6b44b927c5de3c8f8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_nodes</b> ()</td></tr>
+<tr class="memitem:ab773214c7e9f3cf6b44b927c5de3c8f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ab773214c7e9f3cf6b44b927c5de3c8f8">show_nodes</a> ()</td></tr>
 <tr class="separator:ab773214c7e9f3cf6b44b927c5de3c8f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2ef9053d8d59a5a84e5c0f434bad451"><td class="memItemLeft" align="right" valign="top"><a id="ad2ef9053d8d59a5a84e5c0f434bad451"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_sol</b> ()</td></tr>
+<tr class="memitem:ad2ef9053d8d59a5a84e5c0f434bad451"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ad2ef9053d8d59a5a84e5c0f434bad451">show_sol</a> ()</td></tr>
 <tr class="separator:ad2ef9053d8d59a5a84e5c0f434bad451"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f8aa085cc97b2582d6d81189c25f474"><td class="memItemLeft" align="right" valign="top"><a id="a4f8aa085cc97b2582d6d81189c25f474"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_error</b> ()</td></tr>
+<tr class="memitem:a4f8aa085cc97b2582d6d81189c25f474"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a4f8aa085cc97b2582d6d81189c25f474">show_error</a> ()</td></tr>
 <tr class="separator:a4f8aa085cc97b2582d6d81189c25f474"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ae5a6976563be751eb61cf355b22a54"><td class="memItemLeft" align="right" valign="top"><a id="a2ae5a6976563be751eb61cf355b22a54"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_basis</b> ()</td></tr>
+<tr class="memitem:a2ae5a6976563be751eb61cf355b22a54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a2ae5a6976563be751eb61cf355b22a54">show_basis</a> ()</td></tr>
 <tr class="separator:a2ae5a6976563be751eb61cf355b22a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72f7a4714b02bdc66839803ed3d48345"><td class="memItemLeft" align="right" valign="top"><a id="a72f7a4714b02bdc66839803ed3d48345"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_linear_reproduction</b> ()</td></tr>
+<tr class="memitem:a72f7a4714b02bdc66839803ed3d48345"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a72f7a4714b02bdc66839803ed3d48345">show_linear_reproduction</a> ()</td></tr>
 <tr class="separator:a72f7a4714b02bdc66839803ed3d48345"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a400178abf525f361e45ef2d609a20787"><td class="memItemLeft" align="right" valign="top"><a id="a400178abf525f361e45ef2d609a20787"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_quadratic_reproduction</b> ()</td></tr>
+<tr class="memitem:a400178abf525f361e45ef2d609a20787"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a400178abf525f361e45ef2d609a20787">show_quadratic_reproduction</a> ()</td></tr>
 <tr class="separator:a400178abf525f361e45ef2d609a20787"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a227c3de531c1fa523f7ca1f0b38ddaab"><td class="memItemLeft" align="right" valign="top"><a id="a227c3de531c1fa523f7ca1f0b38ddaab"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>build_vis_mesh</b> ()</td></tr>
+<tr class="memitem:a227c3de531c1fa523f7ca1f0b38ddaab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a227c3de531c1fa523f7ca1f0b38ddaab">build_vis_mesh</a> ()</td></tr>
 <tr class="separator:a227c3de531c1fa523f7ca1f0b38ddaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe8d462bf1ba71bda4b0916a56d8046a"><td class="memItemLeft" align="right" valign="top"><a id="afe8d462bf1ba71bda4b0916a56d8046a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>load_mesh</b> ()</td></tr>
+<tr class="memitem:afe8d462bf1ba71bda4b0916a56d8046a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#afe8d462bf1ba71bda4b0916a56d8046a">load_mesh</a> ()</td></tr>
 <tr class="separator:afe8d462bf1ba71bda4b0916a56d8046a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf8c478395fdd3e009852bbebf8ef108"><td class="memItemLeft" align="right" valign="top"><a id="adf8c478395fdd3e009852bbebf8ef108"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>build_basis</b> ()</td></tr>
+<tr class="memitem:adf8c478395fdd3e009852bbebf8ef108"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#adf8c478395fdd3e009852bbebf8ef108">build_basis</a> ()</td></tr>
 <tr class="separator:adf8c478395fdd3e009852bbebf8ef108"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad1910cd287c05e6a839be033461f93c"><td class="memItemLeft" align="right" valign="top"><a id="aad1910cd287c05e6a839be033461f93c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>assemble_stiffness_mat</b> ()</td></tr>
+<tr class="memitem:aad1910cd287c05e6a839be033461f93c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#aad1910cd287c05e6a839be033461f93c">assemble_stiffness_mat</a> ()</td></tr>
 <tr class="separator:aad1910cd287c05e6a839be033461f93c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a426ec8da0afc25adc41d246b5d5e9513"><td class="memItemLeft" align="right" valign="top"><a id="a426ec8da0afc25adc41d246b5d5e9513"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>assemble_rhs</b> ()</td></tr>
+<tr class="memitem:a426ec8da0afc25adc41d246b5d5e9513"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a426ec8da0afc25adc41d246b5d5e9513">assemble_rhs</a> ()</td></tr>
 <tr class="separator:a426ec8da0afc25adc41d246b5d5e9513"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d35e0c5ec1fc69d5140d46a5ef69282"><td class="memItemLeft" align="right" valign="top"><a id="a4d35e0c5ec1fc69d5140d46a5ef69282"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>solve_problem</b> ()</td></tr>
+<tr class="memitem:a4d35e0c5ec1fc69d5140d46a5ef69282"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a4d35e0c5ec1fc69d5140d46a5ef69282">solve_problem</a> ()</td></tr>
 <tr class="separator:a4d35e0c5ec1fc69d5140d46a5ef69282"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fe7fd0b449f73978592e8ebfe1b0190"><td class="memItemLeft" align="right" valign="top"><a id="a6fe7fd0b449f73978592e8ebfe1b0190"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_errors</b> ()</td></tr>
+<tr class="memitem:a6fe7fd0b449f73978592e8ebfe1b0190"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a6fe7fd0b449f73978592e8ebfe1b0190">compute_errors</a> ()</td></tr>
 <tr class="separator:a6fe7fd0b449f73978592e8ebfe1b0190"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55d5e18dd16181f684d1fdad08b746c1"><td class="memItemLeft" align="right" valign="top"><a id="a55d5e18dd16181f684d1fdad08b746c1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update_slices</b> ()</td></tr>
+<tr class="memitem:a55d5e18dd16181f684d1fdad08b746c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a55d5e18dd16181f684d1fdad08b746c1">update_slices</a> ()</td></tr>
 <tr class="separator:a55d5e18dd16181f684d1fdad08b746c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12c491f76131f86fdce639699279c851"><td class="memItemLeft" align="right" valign="top"><a id="a12c491f76131f86fdce639699279c851"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_quad</b> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;bs) const</td></tr>
+<tr class="memitem:a12c491f76131f86fdce639699279c851"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a12c491f76131f86fdce639699279c851">is_quad</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;bs) const</td></tr>
 <tr class="separator:a12c491f76131f86fdce639699279c851"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa598f10b4425d9de47bbc379eb68ad1b"><td class="memItemLeft" align="right" valign="top"><a id="aa598f10b4425d9de47bbc379eb68ad1b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_tri</b> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;bs) const</td></tr>
+<tr class="memitem:aa598f10b4425d9de47bbc379eb68ad1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#aa598f10b4425d9de47bbc379eb68ad1b">is_tri</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;bs) const</td></tr>
 <tr class="separator:aa598f10b4425d9de47bbc379eb68ad1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9befd549a11aa065eefceb7283664a3f"><td class="memItemLeft" align="right" valign="top"><a id="a9befd549a11aa065eefceb7283664a3f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>plot_function</b> (const Eigen::MatrixXd &amp;fun, const Visualizations &amp;layer, double min=0, double max=-1)</td></tr>
+<tr class="memitem:a9befd549a11aa065eefceb7283664a3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a9befd549a11aa065eefceb7283664a3f">plot_function</a> (const Eigen::MatrixXd &amp;fun, const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, double min=0, double max=-1)</td></tr>
 <tr class="separator:a9befd549a11aa065eefceb7283664a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66a5ebf3f768857b2882ef714db97854"><td class="memItemLeft" align="right" valign="top"><a id="a66a5ebf3f768857b2882ef714db97854"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_function</b> (const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result)</td></tr>
+<tr class="memitem:a66a5ebf3f768857b2882ef714db97854"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a66a5ebf3f768857b2882ef714db97854">interpolate_function</a> (const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result)</td></tr>
 <tr class="separator:a66a5ebf3f768857b2882ef714db97854"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5d33b33029001cc91eee9145e3f09be"><td class="memItemLeft" align="right" valign="top"><a id="ab5d33b33029001cc91eee9145e3f09be"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_grad_function</b> (const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result)</td></tr>
+<tr class="memitem:ab5d33b33029001cc91eee9145e3f09be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ab5d33b33029001cc91eee9145e3f09be">interpolate_grad_function</a> (const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result)</td></tr>
 <tr class="separator:ab5d33b33029001cc91eee9145e3f09be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebe4e0dc9381fbe755b4f15b2a75de90"><td class="memItemLeft" align="right" valign="top"><a id="aebe4e0dc9381fbe755b4f15b2a75de90"></a>
-long&#160;</td><td class="memItemRight" valign="bottom"><b>clip_elements</b> (const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXi &amp;tris, const std::vector&lt; int &gt; &amp;ranges, std::vector&lt; bool &gt; &amp;valid_elements, const bool map_edges, const Visualizations &amp;layer)</td></tr>
+<tr class="memitem:aebe4e0dc9381fbe755b4f15b2a75de90"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#aebe4e0dc9381fbe755b4f15b2a75de90">clip_elements</a> (const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXi &amp;tris, const std::vector&lt; int &gt; &amp;ranges, std::vector&lt; bool &gt; &amp;valid_elements, const bool map_edges, const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer)</td></tr>
 <tr class="separator:aebe4e0dc9381fbe755b4f15b2a75de90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adceddd05ca3646fca4c87302b96caefe"><td class="memItemLeft" align="right" valign="top"><a id="adceddd05ca3646fca4c87302b96caefe"></a>
-long&#160;</td><td class="memItemRight" valign="bottom"><b>show_clipped_elements</b> (const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXi &amp;tris, const std::vector&lt; int &gt; &amp;ranges, const std::vector&lt; bool &gt; &amp;valid_elements, const bool map_edges, const Visualizations &amp;layer, const bool recenter=false)</td></tr>
+<tr class="memitem:adceddd05ca3646fca4c87302b96caefe"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#adceddd05ca3646fca4c87302b96caefe">show_clipped_elements</a> (const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXi &amp;tris, const std::vector&lt; int &gt; &amp;ranges, const std::vector&lt; bool &gt; &amp;valid_elements, const bool map_edges, const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, const bool recenter=false)</td></tr>
 <tr class="separator:adceddd05ca3646fca4c87302b96caefe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4670881204faabc68425384eb11973a9"><td class="memItemLeft" align="right" valign="top"><a id="a4670881204faabc68425384eb11973a9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>color_mesh</b> (const int n_tris, const std::vector&lt; bool &gt; &amp;valid_elements, const Visualizations &amp;layer)</td></tr>
+<tr class="memitem:a4670881204faabc68425384eb11973a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a4670881204faabc68425384eb11973a9">color_mesh</a> (const int n_tris, const std::vector&lt; bool &gt; &amp;valid_elements, const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer)</td></tr>
 <tr class="separator:a4670881204faabc68425384eb11973a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92f313242331133f8372f8f2600c83ac"><td class="memItemLeft" align="right" valign="top"><a id="a92f313242331133f8372f8f2600c83ac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>plot_selection_and_index</b> (const bool recenter=false)</td></tr>
+<tr class="memitem:a92f313242331133f8372f8f2600c83ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a92f313242331133f8372f8f2600c83ac">plot_selection_and_index</a> (const bool recenter=false)</td></tr>
 <tr class="separator:a92f313242331133f8372f8f2600c83ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff8478627f08bc6a3d4c2e30a547c317"><td class="memItemLeft" align="right" valign="top"><a id="aff8478627f08bc6a3d4c2e30a547c317"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>get_plot_edges</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;gbases, const int n_samples, const std::vector&lt; bool &gt; &amp;valid_elements, const Visualizations &amp;layer, Eigen::MatrixXd &amp;pp0, Eigen::MatrixXd &amp;pp1)</td></tr>
+<tr class="memitem:aff8478627f08bc6a3d4c2e30a547c317"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#aff8478627f08bc6a3d4c2e30a547c317">get_plot_edges</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;gbases, const int n_samples, const std::vector&lt; bool &gt; &amp;valid_elements, const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, Eigen::MatrixXd &amp;pp0, Eigen::MatrixXd &amp;pp1)</td></tr>
 <tr class="separator:aff8478627f08bc6a3d4c2e30a547c317"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a4b125112f11064d356e941ac529ddd28"><td class="memItemLeft" align="right" valign="top"><a id="a4b125112f11064d356e941ac529ddd28"></a>
-<a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">Navigation3D::Index</a>&#160;</td><td class="memItemRight" valign="bottom"><b>current_3d_index</b></td></tr>
+<tr class="memitem:a4b125112f11064d356e941ac529ddd28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">Navigation3D::Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a4b125112f11064d356e941ac529ddd28">current_3d_index</a></td></tr>
 <tr class="separator:a4b125112f11064d356e941ac529ddd28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a669875eb894331acc5b82359a53ce93f"><td class="memItemLeft" align="right" valign="top"><a id="a669875eb894331acc5b82359a53ce93f"></a>
-<a class="el" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a>&#160;</td><td class="memItemRight" valign="bottom"><b>current_2d_index</b></td></tr>
+<tr class="memitem:a669875eb894331acc5b82359a53ce93f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a669875eb894331acc5b82359a53ce93f">current_2d_index</a></td></tr>
 <tr class="separator:a669875eb894331acc5b82359a53ce93f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a693eec00d3bc223d0c05efbf5c49668d"><td class="memItemLeft" align="right" valign="top"><a id="a693eec00d3bc223d0c05efbf5c49668d"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>febio_file</b></td></tr>
+<tr class="memitem:a693eec00d3bc223d0c05efbf5c49668d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a693eec00d3bc223d0c05efbf5c49668d">febio_file</a></td></tr>
 <tr class="separator:a693eec00d3bc223d0c05efbf5c49668d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a116716154f0897031f7972980060c6d0"><td class="memItemLeft" align="right" valign="top"><a id="a116716154f0897031f7972980060c6d0"></a>
-json&#160;</td><td class="memItemRight" valign="bottom"><b>in_args</b></td></tr>
+<tr class="memitem:a116716154f0897031f7972980060c6d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a116716154f0897031f7972980060c6d0">in_args</a></td></tr>
 <tr class="separator:a116716154f0897031f7972980060c6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc8c98a345501bd37aecf13482a9c7e8"><td class="memItemLeft" align="right" valign="top"><a id="adc8c98a345501bd37aecf13482a9c7e8"></a>
-Eigen::Matrix&lt; bool, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>available_visualizations</b></td></tr>
+<tr class="memitem:adc8c98a345501bd37aecf13482a9c7e8"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; bool, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#adc8c98a345501bd37aecf13482a9c7e8">available_visualizations</a></td></tr>
 <tr class="separator:adc8c98a345501bd37aecf13482a9c7e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade936ca13b204e7a2592c42b03dad734"><td class="memItemLeft" align="right" valign="top"><a id="ade936ca13b204e7a2592c42b03dad734"></a>
-Eigen::Matrix&lt; bool, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>visible_visualizations</b></td></tr>
+<tr class="memitem:ade936ca13b204e7a2592c42b03dad734"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; bool, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#ade936ca13b204e7a2592c42b03dad734">visible_visualizations</a></td></tr>
 <tr class="separator:ade936ca13b204e7a2592c42b03dad734"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a964a51e4942a1f7fd2669f1f73e8d321"><td class="memItemLeft" align="right" valign="top"><a id="a964a51e4942a1f7fd2669f1f73e8d321"></a>
-std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vis_flags</b></td></tr>
+<tr class="memitem:a964a51e4942a1f7fd2669f1f73e8d321"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a964a51e4942a1f7fd2669f1f73e8d321">vis_flags</a></td></tr>
 <tr class="separator:a964a51e4942a1f7fd2669f1f73e8d321"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:a866528eb21d676aca2118b2290728333"><td class="memItemLeft" align="right" valign="top"><a id="a866528eb21d676aca2118b2290728333"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Visualizations</b> { <br />
-&#160;&#160;<b>InputMesh</b> = 0, 
-<b>Sidesets</b>, 
-<b>DiscrMesh</b>, 
-<b>Nodes</b>, 
+<tr class="memitem:a866528eb21d676aca2118b2290728333"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> { <br />
+&#160;&#160;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ac2d1dad5a4eec163c9e9b002cd40e104">InputMesh</a> = 0, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3">Sidesets</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7">DiscrMesh</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a">Nodes</a>, 
 <br />
-&#160;&#160;<b>PNodes</b>, 
-<b>BNodes</b>, 
-<b>BPNodes</b>, 
-<b>VisMesh</b>, 
+&#160;&#160;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531">PNodes</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d">BNodes</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06">BPNodes</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93">VisMesh</a>, 
 <br />
-&#160;&#160;<b>Solution</b>, 
-<b>Error</b>, 
-<b>ErrorGrad</b>, 
-<b>VisBasis</b>, 
+&#160;&#160;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c">Solution</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029">Error</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a">ErrorGrad</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d">VisBasis</a>, 
 <br />
-&#160;&#160;<b>NavigationIndex</b>, 
-<b>Debug</b>, 
-<b>ElementId</b>, 
-<b>VertexId</b>, 
+&#160;&#160;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c">NavigationIndex</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d">Debug</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb">ElementId</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16">VertexId</a>, 
 <br />
-&#160;&#160;<b>NodesId</b>, 
-<b>TotalVisualizations</b>
+&#160;&#160;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4">NodesId</a>, 
+<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a53873c90eddbe92ceb91cc6fc8eb1b06">TotalVisualizations</a>
 <br />
  }</td></tr>
 <tr class="separator:a866528eb21d676aca2118b2290728333"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a70d4a325da1e70bb33fc9d37e66de3a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a70d4a325da1e70bb33fc9d37e66de3a8">UIState</a> ()</td></tr>
+<tr class="separator:a70d4a325da1e70bb33fc9d37e66de3a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a020d97708558694a79b105a2e7042fbc"><td class="memItemLeft" align="right" valign="top"><a id="a020d97708558694a79b105a2e7042fbc"></a>
-const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>visualizations_texts</b> [Visualizations::TotalVisualizations] = {&quot;InputMesh&quot;, &quot;Sidesets&quot;, &quot;Diretization&quot;, &quot;Nodes&quot;, &quot;PNodes&quot;, &quot;BNodes&quot;, &quot;BPNodes&quot;, &quot;VisMesh&quot;, &quot;Solution&quot;, &quot;Error&quot;, &quot;ErrorGrad&quot;, &quot;VisBasis&quot;, &quot;NavigationIndex&quot;, &quot;Debug&quot;, &quot;ElementId&quot;, &quot;VertexId&quot;, &quot;NodesId&quot;}</td></tr>
+<tr class="memitem:a020d97708558694a79b105a2e7042fbc"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_u_i_state.html#a020d97708558694a79b105a2e7042fbc">visualizations_texts</a> [Visualizations::TotalVisualizations] = {&quot;InputMesh&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3">Sidesets</a>&quot;, &quot;Diretization&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a">Nodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531">PNodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d">BNodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06">BPNodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93">VisMesh</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c">Solution</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029">Error</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a">ErrorGrad</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d">VisBasis</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c">NavigationIndex</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d">Debug</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb">ElementId</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16">VertexId</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4">NodesId</a>&quot;}</td></tr>
 <tr class="separator:a020d97708558694a79b105a2e7042fbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a866528eb21d676aca2118b2290728333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a866528eb21d676aca2118b2290728333">&#9670;&nbsp;</a></span>Visualizations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">polyfem::UIState::Visualizations</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333ac2d1dad5a4eec163c9e9b002cd40e104"></a>InputMesh&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3"></a>Sidesets&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7"></a>DiscrMesh&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a"></a>Nodes&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531"></a>PNodes&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d"></a>BNodes&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06"></a>BPNodes&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93"></a>VisMesh&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c"></a>Solution&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029"></a>Error&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a"></a>ErrorGrad&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d"></a>VisBasis&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c"></a>NavigationIndex&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d"></a>Debug&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb"></a>ElementId&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16"></a>VertexId&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4"></a>NodesId&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a866528eb21d676aca2118b2290728333a53873c90eddbe92ceb91cc6fc8eb1b06"></a>TotalVisualizations&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a70d4a325da1e70bb33fc9d37e66de3a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70d4a325da1e70bb33fc9d37e66de3a8">&#9670;&nbsp;</a></span>UIState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::UIState::UIState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a426ec8da0afc25adc41d246b5d5e9513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a426ec8da0afc25adc41d246b5d5e9513">&#9670;&nbsp;</a></span>assemble_rhs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::assemble_rhs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad1910cd287c05e6a839be033461f93c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad1910cd287c05e6a839be033461f93c">&#9670;&nbsp;</a></span>assemble_stiffness_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::assemble_stiffness_mat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf8c478395fdd3e009852bbebf8ef108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf8c478395fdd3e009852bbebf8ef108">&#9670;&nbsp;</a></span>build_basis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::build_basis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a227c3de531c1fa523f7ca1f0b38ddaab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a227c3de531c1fa523f7ca1f0b38ddaab">&#9670;&nbsp;</a></span>build_vis_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::build_vis_mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a96f232d921f018b369921d6fc18cac16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96f232d921f018b369921d6fc18cac16">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aebe4e0dc9381fbe755b4f15b2a75de90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebe4e0dc9381fbe755b4f15b2a75de90">&#9670;&nbsp;</a></span>clip_elements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long polyfem::UIState::clip_elements </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>tris</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ranges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>valid_elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>map_edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4670881204faabc68425384eb11973a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4670881204faabc68425384eb11973a9">&#9670;&nbsp;</a></span>color_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::color_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_tris</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>valid_elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6fe7fd0b449f73978592e8ebfe1b0190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fe7fd0b449f73978592e8ebfe1b0190">&#9670;&nbsp;</a></span>compute_errors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::compute_errors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1558372e7119599777410d542193f51b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1558372e7119599777410d542193f51b">&#9670;&nbsp;</a></span>data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">igl::opengl::ViewerData &amp; polyfem::UIState::data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a404330d8b2c92dd882016bc7b92b9eef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a404330d8b2c92dd882016bc7b92b9eef">&#9670;&nbsp;</a></span>debug_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">igl::opengl::ViewerData&amp; polyfem::UIState::debug_data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2396a61f7c7560c589190268e78843d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2396a61f7c7560c589190268e78843d5">&#9670;&nbsp;</a></span>draw_debug()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::draw_debug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8c45a310bd98789b4f6582373fbe444f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c45a310bd98789b4f6582373fbe444f">&#9670;&nbsp;</a></span>draw_elasticity_bc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::draw_elasticity_bc </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7be715bd0081e1407aa191b3aa30d5fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7be715bd0081e1407aa191b3aa30d5fd">&#9670;&nbsp;</a></span>draw_menu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::draw_menu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8bfef06749a3ad6f7219a47e5f868553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bfef06749a3ad6f7219a47e5f868553">&#9670;&nbsp;</a></span>draw_screenshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::draw_screenshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0c5604bfa26889fa4dc8de37e1ae9fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c5604bfa26889fa4dc8de37e1ae9fb6">&#9670;&nbsp;</a></span>draw_settings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::draw_settings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff8478627f08bc6a3d4c2e30a547c317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff8478627f08bc6a3d4c2e30a547c317">&#9670;&nbsp;</a></span>get_plot_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::get_plot_edges </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>valid_elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pp0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pp1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a06f32ded5decb7174129917e8bee91ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06f32ded5decb7174129917e8bee91ae">&#9670;&nbsp;</a></span>hide_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::hide_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66a5ebf3f768857b2882ef714db97854"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66a5ebf3f768857b2882ef714db97854">&#9670;&nbsp;</a></span>interpolate_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::interpolate_function </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>fun</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab5d33b33029001cc91eee9145e3f09be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5d33b33029001cc91eee9145e3f09be">&#9670;&nbsp;</a></span>interpolate_grad_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::interpolate_grad_function </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>fun</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a12c491f76131f86fdce639699279c851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c491f76131f86fdce639699279c851">&#9670;&nbsp;</a></span>is_quad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::is_quad </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>bs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa598f10b4425d9de47bbc379eb68ad1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa598f10b4425d9de47bbc379eb68ad1b">&#9670;&nbsp;</a></span>is_tri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::is_tri </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>bs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9ae6765e622f779720a8283d7f3bc09f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae6765e622f779720a8283d7f3bc09f">&#9670;&nbsp;</a></span>launch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::launch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>log_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>log_level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_quiet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>febio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7065fd79d3848c2145dd91d9ac94cd9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7065fd79d3848c2145dd91d9ac94cd9b">&#9670;&nbsp;</a></span>load()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::load </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mesh_file_name_string</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe8d462bf1ba71bda4b0916a56d8046a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe8d462bf1ba71bda4b0916a56d8046a">&#9670;&nbsp;</a></span>load_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::load_mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9befd549a11aa065eefceb7283664a3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9befd549a11aa065eefceb7283664a3f">&#9670;&nbsp;</a></span>plot_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::plot_function </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>fun</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>min</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>max</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92f313242331133f8372f8f2600c83ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f313242331133f8372f8f2600c83ac">&#9670;&nbsp;</a></span>plot_selection_and_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::plot_selection_and_index </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>recenter</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3521d7081f48fdc47e4f981d9a48f972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3521d7081f48fdc47e4f981d9a48f972">&#9670;&nbsp;</a></span>redraw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::redraw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19cc2ba81afde785516f2b56f0641495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19cc2ba81afde785516f2b56f0641495">&#9670;&nbsp;</a></span>reset_flags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::reset_flags </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeef6a19ec06d8305bf04e8613b08b27c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeef6a19ec06d8305bf04e8613b08b27c">&#9670;&nbsp;</a></span>save()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::save </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mesh_file_name_string</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f42acb3072fd3ce7f09f7f22c3077b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f42acb3072fd3ce7f09f7f22c3077b3">&#9670;&nbsp;</a></span>sertialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::sertialize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2ae5a6976563be751eb61cf355b22a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ae5a6976563be751eb61cf355b22a54">&#9670;&nbsp;</a></span>show_basis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_basis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adceddd05ca3646fca4c87302b96caefe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adceddd05ca3646fca4c87302b96caefe">&#9670;&nbsp;</a></span>show_clipped_elements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long polyfem::UIState::show_clipped_elements </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>tris</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ranges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>valid_elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>map_edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>recenter</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a120f9d2217a651c689b7f8b78ac317e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a120f9d2217a651c689b7f8b78ac317e6">&#9670;&nbsp;</a></span>show_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f8aa085cc97b2582d6d81189c25f474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f8aa085cc97b2582d6d81189c25f474">&#9670;&nbsp;</a></span>show_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_error </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72f7a4714b02bdc66839803ed3d48345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72f7a4714b02bdc66839803ed3d48345">&#9670;&nbsp;</a></span>show_linear_reproduction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_linear_reproduction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a71636a66d0716ed64e678764570e7419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71636a66d0716ed64e678764570e7419">&#9670;&nbsp;</a></span>show_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab773214c7e9f3cf6b44b927c5de3c8f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab773214c7e9f3cf6b44b927c5de3c8f8">&#9670;&nbsp;</a></span>show_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_nodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a400178abf525f361e45ef2d609a20787"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a400178abf525f361e45ef2d609a20787">&#9670;&nbsp;</a></span>show_quadratic_reproduction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_quadratic_reproduction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a538531bafb1788f6caadb07d3a101e55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a538531bafb1788f6caadb07d3a101e55">&#9670;&nbsp;</a></span>show_sidesets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_sidesets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad2ef9053d8d59a5a84e5c0f434bad451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2ef9053d8d59a5a84e5c0f434bad451">&#9670;&nbsp;</a></span>show_sol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_sol </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f823f46af197dce12fbf4bd4b07f5d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f823f46af197dce12fbf4bd4b07f5d3">&#9670;&nbsp;</a></span>show_vis_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::show_vis_mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d35e0c5ec1fc69d5140d46a5ef69282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d35e0c5ec1fc69d5140d46a5ef69282">&#9670;&nbsp;</a></span>solve_problem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::solve_problem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76cb637cdb23194d564b236a072615f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76cb637cdb23194d564b236a072615f0">&#9670;&nbsp;</a></span>ui_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_u_i_state.html">UIState</a> &amp; polyfem::UIState::ui_state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a55d5e18dd16181f684d1fdad08b746c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55d5e18dd16181f684d1fdad08b746c1">&#9670;&nbsp;</a></span>update_slices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::UIState::update_slices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a98a7f4b78d8a6d6675dc103f3eebd90d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98a7f4b78d8a6d6675dc103f3eebd90d">&#9670;&nbsp;</a></span>ambient_occlusion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::ambient_occlusion = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac39a8ce2e2753a0a7897988a409e2edb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac39a8ce2e2753a0a7897988a409e2edb">&#9670;&nbsp;</a></span>ambient_occlusion_mat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::UIState::ambient_occlusion_mat</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adc8c98a345501bd37aecf13482a9c7e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc8c98a345501bd37aecf13482a9c7e8">&#9670;&nbsp;</a></span>available_visualizations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt;bool, Eigen::Dynamic, 1&gt; polyfem::UIState::available_visualizations</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a20412cd3d30f61f5fbf1ed3789f431"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a20412cd3d30f61f5fbf1ed3789f431">&#9670;&nbsp;</a></span>color_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">igl::ColorMapType polyfem::UIState::color_map = igl::COLOR_MAP_TYPE_VIRIDIS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a669875eb894331acc5b82359a53ce93f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a669875eb894331acc5b82359a53ce93f">&#9670;&nbsp;</a></span>current_2d_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> polyfem::UIState::current_2d_index</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b125112f11064d356e941ac529ddd28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b125112f11064d356e941ac529ddd28">&#9670;&nbsp;</a></span>current_3d_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">Navigation3D::Index</a> polyfem::UIState::current_3d_index</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acac2fd95a8d2547828a96711a23d0684"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acac2fd95a8d2547828a96711a23d0684">&#9670;&nbsp;</a></span>element_ranges</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::UIState::element_ranges</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a693eec00d3bc223d0c05efbf5c49668d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a693eec00d3bc223d0c05efbf5c49668d">&#9670;&nbsp;</a></span>febio_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::UIState::febio_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a116716154f0897031f7972980060c6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a116716154f0897031f7972980060c6d0">&#9670;&nbsp;</a></span>in_args</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> polyfem::UIState::in_args</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0fb50f35dfc1b4b3f60fb794ff4ece29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fb50f35dfc1b4b3f60fb794ff4ece29">&#9670;&nbsp;</a></span>is_slicing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::is_slicing = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4771af32913e388aa5e8953a2bd92c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4771af32913e388aa5e8953a2bd92c47">&#9670;&nbsp;</a></span>light_enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::light_enabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e68532fe629dbe170b082a8c3b5e080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e68532fe629dbe170b082a8c3b5e080">&#9670;&nbsp;</a></span>max_val</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::UIState::max_val = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2fb4bd15f2b7d2d5cdc70b8e750d92cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb4bd15f2b7d2d5cdc70b8e750d92cb">&#9670;&nbsp;</a></span>min_val</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::UIState::min_val = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a61429195423f5a2ed9f22a287644e794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61429195423f5a2ed9f22a287644e794">&#9670;&nbsp;</a></span>normalized_barycenter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::UIState::normalized_barycenter</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4818d3b5e1903205ce39678c6435909a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4818d3b5e1903205ce39678c6435909a">&#9670;&nbsp;</a></span>screenshot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::UIState::screenshot = &quot;&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ce2712bfac04b5e6e159ac9418a06bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ce2712bfac04b5e6e159ac9418a06bd">&#9670;&nbsp;</a></span>selected_elements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::UIState::selected_elements</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a71ae7fac864251b9259758d6094f3c9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71ae7fac864251b9259758d6094f3c9f">&#9670;&nbsp;</a></span>show_element_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::show_element_id = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab85bb040611acf497ce0ab42b701206d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab85bb040611acf497ce0ab42b701206d">&#9670;&nbsp;</a></span>show_funs_in_3d</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::show_funs_in_3d = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a536db6eb999692b1f5a38d9f689f74d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a536db6eb999692b1f5a38d9f689f74d4">&#9670;&nbsp;</a></span>show_grad_error</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::show_grad_error = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66dcd4b7a723682eb09c46f08e75e52d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66dcd4b7a723682eb09c46f08e75e52d">&#9670;&nbsp;</a></span>show_isolines</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::show_isolines = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac30b68f04a6d24d615a5f078cfab3a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac30b68f04a6d24d615a5f078cfab3a28">&#9670;&nbsp;</a></span>show_node_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::show_node_id = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2c619e9552bffd5d7aea123b939861de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c619e9552bffd5d7aea123b939861de">&#9670;&nbsp;</a></span>show_vertex_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::show_vertex_id = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9cde8e57db9039cb891a9923c350c6a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cde8e57db9039cb891a9923c350c6a3">&#9670;&nbsp;</a></span>skip_visualization</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::UIState::skip_visualization = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5b9612a6943fff273cf706fe0f08a52b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b9612a6943fff273cf706fe0f08a52b">&#9670;&nbsp;</a></span>slice_coord</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::UIState::slice_coord = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e754548cc36c6fcf5da976e2e6fe909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e754548cc36c6fcf5da976e2e6fe909">&#9670;&nbsp;</a></span>slice_position</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float polyfem::UIState::slice_position = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44cca0ed4899020f03b20f551994fcdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44cca0ed4899020f03b20f551994fcdd">&#9670;&nbsp;</a></span>state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_state.html">State</a> polyfem::UIState::state</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3fdc4ac5c9c4f62ea507c6b0941880c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fdc4ac5c9c4f62ea507c6b0941880c9">&#9670;&nbsp;</a></span>tri_faces</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::UIState::tri_faces</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad0a393514139dade66a66384b52ce565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a393514139dade66a66384b52ce565">&#9670;&nbsp;</a></span>tri_pts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::UIState::tri_pts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9767e9fa875993556bdd48228ed4b7a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9767e9fa875993556bdd48228ed4b7a9">&#9670;&nbsp;</a></span>viewer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">igl::opengl::glfw::Viewer polyfem::UIState::viewer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a25a1743ba0ff76af7be7ee4e72a2e454"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25a1743ba0ff76af7be7ee4e72a2e454">&#9670;&nbsp;</a></span>vis_basis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::UIState::vis_basis = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40e9bc798ebb08c1fe796cc753a7baa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40e9bc798ebb08c1fe796cc753a7baa7">&#9670;&nbsp;</a></span>vis_element_ranges</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::UIState::vis_element_ranges</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8db08b8f351b68564a00c20e54a68d53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8db08b8f351b68564a00c20e54a68d53">&#9670;&nbsp;</a></span>vis_faces</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::UIState::vis_faces</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0cb3eca211173317956331132ff9d655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cb3eca211173317956331132ff9d655">&#9670;&nbsp;</a></span>vis_faces_poly</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;int, Eigen::MatrixXi&gt; polyfem::UIState::vis_faces_poly</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a964a51e4942a1f7fd2669f1f73e8d321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a964a51e4942a1f7fd2669f1f73e8d321">&#9670;&nbsp;</a></span>vis_flags</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; polyfem::UIState::vis_flags</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a889ee8dabeaefd71e8c050ee4e7e6525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a889ee8dabeaefd71e8c050ee4e7e6525">&#9670;&nbsp;</a></span>vis_pts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::UIState::vis_pts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c3e98eeb331db8fc6a13682df90fbf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c3e98eeb331db8fc6a13682df90fbf5">&#9670;&nbsp;</a></span>vis_pts_poly</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;int, Eigen::MatrixXd&gt; polyfem::UIState::vis_pts_poly</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ade936ca13b204e7a2592c42b03dad734"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade936ca13b204e7a2592c42b03dad734">&#9670;&nbsp;</a></span>visible_visualizations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt;bool, Eigen::Dynamic, 1&gt; polyfem::UIState::visible_visualizations</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a020d97708558694a79b105a2e7042fbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a020d97708558694a79b105a2e7042fbc">&#9670;&nbsp;</a></span>visualizations_texts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string polyfem::UIState::visualizations_texts[Visualizations::TotalVisualizations] = {&quot;InputMesh&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3">Sidesets</a>&quot;, &quot;Diretization&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a">Nodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531">PNodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d">BNodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06">BPNodes</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93">VisMesh</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c">Solution</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029">Error</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a">ErrorGrad</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d">VisBasis</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c">NavigationIndex</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d">Debug</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb">ElementId</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16">VertexId</a>&quot;, &quot;<a class="el" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4">NodesId</a>&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/viewer/<a class="el" href="_u_i_state_8hpp_source.html">UIState.hpp</a></li>
-<li>src/polyfem/viewer/UIMenu.cpp</li>
-<li>src/polyfem/viewer/UIState.cpp</li>
+<li>src/polyfem/viewer/<a class="el" href="_u_i_menu_8cpp.html">UIMenu.cpp</a></li>
+<li>src/polyfem/viewer/<a class="el" href="_u_i_state_8cpp.html">UIState.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1_u_i_state.html">UIState</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1_u_i_state.html">UIState</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

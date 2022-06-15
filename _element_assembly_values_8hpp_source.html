@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/assembler/ElementAssemblyValues.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,14 +118,14 @@ $(document).ready(function(){initNavTree('_element_assembly_values_8hpp_source.h
 <div class="title">ElementAssemblyValues.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_element_assembly_values_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/assembler/AssemblyValues.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;polyfem/basis/ElementBases.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_assembly_values_8hpp.html">polyfem/assembler/AssemblyValues.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_element_bases_8hpp.html">polyfem/basis/ElementBases.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="keyword">namespace </span>assembler</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    {</div>
@@ -102,57 +134,85 @@ $(document).ready(function(){initNavTree('_element_assembly_values_8hpp_source.h
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            <span class="comment">//per basis values</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;            std::vector&lt;AssemblyValues&gt; basis_values;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a45daa338cea31afd0131850d0b40c399">   17</a></span>&#160;            std::vector&lt;AssemblyValues&gt; <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a45daa338cea31afd0131850d0b40c399">basis_values</a>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="comment">//inverse transpose jacobian of geom mapping</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            std::vector&lt;Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3&gt;&gt; jac_it;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06">   19</a></span>&#160;            std::vector&lt;Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3&gt;&gt; <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06">jac_it</a>;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> quadrature;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keywordtype">int</span> element_id;</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#adbc15e5013c155c427ef462311c98c9d">   21</a></span>&#160;            <a class="code" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#adbc15e5013c155c427ef462311c98c9d">quadrature</a>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#ad2f0f58ad6c75b9f3afae8b29593e883">   22</a></span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#ad2f0f58ad6c75b9f3afae8b29593e883">element_id</a>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="comment">// img of quadrature points through the geom mapping (global pos in the mesh)</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            Eigen::MatrixXd val; <span class="comment">// R^{m x dim}</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf">   25</a></span>&#160;            Eigen::MatrixXd <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf">val</a>; <span class="comment">// R^{m x dim}</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="comment">// det(∑∇φi.Ni) det fo the jacobian of geometric mapping (constant for P1)</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            Eigen::VectorXd det; <span class="comment">// R^{m x 1}</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a781c7af4e4096b0ecf57de3a92ac411a">   28</a></span>&#160;            Eigen::VectorXd <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a781c7af4e4096b0ecf57de3a92ac411a">det</a>; <span class="comment">// R^{m x 1}</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="comment">//only poly elements have no parameterization</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;            <span class="keywordtype">bool</span> has_parameterization = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a71c5b93028a8c6b5f946ce7f09a0ae48">   31</a></span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a71c5b93028a8c6b5f946ce7f09a0ae48">has_parameterization</a> = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="comment">//computes the per element values at the quadrature points</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keywordtype">void</span> compute(<span class="keyword">const</span> <span class="keywordtype">int</span> el_index, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;basis, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#aeec183fa67cbe9ed2705c0356fbc6561">compute</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> el_index, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;basis, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="comment">//computes the per element values at the local (ref el) points (pts)</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keywordtype">void</span> compute(<span class="keyword">const</span> <span class="keywordtype">int</span> el_index, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume, <span class="keyword">const</span> Eigen::MatrixXd &amp;pts, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;basis, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#aeec183fa67cbe9ed2705c0356fbc6561">compute</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> el_index, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume, <span class="keyword">const</span> Eigen::MatrixXd &amp;pts, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;basis, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="comment">//check if the element is flipped</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordtype">bool</span> is_geom_mapping_positive(<span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a44707a3dd7a8cbceead9473b61abc4f5">is_geom_mapping_positive</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> is_volume, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            std::vector&lt;AssemblyValues&gt; g_basis_values_cache_;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a6d25809476f9acbaf3918d9cce8b49dc">   41</a></span>&#160;            std::vector&lt;AssemblyValues&gt; <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a6d25809476f9acbaf3918d9cce8b49dc">g_basis_values_cache_</a>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordtype">void</span> finalize_global_element(<span class="keyword">const</span> Eigen::MatrixXd &amp;v);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131">finalize_global_element</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;v);</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="comment">// void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy);</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="comment">// void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy, const Eigen::MatrixXd &amp;dz);</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">void</span> finalize2d(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis, <span class="keyword">const</span> std::vector&lt;AssemblyValues&gt; &amp;gbasis_values);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordtype">void</span> finalize3d(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis, <span class="keyword">const</span> std::vector&lt;AssemblyValues&gt; &amp;gbasis_values);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b">finalize2d</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis, <span class="keyword">const</span> std::vector&lt;AssemblyValues&gt; &amp;gbasis_values);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b">finalize3d</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis, <span class="keyword">const</span> std::vector&lt;AssemblyValues&gt; &amp;gbasis_values);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">bool</span> is_geom_mapping_positive(<span class="keyword">const</span> Eigen::MatrixXd &amp;dx, <span class="keyword">const</span> Eigen::MatrixXd &amp;dy, <span class="keyword">const</span> Eigen::MatrixXd &amp;dz) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">bool</span> is_geom_mapping_positive(<span class="keyword">const</span> Eigen::MatrixXd &amp;dx, <span class="keyword">const</span> Eigen::MatrixXd &amp;dy) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a44707a3dd7a8cbceead9473b61abc4f5">is_geom_mapping_positive</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;dx, <span class="keyword">const</span> Eigen::MatrixXd &amp;dy, <span class="keyword">const</span> Eigen::MatrixXd &amp;dz) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a44707a3dd7a8cbceead9473b61abc4f5">is_geom_mapping_positive</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;dx, <span class="keyword">const</span> Eigen::MatrixXd &amp;dy) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        };</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    } <span class="comment">// namespace assembler</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a45daa338cea31afd0131850d0b40c399"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a45daa338cea31afd0131850d0b40c399">polyfem::assembler::ElementAssemblyValues::basis_values</a></div><div class="ttdeci">std::vector&lt; AssemblyValues &gt; basis_values</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:17</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a781c7af4e4096b0ecf57de3a92ac411a"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a781c7af4e4096b0ecf57de3a92ac411a">polyfem::assembler::ElementAssemblyValues::det</a></div><div class="ttdeci">Eigen::VectorXd det</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:28</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a71c5b93028a8c6b5f946ce7f09a0ae48"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a71c5b93028a8c6b5f946ce7f09a0ae48">polyfem::assembler::ElementAssemblyValues::has_parameterization</a></div><div class="ttdeci">bool has_parameterization</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:31</div></div>
+<div class="ttc" id="a_element_bases_8hpp_html"><div class="ttname"><a href="_element_bases_8hpp.html">ElementBases.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_adbc15e5013c155c427ef462311c98c9d"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#adbc15e5013c155c427ef462311c98c9d">polyfem::assembler::ElementAssemblyValues::quadrature</a></div><div class="ttdeci">quadrature::Quadrature quadrature</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:21</div></div>
+<div class="ttc" id="a_assembly_values_8hpp_html"><div class="ttname"><a href="_assembly_values_8hpp.html">AssemblyValues.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a7ce3e8b5fceffa5bdde29ca3ac79459b"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b">polyfem::assembler::ElementAssemblyValues::finalize2d</a></div><div class="ttdeci">void finalize2d(const basis::ElementBases &amp;gbasis, const std::vector&lt; AssemblyValues &gt; &amp;gbasis_values)</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.cpp:161</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_aeec183fa67cbe9ed2705c0356fbc6561"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#aeec183fa67cbe9ed2705c0356fbc6561">polyfem::assembler::ElementAssemblyValues::compute</a></div><div class="ttdeci">void compute(const int el_index, const bool is_volume, const basis::ElementBases &amp;basis, const basis::ElementBases &amp;gbasis)</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.cpp:199</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a818b1accc498b39a9793408497b6ea06"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06">polyfem::assembler::ElementAssemblyValues::jac_it</a></div><div class="ttdeci">std::vector&lt; Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt; &gt; jac_it</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:19</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_abfc70df83b8de385510064a839273131"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131">polyfem::assembler::ElementAssemblyValues::finalize_global_element</a></div><div class="ttdeci">void finalize_global_element(const Eigen::MatrixXd &amp;v)</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.cpp:14</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a88510322422a2a0dd72de26063a1eecf"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf">polyfem::assembler::ElementAssemblyValues::val</a></div><div class="ttdeci">Eigen::MatrixXd val</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_af2830b447f50401acd4e69a57a4b235b"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b">polyfem::assembler::ElementAssemblyValues::finalize3d</a></div><div class="ttdeci">void finalize3d(const basis::ElementBases &amp;gbasis, const std::vector&lt; AssemblyValues &gt; &amp;gbasis_values)</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.cpp:94</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_ad2f0f58ad6c75b9f3afae8b29593e883"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#ad2f0f58ad6c75b9f3afae8b29593e883">polyfem::assembler::ElementAssemblyValues::element_id</a></div><div class="ttdeci">int element_id</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:22</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a44707a3dd7a8cbceead9473b61abc4f5"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a44707a3dd7a8cbceead9473b61abc4f5">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive</a></div><div class="ttdeci">bool is_geom_mapping_positive(const bool is_volume, const basis::ElementBases &amp;gbasis) const</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.cpp:353</div></div>
 <div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_quadrature_html"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_quadrature.html">polyfem::quadrature::Quadrature</a></div><div class="ttdef"><b>Definition:</b> Quadrature.hpp:9</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">polyfem::assembler::ElementAssemblyValues</a></div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:13</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_element_bases_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_element_bases.html">polyfem::basis::ElementBases</a></div><div class="ttdoc">Stores the basis functions for a given element in a mesh (facet in 2d, cell in 3d).</div><div class="ttdef"><b>Definition:</b> ElementBases.hpp:19</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html_a6d25809476f9acbaf3918d9cce8b49dc"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a6d25809476f9acbaf3918d9cce8b49dc">polyfem::assembler::ElementAssemblyValues::g_basis_values_cache_</a></div><div class="ttdeci">std::vector&lt; AssemblyValues &gt; g_basis_values_cache_</div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:41</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_12817abd2662fe40efba8355c1386b9e.html">assembler</a></li><li class="navelem"><b>ElementAssemblyValues.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_12817abd2662fe40efba8355c1386b9e.html">assembler</a></li><li class="navelem"><a class="el" href="_element_assembly_values_8hpp.html">ElementAssemblyValues.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/solver/SparseNewtonDescentSolver.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,51 +118,51 @@ $(document).ready(function(){initNavTree('_sparse_newton_descent_solver_8hpp_sou
 <div class="title">SparseNewtonDescentSolver.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_sparse_newton_descent_solver_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;NonlinearSolver.hpp&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_nonlinear_solver_8hpp.html">NonlinearSolver.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polysolve/LinearSolver.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/MatrixUtils.hpp&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_matrix_utils_8hpp.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Logger.hpp&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Timer.hpp&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_logger_8hpp.html">polyfem/utils/Logger.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_timer_8hpp.html">polyfem/utils/Timer.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>cppoptlib</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacecppoptlib.html">cppoptlib</a></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ProblemType&gt;</div>
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html">   14</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html">SparseNewtonDescentSolver</a> : <span class="keyword">public</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver</a>&lt;ProblemType&gt;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        <span class="keyword">using</span> Superclass = <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver&lt;ProblemType&gt;</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ad981db542a2923317daa1fea9bb3adf9">   17</a></span>&#160;        <span class="keyword">using</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae">Superclass</a> = <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html">NonlinearSolver&lt;ProblemType&gt;</a>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::Scalar;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <span class="keyword">using</span> <span class="keyword">typename</span> Superclass::TVector;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html">SparseNewtonDescentSolver</a>(</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keyword">const</span> json &amp;solver_params,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            <span class="keyword">const</span> std::string &amp;linear_solver_type,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">const</span> std::string &amp;linear_precond_type)</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            : Superclass(solver_params),</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;              linear_solver_type(linear_solver_type),</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;              linear_precond_type(linear_precond_type)</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8c4e068f65bf8e594fc46291a9994703">   21</a></span>&#160;        <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8c4e068f65bf8e594fc46291a9994703">SparseNewtonDescentSolver</a>(</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a>,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            <span class="keyword">const</span> std::string &amp;<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">linear_solver_type</a>,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">const</span> std::string &amp;<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">linear_precond_type</a>)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            : <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae">Superclass</a>(<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a>),</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;              <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">linear_solver_type</a>(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">linear_solver_type</a>),</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;              <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">linear_precond_type</a>(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">linear_precond_type</a>)</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        }</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        std::string name()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;Newton&quot;</span>; }</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3">   31</a></span>&#160;        std::string <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3">name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;Newton&quot;</span>; }</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> default_descent_strategy()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> 0; }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="keyword">using</span> Superclass::descent_strategy_name;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        std::string descent_strategy_name(<span class="keywordtype">int</span> descent_strategy)<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab2b94a0d16385cb24a4951d86ea24235">   34</a></span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab2b94a0d16385cb24a4951d86ea24235">default_descent_strategy</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="keyword">using</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">Superclass::descent_strategy_name</a>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aa57081d7bebeabd07be89f4fc2c9a88d">   36</a></span>&#160;        std::string <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aa57081d7bebeabd07be89f4fc2c9a88d">descent_strategy_name</a>(<span class="keywordtype">int</span> <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>)<span class="keyword"> const override</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordflow">switch</span> (descent_strategy)</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordflow">switch</span> (<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>)</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keywordflow">case</span> 0:</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                <span class="keywordflow">return</span> <span class="stringliteral">&quot;Newton&quot;</span>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="keywordflow">case</span> 1:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                <span class="keywordflow">if</span> (reg_weight == 0)</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> == 0)</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                    <span class="keywordflow">return</span> <span class="stringliteral">&quot;projected Newton&quot;</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                <span class="keywordflow">return</span> fmt::format(<span class="stringliteral">&quot;projected Newton w/ regularization weight={}&quot;</span>, reg_weight);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                <span class="keywordflow">return</span> fmt::format(<span class="stringliteral">&quot;projected Newton w/ regularization weight={}&quot;</span>, <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a>);</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordflow">case</span> 2:</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                <span class="keywordflow">return</span> <span class="stringliteral">&quot;gradient descent&quot;</span>;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">default</span>:</div>
@@ -138,155 +170,155 @@ $(document).ready(function(){initNavTree('_sparse_newton_descent_solver_8hpp_sou
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            }</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordtype">void</span> increase_descent_strategy()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">   53</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">increase_descent_strategy</a>()<span class="keyword"> override</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">if</span> (this-&gt;descent_strategy == 0 || reg_weight &gt; reg_weight_max)</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                this-&gt;descent_strategy++;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 0 || <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> &gt; <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a93ccdf1e546705c468c18918266e63e0">reg_weight_max</a>)</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a>++;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            assert(this-&gt;descent_strategy &lt;= 2);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> = std::max(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a1b33cce51605b6986c8992d9c91238d6">reg_weight_inc</a> * <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a>, <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2c3ee8a3201c94379f4cc00c4298ae14">reg_weight_min</a>);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            assert(this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> &lt;= 2);</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        std::unique_ptr&lt;polysolve::LinearSolver&gt; linear_solver;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keyword">const</span> std::string linear_solver_type;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keyword">const</span> std::string linear_precond_type;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">   63</a></span>&#160;        std::unique_ptr&lt;polysolve::LinearSolver&gt; <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">   64</a></span>&#160;        <span class="keyword">const</span> std::string <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">linear_solver_type</a>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">   65</a></span>&#160;        <span class="keyword">const</span> std::string <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">linear_precond_type</a>;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        json internal_solver_info = json::array();</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8">   67</a></span>&#160;        <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8">internal_solver_info</a> = json::array();</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        polyfem::StiffnessMatrix hessian; <span class="comment">// Cached version of hessian</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">   69</a></span>&#160;        <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>; <span class="comment">// Cached version of hessian</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="comment">// Regularization Coefficients</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordtype">double</span> reg_weight = 0;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> reg_weight_min = 1e-8; <span class="comment">// needs to be greater than zero</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> reg_weight_max = 1e8;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> reg_weight_inc = 10;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> reg_weight_dec = 2;</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">   72</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> = 0;</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2c3ee8a3201c94379f4cc00c4298ae14">   73</a></span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2c3ee8a3201c94379f4cc00c4298ae14">reg_weight_min</a> = 1e-8; <span class="comment">// needs to be greater than zero</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a93ccdf1e546705c468c18918266e63e0">   74</a></span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a93ccdf1e546705c468c18918266e63e0">reg_weight_max</a> = 1e8;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a1b33cce51605b6986c8992d9c91238d6">   75</a></span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a1b33cce51605b6986c8992d9c91238d6">reg_weight_inc</a> = 10;</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2b66efbab1884048d1c29416c47ed20e">   76</a></span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">double</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2b66efbab1884048d1c29416c47ed20e">reg_weight_dec</a> = 2;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordtype">void</span> reset(<span class="keyword">const</span> ProblemType &amp;objFunc, <span class="keyword">const</span> TVector &amp;x)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aab624bcd7e4c8fb967b417b6790858fd">   78</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aab624bcd7e4c8fb967b417b6790858fd">reset</a>(<span class="keyword">const</span> ProblemType &amp;objFunc, <span class="keyword">const</span> TVector &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            Superclass::reset(objFunc, x);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#ab1651c7dcd4f7269ba77b4d55335a351">Superclass::reset</a>(objFunc, <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            reg_weight = 0;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> = 0;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            linear_solver = polysolve::LinearSolver::create(linear_solver_type, linear_precond_type);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            linear_solver-&gt;setParameters(this-&gt;solver_params);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a> = polysolve::LinearSolver::create(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">linear_solver_type</a>, <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">linear_precond_type</a>);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a>-&gt;setParameters(this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">solver_params</a>);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> compute_update_direction(</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">   88</a></span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">compute_update_direction</a>(</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            ProblemType &amp;objFunc,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            <span class="keyword">const</span> TVector &amp;x,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            <span class="keyword">const</span> TVector &amp;<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>,</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            <span class="keyword">const</span> TVector &amp;grad,</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            TVector &amp;direction)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            <span class="keywordflow">if</span> (this-&gt;descent_strategy == 2)</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 2)</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            {</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                direction = -grad;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            }</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            {</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;assembly time&quot;</span>, this-&gt;assembly_time);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;assembly time&quot;</span>, this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a9bc129fb40312b11fb73f982d4e127c5">assembly_time</a>);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                <span class="keywordflow">if</span> (this-&gt;descent_strategy == 1)</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 1)</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                    objFunc.set_project_to_psd(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (this-&gt;descent_strategy == 0)</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 0)</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                    objFunc.set_project_to_psd(<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                    assert(<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                objFunc.hessian(x, hessian);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                objFunc.hessian(<a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>);</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                <span class="keywordflow">if</span> (reg_weight &gt; 0)</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> &gt; 0)</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                {</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                    hessian += reg_weight * polyfem::utils::sparse_identity(hessian.rows(), hessian.cols());</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                    <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a> += <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> * <a class="code" href="namespacepolyfem_1_1utils.html#a0c9749a5a649c05c690195b6d04578c7">polyfem::utils::sparse_identity</a>(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>.rows(), <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>.cols());</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                }</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            }</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;            {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                POLYFEM_SCOPED_TIMER(<span class="stringliteral">&quot;linear solve&quot;</span>, this-&gt;inverting_time);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                <a class="code" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;linear solve&quot;</span>, this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#ad8d818be91b1395bc6eeb920bf92ebc5">inverting_time</a>);</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                <span class="comment">// TODO: get the correct size</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                linear_solver-&gt;analyzePattern(hessian, hessian.rows());</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                linear_solver-&gt;analyzePattern(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>, <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>.rows());</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                <span class="keywordflow">try</span></div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                {</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                    linear_solver-&gt;factorize(hessian);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                    <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a>-&gt;factorize(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>);</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;err)</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                {</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                    increase_descent_strategy();</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                    <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">increase_descent_strategy</a>();</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                    <span class="comment">// warn if using gradient descent</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                    polyfem::utils::logger().log(</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                        this-&gt;descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                    <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a>().log(</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                        this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                        <span class="stringliteral">&quot;Unable to factorize Hessian: \&quot;{}\&quot;; reverting to {}&quot;</span>,</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                        err.what(), this-&gt;descent_strategy_name());</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                    <span class="comment">// polyfem::write_sparse_matrix_csv(&quot;problematic_hessian.csv&quot;, hessian);</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                    <span class="keywordflow">return</span> compute_update_direction(objFunc, x, grad, direction);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                    <span class="keywordflow">return</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">compute_update_direction</a>(objFunc, <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, grad, direction);</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                }</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                linear_solver-&gt;solve(-grad, direction); <span class="comment">// H Δx = -g</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a>-&gt;solve(-grad, direction); <span class="comment">// H Δx = -g</span></div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;            }</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;            <span class="comment">// gradient descent, check descent direction</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">double</span> residual = (hessian * direction + grad).norm(); <span class="comment">// H Δx + g = 0</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">double</span> residual = (<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a> * direction + grad).<a class="code" href="namespacep__bases.html#acba70df422a2d777f6d2e130b804b5a6">norm</a>(); <span class="comment">// H Δx + g = 0</span></div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;            <span class="keywordflow">if</span> (std::isnan(residual))</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                increase_descent_strategy();</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                polyfem::utils::logger().log(</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                    this-&gt;descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">increase_descent_strategy</a>();</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a>().log(</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                    this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                    <span class="stringliteral">&quot;nan linear solve residual {} (||∇f||={}); reverting to {}&quot;</span>,</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                    residual, grad.norm(), this-&gt;descent_strategy_name());</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                <span class="keywordflow">return</span> compute_update_direction(objFunc, x, grad, direction);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">compute_update_direction</a>(objFunc, <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, grad, direction);</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;            }</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (residual &gt; std::max(1e-8 * grad.norm(), 1e-5))</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;            {</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                increase_descent_strategy();</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                polyfem::utils::logger().log(</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                    this-&gt;descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">increase_descent_strategy</a>();</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a>().log(</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                    this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;                    <span class="stringliteral">&quot;large linear solve residual {} (||∇f||={}); reverting to {}&quot;</span>,</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;                    residual, grad.norm(), this-&gt;descent_strategy_name());</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;                <span class="keywordflow">return</span> compute_update_direction(objFunc, x, grad, direction);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">compute_update_direction</a>(objFunc, <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, grad, direction);</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            }</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;            <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;            {</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                polyfem::utils::logger().trace(<span class="stringliteral">&quot;linear solve residual {}&quot;</span>, residual);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a>().trace(<span class="stringliteral">&quot;linear solve residual {}&quot;</span>, residual);</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            }</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;            <span class="comment">// do this check here because we need to repeat the solve without resetting reg_weight</span></div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;            <span class="keywordflow">if</span> (grad.dot(direction) &gt;= 0)</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;            {</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;                increase_descent_strategy();</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;                polyfem::utils::logger().log(</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;                    this-&gt;descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;                <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">increase_descent_strategy</a>();</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;                <a class="code" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a>().log(</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;                    this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">descent_strategy</a> == 2 ? spdlog::level::warn : spdlog::level::debug,</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                    <span class="stringliteral">&quot;[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}&quot;</span>,</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                    name(), direction.dot(grad), descent_strategy_name());</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                <span class="keywordflow">return</span> compute_update_direction(objFunc, x, grad, direction);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                    <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3">name</a>(), direction.dot(grad), <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">descent_strategy_name</a>());</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">compute_update_direction</a>(objFunc, <a class="code" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, grad, direction);</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;            }</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;            json info;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            linear_solver-&gt;getInfo(info);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;            internal_solver_info.push_back(info);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;            <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> info;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a>-&gt;getInfo(info);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;            <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8">internal_solver_info</a>.push_back(info);</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;            reg_weight /= reg_weight_dec;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            <span class="keywordflow">if</span> (reg_weight &lt; reg_weight_min)</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                reg_weight = 0;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;            <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> /= <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2b66efbab1884048d1c29416c47ed20e">reg_weight_dec</a>;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> &lt; <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2c3ee8a3201c94379f4cc00c4298ae14">reg_weight_min</a>)</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> = 0;</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        }</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160; </div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        <span class="keywordtype">void</span> update_solver_info()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e">  189</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e">update_solver_info</a>()<span class="keyword"> override</span></div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;            Superclass::update_solver_info();</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;            <a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a08c477575ee1b685c81be5ac62090e24">Superclass::update_solver_info</a>();</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160; </div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;            this-&gt;solver_info[<span class="stringliteral">&quot;internal_solver&quot;</span>] = internal_solver_info;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            this-&gt;solver_info[<span class="stringliteral">&quot;internal_solver_first&quot;</span>] = internal_solver_info.size() ? internal_solver_info.front() : json(<span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;            this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a88253269546f44a143e1d051528bb911">solver_info</a>[<span class="stringliteral">&quot;internal_solver&quot;</span>] = <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8">internal_solver_info</a>;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            this-&gt;<a class="code" href="classcppoptlib_1_1_nonlinear_solver.html#a88253269546f44a143e1d051528bb911">solver_info</a>[<span class="stringliteral">&quot;internal_solver_first&quot;</span>] = internal_solver_info.size() ? <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8">internal_solver_info</a>.front() : <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>(<span class="keyword">nullptr</span>);</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        }</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">bool</span> has_hessian_nans(<span class="keyword">const</span> polyfem::StiffnessMatrix &amp;hessian)</div>
+<div class="line"><a name="l00197"></a><span class="lineno"><a class="line" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ac977992daa1916b7fa1c5bbe726f534f">  197</a></span>&#160;        <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ac977992daa1916b7fa1c5bbe726f534f">has_hessian_nans</a>(<span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> &amp;<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>)</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        {</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; hessian.outerSize(); ++k)</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; <a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>.outerSize(); ++k)</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                <span class="keywordflow">for</span> (polyfem::StiffnessMatrix::InnerIterator it(hessian, k); it; ++it)</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                <span class="keywordflow">for</span> (polyfem::StiffnessMatrix::InnerIterator it(<a class="code" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">hessian</a>, k); it; ++it)</div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                {</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                    <span class="keywordflow">if</span> (std::isnan(it.value()))</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
@@ -299,16 +331,69 @@ $(document).ready(function(){initNavTree('_sparse_newton_descent_solver_8hpp_sou
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;} <span class="comment">// namespace cppoptlib</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> Types.hpp:20</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a0c9749a5a649c05c690195b6d04578c7"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a0c9749a5a649c05c690195b6d04578c7">polyfem::utils::sparse_identity</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double &gt; sparse_identity(int rows, int cols)</div><div class="ttdef"><b>Definition:</b> MatrixUtils.hpp:31</div></div>
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_ab1651c7dcd4f7269ba77b4d55335a351"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#ab1651c7dcd4f7269ba77b4d55335a351">cppoptlib::NonlinearSolver::reset</a></div><div class="ttdeci">virtual void reset(const ProblemType &amp;objFunc, const TVector &amp;x)</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:316</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a08c477575ee1b685c81be5ac62090e24"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a08c477575ee1b685c81be5ac62090e24">cppoptlib::NonlinearSolver::update_solver_info</a></div><div class="ttdeci">virtual void update_solver_info()</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:370</div></div>
+<div class="ttc" id="anamespacep__bases_html_acba70df422a2d777f6d2e130b804b5a6"><div class="ttname"><a href="namespacep__bases.html#acba70df422a2d777f6d2e130b804b5a6">p_bases.norm</a></div><div class="ttdeci">int norm</div><div class="ttdef"><b>Definition:</b> p_bases.py:238</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a2b66efbab1884048d1c29416c47ed20e"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2b66efbab1884048d1c29416c47ed20e">cppoptlib::SparseNewtonDescentSolver::reg_weight_dec</a></div><div class="ttdeci">static constexpr double reg_weight_dec</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:76</div></div>
+<div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_ac977992daa1916b7fa1c5bbe726f534f"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ac977992daa1916b7fa1c5bbe726f534f">cppoptlib::SparseNewtonDescentSolver::has_hessian_nans</a></div><div class="ttdeci">static bool has_hessian_nans(const polyfem::StiffnessMatrix &amp;hessian)</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:197</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_aa57081d7bebeabd07be89f4fc2c9a88d"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aa57081d7bebeabd07be89f4fc2c9a88d">cppoptlib::SparseNewtonDescentSolver::descent_strategy_name</a></div><div class="ttdeci">std::string descent_strategy_name(int descent_strategy) const override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:36</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_adfee0010a575b6ade54621a7be148e0e"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e">cppoptlib::SparseNewtonDescentSolver::update_solver_info</a></div><div class="ttdeci">void update_solver_info() override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:189</div></div>
 <div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a></div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:16</div></div>
+<div class="ttc" id="a_nonlinear_solver_8hpp_html"><div class="ttname"><a href="_nonlinear_solver_8hpp.html">NonlinearSolver.hpp</a></div></div>
+<div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> SplineBasis3d.cpp:52</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_aab624bcd7e4c8fb967b417b6790858fd"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aab624bcd7e4c8fb967b417b6790858fd">cppoptlib::SparseNewtonDescentSolver::reset</a></div><div class="ttdeci">void reset(const ProblemType &amp;objFunc, const TVector &amp;x) override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:78</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_ab87d0126a0fb58ad40ccb412d4b50a71"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">cppoptlib::SparseNewtonDescentSolver::reg_weight</a></div><div class="ttdeci">double reg_weight</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:72</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a8ab815753fece5e57a20ddb9b0365596"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8ab815753fece5e57a20ddb9b0365596">cppoptlib::SparseNewtonDescentSolver::compute_update_direction</a></div><div class="ttdeci">virtual bool compute_update_direction(ProblemType &amp;objFunc, const TVector &amp;x, const TVector &amp;grad, TVector &amp;direction) override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:88</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a9bc129fb40312b11fb73f982d4e127c5"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a9bc129fb40312b11fb73f982d4e127c5">cppoptlib::NonlinearSolver::assembly_time</a></div><div class="ttdeci">double assembly_time</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:349</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a7fde555a657401aa47a76322b1d86e37"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37">cppoptlib::NonlinearSolver::descent_strategy</a></div><div class="ttdeci">int descent_strategy</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:338</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a107a4558ff1894a3373b8ef1ae408b91"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">cppoptlib::NonlinearSolver::descent_strategy_name</a></div><div class="ttdeci">virtual std::string descent_strategy_name() const</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:334</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_aef326b7f5c2669fdd8f0db99e3b4b3c3"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3">cppoptlib::SparseNewtonDescentSolver::name</a></div><div class="ttdeci">std::string name() const override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:31</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a8c4e068f65bf8e594fc46291a9994703"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a8c4e068f65bf8e594fc46291a9994703">cppoptlib::SparseNewtonDescentSolver::SparseNewtonDescentSolver</a></div><div class="ttdeci">SparseNewtonDescentSolver(const json &amp;solver_params, const std::string &amp;linear_solver_type, const std::string &amp;linear_precond_type)</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:21</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_ad8d818be91b1395bc6eeb920bf92ebc5"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#ad8d818be91b1395bc6eeb920bf92ebc5">cppoptlib::NonlinearSolver::inverting_time</a></div><div class="ttdeci">double inverting_time</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:350</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_ab2b94a0d16385cb24a4951d86ea24235"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab2b94a0d16385cb24a4951d86ea24235">cppoptlib::SparseNewtonDescentSolver::default_descent_strategy</a></div><div class="ttdeci">virtual int default_descent_strategy() override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:34</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a2c3ee8a3201c94379f4cc00c4298ae14"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2c3ee8a3201c94379f4cc00c4298ae14">cppoptlib::SparseNewtonDescentSolver::reg_weight_min</a></div><div class="ttdeci">static constexpr double reg_weight_min</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:73</div></div>
 <div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html">cppoptlib::SparseNewtonDescentSolver</a></div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:14</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a29dc58ee1801415f7fbe0f413d3a63f1"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a29dc58ee1801415f7fbe0f413d3a63f1">cppoptlib::SparseNewtonDescentSolver::linear_solver_type</a></div><div class="ttdeci">const std::string linear_solver_type</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:64</div></div>
+<div class="ttc" id="a_timer_8hpp_html_a9b9dcda2187614bc17a1a91c5de80b56"><div class="ttname"><a href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a></div><div class="ttdeci">#define POLYFEM_SCOPED_TIMER(...)</div><div class="ttdef"><b>Definition:</b> Timer.hpp:5</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a39b6bc5367dce3b91fe799a91921f1d9"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a39b6bc5367dce3b91fe799a91921f1d9">cppoptlib::NonlinearSolver::solver_params</a></div><div class="ttdeci">const json solver_params</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:328</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a93ccdf1e546705c468c18918266e63e0"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a93ccdf1e546705c468c18918266e63e0">cppoptlib::SparseNewtonDescentSolver::reg_weight_max</a></div><div class="ttdeci">static constexpr double reg_weight_max</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:74</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a2456056f352b15603bf9f8bc2948a14f"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">polyfem::utils::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdef"><b>Definition:</b> Logger.cpp:23</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_aa848ff8acc24d5cb997cdf2dfcd5f0ae"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae">cppoptlib::NonlinearSolver::Superclass</a></div><div class="ttdeci">ISolver&lt; ProblemType, -1 &gt; Superclass</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:19</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a11dc255b645616580dba80d84112cb1e"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">cppoptlib::SparseNewtonDescentSolver::linear_solver</a></div><div class="ttdeci">std::unique_ptr&lt; polysolve::LinearSolver &gt; linear_solver</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:63</div></div>
+<div class="ttc" id="a_timer_8hpp_html"><div class="ttname"><a href="_timer_8hpp.html">Timer.hpp</a></div></div>
+<div class="ttc" id="anamespacecppoptlib_html"><div class="ttname"><a href="namespacecppoptlib.html">cppoptlib</a></div><div class="ttdef"><b>Definition:</b> LBFGSSolver.hpp:16</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a58f4cab63cd0956bfca813c777c5ea25"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25">cppoptlib::SparseNewtonDescentSolver::hessian</a></div><div class="ttdeci">polyfem::StiffnessMatrix hessian</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:69</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a7cf059aeaff0c10ea3feb628c0abcbb2"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a7cf059aeaff0c10ea3feb628c0abcbb2">cppoptlib::SparseNewtonDescentSolver::linear_precond_type</a></div><div class="ttdeci">const std::string linear_precond_type</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:65</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_nonlinear_solver_html_a88253269546f44a143e1d051528bb911"><div class="ttname"><a href="classcppoptlib_1_1_nonlinear_solver.html#a88253269546f44a143e1d051528bb911">cppoptlib::NonlinearSolver::solver_info</a></div><div class="ttdeci">json solver_info</div><div class="ttdef"><b>Definition:</b> NonlinearSolver.hpp:345</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_acffac49cd50a6cc1356ae78a645f1193"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193">cppoptlib::SparseNewtonDescentSolver::increase_descent_strategy</a></div><div class="ttdeci">void increase_descent_strategy() override</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:53</div></div>
+<div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_a1b33cce51605b6986c8992d9c91238d6"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a1b33cce51605b6986c8992d9c91238d6">cppoptlib::SparseNewtonDescentSolver::reg_weight_inc</a></div><div class="ttdeci">static constexpr double reg_weight_inc</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:75</div></div>
+<div class="ttc" id="aclasscppoptlib_1_1_sparse_newton_descent_solver_html_ab9b46d274066e6e16bdd6ef48a9ae7c8"><div class="ttname"><a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8">cppoptlib::SparseNewtonDescentSolver::internal_solver_info</a></div><div class="ttdeci">json internal_solver_info</div><div class="ttdef"><b>Definition:</b> SparseNewtonDescentSolver.hpp:67</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><b>SparseNewtonDescentSolver.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="_sparse_newton_descent_solver_8hpp.html">SparseNewtonDescentSolver.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

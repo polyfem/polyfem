@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/mesh/mesh2D/Mesh2D.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,82 +118,123 @@ $(document).ready(function(){initNavTree('_mesh2_d_8hpp_source.html',''); initRe
 <div class="title">Mesh2D.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_mesh2_d_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;polyfem/mesh/Mesh.hpp&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polyfem/mesh/mesh2D/Navigation.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/Types.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_mesh_8hpp.html">polyfem/mesh/Mesh.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_navigation_8hpp.html">polyfem/mesh/mesh2D/Navigation.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_types_8hpp.html">polyfem/utils/Types.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;geogram/mesh/mesh.h&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">namespace </span>mesh</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    {</div>
 <div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">   15</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">Mesh2D</a> : <span class="keyword">public</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">Mesh2D</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <span class="keyword">virtual</span> ~<a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">Mesh2D</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;            POLYFEM_DEFAULT_MOVE_COPY(<a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">Mesh2D</a>)</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ab18ff604f927d7e928496b4bb358162c">Mesh2D</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#abdd3fe7a2dec434aa4ea1005006faf80">~Mesh2D</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;            <a class="code" href="_common_8hpp.html#ac8a0e9afb983dbed8532650e402ecdc4">POLYFEM_DEFAULT_MOVE_COPY</a>(<a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">Mesh2D</a>)</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keywordtype">bool</span> is_volume()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5">   22</a></span>&#160;            bool <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5">is_volume</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keywordtype">int</span> n_cells()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a9dfaccca839ea4aa95da045bb161d207">   24</a></span>&#160;            <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a9dfaccca839ea4aa95da045bb161d207">n_cells</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> 0; }</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keywordtype">bool</span> is_boundary_face(<span class="keyword">const</span> <span class="keywordtype">int</span> face_global_id)<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a05f1a1ffd74c2651e1c92836b8cdb736">   26</a></span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a05f1a1ffd74c2651e1c92836b8cdb736">is_boundary_face</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> face_global_id)<span class="keyword"> const override</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">            </span>{</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                assert(<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            }</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="keyword">virtual</span> RowVectorNd edge_node(<span class="keyword">const</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> &amp;index, <span class="keyword">const</span> <span class="keywordtype">int</span> n_new_nodes, <span class="keyword">const</span> <span class="keywordtype">int</span> i) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keyword">virtual</span> RowVectorNd face_node(<span class="keyword">const</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> &amp;index, <span class="keyword">const</span> <span class="keywordtype">int</span> n_new_nodes, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#af9d2f81e2afdf5218773168bd71bd2de">edge_node</a>(<span class="keyword">const</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> &amp;index, <span class="keyword">const</span> <span class="keywordtype">int</span> n_new_nodes, <span class="keyword">const</span> <span class="keywordtype">int</span> i) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aec49796c4551f0519797c3442bd46aae">face_node</a>(<span class="keyword">const</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> &amp;index, <span class="keyword">const</span> <span class="keywordtype">int</span> n_new_nodes, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_point(<span class="keyword">const</span> <span class="keywordtype">int</span> global_index, <span class="keyword">const</span> RowVectorNd &amp;p) = 0;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            RowVectorNd cell_barycenter(<span class="keyword">const</span> <span class="keywordtype">int</span> index)<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aa1cca9819eddf537887c72bd30209d94">set_point</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> global_index, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) = 0;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a310e8b13dbda9defdd7f0468e23d9407">   36</a></span>&#160;            <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a310e8b13dbda9defdd7f0468e23d9407">cell_barycenter</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> index)<span class="keyword"> const override</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">            </span>{</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                assert(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                <span class="keywordflow">return</span> RowVectorNd(2);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>(2);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="comment">// Navigation wrapper</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> get_index_from_face(<span class="keywordtype">int</span> f, <span class="keywordtype">int</span> lv = 0) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">get_index_from_face</a>(<span class="keywordtype">int</span> <a class="code" href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">f</a>, <span class="keywordtype">int</span> lv = 0) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="comment">// Navigation in a surface mesh</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> switch_vertex(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> switch_edge(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> switch_face(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42">switch_vertex</a>(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581">switch_edge</a>(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6">switch_face</a>(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">void</span> barycentric_coords(<span class="keyword">const</span> RowVectorNd &amp;p, <span class="keyword">const</span> <span class="keywordtype">int</span> el_id, Eigen::MatrixXd &amp;coord) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            RowVectorNd face_barycenter(<span class="keyword">const</span> <span class="keywordtype">int</span> index) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordtype">void</span> compute_element_barycenters(Eigen::MatrixXd &amp;barycenters)<span class="keyword"> const override </span>{ face_barycenters(barycenters); }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keywordtype">void</span> elements_boxes(std::vector&lt;std::array&lt;Eigen::Vector3d, 2&gt;&gt; &amp;boxes) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a65982e1f2bf0893fc9f8ad1d70acc583">barycentric_coords</a>(<span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p, <span class="keyword">const</span> <span class="keywordtype">int</span> el_id, Eigen::MatrixXd &amp;coord) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a47f4f34ea25a5a7e1026121999cbf8d4">face_barycenter</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> index) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ae12a37c56b98ea95b3a65983b924220c">   52</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ae12a37c56b98ea95b3a65983b924220c">compute_element_barycenters</a>(Eigen::MatrixXd &amp;barycenters)<span class="keyword"> const override </span>{ <a class="code" href="classpolyfem_1_1mesh_1_1_mesh.html#a8532f89710d84389e2e7e0baef61d684">face_barycenters</a>(barycenters); }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac39bfb89c515d21727e3bb6f306be12f">elements_boxes</a>(std::vector&lt;std::array&lt;Eigen::Vector3d, 2&gt;&gt; &amp;boxes) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="comment">// Iterate in a mesh</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keyword">inline</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> next_around_face(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> switch_edge(switch_vertex(idx)); }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keyword">inline</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> next_around_vertex(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> switch_face(switch_edge(idx)); }</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b">   56</a></span>&#160;            <span class="keyword">inline</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b">next_around_face</a>(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581">switch_edge</a>(<a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42">switch_vertex</a>(idx)); }</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1">   57</a></span>&#160;            <span class="keyword">inline</span> <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1">next_around_vertex</a>(<a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> idx)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6">switch_face</a>(<a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581">switch_edge</a>(idx)); }</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordtype">void</span> get_edges(Eigen::MatrixXd &amp;p0, Eigen::MatrixXd &amp;p1) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            <span class="keywordtype">void</span> get_edges(Eigen::MatrixXd &amp;p0, Eigen::MatrixXd &amp;p1, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a6af0e5b8f40ff8ff7bc7edb44a63ca60">get_edges</a>(Eigen::MatrixXd &amp;p0, Eigen::MatrixXd &amp;p1) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a6af0e5b8f40ff8ff7bc7edb44a63ca60">get_edges</a>(Eigen::MatrixXd &amp;p0, Eigen::MatrixXd &amp;p1, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        };</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    } <span class="comment">// namespace mesh</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_ac39bfb89c515d21727e3bb6f306be12f"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac39bfb89c515d21727e3bb6f306be12f">polyfem::mesh::Mesh2D::elements_boxes</a></div><div class="ttdeci">void elements_boxes(std::vector&lt; std::array&lt; Eigen::Vector3d, 2 &gt;&gt; &amp;boxes) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.cpp:101</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a8763fa8b0b83980f2d18184895b75d42"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42">polyfem::mesh::Mesh2D::switch_vertex</a></div><div class="ttdeci">virtual Navigation::Index switch_vertex(Navigation::Index idx) const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_aec49796c4551f0519797c3442bd46aae"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aec49796c4551f0519797c3442bd46aae">polyfem::mesh::Mesh2D::face_node</a></div><div class="ttdeci">virtual RowVectorNd face_node(const Navigation::Index &amp;index, const int n_new_nodes, const int i, const int j) const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a6af0e5b8f40ff8ff7bc7edb44a63ca60"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a6af0e5b8f40ff8ff7bc7edb44a63ca60">polyfem::mesh::Mesh2D::get_edges</a></div><div class="ttdeci">void get_edges(Eigen::MatrixXd &amp;p0, Eigen::MatrixXd &amp;p1) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.cpp:21</div></div>
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_af9d2f81e2afdf5218773168bd71bd2de"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#af9d2f81e2afdf5218773168bd71bd2de">polyfem::mesh::Mesh2D::edge_node</a></div><div class="ttdeci">virtual RowVectorNd edge_node(const Navigation::Index &amp;index, const int n_new_nodes, const int i) const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a61b06dff45269d1802eccd079802d7a1"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1">polyfem::mesh::Mesh2D::next_around_vertex</a></div><div class="ttdeci">Navigation::Index next_around_vertex(Navigation::Index idx) const</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:57</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a655514850b93a4d71b22c5a301c8984b"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b">polyfem::mesh::Mesh2D::next_around_face</a></div><div class="ttdeci">Navigation::Index next_around_face(Navigation::Index idx) const</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:56</div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation_1_1_index_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">polyfem::mesh::Navigation::Index</a></div><div class="ttdef"><b>Definition:</b> Navigation.hpp:13</div></div>
+<div class="ttc" id="a_common_8hpp_html_ac8a0e9afb983dbed8532650e402ecdc4"><div class="ttname"><a href="_common_8hpp.html#ac8a0e9afb983dbed8532650e402ecdc4">POLYFEM_DEFAULT_MOVE_COPY</a></div><div class="ttdeci">#define POLYFEM_DEFAULT_MOVE_COPY(Base)</div><div class="ttdef"><b>Definition:</b> Common.hpp:7</div></div>
+<div class="ttc" id="a_mesh_8hpp_html"><div class="ttname"><a href="_mesh_8hpp.html">Mesh.hpp</a></div></div>
+<div class="ttc" id="anamespaceelasticity__rhs_html_a40cac4cd15d87571365bca9e062442d8"><div class="ttname"><a href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">elasticity_rhs.f</a></div><div class="ttdeci">f</div><div class="ttdef"><b>Definition:</b> elasticity_rhs.py:173</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a310e8b13dbda9defdd7f0468e23d9407"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a310e8b13dbda9defdd7f0468e23d9407">polyfem::mesh::Mesh2D::cell_barycenter</a></div><div class="ttdeci">RowVectorNd cell_barycenter(const int index) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:36</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a65982e1f2bf0893fc9f8ad1d70acc583"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a65982e1f2bf0893fc9f8ad1d70acc583">polyfem::mesh::Mesh2D::barycentric_coords</a></div><div class="ttdeci">void barycentric_coords(const RowVectorNd &amp;p, const int el_id, Eigen::MatrixXd &amp;coord) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.cpp:85</div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></div><div class="ttdef"><b>Definition:</b> Mesh.hpp:33</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh_html_a8532f89710d84389e2e7e0baef61d684"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh.html#a8532f89710d84389e2e7e0baef61d684">polyfem::mesh::Mesh::face_barycenters</a></div><div class="ttdeci">void face_barycenters(Eigen::MatrixXd &amp;barycenters) const</div><div class="ttdef"><b>Definition:</b> Mesh.cpp:161</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a126b7c7206e56ae3728e1bd251fa6581"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581">polyfem::mesh::Mesh2D::switch_edge</a></div><div class="ttdeci">virtual Navigation::Index switch_edge(Navigation::Index idx) const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_abdd3fe7a2dec434aa4ea1005006faf80"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#abdd3fe7a2dec434aa4ea1005006faf80">polyfem::mesh::Mesh2D::~Mesh2D</a></div><div class="ttdeci">virtual ~Mesh2D()=default</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_ac65697f6e350c21881013348cd1f6111"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">polyfem::mesh::Mesh2D::get_index_from_face</a></div><div class="ttdeci">virtual Navigation::Index get_index_from_face(int f, int lv=0) const =0</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a6c29651fa089917c4230422725299bd5"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5">polyfem::mesh::Mesh2D::is_volume</a></div><div class="ttdeci">bool is_volume() const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:22</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a9dfaccca839ea4aa95da045bb161d207"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a9dfaccca839ea4aa95da045bb161d207">polyfem::mesh::Mesh2D::n_cells</a></div><div class="ttdeci">int n_cells() const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:24</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a05f1a1ffd74c2651e1c92836b8cdb736"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a05f1a1ffd74c2651e1c92836b8cdb736">polyfem::mesh::Mesh2D::is_boundary_face</a></div><div class="ttdeci">bool is_boundary_face(const int face_global_id) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:26</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_ae12a37c56b98ea95b3a65983b924220c"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ae12a37c56b98ea95b3a65983b924220c">polyfem::mesh::Mesh2D::compute_element_barycenters</a></div><div class="ttdeci">void compute_element_barycenters(Eigen::MatrixXd &amp;barycenters) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:52</div></div>
+<div class="ttc" id="anamespacepolyfem_html_abe6f92d10f655cb8c4ded3f58a6dc321"><div class="ttname"><a href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">polyfem::RowVectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3 &gt; RowVectorNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:12</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_ab18ff604f927d7e928496b4bb358162c"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ab18ff604f927d7e928496b4bb358162c">polyfem::mesh::Mesh2D::Mesh2D</a></div><div class="ttdeci">Mesh2D()=default</div></div>
+<div class="ttc" id="a_types_8hpp_html"><div class="ttname"><a href="_types_8hpp.html">Types.hpp</a></div></div>
+<div class="ttc" id="a_navigation_8hpp_html"><div class="ttname"><a href="_navigation_8hpp.html">Navigation.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_aa1cca9819eddf537887c72bd30209d94"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aa1cca9819eddf537887c72bd30209d94">polyfem::mesh::Mesh2D::set_point</a></div><div class="ttdeci">virtual void set_point(const int global_index, const RowVectorNd &amp;p)=0</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html">polyfem::mesh::Mesh2D</a></div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:15</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_a47f4f34ea25a5a7e1026121999cbf8d4"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a47f4f34ea25a5a7e1026121999cbf8d4">polyfem::mesh::Mesh2D::face_barycenter</a></div><div class="ttdeci">RowVectorNd face_barycenter(const int index) const override</div><div class="ttdef"><b>Definition:</b> Mesh2D.cpp:69</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html_aee59636688d42983f472daa1a457a6f6"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6">polyfem::mesh::Mesh2D::switch_face</a></div><div class="ttdeci">virtual Navigation::Index switch_face(Navigation::Index idx) const =0</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_15d4893607df4bf7106bb9ed16128612.html">mesh</a></li><li class="navelem"><a class="el" href="dir_0dea85a4cc0a13ac5889fb898e038943.html">mesh2D</a></li><li class="navelem"><b>Mesh2D.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_15d4893607df4bf7106bb9ed16128612.html">mesh</a></li><li class="navelem"><a class="el" href="dir_0dea85a4cc0a13ac5889fb898e038943.html">mesh2D</a></li><li class="navelem"><a class="el" href="_mesh2_d_8hpp.html">Mesh2D.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::solver::line_search::LineSearch&lt; ProblemType &gt; Class Template Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -94,108 +126,702 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1line__search
 <div class="title">polyfem::solver::line_search::LineSearch&lt; ProblemType &gt; Class Template Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_line_search_8hpp_source.html">LineSearch.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for polyfem::solver::line_search::LineSearch&lt; ProblemType &gt;:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classpolyfem_1_1solver_1_1line__search_1_1_line_search.png" usemap="#polyfem::solver::line_5Fsearch::LineSearch_3C_20ProblemType_20_3E_map" alt=""/>
-  <map id="polyfem::solver::line_5Fsearch::LineSearch_3C_20ProblemType_20_3E_map" name="polyfem::solver::line_5Fsearch::LineSearch_3C_20ProblemType_20_3E_map">
-<area href="classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html" alt="polyfem::solver::line_search::ArmijoLineSearch&lt; ProblemType &gt;" shape="rect" coords="0,56,417,80"/>
-<area href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html" alt="polyfem::solver::line_search::BacktrackingLineSearch&lt; ProblemType &gt;" shape="rect" coords="427,56,844,80"/>
-<area href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html" alt="polyfem::solver::line_search::CppOptArmijoLineSearch&lt; ProblemType &gt;" shape="rect" coords="854,56,1271,80"/>
-<area href="classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html" alt="polyfem::solver::line_search::MoreThuenteLineSearch&lt; ProblemType &gt;" shape="rect" coords="1281,56,1698,80"/>
-  </map>
-</div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1line__search_1_1_line_search__inherit__graph.svg" width="464" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aab06bc92bfecad365ffeda27b28651c7"><td class="memItemLeft" align="right" valign="top"><a id="aab06bc92bfecad365ffeda27b28651c7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Scalar</b> = typename ProblemType::Scalar</td></tr>
+<tr class="memitem:aab06bc92bfecad365ffeda27b28651c7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aab06bc92bfecad365ffeda27b28651c7">Scalar</a> = typename ProblemType::Scalar</td></tr>
 <tr class="separator:aab06bc92bfecad365ffeda27b28651c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17ffbdf8087400684d3d3609d20d09bf"><td class="memItemLeft" align="right" valign="top"><a id="a17ffbdf8087400684d3d3609d20d09bf"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>TVector</b> = typename ProblemType::TVector</td></tr>
+<tr class="memitem:a17ffbdf8087400684d3d3609d20d09bf"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> = typename ProblemType::TVector</td></tr>
 <tr class="separator:a17ffbdf8087400684d3d3609d20d09bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa83f2a2f12125d3b48b5384bfc742921"><td class="memItemLeft" align="right" valign="top"><a id="aa83f2a2f12125d3b48b5384bfc742921"></a>
-virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>line_search</b> (const TVector &amp;x, const TVector &amp;grad, ProblemType &amp;objFunc)=0</td></tr>
+<tr class="memitem:aebab190fce69f1ea77e9fc6852173d76"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aebab190fce69f1ea77e9fc6852173d76">LineSearch</a> ()</td></tr>
+<tr class="separator:aebab190fce69f1ea77e9fc6852173d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc022a0d423d25988b975c070c9c481a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#abc022a0d423d25988b975c070c9c481a">~LineSearch</a> ()=default</td></tr>
+<tr class="separator:abc022a0d423d25988b975c070c9c481a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83f2a2f12125d3b48b5384bfc742921"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aa83f2a2f12125d3b48b5384bfc742921">line_search</a> (const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;grad, ProblemType &amp;objFunc)=0</td></tr>
 <tr class="separator:aa83f2a2f12125d3b48b5384bfc742921"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a9d3142ceecbb0b63e8a2783bb6479e"><td class="memItemLeft" align="right" valign="top"><a id="a4a9d3142ceecbb0b63e8a2783bb6479e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_times</b> ()</td></tr>
+<tr class="memitem:a4a9d3142ceecbb0b63e8a2783bb6479e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4a9d3142ceecbb0b63e8a2783bb6479e">reset_times</a> ()</td></tr>
 <tr class="separator:a4a9d3142ceecbb0b63e8a2783bb6479e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a45f156287c1678b163e67d98edb69f18"><td class="memItemLeft" align="right" valign="top"><a id="a45f156287c1678b163e67d98edb69f18"></a>
-static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a>&lt; ProblemType &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>construct_line_search</b> (const std::string &amp;name)</td></tr>
+<tr class="memitem:a45f156287c1678b163e67d98edb69f18"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a>&lt; ProblemType &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a45f156287c1678b163e67d98edb69f18">construct_line_search</a> (const std::string &amp;name)</td></tr>
 <tr class="separator:a45f156287c1678b163e67d98edb69f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab53ee5be4a077d0afec4bb4999d19990"><td class="memItemLeft" align="right" valign="top"><a id="ab53ee5be4a077d0afec4bb4999d19990"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>save_sampled_values</b> (const std::string &amp;filename, const TVector &amp;x, const TVector &amp;grad, ProblemType &amp;objFunc, const double starting_step_size=1e-1, const int num_samples=1000)</td></tr>
+<tr class="memitem:ab53ee5be4a077d0afec4bb4999d19990"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ab53ee5be4a077d0afec4bb4999d19990">save_sampled_values</a> (const std::string &amp;filename, const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;grad, ProblemType &amp;objFunc, const double starting_step_size=1e-1, const int num_samples=1000)</td></tr>
 <tr class="separator:ab53ee5be4a077d0afec4bb4999d19990"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a7c5d42309d9f8dba4ab89b8d7eff8537"><td class="memItemLeft" align="right" valign="top"><a id="a7c5d42309d9f8dba4ab89b8d7eff8537"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537">iterations</a></td></tr>
-<tr class="memdesc:a7c5d42309d9f8dba4ab89b8d7eff8537"><td class="mdescLeft">&#160;</td><td class="mdescRight">total number of backtracking iterations done <br /></td></tr>
+<tr class="memitem:a7c5d42309d9f8dba4ab89b8d7eff8537"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537">iterations</a></td></tr>
+<tr class="memdesc:a7c5d42309d9f8dba4ab89b8d7eff8537"><td class="mdescLeft">&#160;</td><td class="mdescRight">total number of backtracking iterations done  <a href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a7c5d42309d9f8dba4ab89b8d7eff8537">More...</a><br /></td></tr>
 <tr class="separator:a7c5d42309d9f8dba4ab89b8d7eff8537"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d8c9054c23fe46766eb28bef54fcf1a"><td class="memItemLeft" align="right" valign="top"><a id="a4d8c9054c23fe46766eb28bef54fcf1a"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>checking_for_nan_inf_time</b></td></tr>
+<tr class="memitem:a4d8c9054c23fe46766eb28bef54fcf1a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4d8c9054c23fe46766eb28bef54fcf1a">checking_for_nan_inf_time</a></td></tr>
 <tr class="separator:a4d8c9054c23fe46766eb28bef54fcf1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cfb5b4f209cc03e3a36fa8c36f823e1"><td class="memItemLeft" align="right" valign="top"><a id="a5cfb5b4f209cc03e3a36fa8c36f823e1"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>broad_phase_ccd_time</b></td></tr>
+<tr class="memitem:a5cfb5b4f209cc03e3a36fa8c36f823e1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5cfb5b4f209cc03e3a36fa8c36f823e1">broad_phase_ccd_time</a></td></tr>
 <tr class="separator:a5cfb5b4f209cc03e3a36fa8c36f823e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5903e76e0529bcdc7c3a67cf6802cceb"><td class="memItemLeft" align="right" valign="top"><a id="a5903e76e0529bcdc7c3a67cf6802cceb"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>ccd_time</b></td></tr>
+<tr class="memitem:a5903e76e0529bcdc7c3a67cf6802cceb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5903e76e0529bcdc7c3a67cf6802cceb">ccd_time</a></td></tr>
 <tr class="separator:a5903e76e0529bcdc7c3a67cf6802cceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a816d662fcc4601478ecf961b89d88304"><td class="memItemLeft" align="right" valign="top"><a id="a816d662fcc4601478ecf961b89d88304"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_set_update_time</b></td></tr>
+<tr class="memitem:a816d662fcc4601478ecf961b89d88304"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a816d662fcc4601478ecf961b89d88304">constraint_set_update_time</a></td></tr>
 <tr class="separator:a816d662fcc4601478ecf961b89d88304"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ff6b46a559be85cd56736d1d44dbf5a"><td class="memItemLeft" align="right" valign="top"><a id="a4ff6b46a559be85cd56736d1d44dbf5a"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>classical_line_search_time</b></td></tr>
+<tr class="memitem:a4ff6b46a559be85cd56736d1d44dbf5a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4ff6b46a559be85cd56736d1d44dbf5a">classical_line_search_time</a></td></tr>
 <tr class="separator:a4ff6b46a559be85cd56736d1d44dbf5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e63e913fd1df2799151f88d8233096d"><td class="memItemLeft" align="right" valign="top"><a id="a0e63e913fd1df2799151f88d8233096d"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>use_grad_norm_tol</b> = -1</td></tr>
+<tr class="memitem:a0e63e913fd1df2799151f88d8233096d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d">use_grad_norm_tol</a> = -1</td></tr>
 <tr class="separator:a0e63e913fd1df2799151f88d8233096d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:af35a5d0f24305a5400176e5bc8669d59"><td class="memItemLeft" align="right" valign="top"><a id="af35a5d0f24305a5400176e5bc8669d59"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>compute_nan_free_step_size</b> (const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size, const double rate)</td></tr>
+<tr class="memitem:af35a5d0f24305a5400176e5bc8669d59"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59">compute_nan_free_step_size</a> (const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size, const double rate)</td></tr>
 <tr class="separator:af35a5d0f24305a5400176e5bc8669d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07bc05931512b5257fd28bffe4fb7efc"><td class="memItemLeft" align="right" valign="top"><a id="a07bc05931512b5257fd28bffe4fb7efc"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>compute_collision_free_step_size</b> (const TVector &amp;x, const TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size)</td></tr>
+<tr class="memitem:a07bc05931512b5257fd28bffe4fb7efc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a07bc05931512b5257fd28bffe4fb7efc">compute_collision_free_step_size</a> (const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size)</td></tr>
 <tr class="separator:a07bc05931512b5257fd28bffe4fb7efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d5d9b20058cad6c6f1adad54362d846"><td class="memItemLeft" align="right" valign="top"><a id="a6d5d9b20058cad6c6f1adad54362d846"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>compute_debug_collision_free_step_size</b> (const typename ProblemType::TVector &amp;x, const typename ProblemType::TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size, const double rate)</td></tr>
+<tr class="memitem:a6d5d9b20058cad6c6f1adad54362d846"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a6d5d9b20058cad6c6f1adad54362d846">compute_debug_collision_free_step_size</a> (const typename ProblemType::TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const typename ProblemType::TVector &amp;delta_x, ProblemType &amp;objFunc, const double starting_step_size, const double rate)</td></tr>
 <tr class="separator:a6d5d9b20058cad6c6f1adad54362d846"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a75548d7d1b779d37c20b68d508094137"><td class="memItemLeft" align="right" valign="top"><a id="a75548d7d1b779d37c20b68d508094137"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>min_step_size</b> = 0</td></tr>
+<tr class="memitem:a75548d7d1b779d37c20b68d508094137"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137">min_step_size</a> = 0</td></tr>
 <tr class="separator:a75548d7d1b779d37c20b68d508094137"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae82b98abb213a3a79a64299bffa4a36b"><td class="memItemLeft" align="right" valign="top"><a id="ae82b98abb213a3a79a64299bffa4a36b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>max_step_size_iter</b> = 100</td></tr>
+<tr class="memitem:ae82b98abb213a3a79a64299bffa4a36b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b">max_step_size_iter</a> = 100</td></tr>
 <tr class="separator:ae82b98abb213a3a79a64299bffa4a36b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a353761915b4eabc0739af54992a66928"><td class="memItemLeft" align="right" valign="top"><a id="a353761915b4eabc0739af54992a66928"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>cur_iter</b> = 0</td></tr>
+<tr class="memitem:a353761915b4eabc0739af54992a66928"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928">cur_iter</a> = 0</td></tr>
 <tr class="separator:a353761915b4eabc0739af54992a66928"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="aab06bc92bfecad365ffeda27b28651c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab06bc92bfecad365ffeda27b28651c7">&#9670;&nbsp;</a></span>Scalar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aab06bc92bfecad365ffeda27b28651c7">Scalar</a> =  typename ProblemType::Scalar</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17ffbdf8087400684d3d3609d20d09bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ffbdf8087400684d3d3609d20d09bf">&#9670;&nbsp;</a></span>TVector</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> =  typename ProblemType::TVector</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aebab190fce69f1ea77e9fc6852173d76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebab190fce69f1ea77e9fc6852173d76">&#9670;&nbsp;</a></span>LineSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc022a0d423d25988b975c070c9c481a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc022a0d423d25988b975c070c9c481a">&#9670;&nbsp;</a></span>~LineSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::~<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a07bc05931512b5257fd28bffe4fb7efc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07bc05931512b5257fd28bffe4fb7efc">&#9670;&nbsp;</a></span>compute_collision_free_step_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::compute_collision_free_step_size </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>delta_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>starting_step_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6d5d9b20058cad6c6f1adad54362d846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d5d9b20058cad6c6f1adad54362d846">&#9670;&nbsp;</a></span>compute_debug_collision_free_step_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::compute_debug_collision_free_step_size </td>
+          <td>(</td>
+          <td class="paramtype">const typename ProblemType::TVector &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename ProblemType::TVector &amp;&#160;</td>
+          <td class="paramname"><em>delta_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>starting_step_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af35a5d0f24305a5400176e5bc8669d59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af35a5d0f24305a5400176e5bc8669d59">&#9670;&nbsp;</a></span>compute_nan_free_step_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::compute_nan_free_step_size </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>delta_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>starting_step_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45f156287c1678b163e67d98edb69f18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f156287c1678b163e67d98edb69f18">&#9670;&nbsp;</a></span>construct_line_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a>&lt;ProblemType&gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::construct_line_search </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa83f2a2f12125d3b48b5384bfc742921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa83f2a2f12125d3b48b5384bfc742921">&#9670;&nbsp;</a></span>line_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::line_search </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>grad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html#ab2cf797eedaabe07e4697075c2be48ff">polyfem::solver::line_search::ArmijoLineSearch&lt; ProblemType &gt;</a>, <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html#ab8968b3929fa21704b3ddd9f2c666dc3">polyfem::solver::line_search::CppOptArmijoLineSearch&lt; ProblemType &gt;</a>, <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html#ad24d642d72c644f88c17423570d61886">polyfem::solver::line_search::MoreThuenteLineSearch&lt; ProblemType &gt;</a>, and <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#acd54aa6e4ba54937fb54346b453cc094">polyfem::solver::line_search::BacktrackingLineSearch&lt; ProblemType &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a4a9d3142ceecbb0b63e8a2783bb6479e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a9d3142ceecbb0b63e8a2783bb6479e">&#9670;&nbsp;</a></span>reset_times()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::reset_times </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab53ee5be4a077d0afec4bb4999d19990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab53ee5be4a077d0afec4bb4999d19990">&#9670;&nbsp;</a></span>save_sampled_values()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::save_sampled_values </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf">TVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>grad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProblemType &amp;&#160;</td>
+          <td class="paramname"><em>objFunc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>starting_step_size</em> = <code>1e-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>num_samples</em> = <code>1000</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a5cfb5b4f209cc03e3a36fa8c36f823e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cfb5b4f209cc03e3a36fa8c36f823e1">&#9670;&nbsp;</a></span>broad_phase_ccd_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::broad_phase_ccd_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5903e76e0529bcdc7c3a67cf6802cceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5903e76e0529bcdc7c3a67cf6802cceb">&#9670;&nbsp;</a></span>ccd_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::ccd_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d8c9054c23fe46766eb28bef54fcf1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d8c9054c23fe46766eb28bef54fcf1a">&#9670;&nbsp;</a></span>checking_for_nan_inf_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::checking_for_nan_inf_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ff6b46a559be85cd56736d1d44dbf5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ff6b46a559be85cd56736d1d44dbf5a">&#9670;&nbsp;</a></span>classical_line_search_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::classical_line_search_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a816d662fcc4601478ecf961b89d88304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a816d662fcc4601478ecf961b89d88304">&#9670;&nbsp;</a></span>constraint_set_update_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::constraint_set_update_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a353761915b4eabc0739af54992a66928"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a353761915b4eabc0739af54992a66928">&#9670;&nbsp;</a></span>cur_iter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::cur_iter = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c5d42309d9f8dba4ab89b8d7eff8537"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c5d42309d9f8dba4ab89b8d7eff8537">&#9670;&nbsp;</a></span>iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::iterations</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>total number of backtracking iterations done </p>
+
+</div>
+</div>
+<a id="ae82b98abb213a3a79a64299bffa4a36b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae82b98abb213a3a79a64299bffa4a36b">&#9670;&nbsp;</a></span>max_step_size_iter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::max_step_size_iter = 100</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a75548d7d1b779d37c20b68d508094137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75548d7d1b779d37c20b68d508094137">&#9670;&nbsp;</a></span>min_step_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::min_step_size = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0e63e913fd1df2799151f88d8233096d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e63e913fd1df2799151f88d8233096d">&#9670;&nbsp;</a></span>use_grad_norm_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">polyfem::solver::line_search::LineSearch</a>&lt; ProblemType &gt;::use_grad_norm_tol = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/polyfem/solver/line_search/<a class="el" href="_line_search_8hpp_source.html">LineSearch.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>solver</b></li><li class="navelem"><b>line_search</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1solver.html">solver</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1solver_1_1line__search.html">line_search</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html">LineSearch</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

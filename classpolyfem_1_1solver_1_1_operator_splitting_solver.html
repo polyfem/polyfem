@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::solver::OperatorSplittingSolver Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,183 +122,1940 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_operator_sp
 <div class="title">polyfem::solver::OperatorSplittingSolver Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_operator_splitting_solver_8hpp_source.html">OperatorSplittingSolver.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af4b7ab99efd5023af3cec64d2240327f"><td class="memItemLeft" align="right" valign="top"><a id="af4b7ab99efd5023af3cec64d2240327f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_grid</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const double &amp;density_dx)</td></tr>
+<tr class="memitem:af4b7ab99efd5023af3cec64d2240327f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#af4b7ab99efd5023af3cec64d2240327f">initialize_grid</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const double &amp;density_dx)</td></tr>
 <tr class="separator:af4b7ab99efd5023af3cec64d2240327f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a014e13100b981f76dee19d2f62f40f45"><td class="memItemLeft" align="right" valign="top"><a id="a014e13100b981f76dee19d2f62f40f45"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_mesh</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int shape, const int n_el, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary)</td></tr>
+<tr class="memitem:a014e13100b981f76dee19d2f62f40f45"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a014e13100b981f76dee19d2f62f40f45">initialize_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int <a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29">shape</a>, const int <a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1a1399b10aa442c6d149954db66535a7">n_el</a>, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary)</td></tr>
 <tr class="separator:a014e13100b981f76dee19d2f62f40f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4c1d2442415698c5166f82a4f079b89"><td class="memItemLeft" align="right" valign="top"><a id="af4c1d2442415698c5166f82a4f079b89"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_hashtable</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh)</td></tr>
+<tr class="memitem:af4c1d2442415698c5166f82a4f079b89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#af4c1d2442415698c5166f82a4f079b89">initialize_hashtable</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh)</td></tr>
 <tr class="separator:af4c1d2442415698c5166f82a4f079b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebd75e84b126356c6cfbfeaebab8be9d"><td class="memItemLeft" align="right" valign="top"><a id="aebd75e84b126356c6cfbfeaebab8be9d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_solver</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int shape_, const int n_el_, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bnd_nodes)</td></tr>
+<tr class="memitem:a0fe30b41aa6f077b4ca4dfd922dd434e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a0fe30b41aa6f077b4ca4dfd922dd434e">OperatorSplittingSolver</a> ()</td></tr>
+<tr class="separator:a0fe30b41aa6f077b4ca4dfd922dd434e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd75e84b126356c6cfbfeaebab8be9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aebd75e84b126356c6cfbfeaebab8be9d">initialize_solver</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int shape_, const int n_el_, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bnd_nodes)</td></tr>
 <tr class="separator:aebd75e84b126356c6cfbfeaebab8be9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb62512c98ba6bba04d0b169e51c7f30"><td class="memItemLeft" align="right" valign="top"><a id="aeb62512c98ba6bba04d0b169e51c7f30"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>OperatorSplittingSolver</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int shape, const int n_el, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bnd_nodes)</td></tr>
+<tr class="memitem:aeb62512c98ba6bba04d0b169e51c7f30"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aeb62512c98ba6bba04d0b169e51c7f30">OperatorSplittingSolver</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int <a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29">shape</a>, const int <a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1a1399b10aa442c6d149954db66535a7">n_el</a>, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bnd_nodes)</td></tr>
 <tr class="separator:aeb62512c98ba6bba04d0b169e51c7f30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc68f295053acbfa1afa99d049a70f54"><td class="memItemLeft" align="right" valign="top"><a id="abc68f295053acbfa1afa99d049a70f54"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>OperatorSplittingSolver</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int shape, const int n_el, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;boundary_nodes_, const std::vector&lt; int &gt; &amp;pressure_boundary_nodes, const std::vector&lt; int &gt; &amp;bnd_nodes, const StiffnessMatrix &amp;mass, const StiffnessMatrix &amp;stiffness_viscosity, const StiffnessMatrix &amp;stiffness_velocity, const StiffnessMatrix &amp;mass_velocity, const double &amp;dt, const double &amp;viscosity_, const std::string &amp;solver_type, const std::string &amp;precond, const json &amp;params, const std::string &amp;save_path)</td></tr>
+<tr class="memitem:abc68f295053acbfa1afa99d049a70f54"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#abc68f295053acbfa1afa99d049a70f54">OperatorSplittingSolver</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int <a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29">shape</a>, const int <a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1a1399b10aa442c6d149954db66535a7">n_el</a>, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;boundary_nodes_, const std::vector&lt; int &gt; &amp;pressure_boundary_nodes, const std::vector&lt; int &gt; &amp;bnd_nodes, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness_viscosity, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness_velocity, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass_velocity, const double &amp;dt, const double &amp;viscosity_, const std::string &amp;<a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a60765d38a88c08b450f073a1e63eb491">solver_type</a>, const std::string &amp;precond, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params, const std::string &amp;save_path)</td></tr>
 <tr class="separator:abc68f295053acbfa1afa99d049a70f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb02070fcb475145b61bb691fa8227f4"><td class="memItemLeft" align="right" valign="top"><a id="adb02070fcb475145b61bb691fa8227f4"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>handle_boundary_advection</b> (RowVectorNd &amp;pos)</td></tr>
+<tr class="memitem:adb02070fcb475145b61bb691fa8227f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#adb02070fcb475145b61bb691fa8227f4">handle_boundary_advection</a> (<a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos)</td></tr>
 <tr class="separator:adb02070fcb475145b61bb691fa8227f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f658978496f29a7c323ea19e8740dcc"><td class="memItemLeft" align="right" valign="top"><a id="a9f658978496f29a7c323ea19e8740dcc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>trace_back</b> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const RowVectorNd &amp;pos_1, const RowVectorNd &amp;vel_1, RowVectorNd &amp;pos_2, RowVectorNd &amp;vel_2, Eigen::MatrixXd &amp;local_pos, const Eigen::MatrixXd &amp;sol, const double dt)</td></tr>
+<tr class="memitem:a9f658978496f29a7c323ea19e8740dcc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a9f658978496f29a7c323ea19e8740dcc">trace_back</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos_1, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;vel_1, <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos_2, <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;vel_2, Eigen::MatrixXd &amp;local_pos, const Eigen::MatrixXd &amp;sol, const double dt)</td></tr>
 <tr class="separator:a9f658978496f29a7c323ea19e8740dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42e37560b90067a4248d4398218fb982"><td class="memItemLeft" align="right" valign="top"><a id="a42e37560b90067a4248d4398218fb982"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>interpolator</b> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const RowVectorNd &amp;pos, RowVectorNd &amp;vel, Eigen::MatrixXd &amp;local_pos, const Eigen::MatrixXd &amp;sol)</td></tr>
+<tr class="memitem:a42e37560b90067a4248d4398218fb982"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a42e37560b90067a4248d4398218fb982">interpolator</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos, <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;vel, Eigen::MatrixXd &amp;local_pos, const Eigen::MatrixXd &amp;sol)</td></tr>
 <tr class="separator:a42e37560b90067a4248d4398218fb982"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4466075f0c20c68daf496e13065e5c3"><td class="memItemLeft" align="right" valign="top"><a id="ae4466075f0c20c68daf496e13065e5c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolator</b> (const RowVectorNd &amp;pos, double &amp;val)</td></tr>
+<tr class="memitem:ae4466075f0c20c68daf496e13065e5c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ae4466075f0c20c68daf496e13065e5c3">interpolator</a> (const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos, double &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)</td></tr>
 <tr class="separator:ae4466075f0c20c68daf496e13065e5c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64a74b23993d4d656930c2919f31abdd"><td class="memItemLeft" align="right" valign="top"><a id="a64a74b23993d4d656930c2919f31abdd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>advection</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;sol, const double dt, const Eigen::MatrixXd &amp;local_pts, const int order=1, const int RK=1)</td></tr>
+<tr class="memitem:a64a74b23993d4d656930c2919f31abdd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a64a74b23993d4d656930c2919f31abdd">advection</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;sol, const double dt, const Eigen::MatrixXd &amp;local_pts, const int order=1, const int RK=1)</td></tr>
 <tr class="separator:a64a74b23993d4d656930c2919f31abdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa52469b65fb60a91e75c2f989d89872e"><td class="memItemLeft" align="right" valign="top"><a id="aa52469b65fb60a91e75c2f989d89872e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>advect_density_exact</b> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; problem, const double t, const double dt, const int RK=3)</td></tr>
+<tr class="memitem:aa52469b65fb60a91e75c2f989d89872e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aa52469b65fb60a91e75c2f989d89872e">advect_density_exact</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; problem, const double t, const double dt, const int RK=3)</td></tr>
 <tr class="separator:aa52469b65fb60a91e75c2f989d89872e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa138ceb773286dcfb3134ea0397c29a4"><td class="memItemLeft" align="right" valign="top"><a id="aa138ceb773286dcfb3134ea0397c29a4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>advect_density</b> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const Eigen::MatrixXd &amp;sol, const double dt, const int RK=3)</td></tr>
+<tr class="memitem:aa138ceb773286dcfb3134ea0397c29a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aa138ceb773286dcfb3134ea0397c29a4">advect_density</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const Eigen::MatrixXd &amp;sol, const double dt, const int RK=3)</td></tr>
 <tr class="separator:aa138ceb773286dcfb3134ea0397c29a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa031b766ab6b7ef81bebb3401e0ea8e"><td class="memItemLeft" align="right" valign="top"><a id="aaa031b766ab6b7ef81bebb3401e0ea8e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>advection_FLIP</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;sol, const double dt, const Eigen::MatrixXd &amp;local_pts, const int order=1)</td></tr>
+<tr class="memitem:aaa031b766ab6b7ef81bebb3401e0ea8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aaa031b766ab6b7ef81bebb3401e0ea8e">advection_FLIP</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;sol, const double dt, const Eigen::MatrixXd &amp;local_pts, const int order=1)</td></tr>
 <tr class="separator:aaa031b766ab6b7ef81bebb3401e0ea8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71d25220cfe9747e5a2f970587df6d99"><td class="memItemLeft" align="right" valign="top"><a id="a71d25220cfe9747e5a2f970587df6d99"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>advection_PIC</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;sol, const double dt, const Eigen::MatrixXd &amp;local_pts, const int order=1)</td></tr>
+<tr class="memitem:a71d25220cfe9747e5a2f970587df6d99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a71d25220cfe9747e5a2f970587df6d99">advection_PIC</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, Eigen::MatrixXd &amp;sol, const double dt, const Eigen::MatrixXd &amp;local_pts, const int order=1)</td></tr>
 <tr class="separator:a71d25220cfe9747e5a2f970587df6d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af16cdb358d1592e7ab9341c18014f482"><td class="memItemLeft" align="right" valign="top"><a id="af16cdb358d1592e7ab9341c18014f482"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>solve_diffusion_1st</b> (const StiffnessMatrix &amp;mass, const std::vector&lt; int &gt; &amp;bnd_nodes, Eigen::MatrixXd &amp;sol)</td></tr>
+<tr class="memitem:af16cdb358d1592e7ab9341c18014f482"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#af16cdb358d1592e7ab9341c18014f482">solve_diffusion_1st</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass, const std::vector&lt; int &gt; &amp;bnd_nodes, Eigen::MatrixXd &amp;sol)</td></tr>
 <tr class="separator:af16cdb358d1592e7ab9341c18014f482"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4839c430138428e9badef93c8a9d052"><td class="memItemLeft" align="right" valign="top"><a id="aa4839c430138428e9badef93c8a9d052"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>external_force</b> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const double dt, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;local_pts, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; problem, const double time)</td></tr>
+<tr class="memitem:aa4839c430138428e9badef93c8a9d052"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aa4839c430138428e9badef93c8a9d052">external_force</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const double dt, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;local_pts, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; problem, const double time)</td></tr>
 <tr class="separator:aa4839c430138428e9badef93c8a9d052"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32eada89bbf4f77969c4f3f411b6e84f"><td class="memItemLeft" align="right" valign="top"><a id="a32eada89bbf4f77969c4f3f411b6e84f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>solve_pressure</b> (const StiffnessMatrix &amp;mixed_stiffness, const std::vector&lt; int &gt; &amp;pressure_boundary_nodes, Eigen::MatrixXd &amp;sol, Eigen::MatrixXd &amp;pressure)</td></tr>
+<tr class="memitem:a32eada89bbf4f77969c4f3f411b6e84f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a32eada89bbf4f77969c4f3f411b6e84f">solve_pressure</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const std::vector&lt; int &gt; &amp;pressure_boundary_nodes, Eigen::MatrixXd &amp;sol, Eigen::MatrixXd &amp;pressure)</td></tr>
 <tr class="separator:a32eada89bbf4f77969c4f3f411b6e84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40d763cda56ab6d6d45b7605bcd58a1d"><td class="memItemLeft" align="right" valign="top"><a id="a40d763cda56ab6d6d45b7605bcd58a1d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>projection</b> (const StiffnessMatrix &amp;velocity_mass, const StiffnessMatrix &amp;mixed_stiffness, const std::vector&lt; int &gt; &amp;boundary_nodes_, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure)</td></tr>
+<tr class="memitem:a40d763cda56ab6d6d45b7605bcd58a1d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a40d763cda56ab6d6d45b7605bcd58a1d">projection</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const std::vector&lt; int &gt; &amp;boundary_nodes_, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure)</td></tr>
 <tr class="separator:a40d763cda56ab6d6d45b7605bcd58a1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae90ebcac963bd9857a14610e4998e496"><td class="memItemLeft" align="right" valign="top"><a id="ae90ebcac963bd9857a14610e4998e496"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>projection</b> (int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;pressure_bases, const Eigen::MatrixXd &amp;local_pts, Eigen::MatrixXd &amp;pressure, Eigen::MatrixXd &amp;sol)</td></tr>
+<tr class="memitem:ae90ebcac963bd9857a14610e4998e496"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ae90ebcac963bd9857a14610e4998e496">projection</a> (int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;pressure_bases, const Eigen::MatrixXd &amp;local_pts, Eigen::MatrixXd &amp;pressure, Eigen::MatrixXd &amp;sol)</td></tr>
 <tr class="separator:ae90ebcac963bd9857a14610e4998e496"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9e6001debc8d565c6ec547c3f8bd5ee"><td class="memItemLeft" align="right" valign="top"><a id="ae9e6001debc8d565c6ec547c3f8bd5ee"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_density</b> (const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; &amp;problem)</td></tr>
+<tr class="memitem:ae9e6001debc8d565c6ec547c3f8bd5ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ae9e6001debc8d565c6ec547c3f8bd5ee">initialize_density</a> (const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; &amp;problem)</td></tr>
 <tr class="separator:ae9e6001debc8d565c6ec547c3f8bd5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bb48a9ac9ec047080babfc71238c5c8"><td class="memItemLeft" align="right" valign="top"><a id="a7bb48a9ac9ec047080babfc71238c5c8"></a>
-long&#160;</td><td class="memItemRight" valign="bottom"><b>search_cell</b> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const RowVectorNd &amp;pos, Eigen::MatrixXd &amp;local_pts)</td></tr>
+<tr class="memitem:a7bb48a9ac9ec047080babfc71238c5c8"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a7bb48a9ac9ec047080babfc71238c5c8">search_cell</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos, Eigen::MatrixXd &amp;local_pts)</td></tr>
 <tr class="separator:a7bb48a9ac9ec047080babfc71238c5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba2c584adcb4c5633f68a076110d5fd4"><td class="memItemLeft" align="right" valign="top"><a id="aba2c584adcb4c5633f68a076110d5fd4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>outside_quad</b> (const std::vector&lt; RowVectorNd &gt; &amp;vert, const RowVectorNd &amp;pos)</td></tr>
+<tr class="memitem:aba2c584adcb4c5633f68a076110d5fd4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aba2c584adcb4c5633f68a076110d5fd4">outside_quad</a> (const std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;vert, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos)</td></tr>
 <tr class="separator:aba2c584adcb4c5633f68a076110d5fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a438a463e995d920c4f7241f6f6a59d02"><td class="memItemLeft" align="right" valign="top"><a id="a438a463e995d920c4f7241f6f6a59d02"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_gbase_val</b> (const int elem_idx, const Eigen::MatrixXd &amp;local_pos, Eigen::MatrixXd &amp;pos)</td></tr>
+<tr class="memitem:a438a463e995d920c4f7241f6f6a59d02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a438a463e995d920c4f7241f6f6a59d02">compute_gbase_val</a> (const int elem_idx, const Eigen::MatrixXd &amp;local_pos, Eigen::MatrixXd &amp;pos)</td></tr>
 <tr class="separator:a438a463e995d920c4f7241f6f6a59d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3c5f81a4e692638ef18a1040cb61cf1"><td class="memItemLeft" align="right" valign="top"><a id="ae3c5f81a4e692638ef18a1040cb61cf1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_gbase_jacobi</b> (const int elem_idx, const Eigen::MatrixXd &amp;local_pos, Eigen::MatrixXd &amp;jacobi)</td></tr>
+<tr class="memitem:ae3c5f81a4e692638ef18a1040cb61cf1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ae3c5f81a4e692638ef18a1040cb61cf1">compute_gbase_jacobi</a> (const int elem_idx, const Eigen::MatrixXd &amp;local_pos, Eigen::MatrixXd &amp;jacobi)</td></tr>
 <tr class="separator:ae3c5f81a4e692638ef18a1040cb61cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb209fc33bfb84395220cc09de3f70c4"><td class="memItemLeft" align="right" valign="top"><a id="acb209fc33bfb84395220cc09de3f70c4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>calculate_local_pts</b> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbase, const int elem_idx, const RowVectorNd &amp;pos, Eigen::MatrixXd &amp;local_pos)</td></tr>
+<tr class="memitem:acb209fc33bfb84395220cc09de3f70c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acb209fc33bfb84395220cc09de3f70c4">calculate_local_pts</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbase, const int elem_idx, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pos, Eigen::MatrixXd &amp;local_pos)</td></tr>
 <tr class="separator:acb209fc33bfb84395220cc09de3f70c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8175610416cf77ecc8df2f4469081467"><td class="memItemLeft" align="right" valign="top"><a id="a8175610416cf77ecc8df2f4469081467"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>save_density</b> ()</td></tr>
+<tr class="memitem:a8175610416cf77ecc8df2f4469081467"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a8175610416cf77ecc8df2f4469081467">save_density</a> ()</td></tr>
 <tr class="separator:a8175610416cf77ecc8df2f4469081467"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad06223b8ce8f2d1c2f106f84de8c6dd3"><td class="memItemLeft" align="right" valign="top"><a id="ad06223b8ce8f2d1c2f106f84de8c6dd3"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>dim</b></td></tr>
+<tr class="memitem:ad06223b8ce8f2d1c2f106f84de8c6dd3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ad06223b8ce8f2d1c2f106f84de8c6dd3">dim</a></td></tr>
 <tr class="separator:ad06223b8ce8f2d1c2f106f84de8c6dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a1399b10aa442c6d149954db66535a7"><td class="memItemLeft" align="right" valign="top"><a id="a1a1399b10aa442c6d149954db66535a7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>n_el</b></td></tr>
+<tr class="memitem:a1a1399b10aa442c6d149954db66535a7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1a1399b10aa442c6d149954db66535a7">n_el</a></td></tr>
 <tr class="separator:a1a1399b10aa442c6d149954db66535a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acded0a120ab782970ff47e7f91950e29"><td class="memItemLeft" align="right" valign="top"><a id="acded0a120ab782970ff47e7f91950e29"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>shape</b></td></tr>
+<tr class="memitem:acded0a120ab782970ff47e7f91950e29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29">shape</a></td></tr>
 <tr class="separator:acded0a120ab782970ff47e7f91950e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9508493e6cb5f9dade2556bea092f3f"><td class="memItemLeft" align="right" valign="top"><a id="ae9508493e6cb5f9dade2556bea092f3f"></a>
-RowVectorNd&#160;</td><td class="memItemRight" valign="bottom"><b>min_domain</b></td></tr>
+<tr class="memitem:ae9508493e6cb5f9dade2556bea092f3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ae9508493e6cb5f9dade2556bea092f3f">min_domain</a></td></tr>
 <tr class="separator:ae9508493e6cb5f9dade2556bea092f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a744079dc4924258b61ad1d9af05800c5"><td class="memItemLeft" align="right" valign="top"><a id="a744079dc4924258b61ad1d9af05800c5"></a>
-RowVectorNd&#160;</td><td class="memItemRight" valign="bottom"><b>max_domain</b></td></tr>
+<tr class="memitem:a744079dc4924258b61ad1d9af05800c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a744079dc4924258b61ad1d9af05800c5">max_domain</a></td></tr>
 <tr class="separator:a744079dc4924258b61ad1d9af05800c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a590aa5859113a5ef17a9e7433753c6e4"><td class="memItemLeft" align="right" valign="top"><a id="a590aa5859113a5ef17a9e7433753c6e4"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>V</b></td></tr>
+<tr class="memitem:a590aa5859113a5ef17a9e7433753c6e4"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a590aa5859113a5ef17a9e7433753c6e4">V</a></td></tr>
 <tr class="separator:a590aa5859113a5ef17a9e7433753c6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab898f86e40d086ed9e13aba18281480a"><td class="memItemLeft" align="right" valign="top"><a id="ab898f86e40d086ed9e13aba18281480a"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>T</b></td></tr>
+<tr class="memitem:ab898f86e40d086ed9e13aba18281480a"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ab898f86e40d086ed9e13aba18281480a">T</a></td></tr>
 <tr class="separator:ab898f86e40d086ed9e13aba18281480a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d44fc2c88bbd06efff098eee0503174"><td class="memItemLeft" align="right" valign="top"><a id="a8d44fc2c88bbd06efff098eee0503174"></a>
-std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>hash_table</b></td></tr>
+<tr class="memitem:a8d44fc2c88bbd06efff098eee0503174"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a8d44fc2c88bbd06efff098eee0503174">hash_table</a></td></tr>
 <tr class="separator:a8d44fc2c88bbd06efff098eee0503174"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f6822209689767027ba50199b933724"><td class="memItemLeft" align="right" valign="top"><a id="a1f6822209689767027ba50199b933724"></a>
-std::array&lt; long, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>hash_table_cell_num</b></td></tr>
+<tr class="memitem:a1f6822209689767027ba50199b933724"><td class="memItemLeft" align="right" valign="top">std::array&lt; long, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1f6822209689767027ba50199b933724">hash_table_cell_num</a></td></tr>
 <tr class="separator:a1f6822209689767027ba50199b933724"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadbf2d1db0cfce91b378fabc1e694b35"><td class="memItemLeft" align="right" valign="top"><a id="aadbf2d1db0cfce91b378fabc1e694b35"></a>
-std::vector&lt; RowVectorNd &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>position_particle</b></td></tr>
+<tr class="memitem:aadbf2d1db0cfce91b378fabc1e694b35"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aadbf2d1db0cfce91b378fabc1e694b35">position_particle</a></td></tr>
 <tr class="separator:aadbf2d1db0cfce91b378fabc1e694b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfe443b5760674f6629f87c0c18d312f"><td class="memItemLeft" align="right" valign="top"><a id="acfe443b5760674f6629f87c0c18d312f"></a>
-std::vector&lt; RowVectorNd &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity_particle</b></td></tr>
+<tr class="memitem:acfe443b5760674f6629f87c0c18d312f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acfe443b5760674f6629f87c0c18d312f">velocity_particle</a></td></tr>
 <tr class="separator:acfe443b5760674f6629f87c0c18d312f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11a29e0a437f05141af534ff34b915f6"><td class="memItemLeft" align="right" valign="top"><a id="a11a29e0a437f05141af534ff34b915f6"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cellI_particle</b></td></tr>
+<tr class="memitem:a11a29e0a437f05141af534ff34b915f6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a11a29e0a437f05141af534ff34b915f6">cellI_particle</a></td></tr>
 <tr class="separator:a11a29e0a437f05141af534ff34b915f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd7d0bdb143efaacb873507bf3422b87"><td class="memItemLeft" align="right" valign="top"><a id="afd7d0bdb143efaacb873507bf3422b87"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>new_sol</b></td></tr>
+<tr class="memitem:afd7d0bdb143efaacb873507bf3422b87"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#afd7d0bdb143efaacb873507bf3422b87">new_sol</a></td></tr>
 <tr class="separator:afd7d0bdb143efaacb873507bf3422b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cee442797e4f03158350d9c74aceec9"><td class="memItemLeft" align="right" valign="top"><a id="a0cee442797e4f03158350d9c74aceec9"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>new_sol_w</b></td></tr>
+<tr class="memitem:a0cee442797e4f03158350d9c74aceec9"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a0cee442797e4f03158350d9c74aceec9">new_sol_w</a></td></tr>
 <tr class="separator:a0cee442797e4f03158350d9c74aceec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84b94596cfb1872928b489c417f1ddd8"><td class="memItemLeft" align="right" valign="top"><a id="a84b94596cfb1872928b489c417f1ddd8"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_elem_id</b></td></tr>
+<tr class="memitem:a84b94596cfb1872928b489c417f1ddd8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a84b94596cfb1872928b489c417f1ddd8">boundary_elem_id</a></td></tr>
 <tr class="separator:a84b94596cfb1872928b489c417f1ddd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab70e9bca2919ab022b0f026d0e061d7"><td class="memItemLeft" align="right" valign="top"><a id="aab70e9bca2919ab022b0f026d0e061d7"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_nodes</b></td></tr>
+<tr class="memitem:aab70e9bca2919ab022b0f026d0e061d7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aab70e9bca2919ab022b0f026d0e061d7">boundary_nodes</a></td></tr>
 <tr class="separator:aab70e9bca2919ab022b0f026d0e061d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a1d135e1c9e9060855874c29ae9944c"><td class="memItemLeft" align="right" valign="top"><a id="a4a1d135e1c9e9060855874c29ae9944c"></a>
-std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>solver_diffusion</b></td></tr>
+<tr class="memitem:a4a1d135e1c9e9060855874c29ae9944c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4a1d135e1c9e9060855874c29ae9944c">solver_diffusion</a></td></tr>
 <tr class="separator:a4a1d135e1c9e9060855874c29ae9944c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f21291a6b2b725554ce956b62a2d595"><td class="memItemLeft" align="right" valign="top"><a id="a2f21291a6b2b725554ce956b62a2d595"></a>
-std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>solver_projection</b></td></tr>
+<tr class="memitem:a2f21291a6b2b725554ce956b62a2d595"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a2f21291a6b2b725554ce956b62a2d595">solver_projection</a></td></tr>
 <tr class="separator:a2f21291a6b2b725554ce956b62a2d595"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8837019f891efb0117e92dcc4731b485"><td class="memItemLeft" align="right" valign="top"><a id="a8837019f891efb0117e92dcc4731b485"></a>
-std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>solver_mass</b></td></tr>
+<tr class="memitem:a8837019f891efb0117e92dcc4731b485"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a8837019f891efb0117e92dcc4731b485">solver_mass</a></td></tr>
 <tr class="separator:a8837019f891efb0117e92dcc4731b485"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1c2a82acbea62d91aa40a3c062e881d"><td class="memItemLeft" align="right" valign="top"><a id="ac1c2a82acbea62d91aa40a3c062e881d"></a>
-StiffnessMatrix&#160;</td><td class="memItemRight" valign="bottom"><b>mat_diffusion</b></td></tr>
+<tr class="memitem:ac1c2a82acbea62d91aa40a3c062e881d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ac1c2a82acbea62d91aa40a3c062e881d">mat_diffusion</a></td></tr>
 <tr class="separator:ac1c2a82acbea62d91aa40a3c062e881d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a"><td class="memItemLeft" align="right" valign="top"><a id="a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a"></a>
-StiffnessMatrix&#160;</td><td class="memItemRight" valign="bottom"><b>mat_projection</b></td></tr>
+<tr class="memitem:a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a">mat_projection</a></td></tr>
 <tr class="separator:a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60765d38a88c08b450f073a1e63eb491"><td class="memItemLeft" align="right" valign="top"><a id="a60765d38a88c08b450f073a1e63eb491"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>solver_type</b></td></tr>
+<tr class="memitem:a60765d38a88c08b450f073a1e63eb491"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a60765d38a88c08b450f073a1e63eb491">solver_type</a></td></tr>
 <tr class="separator:a60765d38a88c08b450f073a1e63eb491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afab3acbb8db741452399200249df1077"><td class="memItemLeft" align="right" valign="top"><a id="afab3acbb8db741452399200249df1077"></a>
-Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>density</b></td></tr>
+<tr class="memitem:afab3acbb8db741452399200249df1077"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#afab3acbb8db741452399200249df1077">density</a></td></tr>
 <tr class="separator:afab3acbb8db741452399200249df1077"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a921337bef2f24255ff5b7c9f401f1555"><td class="memItemLeft" align="right" valign="top"><a id="a921337bef2f24255ff5b7c9f401f1555"></a>
-RowVectorNd&#160;</td><td class="memItemRight" valign="bottom"><b>grid_cell_num</b></td></tr>
+<tr class="memitem:a921337bef2f24255ff5b7c9f401f1555"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a921337bef2f24255ff5b7c9f401f1555">grid_cell_num</a></td></tr>
 <tr class="separator:a921337bef2f24255ff5b7c9f401f1555"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ab1c36f763af029158e70fb3ba0da15"><td class="memItemLeft" align="right" valign="top"><a id="a6ab1c36f763af029158e70fb3ba0da15"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>resolution</b></td></tr>
+<tr class="memitem:a6ab1c36f763af029158e70fb3ba0da15"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a6ab1c36f763af029158e70fb3ba0da15">resolution</a></td></tr>
 <tr class="separator:a6ab1c36f763af029158e70fb3ba0da15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a0fe30b41aa6f077b4ca4dfd922dd434e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fe30b41aa6f077b4ca4dfd922dd434e">&#9670;&nbsp;</a></span>OperatorSplittingSolver() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::solver::OperatorSplittingSolver::OperatorSplittingSolver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb62512c98ba6bba04d0b169e51c7f30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb62512c98ba6bba04d0b169e51c7f30">&#9670;&nbsp;</a></span>OperatorSplittingSolver() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::solver::OperatorSplittingSolver::OperatorSplittingSolver </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_el</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bnd_nodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc68f295053acbfa1afa99d049a70f54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc68f295053acbfa1afa99d049a70f54">&#9670;&nbsp;</a></span>OperatorSplittingSolver() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::solver::OperatorSplittingSolver::OperatorSplittingSolver </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_el</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>boundary_nodes_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>pressure_boundary_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bnd_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>stiffness_viscosity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>stiffness_velocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mass_velocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>viscosity_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>solver_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>save_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa138ceb773286dcfb3134ea0397c29a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa138ceb773286dcfb3134ea0397c29a4">&#9670;&nbsp;</a></span>advect_density()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::advect_density </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>RK</em> = <code>3</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa52469b65fb60a91e75c2f989d89872e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52469b65fb60a91e75c2f989d89872e">&#9670;&nbsp;</a></span>advect_density_exact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::advect_density_exact </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt;&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>RK</em> = <code>3</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a64a74b23993d4d656930c2919f31abdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64a74b23993d4d656930c2919f31abdd">&#9670;&nbsp;</a></span>advection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::advection </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>order</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>RK</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa031b766ab6b7ef81bebb3401e0ea8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa031b766ab6b7ef81bebb3401e0ea8e">&#9670;&nbsp;</a></span>advection_FLIP()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::advection_FLIP </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>order</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a71d25220cfe9747e5a2f970587df6d99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71d25220cfe9747e5a2f970587df6d99">&#9670;&nbsp;</a></span>advection_PIC()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::advection_PIC </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>order</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acb209fc33bfb84395220cc09de3f70c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb209fc33bfb84395220cc09de3f70c4">&#9670;&nbsp;</a></span>calculate_local_pts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::calculate_local_pts </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>gbase</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>elem_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae3c5f81a4e692638ef18a1040cb61cf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3c5f81a4e692638ef18a1040cb61cf1">&#9670;&nbsp;</a></span>compute_gbase_jacobi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::compute_gbase_jacobi </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>elem_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>jacobi</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a438a463e995d920c4f7241f6f6a59d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438a463e995d920c4f7241f6f6a59d02">&#9670;&nbsp;</a></span>compute_gbase_val()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::compute_gbase_val </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>elem_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa4839c430138428e9badef93c8a9d052"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4839c430138428e9badef93c8a9d052">&#9670;&nbsp;</a></span>external_force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::external_force </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramname"><em>assembler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt;&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adb02070fcb475145b61bb691fa8227f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb02070fcb475145b61bb691fa8227f4">&#9670;&nbsp;</a></span>handle_boundary_advection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::OperatorSplittingSolver::handle_boundary_advection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9e6001debc8d565c6ec547c3f8bd5ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9e6001debc8d565c6ec547c3f8bd5ee">&#9670;&nbsp;</a></span>initialize_density()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::initialize_density </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1problem_1_1_problem.html">problem::Problem</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af4b7ab99efd5023af3cec64d2240327f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b7ab99efd5023af3cec64d2240327f">&#9670;&nbsp;</a></span>initialize_grid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::initialize_grid </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>density_dx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af4c1d2442415698c5166f82a4f079b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4c1d2442415698c5166f82a4f079b89">&#9670;&nbsp;</a></span>initialize_hashtable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::initialize_hashtable </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a014e13100b981f76dee19d2f62f40f45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a014e13100b981f76dee19d2f62f40f45">&#9670;&nbsp;</a></span>initialize_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::initialize_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_el</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aebd75e84b126356c6cfbfeaebab8be9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd75e84b126356c6cfbfeaebab8be9d">&#9670;&nbsp;</a></span>initialize_solver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::initialize_solver </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>shape_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_el_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bnd_nodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae4466075f0c20c68daf496e13065e5c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4466075f0c20c68daf496e13065e5c3">&#9670;&nbsp;</a></span>interpolator() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::interpolator </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42e37560b90067a4248d4398218fb982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42e37560b90067a4248d4398218fb982">&#9670;&nbsp;</a></span>interpolator() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::OperatorSplittingSolver::interpolator </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>vel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba2c584adcb4c5633f68a076110d5fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba2c584adcb4c5633f68a076110d5fd4">&#9670;&nbsp;</a></span>outside_quad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::solver::OperatorSplittingSolver::outside_quad </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vert</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40d763cda56ab6d6d45b7605bcd58a1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40d763cda56ab6d6d45b7605bcd58a1d">&#9670;&nbsp;</a></span>projection() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::projection </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>velocity_mass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mixed_stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>boundary_nodes_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pressure</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae90ebcac963bd9857a14610e4998e496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae90ebcac963bd9857a14610e4998e496">&#9670;&nbsp;</a></span>projection() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::projection </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>pressure_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pressure</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8175610416cf77ecc8df2f4469081467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8175610416cf77ecc8df2f4469081467">&#9670;&nbsp;</a></span>save_density()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::save_density </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7bb48a9ac9ec047080babfc71238c5c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bb48a9ac9ec047080babfc71238c5c8">&#9670;&nbsp;</a></span>search_cell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long polyfem::solver::OperatorSplittingSolver::search_cell </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af16cdb358d1592e7ab9341c18014f482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af16cdb358d1592e7ab9341c18014f482">&#9670;&nbsp;</a></span>solve_diffusion_1st()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::solve_diffusion_1st </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bnd_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a32eada89bbf4f77969c4f3f411b6e84f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32eada89bbf4f77969c4f3f411b6e84f">&#9670;&nbsp;</a></span>solve_pressure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::solver::OperatorSplittingSolver::solve_pressure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mixed_stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>pressure_boundary_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pressure</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9f658978496f29a7c323ea19e8740dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f658978496f29a7c323ea19e8740dcc">&#9670;&nbsp;</a></span>trace_back()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::OperatorSplittingSolver::trace_back </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos_1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>vel_1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pos_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>vel_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>sol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a84b94596cfb1872928b489c417f1ddd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84b94596cfb1872928b489c417f1ddd8">&#9670;&nbsp;</a></span>boundary_elem_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::solver::OperatorSplittingSolver::boundary_elem_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab70e9bca2919ab022b0f026d0e061d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab70e9bca2919ab022b0f026d0e061d7">&#9670;&nbsp;</a></span>boundary_nodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::solver::OperatorSplittingSolver::boundary_nodes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a11a29e0a437f05141af534ff34b915f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11a29e0a437f05141af534ff34b915f6">&#9670;&nbsp;</a></span>cellI_particle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::solver::OperatorSplittingSolver::cellI_particle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afab3acbb8db741452399200249df1077"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afab3acbb8db741452399200249df1077">&#9670;&nbsp;</a></span>density</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::solver::OperatorSplittingSolver::density</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad06223b8ce8f2d1c2f106f84de8c6dd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad06223b8ce8f2d1c2f106f84de8c6dd3">&#9670;&nbsp;</a></span>dim</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::OperatorSplittingSolver::dim</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a921337bef2f24255ff5b7c9f401f1555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921337bef2f24255ff5b7c9f401f1555">&#9670;&nbsp;</a></span>grid_cell_num</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> polyfem::solver::OperatorSplittingSolver::grid_cell_num</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8d44fc2c88bbd06efff098eee0503174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d44fc2c88bbd06efff098eee0503174">&#9670;&nbsp;</a></span>hash_table</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::vector&lt;long&gt; &gt; polyfem::solver::OperatorSplittingSolver::hash_table</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1f6822209689767027ba50199b933724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f6822209689767027ba50199b933724">&#9670;&nbsp;</a></span>hash_table_cell_num</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;long, 3&gt; polyfem::solver::OperatorSplittingSolver::hash_table_cell_num</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac1c2a82acbea62d91aa40a3c062e881d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c2a82acbea62d91aa40a3c062e881d">&#9670;&nbsp;</a></span>mat_diffusion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> polyfem::solver::OperatorSplittingSolver::mat_diffusion</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ad3a5fb5bb57aa6f8c0a33ff3ddfe0a">&#9670;&nbsp;</a></span>mat_projection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> polyfem::solver::OperatorSplittingSolver::mat_projection</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a744079dc4924258b61ad1d9af05800c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a744079dc4924258b61ad1d9af05800c5">&#9670;&nbsp;</a></span>max_domain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> polyfem::solver::OperatorSplittingSolver::max_domain</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9508493e6cb5f9dade2556bea092f3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9508493e6cb5f9dade2556bea092f3f">&#9670;&nbsp;</a></span>min_domain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> polyfem::solver::OperatorSplittingSolver::min_domain</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a1399b10aa442c6d149954db66535a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1399b10aa442c6d149954db66535a7">&#9670;&nbsp;</a></span>n_el</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::OperatorSplittingSolver::n_el</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd7d0bdb143efaacb873507bf3422b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd7d0bdb143efaacb873507bf3422b87">&#9670;&nbsp;</a></span>new_sol</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::OperatorSplittingSolver::new_sol</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0cee442797e4f03158350d9c74aceec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cee442797e4f03158350d9c74aceec9">&#9670;&nbsp;</a></span>new_sol_w</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::OperatorSplittingSolver::new_sol_w</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aadbf2d1db0cfce91b378fabc1e694b35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadbf2d1db0cfce91b378fabc1e694b35">&#9670;&nbsp;</a></span>position_particle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&gt; polyfem::solver::OperatorSplittingSolver::position_particle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ab1c36f763af029158e70fb3ba0da15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab1c36f763af029158e70fb3ba0da15">&#9670;&nbsp;</a></span>resolution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::solver::OperatorSplittingSolver::resolution</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acded0a120ab782970ff47e7f91950e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acded0a120ab782970ff47e7f91950e29">&#9670;&nbsp;</a></span>shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::OperatorSplittingSolver::shape</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a1d135e1c9e9060855874c29ae9944c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a1d135e1c9e9060855874c29ae9944c">&#9670;&nbsp;</a></span>solver_diffusion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;polysolve::LinearSolver&gt; polyfem::solver::OperatorSplittingSolver::solver_diffusion</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8837019f891efb0117e92dcc4731b485"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8837019f891efb0117e92dcc4731b485">&#9670;&nbsp;</a></span>solver_mass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;polysolve::LinearSolver&gt; polyfem::solver::OperatorSplittingSolver::solver_mass</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f21291a6b2b725554ce956b62a2d595"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f21291a6b2b725554ce956b62a2d595">&#9670;&nbsp;</a></span>solver_projection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;polysolve::LinearSolver&gt; polyfem::solver::OperatorSplittingSolver::solver_projection</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a60765d38a88c08b450f073a1e63eb491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60765d38a88c08b450f073a1e63eb491">&#9670;&nbsp;</a></span>solver_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::OperatorSplittingSolver::solver_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab898f86e40d086ed9e13aba18281480a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab898f86e40d086ed9e13aba18281480a">&#9670;&nbsp;</a></span>T</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::solver::OperatorSplittingSolver::T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a590aa5859113a5ef17a9e7433753c6e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590aa5859113a5ef17a9e7433753c6e4">&#9670;&nbsp;</a></span>V</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::OperatorSplittingSolver::V</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfe443b5760674f6629f87c0c18d312f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe443b5760674f6629f87c0c18d312f">&#9670;&nbsp;</a></span>velocity_particle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&gt; polyfem::solver::OperatorSplittingSolver::velocity_particle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/solver/<a class="el" href="_operator_splitting_solver_8hpp_source.html">OperatorSplittingSolver.hpp</a></li>
-<li>src/polyfem/solver/OperatorSplittingSolver.cpp</li>
+<li>src/polyfem/solver/<a class="el" href="_operator_splitting_solver_8cpp.html">OperatorSplittingSolver.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>solver</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html">OperatorSplittingSolver</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1solver.html">solver</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html">OperatorSplittingSolver</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

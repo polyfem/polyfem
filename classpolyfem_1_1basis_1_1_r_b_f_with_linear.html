@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::basis::RBFWithLinear Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -91,47 +123,43 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_r_b_f_with_l
 <div class="title">polyfem::basis::RBFWithLinear Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_r_b_f_with_linear_8hpp_source.html">RBFWithLinear.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7f17ff3317a53590038a11fa75eb49a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a7f17ff3317a53590038a11fa75eb49a4">RBFWithLinear</a> (const Eigen::MatrixXd &amp;centers, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints=true)</td></tr>
 <tr class="memdesc:a7f17ff3317a53590038a11fa75eb49a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Initialize RBF functions over a polytope element. }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a7f17ff3317a53590038a11fa75eb49a4">More...</a><br /></td></tr>
 <tr class="separator:a7f17ff3317a53590038a11fa75eb49a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab60f858eefdd193a7e9277f8578e94b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#ab60f858eefdd193a7e9277f8578e94b2">basis</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:ab60f858eefdd193a7e9277f8578e94b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#ab60f858eefdd193a7e9277f8578e94b2">basis</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:ab60f858eefdd193a7e9277f8578e94b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Evaluates one RBF function over a list of coordinates }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#ab60f858eefdd193a7e9277f8578e94b2">More...</a><br /></td></tr>
 <tr class="separator:ab60f858eefdd193a7e9277f8578e94b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ff247faa934bfbe0370516fe8e5249a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a9ff247faa934bfbe0370516fe8e5249a">grad</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:a9ff247faa934bfbe0370516fe8e5249a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a9ff247faa934bfbe0370516fe8e5249a">grad</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:a9ff247faa934bfbe0370516fe8e5249a"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Evaluates the gradient of one RBF function over a list of coordinates }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a9ff247faa934bfbe0370516fe8e5249a">More...</a><br /></td></tr>
 <tr class="separator:a9ff247faa934bfbe0370516fe8e5249a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5125dbd2cec8ea3a597b3452526bb822"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a5125dbd2cec8ea3a597b3452526bb822">bases_values</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:a5125dbd2cec8ea3a597b3452526bb822"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a5125dbd2cec8ea3a597b3452526bb822">bases_values</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:a5125dbd2cec8ea3a597b3452526bb822"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Batch evaluates the RBF + polynomials on a set of sample points }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a5125dbd2cec8ea3a597b3452526bb822">More...</a><br /></td></tr>
 <tr class="separator:a5125dbd2cec8ea3a597b3452526bb822"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa40ad3884f69ea106c439bfa9d49d5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#afa40ad3884f69ea106c439bfa9d49d5e">bases_grads</a> (const int axis, const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:afa40ad3884f69ea106c439bfa9d49d5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#afa40ad3884f69ea106c439bfa9d49d5e">bases_grads</a> (const int axis, const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:afa40ad3884f69ea106c439bfa9d49d5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Batch evaluates the gradient of the RBF + polynomials on a set of sample points }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#afa40ad3884f69ea106c439bfa9d49d5e">More...</a><br /></td></tr>
 <tr class="separator:afa40ad3884f69ea106c439bfa9d49d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a32a39f9c99b10b8de570e59552d778a2"><td class="memItemLeft" align="right" valign="top"><a id="a32a39f9c99b10b8de570e59552d778a2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_volume</b> () const</td></tr>
+<tr class="memitem:a32a39f9c99b10b8de570e59552d778a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a32a39f9c99b10b8de570e59552d778a2">is_volume</a> () const</td></tr>
 <tr class="separator:a32a39f9c99b10b8de570e59552d778a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83d55d0336e86056d2daf6806af4b210"><td class="memItemLeft" align="right" valign="top"><a id="a83d55d0336e86056d2daf6806af4b210"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_kernels_matrix</b> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) const</td></tr>
+<tr class="memitem:a83d55d0336e86056d2daf6806af4b210"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a83d55d0336e86056d2daf6806af4b210">compute_kernels_matrix</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) const</td></tr>
 <tr class="separator:a83d55d0336e86056d2daf6806af4b210"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f1bef4fcddcfda76202312a6fcaad0f"><td class="memItemLeft" align="right" valign="top"><a id="a5f1bef4fcddcfda76202312a6fcaad0f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_constraints_matrix</b> (const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
+<tr class="memitem:a5f1bef4fcddcfda76202312a6fcaad0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a5f1bef4fcddcfda76202312a6fcaad0f">compute_constraints_matrix</a> (const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
 <tr class="separator:a5f1bef4fcddcfda76202312a6fcaad0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1247dbc1ade7dcc5c30cfaf5305b18a3"><td class="memItemLeft" align="right" valign="top"><a id="a1247dbc1ade7dcc5c30cfaf5305b18a3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_weights</b> (const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</td></tr>
+<tr class="memitem:a1247dbc1ade7dcc5c30cfaf5305b18a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a1247dbc1ade7dcc5c30cfaf5305b18a3">compute_weights</a> (const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</td></tr>
 <tr class="separator:a1247dbc1ade7dcc5c30cfaf5305b18a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a5f6b97ae1ab41fa64ca807c1dc4f5e4f"><td class="memItemLeft" align="right" valign="top"><a id="a5f6b97ae1ab41fa64ca807c1dc4f5e4f"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>centers_</b></td></tr>
+<tr class="memitem:a5f6b97ae1ab41fa64ca807c1dc4f5e4f"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a5f6b97ae1ab41fa64ca807c1dc4f5e4f">centers_</a></td></tr>
 <tr class="separator:a5f6b97ae1ab41fa64ca807c1dc4f5e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf4083b7bc6125f7add67af7ac17eec5"><td class="memItemLeft" align="right" valign="top"><a id="aaf4083b7bc6125f7add67af7ac17eec5"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</b></td></tr>
+<tr class="memitem:aaf4083b7bc6125f7add67af7ac17eec5"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#aaf4083b7bc6125f7add67af7ac17eec5">weights_</a></td></tr>
 <tr class="separator:aaf4083b7bc6125f7add67af7ac17eec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -326,6 +354,150 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</
 
 </div>
 </div>
+<a id="a5f1bef4fcddcfda76202312a6fcaad0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f1bef4fcddcfda76202312a6fcaad0f">&#9670;&nbsp;</a></span>compute_constraints_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithLinear::compute_constraints_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>num_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_basis_integral</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a83d55d0336e86056d2daf6806af4b210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83d55d0336e86056d2daf6806af4b210">&#9670;&nbsp;</a></span>compute_kernels_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithLinear::compute_kernels_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1247dbc1ade7dcc5c30cfaf5305b18a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1247dbc1ade7dcc5c30cfaf5305b18a3">&#9670;&nbsp;</a></span>compute_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithLinear::compute_weights </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>collocation_points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_basis_integral</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>with_constraints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a9ff247faa934bfbe0370516fe8e5249a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9ff247faa934bfbe0370516fe8e5249a">&#9670;&nbsp;</a></span>grad()</h2>
 
@@ -370,20 +542,102 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</
 
 </div>
 </div>
+<a id="a32a39f9c99b10b8de570e59552d778a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32a39f9c99b10b8de570e59552d778a2">&#9670;&nbsp;</a></span>is_volume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::basis::RBFWithLinear::is_volume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a5f6b97ae1ab41fa64ca807c1dc4f5e4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f6b97ae1ab41fa64ca807c1dc4f5e4f">&#9670;&nbsp;</a></span>centers_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::basis::RBFWithLinear::centers_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf4083b7bc6125f7add67af7ac17eec5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4083b7bc6125f7add67af7ac17eec5">&#9670;&nbsp;</a></span>weights_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::basis::RBFWithLinear::weights_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_linear_8hpp_source.html">RBFWithLinear.hpp</a></li>
-<li>src/polyfem/basis/function/RBFWithLinear.cpp</li>
+<li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_linear_8cpp.html">RBFWithLinear.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>basis</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html">RBFWithLinear</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1basis.html">basis</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_linear.html">RBFWithLinear</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

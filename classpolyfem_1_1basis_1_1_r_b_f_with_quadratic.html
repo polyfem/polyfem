@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::basis::RBFWithQuadratic Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -92,65 +124,56 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_r_b_f_with_q
 <div class="title">polyfem::basis::RBFWithQuadratic Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e9070c30c8f0862727db6998a7edd2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a6e9070c30c8f0862727db6998a7edd2b">RBFWithQuadratic</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;centers, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints=true)</td></tr>
 <tr class="memdesc:a6e9070c30c8f0862727db6998a7edd2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Initialize RBF functions over a polytope element. }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a6e9070c30c8f0862727db6998a7edd2b">More...</a><br /></td></tr>
 <tr class="separator:a6e9070c30c8f0862727db6998a7edd2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1707dc6e1745ab4fceb760c690bd8c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00">basis</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:a1707dc6e1745ab4fceb760c690bd8c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00">basis</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:a1707dc6e1745ab4fceb760c690bd8c00"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Evaluates one RBF function over a list of coordinates }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00">More...</a><br /></td></tr>
 <tr class="separator:a1707dc6e1745ab4fceb760c690bd8c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecdf265e10eaa4c031447615db9c1e6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#aecdf265e10eaa4c031447615db9c1e6f">grad</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:aecdf265e10eaa4c031447615db9c1e6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#aecdf265e10eaa4c031447615db9c1e6f">grad</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:aecdf265e10eaa4c031447615db9c1e6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Evaluates the gradient of one RBF function over a list of coordinates }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#aecdf265e10eaa4c031447615db9c1e6f">More...</a><br /></td></tr>
 <tr class="separator:aecdf265e10eaa4c031447615db9c1e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a423295c4a8d424c9572f15221b4c52e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a423295c4a8d424c9572f15221b4c52e8">bases_values</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:a423295c4a8d424c9572f15221b4c52e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a423295c4a8d424c9572f15221b4c52e8">bases_values</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:a423295c4a8d424c9572f15221b4c52e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Batch evaluates the RBF + polynomials on a set of sample points }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a423295c4a8d424c9572f15221b4c52e8">More...</a><br /></td></tr>
 <tr class="separator:a423295c4a8d424c9572f15221b4c52e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f23527b0e433b12c941007b6623a099"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a4f23527b0e433b12c941007b6623a099">bases_grads</a> (const int axis, const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:a4f23527b0e433b12c941007b6623a099"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a4f23527b0e433b12c941007b6623a099">bases_grads</a> (const int axis, const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:a4f23527b0e433b12c941007b6623a099"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Batch evaluates the gradient of the RBF + polynomials on a set of sample points }  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a4f23527b0e433b12c941007b6623a099">More...</a><br /></td></tr>
 <tr class="separator:a4f23527b0e433b12c941007b6623a099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a75b22925d15fe138c5421becf90650ee"><td class="memItemLeft" align="right" valign="top"><a id="a75b22925d15fe138c5421becf90650ee"></a>
-static int&#160;</td><td class="memItemRight" valign="bottom"><b>index_mapping</b> (const int alpha, const int beta, const int d, const int ass_dim)</td></tr>
+<tr class="memitem:a75b22925d15fe138c5421becf90650ee"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a75b22925d15fe138c5421becf90650ee">index_mapping</a> (const int alpha, const int beta, const int d, const int ass_dim)</td></tr>
 <tr class="separator:a75b22925d15fe138c5421becf90650ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a699276b593b76cf2523f9e2c995b33b6"><td class="memItemLeft" align="right" valign="top"><a id="a699276b593b76cf2523f9e2c995b33b6"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>setup_monomials_vals_2d</b> (const int star_index, const Eigen::MatrixXd &amp;pts, <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;vals)</td></tr>
+<tr class="memitem:a699276b593b76cf2523f9e2c995b33b6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a699276b593b76cf2523f9e2c995b33b6">setup_monomials_vals_2d</a> (const int star_index, const Eigen::MatrixXd &amp;pts, <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>)</td></tr>
 <tr class="separator:a699276b593b76cf2523f9e2c995b33b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5aff3ff452671e145858cf8e7d82fd4"><td class="memItemLeft" align="right" valign="top"><a id="ab5aff3ff452671e145858cf8e7d82fd4"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>setup_monomials_strong_2d</b> (const int dim, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;pts, const QuadratureVector &amp;da, std::array&lt; Eigen::MatrixXd, 5 &gt; &amp;strong)</td></tr>
+<tr class="memitem:ab5aff3ff452671e145858cf8e7d82fd4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab5aff3ff452671e145858cf8e7d82fd4">setup_monomials_strong_2d</a> (const int dim, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;pts, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>, std::array&lt; Eigen::MatrixXd, 5 &gt; &amp;strong)</td></tr>
 <tr class="separator:ab5aff3ff452671e145858cf8e7d82fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a10e9128482791ec06df9e525c1bada8b"><td class="memItemLeft" align="right" valign="top"><a id="a10e9128482791ec06df9e525c1bada8b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_volume</b> () const</td></tr>
+<tr class="memitem:a10e9128482791ec06df9e525c1bada8b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a10e9128482791ec06df9e525c1bada8b">is_volume</a> () const</td></tr>
 <tr class="separator:a10e9128482791ec06df9e525c1bada8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af027c7a81967196281bb067570c129c9"><td class="memItemLeft" align="right" valign="top"><a id="af027c7a81967196281bb067570c129c9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_kernels_matrix</b> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) const</td></tr>
+<tr class="memitem:af027c7a81967196281bb067570c129c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#af027c7a81967196281bb067570c129c9">compute_kernels_matrix</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;A) const</td></tr>
 <tr class="separator:af027c7a81967196281bb067570c129c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5359898f644358a097589155295aa195"><td class="memItemLeft" align="right" valign="top"><a id="a5359898f644358a097589155295aa195"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_constraints_matrix_2d_old</b> (const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
+<tr class="memitem:a5359898f644358a097589155295aa195"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a5359898f644358a097589155295aa195">compute_constraints_matrix_2d_old</a> (const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
 <tr class="separator:a5359898f644358a097589155295aa195"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a743a74284f7af70329fdada2b4d07e"><td class="memItemLeft" align="right" valign="top"><a id="a4a743a74284f7af70329fdada2b4d07e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_constraints_matrix_2d</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
+<tr class="memitem:a4a743a74284f7af70329fdada2b4d07e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a4a743a74284f7af70329fdada2b4d07e">compute_constraints_matrix_2d</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
 <tr class="separator:a4a743a74284f7af70329fdada2b4d07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77fe2f6a30da36a45ba5991e77e313fb"><td class="memItemLeft" align="right" valign="top"><a id="a77fe2f6a30da36a45ba5991e77e313fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_constraints_matrix_3d</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
+<tr class="memitem:a77fe2f6a30da36a45ba5991e77e313fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a77fe2f6a30da36a45ba5991e77e313fb">compute_constraints_matrix_3d</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
 <tr class="separator:a77fe2f6a30da36a45ba5991e77e313fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0950bb574bb3bd3475cb4afc40dad9f"><td class="memItemLeft" align="right" valign="top"><a id="ac0950bb574bb3bd3475cb4afc40dad9f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_weights</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</td></tr>
+<tr class="memitem:ac0950bb574bb3bd3475cb4afc40dad9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ac0950bb574bb3bd3475cb4afc40dad9f">compute_weights</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</td></tr>
 <tr class="separator:ac0950bb574bb3bd3475cb4afc40dad9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a328c9bfd199ab430ae70e52fa272bec9"><td class="memItemLeft" align="right" valign="top"><a id="a328c9bfd199ab430ae70e52fa272bec9"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>centers_</b></td></tr>
+<tr class="memitem:a328c9bfd199ab430ae70e52fa272bec9"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a328c9bfd199ab430ae70e52fa272bec9">centers_</a></td></tr>
 <tr class="separator:a328c9bfd199ab430ae70e52fa272bec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2529dc76e554298d4c840f9dccf4dfd6"><td class="memItemLeft" align="right" valign="top"><a id="a2529dc76e554298d4c840f9dccf4dfd6"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</b></td></tr>
+<tr class="memitem:a2529dc76e554298d4c840f9dccf4dfd6"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a2529dc76e554298d4c840f9dccf4dfd6">weights_</a></td></tr>
 <tr class="separator:a2529dc76e554298d4c840f9dccf4dfd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -357,6 +380,294 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</
 
 </div>
 </div>
+<a id="a4a743a74284f7af70329fdada2b4d07e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a743a74284f7af70329fdada2b4d07e">&#9670;&nbsp;</a></span>compute_constraints_matrix_2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::compute_constraints_matrix_2d </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramname"><em>assembler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>assembler_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>num_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_basis_integral</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5359898f644358a097589155295aa195"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5359898f644358a097589155295aa195">&#9670;&nbsp;</a></span>compute_constraints_matrix_2d_old()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::compute_constraints_matrix_2d_old </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>num_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_basis_integral</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a77fe2f6a30da36a45ba5991e77e313fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77fe2f6a30da36a45ba5991e77e313fb">&#9670;&nbsp;</a></span>compute_constraints_matrix_3d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::compute_constraints_matrix_3d </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramname"><em>assembler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>assembler_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>num_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_basis_integral</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af027c7a81967196281bb067570c129c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af027c7a81967196281bb067570c129c9">&#9670;&nbsp;</a></span>compute_kernels_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::compute_kernels_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac0950bb574bb3bd3475cb4afc40dad9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0950bb574bb3bd3475cb4afc40dad9f">&#9670;&nbsp;</a></span>compute_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::compute_weights </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramname"><em>assembler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>assembler_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>collocation_points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_basis_integral</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;&#160;</td>
+          <td class="paramname"><em>quadr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>with_constraints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aecdf265e10eaa4c031447615db9c1e6f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aecdf265e10eaa4c031447615db9c1e6f">&#9670;&nbsp;</a></span>grad()</h2>
 
@@ -401,20 +712,252 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</
 
 </div>
 </div>
+<a id="a75b22925d15fe138c5421becf90650ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75b22925d15fe138c5421becf90650ee">&#9670;&nbsp;</a></span>index_mapping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int polyfem::basis::RBFWithQuadratic::index_mapping </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>ass_dim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a10e9128482791ec06df9e525c1bada8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10e9128482791ec06df9e525c1bada8b">&#9670;&nbsp;</a></span>is_volume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::basis::RBFWithQuadratic::is_volume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab5aff3ff452671e145858cf8e7d82fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5aff3ff452671e145858cf8e7d82fd4">&#9670;&nbsp;</a></span>setup_monomials_strong_2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::setup_monomials_strong_2d </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramname"><em>assembler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>assembler_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; Eigen::MatrixXd, 5 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>strong</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a699276b593b76cf2523f9e2c995b33b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a699276b593b76cf2523f9e2c995b33b6">&#9670;&nbsp;</a></span>setup_monomials_vals_2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RBFWithQuadratic::setup_monomials_vals_2d </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>star_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a328c9bfd199ab430ae70e52fa272bec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a328c9bfd199ab430ae70e52fa272bec9">&#9670;&nbsp;</a></span>centers_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::basis::RBFWithQuadratic::centers_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2529dc76e554298d4c840f9dccf4dfd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2529dc76e554298d4c840f9dccf4dfd6">&#9670;&nbsp;</a></span>weights_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::basis::RBFWithQuadratic::weights_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a></li>
-<li>src/polyfem/basis/function/RBFWithQuadratic.cpp</li>
+<li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_quadratic_8cpp.html">RBFWithQuadratic.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>basis</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html">RBFWithQuadratic</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1basis.html">basis</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html">RBFWithQuadratic</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

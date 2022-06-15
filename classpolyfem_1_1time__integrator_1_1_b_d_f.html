@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::time_integrator::BDF Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -90,45 +122,171 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1time__integrator_1_1_b
 <div class="title">polyfem::time_integrator::BDF Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_b_d_f_8hpp_source.html">BDF.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af534b9e8be07a1613b37b3f3f6a73a13"><td class="memItemLeft" align="right" valign="top"><a id="af534b9e8be07a1613b37b3f3f6a73a13"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>BDF</b> (int order)</td></tr>
+<tr class="memitem:af534b9e8be07a1613b37b3f3f6a73a13"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#af534b9e8be07a1613b37b3f3f6a73a13">BDF</a> (int order)</td></tr>
 <tr class="separator:af534b9e8be07a1613b37b3f3f6a73a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a64bd5ec137a21e0b1ed165e28ec771"><td class="memItemLeft" align="right" valign="top"><a id="a3a64bd5ec137a21e0b1ed165e28ec771"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>alpha</b> () const</td></tr>
+<tr class="memitem:a3a64bd5ec137a21e0b1ed165e28ec771"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a3a64bd5ec137a21e0b1ed165e28ec771">alpha</a> () const</td></tr>
 <tr class="separator:a3a64bd5ec137a21e0b1ed165e28ec771"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa616d77c31a43b34f7293070cbdc337e"><td class="memItemLeft" align="right" valign="top"><a id="aa616d77c31a43b34f7293070cbdc337e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>rhs</b> (Eigen::VectorXd &amp;rhs) const</td></tr>
+<tr class="memitem:aa616d77c31a43b34f7293070cbdc337e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#aa616d77c31a43b34f7293070cbdc337e">rhs</a> (Eigen::VectorXd &amp;rhs) const</td></tr>
 <tr class="separator:aa616d77c31a43b34f7293070cbdc337e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23e5fa3b3d314b7bf5ab6ea097169cfe"><td class="memItemLeft" align="right" valign="top"><a id="a23e5fa3b3d314b7bf5ab6ea097169cfe"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>new_solution</b> (Eigen::VectorXd &amp;rhs)</td></tr>
+<tr class="memitem:a23e5fa3b3d314b7bf5ab6ea097169cfe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a23e5fa3b3d314b7bf5ab6ea097169cfe">new_solution</a> (Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#aa616d77c31a43b34f7293070cbdc337e">rhs</a>)</td></tr>
 <tr class="separator:a23e5fa3b3d314b7bf5ab6ea097169cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a60cd19ecab0222ab951e376727110cee"><td class="memItemLeft" align="right" valign="top"><a id="a60cd19ecab0222ab951e376727110cee"></a>
-std::deque&lt; Eigen::VectorXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>history_</b></td></tr>
+<tr class="memitem:a60cd19ecab0222ab951e376727110cee"><td class="memItemLeft" align="right" valign="top">std::deque&lt; Eigen::VectorXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a60cd19ecab0222ab951e376727110cee">history_</a></td></tr>
 <tr class="separator:a60cd19ecab0222ab951e376727110cee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba02fe067733fd936ecb8f66d4aebd85"><td class="memItemLeft" align="right" valign="top"><a id="aba02fe067733fd936ecb8f66d4aebd85"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>order_</b></td></tr>
+<tr class="memitem:aba02fe067733fd936ecb8f66d4aebd85"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#aba02fe067733fd936ecb8f66d4aebd85">order_</a></td></tr>
 <tr class="separator:aba02fe067733fd936ecb8f66d4aebd85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af534b9e8be07a1613b37b3f3f6a73a13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af534b9e8be07a1613b37b3f3f6a73a13">&#9670;&nbsp;</a></span>BDF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::time_integrator::BDF::BDF </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3a64bd5ec137a21e0b1ed165e28ec771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a64bd5ec137a21e0b1ed165e28ec771">&#9670;&nbsp;</a></span>alpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::time_integrator::BDF::alpha </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a23e5fa3b3d314b7bf5ab6ea097169cfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23e5fa3b3d314b7bf5ab6ea097169cfe">&#9670;&nbsp;</a></span>new_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::time_integrator::BDF::new_solution </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa616d77c31a43b34f7293070cbdc337e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa616d77c31a43b34f7293070cbdc337e">&#9670;&nbsp;</a></span>rhs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::time_integrator::BDF::rhs </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a60cd19ecab0222ab951e376727110cee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60cd19ecab0222ab951e376727110cee">&#9670;&nbsp;</a></span>history_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::deque&lt;Eigen::VectorXd&gt; polyfem::time_integrator::BDF::history_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba02fe067733fd936ecb8f66d4aebd85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba02fe067733fd936ecb8f66d4aebd85">&#9670;&nbsp;</a></span>order_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::time_integrator::BDF::order_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/time_integrator/<a class="el" href="_b_d_f_8hpp_source.html">BDF.hpp</a></li>
-<li>src/polyfem/time_integrator/BDF.cpp</li>
+<li>src/polyfem/time_integrator/<a class="el" href="_b_d_f_8cpp.html">BDF.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>time_integrator</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html">BDF</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1time__integrator.html">time_integrator</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html">BDF</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::basis::Basis Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -100,71 +132,92 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_basis.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ad2c9c00a959d15e6aad620274e04dfeb"><td class="memItemLeft" align="right" valign="top"><a id="ad2c9c00a959d15e6aad620274e04dfeb"></a>
-typedef std::function&lt; void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Fun</b></td></tr>
+<tr class="memitem:ad2c9c00a959d15e6aad620274e04dfeb"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a></td></tr>
 <tr class="separator:ad2c9c00a959d15e6aad620274e04dfeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abb4c4cb17788261d7dcc02b5e7a445d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#abb4c4cb17788261d7dcc02b5e7a445d1">init</a> (const int order, const int global_index, const int local_index, const RowVectorNd &amp;node)</td></tr>
+<tr class="memitem:ad724f7e408ed7966571960c4d462fd2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad724f7e408ed7966571960c4d462fd2e">Basis</a> ()</td></tr>
+<tr class="separator:ad724f7e408ed7966571960c4d462fd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb4c4cb17788261d7dcc02b5e7a445d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#abb4c4cb17788261d7dcc02b5e7a445d1">init</a> (const int <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a0c0b0cce4c9db9e4fca0b35bab342014">order</a>, const int global_index, const int local_index, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;node)</td></tr>
 <tr class="memdesc:abb4c4cb17788261d7dcc02b5e7a445d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a basis function within an element.  <a href="classpolyfem_1_1basis_1_1_basis.html#abb4c4cb17788261d7dcc02b5e7a445d1">More...</a><br /></td></tr>
 <tr class="separator:abb4c4cb17788261d7dcc02b5e7a445d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a148dcc769638cbc1331703378776efe8"><td class="memItemLeft" align="right" valign="top"><a id="a148dcc769638cbc1331703378776efe8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8">is_complete</a> () const</td></tr>
-<tr class="memdesc:a148dcc769638cbc1331703378776efe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if global is empty or not. <br /></td></tr>
+<tr class="memitem:a148dcc769638cbc1331703378776efe8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8">is_complete</a> () const</td></tr>
+<tr class="memdesc:a148dcc769638cbc1331703378776efe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if global is empty or not.  <a href="classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8">More...</a><br /></td></tr>
 <tr class="separator:a148dcc769638cbc1331703378776efe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a426fd294702d85350db2bdaab6536bef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">eval_basis</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:a426fd294702d85350db2bdaab6536bef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">eval_basis</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:a426fd294702d85350db2bdaab6536bef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates the basis function over a set of uv parameters.  <a href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">More...</a><br /></td></tr>
 <tr class="separator:a426fd294702d85350db2bdaab6536bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">eval_grad</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;val) const</td></tr>
+<tr class="memitem:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">eval_grad</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
 <tr class="memdesc:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the gradient of the basis function.  <a href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">More...</a><br /></td></tr>
 <tr class="separator:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7a309964f3c3a663e65107c7decb450"><td class="memItemLeft" align="right" valign="top"><a id="aa7a309964f3c3a663e65107c7decb450"></a>
-const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>global</b> () const</td></tr>
+<tr class="memitem:aa7a309964f3c3a663e65107c7decb450"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#aa7a309964f3c3a663e65107c7decb450">global</a> () const</td></tr>
 <tr class="separator:aa7a309964f3c3a663e65107c7decb450"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac623f4644636339cb08c98806c334987"><td class="memItemLeft" align="right" valign="top"><a id="ac623f4644636339cb08c98806c334987"></a>
-std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>global</b> ()</td></tr>
+<tr class="memitem:ac623f4644636339cb08c98806c334987"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac623f4644636339cb08c98806c334987">global</a> ()</td></tr>
 <tr class="separator:ac623f4644636339cb08c98806c334987"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7add13c457cb02a2038942a4ae189b85"><td class="memItemLeft" align="right" valign="top"><a id="a7add13c457cb02a2038942a4ae189b85"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_basis</b> (const Fun &amp;fun)</td></tr>
+<tr class="memitem:a7add13c457cb02a2038942a4ae189b85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a7add13c457cb02a2038942a4ae189b85">set_basis</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a> &amp;fun)</td></tr>
 <tr class="separator:a7add13c457cb02a2038942a4ae189b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c1bdb82261b50e3ee93f434e9c1ba8f"><td class="memItemLeft" align="right" valign="top"><a id="a5c1bdb82261b50e3ee93f434e9c1ba8f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_grad</b> (const Fun &amp;fun)</td></tr>
+<tr class="memitem:a5c1bdb82261b50e3ee93f434e9c1ba8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a5c1bdb82261b50e3ee93f434e9c1ba8f">set_grad</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a> &amp;fun)</td></tr>
 <tr class="separator:a5c1bdb82261b50e3ee93f434e9c1ba8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20fe4fc9bc89d9617fc10cf8d50eca2c"><td class="memItemLeft" align="right" valign="top"><a id="a20fe4fc9bc89d9617fc10cf8d50eca2c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_defined</b> () const</td></tr>
+<tr class="memitem:a20fe4fc9bc89d9617fc10cf8d50eca2c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a20fe4fc9bc89d9617fc10cf8d50eca2c">is_defined</a> () const</td></tr>
 <tr class="separator:a20fe4fc9bc89d9617fc10cf8d50eca2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c0b0cce4c9db9e4fca0b35bab342014"><td class="memItemLeft" align="right" valign="top"><a id="a0c0b0cce4c9db9e4fca0b35bab342014"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>order</b> () const</td></tr>
+<tr class="memitem:a0c0b0cce4c9db9e4fca0b35bab342014"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a0c0b0cce4c9db9e4fca0b35bab342014">order</a> () const</td></tr>
 <tr class="separator:a0c0b0cce4c9db9e4fca0b35bab342014"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ad4b24c0d8a1e14e5f471f20b7d3119e6"><td class="memItemLeft" align="right" valign="top"><a id="ad4b24c0d8a1e14e5f471f20b7d3119e6"></a>
-std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>global_</b></td></tr>
+<tr class="memitem:ad4b24c0d8a1e14e5f471f20b7d3119e6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad4b24c0d8a1e14e5f471f20b7d3119e6">global_</a></td></tr>
 <tr class="separator:ad4b24c0d8a1e14e5f471f20b7d3119e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe218649534756d6c0d5853bd94ff8d1"><td class="memItemLeft" align="right" valign="top"><a id="afe218649534756d6c0d5853bd94ff8d1"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>local_index_</b></td></tr>
+<tr class="memitem:afe218649534756d6c0d5853bd94ff8d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#afe218649534756d6c0d5853bd94ff8d1">local_index_</a></td></tr>
 <tr class="separator:afe218649534756d6c0d5853bd94ff8d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32467ddcd1ce6839401f099644fcc92a"><td class="memItemLeft" align="right" valign="top"><a id="a32467ddcd1ce6839401f099644fcc92a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>order_</b></td></tr>
+<tr class="memitem:a32467ddcd1ce6839401f099644fcc92a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a32467ddcd1ce6839401f099644fcc92a">order_</a></td></tr>
 <tr class="separator:a32467ddcd1ce6839401f099644fcc92a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4263ab09ebee017a2834573d3afe26e5"><td class="memItemLeft" align="right" valign="top"><a id="a4263ab09ebee017a2834573d3afe26e5"></a>
-Fun&#160;</td><td class="memItemRight" valign="bottom"><b>basis_</b></td></tr>
+<tr class="memitem:a4263ab09ebee017a2834573d3afe26e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a4263ab09ebee017a2834573d3afe26e5">basis_</a></td></tr>
 <tr class="separator:a4263ab09ebee017a2834573d3afe26e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9c1076cc0b4631159f5e6d02a07e8cc"><td class="memItemLeft" align="right" valign="top"><a id="ac9c1076cc0b4631159f5e6d02a07e8cc"></a>
-Fun&#160;</td><td class="memItemRight" valign="bottom"><b>grad_</b></td></tr>
+<tr class="memitem:ac9c1076cc0b4631159f5e6d02a07e8cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac9c1076cc0b4631159f5e6d02a07e8cc">grad_</a></td></tr>
 <tr class="separator:ac9c1076cc0b4631159f5e6d02a07e8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a74cfd84ee5868cb9c300996e935f7413"><td class="memItemLeft" align="right" valign="top"><a id="a74cfd84ee5868cb9c300996e935f7413"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a> &amp;obj)</td></tr>
+<tr class="memitem:a74cfd84ee5868cb9c300996e935f7413"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a74cfd84ee5868cb9c300996e935f7413">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a> &amp;obj)</td></tr>
 <tr class="separator:a74cfd84ee5868cb9c300996e935f7413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents one basis function and its gradient. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="ad2c9c00a959d15e6aad620274e04dfeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2c9c00a959d15e6aad620274e04dfeb">&#9670;&nbsp;</a></span>Fun</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::function&lt;void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&gt; <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">polyfem::basis::Basis::Fun</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad724f7e408ed7966571960c4d462fd2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad724f7e408ed7966571960c4d462fd2e">&#9670;&nbsp;</a></span>Basis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::basis::Basis::Basis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a426fd294702d85350db2bdaab6536bef"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a426fd294702d85350db2bdaab6536bef">&#9670;&nbsp;</a></span>eval_basis()</h2>
 
@@ -255,6 +308,56 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 
 </div>
 </div>
+<a id="ac623f4644636339cb08c98806c334987"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac623f4644636339cb08c98806c334987">&#9670;&nbsp;</a></span>global() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a>&gt;&amp; polyfem::basis::Basis::global </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa7a309964f3c3a663e65107c7decb450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a309964f3c3a663e65107c7decb450">&#9670;&nbsp;</a></span>global() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a>&gt;&amp; polyfem::basis::Basis::global </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="abb4c4cb17788261d7dcc02b5e7a445d1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abb4c4cb17788261d7dcc02b5e7a445d1">&#9670;&nbsp;</a></span>init()</h2>
 
@@ -282,7 +385,7 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const RowVectorNd &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
           <td class="paramname"><em>node</em>&#160;</td>
         </tr>
         <tr>
@@ -305,20 +408,309 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 
 </div>
 </div>
+<a id="a148dcc769638cbc1331703378776efe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a148dcc769638cbc1331703378776efe8">&#9670;&nbsp;</a></span>is_complete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::basis::Basis::is_complete </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if global is empty or not. </p>
+
+</div>
+</div>
+<a id="a20fe4fc9bc89d9617fc10cf8d50eca2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20fe4fc9bc89d9617fc10cf8d50eca2c">&#9670;&nbsp;</a></span>is_defined()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::basis::Basis::is_defined </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0c0b0cce4c9db9e4fca0b35bab342014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c0b0cce4c9db9e4fca0b35bab342014">&#9670;&nbsp;</a></span>order()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::basis::Basis::order </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7add13c457cb02a2038942a4ae189b85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7add13c457cb02a2038942a4ae189b85">&#9670;&nbsp;</a></span>set_basis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::Basis::set_basis </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a> &amp;&#160;</td>
+          <td class="paramname"><em>fun</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5c1bdb82261b50e3ee93f434e9c1ba8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c1bdb82261b50e3ee93f434e9c1ba8f">&#9670;&nbsp;</a></span>set_grad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::basis::Basis::set_grad </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a> &amp;&#160;</td>
+          <td class="paramname"><em>fun</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a74cfd84ee5868cb9c300996e935f7413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74cfd84ee5868cb9c300996e935f7413">&#9670;&nbsp;</a></span>operator&lt;&lt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a> &amp;&#160;</td>
+          <td class="paramname"><em>obj</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a4263ab09ebee017a2834573d3afe26e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4263ab09ebee017a2834573d3afe26e5">&#9670;&nbsp;</a></span>basis_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a> polyfem::basis::Basis::basis_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad4b24c0d8a1e14e5f471f20b7d3119e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b24c0d8a1e14e5f471f20b7d3119e6">&#9670;&nbsp;</a></span>global_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a>&gt; polyfem::basis::Basis::global_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac9c1076cc0b4631159f5e6d02a07e8cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9c1076cc0b4631159f5e6d02a07e8cc">&#9670;&nbsp;</a></span>grad_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a> polyfem::basis::Basis::grad_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe218649534756d6c0d5853bd94ff8d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe218649534756d6c0d5853bd94ff8d1">&#9670;&nbsp;</a></span>local_index_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::basis::Basis::local_index_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a32467ddcd1ce6839401f099644fcc92a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32467ddcd1ce6839401f099644fcc92a">&#9670;&nbsp;</a></span>order_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::basis::Basis::order_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/<a class="el" href="_basis_8hpp_source.html">Basis.hpp</a></li>
-<li>src/polyfem/basis/Basis.cpp</li>
+<li>src/polyfem/basis/<a class="el" href="_basis_8cpp.html">Basis.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>basis</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1basis.html">basis</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html">Basis</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

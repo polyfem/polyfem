@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/Types.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,38 +118,56 @@ $(document).ready(function(){initNavTree('_types_8hpp_source.html',''); initResi
 <div class="title">Types.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_types_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#define MAX_QUAD_POINTS -1</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno"><a class="line" href="_types_8hpp.html#a495bcd5d134917272807537c6797abae">    3</a></span>&#160;<span class="preprocessor">#define MAX_QUAD_POINTS -1</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;Eigen/Sparse&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="comment">// Stack-allocated vectors of size either 2 or 3</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, Eigen::Dynamic, 1, 0, 3, 1&gt; VectorNd;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3&gt; RowVectorNd;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3&gt; MatrixNd;</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">   11</a></span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, Eigen::Dynamic, 1, 0, 3, 1&gt; <a class="code" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>;</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">   12</a></span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3&gt; <a class="code" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>;</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">   13</a></span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3&gt; <a class="code" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a>;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1&gt; QuadratureVector;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">   15</a></span>&#160;    <span class="keyword">typedef</span> Eigen::Matrix&lt;double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1&gt; <a class="code" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a>;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifdef POLYSOLVE_LARGE_INDEX</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">typedef</span> Eigen::SparseMatrix&lt;double, Eigen::ColMajor, std::ptrdiff_t&gt; StiffnessMatrix;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">typedef</span> Eigen::SparseMatrix&lt;double, Eigen::ColMajor, std::ptrdiff_t&gt; <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">typedef</span> Eigen::SparseMatrix&lt;double, Eigen::ColMajor&gt; StiffnessMatrix;</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">   20</a></span>&#160;    <span class="keyword">typedef</span> Eigen::SparseMatrix&lt;double, Eigen::ColMajor&gt; <a class="code" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> Types.hpp:20</div></div>
+<div class="ttc" id="anamespacepolyfem_html_a9b6c0c90bf84bff37213e17517526dd2"><div class="ttname"><a href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">polyfem::MatrixNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3 &gt; MatrixNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:13</div></div>
+<div class="ttc" id="anamespacepolyfem_html_abe6f92d10f655cb8c4ded3f58a6dc321"><div class="ttname"><a href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">polyfem::RowVectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3 &gt; RowVectorNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:12</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="anamespacepolyfem_html_a6fa9b5aafa6c994633a25aa454efc18f"><div class="ttname"><a href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">polyfem::QuadratureVector</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1 &gt; QuadratureVector</div><div class="ttdef"><b>Definition:</b> Types.hpp:15</div></div>
+<div class="ttc" id="anamespacepolyfem_html_a5d46d4510849a3d306dc60d4f365dc2c"><div class="ttname"><a href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">polyfem::VectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; VectorNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:11</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>Types.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="_types_8hpp.html">Types.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

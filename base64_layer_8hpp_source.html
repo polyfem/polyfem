@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/base64Layer.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,11 +118,11 @@ $(document).ready(function(){initNavTree('base64_layer_8hpp_source.html',''); in
 <div class="title">base64Layer.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="base64_layer_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;{</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    <span class="keyword">namespace </span>utils</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    {</div>
@@ -98,67 +130,103 @@ $(document).ready(function(){initNavTree('base64_layer_8hpp_source.html',''); in
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;        {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;            <span class="comment">//- The output stream for the layer</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;            std::ostream &amp;os_;</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#ac11b17cb7b56d6e4a5214f8943f1a0e8">   13</a></span>&#160;            std::ostream &amp;<a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#ac11b17cb7b56d6e4a5214f8943f1a0e8">os_</a>;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            <span class="comment">//- Buffer of characters to encode</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> group_[3];</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#aab8d988f19847a2f1925c912bc40d74d">   16</a></span>&#160;            <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#aab8d988f19847a2f1925c912bc40d74d">group_</a>[3];</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            <span class="comment">//- Current length of the encode buffer</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;            <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> groupLen_;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a8df5f8735638dd57e90a7b9fe5caa977">   19</a></span>&#160;            <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a8df5f8735638dd57e90a7b9fe5caa977">groupLen_</a>;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <span class="comment">//- Track if anything has been encoded.</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keywordtype">bool</span> dirty_;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a990d202923d8e7643cd7b3078ad440c2">   22</a></span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a990d202923d8e7643cd7b3078ad440c2">dirty_</a>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> encode0() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> encode1() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> encode2() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> encode3() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a8fab19b550b816690ed104e4f0326329">encode0</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#ade750615fd936b8d3a612e648df0e358">encode1</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a5cd76db1328f84383a5484aa585c8782">encode2</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a6837a6b2c3678ce61831d80b6c1cfc4e">encode3</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordtype">void</span> operator=(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a953d766c8f3063a4fcdf32d9ab86fd99">base64Layer</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#aae4e8cab1836c6d7804ce4e137d1c79e">operator=</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a> &amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="comment">//- Add a character to the group, outputting when the group is full.</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keywordtype">void</span> add(<span class="keywordtype">char</span> c);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a0ecbe15fbcc5921d50a1f8d22394f943">add</a>(<span class="keywordtype">char</span> c);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="comment">//- The encoded length has 4 bytes out for every 3 bytes in.</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keyword">static</span> std::size_t encodedLength(std::size_t n);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keyword">static</span> std::size_t <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a1e8fce5f386b74d584e8106f0d635794">encodedLength</a>(std::size_t n);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a>(std::ostream &amp;os);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            ~<a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html">base64Layer</a>();</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a953d766c8f3063a4fcdf32d9ab86fd99">base64Layer</a>(std::ostream &amp;os);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#ad33d4ba0b6163b52324b270a19d91e48">~base64Layer</a>();</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="comment">//- Encode the character sequence, writing when possible.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordtype">void</span> write(<span class="keyword">const</span> <span class="keywordtype">char</span> *s, std::streamsize n);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#abf9b2fce3dde0620386c02533c45797a">write</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *s, std::streamsize n);</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> uint64_t v) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(uint64_t)); }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> int64_t v) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(int64_t)); }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> int8_t v) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(int8_t)); }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> uint8_t v) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(uint8_t)); }</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a537c20c428a7ef746f7c5c6075f0c368">   45</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a537c20c428a7ef746f7c5c6075f0c368">write</a>(<span class="keyword">const</span> uint64_t v) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a537c20c428a7ef746f7c5c6075f0c368">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(uint64_t)); }</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a4ea8e0e1abbb75a031cd3e71915e2860">   46</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a4ea8e0e1abbb75a031cd3e71915e2860">write</a>(<span class="keyword">const</span> int64_t v) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a4ea8e0e1abbb75a031cd3e71915e2860">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(int64_t)); }</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a507e494e9dad68a96310677c073fb144">   47</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a507e494e9dad68a96310677c073fb144">write</a>(<span class="keyword">const</span> int8_t v) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a507e494e9dad68a96310677c073fb144">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(int8_t)); }</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#abd7d2b197aabcd95065f76e5b3ee9ca3">   48</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#abd7d2b197aabcd95065f76e5b3ee9ca3">write</a>(<span class="keyword">const</span> uint8_t v) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#abd7d2b197aabcd95065f76e5b3ee9ca3">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(&amp;v), <span class="keyword">sizeof</span>(uint8_t)); }</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> int64_t *v, <span class="keyword">const</span> <span class="keywordtype">int</span> n) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(v), n * <span class="keyword">sizeof</span>(int64_t)); }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> <span class="keywordtype">double</span> *v, <span class="keyword">const</span> <span class="keywordtype">int</span> n) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(v), n * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)); }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> write(<span class="keyword">const</span> <span class="keywordtype">float</span> *v, <span class="keyword">const</span> <span class="keywordtype">int</span> n) { write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(v), n * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>)); }</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a167cc9d1a1a30e4ae79bc12567e67e82">   50</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a167cc9d1a1a30e4ae79bc12567e67e82">write</a>(<span class="keyword">const</span> int64_t *v, <span class="keyword">const</span> <span class="keywordtype">int</span> n) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a167cc9d1a1a30e4ae79bc12567e67e82">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(v), n * <span class="keyword">sizeof</span>(int64_t)); }</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#ae29d22305c8c31d1c239dc5ca31f73c8">   51</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#ae29d22305c8c31d1c239dc5ca31f73c8">write</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> *v, <span class="keyword">const</span> <span class="keywordtype">int</span> n) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#ae29d22305c8c31d1c239dc5ca31f73c8">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(v), n * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)); }</div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1base64_layer.html#a36fb5329cb3c36dbbab89422aaff9e4d">   52</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a36fb5329cb3c36dbbab89422aaff9e4d">write</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *v, <span class="keyword">const</span> <span class="keywordtype">int</span> n) { <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a36fb5329cb3c36dbbab89422aaff9e4d">write</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(v), n * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>)); }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="comment">//- Restart a new encoding sequence.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordtype">void</span> reset();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a518896afe71d8d265f43abfd3c5d7d0b">reset</a>();</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="comment">//- End the encoding sequence, padding the final characters with &#39;=&#39;.</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="comment">//  Return false if no encoding was actually performed.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordtype">bool</span> close();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1utils_1_1base64_layer.html#a838c8e73c72c44215f67874b24d094e2">close</a>();</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        };</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a0ecbe15fbcc5921d50a1f8d22394f943"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a0ecbe15fbcc5921d50a1f8d22394f943">polyfem::utils::base64Layer::add</a></div><div class="ttdeci">void add(char c)</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:53</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_abf9b2fce3dde0620386c02533c45797a"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#abf9b2fce3dde0620386c02533c45797a">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const char *s, std::streamsize n)</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:85</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a4ea8e0e1abbb75a031cd3e71915e2860"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a4ea8e0e1abbb75a031cd3e71915e2860">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const int64_t v)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:46</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a167cc9d1a1a30e4ae79bc12567e67e82"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a167cc9d1a1a30e4ae79bc12567e67e82">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const int64_t *v, const int n)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:50</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a1e8fce5f386b74d584e8106f0d635794"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a1e8fce5f386b74d584e8106f0d635794">polyfem::utils::base64Layer::encodedLength</a></div><div class="ttdeci">static std::size_t encodedLength(std::size_t n)</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:24</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_ade750615fd936b8d3a612e648df0e358"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#ade750615fd936b8d3a612e648df0e358">polyfem::utils::base64Layer::encode1</a></div><div class="ttdeci">unsigned char encode1() const</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:35</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a537c20c428a7ef746f7c5c6075f0c368"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a537c20c428a7ef746f7c5c6075f0c368">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const uint64_t v)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:45</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a507e494e9dad68a96310677c073fb144"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a507e494e9dad68a96310677c073fb144">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const int8_t v)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:47</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a6837a6b2c3678ce61831d80b6c1cfc4e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a6837a6b2c3678ce61831d80b6c1cfc4e">polyfem::utils::base64Layer::encode3</a></div><div class="ttdeci">unsigned char encode3() const</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:47</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html">polyfem::utils::base64Layer</a></div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:9</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_abd7d2b197aabcd95065f76e5b3ee9ca3"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#abd7d2b197aabcd95065f76e5b3ee9ca3">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const uint8_t v)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:48</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_aab8d988f19847a2f1925c912bc40d74d"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#aab8d988f19847a2f1925c912bc40d74d">polyfem::utils::base64Layer::group_</a></div><div class="ttdeci">unsigned char group_[3]</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:16</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a953d766c8f3063a4fcdf32d9ab86fd99"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a953d766c8f3063a4fcdf32d9ab86fd99">polyfem::utils::base64Layer::base64Layer</a></div><div class="ttdeci">base64Layer(const base64Layer &amp;)=delete</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_aae4e8cab1836c6d7804ce4e137d1c79e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#aae4e8cab1836c6d7804ce4e137d1c79e">polyfem::utils::base64Layer::operator=</a></div><div class="ttdeci">void operator=(const base64Layer &amp;)=delete</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a518896afe71d8d265f43abfd3c5d7d0b"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a518896afe71d8d265f43abfd3c5d7d0b">polyfem::utils::base64Layer::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:93</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_ac11b17cb7b56d6e4a5214f8943f1a0e8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#ac11b17cb7b56d6e4a5214f8943f1a0e8">polyfem::utils::base64Layer::os_</a></div><div class="ttdeci">std::ostream &amp; os_</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:13</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a8df5f8735638dd57e90a7b9fe5caa977"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a8df5f8735638dd57e90a7b9fe5caa977">polyfem::utils::base64Layer::groupLen_</a></div><div class="ttdeci">unsigned char groupLen_</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:19</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a5cd76db1328f84383a5484aa585c8782"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a5cd76db1328f84383a5484aa585c8782">polyfem::utils::base64Layer::encode2</a></div><div class="ttdeci">unsigned char encode2() const</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:41</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a8fab19b550b816690ed104e4f0326329"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a8fab19b550b816690ed104e4f0326329">polyfem::utils::base64Layer::encode0</a></div><div class="ttdeci">unsigned char encode0() const</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:29</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_ad33d4ba0b6163b52324b270a19d91e48"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#ad33d4ba0b6163b52324b270a19d91e48">polyfem::utils::base64Layer::~base64Layer</a></div><div class="ttdeci">~base64Layer()</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:80</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a838c8e73c72c44215f67874b24d094e2"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a838c8e73c72c44215f67874b24d094e2">polyfem::utils::base64Layer::close</a></div><div class="ttdeci">bool close()</div><div class="ttdef"><b>Definition:</b> base64Layer.cpp:99</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_ae29d22305c8c31d1c239dc5ca31f73c8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#ae29d22305c8c31d1c239dc5ca31f73c8">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const double *v, const int n)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:51</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a36fb5329cb3c36dbbab89422aaff9e4d"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a36fb5329cb3c36dbbab89422aaff9e4d">polyfem::utils::base64Layer::write</a></div><div class="ttdeci">void write(const float *v, const int n)</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1base64_layer_html_a990d202923d8e7643cd7b3078ad440c2"><div class="ttname"><a href="classpolyfem_1_1utils_1_1base64_layer.html#a990d202923d8e7643cd7b3078ad440c2">polyfem::utils::base64Layer::dirty_</a></div><div class="ttdeci">bool dirty_</div><div class="ttdef"><b>Definition:</b> base64Layer.hpp:22</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>base64Layer.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="base64_layer_8hpp.html">base64Layer.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

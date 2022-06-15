@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/assembler/Bilaplacian.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,19 +118,19 @@ $(document).ready(function(){initNavTree('_bilaplacian_8hpp_source.html',''); in
 <div class="title">Bilaplacian.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_bilaplacian_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/Common.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;polyfem/assembler/ElementAssemblyValues.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;polyfem/basis/ElementBases.hpp&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_element_assembly_values_8hpp.html">polyfem/assembler/ElementAssemblyValues.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_element_bases_8hpp.html">polyfem/basis/ElementBases.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;polyfem/utils/AutodiffTypes.hpp&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_autodiff_types_8hpp.html">polyfem/utils/AutodiffTypes.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">namespace </span>assembler</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    {</div>
@@ -109,17 +141,17 @@ $(document).ready(function(){initNavTree('_bilaplacian_8hpp_source.html',''); in
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        {</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            Eigen::Matrix&lt;double, 1, 1&gt;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            assemble(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j, <span class="keyword">const</span> QuadratureVector &amp;da)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#a360f58c7d361dd7df5e6f6c3e071931d">   24</a></span>&#160;            <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#a360f58c7d361dd7df5e6f6c3e071931d">assemble</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="code" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="code" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">            </span>{</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                <span class="keywordflow">return</span> Eigen::Matrix&lt;double, 1, 1&gt;::Zero(1, 1);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            Eigen::Matrix&lt;double, 1, 1&gt;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            compute_rhs(<span class="keyword">const</span> AutodiffHessianPt &amp;pt) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#a1e0ae448d55606d9b37087ffe798411d">compute_rhs</a>(<span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> size()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#aec72e2f0d0a83a22b4655c23570782cb">   32</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#aec72e2f0d0a83a22b4655c23570782cb">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keywordtype">void</span> set_parameters(<span class="keyword">const</span> json &amp;params) {}</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#ad57ecec22b9c7d440e78b51aac43b268">   34</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#ad57ecec22b9c7d440e78b51aac43b268">set_parameters</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params) {}</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        };</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html">   37</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html">BilaplacianMixed</a></div>
@@ -127,19 +159,19 @@ $(document).ready(function(){initNavTree('_bilaplacian_8hpp_source.html',''); in
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="comment">// res is R</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            Eigen::Matrix&lt;double, 1, 1&gt;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            assemble(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;psi_vals, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;phi_vals, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j, <span class="keyword">const</span> QuadratureVector &amp;da) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a3bb1f516076fb1a43c33a66fc3f55e07">assemble</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;psi_vals, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;phi_vals, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="code" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            Eigen::Matrix&lt;double, 1, 1&gt;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            compute_rhs(<span class="keyword">const</span> AutodiffHessianPt &amp;pt)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a53717a80a5344bc0fff466441b30cdc5">   45</a></span>&#160;            <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a53717a80a5344bc0fff466441b30cdc5">compute_rhs</a>(<span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">            </span>{</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                assert(<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                <span class="keywordflow">return</span> Eigen::Matrix&lt;double, 1, 1&gt;::Zero(1, 1);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            }</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> rows()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> cols()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a7fef828a866c314d9a409bbffc584298">   51</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a7fef828a866c314d9a409bbffc584298">rows</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a92a0ccc8f6343a247fb01b1d8d509853">   52</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a92a0ccc8f6343a247fb01b1d8d509853">cols</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordtype">void</span> set_parameters(<span class="keyword">const</span> json &amp;params) {}</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a2bdb27567fa5d94e2c0ae32aafecf4b7">   54</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a2bdb27567fa5d94e2c0ae32aafecf4b7">set_parameters</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params) {}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        };</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
 <div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html">   57</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html">BilaplacianAux</a></div>
@@ -147,35 +179,70 @@ $(document).ready(function(){initNavTree('_bilaplacian_8hpp_source.html',''); in
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            <span class="comment">// res is R</span></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            Eigen::Matrix&lt;double, 1, 1&gt;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            assemble(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j, <span class="keyword">const</span> QuadratureVector &amp;da) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#a2163801234987479e02ce9b108c4ceb6">assemble</a>(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="code" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <span class="keyword">const</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">int</span> j, <span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="code" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            Eigen::Matrix&lt;double, 1, 1&gt;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            compute_rhs(<span class="keyword">const</span> AutodiffHessianPt &amp;pt)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ad8eb08c644c7f0150d9f0d05dd1f098d">   65</a></span>&#160;            <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ad8eb08c644c7f0150d9f0d05dd1f098d">compute_rhs</a>(<span class="keyword">const</span> <a class="code" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">            </span>{</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                assert(<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                <span class="keywordflow">return</span> Eigen::Matrix&lt;double, 1, 1&gt;::Zero(1, 1);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            }</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> size()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#aa49429804bd754461f7c6941073eeb17">   71</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#aa49429804bd754461f7c6941073eeb17">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 1; }</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            <span class="keywordtype">void</span> set_parameters(<span class="keyword">const</span> json &amp;params) {}</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ae0567f1a4070f054fe0ea4a311261aa3">   73</a></span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ae0567f1a4070f054fe0ea4a311261aa3">set_parameters</a>(<span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params) {}</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        };</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    } <span class="comment">// namespace assembler</span></div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_mixed_html_a53717a80a5344bc0fff466441b30cdc5"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a53717a80a5344bc0fff466441b30cdc5">polyfem::assembler::BilaplacianMixed::compute_rhs</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, 1 &gt; compute_rhs(const AutodiffHessianPt &amp;pt) const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:45</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_mixed_html_a3bb1f516076fb1a43c33a66fc3f55e07"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a3bb1f516076fb1a43c33a66fc3f55e07">polyfem::assembler::BilaplacianMixed::assemble</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, 1 &gt; assemble(const ElementAssemblyValues &amp;psi_vals, const ElementAssemblyValues &amp;phi_vals, const int i, const int j, const QuadratureVector &amp;da) const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.cpp:21</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_main_html_aec72e2f0d0a83a22b4655c23570782cb"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#aec72e2f0d0a83a22b4655c23570782cb">polyfem::assembler::BilaplacianMain::size</a></div><div class="ttdeci">int size() const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:32</div></div>
+<div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="a_element_bases_8hpp_html"><div class="ttname"><a href="_element_bases_8hpp.html">ElementBases.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_aux_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html">polyfem::assembler::BilaplacianAux</a></div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:57</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_main_html_a360f58c7d361dd7df5e6f6c3e071931d"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#a360f58c7d361dd7df5e6f6c3e071931d">polyfem::assembler::BilaplacianMain::assemble</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, 1 &gt; assemble(const ElementAssemblyValues &amp;vals, const int i, const int j, const QuadratureVector &amp;da) const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:24</div></div>
+<div class="ttc" id="anamespacepolyfem_html_a5a418fe12634f0003c7e52fe47cdf99c"><div class="ttname"><a href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">polyfem::AutodiffHessianPt</a></div><div class="ttdeci">Eigen::Matrix&lt; AutodiffScalarHessian, Eigen::Dynamic, 1, 0, 3, 1 &gt; AutodiffHessianPt</div><div class="ttdef"><b>Definition:</b> AutodiffTypes.hpp:14</div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_aux_html_aa49429804bd754461f7c6941073eeb17"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#aa49429804bd754461f7c6941073eeb17">polyfem::assembler::BilaplacianAux::size</a></div><div class="ttdeci">int size() const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:71</div></div>
+<div class="ttc" id="a_assembler_8cpp_html_a8e8ee90d91b64973bc4ad946fd461666"><div class="ttname"><a href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a></div><div class="ttdeci">QuadratureVector da</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:40</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_main_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html">polyfem::assembler::BilaplacianMain</a></div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:20</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_aux_html_ad8eb08c644c7f0150d9f0d05dd1f098d"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ad8eb08c644c7f0150d9f0d05dd1f098d">polyfem::assembler::BilaplacianAux::compute_rhs</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, 1 &gt; compute_rhs(const AutodiffHessianPt &amp;pt) const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:65</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_main_html_a1e0ae448d55606d9b37087ffe798411d"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#a1e0ae448d55606d9b37087ffe798411d">polyfem::assembler::BilaplacianMain::compute_rhs</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, 1 &gt; compute_rhs(const AutodiffHessianPt &amp;pt) const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.cpp:12</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_main_html_ad57ecec22b9c7d440e78b51aac43b268"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_main.html#ad57ecec22b9c7d440e78b51aac43b268">polyfem::assembler::BilaplacianMain::set_parameters</a></div><div class="ttdeci">void set_parameters(const json &amp;params)</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:34</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_mixed_html_a7fef828a866c314d9a409bbffc584298"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a7fef828a866c314d9a409bbffc584298">polyfem::assembler::BilaplacianMixed::rows</a></div><div class="ttdeci">int rows() const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:51</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_aux_html_a2163801234987479e02ce9b108c4ceb6"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#a2163801234987479e02ce9b108c4ceb6">polyfem::assembler::BilaplacianAux::assemble</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, 1 &gt; assemble(const ElementAssemblyValues &amp;vals, const int i, const int j, const QuadratureVector &amp;da) const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.cpp:36</div></div>
+<div class="ttc" id="a_autodiff_types_8hpp_html"><div class="ttname"><a href="_autodiff_types_8hpp.html">AutodiffTypes.hpp</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_mixed_html_a92a0ccc8f6343a247fb01b1d8d509853"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a92a0ccc8f6343a247fb01b1d8d509853">polyfem::assembler::BilaplacianMixed::cols</a></div><div class="ttdeci">int cols() const</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:52</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_mixed_html_a2bdb27567fa5d94e2c0ae32aafecf4b7"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a2bdb27567fa5d94e2c0ae32aafecf4b7">polyfem::assembler::BilaplacianMixed::set_parameters</a></div><div class="ttdeci">void set_parameters(const json &amp;params)</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:54</div></div>
+<div class="ttc" id="a_element_assembly_values_8hpp_html"><div class="ttname"><a href="_element_assembly_values_8hpp.html">ElementAssemblyValues.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_element_assembly_values_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">polyfem::assembler::ElementAssemblyValues</a></div><div class="ttdef"><b>Definition:</b> ElementAssemblyValues.hpp:13</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_aux_html_ae0567f1a4070f054fe0ea4a311261aa3"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ae0567f1a4070f054fe0ea4a311261aa3">polyfem::assembler::BilaplacianAux::set_parameters</a></div><div class="ttdeci">void set_parameters(const json &amp;params)</div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:73</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="a_assembler_8cpp_html_ace467602a78d8e0c10fcd553d052fb6e"><div class="ttname"><a href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a></div><div class="ttdeci">ElementAssemblyValues vals</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:39</div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_bilaplacian_mixed_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html">polyfem::assembler::BilaplacianMixed</a></div><div class="ttdef"><b>Definition:</b> Bilaplacian.hpp:37</div></div>
+<div class="ttc" id="anamespacepolyfem_html_a6fa9b5aafa6c994633a25aa454efc18f"><div class="ttname"><a href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">polyfem::QuadratureVector</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1 &gt; QuadratureVector</div><div class="ttdef"><b>Definition:</b> Types.hpp:15</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_12817abd2662fe40efba8355c1386b9e.html">assembler</a></li><li class="navelem"><b>Bilaplacian.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_12817abd2662fe40efba8355c1386b9e.html">assembler</a></li><li class="navelem"><a class="el" href="_bilaplacian_8hpp.html">Bilaplacian.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

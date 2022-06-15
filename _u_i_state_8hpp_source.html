@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/viewer/UIState.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,16 +118,16 @@ $(document).ready(function(){initNavTree('_u_i_state_8hpp_source.html',''); init
 <div class="title">UIState.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="_u_i_state_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;polyfem/State.hpp&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="_state_8hpp.html">polyfem/State.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;igl/colormap.h&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;igl/opengl/glfw/Viewer.h&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;igl/opengl/glfw/imgui/ImGuiMenu.h&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="comment">//This is bad, but just ui</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">using namespace </span>mesh;</div>
@@ -105,82 +137,82 @@ $(document).ready(function(){initNavTree('_u_i_state_8hpp_source.html',''); init
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <a class="code" href="classpolyfem_1_1_u_i_state.html">UIState</a>();</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="keyword">enum</span> Visualizations</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">   20</a></span>&#160;        <span class="keyword">enum</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            InputMesh = 0,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            Sidesets,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            DiscrMesh,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            Nodes,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            PNodes,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            BNodes,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            BPNodes,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            VisMesh,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            Solution,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;            Error,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            ErrorGrad,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            VisBasis,</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ac2d1dad5a4eec163c9e9b002cd40e104">   22</a></span>&#160;            InputMesh = 0,</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3">   23</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3">Sidesets</a>,</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7">   24</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7">DiscrMesh</a>,</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a">   25</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a">Nodes</a>,</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531">   26</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531">PNodes</a>,</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d">   27</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d">BNodes</a>,</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06">   28</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06">BPNodes</a>,</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93">   29</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93">VisMesh</a>,</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c">   30</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c">Solution</a>,</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029">   31</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029">Error</a>,</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a">   32</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a">ErrorGrad</a>,</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d">   33</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d">VisBasis</a>,</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            NavigationIndex,</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c">   35</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c">NavigationIndex</a>,</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            Debug,</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d">   37</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d">Debug</a>,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            ElementId,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            VertexId,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            NodesId,</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb">   39</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb">ElementId</a>,</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16">   40</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16">VertexId</a>,</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4">   41</a></span>&#160;            <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4">NodesId</a>,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            TotalVisualizations</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a53873c90eddbe92ceb91cc6fc8eb1b06">   43</a></span>&#160;            TotalVisualizations</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        };</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keyword">const</span> std::string visualizations_texts[Visualizations::TotalVisualizations] = {<span class="stringliteral">&quot;InputMesh&quot;</span>, <span class="stringliteral">&quot;Sidesets&quot;</span>, <span class="stringliteral">&quot;Diretization&quot;</span>, <span class="stringliteral">&quot;Nodes&quot;</span>, <span class="stringliteral">&quot;PNodes&quot;</span>, <span class="stringliteral">&quot;BNodes&quot;</span>, <span class="stringliteral">&quot;BPNodes&quot;</span>, <span class="stringliteral">&quot;VisMesh&quot;</span>, <span class="stringliteral">&quot;Solution&quot;</span>, <span class="stringliteral">&quot;Error&quot;</span>, <span class="stringliteral">&quot;ErrorGrad&quot;</span>, <span class="stringliteral">&quot;VisBasis&quot;</span>, <span class="stringliteral">&quot;NavigationIndex&quot;</span>, <span class="stringliteral">&quot;Debug&quot;</span>, <span class="stringliteral">&quot;ElementId&quot;</span>, <span class="stringliteral">&quot;VertexId&quot;</span>, <span class="stringliteral">&quot;NodesId&quot;</span>};</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a020d97708558694a79b105a2e7042fbc">   46</a></span>&#160;        <span class="keyword">const</span> std::string visualizations_texts[Visualizations::TotalVisualizations] = {<span class="stringliteral">&quot;InputMesh&quot;</span>, <span class="stringliteral">&quot;Sidesets&quot;</span>, <span class="stringliteral">&quot;Diretization&quot;</span>, <span class="stringliteral">&quot;Nodes&quot;</span>, <span class="stringliteral">&quot;PNodes&quot;</span>, <span class="stringliteral">&quot;BNodes&quot;</span>, <span class="stringliteral">&quot;BPNodes&quot;</span>, <span class="stringliteral">&quot;VisMesh&quot;</span>, <span class="stringliteral">&quot;Solution&quot;</span>, <span class="stringliteral">&quot;Error&quot;</span>, <span class="stringliteral">&quot;ErrorGrad&quot;</span>, <span class="stringliteral">&quot;VisBasis&quot;</span>, <span class="stringliteral">&quot;NavigationIndex&quot;</span>, <span class="stringliteral">&quot;Debug&quot;</span>, <span class="stringliteral">&quot;ElementId&quot;</span>, <span class="stringliteral">&quot;VertexId&quot;</span>, <span class="stringliteral">&quot;NodesId&quot;</span>};</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keyword">static</span> <a class="code" href="classpolyfem_1_1_u_i_state.html">UIState</a> &amp;ui_state();</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">void</span> launch(<span class="keyword">const</span> std::string &amp;log_file, <span class="keywordtype">int</span> log_level, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_quiet, <span class="keyword">const</span> json &amp;args, <span class="keyword">const</span> std::string &amp;febio);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">void</span> launch(<span class="keyword">const</span> std::string &amp;log_file, <span class="keywordtype">int</span> log_level, <span class="keyword">const</span> <span class="keywordtype">bool</span> is_quiet, <span class="keyword">const</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="code" href="namespaceeigs.html#abe44e904f63d6b59924f947d7ab47875">args</a>, <span class="keyword">const</span> std::string &amp;febio);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordtype">void</span> sertialize(<span class="keyword">const</span> std::string &amp;name);</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordtype">bool</span> skip_visualization = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">bool</span> show_funs_in_3d = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordtype">int</span> vis_basis = 0;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a9cde8e57db9039cb891a9923c350c6a3">   55</a></span>&#160;        <span class="keywordtype">bool</span> skip_visualization = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#ab85bb040611acf497ce0ab42b701206d">   56</a></span>&#160;        <span class="keywordtype">bool</span> show_funs_in_3d = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a25a1743ba0ff76af7be7ee4e72a2e454">   57</a></span>&#160;        <span class="keywordtype">int</span> vis_basis = 0;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        igl::opengl::glfw::Viewer viewer;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a9767e9fa875993556bdd48228ed4b7a9">   59</a></span>&#160;        igl::opengl::glfw::Viewer <a class="code" href="classpolyfem_1_1_u_i_state.html#a9767e9fa875993556bdd48228ed4b7a9">viewer</a>;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        std::vector&lt;int&gt; element_ranges, vis_element_ranges;</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a40e9bc798ebb08c1fe796cc753a7baa7">   61</a></span>&#160;        std::vector&lt;int&gt; element_ranges, <a class="code" href="classpolyfem_1_1_u_i_state.html#a40e9bc798ebb08c1fe796cc753a7baa7">vis_element_ranges</a>;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        Eigen::MatrixXi tri_faces, vis_faces;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        Eigen::MatrixXd tri_pts, vis_pts;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a8db08b8f351b68564a00c20e54a68d53">   63</a></span>&#160;        Eigen::MatrixXi tri_faces, <a class="code" href="classpolyfem_1_1_u_i_state.html#a8db08b8f351b68564a00c20e54a68d53">vis_faces</a>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a889ee8dabeaefd71e8c050ee4e7e6525">   64</a></span>&#160;        Eigen::MatrixXd tri_pts, <a class="code" href="classpolyfem_1_1_u_i_state.html#a889ee8dabeaefd71e8c050ee4e7e6525">vis_pts</a>;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        std::map&lt;int, Eigen::MatrixXi&gt; vis_faces_poly;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        std::map&lt;int, Eigen::MatrixXd&gt; vis_pts_poly;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a0cb3eca211173317956331132ff9d655">   66</a></span>&#160;        std::map&lt;int, Eigen::MatrixXi&gt; <a class="code" href="classpolyfem_1_1_u_i_state.html#a0cb3eca211173317956331132ff9d655">vis_faces_poly</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a9c3e98eeb331db8fc6a13682df90fbf5">   67</a></span>&#160;        std::map&lt;int, Eigen::MatrixXd&gt; <a class="code" href="classpolyfem_1_1_u_i_state.html#a9c3e98eeb331db8fc6a13682df90fbf5">vis_pts_poly</a>;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordtype">double</span> min_val = 0, max_val = 0;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a5a20412cd3d30f61f5fbf1ed3789f431">   69</a></span>&#160;        igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a2fb4bd15f2b7d2d5cdc70b8e750d92cb">   70</a></span>&#160;        <span class="keywordtype">double</span> min_val = 0, max_val = 0;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordtype">int</span> slice_coord = 0;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordtype">bool</span> is_slicing = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordtype">bool</span> show_grad_error = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordtype">float</span> slice_position = 1;</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a5b9612a6943fff273cf706fe0f08a52b">   72</a></span>&#160;        <span class="keywordtype">int</span> slice_coord = 0;</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a0fb50f35dfc1b4b3f60fb794ff4ece29">   73</a></span>&#160;        <span class="keywordtype">bool</span> is_slicing = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a536db6eb999692b1f5a38d9f689f74d4">   74</a></span>&#160;        <span class="keywordtype">bool</span> show_grad_error = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a6e754548cc36c6fcf5da976e2e6fe909">   75</a></span>&#160;        <span class="keywordtype">float</span> slice_position = 1;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordtype">bool</span> ambient_occlusion = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordtype">bool</span> light_enabled = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordtype">bool</span> show_isolines = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a98a7f4b78d8a6d6675dc103f3eebd90d">   77</a></span>&#160;        <span class="keywordtype">bool</span> ambient_occlusion = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a4771af32913e388aa5e8953a2bd92c47">   78</a></span>&#160;        <span class="keywordtype">bool</span> light_enabled = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a66dcd4b7a723682eb09c46f08e75e52d">   79</a></span>&#160;        <span class="keywordtype">bool</span> show_isolines = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordtype">bool</span> show_element_id = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordtype">bool</span> show_vertex_id = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordtype">bool</span> show_node_id = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a71ae7fac864251b9259758d6094f3c9f">   81</a></span>&#160;        <span class="keywordtype">bool</span> show_element_id = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a2c619e9552bffd5d7aea123b939861de">   82</a></span>&#160;        <span class="keywordtype">bool</span> show_vertex_id = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#ac30b68f04a6d24d615a5f078cfab3a28">   83</a></span>&#160;        <span class="keywordtype">bool</span> show_node_id = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <span class="comment">// bool color_using_discr_order = false;</span></div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        std::string screenshot = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a4818d3b5e1903205ce39678c6435909a">   86</a></span>&#160;        std::string screenshot = <span class="stringliteral">&quot;&quot;</span>;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        Eigen::MatrixXd normalized_barycenter;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        Eigen::VectorXd ambient_occlusion_mat;</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a61429195423f5a2ed9f22a287644e794">   88</a></span>&#160;        Eigen::MatrixXd <a class="code" href="classpolyfem_1_1_u_i_state.html#a61429195423f5a2ed9f22a287644e794">normalized_barycenter</a>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#ac39a8ce2e2753a0a7897988a409e2edb">   89</a></span>&#160;        Eigen::VectorXd <a class="code" href="classpolyfem_1_1_u_i_state.html#ac39a8ce2e2753a0a7897988a409e2edb">ambient_occlusion_mat</a>;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        std::vector&lt;int&gt; selected_elements;</div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a3ce2712bfac04b5e6e159ac9418a06bd">   91</a></span>&#160;        std::vector&lt;int&gt; <a class="code" href="classpolyfem_1_1_u_i_state.html#a3ce2712bfac04b5e6e159ac9418a06bd">selected_elements</a>;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <a class="code" href="classpolyfem_1_1_state.html">State</a> state;</div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a44cca0ed4899020f03b20f551994fcdd">   93</a></span>&#160;        <a class="code" href="classpolyfem_1_1_state.html">State</a> <a class="code" href="classpolyfem_1_1_u_i_state.html#a44cca0ed4899020f03b20f551994fcdd">state</a>;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        igl::opengl::ViewerData &amp;debug_data()</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef">   95</a></span>&#160;        igl::opengl::ViewerData &amp;<a class="code" href="classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef">debug_data</a>()</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        {</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;            reset_flags(Visualizations::Debug, <span class="keyword">false</span>);</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            hide_data(Visualizations::Debug);</div>
@@ -189,35 +221,35 @@ $(document).ready(function(){initNavTree('_u_i_state_8hpp_source.html',''); init
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            <span class="keywordflow">return</span> data(Visualizations::Debug);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        }</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <span class="keywordtype">bool</span> load(std::string mesh_file_name_string)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a7065fd79d3848c2145dd91d9ac94cd9b">  104</a></span>&#160;        <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a7065fd79d3848c2145dd91d9ac94cd9b">load</a>(std::string mesh_file_name_string)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            state.args[<span class="stringliteral">&quot;mesh&quot;</span>] = mesh_file_name_string;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            load_mesh();</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            state.<a class="code" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;mesh&quot;</span>] = mesh_file_name_string;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            <a class="code" href="namespacepolyfem_1_1mesh.html#a0cae0dcc473dc0f45c46dd62901e2269">load_mesh</a>();</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        }</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="keywordtype">bool</span> save(std::string mesh_file_name_string)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#aeef6a19ec06d8305bf04e8613b08b27c">  112</a></span>&#160;        <span class="keywordtype">bool</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#aeef6a19ec06d8305bf04e8613b08b27c">save</a>(std::string mesh_file_name_string)<span class="keyword"> override</span></div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">        </span>{</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            state.mesh-&gt;save(mesh_file_name_string);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            state.<a class="code" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;save(mesh_file_name_string);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        }</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <a class="code" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">Navigation3D::Index</a> current_3d_index;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> current_2d_index;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        std::string febio_file;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        json in_args;</div>
+<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a4b125112f11064d356e941ac529ddd28">  120</a></span>&#160;        <a class="code" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">Navigation3D::Index</a> <a class="code" href="classpolyfem_1_1_u_i_state.html#a4b125112f11064d356e941ac529ddd28">current_3d_index</a>;</div>
+<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a669875eb894331acc5b82359a53ce93f">  121</a></span>&#160;        <a class="code" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> <a class="code" href="classpolyfem_1_1_u_i_state.html#a669875eb894331acc5b82359a53ce93f">current_2d_index</a>;</div>
+<div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a693eec00d3bc223d0c05efbf5c49668d">  122</a></span>&#160;        std::string <a class="code" href="classpolyfem_1_1_u_i_state.html#a693eec00d3bc223d0c05efbf5c49668d">febio_file</a>;</div>
+<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a116716154f0897031f7972980060c6d0">  123</a></span>&#160;        <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classpolyfem_1_1_u_i_state.html#a116716154f0897031f7972980060c6d0">in_args</a>;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        igl::opengl::ViewerData &amp;data(<span class="keyword">const</span> Visualizations &amp;layer);</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        Eigen::Matrix&lt;bool, Eigen::Dynamic, 1&gt; available_visualizations;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        Eigen::Matrix&lt;bool, Eigen::Dynamic, 1&gt; visible_visualizations;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        igl::opengl::ViewerData &amp;data(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer);</div>
+<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#adc8c98a345501bd37aecf13482a9c7e8">  126</a></span>&#160;        Eigen::Matrix&lt;bool, Eigen::Dynamic, 1&gt; <a class="code" href="classpolyfem_1_1_u_i_state.html#adc8c98a345501bd37aecf13482a9c7e8">available_visualizations</a>;</div>
+<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#ade936ca13b204e7a2592c42b03dad734">  127</a></span>&#160;        Eigen::Matrix&lt;bool, Eigen::Dynamic, 1&gt; <a class="code" href="classpolyfem_1_1_u_i_state.html#ade936ca13b204e7a2592c42b03dad734">visible_visualizations</a>;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        std::vector&lt;std::vector&lt;unsigned int&gt;&gt; vis_flags;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="keywordtype">void</span> reset_flags(<span class="keyword">const</span> Visualizations &amp;layer, <span class="keywordtype">bool</span> clear = <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <span class="keywordtype">void</span> hide_data(<span class="keyword">const</span> Visualizations &amp;layer);</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordtype">void</span> show_data(<span class="keyword">const</span> Visualizations &amp;layer);</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classpolyfem_1_1_u_i_state.html#a964a51e4942a1f7fd2669f1f73e8d321">  129</a></span>&#160;        std::vector&lt;std::vector&lt;unsigned int&gt;&gt; <a class="code" href="classpolyfem_1_1_u_i_state.html#a964a51e4942a1f7fd2669f1f73e8d321">vis_flags</a>;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="keywordtype">void</span> reset_flags(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, <span class="keywordtype">bool</span> clear = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <span class="keywordtype">void</span> hide_data(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordtype">void</span> show_data(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer);</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordtype">void</span> clear();</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keywordtype">void</span> redraw();</div>
@@ -239,7 +271,7 @@ $(document).ready(function(){initNavTree('_u_i_state_8hpp_source.html',''); init
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <span class="keywordtype">void</span> show_linear_reproduction();</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordtype">void</span> show_quadratic_reproduction();</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keywordtype">void</span> build_vis_mesh();</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordtype">void</span> load_mesh();</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1mesh.html#a0cae0dcc473dc0f45c46dd62901e2269">load_mesh</a>();</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        <span class="keywordtype">void</span> build_basis();</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="keywordtype">void</span> assemble_stiffness_mat();</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="keywordtype">void</span> assemble_rhs();</div>
@@ -250,34 +282,90 @@ $(document).ready(function(){initNavTree('_u_i_state_8hpp_source.html',''); init
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="keywordtype">bool</span> is_quad(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;bs) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        <span class="keywordtype">bool</span> is_tri(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;bs) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        <span class="keywordtype">void</span> plot_function(<span class="keyword">const</span> Eigen::MatrixXd &amp;fun, <span class="keyword">const</span> Visualizations &amp;layer, <span class="keywordtype">double</span> min = 0, <span class="keywordtype">double</span> max = -1);</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        <span class="keywordtype">void</span> plot_function(<span class="keyword">const</span> Eigen::MatrixXd &amp;fun, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, <span class="keywordtype">double</span> min = 0, <span class="keywordtype">double</span> max = -1);</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordtype">void</span> interpolate_function(<span class="keyword">const</span> Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result);</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="keywordtype">void</span> interpolate_grad_function(<span class="keyword">const</span> Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result);</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="keywordtype">long</span> clip_elements(<span class="keyword">const</span> Eigen::MatrixXd &amp;pts, <span class="keyword">const</span> Eigen::MatrixXi &amp;tris, <span class="keyword">const</span> std::vector&lt;int&gt; &amp;ranges, std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> <span class="keywordtype">bool</span> map_edges, <span class="keyword">const</span> Visualizations &amp;layer);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordtype">long</span> show_clipped_elements(<span class="keyword">const</span> Eigen::MatrixXd &amp;pts, <span class="keyword">const</span> Eigen::MatrixXi &amp;tris, <span class="keyword">const</span> std::vector&lt;int&gt; &amp;ranges, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> <span class="keywordtype">bool</span> map_edges, <span class="keyword">const</span> Visualizations &amp;layer, <span class="keyword">const</span> <span class="keywordtype">bool</span> recenter = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordtype">void</span> color_mesh(<span class="keyword">const</span> <span class="keywordtype">int</span> n_tris, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> Visualizations &amp;layer);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="keywordtype">long</span> clip_elements(<span class="keyword">const</span> Eigen::MatrixXd &amp;pts, <span class="keyword">const</span> Eigen::MatrixXi &amp;tris, <span class="keyword">const</span> std::vector&lt;int&gt; &amp;ranges, std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> <span class="keywordtype">bool</span> map_edges, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer);</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordtype">long</span> show_clipped_elements(<span class="keyword">const</span> Eigen::MatrixXd &amp;pts, <span class="keyword">const</span> Eigen::MatrixXi &amp;tris, <span class="keyword">const</span> std::vector&lt;int&gt; &amp;ranges, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> <span class="keywordtype">bool</span> map_edges, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, <span class="keyword">const</span> <span class="keywordtype">bool</span> recenter = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordtype">void</span> color_mesh(<span class="keyword">const</span> <span class="keywordtype">int</span> n_tris, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer);</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="keywordtype">void</span> plot_selection_and_index(<span class="keyword">const</span> <span class="keywordtype">bool</span> recenter = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keywordtype">void</span> get_plot_edges(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;mesh, <span class="keyword">const</span> std::vector&lt;ElementBases&gt; &amp;bases, <span class="keyword">const</span> std::vector&lt;ElementBases&gt; &amp;gbases, <span class="keyword">const</span> <span class="keywordtype">int</span> n_samples, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> Visualizations &amp;layer, Eigen::MatrixXd &amp;pp0, Eigen::MatrixXd &amp;pp1);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keywordtype">void</span> get_plot_edges(<span class="keyword">const</span> <a class="code" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;mesh, <span class="keyword">const</span> std::vector&lt;ElementBases&gt; &amp;bases, <span class="keyword">const</span> std::vector&lt;ElementBases&gt; &amp;gbases, <span class="keyword">const</span> <span class="keywordtype">int</span> n_samples, <span class="keyword">const</span> std::vector&lt;bool&gt; &amp;valid_elements, <span class="keyword">const</span> <a class="code" href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">Visualizations</a> &amp;layer, Eigen::MatrixXd &amp;pp0, Eigen::MatrixXd &amp;pp1);</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    };</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160; </div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a889ee8dabeaefd71e8c050ee4e7e6525"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a889ee8dabeaefd71e8c050ee4e7e6525">polyfem::UIState::vis_pts</a></div><div class="ttdeci">Eigen::MatrixXd vis_pts</div><div class="ttdef"><b>Definition:</b> UIState.hpp:64</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ae07af0f942535bf667951ca21c9215cb">polyfem::UIState::ElementId</a></div><div class="ttdeci">@ ElementId</div><div class="ttdef"><b>Definition:</b> UIState.hpp:39</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a0cae0dcc473dc0f45c46dd62901e2269"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a0cae0dcc473dc0f45c46dd62901e2269">polyfem::mesh::load_mesh</a></div><div class="ttdeci">void load_mesh(const json &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;weights, size_t &amp;num_faces, std::vector&lt; std::shared_ptr&lt; polyfem::utils::Selection &gt;&gt; &amp;surface_selections, std::vector&lt; std::shared_ptr&lt; polyfem::utils::Selection &gt;&gt; &amp;volume_selections)</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a693eec00d3bc223d0c05efbf5c49668d"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a693eec00d3bc223d0c05efbf5c49668d">polyfem::UIState::febio_file</a></div><div class="ttdeci">std::string febio_file</div><div class="ttdef"><b>Definition:</b> UIState.hpp:122</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_ade936ca13b204e7a2592c42b03dad734"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#ade936ca13b204e7a2592c42b03dad734">polyfem::UIState::visible_visualizations</a></div><div class="ttdeci">Eigen::Matrix&lt; bool, Eigen::Dynamic, 1 &gt; visible_visualizations</div><div class="ttdef"><b>Definition:</b> UIState.hpp:127</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad2df6ab5ec7706a9fb1bd01569b53a93">polyfem::UIState::VisMesh</a></div><div class="ttdeci">@ VisMesh</div><div class="ttdef"><b>Definition:</b> UIState.hpp:29</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a964a51e4942a1f7fd2669f1f73e8d321"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a964a51e4942a1f7fd2669f1f73e8d321">polyfem::UIState::vis_flags</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; vis_flags</div><div class="ttdef"><b>Definition:</b> UIState.hpp:129</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a116716154f0897031f7972980060c6d0"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a116716154f0897031f7972980060c6d0">polyfem::UIState::in_args</a></div><div class="ttdeci">json in_args</div><div class="ttdef"><b>Definition:</b> UIState.hpp:123</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333">polyfem::UIState::Visualizations</a></div><div class="ttdeci">Visualizations</div><div class="ttdef"><b>Definition:</b> UIState.hpp:20</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_aeef6a19ec06d8305bf04e8613b08b27c"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#aeef6a19ec06d8305bf04e8613b08b27c">polyfem::UIState::save</a></div><div class="ttdeci">bool save(std::string mesh_file_name_string) override</div><div class="ttdef"><b>Definition:</b> UIState.hpp:112</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a813d80fa2f8ebcf6fa4a09ffb9b5da99"><div class="ttname"><a href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">polyfem::State::args</a></div><div class="ttdeci">json args</div><div class="ttdef"><b>Definition:</b> State.hpp:125</div></div>
+<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a4b125112f11064d356e941ac529ddd28"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a4b125112f11064d356e941ac529ddd28">polyfem::UIState::current_3d_index</a></div><div class="ttdeci">Navigation3D::Index current_3d_index</div><div class="ttdef"><b>Definition:</b> UIState.hpp:120</div></div>
+<div class="ttc" id="anamespaceeigs_html_abe44e904f63d6b59924f947d7ab47875"><div class="ttname"><a href="namespaceeigs.html#abe44e904f63d6b59924f947d7ab47875">eigs.args</a></div><div class="ttdeci">def args</div><div class="ttdef"><b>Definition:</b> eigs.py:78</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a61429195423f5a2ed9f22a287644e794"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a61429195423f5a2ed9f22a287644e794">polyfem::UIState::normalized_barycenter</a></div><div class="ttdeci">Eigen::MatrixXd normalized_barycenter</div><div class="ttdef"><b>Definition:</b> UIState.hpp:88</div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation3_d_1_1_index_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">polyfem::mesh::Navigation3D::Index</a></div><div class="ttdef"><b>Definition:</b> Navigation3D.hpp:18</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d">polyfem::UIState::Debug</a></div><div class="ttdeci">@ Debug</div><div class="ttdef"><b>Definition:</b> UIState.hpp:37</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531">polyfem::UIState::PNodes</a></div><div class="ttdeci">@ PNodes</div><div class="ttdef"><b>Definition:</b> UIState.hpp:26</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a404330d8b2c92dd882016bc7b92b9eef"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef">polyfem::UIState::debug_data</a></div><div class="ttdeci">igl::opengl::ViewerData &amp; debug_data()</div><div class="ttdef"><b>Definition:</b> UIState.hpp:95</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a3ce2712bfac04b5e6e159ac9418a06bd"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a3ce2712bfac04b5e6e159ac9418a06bd">polyfem::UIState::selected_elements</a></div><div class="ttdeci">std::vector&lt; int &gt; selected_elements</div><div class="ttdef"><b>Definition:</b> UIState.hpp:91</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a9c3e98eeb331db8fc6a13682df90fbf5"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a9c3e98eeb331db8fc6a13682df90fbf5">polyfem::UIState::vis_pts_poly</a></div><div class="ttdeci">std::map&lt; int, Eigen::MatrixXd &gt; vis_pts_poly</div><div class="ttdef"><b>Definition:</b> UIState.hpp:67</div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation_1_1_index_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">polyfem::mesh::Navigation::Index</a></div><div class="ttdef"><b>Definition:</b> Navigation.hpp:13</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a669875eb894331acc5b82359a53ce93f"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a669875eb894331acc5b82359a53ce93f">polyfem::UIState::current_2d_index</a></div><div class="ttdeci">Navigation::Index current_2d_index</div><div class="ttdef"><b>Definition:</b> UIState.hpp:121</div></div>
 <div class="ttc" id="aclasspolyfem_1_1_u_i_state_html"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html">polyfem::UIState</a></div><div class="ttdef"><b>Definition:</b> UIState.hpp:15</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333af17877abbc8e2b57eb58511c473cad06">polyfem::UIState::BPNodes</a></div><div class="ttdeci">@ BPNodes</div><div class="ttdef"><b>Definition:</b> UIState.hpp:28</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a72c3cf845a1dc5c85120da3e21b5ac16">polyfem::UIState::VertexId</a></div><div class="ttdeci">@ VertexId</div><div class="ttdef"><b>Definition:</b> UIState.hpp:40</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aec354fa24fa117a0ea34d06c9f860ab4">polyfem::UIState::NodesId</a></div><div class="ttdeci">@ NodesId</div><div class="ttdef"><b>Definition:</b> UIState.hpp:41</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7">polyfem::UIState::DiscrMesh</a></div><div class="ttdeci">@ DiscrMesh</div><div class="ttdef"><b>Definition:</b> UIState.hpp:24</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad0019eef4e8ee1ddabd7bb34c9fc511a">polyfem::UIState::ErrorGrad</a></div><div class="ttdeci">@ ErrorGrad</div><div class="ttdef"><b>Definition:</b> UIState.hpp:32</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a7065fd79d3848c2145dd91d9ac94cd9b"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a7065fd79d3848c2145dd91d9ac94cd9b">polyfem::UIState::load</a></div><div class="ttdeci">bool load(std::string mesh_file_name_string) override</div><div class="ttdef"><b>Definition:</b> UIState.hpp:104</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a0cb3eca211173317956331132ff9d655"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a0cb3eca211173317956331132ff9d655">polyfem::UIState::vis_faces_poly</a></div><div class="ttdeci">std::map&lt; int, Eigen::MatrixXi &gt; vis_faces_poly</div><div class="ttdef"><b>Definition:</b> UIState.hpp:66</div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></div><div class="ttdef"><b>Definition:</b> Mesh.hpp:33</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333aaa7a721a116429f2a9f107321340393c">polyfem::UIState::Solution</a></div><div class="ttdeci">@ Solution</div><div class="ttdef"><b>Definition:</b> UIState.hpp:30</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333abf0a273bcc0df53586a9b1c34694721d">polyfem::UIState::VisBasis</a></div><div class="ttdeci">@ VisBasis</div><div class="ttdef"><b>Definition:</b> UIState.hpp:33</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333acb32674e5cc954e2dc64e4f1539607a3">polyfem::UIState::Sidesets</a></div><div class="ttdeci">@ Sidesets</div><div class="ttdef"><b>Definition:</b> UIState.hpp:23</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a775884bd8668538778b642e02659b04d">polyfem::UIState::BNodes</a></div><div class="ttdeci">@ BNodes</div><div class="ttdef"><b>Definition:</b> UIState.hpp:27</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a40e9bc798ebb08c1fe796cc753a7baa7"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a40e9bc798ebb08c1fe796cc753a7baa7">polyfem::UIState::vis_element_ranges</a></div><div class="ttdeci">std::vector&lt; int &gt; vis_element_ranges</div><div class="ttdef"><b>Definition:</b> UIState.hpp:61</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333afeee7c5b3be545329a2098c8daf0e029">polyfem::UIState::Error</a></div><div class="ttdeci">@ Error</div><div class="ttdef"><b>Definition:</b> UIState.hpp:31</div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html"><div class="ttname"><a href="classpolyfem_1_1_state.html">polyfem::State</a></div><div class="ttdef"><b>Definition:</b> State.hpp:79</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a9767e9fa875993556bdd48228ed4b7a9"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a9767e9fa875993556bdd48228ed4b7a9">polyfem::UIState::viewer</a></div><div class="ttdeci">igl::opengl::glfw::Viewer viewer</div><div class="ttdef"><b>Definition:</b> UIState.hpp:59</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a6d2275d335a2330738caba1cb37f7bb9"><div class="ttname"><a href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">polyfem::State::mesh</a></div><div class="ttdeci">std::unique_ptr&lt; mesh::Mesh &gt; mesh</div><div class="ttdef"><b>Definition:</b> State.hpp:167</div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_element_bases_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_element_bases.html">polyfem::basis::ElementBases</a></div><div class="ttdoc">Stores the basis functions for a given element in a mesh (facet in 2d, cell in 3d).</div><div class="ttdef"><b>Definition:</b> ElementBases.hpp:19</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333ad7bcf028fecb057a4b65acda83e5805a">polyfem::UIState::Nodes</a></div><div class="ttdeci">@ Nodes</div><div class="ttdef"><b>Definition:</b> UIState.hpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_ac39a8ce2e2753a0a7897988a409e2edb"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#ac39a8ce2e2753a0a7897988a409e2edb">polyfem::UIState::ambient_occlusion_mat</a></div><div class="ttdeci">Eigen::VectorXd ambient_occlusion_mat</div><div class="ttdef"><b>Definition:</b> UIState.hpp:89</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a8db08b8f351b68564a00c20e54a68d53"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a8db08b8f351b68564a00c20e54a68d53">polyfem::UIState::vis_faces</a></div><div class="ttdeci">Eigen::MatrixXi vis_faces</div><div class="ttdef"><b>Definition:</b> UIState.hpp:63</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a08a2b19fd7076a52ae5f2be9568e288c">polyfem::UIState::NavigationIndex</a></div><div class="ttdeci">@ NavigationIndex</div><div class="ttdef"><b>Definition:</b> UIState.hpp:35</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_adc8c98a345501bd37aecf13482a9c7e8"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#adc8c98a345501bd37aecf13482a9c7e8">polyfem::UIState::available_visualizations</a></div><div class="ttdeci">Eigen::Matrix&lt; bool, Eigen::Dynamic, 1 &gt; available_visualizations</div><div class="ttdef"><b>Definition:</b> UIState.hpp:126</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_u_i_state_html_a44cca0ed4899020f03b20f551994fcdd"><div class="ttname"><a href="classpolyfem_1_1_u_i_state.html#a44cca0ed4899020f03b20f551994fcdd">polyfem::UIState::state</a></div><div class="ttdeci">State state</div><div class="ttdef"><b>Definition:</b> UIState.hpp:93</div></div>
+<div class="ttc" id="a_state_8hpp_html"><div class="ttname"><a href="_state_8hpp.html">State.hpp</a></div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_666928e39818db812eb9eed7ed84faf5.html">viewer</a></li><li class="navelem"><b>UIState.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_666928e39818db812eb9eed7ed84faf5.html">viewer</a></li><li class="navelem"><a class="el" href="_u_i_state_8hpp.html">UIState.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

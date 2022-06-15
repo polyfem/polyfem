@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::mesh::VTUWriter Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -91,87 +123,618 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1mesh_1_1_v_t_u_writer.
 <div class="title">polyfem::mesh::VTUWriter Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a260598f5284724050aea118bacee7be0"><td class="memItemLeft" align="right" valign="top"><a id="a260598f5284724050aea118bacee7be0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VTUWriter</b> (bool binary=true)</td></tr>
+<tr class="memitem:a260598f5284724050aea118bacee7be0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a260598f5284724050aea118bacee7be0">VTUWriter</a> (bool binary=true)</td></tr>
 <tr class="separator:a260598f5284724050aea118bacee7be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a8870f73826a55b66d25a38bcd531e8"><td class="memItemLeft" align="right" valign="top"><a id="a6a8870f73826a55b66d25a38bcd531e8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>write_mesh</b> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const Eigen::MatrixXi &amp;cells)</td></tr>
+<tr class="memitem:a6a8870f73826a55b66d25a38bcd531e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a6a8870f73826a55b66d25a38bcd531e8">write_mesh</a> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const Eigen::MatrixXi &amp;cells)</td></tr>
 <tr class="separator:a6a8870f73826a55b66d25a38bcd531e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf71190dc1b0de2562e6abbde33857bc"><td class="memItemLeft" align="right" valign="top"><a id="acf71190dc1b0de2562e6abbde33857bc"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>write_mesh</b> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const std::vector&lt; std::vector&lt; int &gt;&gt; &amp;cells, const bool is_simplicial)</td></tr>
+<tr class="memitem:acf71190dc1b0de2562e6abbde33857bc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#acf71190dc1b0de2562e6abbde33857bc">write_mesh</a> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const std::vector&lt; std::vector&lt; int &gt;&gt; &amp;cells, const bool is_simplicial)</td></tr>
 <tr class="separator:acf71190dc1b0de2562e6abbde33857bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e9d0e483138626462eaf6d74b4fad05"><td class="memItemLeft" align="right" valign="top"><a id="a7e9d0e483138626462eaf6d74b4fad05"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add_field</b> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
+<tr class="memitem:a7e9d0e483138626462eaf6d74b4fad05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a7e9d0e483138626462eaf6d74b4fad05">add_field</a> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
 <tr class="separator:a7e9d0e483138626462eaf6d74b4fad05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbccb8f162e3b3c00da4e26c6d62d229"><td class="memItemLeft" align="right" valign="top"><a id="acbccb8f162e3b3c00da4e26c6d62d229"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add_scalar_field</b> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
+<tr class="memitem:acbccb8f162e3b3c00da4e26c6d62d229"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#acbccb8f162e3b3c00da4e26c6d62d229">add_scalar_field</a> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
 <tr class="separator:acbccb8f162e3b3c00da4e26c6d62d229"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4914ff2ef8e919f26cfaac20f0b8d2d"><td class="memItemLeft" align="right" valign="top"><a id="ad4914ff2ef8e919f26cfaac20f0b8d2d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add_vector_field</b> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
+<tr class="memitem:ad4914ff2ef8e919f26cfaac20f0b8d2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#ad4914ff2ef8e919f26cfaac20f0b8d2d">add_vector_field</a> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
 <tr class="separator:ad4914ff2ef8e919f26cfaac20f0b8d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a059f0693f085739cdff252202da5cd5d"><td class="memItemLeft" align="right" valign="top"><a id="a059f0693f085739cdff252202da5cd5d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:a059f0693f085739cdff252202da5cd5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a059f0693f085739cdff252202da5cd5d">clear</a> ()</td></tr>
 <tr class="separator:a059f0693f085739cdff252202da5cd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:ac6f830544f140d500e659d447841be97"><td class="memItemLeft" align="right" valign="top"><a id="ac6f830544f140d500e659d447841be97"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_point_data</b> (std::ostream &amp;os)</td></tr>
+<tr class="memitem:ac6f830544f140d500e659d447841be97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#ac6f830544f140d500e659d447841be97">write_point_data</a> (std::ostream &amp;os)</td></tr>
 <tr class="separator:ac6f830544f140d500e659d447841be97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4d37c797f820abb0bebad794ed9d47b"><td class="memItemLeft" align="right" valign="top"><a id="ae4d37c797f820abb0bebad794ed9d47b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_header</b> (const int n_vertices, const int n_elements, std::ostream &amp;os)</td></tr>
+<tr class="memitem:ae4d37c797f820abb0bebad794ed9d47b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#ae4d37c797f820abb0bebad794ed9d47b">write_header</a> (const int n_vertices, const int n_elements, std::ostream &amp;os)</td></tr>
 <tr class="separator:ae4d37c797f820abb0bebad794ed9d47b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75e4620a90ef1438f4531b7ce0bd5d89"><td class="memItemLeft" align="right" valign="top"><a id="a75e4620a90ef1438f4531b7ce0bd5d89"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_footer</b> (std::ostream &amp;os)</td></tr>
+<tr class="memitem:a75e4620a90ef1438f4531b7ce0bd5d89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a75e4620a90ef1438f4531b7ce0bd5d89">write_footer</a> (std::ostream &amp;os)</td></tr>
 <tr class="separator:a75e4620a90ef1438f4531b7ce0bd5d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8edbf4b711de5d29ddf455170adb1c1"><td class="memItemLeft" align="right" valign="top"><a id="ac8edbf4b711de5d29ddf455170adb1c1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_points</b> (const Eigen::MatrixXd &amp;points, std::ostream &amp;os)</td></tr>
+<tr class="memitem:ac8edbf4b711de5d29ddf455170adb1c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#ac8edbf4b711de5d29ddf455170adb1c1">write_points</a> (const Eigen::MatrixXd &amp;points, std::ostream &amp;os)</td></tr>
 <tr class="separator:ac8edbf4b711de5d29ddf455170adb1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd0d70f7022f06cc0a47bc8af74f9ad7"><td class="memItemLeft" align="right" valign="top"><a id="acd0d70f7022f06cc0a47bc8af74f9ad7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_cells</b> (const Eigen::MatrixXi &amp;cells, std::ostream &amp;os)</td></tr>
+<tr class="memitem:acd0d70f7022f06cc0a47bc8af74f9ad7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#acd0d70f7022f06cc0a47bc8af74f9ad7">write_cells</a> (const Eigen::MatrixXi &amp;cells, std::ostream &amp;os)</td></tr>
 <tr class="separator:acd0d70f7022f06cc0a47bc8af74f9ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59b304b99ec82fe325dc10a48816d68f"><td class="memItemLeft" align="right" valign="top"><a id="a59b304b99ec82fe325dc10a48816d68f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>write_cells</b> (const std::vector&lt; std::vector&lt; int &gt;&gt; &amp;cells, const bool is_simplex, std::ostream &amp;os)</td></tr>
+<tr class="memitem:a59b304b99ec82fe325dc10a48816d68f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a59b304b99ec82fe325dc10a48816d68f">write_cells</a> (const std::vector&lt; std::vector&lt; int &gt;&gt; &amp;cells, const bool is_simplex, std::ostream &amp;os)</td></tr>
 <tr class="separator:a59b304b99ec82fe325dc10a48816d68f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ac42c0c49949a069c66db3e49c1e1130b"><td class="memItemLeft" align="right" valign="top"><a id="ac42c0c49949a069c66db3e49c1e1130b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_volume_</b></td></tr>
+<tr class="memitem:ac42c0c49949a069c66db3e49c1e1130b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#ac42c0c49949a069c66db3e49c1e1130b">is_volume_</a></td></tr>
 <tr class="separator:ac42c0c49949a069c66db3e49c1e1130b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa32db6a4f052a6907edac03ae326e4a5"><td class="memItemLeft" align="right" valign="top"><a id="aa32db6a4f052a6907edac03ae326e4a5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>binary_</b></td></tr>
+<tr class="memitem:aa32db6a4f052a6907edac03ae326e4a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#aa32db6a4f052a6907edac03ae326e4a5">binary_</a></td></tr>
 <tr class="separator:aa32db6a4f052a6907edac03ae326e4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60adffc4e06931841a5d0fb4c41118ce"><td class="memItemLeft" align="right" valign="top"><a id="a60adffc4e06931841a5d0fb4c41118ce"></a>
-std::vector&lt; VTKDataNode&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>point_data_</b></td></tr>
+<tr class="memitem:a60adffc4e06931841a5d0fb4c41118ce"><td class="memItemLeft" align="right" valign="top">std::vector&lt; VTKDataNode&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a60adffc4e06931841a5d0fb4c41118ce">point_data_</a></td></tr>
 <tr class="separator:a60adffc4e06931841a5d0fb4c41118ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e29a4c8f98a1cf8df9ba3d41f3d9208"><td class="memItemLeft" align="right" valign="top"><a id="a1e29a4c8f98a1cf8df9ba3d41f3d9208"></a>
-std::vector&lt; VTKDataNode&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cell_data_</b></td></tr>
+<tr class="memitem:a1e29a4c8f98a1cf8df9ba3d41f3d9208"><td class="memItemLeft" align="right" valign="top">std::vector&lt; VTKDataNode&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a1e29a4c8f98a1cf8df9ba3d41f3d9208">cell_data_</a></td></tr>
 <tr class="separator:a1e29a4c8f98a1cf8df9ba3d41f3d9208"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87e107e063ad6018ed8cfc701e1c7890"><td class="memItemLeft" align="right" valign="top"><a id="a87e107e063ad6018ed8cfc701e1c7890"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>current_scalar_point_data_</b></td></tr>
+<tr class="memitem:a87e107e063ad6018ed8cfc701e1c7890"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a87e107e063ad6018ed8cfc701e1c7890">current_scalar_point_data_</a></td></tr>
 <tr class="separator:a87e107e063ad6018ed8cfc701e1c7890"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30470edca4c2e19ae07f5c479ed833ec"><td class="memItemLeft" align="right" valign="top"><a id="a30470edca4c2e19ae07f5c479ed833ec"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>current_vector_point_data_</b></td></tr>
+<tr class="memitem:a30470edca4c2e19ae07f5c479ed833ec"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a30470edca4c2e19ae07f5c479ed833ec">current_vector_point_data_</a></td></tr>
 <tr class="separator:a30470edca4c2e19ae07f5c479ed833ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a260598f5284724050aea118bacee7be0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a260598f5284724050aea118bacee7be0">&#9670;&nbsp;</a></span>VTUWriter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::mesh::VTUWriter::VTUWriter </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>binary</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7e9d0e483138626462eaf6d74b4fad05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9d0e483138626462eaf6d74b4fad05">&#9670;&nbsp;</a></span>add_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::add_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acbccb8f162e3b3c00da4e26c6d62d229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbccb8f162e3b3c00da4e26c6d62d229">&#9670;&nbsp;</a></span>add_scalar_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::add_scalar_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad4914ff2ef8e919f26cfaac20f0b8d2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4914ff2ef8e919f26cfaac20f0b8d2d">&#9670;&nbsp;</a></span>add_vector_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::add_vector_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a059f0693f085739cdff252202da5cd5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a059f0693f085739cdff252202da5cd5d">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd0d70f7022f06cc0a47bc8af74f9ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd0d70f7022f06cc0a47bc8af74f9ad7">&#9670;&nbsp;</a></span>write_cells() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::write_cells </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59b304b99ec82fe325dc10a48816d68f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b304b99ec82fe325dc10a48816d68f">&#9670;&nbsp;</a></span>write_cells() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::write_cells </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; int &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_simplex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a75e4620a90ef1438f4531b7ce0bd5d89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75e4620a90ef1438f4531b7ce0bd5d89">&#9670;&nbsp;</a></span>write_footer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::write_footer </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae4d37c797f820abb0bebad794ed9d47b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4d37c797f820abb0bebad794ed9d47b">&#9670;&nbsp;</a></span>write_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::write_header </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6a8870f73826a55b66d25a38bcd531e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a8870f73826a55b66d25a38bcd531e8">&#9670;&nbsp;</a></span>write_mesh() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::mesh::VTUWriter::write_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acf71190dc1b0de2562e6abbde33857bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf71190dc1b0de2562e6abbde33857bc">&#9670;&nbsp;</a></span>write_mesh() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::mesh::VTUWriter::write_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; int &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_simplicial</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac6f830544f140d500e659d447841be97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6f830544f140d500e659d447841be97">&#9670;&nbsp;</a></span>write_point_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::write_point_data </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac8edbf4b711de5d29ddf455170adb1c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8edbf4b711de5d29ddf455170adb1c1">&#9670;&nbsp;</a></span>write_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::VTUWriter::write_points </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aa32db6a4f052a6907edac03ae326e4a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa32db6a4f052a6907edac03ae326e4a5">&#9670;&nbsp;</a></span>binary_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::mesh::VTUWriter::binary_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1e29a4c8f98a1cf8df9ba3d41f3d9208"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e29a4c8f98a1cf8df9ba3d41f3d9208">&#9670;&nbsp;</a></span>cell_data_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VTKDataNode&lt;double&gt; &gt; polyfem::mesh::VTUWriter::cell_data_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87e107e063ad6018ed8cfc701e1c7890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87e107e063ad6018ed8cfc701e1c7890">&#9670;&nbsp;</a></span>current_scalar_point_data_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::mesh::VTUWriter::current_scalar_point_data_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a30470edca4c2e19ae07f5c479ed833ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30470edca4c2e19ae07f5c479ed833ec">&#9670;&nbsp;</a></span>current_vector_point_data_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::mesh::VTUWriter::current_vector_point_data_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac42c0c49949a069c66db3e49c1e1130b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac42c0c49949a069c66db3e49c1e1130b">&#9670;&nbsp;</a></span>is_volume_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::mesh::VTUWriter::is_volume_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a60adffc4e06931841a5d0fb4c41118ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60adffc4e06931841a5d0fb4c41118ce">&#9670;&nbsp;</a></span>point_data_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VTKDataNode&lt;double&gt; &gt; polyfem::mesh::VTUWriter::point_data_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/mesh/<a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a></li>
-<li>src/polyfem/mesh/VTUWriter.cpp</li>
+<li>src/polyfem/mesh/<a class="el" href="_v_t_u_writer_8cpp.html">VTUWriter.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>mesh</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html">VTUWriter</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1mesh.html">mesh</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1mesh_1_1_v_t_u_writer.html">VTUWriter</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

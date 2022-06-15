@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: polyfem::assembler::LinearElasticity Class Reference</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -91,92 +123,812 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_linear_e
 <div class="title">polyfem::assembler::LinearElasticity Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_linear_elasticity_8hpp_source.html">LinearElasticity.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for polyfem::assembler::LinearElasticity:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_linear_elasticity__coll__graph.svg" width="206" height="260"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad6245dafdbf88f156265eaa119c2c2be"><td class="memItemLeft" align="right" valign="top"><a id="ad6245dafdbf88f156265eaa119c2c2be"></a>
-Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad6245dafdbf88f156265eaa119c2c2be">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, const int i, const int j, const QuadratureVector &amp;da) const</td></tr>
-<tr class="memdesc:ad6245dafdbf88f156265eaa119c2c2be"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes local stiffness matrix is R^{dim²} for bases i,j <br /></td></tr>
+<tr class="memitem:ad6245dafdbf88f156265eaa119c2c2be"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad6245dafdbf88f156265eaa119c2c2be">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const int i, const int j, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
+<tr class="memdesc:ad6245dafdbf88f156265eaa119c2c2be"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes local stiffness matrix is R^{dim²} for bases i,j  <a href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad6245dafdbf88f156265eaa119c2c2be">More...</a><br /></td></tr>
 <tr class="separator:ad6245dafdbf88f156265eaa119c2c2be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb8fa53fcee51fd0f099035ebbf5403e"><td class="memItemLeft" align="right" valign="top"><a id="aeb8fa53fcee51fd0f099035ebbf5403e"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>assemble_hessian</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, const Eigen::MatrixXd &amp;displacement, const QuadratureVector &amp;da) const</td></tr>
+<tr class="memitem:aeb8fa53fcee51fd0f099035ebbf5403e"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aeb8fa53fcee51fd0f099035ebbf5403e">assemble_hessian</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;displacement, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
 <tr class="separator:aeb8fa53fcee51fd0f099035ebbf5403e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc138971b842cd3a3c2fb981d99524d9"><td class="memItemLeft" align="right" valign="top"><a id="afc138971b842cd3a3c2fb981d99524d9"></a>
-Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>assemble_grad</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, const Eigen::MatrixXd &amp;displacement, const QuadratureVector &amp;da) const</td></tr>
+<tr class="memitem:afc138971b842cd3a3c2fb981d99524d9"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#afc138971b842cd3a3c2fb981d99524d9">assemble_grad</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;displacement, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
 <tr class="separator:afc138971b842cd3a3c2fb981d99524d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a383f8b697bb4ba478f94f3eedd4e5ab3"><td class="memItemLeft" align="right" valign="top"><a id="a383f8b697bb4ba478f94f3eedd4e5ab3"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>compute_energy</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, const Eigen::MatrixXd &amp;displacement, const QuadratureVector &amp;da) const</td></tr>
+<tr class="memitem:a383f8b697bb4ba478f94f3eedd4e5ab3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a383f8b697bb4ba478f94f3eedd4e5ab3">compute_energy</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;displacement, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
 <tr class="separator:a383f8b697bb4ba478f94f3eedd4e5ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c21d8e3de03d6cde3b56691da004c1f"><td class="memItemLeft" align="right" valign="top"><a id="a1c21d8e3de03d6cde3b56691da004c1f"></a>
-Eigen::Matrix&lt; <a class="el" href="struct_d_scalar1.html">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>kernel</b> (const int dim, const AutodiffGradPt &amp;r) const</td></tr>
+<tr class="memitem:a1c21d8e3de03d6cde3b56691da004c1f"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a1c21d8e3de03d6cde3b56691da004c1f">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;r) const</td></tr>
 <tr class="separator:a1c21d8e3de03d6cde3b56691da004c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaa13e1d3a3b727305199a56c2708dbc"><td class="memItemLeft" align="right" valign="top"><a id="abaa13e1d3a3b727305199a56c2708dbc"></a>
-Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>compute_rhs</b> (const AutodiffHessianPt &amp;pt) const</td></tr>
+<tr class="memitem:abaa13e1d3a3b727305199a56c2708dbc"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#abaa13e1d3a3b727305199a56c2708dbc">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const</td></tr>
 <tr class="separator:abaa13e1d3a3b727305199a56c2708dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9ebf6310a4fb9ead16155261b30a3c1"><td class="memItemLeft" align="right" valign="top"><a id="ab9ebf6310a4fb9ead16155261b30a3c1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_von_mises_stresses</b> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;stresses) const</td></tr>
+<tr class="memitem:ab9ebf6310a4fb9ead16155261b30a3c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ab9ebf6310a4fb9ead16155261b30a3c1">compute_von_mises_stresses</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;stresses) const</td></tr>
 <tr class="separator:ab9ebf6310a4fb9ead16155261b30a3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf18ed65098500d77a5e48fe8f908b2b"><td class="memItemLeft" align="right" valign="top"><a id="adf18ed65098500d77a5e48fe8f908b2b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_stress_tensor</b> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
+<tr class="memitem:adf18ed65098500d77a5e48fe8f908b2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#adf18ed65098500d77a5e48fe8f908b2b">compute_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
 <tr class="separator:adf18ed65098500d77a5e48fe8f908b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c58601d856d695594c1a12fcadaebb3"><td class="memItemLeft" align="right" valign="top"><a id="a9c58601d856d695594c1a12fcadaebb3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_dstress_dgradu_multiply_mat</b> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;mat, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="memitem:a9c58601d856d695594c1a12fcadaebb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a9c58601d856d695594c1a12fcadaebb3">compute_dstress_dgradu_multiply_mat</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;mat, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
 <tr class="separator:a9c58601d856d695594c1a12fcadaebb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0fe07ed1a6bfad8453cb77e841be463"><td class="memItemLeft" align="right" valign="top"><a id="ad0fe07ed1a6bfad8453cb77e841be463"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_dstress_dmu_dlambda</b> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
+<tr class="memitem:ad0fe07ed1a6bfad8453cb77e841be463"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad0fe07ed1a6bfad8453cb77e841be463">compute_dstress_dmu_dlambda</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
 <tr class="separator:ad0fe07ed1a6bfad8453cb77e841be463"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d10ce132b69d8a5046481b00fbe47e1"><td class="memItemLeft" align="right" valign="top"><a id="a4d10ce132b69d8a5046481b00fbe47e1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_size</b> (const int size)</td></tr>
+<tr class="memitem:a4d10ce132b69d8a5046481b00fbe47e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a4d10ce132b69d8a5046481b00fbe47e1">set_size</a> (const int <a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aec319cc4d5bd48c7369358fc6c25a76e">size</a>)</td></tr>
 <tr class="separator:a4d10ce132b69d8a5046481b00fbe47e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec319cc4d5bd48c7369358fc6c25a76e"><td class="memItemLeft" align="right" valign="top"><a id="aec319cc4d5bd48c7369358fc6c25a76e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
+<tr class="memitem:aec319cc4d5bd48c7369358fc6c25a76e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aec319cc4d5bd48c7369358fc6c25a76e">size</a> () const</td></tr>
 <tr class="separator:aec319cc4d5bd48c7369358fc6c25a76e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03f827ebe001ce25a50f967ddb9ad6ce"><td class="memItemLeft" align="right" valign="top"><a id="a03f827ebe001ce25a50f967ddb9ad6ce"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_parameters</b> (const json &amp;params)</td></tr>
+<tr class="memitem:a03f827ebe001ce25a50f967ddb9ad6ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a03f827ebe001ce25a50f967ddb9ad6ce">set_parameters</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params)</td></tr>
 <tr class="separator:a03f827ebe001ce25a50f967ddb9ad6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2d418d0b920c97517f4af7735eeba4a"><td class="memItemLeft" align="right" valign="top"><a id="ac2d418d0b920c97517f4af7735eeba4a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init_multimaterial</b> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
+<tr class="memitem:ac2d418d0b920c97517f4af7735eeba4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ac2d418d0b920c97517f4af7735eeba4a">init_multimaterial</a> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
 <tr class="separator:ac2d418d0b920c97517f4af7735eeba4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a63ac61bc84544071fe5f3458dc5740"><td class="memItemLeft" align="right" valign="top"><a id="a0a63ac61bc84544071fe5f3458dc5740"></a>
-const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>lame_params</b> () const</td></tr>
+<tr class="memitem:a0a63ac61bc84544071fe5f3458dc5740"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a0a63ac61bc84544071fe5f3458dc5740">lame_params</a> () const</td></tr>
 <tr class="separator:a0a63ac61bc84544071fe5f3458dc5740"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ed0d51fb66d2fe3c92d3d4ea7d106ca"><td class="memItemLeft" align="right" valign="top"><a id="a6ed0d51fb66d2fe3c92d3d4ea7d106ca"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_params</b> (const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;params)</td></tr>
+<tr class="memitem:a6ed0d51fb66d2fe3c92d3d4ea7d106ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a6ed0d51fb66d2fe3c92d3d4ea7d106ca">set_params</a> (const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;params)</td></tr>
 <tr class="separator:a6ed0d51fb66d2fe3c92d3d4ea7d106ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:af037a38e01816e98afdc1a64fec544a8"><td class="memItemLeft" align="right" valign="top"><a id="af037a38e01816e98afdc1a64fec544a8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>assign_stress_tensor</b> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, const int all_size, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const</td></tr>
+<tr class="memitem:af037a38e01816e98afdc1a64fec544a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#af037a38e01816e98afdc1a64fec544a8">assign_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, const int all_size, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const</td></tr>
 <tr class="separator:af037a38e01816e98afdc1a64fec544a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f4f8037ba91825c9d3027a5cc04155e"><td class="memTemplParams" colspan="2"><a id="a7f4f8037ba91825c9d3027a5cc04155e"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a7f4f8037ba91825c9d3027a5cc04155e"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>compute_energy_aux</b> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;vals, const Eigen::MatrixXd &amp;displacement, const QuadratureVector &amp;da) const</td></tr>
+<tr class="memitem:a7f4f8037ba91825c9d3027a5cc04155e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7f4f8037ba91825c9d3027a5cc04155e"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a7f4f8037ba91825c9d3027a5cc04155e">compute_energy_aux</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;displacement, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
 <tr class="separator:a7f4f8037ba91825c9d3027a5cc04155e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:aa099f5123c7e619bab818299af289d91"><td class="memItemLeft" align="right" valign="top"><a id="aa099f5123c7e619bab818299af289d91"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b> = -1</td></tr>
+<tr class="memitem:aa099f5123c7e619bab818299af289d91"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aa099f5123c7e619bab818299af289d91">size_</a> = -1</td></tr>
 <tr class="separator:aa099f5123c7e619bab818299af289d91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa27974981571fd4213c956766027b594"><td class="memItemLeft" align="right" valign="top"><a id="aa27974981571fd4213c956766027b594"></a>
-<a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><b>params_</b></td></tr>
+<tr class="memitem:aa27974981571fd4213c956766027b594"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aa27974981571fd4213c956766027b594">params_</a></td></tr>
 <tr class="separator:aa27974981571fd4213c956766027b594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad6245dafdbf88f156265eaa119c2c2be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6245dafdbf88f156265eaa119c2c2be">&#9670;&nbsp;</a></span>assemble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt; polyfem::assembler::LinearElasticity::assemble </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>computes local stiffness matrix is R^{dim²} for bases i,j </p>
+
+</div>
+</div>
+<a id="afc138971b842cd3a3c2fb981d99524d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc138971b842cd3a3c2fb981d99524d9">&#9670;&nbsp;</a></span>assemble_grad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::assembler::LinearElasticity::assemble_grad </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb8fa53fcee51fd0f099035ebbf5403e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb8fa53fcee51fd0f099035ebbf5403e">&#9670;&nbsp;</a></span>assemble_hessian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::assembler::LinearElasticity::assemble_hessian </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af037a38e01816e98afdc1a64fec544a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af037a38e01816e98afdc1a64fec544a8">&#9670;&nbsp;</a></span>assign_stress_tensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::assign_stress_tensor </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>bs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>gbs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>all_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>all</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>fun</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c58601d856d695594c1a12fcadaebb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c58601d856d695594c1a12fcadaebb3">&#9670;&nbsp;</a></span>compute_dstress_dgradu_multiply_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::compute_dstress_dgradu_multiply_mat </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>global_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>grad_u_i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>mat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>stress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad0fe07ed1a6bfad8453cb77e841be463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0fe07ed1a6bfad8453cb77e841be463">&#9670;&nbsp;</a></span>compute_dstress_dmu_dlambda()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::compute_dstress_dmu_dlambda </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>global_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>grad_u_i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>dstress_dmu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>dstress_dlambda</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a383f8b697bb4ba478f94f3eedd4e5ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a383f8b697bb4ba478f94f3eedd4e5ab3">&#9670;&nbsp;</a></span>compute_energy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::assembler::LinearElasticity::compute_energy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f4f8037ba91825c9d3027a5cc04155e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f4f8037ba91825c9d3027a5cc04155e">&#9670;&nbsp;</a></span>compute_energy_aux()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T polyfem::assembler::LinearElasticity::compute_energy_aux </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
+          <td class="paramname"><em>da</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abaa13e1d3a3b727305199a56c2708dbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaa13e1d3a3b727305199a56c2708dbc">&#9670;&nbsp;</a></span>compute_rhs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; polyfem::assembler::LinearElasticity::compute_rhs </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;&#160;</td>
+          <td class="paramname"><em>pt</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf18ed65098500d77a5e48fe8f908b2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf18ed65098500d77a5e48fe8f908b2b">&#9670;&nbsp;</a></span>compute_stress_tensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::compute_stress_tensor </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>bs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>gbs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>tensor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9ebf6310a4fb9ead16155261b30a3c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9ebf6310a4fb9ead16155261b30a3c1">&#9670;&nbsp;</a></span>compute_von_mises_stresses()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::compute_von_mises_stresses </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>bs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>gbs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>stresses</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac2d418d0b920c97517f4af7735eeba4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2d418d0b920c97517f4af7735eeba4a">&#9670;&nbsp;</a></span>init_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::init_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>Es</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>nus</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c21d8e3de03d6cde3b56691da004c1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c21d8e3de03d6cde3b56691da004c1f">&#9670;&nbsp;</a></span>kernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt; polyfem::assembler::LinearElasticity::kernel </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0a63ac61bc84544071fe5f3458dc5740"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a63ac61bc84544071fe5f3458dc5740">&#9670;&nbsp;</a></span>lame_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a>&amp; polyfem::assembler::LinearElasticity::lame_params </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a03f827ebe001ce25a50f967ddb9ad6ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03f827ebe001ce25a50f967ddb9ad6ce">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ed0d51fb66d2fe3c92d3d4ea7d106ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ed0d51fb66d2fe3c92d3d4ea7d106ca">&#9670;&nbsp;</a></span>set_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::set_params </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d10ce132b69d8a5046481b00fbe47e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d10ce132b69d8a5046481b00fbe47e1">&#9670;&nbsp;</a></span>set_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::LinearElasticity::set_size </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec319cc4d5bd48c7369358fc6c25a76e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec319cc4d5bd48c7369358fc6c25a76e">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::assembler::LinearElasticity::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aa27974981571fd4213c956766027b594"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa27974981571fd4213c956766027b594">&#9670;&nbsp;</a></span>params_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> polyfem::assembler::LinearElasticity::params_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa099f5123c7e619bab818299af289d91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa099f5123c7e619bab818299af289d91">&#9670;&nbsp;</a></span>size_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::assembler::LinearElasticity::size_ = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_linear_elasticity_8hpp_source.html">LinearElasticity.hpp</a></li>
-<li>src/polyfem/assembler/LinearElasticity.cpp</li>
+<li>src/polyfem/assembler/<a class="el" href="_linear_elasticity_8cpp.html">LinearElasticity.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>polyfem</b></li><li class="navelem"><b>assembler</b></li><li class="navelem"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html">LinearElasticity</a></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="namespacepolyfem_1_1assembler.html">assembler</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_elasticity.html">LinearElasticity</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>

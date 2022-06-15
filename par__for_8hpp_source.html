@@ -1,8 +1,9 @@
+<!-- HTML header for doxygen 1.9.2-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PolyFEM: src/polyfem/utils/par_for.hpp Source File</title>
@@ -18,6 +19,20 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeParagraphLink.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,6 +45,23 @@
    </div>
   </td>
  </tr>
+   <!--BEGIN FULL_SIDEBAR-->
+   <tr><td colspan="2">        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+</td></tr>
+   <!--END FULL_SIDEBAR-->
  </tbody>
 </table>
 </div>
@@ -86,44 +118,63 @@ $(document).ready(function(){initNavTree('par__for_8hpp_source.html',''); initRe
 <div class="title">par_for.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<a href="par__for_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>polyfem</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;{</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    <span class="keyword">namespace </span>utils</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    {</div>
 <div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_n_thread.html">   10</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html">NThread</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;            <span class="keywordtype">size_t</span> num_threads;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;            <span class="keyword">static</span> <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html">NThread</a> &amp;get()</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034">   13</a></span>&#160;            <span class="keywordtype">size_t</span> <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034">num_threads</a>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_n_thread.html#ab8f54d77ac734586a5f4153b7800d43a">   14</a></span>&#160;            <span class="keyword">static</span> <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html">NThread</a> &amp;<a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html#ab8f54d77ac734586a5f4153b7800d43a">get</a>()</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                <span class="keyword">static</span> <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html">NThread</a> instance;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                <span class="keywordflow">return</span> instance;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            }</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html">NThread</a>() {}</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_n_thread.html#ae809374670941d44a1d73e8f7ec9bdc0">   21</a></span>&#160;            <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html#ae809374670941d44a1d73e8f7ec9bdc0">NThread</a>() {}</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        };</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordtype">void</span> par_for(<span class="keyword">const</span> <span class="keywordtype">int</span> size, <span class="keyword">const</span> std::function&lt;<span class="keywordtype">void</span>(<span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>)&gt; &amp;func);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keyword">inline</span> <span class="keywordtype">size_t</span> get_n_threads() { <span class="keywordflow">return</span> NThread::get().num_threads; }</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf">par_for</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> size, <span class="keyword">const</span> std::function&lt;<span class="keywordtype">void</span>(<span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>)&gt; &amp;<a class="code" href="namespacep__bases.html#a85cc6a89dd1a82f16ecb6133d551092e">func</a>);</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e">   25</a></span>&#160;        <span class="keyword">inline</span> <span class="keywordtype">size_t</span> <a class="code" href="namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e">get_n_threads</a>() { <span class="keywordflow">return</span> <a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html#ab8f54d77ac734586a5f4153b7800d43a">NThread::get</a>().<a class="code" href="classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034">num_threads</a>; }</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;} <span class="comment">// namespace polyfem</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_n_thread_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_n_thread.html">polyfem::utils::NThread</a></div><div class="ttdef"><b>Definition:</b> par_for.hpp:10</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_n_thread_html_ab8f54d77ac734586a5f4153b7800d43a"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_n_thread.html#ab8f54d77ac734586a5f4153b7800d43a">polyfem::utils::NThread::get</a></div><div class="ttdeci">static NThread &amp; get()</div><div class="ttdef"><b>Definition:</b> par_for.hpp:14</div></div>
+<div class="ttc" id="anamespacep__bases_html_a85cc6a89dd1a82f16ecb6133d551092e"><div class="ttname"><a href="namespacep__bases.html#a85cc6a89dd1a82f16ecb6133d551092e">p_bases.func</a></div><div class="ttdeci">string func</div><div class="ttdef"><b>Definition:</b> p_bases.py:385</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_n_thread_html_ae809374670941d44a1d73e8f7ec9bdc0"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_n_thread.html#ae809374670941d44a1d73e8f7ec9bdc0">polyfem::utils::NThread::NThread</a></div><div class="ttdeci">NThread()</div><div class="ttdef"><b>Definition:</b> par_for.hpp:21</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a3b3a8934d13e48dc3a51ed8efe25e11e"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e">polyfem::utils::get_n_threads</a></div><div class="ttdeci">size_t get_n_threads()</div><div class="ttdef"><b>Definition:</b> par_for.hpp:25</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a38b2b0564e236864bbac36467f5502bf"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf">polyfem::utils::par_for</a></div><div class="ttdeci">void par_for(const int size, const std::function&lt; void(int, int, int)&gt; &amp;func)</div><div class="ttdef"><b>Definition:</b> par_for.cpp:9</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_n_thread_html_ae09a4841c48c335a61ca4978a9234034"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034">polyfem::utils::NThread::num_threads</a></div><div class="ttdeci">size_t num_threads</div><div class="ttdef"><b>Definition:</b> par_for.hpp:13</div></div>
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><b>par_for.hpp</b></li>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="par__for_8hpp.html">par_for.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
 </div>
+<script type="text/javascript">
+  $(function() {
+    toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+    toggleButton.title = "Toggle Light/Dark Mode"
+    $(document).ready(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+    // every resize will remove the button, which is why it has to be added again:
+    $(window).resize(function(){
+      document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+    })
+  })
+</script>
 </body>
 </html>
