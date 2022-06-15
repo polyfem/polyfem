@@ -156,6 +156,7 @@ def PolyFEM_convert(old):
     copy_entry("dhat_percentage", old, j["contact"])
     copy_entry("dhat", old, j["contact"])
     copy_entry("epsv", old, j["contact"])
+    rename_entry("mu", old, "friction_coefficient", j["contact"])
     rename_entry("coeff_friction", old, "friction_coefficient", j["contact"])
 
     # Solver
@@ -184,7 +185,7 @@ def PolyFEM_convert(old):
         rename_entry("use_grad_norm_tol", old["solver_params"],
                      "use_grad_norm_tol", j["solver"]["nonlinear"]["line_search"])
 
-    if old["line_search"] == "bisection":
+    if "line_search" in old and old["line_search"] == "bisection":
         old["line_search"] = "backtracking"
     rename_entry("line_search", old, "method",
                  j["solver"]["nonlinear"]['line_search'])
