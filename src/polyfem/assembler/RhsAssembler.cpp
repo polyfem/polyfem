@@ -39,7 +39,7 @@ namespace polyfem
 		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
 								   const int n_basis, const int size,
 								   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
-								   const std::string &formulation, const problem::Problem &problem,
+								   const std::string &formulation, const Problem &problem,
 								   const std::string bc_method,
 								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
 			: assembler_(assembler), mesh_(mesh), obstacle_(obstacle),

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/utils/InterpolatedFunction.hpp>
 #include <polyfem/utils/RBFInterpolation.hpp>
 
@@ -13,7 +13,7 @@ namespace polyfem
 {
 	namespace problem
 	{
-		class PointBasedTensorProblem : public Problem
+		class PointBasedTensorProblem : public assembler::Problem
 		{
 		private:
 			class BCValue

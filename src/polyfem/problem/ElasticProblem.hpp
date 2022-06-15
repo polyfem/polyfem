@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include "ProblemWithSolution.hpp"
 
 #include <vector>
@@ -10,7 +10,7 @@ namespace polyfem
 {
 	namespace problem
 	{
-		class ElasticProblem : public Problem
+		class ElasticProblem : public assembler::Problem
 		{
 		public:
 			ElasticProblem(const std::string &name);
@@ -26,7 +26,7 @@ namespace polyfem
 			int n_incremental_load_steps(const double diag) const override { return 1 / diag; }
 		};
 
-		class TorsionElasticProblem : public Problem
+		class TorsionElasticProblem : public assembler::Problem
 		{
 		public:
 			TorsionElasticProblem(const std::string &name);
@@ -51,7 +51,7 @@ namespace polyfem
 			RowVectorNd trans_;
 		};
 
-		class DoubleTorsionElasticProblem : public Problem
+		class DoubleTorsionElasticProblem : public assembler::Problem
 		{
 		public:
 			DoubleTorsionElasticProblem(const std::string &name);
@@ -83,7 +83,7 @@ namespace polyfem
 			RowVectorNd trans_1_;
 		};
 
-		class ElasticProblemZeroBC : public Problem
+		class ElasticProblemZeroBC : public assembler::Problem
 		{
 		public:
 			ElasticProblemZeroBC(const std::string &name);
@@ -146,7 +146,7 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 		};
 
-		class GravityProblem : public Problem
+		class GravityProblem : public assembler::Problem
 		{
 		public:
 			GravityProblem(const std::string &name);
@@ -172,7 +172,7 @@ namespace polyfem
 			double force_ = 0.1;
 		};
 
-		class WalkProblem : public Problem
+		class WalkProblem : public assembler::Problem
 		{
 		public:
 			WalkProblem(const std::string &name);

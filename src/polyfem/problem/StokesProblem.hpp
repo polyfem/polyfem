@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include "ProblemWithSolution.hpp"
 
 #include <vector>
@@ -10,7 +10,7 @@ namespace polyfem
 {
 	namespace problem
 	{
-		class TimeDepentendStokesProblem : public Problem
+		class TimeDepentendStokesProblem : public assembler::Problem
 		{
 		public:
 			TimeDepentendStokesProblem(const std::string &name);
@@ -123,7 +123,7 @@ namespace polyfem
 			double U_;
 		};
 
-		class Kovnaszy : public Problem
+		class Kovnaszy : public assembler::Problem
 		{
 		public:
 			Kovnaszy(const std::string &name);
@@ -198,7 +198,7 @@ namespace polyfem
 			int dir_;
 		};
 
-		class TaylorGreenVortexProblem : public Problem
+		class TaylorGreenVortexProblem : public assembler::Problem
 		{
 		public:
 			TaylorGreenVortexProblem(const std::string &name);
@@ -222,7 +222,7 @@ namespace polyfem
 			double viscosity_;
 		};
 
-		class StokesLawProblem : public Problem
+		class StokesLawProblem : public assembler::Problem
 		{
 		public:
 			StokesLawProblem(const std::string &name);
@@ -247,7 +247,7 @@ namespace polyfem
 			bool is_time_dependent_;
 		};
 
-		class Airfoil : public Problem
+		class Airfoil : public assembler::Problem
 		{
 		public:
 			Airfoil(const std::string &name);
@@ -300,7 +300,7 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 		};
 
-		class TransientStokeProblemExact : public Problem
+		class TransientStokeProblemExact : public assembler::Problem
 		{
 		public:
 			TransientStokeProblemExact(const std::string &name);

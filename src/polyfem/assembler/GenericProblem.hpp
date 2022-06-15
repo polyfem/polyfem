@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/problem/Problem.hpp>
+#include "Problem.hpp"
 #include <polyfem/utils/ExpressionValue.hpp>
 
 #include <Eigen/Dense>
@@ -10,8 +10,7 @@
 
 namespace polyfem
 {
-	//MOVE TO ASSEMBLER
-	namespace problem
+	namespace assembler
 	{
 		class Interpolation
 		{
@@ -202,5 +201,5 @@ namespace polyfem
 			bool has_exact_grad_ = false;
 			bool is_time_dept_ = false;
 		};
-	} // namespace problem
+	} // namespace assembler
 } // namespace polyfem

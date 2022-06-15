@@ -8,7 +8,7 @@ namespace polyfem
 {
 	using namespace utils;
 
-	namespace problem
+	namespace assembler
 	{
 		std::shared_ptr<Interpolation> Interpolation::build(const json &params)
 		{
@@ -1319,5 +1319,5 @@ namespace polyfem
 			has_exact_grad_ = false;
 			is_time_dept_ = false;
 		}
-	} // namespace problem
+	} // namespace assembler
 } // namespace polyfem

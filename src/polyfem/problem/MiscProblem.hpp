@@ -69,7 +69,7 @@ namespace polyfem
 			bool is_scalar() const override { return true; }
 		};
 
-		class MinSurfProblem : public Problem
+		class MinSurfProblem : public assembler::Problem
 		{
 		public:
 			MinSurfProblem(const std::string &name);
@@ -83,7 +83,7 @@ namespace polyfem
 			bool has_exact_sol() const override { return false; }
 		};
 
-		class TimeDependentProblem : public Problem
+		class TimeDependentProblem : public assembler::Problem
 		{
 		public:
 			TimeDependentProblem(const std::string &name);

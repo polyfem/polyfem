@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/utils/AutodiffTypes.hpp>
@@ -9,7 +9,7 @@ namespace polyfem
 {
 	namespace problem
 	{
-		class ProblemWithSolution : public Problem
+		class ProblemWithSolution : public assembler::Problem
 		{
 		public:
 			ProblemWithSolution(const std::string &name);
@@ -33,7 +33,7 @@ namespace polyfem
 			virtual int size_for(const Eigen::MatrixXd &pts) const { return is_scalar() ? 1 : pts.cols(); }
 		};
 
-		class BilaplacianProblemWithSolution : public Problem
+		class BilaplacianProblemWithSolution : public assembler::Problem
 		{
 		public:
 			BilaplacianProblemWithSolution(const std::string &name);

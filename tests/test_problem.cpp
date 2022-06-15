@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/Common.hpp>
 

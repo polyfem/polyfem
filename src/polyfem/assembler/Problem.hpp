@@ -1,7 +1,8 @@
 #pragma once
 
+#include "AssemblerUtils.hpp"
+
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 
@@ -13,7 +14,7 @@
 
 namespace polyfem
 {
-	namespace problem
+	namespace assembler
 	{
 		class Problem
 		{
@@ -76,19 +77,5 @@ namespace polyfem
 		private:
 			std::string name_;
 		};
-
-		class ProblemFactory
-		{
-		public:
-			static const ProblemFactory &factory();
-
-			std::shared_ptr<Problem> get_problem(const std::string &problem) const;
-			inline const std::vector<std::string> &get_problem_names() const { return problem_names_; }
-
-		private:
-			ProblemFactory();
-			std::map<std::string, std::function<std::shared_ptr<Problem>()>> problems_;
-			std::vector<std::string> problem_names_;
-		};
-	} // namespace problem
+	} // namespace assembler
 } // namespace polyfem

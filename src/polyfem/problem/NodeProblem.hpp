@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/utils/InterpolatedFunction.hpp>
 #include <polyfem/utils/RBFInterpolation.hpp>
 
@@ -39,7 +39,7 @@ namespace polyfem
 			std::vector<bool> dirichlet_;
 		};
 
-		class NodeProblem : public Problem
+		class NodeProblem : public assembler::Problem
 		{
 		public:
 			NodeProblem(const std::string &name);
