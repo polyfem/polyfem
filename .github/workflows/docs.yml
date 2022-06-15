@@ -13,12 +13,12 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # - name: Checkout repository
+      #   uses: actions/checkout@v3
 
-      - name: Install Doxygen
-        run: sudo apt-get update; sudo apt-get install doxygen -y
-        shell: bash
+      # - name: Install Doxygen
+      #   run: sudo apt-get update; sudo apt-get install doxygen -y
+      #   shell: bash
 
       # - name: Configure
       #   run: |
@@ -40,22 +40,22 @@ jobs:
       # - name: Build
       #   run: cd build; make -j2
 
-      - name: Building Docs
-        run: doxygen Doxyfile
+      # - name: Building Docs
+      #   run: doxygen Doxyfile
 
-      - name: Create .nojekyll
-        run: touch docs/html/.nojekyll
+      # - name: Create .nojekyll
+      #   run: touch docs/html/.nojekyll
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages # The branch the action should deploy to.
-          folder: docs/html # The folder the action should deploy.
-      
-      # - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+      # - name: Deploy
+      #   uses: JamesIves/github-pages-deploy-action@v4.3.3
       #   with:
       #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: gh-pages
-      #     folder: docs/html
-      #     config_file: Doxyfile
+      #     branch: gh-pages # The branch the action should deploy to.
+      #     folder: docs/html # The folder the action should deploy.
+      
+      - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs/html
+          config_file: Doxyfile
