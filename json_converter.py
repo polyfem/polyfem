@@ -401,6 +401,8 @@ def PolyFEM_convert(old):
 
     if "boundary_sidesets" in old:
         for t in j["geometry"]:
+            if "is_obstacle" in t and t["is_obstacle"]:
+                    continue
             t["surface_selection"] = []
 
         for o in old["boundary_sidesets"]:
@@ -409,6 +411,8 @@ def PolyFEM_convert(old):
                 copy_entry(entry, o, n)
 
             for t in j["geometry"]:
+                if "is_obstacle" in t and t["is_obstacle"]:
+                    continue
                 t["surface_selection"].append(n)
 
     remove_empty_dicts_from_dict(j)
