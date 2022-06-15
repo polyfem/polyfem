@@ -110,7 +110,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 			}],
 
 			"space":{
-				"discr_order": 5,
+				"discr_order": 2,
 				"advanced": {
 					"isoparametric": false,
 					"bc_method": "sample"
@@ -120,15 +120,15 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 			"boundary_conditions": {
 				"dirichlet_boundary": [{
 					"id": "all",
-					"value": "x^5+y^5+z^5"
+					"value": "x^2+y^2+z^2"
 				}],
-				"rhs": "20*x^3+20*y^3+20*z^3"
+				"rhs": 6
 			},
 
 			"output": {
 				"reference": {
-					"solution": "x^5+y^5+z^5",
-					"gradient": ["5*x^4","5*y^4","5*z^4"]
+					"solution": "x^2+y^2+z^2",
+					"gradient": ["2*x","2*y","2*z"]
 				},
 				"paraview": {
 					"high_order_mesh": false
@@ -144,8 +144,8 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-186.msh";
 
-	State state(8);
-	state.init_logger("", 1, false);
+	State state;
+	state.init_logger("", 6, false);
 	state.init(in_args);
 
 	state.load_mesh(true);
@@ -170,7 +170,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	state.solve_problem();
 	state.compute_errors();
 
-	state.save_vtu("debug.vtu", 1.);
+	// state.save_vtu("debug.vtu", 1.);
 
 	REQUIRE(fabs(state.h1_semi_err) < 1e-7);
 	REQUIRE(fabs(state.l2_err) < 1e-8);

@@ -1568,8 +1568,10 @@ int FEBasis3d::build_bases(
 			{
 				if (bucket.size() == 0)
 					continue;
-				for (const int e : bucket)
+				polyfem::utils::maybe_parallel_for((int)bucket.size(), [&](int start, int end, int thread_id) {
+				for (int e_aux = start; e_aux < end; e_aux++)
 				{
+					const int e = bucket[e_aux];
 					ElementBases &b = bases[e];
 					const int discr_order = discr_orders(e);
 					const int n_edge_nodes = discr_order - 1;
@@ -1968,6 +1970,7 @@ int FEBasis3d::build_bases(
 						}
 					}
 				}
+				});
 			}
 		}
 		else {
