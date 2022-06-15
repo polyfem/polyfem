@@ -1,48 +1,39 @@
 #pragma once
 
+#include "Form.hpp"
+
+#include <polyfem/State.hpp>
+
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/collision_mesh.hpp>
+#include <ipc/friction/friction_constraint.hpp>
 
 namespace polyfem
 {
 	namespace solver
 	{
-		class FrictionForm
+		class FrictionForm : public Form
 		{
 		public:
-			FrictionForm(const double epsv, const double mu, const ipc::CollisionMesh &collision_mesh);
+			FrictionForm(const State &state, const double epsv, const double mu, const double dt, const ipc::CollisionMesh &collision_mesh);
 
-			virtual void init(const Eigen::VectorXd &displacement) {}
+			double value(const Eigen::VectorXd &x) override;
+			void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+			void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
-			virtual double value(const Eigen::VectorXd &x) = 0;
-			virtual void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
-			virtual void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) { hessian.resize(0, 0); }
-
-			virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
-			virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
-
-			virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
-			virtual void line_search_end() {}
-
-			virtual void post_step(const int iter_num, const Eigen::VectorXd &x) {}
-
-			virtual void solution_changed(const Eigen::VectorXd &newX){};
-
-			virtual void update_quantities(const double t, const Eigen::VectorXd &x) = 0;
-
-			//more than one step?
-			virtual void init_lagging(const Eigen::VectorXd &x){};
-			virtual void update_lagging(const Eigen::VectorXd &x){};
-
-			void set_project_to_psd(bool val) { project_to_psd_ = val; }
-			bool is_project_to_psd() const { return project_to_psd_; }
+			void init_lagging(const Eigen::VectorXd &x) override;
+			void update_lagging(const Eigen::VectorXd &x) override;
 
 		private:
 			const double epsv_;
 			const double mu_;
+			const double dt_;
 			const ipc::CollisionMesh &collision_mesh_;
 			ipc::FrictionConstraints friction_constraint_set_;
+			Eigen::MatrixXd displaced_prev_; ///< @brief Displaced vertices at the start of the time-step.
+
+			const State &state_;
 		};
 	} // namespace solver
 } // namespace polyfem
