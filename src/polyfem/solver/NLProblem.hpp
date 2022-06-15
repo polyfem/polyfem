@@ -194,7 +194,7 @@ namespace polyfem
 			double _ccd_tolerance;
 			int _ccd_max_iterations;
 
-			const double &dt() const
+			const double dt() const
 			{
 				if (_time_integrator)
 				{
