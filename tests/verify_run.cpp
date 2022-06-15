@@ -88,7 +88,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	size_t max_threads = std::numeric_limits<size_t>::max();
 
 	State state(max_threads);
-	state.init_logger("", 2, false);
+	state.init_logger("", 0, false);
 	state.init(args, "");
 	state.load_mesh();
 
