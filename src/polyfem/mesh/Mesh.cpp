@@ -95,11 +95,10 @@ std::unique_ptr<Mesh> Mesh::create(const std::string &path, const bool non_confo
 				mesh = std::make_unique<NCMesh2D>();
 			else
 				mesh = std::make_unique<CMesh2D>();
+		else if (non_conforming)
+			mesh = std::make_unique<NCMesh3D>();
 		else
-			if (non_conforming)
-				mesh = std::make_unique<NCMesh3D>();
-			else
-				mesh = std::make_unique<CMesh3D>();
+			mesh = std::make_unique<CMesh3D>();
 
 		mesh->build_from_matrices(vertices, cells);
 		// Only tris and tets
@@ -198,14 +197,14 @@ bool Mesh::is_spline_compatible(const int el_id) const
 	if (is_volume())
 	{
 		return elements_tag_[el_id] == ElementType::RegularInteriorCube
-			|| elements_tag_[el_id] == ElementType::RegularBoundaryCube;
+			   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
 		// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
 		// || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 	}
 	else
 	{
 		return elements_tag_[el_id] == ElementType::RegularInteriorCube
-			|| elements_tag_[el_id] == ElementType::RegularBoundaryCube;
+			   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
 		// || elements_tag_[el_id] == ElementType::InterfaceCube
 		// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
 	}
@@ -216,12 +215,12 @@ bool Mesh::is_spline_compatible(const int el_id) const
 bool Mesh::is_cube(const int el_id) const
 {
 	return elements_tag_[el_id] == ElementType::InterfaceCube
-		|| elements_tag_[el_id] == ElementType::RegularInteriorCube
-		|| elements_tag_[el_id] == ElementType::RegularBoundaryCube
-		|| elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
-		|| elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube
-		|| elements_tag_[el_id] == ElementType::MultiSingularInteriorCube
-		|| elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+		   || elements_tag_[el_id] == ElementType::RegularInteriorCube
+		   || elements_tag_[el_id] == ElementType::RegularBoundaryCube
+		   || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
+		   || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube
+		   || elements_tag_[el_id] == ElementType::MultiSingularInteriorCube
+		   || elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
 }
 
 // -----------------------------------------------------------------------------
@@ -229,7 +228,7 @@ bool Mesh::is_cube(const int el_id) const
 bool Mesh::is_polytope(const int el_id) const
 {
 	return elements_tag_[el_id] == ElementType::InteriorPolytope
-		|| elements_tag_[el_id] == ElementType::BoundaryPolytope;
+		   || elements_tag_[el_id] == ElementType::BoundaryPolytope;
 }
 
 void Mesh::load_boundary_ids(const std::string &path)

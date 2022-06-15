@@ -874,7 +874,8 @@ int FEBasis2d::build_bases(
 		}
 
 #ifndef NDEBUG
-		if (mesh.is_conforming()) {
+		if (mesh.is_conforming())
+		{
 			Eigen::MatrixXd uv(4, 2);
 			uv << 0.1, 0.1, 0.3, 0.3, 0.9, 0.01, 0.01, 0.9;
 			Eigen::MatrixXd dx(4, 1);
