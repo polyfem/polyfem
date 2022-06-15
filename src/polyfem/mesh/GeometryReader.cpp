@@ -230,7 +230,7 @@ namespace polyfem::mesh
 					const int id = complete_geometry["surface_selection"];
 					for (const json &disp : displacements)
 					{
-						if (displacement["id"].get<int>() == id)
+						if (disp["id"].get<int>() == id)
 						{
 							displacement = disp;
 							break;
