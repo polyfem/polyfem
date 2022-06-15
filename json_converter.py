@@ -104,7 +104,7 @@ def PolyFEM_convert(old):
                 n["surface_selection"] = 1000 + i
                 j["boundary_conditions"]["obstacle_displacements"].append({
                     "id": 1000 + i,
-                    "displacement": o["displacement"]
+                    "value": o["displacement"]
                 })
 
             j["geometry"].append(n)
