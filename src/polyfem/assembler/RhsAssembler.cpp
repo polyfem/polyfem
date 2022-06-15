@@ -641,34 +641,6 @@ namespace polyfem
 			obstacle_.update_displacement(t, rhs);
 		}
 
-		// void RhsAssembler::set_velocity_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
-		// {
-		// 	set_bc(
-		// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
-		// 			problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val);
-		// 		},
-		// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
-		// 			problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val);
-		// 		},
-		// 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
-
-		// 	obstacle_.set_zero(rhs);
-		// }
-
-		// void RhsAssembler::set_acceleration_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
-		// {
-		// 	set_bc(
-		// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
-		// 			problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val);
-		// 		},
-		// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
-		// 			problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val);
-		// 		},
-		// 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
-
-		// 	obstacle_.set_zero(rhs);
-		// }
-
 		void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
 		{
 			if (problem_.is_constant_in_time())

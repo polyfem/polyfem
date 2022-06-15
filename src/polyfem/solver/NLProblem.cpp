@@ -231,9 +231,6 @@ namespace polyfem
 				if (!ignore_inertia)
 					_time_integrator->update_quantities(x);
 
-				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, velocity, t);
-				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, acceleration, t);
-
 				rhs_computed = false;
 				this->t = t;
 
@@ -250,9 +247,6 @@ namespace polyfem
 			{
 				rhs_computed = false;
 				this->t = t;
-
-				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, velocity, t);
-				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, acceleration, t);
 			}
 		}
 

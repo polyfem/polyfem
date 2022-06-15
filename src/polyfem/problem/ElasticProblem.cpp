@@ -128,15 +128,6 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void DoubleTorsionElasticProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-		void DoubleTorsionElasticProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
 		void DoubleTorsionElasticProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
@@ -538,16 +529,6 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void GravityProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void GravityProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
 		void GravityProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
@@ -585,16 +566,6 @@ namespace polyfem
 				else if (mesh.get_boundary_id(global_ids(i)) == 2)
 					val(i, 2) = -0.2 * sin(t);
 			}
-		}
-
-		void WalkProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void WalkProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
 		void WalkProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const

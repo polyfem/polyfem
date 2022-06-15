@@ -22,8 +22,6 @@ namespace polyfem
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
-
-			int n_incremental_load_steps(const double diag) const override { return 1 / diag; }
 		};
 
 		class TorsionElasticProblem : public assembler::Problem
@@ -42,8 +40,6 @@ namespace polyfem
 
 			void set_parameters(const json &params) override;
 
-			int n_incremental_load_steps(const double diag) const override { return 10 * n_turns_; }
-
 		private:
 			double n_turns_ = 0.5;
 			int coordiante_0_ = 0;
@@ -60,8 +56,6 @@ namespace polyfem
 			bool is_rhs_zero() const override { return true; }
 
 			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -94,8 +88,6 @@ namespace polyfem
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
-
-			int n_incremental_load_steps(const double diag) const override { return 2 / diag; }
 		};
 
 		class ElasticProblemExact : public ProblemWithSolution
@@ -155,8 +147,6 @@ namespace polyfem
 			bool is_rhs_zero() const override { return false; }
 
 			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -181,8 +171,6 @@ namespace polyfem
 			bool is_rhs_zero() const override { return true; }
 
 			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -192,8 +180,6 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 			bool is_time_dependent() const override { return true; }
 			bool is_constant_in_time() const override { return false; }
-
-			int n_incremental_load_steps(const double diag) const override { return 1 / diag; }
 		};
 	} // namespace problem
 } // namespace polyfem
