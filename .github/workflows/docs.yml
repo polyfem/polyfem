@@ -35,7 +35,7 @@ jobs:
             -DPOLYSOLVE_WITH_SUPERLU=OFF \
             -DPOLYSOLVE_WITH_MKL=OFF     \ 
             -DPOLYSOLVE_WITH_HYPRE=OFF   \
-            -DPOLYSOLVE_WITH_AMGCL=OFF   \
+            -DPOLYSOLVE_WITH_AMGCL=OFF   
 
       - name: Build
         run: cd build; make -j2
