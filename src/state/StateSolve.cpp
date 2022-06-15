@@ -821,7 +821,7 @@ namespace polyfem
 		}
 	}
 
-	int State::remove_pure_neumann_singularity(StiffnessMatrix &A, Eigen::VectorXd &b)
+	int State::remove_pure_neumann_singularity(StiffnessMatrix &A)
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const auto& gbases = iso_parametric() ? bases : geom_bases;
@@ -879,8 +879,6 @@ namespace polyfem
 			StiffnessMatrix A_extended(A.rows()+1, A.cols()+1);
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
-
-			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 
 			return 1;
 		}
@@ -1024,8 +1022,6 @@ namespace polyfem
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
 
-			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
-
 			return 3 * (problem_dim - 1);
 		}
 		else if (formulation() == "Stokes" || formulation() == "NavierStokes")
@@ -1091,8 +1087,6 @@ namespace polyfem
 			StiffnessMatrix A_extended(A.rows() + problem_dim, A.cols() + problem_dim);
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
-
-			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 
 			return problem_dim;
 		}
@@ -1187,7 +1181,8 @@ namespace polyfem
 		if (boundary_nodes_tmp.size() == 0)
 		{
 			logger().info("Pure Neumann boundary condition, use Lagrange multiplier to find unique solution...");
-			n_lagrange_multiplier = remove_pure_neumann_singularity(A, b);
+			n_lagrange_multiplier = remove_pure_neumann_singularity(A);
+			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 		}
 		
 		spectrum = dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);

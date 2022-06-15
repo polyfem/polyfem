@@ -392,7 +392,7 @@ namespace polyfem
 		void solve_problem();
 
 		//add lagrangian multiplier rows for pure neumann boundary condition, returns the number of rows added
-		int remove_pure_neumann_singularity(StiffnessMatrix &A, Eigen::VectorXd &b);
+		int remove_pure_neumann_singularity(StiffnessMatrix &A);
 
 		//timedependent stuff cached
 		StepData step_data;
