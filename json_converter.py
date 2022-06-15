@@ -184,6 +184,8 @@ def PolyFEM_convert(old):
         rename_entry("use_grad_norm_tol", old["solver_params"],
                      "use_grad_norm_tol", j["solver"]["nonlinear"]["line_search"])
 
+    if old["line_search"] == "bisection":
+        old["line_search"] = "backtracking"
     rename_entry("line_search", old, "method",
                  j["solver"]["nonlinear"]['line_search'])
 
