@@ -1,5 +1,13 @@
 var NAVTREEINDEX9 =
 {
+"classpolyfem_1_1problem_1_1_flow.html#aa7b2becf1c156ba24b72a043e4bcd248":[7,0,3,3,13,9],
+"classpolyfem_1_1problem_1_1_flow.html#aaef29d2a46bcf138414def8f0936f4ac":[7,0,3,3,13,7],
+"classpolyfem_1_1problem_1_1_flow.html#ab0a4414cc6c6c8a9ffca6429fe9ae5d6":[7,0,3,3,13,0],
+"classpolyfem_1_1problem_1_1_flow.html#aca7c1bd6b3aa63be6c6d0210395a951a":[7,0,3,3,13,8],
+"classpolyfem_1_1problem_1_1_flow_with_obstacle.html":[7,0,3,3,14],
+"classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a18e71fe7888fb04c0205aededd77640d":[7,0,3,3,14,4],
+"classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a883bf1709534c5e9cc0d67c264291a38":[7,0,3,3,14,5],
+"classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a8940ab850f438a39ccdc3586e5255b7b":[7,0,3,3,14,1],
 "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a8b2cf255fb3cc83c2055b51b5337fe4e":[7,0,3,3,14,2],
 "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#abe5afbea661799f34e65576a658d2d89":[7,0,3,3,14,3],
 "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#ac080406f0f0c82276d82cfd85bba334a":[7,0,3,3,14,0],
@@ -241,13 +249,5 @@ var NAVTREEINDEX9 =
 "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#abb72db62f188f3d2bc481fa46edd8a18":[7,0,3,3,36,5],
 "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ace99069135e004b01402fa82a82d3a87":[7,0,3,3,36,8],
 "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ad098b917beacfa33f60d855c76c947f8":[7,0,3,3,36,9],
-"classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ad9ea5e46b905708f8c053fc943d44e21":[7,0,3,3,36,4],
-"classpolyfem_1_1problem_1_1_test_problem.html":[7,0,3,3,37],
-"classpolyfem_1_1problem_1_1_test_problem.html#a78c36d59aa1dfdd32722bf18e032302c":[7,0,3,3,37,4],
-"classpolyfem_1_1problem_1_1_test_problem.html#a8655aef3b0f5d0e560932944ba2b85c8":[7,0,3,3,37,3],
-"classpolyfem_1_1problem_1_1_test_problem.html#a91581ba244cec3bbc5522b98e6a5d7e0":[7,0,3,3,37,5],
-"classpolyfem_1_1problem_1_1_test_problem.html#a96709d9103691801a3f56436f9065bc0":[7,0,3,3,37,2],
-"classpolyfem_1_1problem_1_1_test_problem.html#a972665b55983e0e6efba57c3aea49a94":[7,0,3,3,37,0],
-"classpolyfem_1_1problem_1_1_test_problem.html#a9ddc7c5cd93e2b401db4204c0f11e62e":[7,0,3,3,37,7],
-"classpolyfem_1_1problem_1_1_test_problem.html#aa221d0f2fe20780d1c39aace03c84199":[7,0,3,3,37,1]
+"classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#ad9ea5e46b905708f8c053fc943d44e21":[7,0,3,3,36,4]
 };

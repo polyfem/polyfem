@@ -133,8 +133,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afed96a4e6a29cd5169c97bda9ca9a1e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#afed96a4e6a29cd5169c97bda9ca9a1e7">append_mesh</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::VectorXi &amp;codim_vertices, const Eigen::MatrixXi &amp;codim_edges, const Eigen::MatrixXi &amp;faces)</td></tr>
-<tr class="separator:afed96a4e6a29cd5169c97bda9ca9a1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82674621defd206a482a2842c33935e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a82674621defd206a482a2842c33935e5">append_mesh</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::VectorXi &amp;codim_vertices, const Eigen::MatrixXi &amp;codim_edges, const Eigen::MatrixXi &amp;faces, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;displacement)</td></tr>
+<tr class="separator:a82674621defd206a482a2842c33935e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a129cf729ea7db45f58ee5cf107301670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a129cf729ea7db45f58ee5cf107301670">append_plane</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;origin, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;normal)</td></tr>
 <tr class="separator:a129cf729ea7db45f58ee5cf107301670"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a030857d0f71ae2a88692d988fab8db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a> () const</td></tr>
@@ -202,8 +202,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a14aadf9d021f34032e52291a0a0a262d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="afed96a4e6a29cd5169c97bda9ca9a1e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afed96a4e6a29cd5169c97bda9ca9a1e7">&#9670;&nbsp;</a></span>append_mesh()</h2>
+<a id="a82674621defd206a482a2842c33935e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82674621defd206a482a2842c33935e5">&#9670;&nbsp;</a></span>append_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -230,7 +230,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>faces</em>&#160;</td>
+          <td class="paramname"><em>faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

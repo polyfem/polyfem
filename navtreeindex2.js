@@ -1,5 +1,14 @@
 var NAVTREEINDEX2 =
 {
+"_saint_venant_elasticity_8cpp.html":[8,0,0,0,0,37],
+"_saint_venant_elasticity_8hpp.html":[8,0,0,0,0,38],
+"_saint_venant_elasticity_8hpp_source.html":[8,0,0,0,0,38],
+"_selection_8cpp.html":[8,0,0,0,9,41],
+"_selection_8hpp.html":[8,0,0,0,9,42],
+"_selection_8hpp_source.html":[8,0,0,0,9,42],
+"_singularities_8cpp.html":[8,0,0,0,3,0,12],
+"_singularities_8hpp.html":[8,0,0,0,3,0,13],
+"_singularities_8hpp.html#a6c2f88605218d9c84cb80764dd0887db":[8,0,0,0,3,0,13,0],
 "_singularities_8hpp.html#a78a20bc192a325efd376142bae8605c0":[8,0,0,0,3,0,13,3],
 "_singularities_8hpp.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867":[8,0,0,0,3,0,13,1],
 "_singularities_8hpp.html#aeb087429296c4e79bd346db0fce81ec5":[8,0,0,0,3,0,13,2],
@@ -240,14 +249,5 @@ var NAVTREEINDEX2 =
 "classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3":[7,0,0,2,6],
 "classes.html":[7,1],
 "classp__bases_1_1_lagrange.html":[7,0,2,0],
-"classp__bases_1_1_lagrange.html#a04e32b1aa59b0068c7c054f975371809":[7,0,2,0,5],
-"classp__bases_1_1_lagrange.html#a081c397de8ed3299f57e0a99cc84cfd5":[7,0,2,0,6],
-"classp__bases_1_1_lagrange.html#a27cb3499317e4f48e28666ea44d8c5be":[7,0,2,0,1],
-"classp__bases_1_1_lagrange.html#a2aa24d0d4233c46d69fddf025e494ef2":[7,0,2,0,3],
-"classp__bases_1_1_lagrange.html#a46769603e076f2b6d354e467d06cbab2":[7,0,2,0,2],
-"classp__bases_1_1_lagrange.html#a9714dc533a0108d8aa857bf353a21279":[7,0,2,0,4],
-"classp__bases_1_1_lagrange.html#abe47c9933a83cf25f3cec39779c1dc39":[7,0,2,0,0],
-"classp__bases_1_1_reference_simplex.html":[7,0,2,1],
-"classp__bases_1_1_reference_simplex.html#a045c2786d4bbea30dfc27ea756084490":[7,0,2,1,2],
-"classp__bases_1_1_reference_simplex.html#a376f78980ae5ef05be3de2f6c7e5f5be":[7,0,2,1,1]
+"classp__bases_1_1_lagrange.html#a04e32b1aa59b0068c7c054f975371809":[7,0,2,0,5]
 };

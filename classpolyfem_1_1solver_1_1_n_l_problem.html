@@ -152,7 +152,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0bae74f90398afec78d722203319a166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac674f4ac254842dd60cf786e42d8bb90"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ac674f4ac254842dd60cf786e42d8bb90">init</a> (const TVector &amp;displacement)</td></tr>
 <tr class="separator:ac674f4ac254842dd60cf786e42d8bb90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4159cc9e45d3d9c366a77a5315de9e6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a4159cc9e45d3d9c366a77a5315de9e6c">init_time_integrator</a> (const TVector &amp;x_prev, const TVector &amp;v_prev, const TVector &amp;a_prev, const double <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a19178fcb765d285fff75653b343b7370">dt</a>)</td></tr>
+<tr class="memitem:a4159cc9e45d3d9c366a77a5315de9e6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a4159cc9e45d3d9c366a77a5315de9e6c">init_time_integrator</a> (const TVector &amp;x_prev, const TVector &amp;v_prev, const TVector &amp;a_prev, const double <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a6b2d9637d06bc6858f5ad0a9f20f95a7">dt</a>)</td></tr>
 <tr class="separator:a4159cc9e45d3d9c366a77a5315de9e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf977a037ecdecf93c79fcc4cdb4679f"><td class="memItemLeft" align="right" valign="top">TVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#aaf977a037ecdecf93c79fcc4cdb4679f">initial_guess</a> ()</td></tr>
 <tr class="separator:aaf977a037ecdecf93c79fcc4cdb4679f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -257,8 +257,8 @@ Protected Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a19178fcb765d285fff75653b343b7370"><td class="memItemLeft" align="right" valign="top">const double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a19178fcb765d285fff75653b343b7370">dt</a> () const</td></tr>
-<tr class="separator:a19178fcb765d285fff75653b343b7370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2d9637d06bc6858f5ad0a9f20f95a7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a6b2d9637d06bc6858f5ad0a9f20f95a7">dt</a> () const</td></tr>
+<tr class="separator:a6b2d9637d06bc6858f5ad0a9f20f95a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7041ba4b4face5e45297787dea2b0204"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a7041ba4b4face5e45297787dea2b0204">compute_cached_stiffness</a> ()</td></tr>
 <tr class="separator:a7041ba4b4face5e45297787dea2b0204"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a149dffd78e2d408e505715f1060d7d17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a149dffd78e2d408e505715f1060d7d17">update_barrier_stiffness</a> (const TVector &amp;full)</td></tr>
@@ -527,8 +527,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a19178fcb765d285fff75653b343b7370"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19178fcb765d285fff75653b343b7370">&#9670;&nbsp;</a></span>dt()</h2>
+<a id="a6b2d9637d06bc6858f5ad0a9f20f95a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b2d9637d06bc6858f5ad0a9f20f95a7">&#9670;&nbsp;</a></span>dt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -537,7 +537,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const double&amp; polyfem::solver::NLProblem::dt </td>
+          <td class="memname">double polyfem::solver::NLProblem::dt </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>

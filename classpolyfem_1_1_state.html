@@ -157,15 +157,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a> (bool non_conforming=false, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;())</td></tr>
 <tr class="separator:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">load_febio</a> (const std::string &amp;path, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;args_in)</td></tr>
+<tr class="memdesc:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads a febio file, uses args_in for default  <a href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">More...</a><br /></td></tr>
 <tr class="separator:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d7e06f66912cc77b1d942340211ddb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9">load_mesh</a> (GEO::Mesh &amp;meshin, const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;)&gt; &amp;boundary_marker, bool non_conforming=false, bool skip_boundary_sideset=false)</td></tr>
 <tr class="separator:a2d7e06f66912cc77b1d942340211ddb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d83cd55d701dbf47e23fb868b813d39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9d83cd55d701dbf47e23fb868b813d39">load_mesh</a> (const std::string &amp;path, bool non_conforming=false)</td></tr>
+<tr class="memdesc:a9d83cd55d701dbf47e23fb868b813d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads a mesh from a path  <a href="classpolyfem_1_1_state.html#a9d83cd55d701dbf47e23fb868b813d39">More...</a><br /></td></tr>
 <tr class="separator:a9d83cd55d701dbf47e23fb868b813d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae7bad570019d2830221abc13cafe54a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#aae7bad570019d2830221abc13cafe54a">load_mesh</a> (const std::string &amp;path, const std::string &amp;bc_tag, bool non_conforming=false)</td></tr>
 <tr class="separator:aae7bad570019d2830221abc13cafe54a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ce16a4580b29c071e8fd84fbada3497"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497">load_mesh</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, bool non_conforming=false)</td></tr>
+<tr class="memdesc:a4ce16a4580b29c071e8fd84fbada3497"><td class="mdescLeft">&#160;</td><td class="mdescRight">load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)  <a href="classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497">More...</a><br /></td></tr>
 <tr class="separator:a4ce16a4580b29c071e8fd84fbada3497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d904b274f338bfa96d3110531cc0aa7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7">reset_mesh</a> ()</td></tr>
+<tr class="separator:a6d904b274f338bfa96d3110531cc0aa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73346b44da0cc930e1f7375cd7ce965a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a73346b44da0cc930e1f7375cd7ce965a">set_multimaterial</a> (const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;)&gt; &amp;setter)</td></tr>
 <tr class="separator:a73346b44da0cc930e1f7375cd7ce965a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99fb2c04916c701c3ca3575b2acf67df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a99fb2c04916c701c3ca3575b2acf67df">set_boundary_side_set</a> (const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;)&gt; &amp;boundary_marker)</td></tr>
@@ -284,10 +289,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af84842569273a14d7c60343dfa811dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6104e9293c455944ea50e561af48219b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a6104e9293c455944ea50e561af48219b">get_sampled_mises_avg</a> (Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;tfun, bool boundary_only=false)</td></tr>
 <tr class="separator:a6104e9293c455944ea50e561af48219b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a9db82a02ef79bc230982958f1d26d4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9a9db82a02ef79bc230982958f1d26d4">mesh_path</a> () const</td></tr>
-<tr class="separator:a9a9db82a02ef79bc230982958f1d26d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b8c1230b4b2c179d56f6fd290fc78e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a8b8c1230b4b2c179d56f6fd290fc78e1">has_mesh</a> () const</td></tr>
-<tr class="separator:a8b8c1230b4b2c179d56f6fd290fc78e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0acd0b93140ea778ac836ee0a1a29dfd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd">formulation</a> () const</td></tr>
 <tr class="separator:a0acd0b93140ea778ac836ee0a1a29dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab956f7e3ad92b7ffc1ca1a45ee47903f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f">iso_parametric</a> () const</td></tr>
@@ -1344,31 +1345,6 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8b8c1230b4b2c179d56f6fd290fc78e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b8c1230b4b2c179d56f6fd290fc78e1">&#9670;&nbsp;</a></span>has_mesh()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool polyfem::State::has_mesh </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a1649c010ebecb92f2b8089619f3dbacb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1649c010ebecb92f2b8089619f3dbacb">&#9670;&nbsp;</a></span>init()</h2>
 
@@ -2067,6 +2043,8 @@ Private Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>loads a febio file, uses args_in for default </p>
+
 </div>
 </div>
 <a id="a37cc0825d6cd66410b5c1a0c46778a9f"></a>
@@ -2149,6 +2127,8 @@ Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2) </p>
+
 </div>
 </div>
 <a id="a9d83cd55d701dbf47e23fb868b813d39"></a>
@@ -2184,6 +2164,8 @@ Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>loads a mesh from a path </p>
 
 </div>
 </div>
@@ -2226,6 +2208,7 @@ Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>loads a mesh from a path and uses the bc_tag to assign sideset ids the bc_tag file should contain a list of integers, one per face </p>
 
 </div>
 </div>
@@ -2266,6 +2249,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset the input of the lambda is the face barycenter, the output is the sideset id </p>
 
 </div>
 </div>
@@ -2284,31 +2268,6 @@ template&lt;typename ProblemType &gt; </div>
           <td> const</td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9a9db82a02ef79bc230982958f1d26d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a9db82a02ef79bc230982958f1d26d4">&#9670;&nbsp;</a></span>mesh_path()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string polyfem::State::mesh_path </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -2367,6 +2326,23 @@ template&lt;typename ProblemType &gt; </div>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh3d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6d904b274f338bfa96d3110531cc0aa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d904b274f338bfa96d3110531cc0aa7">&#9670;&nbsp;</a></span>reset_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::State::reset_mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>

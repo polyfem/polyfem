@@ -1,5 +1,13 @@
 var NAVTREEINDEX7 =
 {
+"classpolyfem_1_1mesh_1_1_mesh.html#a126480d889cb05c7a5f87dce1cec6179":[7,0,3,2,7,85],
+"classpolyfem_1_1mesh_1_1_mesh.html#a129dd721dab31ee5bf7b8a775af30473":[7,0,3,2,7,17],
+"classpolyfem_1_1mesh_1_1_mesh.html#a13697189b777adac8a396757a606b13d":[7,0,3,2,7,48],
+"classpolyfem_1_1mesh_1_1_mesh.html#a156b2a6f79abcf140785ffdd6391964a":[7,0,3,2,7,3],
+"classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c":[7,0,3,2,7,82],
+"classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731":[7,0,3,2,7,22],
+"classpolyfem_1_1mesh_1_1_mesh.html#a1a9456b9875b71ce609ea75c6d50e50c":[7,0,3,2,7,54],
+"classpolyfem_1_1mesh_1_1_mesh.html#a1bbd6a108623834041041c6278c49a92":[7,0,3,2,7,35],
 "classpolyfem_1_1mesh_1_1_mesh.html#a1d11f3bb4a658d850c906dc5e073f08b":[7,0,3,2,7,27],
 "classpolyfem_1_1mesh_1_1_mesh.html#a263112318a0c41066f9bffa9be039fe8":[7,0,3,2,7,84],
 "classpolyfem_1_1mesh_1_1_mesh.html#a2a5bdc005a8069814c63f87bd00b8bdd":[7,0,3,2,7,74],
@@ -241,13 +249,5 @@ var NAVTREEINDEX7 =
 "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a26bbdbd857d5b281246377a3bd1bee4e":[7,0,3,2,13,64],
 "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a2cb3d03198d9ced63bee2bb6a2a12cff":[7,0,3,2,13,31],
 "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3acabbd2c02512959425d9baba4fed59":[7,0,3,2,13,68],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3c09d41233578a9401ece6f8c5dd4205":[7,0,3,2,13,66],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b":[7,0,3,2,13,63],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a40a3ce99939a50d8f3aa36d29e39fc2a":[7,0,3,2,13,91],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a41dfef15ef95a2121ff59c3da79dffb2":[7,0,3,2,13,96],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a41e7b485ae2a79a4885e693095d2310a":[7,0,3,2,13,14],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a441a2867a465b75ad7d1150b5cf02662":[7,0,3,2,13,83],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a47d6c37a8ee74a1abb2ac517be788340":[7,0,3,2,13,49],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a4fa780547c39cd0a11fd3515f2b05e1a":[7,0,3,2,13,59],
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a50e382eaf326b016c28ddffc49ff4f87":[7,0,3,2,13,65]
+"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3c09d41233578a9401ece6f8c5dd4205":[7,0,3,2,13,66]
 };

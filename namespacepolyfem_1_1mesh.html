@@ -222,16 +222,30 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad904e715bfa832bf235080ac76351f33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad904e715bfa832bf235080ac76351f33">load_geometry</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry, const std::string &amp;root_path, std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; &amp;mesh, <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> &amp;obstacle, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
-<tr class="separator:ad904e715bfa832bf235080ac76351f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cae0dcc473dc0f45c46dd62901e2269"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0cae0dcc473dc0f45c46dd62901e2269">load_mesh</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;weights, size_t &amp;num_faces, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;surface_selections, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;volume_selections)</td></tr>
-<tr class="separator:a0cae0dcc473dc0f45c46dd62901e2269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23c11289ee171d378f95b975412b00d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a23c11289ee171d378f95b975412b00d2">log_and_throw_error</a> (const std::string &amp;msg)</td></tr>
+<tr class="separator:a23c11289ee171d378f95b975412b00d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fd912c9c209068769d339932c8b7c79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0fd912c9c209068769d339932c8b7c79">read_fem_geometry</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry, const std::string &amp;root_path, std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; &amp;mesh, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
+<tr class="memdesc:a0fd912c9c209068769d339932c8b7c79"><td class="mdescLeft">&#160;</td><td class="mdescRight">read FEM meshes from a geometry JSON array (or single)  <a href="namespacepolyfem_1_1mesh.html#a0fd912c9c209068769d339932c8b7c79">More...</a><br /></td></tr>
+<tr class="separator:a0fd912c9c209068769d339932c8b7c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc649d2ea30d21c08a016921d553ec90"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#adc649d2ea30d21c08a016921d553ec90">read_obstacle_geometry</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry, const std::vector&lt; <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &gt; &amp;displacements, const std::string &amp;root_path, const int dim, <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> &amp;obstacle, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
+<tr class="memdesc:adc649d2ea30d21c08a016921d553ec90"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#adc649d2ea30d21c08a016921d553ec90">More...</a><br /></td></tr>
+<tr class="separator:adc649d2ea30d21c08a016921d553ec90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab411f13e27498417ffaa63b50e0f3cbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ab411f13e27498417ffaa63b50e0f3cbe">read_fem_mesh</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;in_vertices, Eigen::MatrixXi &amp;in_cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;in_elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;in_weights, size_t &amp;num_faces, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&gt; &amp;surface_selections, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&gt; &amp;volume_selections)</td></tr>
+<tr class="separator:ab411f13e27498417ffaa63b50e0f3cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b062ad34fe687b7f1fb23a07e0696d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad2b062ad34fe687b7f1fb23a07e0696d">read_obstacle_mesh</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</td></tr>
+<tr class="memdesc:ad2b062ad34fe687b7f1fb23a07e0696d"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a obstacle mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#ad2b062ad34fe687b7f1fb23a07e0696d">More...</a><br /></td></tr>
+<tr class="separator:ad2b062ad34fe687b7f1fb23a07e0696d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6d084b6f52a0af47a0f7b9d1e11fc33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33">apply_default_geometry_parameters</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry_in, <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;geometry_out, const std::string &amp;path_prefix=&quot;&quot;)</td></tr>
 <tr class="memdesc:aa6d084b6f52a0af47a0f7b9d1e11fc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill in missing json geometry parameters with the default values.  <a href="namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33">More...</a><br /></td></tr>
 <tr class="separator:aa6d084b6f52a0af47a0f7b9d1e11fc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6039e86ea6e80037d8fe94e72181ada2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2">transform_mesh_from_json</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;transform, Eigen::MatrixXd &amp;vertices)</td></tr>
 <tr class="memdesc:a6039e86ea6e80037d8fe94e72181ada2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a mesh inplace using json parameters including scaling, rotation, and translation.  <a href="namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2">More...</a><br /></td></tr>
 <tr class="separator:a6039e86ea6e80037d8fe94e72181ada2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac070fd8ba3c3767665b0cab25e5c84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a3ac070fd8ba3c3767665b0cab25e5c84">append_selections</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;new_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">Selection::BBox</a> &amp;bbox, const size_t &amp;start_element_id, const size_t &amp;end_element_id, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&gt; &amp;selections)</td></tr>
+<tr class="separator:a3ac070fd8ba3c3767665b0cab25e5c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2f16fdc55deedd0a6cf9a4b4903dacf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ae2f16fdc55deedd0a6cf9a4b4903dacf">read_fem_mesh</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;weights, size_t &amp;num_faces, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;surface_selections, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;volume_selections)</td></tr>
+<tr class="memdesc:ae2f16fdc55deedd0a6cf9a4b4903dacf"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#ae2f16fdc55deedd0a6cf9a4b4903dacf">More...</a><br /></td></tr>
+<tr class="separator:ae2f16fdc55deedd0a6cf9a4b4903dacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addb1327313435ccafb35bb476b034425"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#addb1327313435ccafb35bb476b034425">append_selections</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;new_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">polyfem::utils::Selection::BBox</a> &amp;bbox, const size_t &amp;start_element_id, const size_t &amp;end_element_id, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;selections)</td></tr>
 <tr class="separator:addb1327313435ccafb35bb476b034425"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c9e86a0cbb90821ce9b4c1f37b8df6c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c">find</a> (const Eigen::VectorXi &amp;<a class="el" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, int <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
@@ -324,9 +338,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aad1776e39bc78fd369d9c0b3a9a063c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aad1776e39bc78fd369d9c0b3a9a063c3">read_fem_mesh</a> (const std::string &amp;mesh_path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt;&gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</td></tr>
 <tr class="memdesc:aad1776e39bc78fd369d9c0b3a9a063c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a mesh  <a href="namespacepolyfem_1_1mesh.html#aad1776e39bc78fd369d9c0b3a9a063c3">More...</a><br /></td></tr>
 <tr class="separator:aad1776e39bc78fd369d9c0b3a9a063c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa276860f277bdc467705b9c9614771a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa276860f277bdc467705b9c9614771a6">read_surface_mesh</a> (const std::string &amp;mesh_path, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</td></tr>
-<tr class="memdesc:aa276860f277bdc467705b9c9614771a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a surface mesh  <a href="namespacepolyfem_1_1mesh.html#aa276860f277bdc467705b9c9614771a6">More...</a><br /></td></tr>
-<tr class="separator:aa276860f277bdc467705b9c9614771a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5cb1c08fb1f96a1f0c2bd635457e25f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f">read_surface_mesh</a> (const std::string &amp;mesh_path, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</td></tr>
+<tr class="memdesc:ad5cb1c08fb1f96a1f0c2bd635457e25f"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a surface mesh  <a href="namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f">More...</a><br /></td></tr>
+<tr class="separator:ad5cb1c08fb1f96a1f0c2bd635457e25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0eb020dda8244f82ea9450b2d655cadd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0eb020dda8244f82ea9450b2d655cadd">is_planar</a> (const GEO::Mesh &amp;M, const double tol=1e-5)</td></tr>
 <tr class="memdesc:a0eb020dda8244f82ea9450b2d655cadd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the given mesh is planar (2D or tiny z-range).  <a href="namespacepolyfem_1_1mesh.html#a0eb020dda8244f82ea9450b2d655cadd">More...</a><br /></td></tr>
 <tr class="separator:a0eb020dda8244f82ea9450b2d655cadd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -455,7 +469,7 @@ Functions</h2></td></tr>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="addb1327313435ccafb35bb476b034425"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#addb1327313435ccafb35bb476b034425">&#9670;&nbsp;</a></span>append_selections()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#addb1327313435ccafb35bb476b034425">&#9670;&nbsp;</a></span>append_selections() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -488,6 +502,52 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>selections</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ac070fd8ba3c3767665b0cab25e5c84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac070fd8ba3c3767665b0cab25e5c84">&#9670;&nbsp;</a></span>append_selections() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::append_selections </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>new_selections</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">Selection::BBox</a> &amp;&#160;</td>
+          <td class="paramname"><em>bbox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t &amp;&#160;</td>
+          <td class="paramname"><em>start_element_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t &amp;&#160;</td>
+          <td class="paramname"><em>end_element_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>selections</em>&#160;</td>
         </tr>
         <tr>
@@ -1254,134 +1314,18 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad904e715bfa832bf235080ac76351f33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad904e715bfa832bf235080ac76351f33">&#9670;&nbsp;</a></span>load_geometry()</h2>
+<a id="a23c11289ee171d378f95b975412b00d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23c11289ee171d378f95b975412b00d2">&#9670;&nbsp;</a></span>log_and_throw_error()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::mesh::load_geometry </td>
+          <td class="memname">void polyfem::mesh::log_and_throw_error </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>geometry</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>root_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>mesh</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> &amp;&#160;</td>
-          <td class="paramname"><em>obstacle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>names</em> = <code>std::vector&lt;std::string&gt;()</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; Eigen::MatrixXd &gt; &amp;&#160;</td>
-          <td class="paramname"><em>vertices</em> = <code>std::vector&lt;Eigen::MatrixXd&gt;()</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; Eigen::MatrixXi &gt; &amp;&#160;</td>
-          <td class="paramname"><em>cells</em> = <code>std::vector&lt;Eigen::MatrixXi&gt;()</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>non_conforming</em> = <code>false</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0cae0dcc473dc0f45c46dd62901e2269"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0cae0dcc473dc0f45c46dd62901e2269">&#9670;&nbsp;</a></span>load_mesh()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::mesh::load_mesh </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>jmesh</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>root_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>vertices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>cells</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; int &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>elements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>weights</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t &amp;&#160;</td>
-          <td class="paramname"><em>num_faces</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>surface_selections</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>volume_selections</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1566,8 +1510,229 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a0fd912c9c209068769d339932c8b7c79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fd912c9c209068769d339932c8b7c79">&#9670;&nbsp;</a></span>read_fem_geometry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::read_fem_geometry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>names</em> = <code>std::vector&lt;&#160;std::string&#160;&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Eigen::MatrixXd &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em> = <code>std::vector&lt;&#160;Eigen::MatrixXd&#160;&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Eigen::MatrixXi &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cells</em> = <code>std::vector&lt;&#160;Eigen::MatrixXi&#160;&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>non_conforming</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>read FEM meshes from a geometry JSON array (or single) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>{ geometry JSON object(s) } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mesh</td><td>{ output <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> } </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab411f13e27498417ffaa63b50e0f3cbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab411f13e27498417ffaa63b50e0f3cbe">&#9670;&nbsp;</a></span>read_fem_mesh() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::read_fem_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>jmesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>in_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>in_cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; int &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>in_elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>in_weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>num_faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>surface_selections</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>volume_selections</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae2f16fdc55deedd0a6cf9a4b4903dacf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2f16fdc55deedd0a6cf9a4b4903dacf">&#9670;&nbsp;</a></span>read_fem_mesh() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::read_fem_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>jmesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; int &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>num_faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>surface_selections</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">polyfem::utils::Selection</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>volume_selections</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>read a FEM mesh from a geometry JSON </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">jmesh</td><td>{ geometry JSON } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>{ #V x 3/2 output vertices positions } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>{ indicies in vertices for the codimensional vertices } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>{ indicies in vertices for the codimensional edges } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>{ indicies in vertices for the surface faces } </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aad1776e39bc78fd369d9c0b3a9a063c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad1776e39bc78fd369d9c0b3a9a063c3">&#9670;&nbsp;</a></span>read_fem_mesh()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aad1776e39bc78fd369d9c0b3a9a063c3">&#9670;&nbsp;</a></span>read_fem_mesh() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1630,14 +1795,160 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa276860f277bdc467705b9c9614771a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa276860f277bdc467705b9c9614771a6">&#9670;&nbsp;</a></span>read_surface_mesh()</h2>
+<a id="adc649d2ea30d21c08a016921d553ec90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc649d2ea30d21c08a016921d553ec90">&#9670;&nbsp;</a></span>read_obstacle_geometry()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::mesh::read_surface_mesh </td>
+          <td class="memname">void polyfem::mesh::read_obstacle_geometry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>displacements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> &amp;&#160;</td>
+          <td class="paramname"><em>obstacle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>names</em> = <code>std::vector&lt;&#160;std::string&#160;&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Eigen::MatrixXd &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em> = <code>std::vector&lt;&#160;Eigen::MatrixXd&#160;&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Eigen::MatrixXi &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cells</em> = <code>std::vector&lt;&#160;Eigen::MatrixXi&#160;&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>non_conforming</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>read a FEM mesh from a geometry JSON </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>{ geometry JSON object(s) } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">displacements</td><td>{ displacements JSON object(s) } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">obstacle</td><td>{ output <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> } </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad2b062ad34fe687b7f1fb23a07e0696d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b062ad34fe687b7f1fb23a07e0696d">&#9670;&nbsp;</a></span>read_obstacle_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::read_obstacle_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>jmesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>codim_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>codim_edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>faces</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>read a obstacle mesh from a geometry JSON </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">jmesh</td><td>{ geometry JSON } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>{ #V x 3/2 output vertices positions } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>{ indicies in vertices for the codimensional vertices } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>{ indicies in vertices for the codimensional edges } </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>{ indicies in vertices for the surface faces } </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad5cb1c08fb1f96a1f0c2bd635457e25f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5cb1c08fb1f96a1f0c2bd635457e25f">&#9670;&nbsp;</a></span>read_surface_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::mesh::read_surface_mesh </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>mesh_path</em>, </td>
