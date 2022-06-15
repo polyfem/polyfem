@@ -80,13 +80,13 @@ var NAVTREEINDEX =
 "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a989d4db0509380b2393a71a0247f4f1c",
 "classpolyfem_1_1mesh_1_1_mesh.html#a126480d889cb05c7a5f87dce1cec6179",
 "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b",
-"classpolyfem_1_1problem_1_1_flow.html#aa7b2becf1c156ba24b72a043e4bcd248",
-"classpolyfem_1_1problem_1_1_test_problem.html",
-"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a0cee442797e4f03158350d9c74aceec9",
-"classpolyfem_1_1utils_1_1_ref_element_sampler.html#aad71fd63aa8774488293e46f2e32a5fc",
-"functions_vars_p.html",
-"struct_d_scalar1.html#a396cd72d25c6f32d30540b857f1c7c39",
-"triangle_8py.html#a2ef3f501f213fb6d2ba5ec927a44fc7e"
+"classpolyfem_1_1problem_1_1_elastic_problem.html#abe03f6ea9df9d1807060fb11a69f2bc4",
+"classpolyfem_1_1problem_1_1_stokes_law_problem.html#a63f2e9304cbcb682f407e706c3833211",
+"classpolyfem_1_1solver_1_1_n_l_problem.html#af9a1e29b49c9bac86d05da9da827b0f3",
+"classpolyfem_1_1utils_1_1_ref_element_sampler.html",
+"functions_t.html",
+"q__bases_8py.html#ae5567cc3ff8c51169b59f2d6fdb8b962",
+"structpolyfem_1_1mesh_1_1_vertex.html#a4addda86740ef529091c4935e4a62fa2"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

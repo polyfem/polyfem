@@ -147,6 +147,7 @@ var hierarchy =
       [ "polyfem::problem::Airfoil", "classpolyfem_1_1problem_1_1_airfoil.html", null ],
       [ "polyfem::problem::BilaplacianProblemWithSolution", "classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html", null ],
       [ "polyfem::problem::DoubleTorsionElasticProblem", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html", null ],
+      [ "polyfem::problem::ElasticCantileverExact", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html", null ],
       [ "polyfem::problem::ElasticProblem", "classpolyfem_1_1problem_1_1_elastic_problem.html", null ],
       [ "polyfem::problem::ElasticProblemZeroBC", "classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html", null ],
       [ "polyfem::problem::GravityProblem", "classpolyfem_1_1problem_1_1_gravity_problem.html", null ],

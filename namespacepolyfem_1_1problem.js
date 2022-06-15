@@ -10,6 +10,7 @@ var namespacepolyfem_1_1problem =
     [ "DrivenCavity", "classpolyfem_1_1problem_1_1_driven_cavity.html", "classpolyfem_1_1problem_1_1_driven_cavity" ],
     [ "DrivenCavityC0", "classpolyfem_1_1problem_1_1_driven_cavity_c0.html", "classpolyfem_1_1problem_1_1_driven_cavity_c0" ],
     [ "DrivenCavitySmooth", "classpolyfem_1_1problem_1_1_driven_cavity_smooth.html", "classpolyfem_1_1problem_1_1_driven_cavity_smooth" ],
+    [ "ElasticCantileverExact", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact" ],
     [ "ElasticProblem", "classpolyfem_1_1problem_1_1_elastic_problem.html", "classpolyfem_1_1problem_1_1_elastic_problem" ],
     [ "ElasticProblemExact", "classpolyfem_1_1problem_1_1_elastic_problem_exact.html", "classpolyfem_1_1problem_1_1_elastic_problem_exact" ],
     [ "ElasticProblemZeroBC", "classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c.html", "classpolyfem_1_1problem_1_1_elastic_problem_zero_b_c" ],

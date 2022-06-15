@@ -11,7 +11,8 @@ var dir_db543a2fc901b00946a595a25d020389 =
       [ "QuadraticElasticProblemExact", "classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact.html", "classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact" ],
       [ "LinearElasticProblemExact", "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html", "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact" ],
       [ "GravityProblem", "classpolyfem_1_1problem_1_1_gravity_problem.html", "classpolyfem_1_1problem_1_1_gravity_problem" ],
-      [ "WalkProblem", "classpolyfem_1_1problem_1_1_walk_problem.html", "classpolyfem_1_1problem_1_1_walk_problem" ]
+      [ "WalkProblem", "classpolyfem_1_1problem_1_1_walk_problem.html", "classpolyfem_1_1problem_1_1_walk_problem" ],
+      [ "ElasticCantileverExact", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact" ]
     ] ],
     [ "FrankeProblem.cpp", "_franke_problem_8cpp.html", null ],
     [ "FrankeProblem.hpp", "_franke_problem_8hpp.html", [
