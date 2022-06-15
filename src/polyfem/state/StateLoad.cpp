@@ -5,7 +5,8 @@
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
-#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/mesh3D/CMesh3D.hpp>
+#include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
 #include <polyfem/utils/Selection.hpp>
 

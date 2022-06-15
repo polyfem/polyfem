@@ -1,12 +1,14 @@
 #pragma once
 
-#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <set>
+#include <tuple>
 
 namespace polyfem
 {
 	namespace mesh
 	{
-		class NCMesh2D : public Mesh2D
+		class NCMesh3D : public Mesh3D
 		{
 		public:
 			struct follower_edge
@@ -41,15 +43,31 @@ namespace polyfem
 				ncVert(const Eigen::VectorXd pos_) : pos(pos_){};
 				~ncVert(){};
 
+				int n_elem() const
+				{
+					return elem_list.size();
+				}
+
+				void add_element(const int e)
+				{
+					elem_list.insert(e);
+				};
+
+				void remove_element(const int e)
+				{
+					int num = elem_list.erase(e);
+					assert(num == 1);
+				}
+
+				std::set<int> elem_list; // elements that contain this edge/face
+
 				Eigen::VectorXd pos;
 				bool isboundary = false;
 
 				int edge = -1; // only used if the vertex is on the interior of an edge
-				int face = -1; // only 3d, only used if the vertex is on the interior of an face
+				int face = -1; // only used if the vertex is on the interior of an face
 
 				double weight = -1.; // only 2d, the local position of this vertex on the edge
-
-				int n_elem = 0; // number of valid elements that share this vertex
 			};
 
 			struct ncBoundary
@@ -103,7 +121,7 @@ namespace polyfem
 				Eigen::VectorXi vertices;
 
 				bool isboundary = false; // valid only after calling mark_boundary()
-				int boundary_id = -1;
+				int boundary_id = 0;
 
 				int leader = -1;            // if this edge/face lies on a larger edge/face
 				std::vector<int> followers; // followers of this edge/face
@@ -156,13 +174,23 @@ namespace polyfem
 				bool is_ghost = false;
 			};
 
-			NCMesh2D() = default;
-			virtual ~NCMesh2D() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(NCMesh2D)
+			NCMesh3D() = default;
+			virtual ~NCMesh3D() = default;
+			POLYFEM_DEFAULT_MOVE_COPY(NCMesh3D)
+
+			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
 
 			bool is_conforming() const override { return false; }
 
-			int n_faces() const override { return n_elements; }
+			int n_cells() const override { return n_elements; }
+			int n_faces() const override
+			{
+				int n = 0;
+				for (const auto &face : faces)
+					if (face.n_elem())
+						n++;
+				return n;
+			}
 			int n_edges() const override
 			{
 				int n = 0;
@@ -173,73 +201,50 @@ namespace polyfem
 			}
 			int n_vertices() const override
 			{
-				int n_verts = 0;
+				int n = 0;
 				for (const auto &vert : vertices)
-					if (vert.n_elem)
-						n_verts++;
-
-				return n_verts;
+					if (vert.n_elem())
+						n++;
+				return n;
 			}
 
-			inline int n_face_vertices(const int f_id) const override { return 3; }
-
-			inline int face_ref_level(const int f_id) const { return elements[valid_to_all_elem(f_id)].level; }
-
-			int face_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
-			int edge_vertex(const int e_id, const int lv_id) const override { return all_to_valid_vertex(edges[valid_to_all_edge(e_id)].vertices(lv_id)); }
+			int n_face_vertices(const int f_id) const override { return 3; }
+			int n_face_cells(const int f_id) const { return faces[valid_to_all_face(f_id)].n_elem(); }
+			int n_edge_cells(const int e_id) const { return edges[valid_to_all_edge(e_id)].n_elem(); }
+			int n_cell_vertices(const int c_id) const override { return 4; }
+			int n_cell_edges(const int c_id) const override { return 6; }
+			int n_cell_faces(const int c_id) const override { return 4; }
 			int cell_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
+			int cell_face(const int c_id, const int lf_id) const override { return all_to_valid_face(elements[valid_to_all_elem(c_id)].faces(lf_id)); }
+			int cell_edge(const int c_id, const int le_id) const override { return all_to_valid_edge(elements[valid_to_all_elem(c_id)].edges(le_id)); }
+			int face_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(faces[valid_to_all_face(f_id)].vertices(lv_id)); }
+			int face_edge(const int f_id, const int le_id) const;
+			int edge_vertex(const int e_id, const int lv_id) const override { return all_to_valid_vertex(edges[valid_to_all_edge(e_id)].vertices(lv_id)); }
 
-			int face_edge(const int f_id, const int le_id) const { return all_to_valid_edge(elements[valid_to_all_elem(f_id)].edges(le_id)); }
-			int leader_edge_of_vertex(const int v_id) const
-			{
-				assert(adj_prepared);
-				return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge);
-			}
-			int leader_edge_of_edge(const int e_id) const
-			{
-				assert(adj_prepared);
-				return (edges[valid_to_all_edge(e_id)].leader < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].leader);
-			}
-
-			// number of follower edges of a leader edge
-			int n_follower_edges(const int e_id) const
-			{
-				assert(adj_prepared);
-				return edges[valid_to_all_edge(e_id)].followers.size();
-			}
-			// number of elements have this edge
-			int n_face_neighbors(const int e_id) const { return edges[valid_to_all_edge(e_id)].n_elem(); }
-			// return the only element that has this edge
-			int face_neighbor(const int e_id) const { return all_to_valid_elem(edges[valid_to_all_edge(e_id)].get_element()); }
+			inline int cell_ref_level(const int c_id) const { return elements[valid_to_all_elem(c_id)].level; }
 
 			bool is_boundary_vertex(const int vertex_global_id) const override { return vertices[valid_to_all_vertex(vertex_global_id)].isboundary; }
 			bool is_boundary_edge(const int edge_global_id) const override { return edges[valid_to_all_edge(edge_global_id)].isboundary; }
+			bool is_boundary_face(const int face_global_id) const override { return faces[valid_to_all_face(face_global_id)].isboundary; }
 			bool is_boundary_element(const int element_global_id) const override;
-
-			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
 
 			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 			bool save(const std::string &path) const override;
+			bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
-			RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
-			RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override;
 
 			void normalize() override;
-
-			double edge_length(const int gid) const override;
 
 			void compute_elements_tag() override;
 			void update_elements_tag() override;
 
-			void set_point(const int global_index, const RowVectorNd &p) override;
+			double edge_length(const int gid) const override;
 
-			RowVectorNd point(const int global_index) const override
-			{
-				assert(index_prepared);
-				return vertices[valid_to_all_vertex(global_index)].pos.transpose();
-			}
-			RowVectorNd edge_barycenter(const int index) const override;
+			RowVectorNd point(const int global_index) const override;
+			RowVectorNd edge_barycenter(const int e) const override;
+			RowVectorNd face_barycenter(const int f) const override;
+			RowVectorNd cell_barycenter(const int c) const override;
 
 			void bounding_box(RowVectorNd &min, RowVectorNd &max) const override;
 
@@ -253,36 +258,89 @@ namespace polyfem
 			void set_body_ids(const std::vector<int> &body_ids) override;
 			void set_body_ids(const Eigen::VectorXi &body_ids) override;
 
-			int get_boundary_id(const int primitive) const override { return edges[valid_to_all_edge(primitive)].boundary_id; };
+			int get_boundary_id(const int primitive) const override { return faces[valid_to_all_face(primitive)].boundary_id; };
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
-
-			// Navigation wrapper
-			Navigation::Index get_index_from_face(int f, int lv = 0) const override;
-
-			// Navigation in a surface mesh
-			Navigation::Index switch_vertex(Navigation::Index idx) const override;
-			Navigation::Index switch_edge(Navigation::Index idx) const override;
-			Navigation::Index switch_face(Navigation::Index idx) const override;
 
 			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
-			// refine
+			RowVectorNd kernel(const int cell_id) const override;
+			//navigation wrapper
+			Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const override;
+			Navigation3D::Index get_index_from_element(int hi) const override;
+
+			Navigation3D::Index get_index_from_element_edge(int hi, int v0, int v1) const override;
+			Navigation3D::Index get_index_from_element_face(int hi, int v0, int v1, int v2) const override;
+
+			std::vector<uint32_t> vertex_neighs(const int v_gid) const override;
+			std::vector<uint32_t> edge_neighs(const int e_gid) const override;
+
+			int leader_edge_of_vertex(const int v_id) const
+			{
+				assert(adj_prepared);
+				return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge);
+			}
+			int leader_edge_of_edge(const int e_id) const
+			{
+				assert(adj_prepared);
+				return (edges[valid_to_all_edge(e_id)].leader < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].leader);
+			}
+
+			int leader_face_of_vertex(const int v_id) const
+			{
+				assert(adj_prepared);
+				int id_full = vertices[valid_to_all_vertex(v_id)].face;
+				return (id_full < 0) ? -1 : all_to_valid_face(id_full);
+			}
+			int leader_face_of_edge(const int e_id) const
+			{
+				assert(adj_prepared);
+				int id_full = edges[valid_to_all_edge(e_id)].leader_face;
+				return (id_full < 0) ? -1 : all_to_valid_face(id_full);
+			}
+			int leader_face_of_face(const int f_id) const
+			{
+				assert(adj_prepared);
+				int id_full = faces[valid_to_all_face(f_id)].leader;
+				return (id_full < 0) ? -1 : all_to_valid_face(id_full);
+			}
+
+			// number of follower edges of a leader edge
+			int n_follower_edges(const int e_id) const
+			{
+				assert(adj_prepared);
+				return edges[valid_to_all_edge(e_id)].followers.size();
+			}
+			int n_follower_faces(const int e_id) const
+			{
+				assert(adj_prepared);
+				return faces[valid_to_all_face(e_id)].followers.size();
+			}
+
+			// Navigation in a surface mesh
+			Navigation3D::Index switch_vertex(Navigation3D::Index idx) const override;
+			Navigation3D::Index switch_edge(Navigation3D::Index idx) const override;
+			Navigation3D::Index switch_face(Navigation3D::Index idx) const override;
+			Navigation3D::Index switch_element(Navigation3D::Index idx) const override;
+
+			// Iterate in a mesh
+			Navigation3D::Index next_around_edge(Navigation3D::Index idx) const override;
+			Navigation3D::Index next_around_face(Navigation3D::Index idx) const override;
+
+			void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const override;
+			void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const override;
+			void get_face_elements_neighs(const int f_id, std::vector<int> &ids) const;
+
 			void refine_element(int id_full);
 			void refine_elements(const std::vector<int> &ids);
 
-			// coarsen
 			void coarsen_element(int id_full);
 
-			// mark the true boundary vertices
 			void mark_boundary();
 
-			// map the barycentric coordinate in element to the weight on edge
-			static double element_weight_to_edge_weight(const int l, const Eigen::Vector2d &pos);
-
-			// call necessary functions before building bases
 			void prepare_mesh() override
 			{
 				build_edge_follower_chain();
+				build_face_follower_chain();
 				build_element_vertex_adjacency();
 				build_index_mapping();
 				compute_elements_tag();
@@ -291,6 +349,8 @@ namespace polyfem
 			}
 
 			void build_index_mapping();
+
+			std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const override;
 
 		private:
 			struct ArrayHasher2D
@@ -301,9 +361,17 @@ namespace polyfem
 				}
 			};
 
+			struct ArrayHasher3D
+			{
+				long operator()(const Eigen::Vector3i &a) const
+				{
+					return (long)((long)984120265 * a[0] + (long)125965121 * a[1] + (long)495698413 * a[2]);
+				}
+			};
+
 		protected:
 			bool load(const std::string &path) override;
-			bool load(const GEO::Mesh &mesh) override;
+			bool load(const GEO::Mesh &M) override;
 
 			// index map from vertices to valid ones, and its inverse
 			inline int all_to_valid_vertex(const int id) const
@@ -321,14 +389,24 @@ namespace polyfem
 			inline int all_to_valid_edge(const int id) const
 			{
 				assert(index_prepared);
-				assert(id < all_to_valid_edgeMap.size());
 				return all_to_valid_edgeMap[id];
 			};
 			inline int valid_to_all_edge(const int id) const
 			{
 				assert(index_prepared);
-				assert(id < valid_to_all_edgeMap.size());
 				return valid_to_all_edgeMap[id];
+			};
+
+			// index map from faces to valid ones, and its inverse
+			inline int all_to_valid_face(const int id) const
+			{
+				assert(index_prepared);
+				return all_to_valid_faceMap[id];
+			};
+			inline int valid_to_all_face(const int id) const
+			{
+				assert(index_prepared);
+				return valid_to_all_faceMap[id];
 			};
 
 			// index map from elements to valid ones, and its inverse
@@ -358,18 +436,22 @@ namespace polyfem
 			int get_edge(Eigen::Vector2i v);
 			int get_edge(const int v1, const int v2) { return get_edge(Eigen::Vector2i(v1, v2)); };
 
-			// list all follower edges of a potential leader edge, returns nothing if it's a follower or conforming edge
-			void traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge> &list) const;
+			// find the face, return -1 if not exists
+			int find_face(Eigen::Vector3i v) const;
+			int find_face(const int v1, const int v2, const int v3) const { return find_face(Eigen::Vector3i(v1, v2, v3)); };
+			// find the face, create one if not exists
+			int get_face(Eigen::Vector3i v);
+			int get_face(const int v1, const int v2, const int v3) { return get_face(Eigen::Vector3i(v1, v2, v3)); };
 
-			// call traverse_edge() for every interface, and store everything needed
+			void traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge> &list) const;
 			void build_edge_follower_chain();
 
-			// assign ncElement2D.leader_edges and ncVertex2D.weight
+			void traverse_face(int v1, int v2, int v3, Eigen::Vector2d p1, Eigen::Vector2d p2, Eigen::Vector2d p3, int depth, std::vector<follower_face> &face_list, std::vector<int> &edge_list) const;
+			void build_face_follower_chain();
+
 			void build_element_vertex_adjacency();
 
-			// edges are created if not exist
-			// return the id of this new element
-			int add_element(Eigen::Vector3i v, int parent = -1);
+			int add_element(Eigen::Vector4i v, int parent = -1);
 
 			int n_elements = 0;
 
@@ -379,13 +461,16 @@ namespace polyfem
 			std::vector<ncElem> elements;
 			std::vector<ncVert> vertices;
 			std::vector<ncBoundary> edges;
+			std::vector<ncBoundary> faces;
 
 			std::unordered_map<Eigen::Vector2i, int, ArrayHasher2D> midpointMap;
 			std::unordered_map<Eigen::Vector2i, int, ArrayHasher2D> edgeMap;
+			std::unordered_map<Eigen::Vector3i, int, ArrayHasher3D> faceMap;
 
 			std::vector<int> all_to_valid_elemMap, valid_to_all_elemMap;
 			std::vector<int> all_to_valid_vertexMap, valid_to_all_vertexMap;
 			std::vector<int> all_to_valid_edgeMap, valid_to_all_edgeMap;
+			std::vector<int> all_to_valid_faceMap, valid_to_all_faceMap;
 
 			std::vector<int> refineHistory;
 
