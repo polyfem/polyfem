@@ -214,10 +214,10 @@ int main(int argc, char **argv)
 
 		in_args["root_path"] = json_file;
 
-		if (in_args.contains("defaults"))
+		if (in_args.contains("common"))
 		{
 			apply_default_params(in_args);
-			in_args.erase("defaults"); // Remove this so state does not redo the apply
+			in_args.erase("common"); // Remove this so state does not redo the apply
 		}
 	}
 	else if (!hdf5_file.empty())

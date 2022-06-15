@@ -98,7 +98,7 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 
 		this->args = R"({
-						"defaults": "",
+						"common": "",
 						"root_path": "",
 
 						"geometry": null,
@@ -322,7 +322,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		if (args_in.contains("defaults"))
+		if (args_in.contains("common"))
 			apply_default_params(args_in);
 
 		check_for_unknown_args(args, args_in);

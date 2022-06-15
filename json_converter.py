@@ -38,7 +38,7 @@ def remove_empty_dicts_from_dict(di):
 
 def PolyFEM_convert(old):
     j = {}
-    rename_entry("default_params", old, "defaults", j)
+    rename_entry("default_params", old, "common", j)
     copy_entry("root_path", old, j)
     copy_entry("authen_t1", old, j)
 
