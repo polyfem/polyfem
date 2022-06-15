@@ -383,6 +383,7 @@ def PolyFEM_convert(old):
         copy_entry("a_path", old["import"], j["input"]["data"])
 
     # Body_ids are global and are added to volume selections
+    selection_entries = ["id", "axis", 'position', 'relative', 'normal', 'point', 'center', 'radius', 'box', 'offset']
 
     if "body_ids" in old:
         for t in j["geometry"]:
@@ -390,9 +391,9 @@ def PolyFEM_convert(old):
 
         for o in old["body_ids"]:
             n = {}
-            copy_entry("id", o, n)
-            copy_entry("axis", o, n)
-            copy_entry("position", o, n)
+            for entry in selection_entries:
+                copy_entry(entry, o, n)
+
             for t in j["geometry"]:
                 t["volume_selection"].append(n)
 
@@ -404,9 +405,9 @@ def PolyFEM_convert(old):
 
         for o in old["boundary_sidesets"]:
             n = {}
-            copy_entry("id", o, n)
-            copy_entry("axis", o, n)
-            copy_entry("position", o, n)
+            for entry in selection_entries:
+                copy_entry(entry, o, n)
+
             for t in j["geometry"]:
                 t["surface_selection"].append(n)
 
