@@ -339,7 +339,7 @@ def PolyFEM_convert(old):
         copy_entry("wireframe", old["export"], j["output"]["paraview"])
 
         j["output"]["paraview"]["options"] = {}
-        rename_entry("material_params", old["export"], "materials",
+        rename_entry("material_params", old["export"], "material",
                      j["output"]["paraview"]["options"])
         copy_entry("body_ids", old["export"],
                    j["output"]["paraview"]["options"])
