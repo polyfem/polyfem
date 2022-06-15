@@ -11,7 +11,11 @@ permissions:
 jobs:
   docs:
     runs-on: ubuntu-latest
-    steps:      
+    steps:
+      
+      - name: Dependencies
+        run: sudo apt-get install graphviz
+
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
