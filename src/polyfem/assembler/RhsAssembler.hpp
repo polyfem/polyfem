@@ -4,7 +4,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 
-#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -29,7 +29,7 @@ namespace polyfem
 			RhsAssembler(const AssemblerUtils &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
 						 const int n_basis, const int size,
 						 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
-						 const std::string &formulation, const problem::Problem &problem,
+						 const std::string &formulation, const Problem &problem,
 						 const std::string bc_method,
 						 const std::string &solver, const std::string &preconditioner, const json &solver_params);
 
@@ -48,10 +48,6 @@ namespace polyfem
 			//local local_neumann_boundary stores the mapping from elemment to nodes for Neumann nodes
 			//calls set_bc
 			void set_bc(const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
-			//same for velocity
-			// void set_velocity_bc(const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
-			// //same for acceleration
-			// void set_acceleration_bc(const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
 
 			//compute body energy
 			double compute_energy(const Eigen::MatrixXd &displacement, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const;
@@ -96,7 +92,7 @@ namespace polyfem
 			const std::vector<basis::ElementBases> &gbases_;
 			const AssemblyValsCache &ass_vals_cache_;
 			const std::string formulation_;
-			const problem::Problem &problem_;
+			const Problem &problem_;
 			const std::string bc_method_;
 			const std::string solver_, preconditioner_;
 			const json solver_params_;

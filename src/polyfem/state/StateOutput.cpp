@@ -49,11 +49,11 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 
-			save_vtu(resolve_output_path(fmt::format(step_name + "_{:d}.vtu", t)), time);
+			save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
 
 			save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
-				[step_name](int i) { return fmt::format(step_name + "_{:d}.vtm", i); },
+				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
 				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 		}
 	}
@@ -735,7 +735,7 @@ namespace polyfem
 		if (tend <= 0)
 			tend = 1;
 
-		if (!vis_mesh_path.empty())
+		if (!vis_mesh_path.empty() && args["time"].is_null())
 		{
 			save_vtu(vis_mesh_path, tend);
 		}
@@ -1487,7 +1487,7 @@ namespace polyfem
 					}
 					else
 					{
-						Es(index) = mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+						Es(index) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
 						nus(index) = lambda / (lambda + 2.0 * mu);
 					}
 
@@ -1517,7 +1517,7 @@ namespace polyfem
 				rhos.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			writer.add_field("llambda", lambdas);
+			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
 			writer.add_field("E", Es);
 			writer.add_field("nu", nus);
@@ -1778,8 +1778,16 @@ namespace polyfem
 				params.lambda_mu(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i), lambda, mu);
 				lambdas(i) = lambda;
 				mus(i) = mu;
-				Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-				nus(i) = lambda / (2.0 * (lambda + mu));
+				if (mesh->is_volume())
+				{
+					Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+					nus(i) = lambda / (2.0 * (lambda + mu));
+				}
+				else
+				{
+					Es(i) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+					nus(i) = lambda / (lambda + 2.0 * mu);
+				}
 				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
 			}
 

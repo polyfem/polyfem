@@ -131,10 +131,15 @@ namespace polyfem::mesh
 			for (const auto &selection : surface_selections)
 				if (selection->inside(face_id, p))
 					return selection->id(face_id);
-			return -1;
+			return std::numeric_limits<int>::max(); // default for no selected boundary
 		});
 
-		// TODO: set default boundary ids to the side of the cube thing
+		// TODO: set default boundary ids to the side of the cube thing per mesh
+		if (surface_selections.size() == 0)
+		{
+			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+			mesh->compute_boundary_ids(boundary_id_threshold);
+		}
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -152,6 +157,7 @@ namespace polyfem::mesh
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::string &root_path,
+		const int dim,
 		Obstacle &obstacle,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
@@ -196,7 +202,6 @@ namespace polyfem::mesh
 			geometries = geometry.get<std::vector<json>>();
 		}
 
-		int obstacle_i = 0;
 		for (int i = 0; i < geometries.size(); i++)
 		{
 			json complete_geometry;
@@ -205,8 +210,6 @@ namespace polyfem::mesh
 
 			if (!complete_geometry["is_obstacle"].get<bool>())
 				continue;
-
-			obstacle_i++;
 
 			if (!complete_geometry["enabled"].get<bool>())
 				continue;
@@ -217,13 +220,33 @@ namespace polyfem::mesh
 				Eigen::VectorXi codim_vertices;
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
-				std::string displacements_interpolation;
 				read_obstacle_mesh(
 					complete_geometry, root_path, vertices, codim_vertices,
 					codim_edges, faces);
 
+				vertices.conservativeResize(vertices.rows(), dim);
+
+				json displacement = "{\"value\":[0, 0, 0]}"_json;
+				if (is_param_valid(complete_geometry, "surface_selection"))
+				{
+					if (!complete_geometry["surface_selection"].is_number())
+						log_and_throw_error("Invalid surface_selection for obstable, needs to be a integer");
+
+					const int id = complete_geometry["surface_selection"];
+					for (const json &disp : displacements)
+					{
+						// TODO: Add support for array of ints
+						if ((disp["id"].is_string() && disp["id"].get<std::string>() == "all")
+							|| (disp["id"].is_number_integer() && disp["id"].get<int>() == id))
+						{
+							displacement = disp;
+							break;
+						}
+					}
+				}
+
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacements[obstacle_i - 1]);
+					vertices, codim_vertices, codim_edges, faces, displacement);
 			}
 			else if (complete_geometry["type"] == "plane")
 			{
@@ -296,7 +319,7 @@ namespace polyfem::mesh
 
 		////////////////////////////////////////////////////////////////////////////
 
-		if (!jmesh["advanced"]["force_linear_geometry"].get<bool>())
+		if (jmesh["advanced"]["force_linear_geometry"].get<bool>())
 			log_and_throw_error("Option \"force_linear_geometry\" in geometry not implement yet!");
 
 		// Shift vertex ids in elements
@@ -432,6 +455,10 @@ namespace polyfem::mesh
 			faces.resize(0, 0);
 			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
 		}
+		else if (jmesh["extract"].get<std::string>() == "volume")
+		{
+			log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+		}
 
 		if (jmesh["n_refs"].get<int>() != 0)
 		{
@@ -448,7 +475,7 @@ namespace polyfem::mesh
 		json &geometry_out,
 		const std::string &path_prefix)
 	{
-		geometry_out = R"({
+		static const json mesh_defaults = R"({
 			"type": "mesh",
 			"mesh": null,
 			"is_obstacle": false,
@@ -478,7 +505,43 @@ namespace polyfem::mesh
 				"min_component": -1
 			}
 		})"_json;
-		check_for_unknown_args(geometry_out, geometry_in, path_prefix);
+
+		static const json obstacle_defaults = R"({
+			"type": "mesh",
+			"mesh": null,
+			"is_obstacle": true,
+			"enabled": true,
+
+			"transformation": {
+				"translation": [0.0, 0.0, 0.0],
+				"rotation": null,
+				"rotation_mode": "xyz",
+				"scale": [1.0, 1.0, 1.0],
+				"dimensions": null
+			},
+
+			"extract": "surface",
+
+			"surface_selection": null,
+
+			"n_refs": 0,
+
+			"advanced": {
+				"refinement_location": 0.5,
+				"normalize_mesh": false
+			}
+		})"_json;
+
+		if (geometry_in.contains("is_obstacle") && geometry_in["is_obstacle"].get<bool>())
+		{
+			check_for_unknown_args(obstacle_defaults, geometry_in, path_prefix);
+			geometry_out = obstacle_defaults;
+		}
+		else
+		{
+			check_for_unknown_args(mesh_defaults, geometry_in, path_prefix);
+			geometry_out = mesh_defaults;
+		}
 		geometry_out.merge_patch(geometry_in);
 	}
 

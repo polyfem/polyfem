@@ -18,7 +18,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
-using namespace polyfem::problem;
 using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
@@ -60,12 +59,6 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 				"paraview": {
 					"high_order_mesh": false
 				}
-			},
-
-			"solver": {
-				"linear": {
-					"solver": "Eigen::SparseLU"
-				}
 			}
 		})"_json;
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
@@ -77,7 +70,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.load_mesh(true);
 	NCMesh2D &ncmesh = *dynamic_cast<NCMesh2D *>(state.mesh.get());
 
-	for (int n = 0; n < 1; n++)
+	for (int n = 0; n < 2; n++)
 	{
 		ncmesh.prepare_mesh();
 		std::vector<int> ref_ids(ncmesh.n_faces() / 2);
@@ -97,7 +90,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.solve_problem();
 	state.compute_errors();
 
-	state.save_vtu("debug.vtu", 1.);
+	// state.save_vtu("debug.vtu", 1.);
 
 	REQUIRE(fabs(state.h1_semi_err) < 1e-9);
 	REQUIRE(fabs(state.l2_err) < 1e-10);
@@ -144,7 +137,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			}
 		}
@@ -152,7 +145,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-186.msh";
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", 1, false);
 	state.init(in_args);
 
 	state.load_mesh(true);

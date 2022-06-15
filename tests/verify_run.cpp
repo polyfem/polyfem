@@ -11,7 +11,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
-using namespace polyfem::problem;
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
 
@@ -41,24 +40,27 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	auto args = in_args;
-	if (in_args["json_version"] == "1.0")
+	if (true)
 	{
 		args["output"] = json({});
-		json t_args = args["time"];
-		if (t_args.contains("tend") || t_args.contains("dt"))
+		if (args.contains("time"))
 		{
-			if (!t_args.contains("dt"))
+			json t_args = args["time"];
+			if (t_args.contains("tend") || t_args.contains("dt"))
 			{
-				t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+				if (!t_args.contains("dt"))
+				{
+					t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+				}
+				if (!t_args.contains("time_steps"))
+				{
+					t_args["time_steps"] = t_args["tend"].get<double>() / t_args["dt"].get<double>();
+				}
+				t_args["tend"] = t_args["dt"].get<double>();
 			}
-			if (!t_args.contains("time_steps"))
-			{
-				t_args["time_steps"] = t_args["tend"].get<double>() / t_args["dt"].get<double>();
-			}
-			t_args["tend"] = t_args["dt"].get<double>();
 			t_args["time_steps"] = 1;
+			args["time"] = t_args;
 		}
-		args["time"] = t_args;
 		args["root_path"] = json_file;
 	}
 	else
@@ -78,17 +80,16 @@ int authenticate_json(std::string json_file, const bool allow_append)
 				args["time_steps"] = args["tend"].get<double>() / args["dt"].get<double>();
 			}
 			args["tend"] = args["dt"].get<double>();
-			args["time_steps"] = 1;
 		}
+		args["time_steps"] = 1;
 		args["root_path"] = json_file;
 	}
 
 	size_t max_threads = std::numeric_limits<size_t>::max();
 
 	State state(max_threads);
-	state.init_logger("", 3, false);
+	state.init_logger("", 2, false);
 	state.init(args, "");
-	state.init_timesteps();
 	state.load_mesh();
 
 	if (state.mesh == nullptr)
@@ -122,10 +123,11 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		logger().info("Authenticating..");
 		auto authen = in_args.at(authent1);
 		auto margin = authen.at("margin").get<double>();
+		margin = 1e-8;
 		for (auto &el : out.items())
 		{
 			auto gt_val = authen[el.key()].get<double>();
-			auto relerr = std::abs((gt_val - el.value().get<double>()) / std::max(std::abs(gt_val), margin));
+			auto relerr = std::abs((gt_val - el.value().get<double>()) / std::max(std::abs(gt_val), 1e-5));
 			if (relerr > margin)
 			{
 				logger().error("Violating Authenticate {}", el.key());

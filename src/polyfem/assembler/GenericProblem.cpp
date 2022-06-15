@@ -8,7 +8,7 @@ namespace polyfem
 {
 	using namespace utils;
 
-	namespace problem
+	namespace assembler
 	{
 		std::shared_ptr<Interpolation> Interpolation::build(const json &params)
 		{
@@ -101,7 +101,7 @@ namespace polyfem
 			return true;
 		}
 
-		void GenericTensorProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -754,56 +754,6 @@ namespace polyfem
 			}
 		}
 
-		int GenericTensorProblem::n_incremental_load_steps(const double diag) const
-		{
-			double max;
-			Eigen::Matrix<double, 1, 3, Eigen::RowMajor> tmp;
-
-			for (const auto &vec : forces_)
-			{
-				const int dim = vec.size();
-				for (int i = 0; i < dim; ++i)
-				{
-					tmp[i] = vec[i](0, 0, 0);
-				}
-
-				max = std::max(max, tmp.norm());
-			}
-
-			for (const auto &vec : displacements_)
-			{
-				const int dim = vec.size();
-				for (int i = 0; i < dim; ++i)
-				{
-					tmp[i] = vec[i](0, 0, 0);
-				}
-
-				max = std::max(max, tmp.norm());
-			}
-
-			const int dim = rhs_.size();
-			for (int i = 0; i < dim; ++i)
-			{
-				tmp[i] = rhs_[i](0, 0, 0);
-			}
-
-			max = std::max(max, tmp.norm());
-
-			return 4 * max / diag;
-		}
-
-		void GenericTensorProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			//TODO
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void GenericTensorProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			//TODO
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
 		void GenericTensorProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
@@ -953,7 +903,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericScalarProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -1319,5 +1269,5 @@ namespace polyfem
 			has_exact_grad_ = false;
 			is_time_dept_ = false;
 		}
-	} // namespace problem
+	} // namespace assembler
 } // namespace polyfem

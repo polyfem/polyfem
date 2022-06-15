@@ -4,7 +4,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -131,7 +131,7 @@ namespace polyfem
 		//assembler, it dispatches call to the differnt assembers based on the formulation
 		assembler::AssemblerUtils assembler;
 		//current problem, it contains rhs and bc
-		std::shared_ptr<problem::Problem> problem;
+		std::shared_ptr<assembler::Problem> problem;
 
 		//density of the input, default=1.
 		Density density;

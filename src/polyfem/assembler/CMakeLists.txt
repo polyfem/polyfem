@@ -36,6 +36,10 @@ set(SOURCES
 	NavierStokes.hpp
 	AssemblerUtils.cpp
 	AssemblerUtils.hpp
+	Problem.cpp
+	Problem.hpp
+	GenericProblem.cpp
+	GenericProblem.hpp
 )
 
 prepend_current_path(SOURCES)

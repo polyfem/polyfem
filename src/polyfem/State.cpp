@@ -193,19 +193,24 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (!is_param_valid(args, "body_params"))
+		if (!is_param_valid(args, "materials"))
 			return;
 
+		const auto &body_params = args["materials"];
+
+		if (!body_params.is_array())
+			return;
+
+		//FIXME with the new stuff
 		const json default_material = R"({
 			"id": -1,
 			"E": 100,
 			"nu": 0.3,
 			"rho": 1,
-			"density": 1
+			"density": 1,
+			"type": null
 		})"_json;
 
-		const auto &body_params = args["materials"];
-		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
 		Es.setConstant(default_material["E"].get<double>());
 		nus.setConstant(default_material["nu"].get<double>());
@@ -215,7 +220,7 @@ namespace polyfem
 		for (int i = 0; i < body_params.size(); ++i)
 		{
 			//TODO fix and check me
-			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
+			check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
 			json mat = default_material;
 			mat.merge_patch(body_params[i]);
 
