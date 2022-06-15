@@ -131,10 +131,15 @@ namespace polyfem::mesh
 			for (const auto &selection : surface_selections)
 				if (selection->inside(face_id, p))
 					return selection->id(face_id);
-			return -1;
+			return std::numeric_limits<int>::max(); // default for no selected boundary
 		});
 
-		// TODO: set default boundary ids to the side of the cube thing
+		// TODO: set default boundary ids to the side of the cube thing per mesh
+		if (surface_selections.size() == 0)
+		{
+			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+			mesh->compute_boundary_ids(boundary_id_threshold);
+		}
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -230,7 +235,9 @@ namespace polyfem::mesh
 					const int id = complete_geometry["surface_selection"];
 					for (const json &disp : displacements)
 					{
-						if (disp["id"].get<int>() == id)
+						// TODO: Add support for array of ints
+						if ((disp["id"].is_string() && disp["id"].get<std::string>() == "all")
+							|| (disp["id"].is_number_integer() && disp["id"].get<int>() == id))
 						{
 							displacement = disp;
 							break;
@@ -448,6 +455,10 @@ namespace polyfem::mesh
 			faces.resize(0, 0);
 			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
 		}
+		else if (jmesh["extract"].get<std::string>() == "volume")
+		{
+			log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+		}
 
 		if (jmesh["n_refs"].get<int>() != 0)
 		{
@@ -464,7 +475,7 @@ namespace polyfem::mesh
 		json &geometry_out,
 		const std::string &path_prefix)
 	{
-		geometry_out = R"({
+		static const json mesh_defaults = R"({
 			"type": "mesh",
 			"mesh": null,
 			"is_obstacle": false,
@@ -494,7 +505,43 @@ namespace polyfem::mesh
 				"min_component": -1
 			}
 		})"_json;
-		check_for_unknown_args(geometry_out, geometry_in, path_prefix);
+
+		static const json obstacle_defaults = R"({
+			"type": "mesh",
+			"mesh": null,
+			"is_obstacle": true,
+			"enabled": true,
+
+			"transformation": {
+				"translation": [0.0, 0.0, 0.0],
+				"rotation": null,
+				"rotation_mode": "xyz",
+				"scale": [1.0, 1.0, 1.0],
+				"dimensions": null
+			},
+
+			"extract": "surface",
+
+			"surface_selection": null,
+
+			"n_refs": 0,
+
+			"advanced": {
+				"refinement_location": 0.5,
+				"normalize_mesh": false
+			}
+		})"_json;
+
+		if (geometry_in.contains("is_obstacle") && geometry_in["is_obstacle"].get<bool>())
+		{
+			check_for_unknown_args(mesh_defaults, geometry_in, path_prefix);
+			geometry_out = mesh_defaults;
+		}
+		else
+		{
+			check_for_unknown_args(obstacle_defaults, geometry_in, path_prefix);
+			geometry_out = obstacle_defaults;
+		}
 		geometry_out.merge_patch(geometry_in);
 	}
 
