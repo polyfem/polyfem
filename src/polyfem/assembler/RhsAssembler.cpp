@@ -338,7 +338,7 @@ namespace polyfem
 					}
 				}
 
-				// problem_.bc(mesh_, global_primitive_ids, mapped, t, rhs_fun);
+				// problem_.dirichlet_bc(mesh_, global_primitive_ids, mapped, t, rhs_fun);
 				df(global_primitive_ids, uv, mapped, rhs_fun);
 				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 				global_counter += rhs_fun.rows();
@@ -631,7 +631,7 @@ namespace polyfem
 		{
 			set_bc(
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
-					problem_.bc(mesh_, global_ids, uv, pts, t, val);
+					problem_.dirichlet_bc(mesh_, global_ids, uv, pts, t, val);
 				},
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
 					problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
