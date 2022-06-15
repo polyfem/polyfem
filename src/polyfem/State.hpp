@@ -303,41 +303,37 @@ namespace polyfem
 					   const std::vector<std::string> &names = std::vector<std::string>(),
 					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
-		//loads a febio file, uses args_in for default
+
+		/// loads a febio file, uses args_in for default
 		void load_febio(const std::string &path, const json &args_in);
-		//loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset
-		//the input of the lambda is the face barycenter, the output is the sideset id
+
+		/// loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset
+		/// the input of the lambda is the face barycenter, the output is the sideset id
 		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
-		//loads a mesh from a path
+
+		/// loads a mesh from a path
 		void load_mesh(const std::string &path, bool non_conforming = false)
 		{
-			//TODO fix Zach
-			args["mesh"] = path;
+			args["geometry"] = {{"mesh", path}};
 			load_mesh(non_conforming);
 		}
-		//loads a mesh from a path and uses the bc_tag to assign sideset ids
-		//the bc_tag file should contain a list of integers, one per face
+
+		/// loads a mesh from a path and uses the bc_tag to assign sideset ids
+		/// the bc_tag file should contain a list of integers, one per face
 		void load_mesh(const std::string &path, const std::string &bc_tag, bool non_conforming = false)
 		{
-			//TODO fix Zach
-			args["mesh"] = path;
-			args["bc_tag"] = bc_tag;
+			args["geometry"] = {{"mesh", path}, {"surface_selection", bc_tag}};
 			load_mesh(non_conforming);
 		}
-		//load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
+
+		/// load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
 		{
-			if (V.cols() == 2)
-				if (non_conforming)
-					mesh = std::make_unique<mesh::NCMesh2D>();
-				else
-					mesh = std::make_unique<mesh::CMesh2D>();
-			else
-				mesh = std::make_unique<mesh::Mesh3D>();
-			mesh->build_from_matrices(V, F);
-
+			mesh = mesh::Mesh::create(V, F, non_conforming);
 			load_mesh(non_conforming);
 		}
+
+		void reset_mesh();
 
 		//set the multimaterial, this is mean for internal usage.
 		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
@@ -552,16 +548,6 @@ namespace polyfem
 			// average_grad_based_function(points.rows(), sol, fun, tfun, false, boundary_only);
 
 			// args["export"]["vis_boundary_only"] = tmp;
-		}
-
-		//returns the path of the input mesh (wrappers around the arguments)
-		//TODO fix me Zach
-		inline std::string mesh_path() const { return resolve_input_path(args["mesh"]); }
-
-		inline bool has_mesh() const
-		{
-			//TODO fix me Zach
-			return !mesh_path().empty() || (args.contains("meshes") && !args["meshes"].empty());
 		}
 
 		//return the formulation (checks if the problem is scalar or not)

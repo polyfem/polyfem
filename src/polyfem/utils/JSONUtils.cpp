@@ -13,9 +13,9 @@ namespace polyfem
 	{
 		void apply_default_params(json &args)
 		{
-			assert(args.contains("default_params"));
+			assert(args.contains("common"));
 
-			std::string default_params_path = resolve_path(args["default_params"], args["root_path"]);
+			std::string default_params_path = resolve_path(args["common"], args["root_path"]);
 
 			if (default_params_path.empty())
 				return;

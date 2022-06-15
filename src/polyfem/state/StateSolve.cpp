@@ -55,7 +55,7 @@ namespace polyfem
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
 	{
-		std::string name = args["solver"]["nonlinear"];
+		std::string name = args["solver"]["nonlinear"]["solver"];
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
@@ -797,10 +797,10 @@ namespace polyfem
 			sol.setZero();
 		}
 
-		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
+		const std::string u_path = resolve_input_path(args["input"]["data"]["u_path"]);
 		//TODO fix import
 		if (!u_path.empty())
-			import_matrix(u_path, args["import"], sol);
+			import_matrix(u_path, args["input"]["data"]["u_path"], sol);
 
 		// if (args["use_al"] || args["contact"]["enabled"])
 		// {

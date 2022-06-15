@@ -38,7 +38,8 @@ namespace polyfem
 			const Eigen::MatrixXd &vertices,
 			const Eigen::VectorXi &codim_vertices,
 			const Eigen::MatrixXi &codim_edges,
-			const Eigen::MatrixXi &faces)
+			const Eigen::MatrixXi &faces,
+			const json &displacement)
 		{
 			if (vertices.size() == 0)
 				return;
@@ -88,11 +89,17 @@ namespace polyfem
 			v_.conservativeResize(v_.rows() + vertices.rows(), dim_);
 			v_.bottomRows(vertices.rows()) = vertices;
 
-			// initialize to zero displacement
 			displacements_.emplace_back();
 			for (size_t d = 0; d < dim_; ++d)
-				displacements_.back()[d].init(0);
-			displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+			{
+				assert(displacement["value"].is_array());
+				displacements_.back()[d].init(displacement["value"][d]);
+			}
+
+			if (displacement.contains("interpolation"))
+				displacements_interpolation_.emplace_back(Interpolation::build(displacement["interpolation"]));
+			else
+				displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
 
 			endings_.push_back(v_.rows());
 		}

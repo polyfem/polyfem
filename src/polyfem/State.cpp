@@ -191,19 +191,24 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (!is_param_valid(args, "body_params"))
+		if (!is_param_valid(args, "materials"))
 			return;
 
+		const auto &body_params = args["materials"];
+
+		if (!body_params.is_array())
+			return;
+
+		//FIXME with the new stuff
 		const json default_material = R"({
 			"id": -1,
 			"E": 100,
 			"nu": 0.3,
 			"rho": 1,
-			"density": 1
+			"density": 1,
+			"type": null
 		})"_json;
 
-		const auto &body_params = args["materials"];
-		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
 		Es.setConstant(default_material["E"].get<double>());
 		nus.setConstant(default_material["nu"].get<double>());
@@ -213,7 +218,7 @@ namespace polyfem
 		for (int i = 0; i < body_params.size(); ++i)
 		{
 			//TODO fix and check me
-			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
+			check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
 			json mat = default_material;
 			mat.merge_patch(body_params[i]);
 
@@ -388,8 +393,8 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				b_orders[b_discr_orders[i]["body_id"]] = b_discr_orders[i]["discr"];
-				logger().trace("bid {}, discr {}", b_discr_orders[i]["body_id"], b_discr_orders[i]["discr"]);
+				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
+				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
 			}
 
 			for (int e = 0; e < mesh->n_elements(); ++e)
@@ -998,9 +1003,9 @@ namespace polyfem
 		}
 
 		igl::Timer timer;
-		std::string rhs_path = "";
-		if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs") && args["boundary_conditions"]["rhs"].is_string())
-			rhs_path = args["boundary_conditions"]["rhs"];
+		// std::string rhs_path = "";
+		// if (args["boundary_conditions"]["rhs"].is_string())
+		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
 		p_params["formulation"] = formulation();
@@ -1037,21 +1042,21 @@ namespace polyfem
 			args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		if (!rhs_path.empty() || rhs_in.size() > 0)
-		{
-			logger().debug("Loading rhs...");
+		// if (!rhs_path.empty() || rhs_in.size() > 0)
+		// {
+		// 	logger().debug("Loading rhs...");
 
-			if (rhs_in.size())
-				rhs = rhs_in;
-			else
-				read_matrix(rhs_path, rhs);
+		// 	if (rhs_in.size())
+		// 		rhs = rhs_in;
+		// 	else
+		// 		read_matrix(rhs_path, rhs);
 
-			StiffnessMatrix tmp_mass;
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
-			rhs = tmp_mass * rhs;
-			logger().debug("done!");
-		}
-		else
+		// 	StiffnessMatrix tmp_mass;
+		// 	assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
+		// 	rhs = tmp_mass * rhs;
+		// 	logger().debug("done!");
+		// }
+		// else
 		{
 			step_data.rhs_assembler->assemble(density, rhs);
 			rhs *= -1;

@@ -18,7 +18,7 @@ namespace polyfem
 	using namespace mesh;
 	using namespace utils;
 
-	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
+	void State::reset_mesh()
 	{
 		bases.clear();
 		pressure_bases.clear();
@@ -38,6 +38,11 @@ namespace polyfem
 
 		n_bases = 0;
 		n_pressure_bases = 0;
+	}
+
+	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
+	{
+		reset_mesh();
 
 		igl::Timer timer;
 		timer.start();
@@ -49,11 +54,9 @@ namespace polyfem
 			return;
 		}
 
-		//TODO
+		// TODO: renable this
 		// if (args["normalize_mesh"])
-		// {
 		// 	mesh->normalize();
-		// }
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
@@ -64,9 +67,8 @@ namespace polyfem
 
 		assembler.set_size(mesh->dimension());
 
-		//TODO
+		// TODO: renable this
 		// int n_refs = args["n_refs"];
-
 		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
 		// {
 		// 	if (args["force_no_ref_for_harmonic"])
@@ -74,26 +76,26 @@ namespace polyfem
 		// 	else
 		// 		n_refs = 1;
 		// }
-
 		// if (n_refs > 0)
 		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
+		// TODO: renable this
 		// if (!skip_boundary_sideset)
 		// 	mesh->compute_boundary_ids(boundary_marker);
 		// BoxSetter::set_sidesets(args, *mesh);
-		// set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-		// 	assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-		// 	density.init_multimaterial(rhos);
-		// });
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		//TODO
-		// if (args.contains("obstacles"))
-		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+		mesh::read_obstacle_geometry(
+			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["root_path"], mesh->dimension(), obstacle);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -108,61 +110,18 @@ namespace polyfem
 		assert(names.size() == cells.size());
 		assert(vertices.size() == cells.size());
 
-		bases.clear();
-		pressure_bases.clear();
-		geom_bases.clear();
-		boundary_nodes.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		polys.clear();
-		poly_edge_to_data.clear();
-		parent_elements.clear();
-		obstacle.clear();
-
-		stiffness.resize(0, 0);
-		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
-
-		n_bases = 0;
-		n_pressure_bases = 0;
+		reset_mesh();
 
 		igl::Timer timer;
 		timer.start();
 
+		logger().info("Loading mesh ...");
 		if (mesh == nullptr)
 		{
-
-			// TODO fix me for hdf5
-			// {
-			// 	int index = -1;
-			// 	for (int i = 0; i < names.size(); ++i)
-			// 	{
-			// 		if (names[i] == args["meshes"])
-			// 		{
-			// 			index = i;
-			// 			break;
-			// 		}
-			// 	}
-
-			// 	assert(index >= 0);
-
-			// 	if (vertices[index].cols() == 2)
-			// 		mesh = std::make_unique<polyfem::CMesh2D>();
-			// 	else
-			// 		mesh = std::make_unique<polyfem::Mesh3D>();
-			// 	mesh->build_from_matrices(vertices[index], cells[index]);
-			// }
-
 			assert(is_param_valid(args, "geometry"));
-			logger().info("Loading geometry ...");
-			load_geometry(
-				args["geometry"], args["root_path"], mesh, obstacle,
+			mesh::read_fem_geometry(
+				args["geometry"], args["root_path"], mesh,
 				names, vertices, cells, non_conforming);
-		}
-		else
-		{
-			logger().info("Loading mesh ...");
 		}
 
 		if (mesh == nullptr)
@@ -178,10 +137,6 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		// TODO: fix me @zfergus
-		// if (args["normalize_mesh"])
-		// 	mesh->normalize();
-
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
@@ -191,9 +146,6 @@ namespace polyfem
 			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
 		assembler.set_size(mesh->dimension());
-
-		// TODO: fix me @zfergus
-		// int n_refs = args["n_refs"];
 
 		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
 		// {
@@ -208,10 +160,6 @@ namespace polyfem
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
-		// TODO: fix me @zfergus
-		const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
-		mesh->compute_boundary_ids(boundary_id_threshold);
-
 		// double boundary_id_threshold = args["boundary_id_threshold"];
 		// if (boundary_id_threshold <= 0)
 		// 	boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
@@ -225,10 +173,10 @@ namespace polyfem
 		// 		mesh->load_boundary_ids(bc_tag_path);
 		// }
 		// BoxSetter::set_sidesets(args, *mesh);
-		// set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-		// 	assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-		// 	density.init_multimaterial(rhos);
-		// });
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -236,122 +184,26 @@ namespace polyfem
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
 
 		timer.start();
-		// TODO: fix me @zfergus
-		// logger().info("Loading obstacles...");
-		// if (is_param_valid(args, "obstacles"))
-		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension(), names, cells, vertices);
+		logger().info("Loading obstacles...");
+		mesh::read_obstacle_geometry(
+			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["root_path"], mesh->dimension(), obstacle, names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
-
-		// const double poly_percentage = 0.05;
-		// const double poly_percentage = 0;
-		// const double perturb_t = 0.3;
-
-		// if(poly_percentage > 0)
-		// {
-		// 	const int n_poly = std::max(1., mesh->n_elements()*poly_percentage);
-		// 	int counter = 0;
-		// 	srand(11);
-
-		// 	for(int trial = 0; trial < n_poly*10; ++trial)
-		// 	{
-		// 		int el_id = rand() % mesh->n_elements();
-
-		// 		auto tags = mesh->elements_tag();
-
-		// 		if(mesh->is_volume())
-		// 		{
-		// 			assert(false);
-		// 		}
-		// 		else
-		// 		{
-		// 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-		// 			auto index = tmp_mesh.get_index_from_face(el_id);
-
-		// 			bool stop = false;
-
-		// 			for(int i = 0; i < tmp_mesh.n_face_vertices(el_id); ++i)
-		// 			{
-		// 				if(tmp_mesh.is_boundary_edge(index.edge))
-		// 				{
-		// 					stop = true;
-		// 					break;
-		// 				}
-
-		// 				const auto neigh_index = tmp_mesh.switch_face(index);
-		// 				if(tags[neigh_index.face] != ElementType::RegularInteriorCube)
-		// 				{
-		// 					stop = true;
-		// 					break;
-		// 				}
-
-		// 				const auto f1 = tmp_mesh.switch_face(tmp_mesh.switch_edge(neigh_index						 )).face;
-		// 				const auto f2 = tmp_mesh.switch_face(tmp_mesh.switch_edge(tmp_mesh.switch_vertex(neigh_index))).face;
-		// 				if((f1 >= 0 && tags[f1] != ElementType::RegularInteriorCube) || (f2 >= 0 && tags[f2] != ElementType::RegularInteriorCube ))
-		// 				{
-		// 					stop = true;
-		// 					break;
-		// 				}
-
-		// 				index = tmp_mesh.next_around_face(index);
-		// 			}
-
-		// 			if(stop) continue;
-		// 		}
-
-		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
-		// 		++counter;
-
-		// 		mesh->update_elements_tag();
-
-		// 		if(counter >= n_poly)
-		// 			break;
-
-		// 	}
-
-		// 	if(perturb_t > 0)
-		// 	{
-		// 		if(mesh->is_volume())
-		// 		{
-		// 			assert(false);
-		// 		}
-		// 		else
-		// 		{
-		// 			Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-		// 			for(int el_id = 0; el_id < tmp_mesh.n_elements(); ++el_id)
-		// 			{
-		// 				if(!tmp_mesh.is_polytope(el_id))
-		// 					continue;
-
-		// 				const int rand_index = rand() % tmp_mesh.n_face_vertices(el_id);
-		// 				auto index = tmp_mesh.get_index_from_face(el_id);
-		// 				for(int r = 0; r < rand_index; ++r)
-		// 					index = tmp_mesh.next_around_face(index);
-
-		// 				const auto v1 = tmp_mesh.point(index.vertex);
-		// 				const auto v2 = tmp_mesh.point(tmp_mesh.next_around_face(tmp_mesh.next_around_face(index)).vertex);
-
-		// 				const double t = perturb_t + ((double) rand() / (RAND_MAX)) * 0.2 - 0.1;
-		// 				const RowVectorNd v = t * v1 + (1-t) * v2;
-		// 				tmp_mesh.set_point(index.vertex, v);
-		// 			}
-		// 		}
-		// 	}
-		// }
 	}
 
 	void State::load_febio(const std::string &path, const json &args_in)
 	{
 		FEBioReader::load(path, args_in, *this);
 
-		// igl::Timer timer;
-		// timer.start();
-		// TODO: fix me @zfergus
-		// logger().info("Loading obstacles...");
-		// if (args.contains("obstacles"))
-		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
-		// timer.stop();
-		// logger().info(" took {}s", timer.getElapsedTime());
+		igl::Timer timer;
+		timer.start();
+		logger().info("Loading obstacles...");
+		mesh::read_obstacle_geometry(
+			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["root_path"], mesh->dimension(), obstacle);
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
 	}
 
 	void State::compute_mesh_stats()

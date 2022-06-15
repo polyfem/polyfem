@@ -13,12 +13,12 @@ namespace polyfem
 		class Obstacle
 		{
 		public:
-			// NOTE: index i is only for logging information
 			void append_mesh(
 				const Eigen::MatrixXd &vertices,
 				const Eigen::VectorXi &codim_vertices,
 				const Eigen::MatrixXi &codim_edges,
-				const Eigen::MatrixXi &faces);
+				const Eigen::MatrixXi &faces,
+				const json &displacement);
 			void append_plane(const VectorNd &origin, const VectorNd &normal);
 
 			inline int n_vertices() const { return v_.rows(); }
