@@ -1470,7 +1470,7 @@ namespace polyfem
 					}
 					else
 					{
-						Es(index) = mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+						Es(index) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
 						nus(index) = lambda / (lambda + 2.0 * mu);
 					}
 
@@ -1761,8 +1761,16 @@ namespace polyfem
 				params.lambda_mu(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i), lambda, mu);
 				lambdas(i) = lambda;
 				mus(i) = mu;
-				Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-				nus(i) = lambda / (2.0 * (lambda + mu));
+				if (mesh->is_volume())
+				{
+					Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+					nus(i) = lambda / (2.0 * (lambda + mu));
+				}
+				else
+				{
+					Es(i) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+					nus(i) = lambda / (lambda + 2.0 * mu);
+				}
 				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
 			}
 
