@@ -355,13 +355,13 @@ namespace polyfem
 			if (args["solver"]["contact"]["friction_iterations"] == 0)
 			{
 				logger().info("specified friction_iterations is 0; disabling friction");
-				args["mu"] = 0.0;
+				args["contact"]["friction_coefficient"] = 0.0;
 			}
 			else if (args["solver"]["contact"]["friction_iterations"] < 0)
 			{
 				args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
 			}
-			if (args["mu"] == 0.0)
+			if (args["contact"]["friction_coefficient"] == 0.0)
 			{
 				args["solver"]["contact"]["friction_iterations"] = 0;
 			}
@@ -369,7 +369,7 @@ namespace polyfem
 		else
 		{
 			args["solver"]["contact"]["friction_iterations"] = 0;
-			args["mu"] = 0;
+			args["contact"]["friction_coefficient"] = 0;
 		}
 
 		if (!args.contains("preset_problem"))
