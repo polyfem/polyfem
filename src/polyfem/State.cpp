@@ -43,7 +43,6 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
-#include <filesystem>
 
 #include <polyfem/utils/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
