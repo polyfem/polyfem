@@ -12,6 +12,8 @@ set(SOURCES
 	LaggedRegForm.hpp
 	FrictionForm.cpp
 	FrictionForm.hpp
+	ContactForm.cpp
+	ContactForm.hpp
 )
 
 prepend_current_path(SOURCES)

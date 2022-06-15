@@ -1,45 +1,66 @@
 #pragma once
 
+#include "Form.hpp"
+
+#include <polyfem/State.hpp>
 #include <polyfem/utils/Types.hpp>
+
+#include <ipc/ipc.hpp>
+#include <ipc/broad_phase/broad_phase.hpp>
 
 namespace polyfem
 {
 	namespace solver
 	{
-		class ContactForm
+		class ContactForm : public Form
 		{
 		public:
-			ContactForm();
+			ContactForm(const State &state,
+						const double dhat,
+						const bool use_adaptive_barrier_stiffness,
+						double barrier_stiffness,
+						const bool is_time_dependent,
+						const ipc::BroadPhaseMethod broad_phase_method,
+						const double ccd_tolerance,
+						const int ccd_max_iterations);
 
-			void init(const Eigen::VectorXd &x);
+			void init(const Eigen::VectorXd &x) override;
 
-			virtual double value(const Eigen::VectorXd &x) = 0;
-			virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
-			virtual void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) { hessian.resize(0, 0); }
+			double value(const Eigen::VectorXd &x) override;
+			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+			void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
-			virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
-			virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
+			double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
-			virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
-			virtual void line_search_end() {}
+			void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+			void line_search_end() override;
 
-			virtual void post_step(const int iter_num, const Eigen::VectorXd &x) {}
+			void solution_changed(const Eigen::VectorXd &newX) override;
+			void post_step(const int iter_num, const Eigen::VectorXd &x) override;
 
-			//virtual void update_quantities(const double t, const Eigen::VectorXd &x);
+			void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-			//more than one step?
-			virtual void init_lagging(const Eigen::VectorXd &x){};
-			virtual void update_lagging(const Eigen::VectorXd &x){};
-			virtual double compute_lagging_error(const Eigen::VectorXd &x) { return 0; };
-			virtual bool lagging_converged(const Eigen::VectorXd &x) { return true; };
+		private:
+			const double dhat_;
+			const bool use_adaptive_barrier_stiffness_;
+			double barrier_stiffness_;
 
-			virtual bool stop(const Eigen::VectorXd &x) { return false; }
+			const bool is_time_dependent_;
 
-			void set_project_to_psd(bool val) { project_to_psd = val; }
-			bool is_project_to_psd() const { return project_to_psd; }
+			const ipc::BroadPhaseMethod broad_phase_method_;
+			const double ccd_tolerance_;
+			const int ccd_max_iterations_;
 
-		protected:
-			bool project_to_psd;
+			double prev_distance_;
+			double max_barrier_stiffness_;
+			ipc::Constraints constraint_set_;
+			ipc::Candidates candidates_;
+			bool use_cached_candidates_ = false;
+
+			const State &state_;
+
+			void update_barrier_stiffness(const Eigen::VectorXd &x);
+			void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 		};
 	} // namespace solver
 } // namespace polyfem
