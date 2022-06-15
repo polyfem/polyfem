@@ -112,7 +112,13 @@ def PolyFEM_convert(old):
     # Space
     j["space"] = {}
     copy_entry("discr_order", old, j["space"])
-    rename_entry("bodies_discr_order", old, "discr_order", j["space"])
+    if "bodies_discr_order" in old:
+        j["space"]["discr_order"] = []
+        for order in old["bodies_discr_order"]:
+            j["space"]["discr_order"].append({
+                "id": order["body_id"],
+                "order": order["discr"]
+            })
     copy_entry("pressure_discr_order", old, j["space"])
     copy_entry("use_p_ref", old, j["space"])
 
