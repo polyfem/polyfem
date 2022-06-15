@@ -148,9 +148,9 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	return 0;
 }
 
-TEST_CASE("runners", "[.]")
+TEST_CASE("runners", "[json]")
 {
-	std::ifstream file("all_json.txt");
+	std::ifstream file(POLYFEM_DATA_DIR "/system_test_list.txt");
 	std::string line;
 	spdlog::set_level(spdlog::level::info);
 	while (std::getline(file, line))
@@ -166,7 +166,7 @@ TEST_CASE("runners", "[.]")
 				line = line.substr(1);
 			}
 			spdlog::info("Processing {}", line);
-			auto flag = authenticate_json(line, allow_append);
+			auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, allow_append);
 			CAPTURE(line);
 			CHECK(flag == 0);
 		}
