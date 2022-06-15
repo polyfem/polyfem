@@ -1,0 +1,26 @@
+var classpolyfem_1_1basis_1_1_element_bases =
+[
+    [ "EvalBasesFunc", "classpolyfem_1_1basis_1_1_element_bases.html#aeeada219c048b38a032bd67c9b538024", null ],
+    [ "LocalNodeFromPrimitiveFunc", "classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474", null ],
+    [ "QuadratureFunction", "classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf", null ],
+    [ "compute_quadrature", "classpolyfem_1_1basis_1_1_element_bases.html#a3fe910141a6dd62e404d5eededafb547", null ],
+    [ "eval_geom_mapping", "classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523", null ],
+    [ "eval_geom_mapping_grads", "classpolyfem_1_1basis_1_1_element_bases.html#aa6ed093f463318ed61f89280cd7c2e55", null ],
+    [ "evaluate_bases", "classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6", null ],
+    [ "evaluate_bases_default", "classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89", null ],
+    [ "evaluate_grads", "classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c", null ],
+    [ "evaluate_grads_default", "classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c", null ],
+    [ "is_complete", "classpolyfem_1_1basis_1_1_element_bases.html#a6e17ce1a3d515a82126d02a84ff94a49", null ],
+    [ "local_nodes_for_primitive", "classpolyfem_1_1basis_1_1_element_bases.html#a9fde226f98331cb0c54e13baa95d5a98", null ],
+    [ "set_bases_func", "classpolyfem_1_1basis_1_1_element_bases.html#a0a352d6eecadbe30bf82d8cc475dfeef", null ],
+    [ "set_grads_func", "classpolyfem_1_1basis_1_1_element_bases.html#aa5af92cc96cae3fdb89dbbaf20524f33", null ],
+    [ "set_local_node_from_primitive_func", "classpolyfem_1_1basis_1_1_element_bases.html#a4d8eaf01d57981f0e7449692a742ceb4", null ],
+    [ "set_quadrature", "classpolyfem_1_1basis_1_1_element_bases.html#a2f199c4f37379930fb492028060f9a1c", null ],
+    [ "operator<<", "classpolyfem_1_1basis_1_1_element_bases.html#ae632007f9317ed5883533f791dbc3aa4", null ],
+    [ "bases", "classpolyfem_1_1basis_1_1_element_bases.html#ab3e049455c895d613294cfd10a1bbd9e", null ],
+    [ "eval_bases_func_", "classpolyfem_1_1basis_1_1_element_bases.html#a4e780b2e0aa26209bd5ed6e60e841ba8", null ],
+    [ "eval_grads_func_", "classpolyfem_1_1basis_1_1_element_bases.html#af991f80d3057d11973733b07f13e644d", null ],
+    [ "has_parameterization", "classpolyfem_1_1basis_1_1_element_bases.html#acc2650e04db97cab021eb730be84d215", null ],
+    [ "local_node_from_primitive_", "classpolyfem_1_1basis_1_1_element_bases.html#a9df0ed812e27f48018349b2f283a08ee", null ],
+    [ "quadrature_builder_", "classpolyfem_1_1basis_1_1_element_bases.html#a624d4469689656631ac92a9eebf6fadb", null ]
+];

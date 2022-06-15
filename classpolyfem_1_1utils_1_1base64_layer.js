@@ -1,0 +1,26 @@
+var classpolyfem_1_1utils_1_1base64_layer =
+[
+    [ "base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html#a953d766c8f3063a4fcdf32d9ab86fd99", null ],
+    [ "base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html#a1d4496de8f4423be38a51acd855c3aa5", null ],
+    [ "~base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html#ad33d4ba0b6163b52324b270a19d91e48", null ],
+    [ "add", "classpolyfem_1_1utils_1_1base64_layer.html#a0ecbe15fbcc5921d50a1f8d22394f943", null ],
+    [ "close", "classpolyfem_1_1utils_1_1base64_layer.html#a838c8e73c72c44215f67874b24d094e2", null ],
+    [ "encode0", "classpolyfem_1_1utils_1_1base64_layer.html#a8fab19b550b816690ed104e4f0326329", null ],
+    [ "encode1", "classpolyfem_1_1utils_1_1base64_layer.html#ade750615fd936b8d3a612e648df0e358", null ],
+    [ "encode2", "classpolyfem_1_1utils_1_1base64_layer.html#a5cd76db1328f84383a5484aa585c8782", null ],
+    [ "encode3", "classpolyfem_1_1utils_1_1base64_layer.html#a6837a6b2c3678ce61831d80b6c1cfc4e", null ],
+    [ "operator=", "classpolyfem_1_1utils_1_1base64_layer.html#aae4e8cab1836c6d7804ce4e137d1c79e", null ],
+    [ "reset", "classpolyfem_1_1utils_1_1base64_layer.html#a518896afe71d8d265f43abfd3c5d7d0b", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#abf9b2fce3dde0620386c02533c45797a", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#ae29d22305c8c31d1c239dc5ca31f73c8", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#a36fb5329cb3c36dbbab89422aaff9e4d", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#a167cc9d1a1a30e4ae79bc12567e67e82", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#a4ea8e0e1abbb75a031cd3e71915e2860", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#a507e494e9dad68a96310677c073fb144", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#a537c20c428a7ef746f7c5c6075f0c368", null ],
+    [ "write", "classpolyfem_1_1utils_1_1base64_layer.html#abd7d2b197aabcd95065f76e5b3ee9ca3", null ],
+    [ "dirty_", "classpolyfem_1_1utils_1_1base64_layer.html#a990d202923d8e7643cd7b3078ad440c2", null ],
+    [ "group_", "classpolyfem_1_1utils_1_1base64_layer.html#aab8d988f19847a2f1925c912bc40d74d", null ],
+    [ "groupLen_", "classpolyfem_1_1utils_1_1base64_layer.html#a8df5f8735638dd57e90a7b9fe5caa977", null ],
+    [ "os_", "classpolyfem_1_1utils_1_1base64_layer.html#ac11b17cb7b56d6e4a5214f8943f1a0e8", null ]
+];
