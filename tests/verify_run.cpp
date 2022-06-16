@@ -149,6 +149,8 @@ int authenticate_json(std::string json_file, const bool allow_append)
 
 TEST_CASE("runners", "[json]")
 {
+	// Disabled on Windows CI, due to the requirement for Pardiso.
+	#ifndef WIN32
 	std::ifstream file(POLYFEM_DATA_DIR "/system_test_list.txt");
 	std::string line;
 	spdlog::set_level(spdlog::level::info);
@@ -170,4 +172,5 @@ TEST_CASE("runners", "[json]")
 			CHECK(flag == 0);
 		}
 	}
+	#endif
 }
