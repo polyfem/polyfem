@@ -212,7 +212,10 @@ int main(int argc, char **argv)
 			logger().error("unable to open {} file", json_file);
 		file.close();
 
-		in_args["root_path"] = json_file;
+		if (!in_args.contains("root_path"))
+		{
+			in_args["root_path"] = json_file;
+		}
 
 		if (in_args.contains("common"))
 		{

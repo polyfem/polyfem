@@ -384,21 +384,22 @@ namespace polyfem
 					}
 
 					std::vector<int> loc_nodes;
-					
+
 					bool is_follower = false;
-					if (!mesh3d.is_conforming()) {
+					if (!mesh3d.is_conforming())
+					{
 						for (long n = 0; n < nodes.size(); ++n)
 						{
 							auto &bs = b.bases[nodes(n)];
 							const auto &glob = bs.global();
-							if (glob.size() != 1) 
+							if (glob.size() != 1)
 							{
 								is_follower = true;
 								break;
 							}
 						}
 					}
-					
+
 					if (is_follower)
 						continue;
 
@@ -520,15 +521,6 @@ namespace polyfem
 				boundary_edges.row(i) << edges[i].first, edges[i].second;
 			}
 		}
-	}
-
-	std::string State::resolve_output_path(const std::string &path) const
-	{
-		if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
-		{
-			return path;
-		}
-		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
 	}
 
 	void State::save_json()

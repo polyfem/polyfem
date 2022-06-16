@@ -680,13 +680,13 @@ int FEBasis2d::build_bases(
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_edge_to_data,
-	std::vector<int> &primitive_to_node)
+	std::shared_ptr<MeshNodes> &mesh_nodes)
 {
 
 	Eigen::VectorXi discr_orders(mesh.n_faces());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, primitive_to_node);
+	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 }
 
 int FEBasis2d::build_bases(
@@ -699,7 +699,7 @@ int FEBasis2d::build_bases(
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_edge_to_data,
-	std::vector<int> &primitive_to_node)
+	std::shared_ptr<MeshNodes> &mesh_nodes)
 {
 	assert(!mesh.is_volume());
 	assert(discr_orders.size() == mesh.n_faces());
@@ -715,7 +715,8 @@ int FEBasis2d::build_bases(
 		compute_edge_orders(ncmesh, discr_orders, edge_orders);
 	}
 
-	MeshNodes nodes(mesh, has_polys, !is_geom_bases, (max_p > 1 ? (max_p - 1) : 0) * (is_geom_bases ? 2 : 1), max_p == 0 ? 1 : n_face_nodes);
+	mesh_nodes = std::make_shared<MeshNodes>(mesh, has_polys, !is_geom_bases, (max_p > 1 ? (max_p - 1) : 0) * (is_geom_bases ? 2 : 1), max_p == 0 ? 1 : n_face_nodes);
+	MeshNodes &nodes = *mesh_nodes;
 	std::vector<std::vector<int>> element_nodes_id, edge_virtual_nodes;
 	compute_nodes(mesh, discr_orders, edge_orders, serendipity, has_polys, is_geom_bases, nodes, edge_virtual_nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
@@ -1221,8 +1222,6 @@ int FEBasis2d::build_bases(
 			}
 		}
 	}
-
-	primitive_to_node = nodes.primitive_to_node();
 
 	return nodes.n_nodes();
 }

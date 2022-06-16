@@ -17,7 +17,10 @@ namespace polyfem
 		public:
 			Mesh2D() = default;
 			virtual ~Mesh2D() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(Mesh2D)
+			Mesh2D(Mesh2D &&) = default;
+			Mesh2D &operator=(Mesh2D &&) = default;
+			Mesh2D(const Mesh2D &) = default;
+			Mesh2D &operator=(const Mesh2D &) = default;
 
 			bool is_volume() const override { return false; }
 

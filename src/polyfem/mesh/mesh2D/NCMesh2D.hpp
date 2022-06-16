@@ -158,7 +158,10 @@ namespace polyfem
 
 			NCMesh2D() = default;
 			virtual ~NCMesh2D() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(NCMesh2D)
+			NCMesh2D(NCMesh2D &&) = default;
+			NCMesh2D &operator=(NCMesh2D &&) = default;
+			NCMesh2D(const NCMesh2D &) = default;
+			NCMesh2D &operator=(const NCMesh2D &) = default;
 
 			bool is_conforming() const override { return false; }
 
