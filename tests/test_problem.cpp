@@ -36,7 +36,7 @@ TEST_CASE("franke 2d", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(2);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -129,7 +129,7 @@ TEST_CASE("franke 3d", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(3);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -209,7 +209,7 @@ TEST_CASE("linear", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(2);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -270,7 +270,7 @@ TEST_CASE("quadratic", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(2);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -329,7 +329,7 @@ TEST_CASE("zero bc 2d", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(2);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -363,7 +363,7 @@ TEST_CASE("zero bc 3d", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(2);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -397,7 +397,7 @@ TEST_CASE("elasticity 2d", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(2);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
@@ -467,7 +467,7 @@ TEST_CASE("elasticity 3d", "[problem]")
 
 	AssemblerUtils assembler;
 	assembler.set_size(3);
-	assembler.set_parameters(params);
+	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
 	auto y = pts.col(1).array();
