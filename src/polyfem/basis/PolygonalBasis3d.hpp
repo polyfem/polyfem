@@ -40,28 +40,18 @@ namespace polyfem
 			///
 			/// @brief         Build bases over the remaining polygons of a mesh.
 			///
-			/// @param[in]     n_samples_per_edge    { Number of collocation samples per polygon edge
-			///                                      (including endpoints) }
-			/// @param[in]     mesh                   Input volume mesh
-			/// @param[in]     n_bases                Total number of bases functions in the mesh
-			/// @param[in]     quadrature_order       Quadrature order for the polyhedra
-			/// @param[in]     integral_constraints  { Order of the integral constraints (0 = no
-			///                                      constraints, 1 = linear, 2 = quadratic) }
-			/// @param[in,out] bases                 { List of the different basis (shape functions)
-			///                                      used to discretize the PDE }
-			/// @param[in]     gbases                { List of the different basis used to discretize
-			///                                      the geometry of the mesh }
-			/// @param[in]     poly_face_to_data     { Additional data computed for faces at the
-			///                                      interface with a polygon }
-			/// @param         mapped_boundary       { Map element id > (V, E) triangle mesh surface
-			///                                      formed by the image of the collocation points
-			///                                      trough the geometric mapping of the boundary faces
-			///                                      }
+			/// @param[in]     n_samples_per_edge    Number of collocation samples per polygon edge (including endpoints)
+			/// @param[in]     mesh                  Input volume mesh
+			/// @param[in]     n_bases               Total number of bases functions in the mesh
+			/// @param[in]     quadrature_order      Quadrature order for the polyhedra
+			/// @param[in]     integral_constraints  Order of the integral constraints (0 = no constraints, 1 = linear, 2 = quadratic)
+			/// @param[in,out] bases                 List of the different basis (shape functions) used to discretize the PDE
+			/// @param[in]     gbases                List of the different basis used to discretize the geometry of the mesh
+			/// @param[in]     poly_face_to_data     Additional data computed for faces at the interface with a polygon
+			/// @param         mapped_boundary       Map element id > (V, E) triangle mesh surface formed by the image of the collocation points trough the geometric mapping of the boundary faces
 			/// @param[in]  element_types   Per-element tag indicating the type of each element (see Mesh.hpp)
-			/// @param[in]  values         { Per-element shape functions for the PDE, evaluated over the element,
-			///                            used for the system matrix assembly (used for linear reproduction) }
-			/// @param[in]  gvalues        { Per-element shape functions for the geometric mapping, evaluated over
-			///                            the element (get boundary of the polygon) }
+			/// @param[in]  values         Per-element shape functions for the PDE, evaluated over the element,  used for the system matrix assembly (used for linear reproduction)
+			/// @param[in]  gvalues        Per-element shape functions for the geometric mapping, evaluated over  the element (get boundary of the polygon)
 			///
 			static int build_bases(
 				const assembler::AssemblerUtils &assembler,

@@ -54,7 +54,7 @@ namespace polyfem
 		/// @brief         Orient facets of a 2D mesh so that each connected component
 		///                has positive volume
 		///
-		/// @param[in,out] M     { Surface mesh to reorient }
+		/// @param[in,out] M     Surface mesh to reorient
 		///
 		void orient_normals_2d(GEO::Mesh &M);
 
@@ -62,11 +62,10 @@ namespace polyfem
 		/// @brief         Reorder vertices of a mesh using color tags, so that vertices are ordered by
 		///                increasing colors
 		///
-		/// @param[in,out] V     { #V x d input mesh vertices }
-		/// @param[in,out] F     { #F x k input mesh faces }
+		/// @param[in,out] V     #V x d input mesh vertices
+		/// @param[in,out] F     #F x k input mesh faces
 		/// @param[in]     C      #V per vertex color tag
-		/// @param[out]    R     { max(C)+1 vector of starting indices for each colors (last value is the
-		///                      total number of vertices) }
+		/// @param[out]    R     max(C)+1 vector of starting indices for each colors (last value is the total number of vertices)
 		///
 		void reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R);
 
@@ -80,7 +79,7 @@ namespace polyfem
 		/// @param[in]  V      #V x 3 input mesh vertices
 		/// @param[in]  F      #F x 3 input mesh faces
 		/// @param[in]  P      #P x 3 query points
-		/// @param      D     { #P x 1 computed signed distances, negative inside, positive outside }
+		/// @param      D      #P x 1 computed signed distances, negative inside, positive outside
 		///
 		void signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 									  const Eigen::MatrixXd &P, Eigen::VectorXd &D);
@@ -160,8 +159,7 @@ namespace polyfem
 		/// @param[in]  F             #F x 3 input mesh facets
 		/// @param[in]  num_samples   Number of desired samples
 		/// @param[out] P             num_samples x 3 sample points positions
-		/// @param[out] N            { num_samples x 3 of normals estimated from the original surface
-		///                          (optional argument) }
+		/// @param[out] N             num_samples x 3 of normals estimated from the original surface (optional argument)
 		/// @param[in]  num_lloyd     Number of Lloyd iterations
 		/// @param[in]  num_newton    Number of Newton iterations
 		///

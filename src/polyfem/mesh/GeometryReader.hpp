@@ -94,8 +94,8 @@ namespace polyfem::mesh
 	///
 	/// @brief         Transform a mesh inplace using json parameters including scaling, rotation, and translation
 	///
-	/// @param[in]     transform  json object with the mesh data
-	/// @param[in,out] vertices  { #V x 3/2 input and output vertices positions }
+	/// @param[in]     transform json object with the mesh data
+	/// @param[in,out] vertices  #V x 3/2 input and output vertices positions
 	///
 	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices);
 

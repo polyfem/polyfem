@@ -18,23 +18,12 @@ namespace polyfem
 			///
 			/// @brief      { Initialize RBF functions over a polytope element. }
 			///
-			/// @param[in]  centers               { #C x dim positions of the kernels used to define
-			///                                   functions over the polytope. The centers are placed at
-			///                                   a small offset distance from the boundary of the
-			///                                   element, due to the singularity at the centers }
-			/// @param[in]  collocation_points    { #S x dim positions of the collocation points, used
-			///                                   to approximate the RBF functions over the boundary of
-			///                                   the element }
-			/// @param[in]  local_basis_integral  { #B x dim+dim*(dim+1)/2 of the constant right-hand
-			///                                   side for the integral constraint for each basis over
-			///                                   the polytope }
-			/// @param[in]  quadr                  Quadrature points and weights inside the polytope
-			/// @param[in]  rhs                   { #S x #B of boundary conditions. Each column defines
-			///                                   how the i-th basis of the mesh should evaluate on the
-			///                                   collocation points sampled on the boundary of the
-			///                                   polytope }
-			/// @param[in]  with_constraints      { Impose integral constraints to guarantee linear
-			///                                   reproduction for the Poisson equation }
+			/// @param[in]  centers               #C x dim positions of the kernels used to define functions over the polytope. The centers are placed at a small offset distance from the boundary of the element, due to the singularity at the centers
+			/// @param[in]  collocation_points    #S x dim positions of the collocation points, used to approximate the RBF functions over the boundary of the element
+			/// @param[in]  local_basis_integral  #B x dim+dim*(dim+1)/2 of the constant right-hand side for the integral constraint for each basis over the polytope
+			/// @param[in]  quadr                 Quadrature points and weights inside the polytope
+			/// @param[in]  rhs                   #S x #B of boundary conditions. Each column defines how the i-th basis of the mesh should evaluate on the collocation points sampled on the boundary of the polytope
+			/// @param[in]  with_constraints      Impose integral constraints to guarantee linear reproduction for the Poisson equation
 			///
 			RBFWithQuadraticLagrange(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
 									 const Eigen::MatrixXd &local_basis_integral, const quadrature::Quadrature &quadr,
@@ -44,8 +33,7 @@ namespace polyfem
 			/// @brief      { Evaluates one RBF function over a list of coordinates }
 			///
 			/// @param[in]  local_index   i-th RBF function to evaluate
-			/// @param[in]  uv           { #uv x dim matrix of coordinates to evaluate (in object
-			///                          domain) }
+			/// @param[in]  uv           #uv x dim matrix of coordinates to evaluate (in object domain)
 			/// @param[out] val           #uv x 1 matrix of computed values
 			///
 			void basis(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
@@ -54,8 +42,7 @@ namespace polyfem
 			/// @brief      { Evaluates the gradient of one RBF function over a list of coordinates }
 			///
 			/// @param[in]  local_index   i-th RBF function to evaluate
-			/// @param[in]  uv           { #uv x dim matrix of coordinates to evaluate (in object
-			///                          domain) }
+			/// @param[in]  uv           #uv x dim matrix of coordinates to evaluate (in object domain)
 			/// @param[out] val           #uv x dim matrix of computed gradients
 			///
 			void grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;

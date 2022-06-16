@@ -79,10 +79,7 @@ namespace polyfem
 			/// @param[in]  IV     #IV x (2|3) of vertex positions around the polygon
 			/// @param[out] OV     #OF v (2|3) output vertex positions
 			/// @param[out] OF     list of output polygonal face indices
-			/// @param[in]  t     { Interpolation parameter to place the new vertices on
-			///                   the edge from the barycenter to the outer polygon
-			///                   vertices (0 being at the center, 1 being at the
-			///                   boundary).t should be >= 0.0 and < 1.0 }
+			/// @param[in]  t      Interpolation parameter to place the new vertices on the edge from the barycenter to the outer polygon vertices (0 being at the center, 1 being at the boundary).t should be >= 0.0 and < 1.0 }
 			///
 			void polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t = 0.5);
 
@@ -101,8 +98,8 @@ namespace polyfem
 			/// edges will be inserted every 2 vertices, starting from vertex #1.
 			///
 			/// @param[in]  IV     #IV x (2|3) of vertex positions around the polygon
-			/// @param      OV    { #OF v (2|3) output vertex positions }
-			/// @param      OF    { list of output polygonal face indices }
+			/// @param      OV     #OF v (2|3) output vertex positions
+			/// @param      OF     list of output polygonal face indices
 			///
 			void catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF);
 
@@ -124,8 +121,7 @@ namespace polyfem
 		///
 		/// @param[in]  M_in         Surface mesh to subdivide
 		/// @param[out] M_out        Refined mesh
-		/// @param[in]  split_func  { Functional used to split the new polygon interiors
-		///                         (boundary has already been split) }
+		/// @param[in]  split_func   Functional used to split the new polygon interiors (boundary has already been split)
 		///
 		void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func);
 
