@@ -29,8 +29,8 @@ var dir_45751013e7de66cb9317c15709b40c18 =
     ] ],
     [ "getRSS.c", "get_r_s_s_8c.html", "get_r_s_s_8c" ],
     [ "HashUtils.hpp", "_hash_utils_8hpp.html", [
-      [ "HashPair", "structpolyfem_1_1_hash_pair.html", "structpolyfem_1_1_hash_pair" ],
-      [ "HashVector", "structpolyfem_1_1_hash_vector.html", "structpolyfem_1_1_hash_vector" ]
+      [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
+      [ "HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", "structpolyfem_1_1utils_1_1_hash_vector" ]
     ] ],
     [ "InterpolatedFunction.cpp", "_interpolated_function_8cpp.html", null ],
     [ "InterpolatedFunction.hpp", "_interpolated_function_8hpp.html", [
@@ -48,9 +48,10 @@ var dir_45751013e7de66cb9317c15709b40c18 =
     [ "MshReader.hpp", "_msh_reader_8hpp.html", [
       [ "MshReader", "classpolyfem_1_1utils_1_1_msh_reader.html", null ]
     ] ],
-    [ "OBJReader.cpp", "_o_b_j_reader_8cpp.html", null ],
-    [ "OBJReader.hpp", "_o_b_j_reader_8hpp.html", [
-      [ "OBJReader", "classpolyfem_1_1utils_1_1_o_b_j_reader.html", null ]
+    [ "OBJ_IO.cpp", "_o_b_j___i_o_8cpp.html", null ],
+    [ "OBJ_IO.hpp", "_o_b_j___i_o_8hpp.html", [
+      [ "OBJReader", "classpolyfem_1_1utils_1_1_o_b_j_reader.html", "classpolyfem_1_1utils_1_1_o_b_j_reader" ],
+      [ "OBJWriter", "classpolyfem_1_1utils_1_1_o_b_j_writer.html", "classpolyfem_1_1utils_1_1_o_b_j_writer" ]
     ] ],
     [ "par_for.cpp", "par__for_8cpp.html", "par__for_8cpp" ],
     [ "par_for.hpp", "par__for_8hpp.html", "par__for_8hpp" ],

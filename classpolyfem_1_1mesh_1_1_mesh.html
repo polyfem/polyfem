@@ -149,6 +149,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a156b2a6f79abcf140785ffdd6391964a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbc74f93b8fdf5fde844201a33468c73"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afbc74f93b8fdf5fde844201a33468c73">~Mesh</a> ()=default</td></tr>
 <tr class="separator:afbc74f93b8fdf5fde844201a33468c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae840c57e89317bb67d6dfcd10c10c9de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae840c57e89317bb67d6dfcd10c10c9de">Mesh</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:ae840c57e89317bb67d6dfcd10c10c9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a6ee39ae4427ebe0f0bef223b3fbc46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5a6ee39ae4427ebe0f0bef223b3fbc46">operator=</a> (<a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a5a6ee39ae4427ebe0f0bef223b3fbc46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe427d4d84318b343c376d29eb1adbd4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afe427d4d84318b343c376d29eb1adbd4">Mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;)=default</td></tr>
+<tr class="separator:afe427d4d84318b343c376d29eb1adbd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6203d263cd8243401c244cc9aa838549"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6203d263cd8243401c244cc9aa838549">operator=</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;)=default</td></tr>
+<tr class="separator:a6203d263cd8243401c244cc9aa838549"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad85a6611e9273063472c5339624b12fe"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad85a6611e9273063472c5339624b12fe">refine</a> (const int n_refinement, const double t, std::vector&lt; int &gt; &amp;parent_nodes)=0</td></tr>
 <tr class="separator:ad85a6611e9273063472c5339624b12fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93c9ea4759ded33a8f25ff157033cfd9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume</a> () const =0</td></tr>
@@ -215,30 +223,30 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3cb2c64fbd2615052b400fb1dcd63e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8d68bc06906aa64d4757c7c6fc5f6c2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae8d68bc06906aa64d4757c7c6fc5f6c2">cell_barycenter</a> (const int c) const =0</td></tr>
 <tr class="separator:ae8d68bc06906aa64d4757c7c6fc5f6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55fb62d6410a1bc23ffb3979fe20e146"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a55fb62d6410a1bc23ffb3979fe20e146">edge_barycenters</a> (Eigen::MatrixXd &amp;barycenters) const</td></tr>
-<tr class="separator:a55fb62d6410a1bc23ffb3979fe20e146"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8532f89710d84389e2e7e0baef61d684"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8532f89710d84389e2e7e0baef61d684">face_barycenters</a> (Eigen::MatrixXd &amp;barycenters) const</td></tr>
-<tr class="separator:a8532f89710d84389e2e7e0baef61d684"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03abfa85e8cc8f3322db09ff3d627c26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a03abfa85e8cc8f3322db09ff3d627c26">cell_barycenters</a> (Eigen::MatrixXd &amp;barycenters) const</td></tr>
-<tr class="separator:a03abfa85e8cc8f3322db09ff3d627c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef8b5354d06a6e77b14ade524abda3e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aef8b5354d06a6e77b14ade524abda3e4">edge_barycenters</a> (Eigen::MatrixXd &amp;barycenters) const</td></tr>
+<tr class="separator:aef8b5354d06a6e77b14ade524abda3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6441cc4f2ce2b2f378294ad31f248305"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6441cc4f2ce2b2f378294ad31f248305">face_barycenters</a> (Eigen::MatrixXd &amp;barycenters) const</td></tr>
+<tr class="separator:a6441cc4f2ce2b2f378294ad31f248305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c4ac578d1c5db882716cea38bd80e8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a2c4ac578d1c5db882716cea38bd80e8b">cell_barycenters</a> (Eigen::MatrixXd &amp;barycenters) const</td></tr>
+<tr class="separator:a2c4ac578d1c5db882716cea38bd80e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d11f3bb4a658d850c906dc5e073f08b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1d11f3bb4a658d850c906dc5e073f08b">elements_boxes</a> (std::vector&lt; std::array&lt; Eigen::Vector3d, 2 &gt;&gt; &amp;boxes) const =0</td></tr>
 <tr class="separator:a1d11f3bb4a658d850c906dc5e073f08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a399b7b652be1ffcc392b46a6d1572fec"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a399b7b652be1ffcc392b46a6d1572fec">barycentric_coords</a> (const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p, const int el_id, Eigen::MatrixXd &amp;coord) const =0</td></tr>
 <tr class="separator:a399b7b652be1ffcc392b46a6d1572fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37244a7f1a8b69a2fc9ec3bc2a20a840"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">bounding_box</a> (<a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;min, <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;max) const =0</td></tr>
 <tr class="separator:a37244a7f1a8b69a2fc9ec3bc2a20a840"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61d19c3b6757ecef02d4d7dab1a10640"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a61d19c3b6757ecef02d4d7dab1a10640">is_spline_compatible</a> (const int el_id) const</td></tr>
-<tr class="separator:a61d19c3b6757ecef02d4d7dab1a10640"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a484ae0598f739d2fe4925936240d90fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a484ae0598f739d2fe4925936240d90fd">is_cube</a> (const int el_id) const</td></tr>
-<tr class="separator:a484ae0598f739d2fe4925936240d90fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea9e3c27febae3ea57a04315d9d1aab1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aea9e3c27febae3ea57a04315d9d1aab1">is_polytope</a> (const int el_id) const</td></tr>
-<tr class="separator:aea9e3c27febae3ea57a04315d9d1aab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c925e924c17a0508b54f050b64715b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a7c925e924c17a0508b54f050b64715b3">is_simplex</a> (const int el_id) const</td></tr>
-<tr class="separator:a7c925e924c17a0508b54f050b64715b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6adb866818837b8eb10297b32db964fe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6adb866818837b8eb10297b32db964fe">is_spline_compatible</a> (const int el_id) const</td></tr>
+<tr class="separator:a6adb866818837b8eb10297b32db964fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac6c05b7775df67b96087dc9721ee0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a">is_cube</a> (const int el_id) const</td></tr>
+<tr class="separator:a4ac6c05b7775df67b96087dc9721ee0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e698a1c82ee90edab1e7a607808779"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779">is_polytope</a> (const int el_id) const</td></tr>
+<tr class="separator:a11e698a1c82ee90edab1e7a607808779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62e57386728f26b8feafea1043b65c21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21">is_simplex</a> (const int el_id) const</td></tr>
+<tr class="separator:a62e57386728f26b8feafea1043b65c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa504ff6a32640a72f57b4ba7e6a2b596"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2">ElementType</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa504ff6a32640a72f57b4ba7e6a2b596">elements_tag</a> () const</td></tr>
 <tr class="separator:aa504ff6a32640a72f57b4ba7e6a2b596"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a9456b9875b71ce609ea75c6d50e50c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1a9456b9875b71ce609ea75c6d50e50c">load_boundary_ids</a> (const std::string &amp;path)</td></tr>
-<tr class="separator:a1a9456b9875b71ce609ea75c6d50e50c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6df16c11beccf98404d2a29fb55b93e7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6df16c11beccf98404d2a29fb55b93e7">load_boundary_ids</a> (const std::string &amp;path)</td></tr>
+<tr class="separator:a6df16c11beccf98404d2a29fb55b93e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a6de9cbe928b4411f9413eb102b66d3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8a6de9cbe928b4411f9413eb102b66d3">compute_boundary_ids</a> (const double eps)=0</td></tr>
 <tr class="separator:a8a6de9cbe928b4411f9413eb102b66d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa77157cc1c817bb90b4e30d0f51f5b5f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa77157cc1c817bb90b4e30d0f51f5b5f">compute_boundary_ids</a> (const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;)&gt; &amp;marker)=0</td></tr>
@@ -285,19 +293,23 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa9e6bd69e6a7dff10d11a335390c1062"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a7cfac4a320e0d716e5393781ab259f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9a7cfac4a320e0d716e5393781ab259f">is_linear</a> ()</td></tr>
 <tr class="separator:a9a7cfac4a320e0d716e5393781ab259f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6a27d2fed2556e9d588e774d5d799de"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af6a27d2fed2556e9d588e774d5d799de">edges</a> () const</td></tr>
-<tr class="separator:af6a27d2fed2556e9d588e774d5d799de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9459e69263ac5e2bc4babc583685c6a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad9459e69263ac5e2bc4babc583685c6a">faces</a> () const</td></tr>
-<tr class="separator:ad9459e69263ac5e2bc4babc583685c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9729b125c2d248aca9566c420266dc70"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9729b125c2d248aca9566c420266dc70">edges</a> () const</td></tr>
+<tr class="separator:a9729b125c2d248aca9566c420266dc70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad07dcb246770556ead116247fcad1da5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad07dcb246770556ead116247fcad1da5">faces</a> () const</td></tr>
+<tr class="separator:ad07dcb246770556ead116247fcad1da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13548082edfcbe6bc4bc7ca39ee8be4a"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::pair&lt; int, int &gt;, size_t, <a class="el" href="structpolyfem_1_1utils_1_1_hash_pair.html">polyfem::utils::HashPair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a13548082edfcbe6bc4bc7ca39ee8be4a">edges_to_ids</a> () const</td></tr>
+<tr class="separator:a13548082edfcbe6bc4bc7ca39ee8be4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a870ccdba92d3735bdc3541c84f9815ec"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::vector&lt; int &gt;, size_t, <a class="el" href="structpolyfem_1_1utils_1_1_hash_vector.html">polyfem::utils::HashVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a870ccdba92d3735bdc3541c84f9815ec">faces_to_ids</a> () const</td></tr>
+<tr class="separator:a870ccdba92d3735bdc3541c84f9815ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a1c3d7c26fb196ae12f5f4fa7bdeffb59"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1c3d7c26fb196ae12f5f4fa7bdeffb59">create</a> (const std::string &amp;path, const bool non_conforming=false)</td></tr>
-<tr class="separator:a1c3d7c26fb196ae12f5f4fa7bdeffb59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22ca08b3499b7b4657524c294b8f915d"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a22ca08b3499b7b4657524c294b8f915d">create</a> (GEO::Mesh &amp;M, const bool non_conforming=false)</td></tr>
-<tr class="separator:a22ca08b3499b7b4657524c294b8f915d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa90d8069b3f819b55872f296fa9a929b"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa90d8069b3f819b55872f296fa9a929b">create</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;cells, const bool non_conforming=false)</td></tr>
-<tr class="separator:aa90d8069b3f819b55872f296fa9a929b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac5fea90bccd67b90530342e6bed96b1"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aac5fea90bccd67b90530342e6bed96b1">create</a> (const std::string &amp;path, const bool non_conforming=false)</td></tr>
+<tr class="separator:aac5fea90bccd67b90530342e6bed96b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa671492edb4624e593b5b9e18098a16c"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa671492edb4624e593b5b9e18098a16c">create</a> (GEO::Mesh &amp;M, const bool non_conforming=false)</td></tr>
+<tr class="separator:aa671492edb4624e593b5b9e18098a16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a5cfda12f4c4a2a534ca3c396858015"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5a5cfda12f4c4a2a534ca3c396858015">create</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;cells, const bool non_conforming=false)</td></tr>
+<tr class="separator:a5a5cfda12f4c4a2a534ca3c396858015"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -329,7 +341,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a156b2a6f79abcf140785ffdd6391964a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a156b2a6f79abcf140785ffdd6391964a">&#9670;&nbsp;</a></span>Mesh()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a156b2a6f79abcf140785ffdd6391964a">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -372,6 +384,58 @@ Protected Attributes</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae840c57e89317bb67d6dfcd10c10c9de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae840c57e89317bb67d6dfcd10c10c9de">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::mesh::Mesh::Mesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe427d4d84318b343c376d29eb1adbd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe427d4d84318b343c376d29eb1adbd4">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::mesh::Mesh::Mesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -565,14 +629,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a03abfa85e8cc8f3322db09ff3d627c26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03abfa85e8cc8f3322db09ff3d627c26">&#9670;&nbsp;</a></span>cell_barycenters()</h2>
+<a id="a2c4ac578d1c5db882716cea38bd80e8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c4ac578d1c5db882716cea38bd80e8b">&#9670;&nbsp;</a></span>cell_barycenters()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Mesh::cell_barycenters </td>
+          <td class="memname">void polyfem::mesh::Mesh::cell_barycenters </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>barycenters</em></td><td>)</td>
@@ -870,8 +934,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa90d8069b3f819b55872f296fa9a929b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa90d8069b3f819b55872f296fa9a929b">&#9670;&nbsp;</a></span>create() <span class="overload">[1/3]</span></h2>
+<a id="a5a5cfda12f4c4a2a534ca3c396858015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a5cfda12f4c4a2a534ca3c396858015">&#9670;&nbsp;</a></span>create() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -880,7 +944,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; Mesh::create </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; polyfem::mesh::Mesh::create </td>
           <td>(</td>
           <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>vertices</em>, </td>
@@ -912,8 +976,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1c3d7c26fb196ae12f5f4fa7bdeffb59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c3d7c26fb196ae12f5f4fa7bdeffb59">&#9670;&nbsp;</a></span>create() <span class="overload">[2/3]</span></h2>
+<a id="aac5fea90bccd67b90530342e6bed96b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac5fea90bccd67b90530342e6bed96b1">&#9670;&nbsp;</a></span>create() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -922,7 +986,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; Mesh::create </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; polyfem::mesh::Mesh::create </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>path</em>, </td>
@@ -948,8 +1012,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a22ca08b3499b7b4657524c294b8f915d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22ca08b3499b7b4657524c294b8f915d">&#9670;&nbsp;</a></span>create() <span class="overload">[3/3]</span></h2>
+<a id="aa671492edb4624e593b5b9e18098a16c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa671492edb4624e593b5b9e18098a16c">&#9670;&nbsp;</a></span>create() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -958,7 +1022,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; Mesh::create </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; polyfem::mesh::Mesh::create </td>
           <td>(</td>
           <td class="paramtype">GEO::Mesh &amp;&#160;</td>
           <td class="paramname"><em>M</em>, </td>
@@ -1037,14 +1101,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a55fb62d6410a1bc23ffb3979fe20e146"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55fb62d6410a1bc23ffb3979fe20e146">&#9670;&nbsp;</a></span>edge_barycenters()</h2>
+<a id="aef8b5354d06a6e77b14ade524abda3e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef8b5354d06a6e77b14ade524abda3e4">&#9670;&nbsp;</a></span>edge_barycenters()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Mesh::edge_barycenters </td>
+          <td class="memname">void polyfem::mesh::Mesh::edge_barycenters </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>barycenters</em></td><td>)</td>
@@ -1121,14 +1185,31 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="af6a27d2fed2556e9d588e774d5d799de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af6a27d2fed2556e9d588e774d5d799de">&#9670;&nbsp;</a></span>edges()</h2>
+<a id="a9729b125c2d248aca9566c420266dc70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9729b125c2d248aca9566c420266dc70">&#9670;&nbsp;</a></span>edges()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::pair&lt; int, int &gt; &gt; Mesh::edges </td>
+          <td class="memname">std::vector&lt; std::pair&lt; int, int &gt; &gt; polyfem::mesh::Mesh::edges </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13548082edfcbe6bc4bc7ca39ee8be4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13548082edfcbe6bc4bc7ca39ee8be4a">&#9670;&nbsp;</a></span>edges_to_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::pair&lt; int, int &gt;, size_t, <a class="el" href="structpolyfem_1_1utils_1_1_hash_pair.html">HashPair</a> &gt; polyfem::mesh::Mesh::edges_to_ids </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1219,14 +1300,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a8532f89710d84389e2e7e0baef61d684"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8532f89710d84389e2e7e0baef61d684">&#9670;&nbsp;</a></span>face_barycenters()</h2>
+<a id="a6441cc4f2ce2b2f378294ad31f248305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6441cc4f2ce2b2f378294ad31f248305">&#9670;&nbsp;</a></span>face_barycenters()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Mesh::face_barycenters </td>
+          <td class="memname">void polyfem::mesh::Mesh::face_barycenters </td>
           <td>(</td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>barycenters</em></td><td>)</td>
@@ -1275,14 +1356,31 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ad9459e69263ac5e2bc4babc583685c6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9459e69263ac5e2bc4babc583685c6a">&#9670;&nbsp;</a></span>faces()</h2>
+<a id="ad07dcb246770556ead116247fcad1da5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad07dcb246770556ead116247fcad1da5">&#9670;&nbsp;</a></span>faces()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::vector&lt; int &gt; &gt; Mesh::faces </td>
+          <td class="memname">std::vector&lt; std::vector&lt; int &gt; &gt; polyfem::mesh::Mesh::faces </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a870ccdba92d3735bdc3541c84f9815ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a870ccdba92d3735bdc3541c84f9815ec">&#9670;&nbsp;</a></span>faces_to_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::vector&lt; int &gt;, size_t, <a class="el" href="structpolyfem_1_1utils_1_1_hash_vector.html">HashVector</a> &gt; polyfem::mesh::Mesh::faces_to_ids </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1644,14 +1742,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a484ae0598f739d2fe4925936240d90fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a484ae0598f739d2fe4925936240d90fd">&#9670;&nbsp;</a></span>is_cube()</h2>
+<a id="a4ac6c05b7775df67b96087dc9721ee0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac6c05b7775df67b96087dc9721ee0a">&#9670;&nbsp;</a></span>is_cube()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Mesh::is_cube </td>
+          <td class="memname">bool polyfem::mesh::Mesh::is_cube </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>el_id</em></td><td>)</td>
@@ -1687,14 +1785,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aea9e3c27febae3ea57a04315d9d1aab1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea9e3c27febae3ea57a04315d9d1aab1">&#9670;&nbsp;</a></span>is_polytope()</h2>
+<a id="a11e698a1c82ee90edab1e7a607808779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e698a1c82ee90edab1e7a607808779">&#9670;&nbsp;</a></span>is_polytope()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Mesh::is_polytope </td>
+          <td class="memname">bool polyfem::mesh::Mesh::is_polytope </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>el_id</em></td><td>)</td>
@@ -1730,14 +1828,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a7c925e924c17a0508b54f050b64715b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c925e924c17a0508b54f050b64715b3">&#9670;&nbsp;</a></span>is_simplex()</h2>
+<a id="a62e57386728f26b8feafea1043b65c21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62e57386728f26b8feafea1043b65c21">&#9670;&nbsp;</a></span>is_simplex()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Mesh::is_simplex </td>
+          <td class="memname">bool polyfem::mesh::Mesh::is_simplex </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>el_id</em></td><td>)</td>
@@ -1748,14 +1846,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a61d19c3b6757ecef02d4d7dab1a10640"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61d19c3b6757ecef02d4d7dab1a10640">&#9670;&nbsp;</a></span>is_spline_compatible()</h2>
+<a id="a6adb866818837b8eb10297b32db964fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6adb866818837b8eb10297b32db964fe">&#9670;&nbsp;</a></span>is_spline_compatible()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Mesh::is_spline_compatible </td>
+          <td class="memname">bool polyfem::mesh::Mesh::is_spline_compatible </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>el_id</em></td><td>)</td>
@@ -1849,8 +1947,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1a9456b9875b71ce609ea75c6d50e50c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a9456b9875b71ce609ea75c6d50e50c">&#9670;&nbsp;</a></span>load_boundary_ids()</h2>
+<a id="a6df16c11beccf98404d2a29fb55b93e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6df16c11beccf98404d2a29fb55b93e7">&#9670;&nbsp;</a></span>load_boundary_ids()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1859,7 +1957,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Mesh::load_boundary_ids </td>
+          <td class="memname">void polyfem::mesh::Mesh::load_boundary_ids </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>path</em></td><td>)</td>
@@ -2060,6 +2158,58 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a70bdeea0280ec9b79249fd9189c5a177">polyfem::mesh::NCMesh3D</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9c12fc997e0ab5a75f0aa7ef3d304a5e">polyfem::mesh::NCMesh2D</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a202782e874b2da497c3348f0cf35c671">polyfem::mesh::CMesh2D</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3b7e9828faef7f242c99d377b5ecfa5c">polyfem::mesh::CMesh3D</a>.</p>
+
+</div>
+</div>
+<a id="a6203d263cd8243401c244cc9aa838549"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6203d263cd8243401c244cc9aa838549">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a>&amp; polyfem::mesh::Mesh::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a6ee39ae4427ebe0f0bef223b3fbc46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a6ee39ae4427ebe0f0bef223b3fbc46">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a>&amp; polyfem::mesh::Mesh::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

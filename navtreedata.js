@@ -62,7 +62,6 @@ var NAVTREE =
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
-        [ "Typedefs", "globals_type.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -72,21 +71,22 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_l_n_l_problem_8cpp.html",
-"_maybe_parallel_for_8hpp.html#ad20302c105652db61d40fbfcb81847ae",
-"_refinement_8hpp_source.html",
-"classcppoptlib_1_1_sparse_newton_descent_solver.html#ad981db542a2923317daa1fea9bb3adf9",
-"classpolyfem_1_1_u_i_state.html#a0fb50f35dfc1b4b3f60fb794ff4ece29",
-"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a5b5b9871faca53cfe2f24f3896004e1f",
-"classpolyfem_1_1assembler_1_1_rhs_assembler.html#a5b343c891a021a28b2e97d85d451d6d8",
-"classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3cbd9bb6834702fde4e2c8e88b83559f",
-"classpolyfem_1_1mesh_1_1_mesh_nodes.html#aafc383aca92ce25e74913662514e4ec5",
-"classpolyfem_1_1mesh_1_1_obstacle.html#a5604d5fa6fc1d18835c06b4b68d16ce7",
-"classpolyfem_1_1problem_1_1_kovnaszy.html#a7883a5de03e21cbfe08b6fd6d07b1407",
-"classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#ae170f1047a6c61d414075fdb02620aa9",
-"classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ade83a13fd06d36a236fdad9d4c4a15b5",
-"classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8",
-"namespacemembers_func_v.html",
-"struct_d_scalar2.html#a73afde2f7f8de6d69e669d9bfdc88a75"
+"_maybe_parallel_for_8hpp_source.html",
+"_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c",
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#aef326b7f5c2669fdd8f0db99e3b4b3c3",
+"classpolyfem_1_1_u_i_state.html#a116716154f0897031f7972980060c6d0",
+"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a687e27f9edbed05acbee23958d5af33f",
+"classpolyfem_1_1assembler_1_1_rhs_assembler.html#a5f5723dff0acc68a6f76ddc493391860",
+"classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3a26e81950e88f18e58e9f1502688d6c",
+"classpolyfem_1_1mesh_1_1_mesh_nodes.html#a34729f1f45478d5a8bafad2b6916a45e",
+"classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ac0f5cb1c220c2224aa730bcb475dde80",
+"classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7",
+"classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a6f47de54c9af214b62dd3bcaff74768e",
+"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aadbf2d1db0cfce91b378fabc1e694b35",
+"classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a2e25238cd3b1a6a442ccdaa137bc2cea",
+"index.html#autotoc_md5",
+"struct_d_scalar1.html#ab8fe136ed51dffc7efaa79ca8aef7879",
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

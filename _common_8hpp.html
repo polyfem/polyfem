@@ -115,7 +115,7 @@ $(document).ready(function(){initNavTree('_common_8hpp.html',''); initResizable(
 
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">Common.hpp File Reference</div>  </div>
@@ -138,78 +138,16 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="_common_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ac8a0e9afb983dbed8532650e402ecdc4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_common_8hpp.html#ac8a0e9afb983dbed8532650e402ecdc4">POLYFEM_DEFAULT_MOVE_COPY</a>(Base)</td></tr>
-<tr class="separator:ac8a0e9afb983dbed8532650e402ecdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66009e0aabe56bf988384b7fd7b4671f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_common_8hpp.html#a66009e0aabe56bf988384b7fd7b4671f">POLYFEM_DELETE_MOVE_COPY</a>(Base)</td></tr>
-<tr class="separator:a66009e0aabe56bf988384b7fd7b4671f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ab701e3ac61a85b337ec5c1abaad6742d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json</td></tr>
-<tr class="separator:ab701e3ac61a85b337ec5c1abaad6742d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77fa8fe96825827f2af726fcf6405d15"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a> = nlohmann::json</td></tr>
+<tr class="separator:a77fa8fe96825827f2af726fcf6405d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ac8a0e9afb983dbed8532650e402ecdc4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8a0e9afb983dbed8532650e402ecdc4">&#9670;&nbsp;</a></span>POLYFEM_DEFAULT_MOVE_COPY</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define POLYFEM_DEFAULT_MOVE_COPY</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Base</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    Base(Base &amp;&amp;) = <span class="keywordflow">default</span>;            \</div>
-<div class="line">    Base &amp;operator=(Base &amp;&amp;) = <span class="keywordflow">default</span>; \</div>
-<div class="line">    Base(<span class="keyword">const</span> Base &amp;) = <span class="keywordflow">default</span>;       \</div>
-<div class="line">    Base &amp;operator=(<span class="keyword">const</span> Base &amp;) = <span class="keywordflow">default</span>;</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a66009e0aabe56bf988384b7fd7b4671f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66009e0aabe56bf988384b7fd7b4671f">&#9670;&nbsp;</a></span>POLYFEM_DELETE_MOVE_COPY</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define POLYFEM_DELETE_MOVE_COPY</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Base</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    Base(Base &amp;&amp;) = <span class="keyword">delete</span>;            \</div>
-<div class="line">    Base &amp;operator=(Base &amp;&amp;) = <span class="keyword">delete</span>; \</div>
-<div class="line">    Base(<span class="keyword">const</span> Base &amp;) = <span class="keyword">delete</span>;       \</div>
-<div class="line">    Base &amp;operator=(<span class="keyword">const</span> Base &amp;) = <span class="keyword">delete</span>;</div>
-</div><!-- fragment -->
-</div>
-</div>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="ab701e3ac61a85b337ec5c1abaad6742d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab701e3ac61a85b337ec5c1abaad6742d">&#9670;&nbsp;</a></span>json</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> =  nlohmann::json</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

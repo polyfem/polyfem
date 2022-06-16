@@ -144,7 +144,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa2ea04e17108eeedd7d14652245a62e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03b8e81275c22a5f361547f45a012899"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a03b8e81275c22a5f361547f45a012899">init_logger</a> (std::vector&lt; spdlog::sink_ptr &gt; &amp;sinks, int log_level)</td></tr>
 <tr class="separator:a03b8e81275c22a5f361547f45a012899"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1649c010ebecb92f2b8089619f3dbacb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1649c010ebecb92f2b8089619f3dbacb">init</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>, const std::string &amp;<a class="el" href="classpolyfem_1_1_state.html#a34ad4df546a9f0f7e5bd8425d47288aa">output_dir</a>=&quot;&quot;)</td></tr>
+<tr class="memitem:a1649c010ebecb92f2b8089619f3dbacb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1649c010ebecb92f2b8089619f3dbacb">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>, const std::string &amp;<a class="el" href="classpolyfem_1_1_state.html#a34ad4df546a9f0f7e5bd8425d47288aa">output_dir</a>=&quot;&quot;)</td></tr>
 <tr class="separator:a1649c010ebecb92f2b8089619f3dbacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9deda49dd05c34bd6934d30f7cd0640f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9deda49dd05c34bd6934d30f7cd0640f">init_timesteps</a> ()</td></tr>
 <tr class="separator:a9deda49dd05c34bd6934d30f7cd0640f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,7 +156,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3675021f11df56e39be90ed4045125d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a> (bool non_conforming=false, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;())</td></tr>
 <tr class="separator:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">load_febio</a> (const std::string &amp;path, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;args_in)</td></tr>
+<tr class="memitem:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">load_febio</a> (const std::string &amp;path, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args_in)</td></tr>
 <tr class="memdesc:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads a febio file, uses args_in for default  <a href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">More...</a><br /></td></tr>
 <tr class="separator:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d7e06f66912cc77b1d942340211ddb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9">load_mesh</a> (GEO::Mesh &amp;meshin, const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;)&gt; &amp;boundary_marker, bool non_conforming=false, bool skip_boundary_sideset=false)</td></tr>
@@ -209,7 +209,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a54d7fdb2ff62cf895a832fde7e467d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb0853f957801d8aa005f7e014ef2825"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#acb0853f957801d8aa005f7e014ef2825">solve_transient_tensor_non_linear_init</a> (const double t0, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler)</td></tr>
 <tr class="separator:acb0853f957801d8aa005f7e014ef2825"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ad8210b5469eae99d6381fdf372f176"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1ad8210b5469eae99d6381fdf372f176">solve_transient_tensor_non_linear_step</a> (const double t0, const double dt, const int t, <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">solver_info</a>)</td></tr>
+<tr class="memitem:a1ad8210b5469eae99d6381fdf372f176"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1ad8210b5469eae99d6381fdf372f176">solve_transient_tensor_non_linear_step</a> (const double t0, const double dt, const int t, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">solver_info</a>)</td></tr>
 <tr class="separator:a1ad8210b5469eae99d6381fdf372f176"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d47bb299f06cc3fa8472fe5330a301f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a8d47bb299f06cc3fa8472fe5330a301f">solve_linear</a> ()</td></tr>
 <tr class="separator:a8d47bb299f06cc3fa8472fe5330a301f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,13 +253,18 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8cac5e0351b67fc9f3efdd3480ea7015"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75b702eb832ecfd6e8e26738867d265b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a75b702eb832ecfd6e8e26738867d265b">get_sidesets</a> (Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXd &amp;sidesets)</td></tr>
 <tr class="separator:a75b702eb832ecfd6e8e26738867d265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac88421c18e5901cf28c0b21a3ddf27d9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ac88421c18e5901cf28c0b21a3ddf27d9">resolve_input_path</a> (const std::string &amp;path) const</td></tr>
-<tr class="separator:ac88421c18e5901cf28c0b21a3ddf27d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18c94c14eb94feb4a1f82cf8d053b97f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f">root_path</a> () const</td></tr>
+<tr class="memdesc:a18c94c14eb94feb4a1f82cf8d053b97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the root path for the state (e.g., args["root_path"] or ".")  <a href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f">More...</a><br /></td></tr>
+<tr class="separator:a18c94c14eb94feb4a1f82cf8d053b97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfcd600796cd24e1555454a1d31f2fc2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2">resolve_input_path</a> (const std::string &amp;path, const bool only_if_exists=false) const</td></tr>
+<tr class="memdesc:acfcd600796cd24e1555454a1d31f2fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve path relative to <a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">root_path()</a> if the path is not absolute.  <a href="classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2">More...</a><br /></td></tr>
+<tr class="separator:acfcd600796cd24e1555454a1d31f2fc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d27977bcc27d9827913ea573e6fef3a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a> (const std::string &amp;path) const</td></tr>
+<tr class="memdesc:a2d27977bcc27d9827913ea573e6fef3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve path relative to output_dir if the path is not absolute.  <a href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">More...</a><br /></td></tr>
 <tr class="separator:a2d27977bcc27d9827913ea573e6fef3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b51101cfaa31b6a3b0f701923b4716e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1b51101cfaa31b6a3b0f701923b4716e">save_json</a> (std::ostream &amp;out)</td></tr>
 <tr class="separator:a1b51101cfaa31b6a3b0f701923b4716e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9379a451939e1ccb3f055c7acc591ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae9379a451939e1ccb3f055c7acc591ee">save_json</a> (<a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">nlohmann::json</a> &amp;j)</td></tr>
+<tr class="memitem:ae9379a451939e1ccb3f055c7acc591ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae9379a451939e1ccb3f055c7acc591ee">save_json</a> (nlohmann::json &amp;j)</td></tr>
 <tr class="separator:ae9379a451939e1ccb3f055c7acc591ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56de5a26227bca2913c2e89274e3e58c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a56de5a26227bca2913c2e89274e3e58c">save_json</a> ()</td></tr>
 <tr class="separator:a56de5a26227bca2913c2e89274e3e58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -307,7 +312,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a813d80fa2f8ebcf6fa4a09ffb9b5da99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a></td></tr>
+<tr class="memitem:a813d80fa2f8ebcf6fa4a09ffb9b5da99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a></td></tr>
 <tr class="separator:a813d80fa2f8ebcf6fa4a09ffb9b5da99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34ad4df546a9f0f7e5bd8425d47288aa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a34ad4df546a9f0f7e5bd8425d47288aa">output_dir</a></td></tr>
 <tr class="separator:a34ad4df546a9f0f7e5bd8425d47288aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -321,8 +326,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a621210532209805e520415654a6c505e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae871a565c4281f4ba731ecef8130f9c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#aae871a565c4281f4ba731ecef8130f9c">pressure_bases</a></td></tr>
 <tr class="separator:aae871a565c4281f4ba731ecef8130f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61c34442c1476d0469a1c14cff35c906"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a61c34442c1476d0469a1c14cff35c906">primitive_to_node</a></td></tr>
-<tr class="separator:a61c34442c1476d0469a1c14cff35c906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e3564e25632010bfdf4bc7b9f3406e2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">polyfem::mesh::MeshNodes</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a6e3564e25632010bfdf4bc7b9f3406e2">mesh_nodes</a></td></tr>
+<tr class="separator:a6e3564e25632010bfdf4bc7b9f3406e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01a4dad6f731acfcb3322dd119a9b64f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a01a4dad6f731acfcb3322dd119a9b64f">geom_bases</a></td></tr>
 <tr class="separator:a01a4dad6f731acfcb3322dd119a9b64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c6908cbfd6971f8b61316bea21bd19d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">assembler::AssemblyValsCache</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a0c6908cbfd6971f8b61316bea21bd19d">ass_vals_cache</a></td></tr>
@@ -401,7 +406,7 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a05797a3e363ec1c26e7be944e4e5593c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae526ab000cd9872931d1553bc330478e"><td class="memItemLeft" align="right" valign="top">Eigen::Vector4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae526ab000cd9872931d1553bc330478e">spectrum</a></td></tr>
 <tr class="separator:ae526ab000cd9872931d1553bc330478e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab84ec10e82427628979cdcf5c010892b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">solver_info</a></td></tr>
+<tr class="memitem:ab84ec10e82427628979cdcf5c010892b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">solver_info</a></td></tr>
 <tr class="separator:ab84ec10e82427628979cdcf5c010892b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c6c57f7ebcb9808be8e53671afafe48"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48">use_avg_pressure</a></td></tr>
 <tr class="separator:a2c6c57f7ebcb9808be8e53671afafe48"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1354,7 +1359,7 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void polyfem::State::init </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>args</em>, </td>
         </tr>
         <tr>
@@ -2032,7 +2037,7 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>args_in</em>&#160;</td>
         </tr>
         <tr>
@@ -2350,29 +2355,33 @@ template&lt;typename ProblemType &gt; </div>
 
 </div>
 </div>
-<a id="ac88421c18e5901cf28c0b21a3ddf27d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac88421c18e5901cf28c0b21a3ddf27d9">&#9670;&nbsp;</a></span>resolve_input_path()</h2>
+<a id="acfcd600796cd24e1555454a1d31f2fc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfcd600796cd24e1555454a1d31f2fc2">&#9670;&nbsp;</a></span>resolve_input_path()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::string polyfem::State::resolve_input_path </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>path</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>only_if_exists</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
+
+<p>Resolve path relative to <a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">root_path()</a> if the path is not absolute. </p>
 
 </div>
 </div>
@@ -2391,6 +2400,27 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Resolve path relative to output_dir if the path is not absolute. </p>
+
+</div>
+</div>
+<a id="a18c94c14eb94feb4a1f82cf8d053b97f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18c94c14eb94feb4a1f82cf8d053b97f">&#9670;&nbsp;</a></span>root_path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::State::root_path </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the root path for the state (e.g., args["root_path"] or ".") </p>
 
 </div>
 </div>
@@ -2420,7 +2450,7 @@ template&lt;typename ProblemType &gt; </div>
         <tr>
           <td class="memname">void polyfem::State::save_json </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">nlohmann::json</a> &amp;&#160;</td>
+          <td class="paramtype">nlohmann::json &amp;&#160;</td>
           <td class="paramname"><em>j</em></td><td>)</td>
           <td></td>
         </tr>
@@ -3148,7 +3178,7 @@ template&lt;typename ProblemType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>solver_info</em>&#160;</td>
         </tr>
         <tr>
@@ -3169,7 +3199,7 @@ template&lt;typename ProblemType &gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> polyfem::State::args</td>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> polyfem::State::args</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3806,6 +3836,20 @@ template&lt;typename ProblemType &gt; </div>
 
 </div>
 </div>
+<a id="a6e3564e25632010bfdf4bc7b9f3406e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e3564e25632010bfdf4bc7b9f3406e2">&#9670;&nbsp;</a></span>mesh_nodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">polyfem::mesh::MeshNodes</a>&gt; polyfem::State::mesh_nodes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ad788d1ffa64a6b1471e494f224e3587b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad788d1ffa64a6b1471e494f224e3587b">&#9670;&nbsp;</a></span>mesh_size</h2>
 
@@ -4100,20 +4144,6 @@ template&lt;typename ProblemType &gt; </div>
 
 </div>
 </div>
-<a id="a61c34442c1476d0469a1c14cff35c906"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61c34442c1476d0469a1c14cff35c906">&#9670;&nbsp;</a></span>primitive_to_node</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;int&gt; polyfem::State::primitive_to_node</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a799e2a119d49943bab7ca9b0de7c09f6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a799e2a119d49943bab7ca9b0de7c09f6">&#9670;&nbsp;</a></span>problem</h2>
 
@@ -4317,7 +4347,7 @@ template&lt;typename ProblemType &gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> polyfem::State::solver_info</td>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> polyfem::State::solver_info</td>
         </tr>
       </table>
 </div><div class="memdoc">

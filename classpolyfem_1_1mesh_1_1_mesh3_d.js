@@ -2,6 +2,8 @@ var classpolyfem_1_1mesh_1_1_mesh3_d =
 [
     [ "Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a73c53a8588f963cab62965b85e29ed15", null ],
     [ "~Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a3de844749eb1dfc19950dec5363dbc5d", null ],
+    [ "Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a6d7673e896e574aa544378006ededb47", null ],
+    [ "Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a43e7141a7102cd8c1543143918aadf4c", null ],
     [ "barycentric_coords", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ab4e611c0e23d4bd77355ad00843c1e00", null ],
     [ "cell_edge", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a3ff76dbfc406b591c3fa82bd6c6269e7", null ],
     [ "cell_face", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7", null ],
@@ -28,6 +30,8 @@ var classpolyfem_1_1mesh_1_1_mesh3_d =
     [ "n_cell_vertices", "classpolyfem_1_1mesh_1_1_mesh3_d.html#aabb8f39b3828bb4e20d355760dd421b1", null ],
     [ "next_around_edge", "classpolyfem_1_1mesh_1_1_mesh3_d.html#aae474e9bb4c3a280b8157e1ae8ed1450", null ],
     [ "next_around_face", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285", null ],
+    [ "operator=", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a635cdb19cda7b0f2deb1427cf2b797ad", null ],
+    [ "operator=", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ab758522de6f44552c112906cbef9ea5c", null ],
     [ "save", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a025fdc77cc0b452bc9a28187ff8e420a", null ],
     [ "switch_edge", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ab2a59e977bce042ef0e75782536f49c4", null ],
     [ "switch_element", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf", null ],

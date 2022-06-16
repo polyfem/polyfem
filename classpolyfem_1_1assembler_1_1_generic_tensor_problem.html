@@ -167,7 +167,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a42e6897ecbcdd6ecb2db982244bc471a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8de0f06f128befabcf4e8315f97696f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8de0f06f128befabcf4e8315f97696f5">initial_acceleration</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const override</td></tr>
 <tr class="separator:a8de0f06f128befabcf4e8315f97696f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3286b846bdcde273f9713d019d6053d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3286b846bdcde273f9713d019d6053d2">set_parameters</a> (const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;params) override</td></tr>
+<tr class="memitem:a3286b846bdcde273f9713d019d6053d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3286b846bdcde273f9713d019d6053d2">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
 <tr class="separator:a3286b846bdcde273f9713d019d6053d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b5d724692b79b4e82cee829d63411c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9b5d724692b79b4e82cee829d63411c9">is_dimension_dirichet</a> (const int tag, const int dim) const override</td></tr>
 <tr class="separator:a9b5d724692b79b4e82cee829d63411c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -201,17 +201,17 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a687e27f9edbed05acbee23958d5af33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01536f257dd33839663f73f6f56069b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a01536f257dd33839663f73f6f56069b0">update_pressure_boundary</a> (const int id, const std::function&lt; double(double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t)&gt; &amp;func, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_interpolation.html">Interpolation</a> &gt; &amp;interp=std::make_shared&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_no_interpolation.html">NoInterpolation</a> &gt;())</td></tr>
 <tr class="separator:a01536f257dd33839663f73f6f56069b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5728589d3f24ab533c705f5cee6183cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a5728589d3f24ab533c705f5cee6183cf">add_dirichlet_boundary</a> (const int id, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a341ec25b68c17c79197f48228b086038">isx</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a0049a3d103fd64e962a5c00dd2e1d64a">isy</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a713b93670d06678320652be82107bb0d">isz</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
+<tr class="memitem:a5728589d3f24ab533c705f5cee6183cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a5728589d3f24ab533c705f5cee6183cf">add_dirichlet_boundary</a> (const int id, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a341ec25b68c17c79197f48228b086038">isx</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a0049a3d103fd64e962a5c00dd2e1d64a">isy</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a713b93670d06678320652be82107bb0d">isz</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
 <tr class="separator:a5728589d3f24ab533c705f5cee6183cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2dfb132f15290d8f5849e42f791f961c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a2dfb132f15290d8f5849e42f791f961c">add_neumann_boundary</a> (const int id, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
+<tr class="memitem:a2dfb132f15290d8f5849e42f791f961c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a2dfb132f15290d8f5849e42f791f961c">add_neumann_boundary</a> (const int id, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
 <tr class="separator:a2dfb132f15290d8f5849e42f791f961c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae60e643880964bc452f918978725abf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ae60e643880964bc452f918978725abf5">add_pressure_boundary</a> (const int id, <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
+<tr class="memitem:ae60e643880964bc452f918978725abf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ae60e643880964bc452f918978725abf5">add_pressure_boundary</a> (const int id, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> <a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
 <tr class="separator:ae60e643880964bc452f918978725abf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59cc80428b158cddb140fb3f74f3e00c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a59cc80428b158cddb140fb3f74f3e00c">update_dirichlet_boundary</a> (const int id, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a341ec25b68c17c79197f48228b086038">isx</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a0049a3d103fd64e962a5c00dd2e1d64a">isy</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a713b93670d06678320652be82107bb0d">isz</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
+<tr class="memitem:a59cc80428b158cddb140fb3f74f3e00c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a59cc80428b158cddb140fb3f74f3e00c">update_dirichlet_boundary</a> (const int id, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a341ec25b68c17c79197f48228b086038">isx</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a0049a3d103fd64e962a5c00dd2e1d64a">isy</a>, const bool <a class="el" href="_f_e_bio_reader_8cpp.html#a713b93670d06678320652be82107bb0d">isz</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
 <tr class="separator:a59cc80428b158cddb140fb3f74f3e00c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaf54538c400c9e9abb4d56777335a73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abaf54538c400c9e9abb4d56777335a73">update_neumann_boundary</a> (const int id, const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
+<tr class="memitem:abaf54538c400c9e9abb4d56777335a73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abaf54538c400c9e9abb4d56777335a73">update_neumann_boundary</a> (const int id, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
 <tr class="separator:abaf54538c400c9e9abb4d56777335a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c6b251a88d2166c1cc333aad8a7128b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a2c6b251a88d2166c1cc333aad8a7128b">update_pressure_boundary</a> (const int id, <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
+<tr class="memitem:a2c6b251a88d2166c1cc333aad8a7128b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a2c6b251a88d2166c1cc333aad8a7128b">update_pressure_boundary</a> (const int id, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> <a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>, const std::string &amp;interpolation=&quot;&quot;)</td></tr>
 <tr class="separator:a2c6b251a88d2166c1cc333aad8a7128b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cfa2e07afdd64419a9ad645a9c43f9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a4cfa2e07afdd64419a9ad645a9c43f9e">set_rhs</a> (double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
 <tr class="separator:a4cfa2e07afdd64419a9ad645a9c43f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -369,7 +369,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>val</em>, </td>
         </tr>
         <tr>
@@ -507,7 +507,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>val</em>, </td>
         </tr>
         <tr>
@@ -643,7 +643,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td>
           <td class="paramname"><em>val</em>, </td>
         </tr>
         <tr>
@@ -1352,7 +1352,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void polyfem::assembler::GenericTensorProblem::set_parameters </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1495,7 +1495,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>val</em>, </td>
         </tr>
         <tr>
@@ -1633,7 +1633,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>val</em>, </td>
         </tr>
         <tr>
@@ -1769,7 +1769,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td>
           <td class="paramname"><em>val</em>, </td>
         </tr>
         <tr>

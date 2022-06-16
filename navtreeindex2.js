@@ -1,7 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_refinement_8hpp_source.html":[8,0,0,0,3,0,11],
-"_rhs_assembler_8cpp.html":[8,0,0,0,0,35],
 "_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c":[8,0,0,0,0,35,0],
 "_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e":[8,0,0,0,0,35,1],
 "_rhs_assembler_8hpp.html":[8,0,0,0,0,36],
@@ -70,10 +68,10 @@ var NAVTREEINDEX2 =
 "_string_utils_8cpp.html":[8,0,0,0,9,43],
 "_string_utils_8hpp.html":[8,0,0,0,9,44],
 "_string_utils_8hpp.html#a4d5b5bc40fafe3b42a347ff1a55013ca":[8,0,0,0,9,44,3],
+"_string_utils_8hpp.html#a4dc2e59d21d66809d2273ae115be0b73":[8,0,0,0,9,44,2],
 "_string_utils_8hpp.html#a5ea2c1e360cb00a431694ced69344bea":[8,0,0,0,9,44,6],
 "_string_utils_8hpp.html#a8df4a1f29bc95ee539adb419f19b83b7":[8,0,0,0,9,44,5],
 "_string_utils_8hpp.html#a9425d6e696ee910680614d0439ba3fbe":[8,0,0,0,9,44,4],
-"_string_utils_8hpp.html#abe1d2579a4fd2a40ba66321f21ca119e":[8,0,0,0,9,44,2],
 "_string_utils_8hpp.html#ac716d9eff97c92c06c752fe151a714ae":[8,0,0,0,9,44,0],
 "_string_utils_8hpp.html#af73165b653d0e64acc1e8b888fe93bca":[8,0,0,0,9,44,1],
 "_string_utils_8hpp_source.html":[8,0,0,0,9,44],
@@ -249,5 +247,7 @@ var NAVTREEINDEX2 =
 "classcppoptlib_1_1_sparse_newton_descent_solver.html#ab2b94a0d16385cb24a4951d86ea24235":[7,0,0,2,3],
 "classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71":[7,0,0,2,14],
 "classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8":[7,0,0,2,10],
-"classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193":[7,0,0,2,5]
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#acffac49cd50a6cc1356ae78a645f1193":[7,0,0,2,5],
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#ad981db542a2923317daa1fea9bb3adf9":[7,0,0,2,0],
+"classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e":[7,0,0,2,8]
 };

@@ -120,31 +120,18 @@ $(document).ready(function(){initNavTree('_common_8hpp_source.html',''); initRes
 <div class="contents">
 <a href="_common_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;Eigen/Sparse&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;Eigen/Sparse&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="_common_8hpp.html#ac8a0e9afb983dbed8532650e402ecdc4">    7</a></span>&#160;<span class="preprocessor">#define POLYFEM_DEFAULT_MOVE_COPY(Base) \</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">    Base(Base &amp;&amp;) = default;            \</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">    Base &amp;operator=(Base &amp;&amp;) = default; \</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">    Base(const Base &amp;) = default;       \</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">    Base &amp;operator=(const Base &amp;) = default;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="_common_8hpp.html#a66009e0aabe56bf988384b7fd7b4671f">   13</a></span>&#160;<span class="preprocessor">#define POLYFEM_DELETE_MOVE_COPY(Base) \</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">    Base(Base &amp;&amp;) = delete;            \</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">    Base &amp;operator=(Base &amp;&amp;) = delete; \</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">    Base(const Base &amp;) = delete;       \</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">    Base &amp;operator=(const Base &amp;) = delete;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// External libraries</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">// Json</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">   25</a></span>&#160;<span class="keyword">using</span> <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = <a class="code" href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">nlohmann::json</a>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">// Tinyformat</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">// #include &lt;tinyformat.h&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepolyfem.html">polyfem</a></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">    9</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> = <a class="code" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">nlohmann::json</a>;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="a_common_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="_common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:25</div></div>
+<div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> Common.hpp:9</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:25</div></div>
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

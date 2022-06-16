@@ -13,8 +13,6 @@ var namespacepolyfem =
     [ "AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4" ],
     [ "Density", "classpolyfem_1_1_density.html", "classpolyfem_1_1_density" ],
     [ "ElasticityTensor", "classpolyfem_1_1_elasticity_tensor.html", "classpolyfem_1_1_elasticity_tensor" ],
-    [ "HashPair", "structpolyfem_1_1_hash_pair.html", "structpolyfem_1_1_hash_pair" ],
-    [ "HashVector", "structpolyfem_1_1_hash_vector.html", "structpolyfem_1_1_hash_vector" ],
     [ "LameParameters", "classpolyfem_1_1_lame_parameters.html", "classpolyfem_1_1_lame_parameters" ],
     [ "SolutionFrame", "classpolyfem_1_1_solution_frame.html", "classpolyfem_1_1_solution_frame" ],
     [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
