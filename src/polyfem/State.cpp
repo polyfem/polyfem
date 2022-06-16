@@ -230,8 +230,8 @@ namespace polyfem
 			}
 
 			const json &tmp = it->second;
-			assembler.add_multimaterial(tmp, e);
-			density.add_multimaterial(tmp, e);
+			assembler.add_multimaterial(e, tmp);
+			density.add_multimaterial(e, tmp);
 		}
 
 		if (missing.size() > 0)

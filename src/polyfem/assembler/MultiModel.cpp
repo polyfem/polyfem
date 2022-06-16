@@ -25,9 +25,9 @@ namespace polyfem
 		{
 			assert(size_ == 2 || size_ == 3);
 
-			// saint_venant_.add_multimaterial(params);
-			neo_hookean_.add_multimaterial(params);
-			linear_elasticity_.add_multimaterial(params);
+			// saint_venant_.add_multimaterial(index, params);
+			neo_hookean_.add_multimaterial(index, params);
+			linear_elasticity_.add_multimaterial(index, params);
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

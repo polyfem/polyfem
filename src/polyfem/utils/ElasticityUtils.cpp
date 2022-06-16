@@ -501,7 +501,7 @@ namespace polyfem
 		}
 	}
 
-	void LameParameters::add_multimaterial(const json &params, const int index, const bool is_volume)
+	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume)
 	{
 		const int size = is_volume ? 3 : 2;
 		assert(size_ == -1 || size == size_);
@@ -547,7 +547,7 @@ namespace polyfem
 		return tmp(x, y, z, 0, el_id);
 	}
 
-	void Density::add_multimaterial(const json &params, const int index)
+	void Density::add_multimaterial(const int index, const json &params)
 	{
 		for (int i = rho_.size(); i <= index; ++i)
 		{
