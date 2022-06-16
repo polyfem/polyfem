@@ -176,7 +176,10 @@ namespace polyfem
 
 			NCMesh3D() = default;
 			virtual ~NCMesh3D() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(NCMesh3D)
+			NCMesh3D(NCMesh3D &&) = default;
+			NCMesh3D &operator=(NCMesh3D &&) = default;
+			NCMesh3D(const NCMesh3D &) = default;
+			NCMesh3D &operator=(const NCMesh3D &) = default;
 
 			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
 

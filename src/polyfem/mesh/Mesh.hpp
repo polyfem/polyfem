@@ -3,6 +3,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/mesh/mesh2D/Navigation.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/HashUtils.hpp>
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
@@ -61,7 +62,10 @@ namespace polyfem
 
 			Mesh() = default;
 			virtual ~Mesh() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(Mesh)
+			Mesh(Mesh &&) = default;
+			Mesh &operator=(Mesh &&) = default;
+			Mesh(const Mesh &) = default;
+			Mesh &operator=(const Mesh &) = default;
 
 			virtual void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) = 0;
 
@@ -195,6 +199,9 @@ namespace polyfem
 
 			std::vector<std::pair<int, int>> edges() const;
 			std::vector<std::vector<int>> faces() const;
+
+			std::unordered_map<std::pair<int, int>, size_t, polyfem::utils::HashPair> edges_to_ids() const;
+			std::unordered_map<std::vector<int>, size_t, polyfem::utils::HashVector> faces_to_ids() const;
 
 		protected:
 			virtual bool load(const std::string &path) = 0;

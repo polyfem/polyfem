@@ -47,7 +47,7 @@ namespace polyfem
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_face_to_data,
-				std::vector<int> &primitive_to_node);
+				std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes);
 
 			///
 			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1,
@@ -78,7 +78,7 @@ namespace polyfem
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_face_to_data,
-				std::vector<int> &primitive_to_node);
+				std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes);
 
 			//return the local faces nodes for a tet or a hex of order p, index points to a face
 			static Eigen::VectorXi tet_face_local_nodes(const int p, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);

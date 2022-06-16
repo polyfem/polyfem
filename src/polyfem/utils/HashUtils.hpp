@@ -3,7 +3,7 @@
 #include <cstddef> // size_t
 #include <vector>
 
-namespace polyfem
+namespace polyfem::utils
 {
 	struct HashPair
 	{
@@ -32,4 +32,4 @@ namespace polyfem
 		}
 	};
 
-}; // namespace polyfem
+} // namespace polyfem::utils

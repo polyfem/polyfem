@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/mesh/MeshUtils.hpp>
+#include "MeshUtils.hpp"
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MshReader.hpp>
-#include <polyfem/utils/OBJReader.hpp>
+#include <polyfem/utils/OBJ_IO.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/HashUtils.hpp>
 

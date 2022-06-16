@@ -20,7 +20,10 @@ namespace polyfem
 		public:
 			Mesh3D() = default;
 			virtual ~Mesh3D() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(Mesh3D)
+			Mesh3D(Mesh3D &&) = default;
+			Mesh3D &operator=(Mesh3D &&) = default;
+			Mesh3D(const Mesh3D &) = default;
+			Mesh3D &operator=(const Mesh3D &) = default;
 
 			inline bool is_volume() const override { return true; }
 
