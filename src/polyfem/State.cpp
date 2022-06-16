@@ -212,9 +212,17 @@ namespace polyfem
 			// json mat = default_material;
 			// mat.merge_patch(body_params[i]);
 			json mat = body_params[i];
-
-			const int mid = mat["id"];
-			materials[mid] = mat;
+			json id = mat["id"];
+			if (id.is_array())
+			{
+				for (int j = 0; j < id.size(); ++j)
+					materials[id[j]] = mat;
+			}
+			else
+			{
+				const int mid = id;
+				materials[mid] = mat;
+			}
 		}
 
 		std::string missing = "";
