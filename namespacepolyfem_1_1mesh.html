@@ -307,31 +307,31 @@ Functions</h2></td></tr>
 <tr class="memdesc:a816bc73f845b5cd77603ab5804e15356"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the signed squared distance from a list of points to a triangle mesh. This function build a AABB tree of the input mesh, computes the distance for each query point to the closest triangle, and then determines the sign by casting a vertical ray from the query point and counting the number of intersections with the input mesh.  <a href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356">More...</a><br /></td></tr>
 <tr class="separator:a816bc73f845b5cd77603ab5804e15356"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da2ae1a2cf19143192bb198c5ebb5b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">to_geogram_mesh</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, GEO::Mesh &amp;M)</td></tr>
-<tr class="memdesc:a7da2ae1a2cf19143192bb198c5ebb5b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Converts a triangle mesh to a Geogram mesh }  <a href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">More...</a><br /></td></tr>
+<tr class="memdesc:a7da2ae1a2cf19143192bb198c5ebb5b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a triangle mesh to a Geogram mesh.  <a href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">More...</a><br /></td></tr>
 <tr class="separator:a7da2ae1a2cf19143192bb198c5ebb5b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa56d3e4087c89d5eec16b4af3f128879"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879">from_geogram_mesh</a> (const GEO::Mesh &amp;M, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;F, Eigen::MatrixXi &amp;T)</td></tr>
-<tr class="memdesc:aa56d3e4087c89d5eec16b4af3f128879"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Extract simplices from a Geogram mesh }  <a href="namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879">More...</a><br /></td></tr>
+<tr class="memdesc:aa56d3e4087c89d5eec16b4af3f128879"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract simplices from a Geogram mesh.  <a href="namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879">More...</a><br /></td></tr>
 <tr class="separator:aa56d3e4087c89d5eec16b4af3f128879"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad071b94c821ca0409fc672bd5c520bda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda">to_geogram_mesh</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">Mesh3D</a> &amp;mesh, GEO::Mesh &amp;M)</td></tr>
-<tr class="memdesc:ad071b94c821ca0409fc672bd5c520bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Converts a hex mesh to a Geogram mesh }  <a href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda">More...</a><br /></td></tr>
+<tr class="memdesc:ad071b94c821ca0409fc672bd5c520bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex mesh to a Geogram mesh.  <a href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda">More...</a><br /></td></tr>
 <tr class="separator:ad071b94c821ca0409fc672bd5c520bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3366f41b53c326c7a196eea55d0c5c13"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">signed_volume</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F)</td></tr>
-<tr class="memdesc:a3366f41b53c326c7a196eea55d0c5c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Compute the signed volume of a surface mesh }  <a href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">More...</a><br /></td></tr>
+<tr class="memdesc:a3366f41b53c326c7a196eea55d0c5c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the signed volume of a surface mesh.  <a href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">More...</a><br /></td></tr>
 <tr class="separator:a3366f41b53c326c7a196eea55d0c5c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f0a5489e7a8bc1a78e123094cb09854"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854">orient_closed_surface</a> (const Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;F, bool positive=true)</td></tr>
-<tr class="memdesc:a1f0a5489e7a8bc1a78e123094cb09854"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Orient a triangulated surface to have positive volume }  <a href="namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854">More...</a><br /></td></tr>
+<tr class="memdesc:a1f0a5489e7a8bc1a78e123094cb09854"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orient a triangulated surface to have positive volume.  <a href="namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854">More...</a><br /></td></tr>
 <tr class="separator:a1f0a5489e7a8bc1a78e123094cb09854"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7c3a78516aa3e99cede8902c8eab4ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa7c3a78516aa3e99cede8902c8eab4ca">extract_polyhedra</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">Mesh3D</a> &amp;mesh, std::vector&lt; std::unique_ptr&lt; GEO::Mesh &gt;&gt; &amp;polys, bool triangulated=false)</td></tr>
-<tr class="memdesc:aa7c3a78516aa3e99cede8902c8eab4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Extract polyhedra from a 3D volumetric mesh }  <a href="namespacepolyfem_1_1mesh.html#aa7c3a78516aa3e99cede8902c8eab4ca">More...</a><br /></td></tr>
+<tr class="memdesc:aa7c3a78516aa3e99cede8902c8eab4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract polyhedra from a 3D volumetric mesh.  <a href="namespacepolyfem_1_1mesh.html#aa7c3a78516aa3e99cede8902c8eab4ca">More...</a><br /></td></tr>
 <tr class="separator:aa7c3a78516aa3e99cede8902c8eab4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae095321d3a795a54c96f6c93ed66583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583">tertrahedralize_star_shaped_surface</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, const Eigen::RowVector3d &amp;kernel, Eigen::MatrixXd &amp;OV, Eigen::MatrixXi &amp;OF, Eigen::MatrixXi &amp;OT)</td></tr>
-<tr class="memdesc:aae095321d3a795a54c96f6c93ed66583"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Tetrahedralize a star-shaped mesh, with a given point in its kernel }  <a href="namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583">More...</a><br /></td></tr>
+<tr class="memdesc:aae095321d3a795a54c96f6c93ed66583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tetrahedralize a star-shaped mesh, with a given point in its kernel.  <a href="namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583">More...</a><br /></td></tr>
 <tr class="separator:aae095321d3a795a54c96f6c93ed66583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a103b61095d51f0f6fb355c436dfc6d5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d">sample_surface</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, int num_samples, Eigen::MatrixXd &amp;P, Eigen::MatrixXd *N=nullptr, int num_lloyd=10, int num_newton=10)</td></tr>
-<tr class="memdesc:a103b61095d51f0f6fb355c436dfc6d5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Samples points on a surface }  <a href="namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d">More...</a><br /></td></tr>
+<tr class="memdesc:a103b61095d51f0f6fb355c436dfc6d5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples points on a surface.  <a href="namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d">More...</a><br /></td></tr>
 <tr class="separator:a103b61095d51f0f6fb355c436dfc6d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4923ee604ddc3a313a19ef3344f0a719"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a4923ee604ddc3a313a19ef3344f0a719">extract_parent_edges</a> (const Eigen::MatrixXd &amp;IV, const Eigen::MatrixXi &amp;IE, const Eigen::MatrixXd &amp;BV, const Eigen::MatrixXi &amp;BE, Eigen::MatrixXi &amp;OE)</td></tr>
-<tr class="memdesc:a4923ee604ddc3a313a19ef3344f0a719"><td class="mdescLeft">&#160;</td><td class="mdescRight">{ Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate }  <a href="namespacepolyfem_1_1mesh.html#a4923ee604ddc3a313a19ef3344f0a719">More...</a><br /></td></tr>
+<tr class="memdesc:a4923ee604ddc3a313a19ef3344f0a719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate.  <a href="namespacepolyfem_1_1mesh.html#a4923ee604ddc3a313a19ef3344f0a719">More...</a><br /></td></tr>
 <tr class="separator:a4923ee604ddc3a313a19ef3344f0a719"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a614178cdb624f2eff9500fabb9a4f432"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432">extract_triangle_surface_from_tets</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;tets, Eigen::MatrixXd &amp;surface_vertices, Eigen::MatrixXi &amp;tris)</td></tr>
 <tr class="memdesc:a614178cdb624f2eff9500fabb9a4f432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract triangular surface from a tetmesh.  <a href="namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432">More...</a><br /></td></tr>
@@ -599,8 +599,8 @@ Functions</h2></td></tr>
 <p>Fill in missing json geometry parameters with the default values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometry_in</td><td>{ input json geometry parameters } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">geometry_out</td><td>{ output json geometry parameters } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometry_in</td><td>input json geometry parameters </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">geometry_out</td><td>output json geometry parameters </td></tr>
   </table>
   </dd>
 </dl>
@@ -647,10 +647,10 @@ Functions</h2></td></tr>
 <p>Clip a polygon by a half-plane. <a href="https://github.com/alicevision/geogram/blob/cfbc0a5827d71d59f8bcf0369cc1731ef12f82ef/src/examples/graphics/demo_Delaunay2d/main.cpp#L677">https://github.com/alicevision/geogram/blob/cfbc0a5827d71d59f8bcf0369cc1731ef12f82ef/src/examples/graphics/demo_Delaunay2d/main.cpp#L677</a></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">P</td><td>{ Input polygon } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">q1</td><td>{ First endpoint of the clipping line } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">q2</td><td>{ Second endpoint of the clipping line } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>{ Clipped polygon } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">P</td><td>Input polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">q1</td><td>First endpoint of the clipping line </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">q2</td><td>Second endpoint of the clipping line </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Clipped polygon </td></tr>
   </table>
   </dd>
 </dl>
@@ -686,8 +686,8 @@ Functions</h2></td></tr>
 <p>Compute the type of each facet in a surface mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>{ Input surface mesh } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">element_tags</td><td>{ Types of each facet element } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>Input surface mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">element_tags</td><td>Types of each facet element </td></tr>
   </table>
   </dd>
 </dl>
@@ -722,8 +722,8 @@ Functions</h2></td></tr>
 <p>Determine the kernel of the given polygon.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x (2|3) vertex positions around the input polygon } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>{ #OV x (2|3) vertex positions around the output polygon } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x (2|3) vertex positions around the input polygon </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>#OV x (2|3) vertex positions around the output polygon </td></tr>
   </table>
   </dd>
 </dl>
@@ -896,14 +896,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate } </p>
+<p>Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x 3 input vertices positions } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">IE</td><td>{ #IE x 2 input edge indices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">BV</td><td>{ #BV x 3 base vertices positions to test against } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">BE</td><td>{ #BE x 2 base edge indices to test against } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OE</td><td>{ #OE x 2 output extracted edges } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 3 input vertices positions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IE</td><td>#IE x 2 input edge indices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">BV</td><td>#BV x 3 base vertices positions to test against </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">BE</td><td>#BE x 2 base edge indices to test against </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OE</td><td>#OE x 2 output extracted edges </td></tr>
   </table>
   </dd>
 </dl>
@@ -942,11 +942,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Extract polyhedra from a 3D volumetric mesh } </p>
+<p>Extract polyhedra from a 3D volumetric mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>{ Input volume mesh } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">polys</td><td>{ Extracted polyhedral surfaces } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>Input volume mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">polys</td><td>Extracted polyhedral surfaces </td></tr>
   </table>
   </dd>
 </dl>
@@ -994,7 +994,7 @@ Functions</h2></td></tr>
 <p>Extract triangular surface from a tetmesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">v,tets</td><td>{ tet mesh } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v,tets</td><td>tet mesh </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">s_v,tris</td><td>{ surface mesh } </td></tr>
   </table>
   </dd>
@@ -1096,13 +1096,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Extract simplices from a Geogram mesh } </p>
+<p>Extract simplices from a Geogram mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>{ Input Geogram mesh } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">V</td><td>{ #V x 3 output mesh vertices } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">F</td><td>{ #F x 3 output mesh faces } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">T</td><td>{ #T x 4 output mesh tets } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>Input Geogram mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">V</td><td>#V x 3 output mesh vertices </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">F</td><td>#F x 3 output mesh faces </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">T</td><td>#T x 4 output mesh tets </td></tr>
   </table>
   </dd>
 </dl>
@@ -1213,9 +1213,9 @@ Functions</h2></td></tr>
 <p>Compute whether points are inside a polygon</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x 2 of vertex positions for the input polygon } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">Q</td><td>{ #Q x 2 of query point positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">inside</td><td>{ Whether the i-th query point is inside or not }</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 2 of vertex positions for the input polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">Q</td><td>#Q x 2 of query point positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">inside</td><td>Whether the i-th query point is inside or not</td></tr>
   </table>
   </dd>
 </dl>
@@ -1281,8 +1281,8 @@ Functions</h2></td></tr>
 <p>Determine whether a polygon is star-shaped or not.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x (2|3) of vertex positions around the polygon } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">bary</td><td>{ The barycenter of the kernel }</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x (2|3) of vertex positions around the polygon </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">bary</td><td>The barycenter of the kernel</td></tr>
   </table>
   </dd>
 </dl>
@@ -1392,12 +1392,12 @@ Functions</h2></td></tr>
 <p>Retrieve a 3D vector with the position of a given vertex. Contrary to geogram's version, this function works with both single and double precision meshes, as well as 2D meshes too.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>{ Input mesh } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>{ <a class="el" href="structpolyfem_1_1mesh_1_1_vertex.html">Vertex</a> index whose position to retrieve }</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>Input mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td><a class="el" href="structpolyfem_1_1mesh_1_1_vertex.html">Vertex</a> index whose position to retrieve</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>{ Position of the given vertex in 3D } </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Position of the given vertex in 3D </dd></dl>
 
 </div>
 </div>
@@ -1435,9 +1435,9 @@ Functions</h2></td></tr>
 <p>Compute offset polygon</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x 2 of vertex positions for the input polygon } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>{ #OV x 2 of vertex positions for the offset polygon } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">eps</td><td>{ Offset distance } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 2 of vertex positions for the input polygon </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>#OV x 2 of vertex positions for the offset polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">eps</td><td>Offset distance </td></tr>
   </table>
   </dd>
 </dl>
@@ -1476,12 +1476,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Orient a triangulated surface to have positive volume } </p>
+<p>Orient a triangulated surface to have positive volume. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>{ #F x 3 input mesh facets } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">positive</td><td>{ Orient for positive volume, or negative volume } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>#F x 3 input mesh facets </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">positive</td><td>Orient for positive volume, or negative volume </td></tr>
   </table>
   </dd>
 </dl>
@@ -1507,7 +1507,7 @@ Functions</h2></td></tr>
 <p>Orient facets of a 2D mesh so that each connected component has positive volume. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">M</td><td>{ Surface mesh to reorient } </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">M</td><td>Surface mesh to reorient </td></tr>
   </table>
   </dd>
 </dl>
@@ -1573,9 +1573,9 @@ Functions</h2></td></tr>
 <p>read FEM meshes from a geometry JSON array (or single) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>{ geometry JSON object(s) } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mesh</td><td>{ output <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>geometry JSON object(s) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>root path of JSON </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mesh</td><td>output <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -1723,12 +1723,12 @@ Functions</h2></td></tr>
 <p>read a FEM mesh from a geometry JSON </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">jmesh</td><td>{ geometry JSON } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>{ #V x 3/2 output vertices positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>{ indicies in vertices for the codimensional vertices } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>{ indicies in vertices for the codimensional edges } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>{ indicies in vertices for the surface faces } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">jmesh</td><td>geometry JSON </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>root path of JSON </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>#V x 3/2 output vertices positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>indicies in vertices for the codimensional vertices </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>indicies in vertices for the codimensional edges </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>indicies in vertices for the surface faces </td></tr>
   </table>
   </dd>
 </dl>
@@ -1788,11 +1788,11 @@ Functions</h2></td></tr>
 <p>read a mesh </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">mesh_path</td><td>{ path to mesh file } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">V</td><td>{ #V x 3/2 output vertices positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">C</td><td>{ #C cells (e.g., tri/tets/quad/hexes) } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">elements</td><td>{ #C indices for high-order nodes } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">w</td><td>{ #C weights for rational polynomials } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh_path</td><td>path to mesh file </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">V</td><td>#V x 3/2 output vertices positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">C</td><td>#C cells (e.g., tri/tets/quad/hexes) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">elements</td><td>#C indices for high-order nodes </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">w</td><td>#C weights for rational polynomials </td></tr>
   </table>
   </dd>
 </dl>
@@ -1870,10 +1870,10 @@ Functions</h2></td></tr>
 <p>read a FEM mesh from a geometry JSON </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>{ geometry JSON object(s) } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">displacements</td><td>{ displacements JSON object(s) } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">obstacle</td><td>{ output <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>geometry JSON object(s) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">displacements</td><td>displacements JSON object(s) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>root path of JSON </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">obstacle</td><td>output <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -1933,12 +1933,12 @@ Functions</h2></td></tr>
 <p>read a obstacle mesh from a geometry JSON </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">jmesh</td><td>{ geometry JSON } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>{ root path of JSON } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>{ #V x 3/2 output vertices positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>{ indicies in vertices for the codimensional vertices } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>{ indicies in vertices for the codimensional edges } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>{ indicies in vertices for the surface faces } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">jmesh</td><td>geometry JSON </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>root path of JSON </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>#V x 3/2 output vertices positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>indicies in vertices for the codimensional vertices </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>indicies in vertices for the codimensional edges </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>indicies in vertices for the surface faces </td></tr>
   </table>
   </dd>
 </dl>
@@ -1992,11 +1992,11 @@ Functions</h2></td></tr>
 <p>read a surface mesh </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">mesh_path</td><td>{ path to mesh file } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>{ #V x 3/2 output vertices positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>{ indicies in vertices for the codimensional vertices } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>{ indicies in vertices for the codimensional edges } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>{ indicies in vertices for the surface faces } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh_path</td><td>path to mesh file </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>#V x 3/2 output vertices positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>indicies in vertices for the codimensional vertices </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_edges</td><td>indicies in vertices for the codimensional edges </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>indicies in vertices for the surface faces </td></tr>
   </table>
   </dd>
 </dl>
@@ -2085,9 +2085,9 @@ Functions</h2></td></tr>
 <p>Refine a polygonal mesh. Quads and triangles are split into quads. If <code>refine_polygons</code> is set to <code>true</code>, then polygonal facets are also split into a layer of padding quads, and a new polygon is created around the barycenter</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M_in</td><td>{ Surface mesh to subdivide } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">M_out</td><td>{ Refined mesh } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">split_func</td><td>{ Functional used to split the new polygon interiors (boundary has already been split) } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M_in</td><td>Surface mesh to subdivide </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">M_out</td><td>Refined mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">split_func</td><td>Functional used to split the new polygon interiors (boundary has already been split) </td></tr>
   </table>
   </dd>
 </dl>
@@ -2162,8 +2162,8 @@ Functions</h2></td></tr>
 <p>Refine a triangle mesh. Each input triangle is split into 4 new triangles</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M_in</td><td>{ Input surface mesh } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">M_out</td><td>{ Output surface mesh } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M_in</td><td>Input surface mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">M_out</td><td>Output surface mesh </td></tr>
   </table>
   </dd>
 </dl>
@@ -2211,10 +2211,10 @@ Functions</h2></td></tr>
 <p>Reorder vertices of a mesh using color tags, so that vertices are ordered by increasing colors. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">V</td><td>{ #V x d input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">F</td><td>{ #F x k input mesh faces } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">C</td><td>{ #V per vertex color tag } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">R</td><td>{ max(C)+1 vector of starting indices for each colors (last value is the total number of vertices) } </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">V</td><td>#V x d input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">F</td><td>#F x k input mesh faces </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">C</td><td>#V per vertex color tag </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">R</td><td>max(C)+1 vector of starting indices for each colors (last value is the total number of vertices) </td></tr>
   </table>
   </dd>
 </dl>
@@ -2255,9 +2255,9 @@ Functions</h2></td></tr>
 <p>Sample points on a polygon, evenly spaced from each other</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x 2 vertex positions for the input polygon } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">num_samples</td><td>{ Desired number of samples } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">S</td><td>{ #S x 2 output sample positions } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 2 vertex positions for the input polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_samples</td><td>Desired number of samples </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">S</td><td>#S x 2 output sample positions </td></tr>
   </table>
   </dd>
 </dl>
@@ -2320,16 +2320,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Samples points on a surface } </p>
+<p>Samples points on a surface. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>{ #F x 3 input mesh facets } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">num_samples</td><td>{ Number of desired samples } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">P</td><td>{ num_samples x 3 sample points positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">N</td><td>{ num_samples x 3 of normals estimated from the original surface (optional argument) } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">num_lloyd</td><td>{ Number of Lloyd iterations } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">num_newton</td><td>{ Number of Newton iterations } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>#F x 3 input mesh facets </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_samples</td><td>Number of desired samples </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">P</td><td>num_samples x 3 sample points positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">N</td><td>num_samples x 3 of normals estimated from the original surface (optional argument) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_lloyd</td><td>Number of Lloyd iterations </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_newton</td><td>Number of Newton iterations </td></tr>
   </table>
   </dd>
 </dl>
@@ -2371,9 +2371,9 @@ Functions</h2></td></tr>
 <p>Save edge-graph into a .obj. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">filename</td><td>{ Filename to write to } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input vertices positions } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">E</td><td>{ #E x 2 input edge indices } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">filename</td><td>Filename to write to </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input vertices positions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">E</td><td>#E x 2 input edge indices </td></tr>
   </table>
   </dd>
 </dl>
@@ -2421,10 +2421,10 @@ Functions</h2></td></tr>
 <p>Computes the signed squared distance from a list of points to a triangle mesh. This function build a AABB tree of the input mesh, computes the distance for each query point to the closest triangle, and then determines the sign by casting a vertical ray from the query point and counting the number of intersections with the input mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>{ #F x 3 input mesh faces } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">P</td><td>{ #P x 3 query points } </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">D</td><td>{ #P x 1 computed signed distances, negative inside, positive outside } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>#F x 3 input mesh faces </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">P</td><td>#P x 3 query points </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">D</td><td>#P x 1 computed signed distances, negative inside, positive outside </td></tr>
   </table>
   </dd>
 </dl>
@@ -2457,15 +2457,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Compute the signed volume of a surface mesh } </p>
+<p>Compute the signed volume of a surface mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>{ #F x 3 input mesh facets }</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>#F x 3 input mesh facets</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>{ Signed volume of the surface } </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Signed volume of the surface </dd></dl>
 
 </div>
 </div>
@@ -2639,15 +2639,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Tetrahedralize a star-shaped mesh, with a given point in its kernel } </p>
+<p>Tetrahedralize a star-shaped mesh, with a given point in its kernel. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>{ #F x 3 input mesh triangles } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">kernel</td><td>{ A point in the kernel } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>{ #OV x 3 output mesh vertices } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OF</td><td>{ #OF x 3 output mesh surface triangles } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OT</td><td>{ #OT x 4 output mesh tetrahedra } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>#F x 3 input mesh triangles </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kernel</td><td>A point in the kernel </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>#OV x 3 output mesh vertices </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OF</td><td>#OF x 3 output mesh surface triangles </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OT</td><td>#OT x 4 output mesh tetrahedra </td></tr>
   </table>
   </dd>
 </dl>
@@ -2686,12 +2686,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Converts a triangle mesh to a Geogram mesh } </p>
+<p>Converts a triangle mesh to a Geogram mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>{ #V x 3 input mesh vertices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>{ #F x 3 input mesh surface } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">M</td><td>{ Output Geogram mesh } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>#F x 3 input mesh surface </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">M</td><td>Output Geogram mesh </td></tr>
   </table>
   </dd>
 </dl>
@@ -2724,11 +2724,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>{ Converts a hex mesh to a Geogram mesh } </p>
+<p>Converts a hex mesh to a Geogram mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>{ Input mesh } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">M</td><td>{ Output Geogram mesh } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>Input mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">M</td><td>Output Geogram mesh </td></tr>
   </table>
   </dd>
 </dl>
@@ -2764,8 +2764,8 @@ Functions</h2></td></tr>
 <p>Transform a mesh inplace using json parameters including scaling, rotation, and translation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">transform</td><td>{ json object with the mesh data } </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">vertices</td><td>{ #V x 3/2 input and output vertices positions } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">transform</td><td>json object with the mesh data </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">vertices</td><td>#V x 3/2 input and output vertices positions </td></tr>
   </table>
   </dd>
 </dl>

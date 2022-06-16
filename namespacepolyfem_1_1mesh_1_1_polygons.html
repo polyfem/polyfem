@@ -194,9 +194,9 @@ Functions</h2></td></tr>
 <p>Split a polygon using polar refinement. A single vertex is inserted at the barycenter of the polygon kernel (the polygon needs to be star-shaped). Contrary to the <code>polar_split</code> function, this function creates quads instead of triangles. The edges of the original polygon are also assumed to be split already, so the input polygon must have an even number of vertices. Radial edges will be inserted every 2 vertices, starting from vertex #1.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x (2|3) of vertex positions around the polygon } </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">OV</td><td>{ #OF v (2|3) output vertex positions } </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">OF</td><td>{ list of output polygonal face indices } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x (2|3) of vertex positions around the polygon </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">OV</td><td>#OF v (2|3) output vertex positions </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">OF</td><td>list of output polygonal face indices </td></tr>
   </table>
   </dd>
 </dl>
@@ -329,10 +329,10 @@ Functions</h2></td></tr>
 <p>Split a polygon using polar refinement. The input polygon must be star-shaped. A one-ring of quads are create on the outer ring of the polygon, while at the center a new polygonal facet is created around the barycenter of the kernel polygon. If the interpolation parameter t is equal to 0, the central polygon is collapsed into a single vertex, and facets on the ring become triangles.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>{ #IV x (2|3) of vertex positions around the polygon } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>{ #OF v (2|3) output vertex positions } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OF</td><td>{ list of output polygonal face indices } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>{ Interpolation parameter to place the new vertices on the edge from the barycenter to the outer polygon vertices (0 being at the center, 1 being at the boundary).t should be &gt;= 0.0 and &lt; 1.0 } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x (2|3) of vertex positions around the polygon </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>#OF v (2|3) output vertex positions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">OF</td><td>list of output polygonal face indices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>Interpolation parameter to place the new vertices on the edge from the barycenter to the outer polygon vertices (0 being at the center, 1 being at the boundary).t should be &gt;= 0.0 and &lt; 1.0 } </td></tr>
   </table>
   </dd>
 </dl>

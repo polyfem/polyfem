@@ -255,8 +255,8 @@ Friends</h2></td></tr>
 <p>Evaluates the basis function over a set of uv parameters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">uv</td><td>{ #uv x dim matrix of parameters to evaluate } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">val</td><td>{ #uv x 1 vector of computed values } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">uv</td><td>#uv x dim matrix of parameters to evaluate </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">val</td><td>#uv x 1 vector of computed values </td></tr>
   </table>
   </dd>
 </dl>
@@ -300,8 +300,8 @@ Friends</h2></td></tr>
 <p>Evaluate the gradient of the basis function. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">uv</td><td>{ #uv x dim matrix of parameters to evaluate } </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">val</td><td>{ #uv x dim matrix of computed gradients } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">uv</td><td>#uv x dim matrix of parameters to evaluate </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">val</td><td>#uv x dim matrix of computed gradients </td></tr>
   </table>
   </dd>
 </dl>
@@ -399,9 +399,9 @@ Friends</h2></td></tr>
 <p>Initialize a basis function within an element. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">global_index</td><td>{ Global index of the node associated to the basis } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">local_index</td><td>{ Local index of the node within the element } </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>{ 1 x dim position of the node associated to the basis } </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">global_index</td><td>Global index of the node associated to the basis </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">local_index</td><td>Local index of the node within the element </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>1 x dim position of the node associated to the basis </td></tr>
   </table>
   </dd>
 </dl>
