@@ -447,49 +447,38 @@ int main(int argc, char **argv)
 			create_directories(parent);
 	}
 
-#ifndef POLYFEM_NO_UI
-	if (no_ui)
-	{
-#endif
-		State state(max_threads);
-		state.init_logger(log_file, log_level, is_quiet);
-		state.init(in_args, output_dir);
+	State state(max_threads);
+	state.init_logger(log_file, log_level, is_quiet);
+	state.init(in_args, output_dir);
 
-		if (!febio_file.empty())
-			state.load_febio(febio_file, in_args);
-		else
-			state.load_mesh(false, names, cells, vertices);
-
-		// Mesh was not loaded successfully; load_mesh() logged the error.
-		if (state.mesh == nullptr)
-		{
-			// Cannot proceed without a mesh.
-			return EXIT_FAILURE;
-		}
-
-		state.compute_mesh_stats();
-
-		state.build_basis();
-
-		if (stop_after_build_basis)
-			return EXIT_SUCCESS;
-
-		state.assemble_rhs();
-		state.assemble_stiffness_mat();
-
-		state.solve_problem();
-
-		state.compute_errors();
-
-		state.save_json();
-		state.export_data();
-#ifndef POLYFEM_NO_UI
-	}
+	if (!febio_file.empty())
+		state.load_febio(febio_file, in_args);
 	else
-	{
-		UIState::ui_state().launch(log_file, log_level, is_quiet, in_args, febio_file);
-	}
-#endif
+		state.load_mesh(false, names, cells, vertices);
 
+	// Mesh was not loaded successfully; load_mesh() logged the error.
+	if (state.mesh == nullptr)
+	{
+		// Cannot proceed without a mesh.
+		return EXIT_FAILURE;
+	}
+
+	state.compute_mesh_stats();
+
+	state.build_basis();
+
+	if (stop_after_build_basis)
+		return EXIT_SUCCESS;
+
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+
+	Eigen::MatrixXd homogenized_tensor;
+	if (state.formulation() == "LinearElasticity")
+		state.homogenize_linear_elasticity(homogenized_tensor);
+	else if (state.formulation() == "Stokes")
+		state.homogenize_stokes(homogenized_tensor);
+
+	std::cout << homogenized_tensor << std::endl;
 	return EXIT_SUCCESS;
 }

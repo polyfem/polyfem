@@ -608,8 +608,8 @@ namespace polyfem
 		void p_refinement(const mesh::Mesh3D &mesh3d);
 
 		//homogenization study of unit cell
-		void homogenize_linear_elasticity();
-		void homogenize_stokes();
+		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_stokes(Eigen::MatrixXd &K_H);
 
 		bool is_obstacle_vertex(const size_t vi) const
 		{
