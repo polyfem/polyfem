@@ -126,9 +126,9 @@ namespace
 	// only on the input vertex positions, but does not check if the underlying
 	// topology is consistent.
 	//
-	// @param[in]  V                { #V x 3 matrix of vertex positions }
-	// @param[in]  F                { #F x 3 matrix of triangle indexes }
-	// @param[out] border_vertices  { List of vertices along each side }
+	// @param[in]  V                 #V x 3 matrix of vertex positions
+	// @param[in]  F                 #F x 3 matrix of triangle indexes
+	// @param[out] border_vertices   List of vertices along each side
 	//
 	// @return     { Type of periodicity of the pattern. }
 	//

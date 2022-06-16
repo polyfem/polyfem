@@ -42,9 +42,9 @@ namespace polyfem
 			///
 			/// @param[in]     n_samples_per_edge    { Number of collocation samples per polygon edge
 			///                                      (including endpoints) }
-			/// @param[in]     mesh                  { Input volume mesh }
-			/// @param[in]     n_bases               { Total number of bases functions in the mesh }
-			/// @param[in]     quadrature_order      { Quadrature order for the polyhedra }
+			/// @param[in]     mesh                   Input volume mesh
+			/// @param[in]     n_bases                Total number of bases functions in the mesh
+			/// @param[in]     quadrature_order       Quadrature order for the polyhedra
 			/// @param[in]     integral_constraints  { Order of the integral constraints (0 = no
 			///                                      constraints, 1 = linear, 2 = quadratic) }
 			/// @param[in,out] bases                 { List of the different basis (shape functions)
@@ -57,7 +57,7 @@ namespace polyfem
 			///                                      formed by the image of the collocation points
 			///                                      trough the geometric mapping of the boundary faces
 			///                                      }
-			/// @param[in]  element_types  { Per-element tag indicating the type of each element (see Mesh.hpp) }
+			/// @param[in]  element_types   Per-element tag indicating the type of each element (see Mesh.hpp)
 			/// @param[in]  values         { Per-element shape functions for the PDE, evaluated over the element,
 			///                            used for the system matrix assembly (used for linear reproduction) }
 			/// @param[in]  gvalues        { Per-element shape functions for the geometric mapping, evaluated over

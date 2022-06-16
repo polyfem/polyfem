@@ -41,8 +41,8 @@ namespace polyfem
 			///             parametric domain = object domain, and the mapping is
 			///             identity) }
 			///
-			/// @param[in]  samples  { #S x dim matrix of sample positions to evaluate }
-			/// @param[out] mapped   { #S x dim matrix of mapped positions }
+			/// @param[in]  samples   #S x dim matrix of sample positions to evaluate
+			/// @param[out] mapped    #S x dim matrix of mapped positions
 			///
 			void eval_geom_mapping(const Eigen::MatrixXd &samples, Eigen::MatrixXd &mapped) const;
 
@@ -50,8 +50,8 @@ namespace polyfem
 			/// @brief      { Evaluate the gradients of the geometric mapping
 			///             defined above }
 			///
-			/// @param[in]  samples  { #S x dim matrix of input sample positions }
-			/// @param[out] grads    { #S list of dim x dim matrices of gradients }
+			/// @param[in]  samples   #S x dim matrix of input sample positions
+			/// @param[out] grads     #S list of dim x dim matrices of gradients
 			///
 			void eval_geom_mapping_grads(const Eigen::MatrixXd &samples, std::vector<Eigen::MatrixXd> &grads) const;
 
