@@ -181,5 +181,37 @@ namespace polyfem
 			bool is_time_dependent() const override { return true; }
 			bool is_constant_in_time() const override { return false; }
 		};
+
+		class ElasticCantileverExact : public assembler::Problem
+		{
+		public:
+			ElasticCantileverExact(const std::string &name);
+
+			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			bool is_rhs_zero() const override { return false; }
+
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+
+			bool has_exact_sol() const override { return true; }
+			void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;		
+			bool is_scalar() const override { return false; }
+
+			void set_parameters(const json &params);
+
+		private:
+			VectorNd eval_fun(const VectorNd &pt, const double t) const;
+			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const;
+			AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const;
+			int size_for(const Eigen::MatrixXd &pts) const { return is_scalar() ? 1 : pts.cols(); }
+
+			double singular_point_displacement;
+			double E;
+			double nu;
+			std::string formulation;
+			double length;
+			double width;
+		};
 	} // namespace problem
 } // namespace polyfem

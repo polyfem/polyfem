@@ -43,6 +43,7 @@ namespace polyfem
 			problems_.emplace("DoubleTorsionElastic", []() { return std::make_shared<DoubleTorsionElasticProblem>("DoubleTorsionElastic"); });
 			problems_.emplace("ElasticZeroBC", []() { return std::make_shared<ElasticProblemZeroBC>("ElasticZeroBC"); });
 			problems_.emplace("ElasticExact", []() { return std::make_shared<ElasticProblemExact>("ElasticExact"); });
+			problems_.emplace("ElasticCantileverExact", []() { return std::make_shared<ElasticCantileverExact>("ElasticCantileverExact"); });
 			problems_.emplace("CompressionElasticExact", []() { return std::make_shared<CompressionElasticProblemExact>("CompressionElasticExact"); });
 			problems_.emplace("QuadraticElasticExact", []() { return std::make_shared<QuadraticElasticProblemExact>("QuadraticElasticExact"); });
 			problems_.emplace("LinearElasticExact", []() { return std::make_shared<LinearElasticProblemExact>("LinearElasticExact"); });
