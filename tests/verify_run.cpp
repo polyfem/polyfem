@@ -147,11 +147,10 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	return 0;
 }
 
+#if defined(NDEBUG) && !defined(WIN32)
+std::string tags = "[run]";
+#else
 std::string tags = "[.]";
-#ifdef NDEBUG
-#ifndef WIN32
-tags = "[run]";
-#endif
 #endif
 TEST_CASE("runners", tags)
 {
