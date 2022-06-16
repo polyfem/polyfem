@@ -478,6 +478,11 @@ namespace polyfem
 
 	LameParameters::LameParameters()
 	{
+		lambda_or_E_.emplace_back();
+		lambda_or_E_.back().init(1.0);
+
+		mu_or_nu_.emplace_back();
+		mu_or_nu_.back().init(1.0);
 		size_ = -1;
 	}
 
@@ -539,6 +544,8 @@ namespace polyfem
 
 	Density::Density()
 	{
+		rho_.emplace_back();
+		rho_.back().init(1.0);
 	}
 
 	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
