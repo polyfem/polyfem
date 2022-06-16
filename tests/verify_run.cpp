@@ -43,6 +43,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	if (true)
 	{
 		args["output"] = json({});
+		args["output"]["advanced"]["save_time_sequence"] = false;
 		if (args.contains("time"))
 		{
 			json t_args = args["time"];
