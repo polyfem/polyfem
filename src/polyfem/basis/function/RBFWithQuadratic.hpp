@@ -22,7 +22,7 @@ namespace polyfem
 			static void setup_monomials_strong_2d(const int dim, const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
 
 			///
-			/// @brief      { Initialize RBF functions over a polytope element. }
+			/// @brief      Initialize RBF functions over a polytope element.
 			///
 			/// @param[in]  centers                #C x dim positions of the kernels used to define functions over the polytope. The centers are placed at a small offset distance from the boundary of the element, due to the singularity at the centers
 			/// @param[in]  collocation_points     #S x dim positions of the collocation points, used to approximate the RBF functions over the boundary of the element
@@ -36,7 +36,7 @@ namespace polyfem
 							 Eigen::MatrixXd &rhs, bool with_constraints = true);
 
 			///
-			/// @brief      { Evaluates one RBF function over a list of coordinates }
+			/// @brief      Evaluates one RBF function over a list of coordinates
 			///
 			/// @param[in]  local_index   i-th RBF function to evaluate
 			/// @param[in]  uv            #uv x dim matrix of coordinates to evaluate (in object domain)
@@ -45,7 +45,7 @@ namespace polyfem
 			void basis(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
 			///
-			/// @brief      { Evaluates the gradient of one RBF function over a list of coordinates }
+			/// @brief      Evaluates the gradient of one RBF function over a list of coordinates
 			///
 			/// @param[in]  local_index   i-th RBF function to evaluate
 			/// @param[in]  uv            #uv x dim matrix of coordinates to evaluate (in object domain)
@@ -54,7 +54,7 @@ namespace polyfem
 			void grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
 			///
-			/// @brief      { Batch evaluates the RBF + polynomials on a set of sample points }
+			/// @brief      Batch evaluates the RBF + polynomials on a set of sample points
 			///
 			/// @param[in]  uv     #uv x dim matrix of points to evaluate
 			/// @param[out] val    #uv x n_loc_bases of bases values over the sample points
@@ -62,8 +62,7 @@ namespace polyfem
 			void bases_values(const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const;
 
 			///
-			/// @brief      { Batch evaluates the gradient of the RBF + polynomials on a set of sample
-			///             points }
+			/// @brief      Batch evaluates the gradient of the RBF + polynomials on a set of sample points
 			///
 			/// @param[in]  axis   The axis (0, 1, 2) with respect to which to compute the gradient
 			/// @param[in]  uv     #uv x dim matrix of points to evaluate

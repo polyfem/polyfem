@@ -20,7 +20,7 @@ namespace polyfem
 		/// @param[in]  M      Input mesh
 		/// @param[in]  v      Vertex index whose position to retrieve
 		///
-		/// @return     { Position of the given vertex in 3D }
+		/// @return     Position of the given vertex in 3D
 		///
 		GEO::vec3 mesh_vertex(const GEO::Mesh &M, GEO::index_t v);
 
@@ -29,16 +29,16 @@ namespace polyfem
 		// @param[in]  M      Input mesh
 		// @param[in]  f      Facet whose barycenter to compute
 		//
-		// @return     { Barycenter position in 3D }
+		// @return     Barycenter position in 3D
 		//
 		GEO::vec3 facet_barycenter(const GEO::Mesh &M, GEO::index_t f);
 
 		// Create a new mesh vertex with given coordinates.
 		//
-		// @param      M     { Mesh to modify }
+		// @param      M     Mesh to modify
 		// @param[in]  p      New vertex position
 		//
-		// @return     { Index of the newly created vertex }
+		// @return     Index of the newly created vertex
 		//
 		GEO::index_t mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p);
 
@@ -85,7 +85,7 @@ namespace polyfem
 									  const Eigen::MatrixXd &P, Eigen::VectorXd &D);
 
 		///
-		/// @brief      { Converts a triangle mesh to a Geogram mesh }
+		/// @brief      Converts a triangle mesh to a Geogram mesh
 		///
 		/// @param[in]  V      #V x 3 input mesh vertices
 		/// @param[in]  F      #F x 3 input mesh surface
@@ -95,7 +95,7 @@ namespace polyfem
 		// void to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M);
 
 		///
-		/// @brief      { Extract simplices from a Geogram mesh }
+		/// @brief      Extract simplices from a Geogram mesh
 		///
 		/// @param[in]  M      Input Geogram mesh
 		/// @param[out] V      #V x 3 output mesh vertices
@@ -105,7 +105,7 @@ namespace polyfem
 		void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
 
 		///
-		/// @brief      { Converts a hex mesh to a Geogram mesh }
+		/// @brief      Converts a hex mesh to a Geogram mesh
 		///
 		/// @param[in]  mesh   Input mesh
 		/// @param[out] M      Output Geogram mesh
@@ -113,17 +113,17 @@ namespace polyfem
 		void to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M);
 
 		///
-		/// @brief      { Compute the signed volume of a surface mesh }
+		/// @brief      Compute the signed volume of a surface mesh
 		///
 		/// @param[in]  V      #V x 3 input mesh vertices
 		/// @param[in]  F      #F x 3 input mesh facets
 		///
-		/// @return     { Signed volume of the surface }
+		/// @return     Signed volume of the surface
 		///
 		double signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 
 		///
-		/// @brief      { Orient a triangulated surface to have positive volume }
+		/// @brief      Orient a triangulated surface to have positive volume
 		///
 		/// @param[in]  V          #V x 3 input mesh vertices
 		/// @param[in]  F          #F x 3 input mesh facets
@@ -132,7 +132,7 @@ namespace polyfem
 		void orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive = true);
 
 		///
-		/// @brief      { Extract polyhedra from a 3D volumetric mesh }
+		/// @brief      Extract polyhedra from a 3D volumetric mesh
 		///
 		/// @param[in]  mesh    Input volume mesh
 		/// @param[out] polys   Extracted polyhedral surfaces
@@ -140,7 +140,7 @@ namespace polyfem
 		void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated = false);
 
 		///
-		/// @brief      { Tetrahedralize a star-shaped mesh, with a given point in its kernel }
+		/// @brief      Tetrahedralize a star-shaped mesh, with a given point in its kernel
 		///
 		/// @param[in]  V        #V x 3 input mesh vertices
 		/// @param[in]  F        #F x 3 input mesh triangles
@@ -153,7 +153,7 @@ namespace polyfem
 												 const Eigen::RowVector3d &kernel, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT);
 
 		///
-		/// @brief      { Samples points on a surface }
+		/// @brief      Samples points on a surface
 		///
 		/// @param[in]  V             #V x 3 input mesh vertices
 		/// @param[in]  F             #F x 3 input mesh facets
@@ -167,8 +167,7 @@ namespace polyfem
 							Eigen::MatrixXd &P, Eigen::MatrixXd *N = nullptr, int num_lloyd = 10, int num_newton = 10);
 
 		///
-		/// @brief      { Extract a set of edges that are overlap with a set given set
-		///             of parent edges, using vertices positions to discriminate }
+		/// @brief      Extract a set of edges that are overlap with a set given set of parent edges, using vertices positions to discriminate
 		///
 		/// @param[in]  IV     #IV x 3 input vertices positions
 		/// @param[in]  IE     #IE x 2 input edge indices

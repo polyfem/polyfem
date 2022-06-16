@@ -222,10 +222,7 @@ namespace polyfem
 
 			// -----------------------------------------------------------------------------
 
-			///
-			/// @brief      { Compute boundary sample points + centers of harmonic bases for
-			///             the polygonal element }
-			///
+			/// @brief Compute boundary sample points + centers of harmonic bases for the polygonal element
 			void sample_polyhedra(
 				const int element_index,
 				const int n_quadrature_vertices_per_edge,
