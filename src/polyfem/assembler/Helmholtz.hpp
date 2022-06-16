@@ -22,7 +22,7 @@ namespace polyfem
 			inline int size() const { return 1; }
 
 			//sets the k parameter
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params);
 
 		private:
 			double k_ = 1;

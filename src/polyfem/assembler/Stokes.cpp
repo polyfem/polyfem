@@ -10,7 +10,7 @@ namespace polyfem
 
 	namespace assembler
 	{
-		void StokesVelocity::set_parameters(const json &params)
+		void StokesVelocity::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
 
@@ -133,11 +133,6 @@ namespace polyfem
 
 				tensor.row(p) = vel;
 			}
-		}
-
-		void StokesMixed::set_parameters(const json &params)
-		{
-			assert(size_ == 2 || size_ == 3);
 		}
 
 		void StokesMixed::set_size(const int size)

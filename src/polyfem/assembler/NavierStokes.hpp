@@ -45,7 +45,7 @@ namespace polyfem
 			inline int size() const { return size_; }
 
 			//set viscosity
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params);
 
 			//return velociry and norm, for compliancy with elasticity
 			void compute_norm_velocity(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const;

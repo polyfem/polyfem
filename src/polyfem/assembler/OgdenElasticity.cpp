@@ -35,7 +35,7 @@ namespace polyfem
 			Ds_.setOnes();
 		}
 
-		void OgdenElasticity::set_parameters(const json &params)
+		void OgdenElasticity::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
 

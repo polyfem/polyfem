@@ -134,9 +134,8 @@ namespace polyfem
 			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const;
 
 			//dispaces to all set parameters of the local assemblers
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params);
 			void set_size(const int dim);
-			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 			void init_multimodels(const std::vector<std::string> &materials);
 			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 			void update_lame_params(const LameParameters &newParams);

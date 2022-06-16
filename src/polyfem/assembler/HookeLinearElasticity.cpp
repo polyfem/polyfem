@@ -40,7 +40,7 @@ namespace polyfem
 		{
 		}
 
-		void HookeLinearElasticity::set_parameters(const json &params)
+		void HookeLinearElasticity::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
 

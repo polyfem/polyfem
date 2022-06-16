@@ -336,8 +336,8 @@ namespace polyfem
 
 		void reset_mesh();
 
-		//set the multimaterial, this is mean for internal usage.
-		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
+		//set the material, this is mean for internal usage.
+		void set_materials();
 
 		//set the boundary sideset
 		//from a lambda that takes the face/edge barycenter
