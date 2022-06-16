@@ -67,7 +67,6 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
             const AssemblyValues &v = vals.basis_values[i];
 
             for (int k = 0, idx = 0; k < dim; k++)
-            {
                 for (int l = 0; l < dim; l++)
                 {
                     if (k < l)
@@ -98,11 +97,8 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
 
                     idx++;
                 }
-            }
         }
     }
-
-    logger().info("rhs norm {}", rhs.norm());
 
     // solve fluid problem
     StiffnessMatrix A = stiffness;
@@ -139,17 +135,13 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
         std::swap(rhs, rhs_periodic);
     }
 
-    logger().info("rhs norm {}", rhs.norm());
-
     // fix rigid transformation
     const int n_extra_constraints = remove_pure_neumann_singularity(A);
     rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 
-	auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-    solver->setParameters(args["solver"]["linear"]);
-
     Eigen::MatrixXd w(rhs.rows(), rhs.cols());
-
+    auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+    solver->setParameters(args["solver"]["linear"]);
     for (int k = 0; k < rhs.cols(); k++)
     {
         Eigen::VectorXd b = rhs.col(k);
@@ -170,7 +162,8 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
         Eigen::MatrixXd tmp;
         tmp.setZero(n_bases * dim, w.cols());
         for (int i = 0; i < n_bases * dim; i++)
-            tmp(i) = w(periodic_reduce_map(i));
+            for (int k = 0; k < w.cols(); k++)
+                tmp(i, k) = w(periodic_reduce_map(i), k);
 
         std::swap(tmp, w);
     }
