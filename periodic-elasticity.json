@@ -1,0 +1,45 @@
+{
+    "geometry": [
+        {
+            "mesh": "square.obj",
+            "n_refs": 3
+        }
+    ],
+    "space": {
+        "discr_order": 2
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLU"
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [
+            "-(125*pi^2*sin(2*pi*x))/3",
+            "-(125*pi^2*cos(2*pi*y))/3"
+        ],
+        "periodic_boundary": true
+    },
+    "materials": {
+        "type": "LinearElasticity",
+        "E": 10,
+        "nu": 0.2
+    },
+    "output": {
+        "paraview": {
+            "surface": true,
+            "options": {
+                "material": true
+            }
+        },
+        "data": {
+            "stiffness_mat": "A.mat"
+        },
+        "reference": {
+            "solution": [
+                "sin(2*pi*x)",
+                "cos(2*pi*y)"
+            ]
+        }
+    }
+}
