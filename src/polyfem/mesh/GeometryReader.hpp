@@ -11,9 +11,9 @@ namespace polyfem::mesh
 	///
 	/// @brief      read FEM meshes from a geometry JSON array (or single)
 	///
-	/// @param[in]  geometry       { geometry JSON object(s) }
-	/// @param[in]  root_path      { root path of JSON }
-	/// @param[out] mesh           { output Mesh }
+	/// @param[in]  geometry        geometry JSON object(s)
+	/// @param[in]  root_path       root path of JSON
+	/// @param[out] mesh            output Mesh
 	///
 	void read_fem_geometry(
 		const json &geometry,
@@ -27,10 +27,10 @@ namespace polyfem::mesh
 	///
 	/// @brief      read a FEM mesh from a geometry JSON
 	///
-	/// @param[in]  geometry       { geometry JSON object(s) }
-	/// @param[in]  displacements  { displacements JSON object(s) }
-	/// @param[in]  root_path      { root path of JSON }
-	/// @param[out] obstacle       { output Obstacle }
+	/// @param[in]  geometry        geometry JSON object(s)
+	/// @param[in]  displacements   displacements JSON object(s)
+	/// @param[in]  root_path       root path of JSON
+	/// @param[out] obstacle        output Obstacle
 	///
 	void read_obstacle_geometry(
 		const json &geometry,
@@ -46,12 +46,12 @@ namespace polyfem::mesh
 	///
 	/// @brief      read a FEM mesh from a geometry JSON
 	///
-	/// @param[in]  jmesh          { geometry JSON }
-	/// @param[in]  root_path      { root path of JSON }
-	/// @param[out] vertices       { #V x 3/2 output vertices positions }
-	/// @param[out] codim_vertices { indicies in vertices for the codimensional vertices }
-	/// @param[out] codim_edges    { indicies in vertices for the codimensional edges }
-	/// @param[out] faces          { indicies in vertices for the surface faces }
+	/// @param[in]  jmesh           geometry JSON
+	/// @param[in]  root_path       root path of JSON
+	/// @param[out] vertices        #V x 3/2 output vertices positions
+	/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
+	/// @param[out] codim_edges     indicies in vertices for the codimensional edges
+	/// @param[out] faces           indicies in vertices for the surface faces
 	///
 	void read_fem_mesh(
 		const json &jmesh,
@@ -67,12 +67,12 @@ namespace polyfem::mesh
 	///
 	/// @brief      read a obstacle mesh from a geometry JSON
 	///
-	/// @param[in]  jmesh          { geometry JSON }
-	/// @param[in]  root_path      { root path of JSON }
-	/// @param[out] vertices       { #V x 3/2 output vertices positions }
-	/// @param[out] codim_vertices { indicies in vertices for the codimensional vertices }
-	/// @param[out] codim_edges    { indicies in vertices for the codimensional edges }
-	/// @param[out] faces          { indicies in vertices for the surface faces }
+	/// @param[in]  jmesh           geometry JSON
+	/// @param[in]  root_path       root path of JSON
+	/// @param[out] vertices        #V x 3/2 output vertices positions
+	/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
+	/// @param[out] codim_edges     indicies in vertices for the codimensional edges
+	/// @param[out] faces           indicies in vertices for the surface faces
 	///
 	void read_obstacle_mesh(
 		const json &jmesh,
@@ -85,8 +85,8 @@ namespace polyfem::mesh
 	///
 	/// @brief      Fill in missing json geometry parameters with the default values
 	///
-	/// @param[in]  geometry_in  { input json geometry parameters }
-	/// @param[out] geometry_out { output json geometry parameters }
+	/// @param[in]  geometry_in   input json geometry parameters
+	/// @param[out] geometry_out  output json geometry parameters
 	///
 	void apply_default_geometry_parameters(
 		const json &geometry_in, json &geometry_out, const std::string &path_prefix = "");
@@ -94,8 +94,8 @@ namespace polyfem::mesh
 	///
 	/// @brief         Transform a mesh inplace using json parameters including scaling, rotation, and translation
 	///
-	/// @param[in]     transform { json object with the mesh data }
-	/// @param[in,out] vertices  { #V x 3/2 input and output vertices positions }
+	/// @param[in]     transform json object with the mesh data
+	/// @param[in,out] vertices  #V x 3/2 input and output vertices positions
 	///
 	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices);
 
