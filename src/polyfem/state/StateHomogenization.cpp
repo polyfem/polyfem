@@ -100,7 +100,7 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
         }
     }
 
-    // solve fluid problem
+    // solve elastic problem
     StiffnessMatrix A = stiffness;
     auto boundary_nodes_tmp = boundary_nodes;
     const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -139,7 +139,8 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     const int n_extra_constraints = remove_pure_neumann_singularity(A);
     rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 
-    Eigen::MatrixXd w(rhs.rows(), rhs.cols());
+    Eigen::MatrixXd w;
+    w.setZero(rhs.rows(), rhs.cols());
     auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
     for (int k = 0; k < rhs.cols(); k++)
