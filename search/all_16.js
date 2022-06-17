@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['v_0',['v',['../structpolyfem_1_1mesh_1_1_vertex.html#afc574af258f55f93bc032321c1fbcf6a',1,'polyfem::mesh::Vertex::v()'],['../classpolyfem_1_1mesh_1_1_obstacle.html#acd4b860705bf9f9c6af1206b64c3e6f5',1,'polyfem::mesh::Obstacle::v()']]],
-  ['v_1',['V',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a590aa5859113a5ef17a9e7433753c6e4',1,'polyfem::solver::OperatorSplittingSolver']]],
+  ['v_0',['V',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a590aa5859113a5ef17a9e7433753c6e4',1,'polyfem::solver::OperatorSplittingSolver']]],
+  ['v_1',['v',['../structpolyfem_1_1mesh_1_1_vertex.html#afc574af258f55f93bc032321c1fbcf6a',1,'polyfem::mesh::Vertex::v()'],['../classpolyfem_1_1mesh_1_1_obstacle.html#acd4b860705bf9f9c6af1206b64c3e6f5',1,'polyfem::mesh::Obstacle::v()']]],
   ['v1_2',['v1',['../classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html#a173466e6511aa7d3e4356767a5bdff6e',1,'polyfem::mesh::Mesh::EdgeNodes::v1()'],['../classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html#a30b98a355171faab0bde84a450c67adb',1,'polyfem::mesh::Mesh::FaceNodes::v1()'],['../classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html#a0fb7b94874bb7b3dc82ee4db89349fbb',1,'polyfem::mesh::Mesh::CellNodes::v1()']]],
   ['v2_3',['v2',['../classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html#acb8e5f0d50389aaa06fe3f3153bc8f31',1,'polyfem::mesh::Mesh::EdgeNodes::v2()'],['../classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html#aed50b3250e845d0959b4ea030aa771a0',1,'polyfem::mesh::Mesh::FaceNodes::v2()'],['../classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html#a8f9b57c50f6fc1178bf0ab6ab788bb29',1,'polyfem::mesh::Mesh::CellNodes::v2()']]],
   ['v3_4',['v3',['../classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html#a80cc8ac74e695c9e30ef0dce9a393536',1,'polyfem::mesh::Mesh::CellNodes::v3()'],['../classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html#a83fc4add752d6c2100135b59473e3921',1,'polyfem::mesh::Mesh::FaceNodes::v3()']]],

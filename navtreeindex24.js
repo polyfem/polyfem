@@ -1,17 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"namespacemembers_e.html":[6,1,0,4],
-"namespacemembers_enum.html":[6,1,4],
-"namespacemembers_eval.html":[6,1,5],
-"namespacemembers_f.html":[6,1,0,5],
-"namespacemembers_func.html":[6,1,1,0],
-"namespacemembers_func.html":[6,1,1],
-"namespacemembers_func_b.html":[6,1,1,1],
-"namespacemembers_func_c.html":[6,1,1,2],
-"namespacemembers_func_d.html":[6,1,1,3],
-"namespacemembers_func_e.html":[6,1,1,4],
-"namespacemembers_func_f.html":[6,1,1,5],
-"namespacemembers_func_g.html":[6,1,1,6],
 "namespacemembers_func_h.html":[6,1,1,7],
 "namespacemembers_func_i.html":[6,1,1,8],
 "namespacemembers_func_l.html":[6,1,1,9],
@@ -249,5 +237,17 @@ var NAVTREEINDEX24 =
 "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#afb7ad06ae12fc5b116c4a57a9c82b6cb":[6,0,6,3,0,6],
 "namespacepolyfem_1_1mesh_1_1_navigation.html":[6,0,6,3,1],
 "namespacepolyfem_1_1mesh_1_1_navigation.html#a1b9d2ef721df947c3827b416016918fd":[6,0,6,3,1,1],
-"namespacepolyfem_1_1mesh_1_1_navigation.html#a37f55e9dd505f28d098c115ce3cecfa7":[6,0,6,3,1,4]
+"namespacepolyfem_1_1mesh_1_1_navigation.html#a37f55e9dd505f28d098c115ce3cecfa7":[6,0,6,3,1,4],
+"namespacepolyfem_1_1mesh_1_1_navigation.html#a538e8c49434b0ee87dfbdf6870074c1c":[6,0,6,3,1,7],
+"namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba":[6,0,6,3,1,6],
+"namespacepolyfem_1_1mesh_1_1_navigation.html#a72b4f275520c3c228210d1e9a781e8fc":[6,0,6,3,1,5],
+"namespacepolyfem_1_1mesh_1_1_navigation.html#a7d6b7789d9155623da6a8ec00c3086ec":[6,0,6,3,1,3],
+"namespacepolyfem_1_1mesh_1_1_navigation.html#aaf5d4f00cc4dd68391471af5a598b1dd":[6,0,6,3,1,2],
+"namespacepolyfem_1_1mesh_1_1_navigation.html#abf91546c2ca67de0513b99b390ed1e51":[6,0,6,3,1,8],
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html":[6,0,6,3,2],
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a042fb7631b1b3bd7e3dacc7731de0165":[6,0,6,3,2,8],
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a0644f99b30a3ea2305075e2367a1670d":[6,0,6,3,2,11],
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a150d66c2859254eef3c66d3ee57dca41":[6,0,6,3,2,4],
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a45d1df14b0d5989deb22f75a094937ee":[6,0,6,3,2,13],
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a51ba1bb8ce325cc20213ffe364f87ab8":[6,0,6,3,2,2]
 };

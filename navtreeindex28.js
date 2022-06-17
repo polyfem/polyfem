@@ -1,17 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html#a5541d7fbe992ab55eed79040d5ab538d":[6,0,9,0,0],
-"structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html#a5541d7fbe992ab55eed79040d5ab538d":[7,0,5,0,0],
-"tetrahedron_8py.html":[8,0,0,0,1,0,0],
-"tetrahedron_8py.html#a06d630e86a5d3499521e2013f3325a95":[8,0,0,0,1,0,0,1],
-"tetrahedron_8py.html#a178443be14dbb93bf120d2baf6d61499":[8,0,0,0,1,0,0,0],
-"tetrahedron_8py.html#a17a7bd7db0e17083ba27e5ca1bef1853":[8,0,0,0,1,0,0,2],
-"tetrahedron_8py.html#a25c5bf7d54573feb2b7d1c6d109dc6d0":[8,0,0,0,1,0,0,5],
-"tetrahedron_8py.html#a668b9a1147d5e3431070e292760130ad":[8,0,0,0,1,0,0,4],
-"tetrahedron_8py.html#a75c9bafaad4276c08e52bc8a69cdce94":[8,0,0,0,1,0,0,3],
-"tetrahedron_8py.html#a7a30f3081ce9820ed5be706027cb7936":[8,0,0,0,1,0,0,6],
-"tetrahedron_8py.html#ad4d30e972a83032d837f134c5ebbdc3f":[8,0,0,0,1,0,0,7],
-"triangle_8py.html":[8,0,0,0,1,0,1],
 "triangle_8py.html#a2ef3f501f213fb6d2ba5ec927a44fc7e":[8,0,0,0,1,0,1,7],
 "triangle_8py.html#a49dcfd2994a0296f5ecf2157ea14f8e5":[8,0,0,0,1,0,1,5],
 "triangle_8py.html#a72919946fd8d7cdd07d68f2d0588ee94":[8,0,0,0,1,0,1,6],
