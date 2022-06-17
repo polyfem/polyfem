@@ -1,5 +1,13 @@
 var NAVTREEINDEX25 =
 {
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2":[3,0,6,3,24],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789":[3,0,6,3,24,0],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af":[3,0,6,3,24,8],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f":[3,0,6,3,24,4],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64":[3,0,6,3,24,3],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0":[3,0,6,3,24,9],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf":[3,0,6,3,24,2],
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5":[3,0,6,3,24,5],
 "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65":[3,0,6,3,24,7],
 "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb":[3,0,6,3,24,6],
 "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba":[3,0,6,3,24,1],
@@ -241,13 +249,5 @@ var NAVTREEINDEX25 =
 "p__bases_8py.html#acf2948e1b6a7f19a70b5b9ee2bf968c3":[5,0,1,0,1,13,34],
 "p__bases_8py.html#ad00f58e23bcb0a65e9d8f3f34f8fd55c":[5,0,1,0,1,13,4],
 "p__bases_8py.html#ad691f98e6470a6293e467b0bee8685e0":[5,0,1,0,1,13,24],
-"p__bases_8py.html#ad6f4efb7d9fd42dc06ef88e4f0f65668":[5,0,1,0,1,13,7],
-"p__bases_8py.html#ad72a1e76d715321e683a0470b5e431ae":[5,0,1,0,1,13,14],
-"p__bases_8py.html#aeebf777187840c3134b16458a2afcbb7":[5,0,1,0,1,13,16],
-"p__bases_8py.html#aef49fb5f34197f17e36c704e503d9616":[5,0,1,0,1,13,3],
-"p__bases_8py.html#aefce99d39dd7f99318ac75d574b8b4de":[5,0,1,0,1,13,25],
-"p__bases_8py.html#afabc7ae0492eb8f9b81f626e52a0b2a2":[5,0,1,0,1,13,13],
-"p__bases_8py_source.html":[5,0,1,0,1,13],
-"p__n__bases_8cpp.html":[5,0,1,0,1,14],
-"p__n__bases_8cpp.html#a354a4b5cbfcf4c5768a35a8ed4f2cdb7":[5,0,1,0,1,14,7]
+"p__bases_8py.html#ad6f4efb7d9fd42dc06ef88e4f0f65668":[5,0,1,0,1,13,7]
 };

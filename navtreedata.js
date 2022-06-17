@@ -25,9 +25,18 @@
 var NAVTREE =
 [
   [ "PolyFEM", "index.html", [
-    [ "Building PolyFEM", "index.html#autotoc_md1", null ],
-    [ "Using PolyFEM as dependency", "index.html#autotoc_md2", null ],
-    [ "Interface", "index.html#autotoc_md3", null ],
+    [ "Code Structure", "index.html#autotoc_md1", [
+      [ "Finite Element Assembler", "index.html#autotoc_md2", null ],
+      [ "Finite Element Bases", "index.html#autotoc_md3", null ],
+      [ "Mesh data structure, Input/Output, and Navigation", "index.html#autotoc_md4", null ],
+      [ "Quadrature Rules", "index.html#autotoc_md5", null ],
+      [ "Time Integration", "index.html#autotoc_md6", null ],
+      [ "Collection of PDEs", "index.html#autotoc_md7", null ],
+      [ "Automatic Code Generation", "index.html#autotoc_md8", null ],
+      [ "Utilities", "index.html#autotoc_md9", null ]
+    ] ],
+    [ "Building PolyFEM as a stand-alone executable", "index.html#autotoc_md10", null ],
+    [ "Building PolyFEM as a static library", "index.html#autotoc_md11", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -91,10 +100,10 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5",
 "classpolyfem_1_1utils_1_1_timer.html#a1127efc8c59a3168b03938b9986cec2d",
 "functions_~.html",
-"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65",
-"p__n__bases_8cpp.html#a4ed466f5717b1e96c5fd9f788f84249d",
-"structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a34540104fe4aff4c68b0cbdb1fcad9cb",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a2ed1c72e33574d1b93985451d8968192"
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2",
+"p__bases_8py.html#ad72a1e76d715321e683a0470b5e431ae",
+"structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a1c0a30867f9c9060f547f7436579b7f2",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

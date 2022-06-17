@@ -117,20 +117,76 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="contents">
 <div class="textblock"><p ><a class="anchor" id="md_docs_main"></a> </p>
 <h1><a class="anchor" id="autotoc_md1"></a>
-Building PolyFEM</h1>
-<p >All the C++ dependencies required to build the code are included. It should work on Windows, macOS, and Linux, and it should build out-of-the-box with CMake:</p>
+Code Structure</h1>
+<p >The high-level functions of PolyFEM are in <a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a>, a class containing the application state and depending on all the PolyFEM submodules.</p>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Finite Element Assembler</h2>
+<p >polyfem::Assembler assembles the system matrix and right hand side (rhs). The assembler relies on finite element basis (<a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a>), quadrature rules (<a class="el" href="namespacepolyfem_1_1quadrature.html">polyfem::quadrature</a>), and for transient problems on polyfem::Time_integrator.</p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Finite Element Bases</h2>
+<p ><a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a> contains the implementation of finite element basis functions.</p>
+<p >The module supports the following 2 dimensional elements:</p><ul>
+<li>Lagrangian triangular elements of degree 1 to 8 (<a class="el" href="_f_e_basis2d_8hpp.html">FEBasis2d.hpp</a>)</li>
+<li>Lagrangian quadrilateral elements of degree 1 to 8 (<a class="el" href="_f_e_basis2d_8hpp.html">FEBasis2d.hpp</a>)</li>
+<li>Spline (IGA) elements of degree 1 to 4 (<a class="el" href="_spline_basis2d_8hpp.html">SplineBasis2d.hpp</a>)</li>
+<li>Polygonal elements (<a class="el" href="_polygonal_basis2d_8hpp.html">PolygonalBasis2d.hpp</a>)</li>
+</ul>
+<p >The module supports the following 3 dimensional elements:</p><ul>
+<li>Lagrangian tetrahedral elements of degree 1 to 8 (<a class="el" href="_f_e_basis3d_8hpp.html">FEBasis3d.hpp</a>)</li>
+<li>Lagrangian hexahedral elements of degree 1 to 8 (<a class="el" href="_f_e_basis3d_8hpp.html">FEBasis3d.hpp</a>)</li>
+<li>Spline (IGA) elements of degree 1 to 4 (<a class="el" href="_spline_basis3d_8hpp.html">SplineBasis3d.hpp</a>)</li>
+<li>Polygonal elements (<a class="el" href="_polygonal_basis3d_8hpp.html">PolygonalBasis3d.hpp</a>)</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Mesh data structure, Input/Output, and Navigation</h2>
+<p ><a class="el" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a> contains data structures and algorithms for simplicial and polygonal meshes.</p>
+<p >The interface is generic (<a class="el" href="_mesh2_d_8hpp.html">Mesh2D.hpp</a>, <a class="el" href="_mesh3_d_8hpp.html">Mesh3D.hpp</a>). There are two specializations: a conforming implementation which supports conforming polygonal meshes (<a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a>, <a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a>) without hanging nodes, and a non-conforming version (<a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a>, <a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a>) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.</p>
+<p >Many input formats are supported (see the JSON documentation for the complete list), and it outputs meshes in VTU (the format used by paraview/VTK).</p>
+<p >In PolyFEM the mesh is used to define a collection of dofs (in case of linear elements, they correspond to the nodes of the mesh, but this is not the case for other elements). The mesh is then discarded and not used by other modules.</p>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Quadrature Rules</h2>
+<p ><a class="el" href="namespacepolyfem_1_1quadrature.html">polyfem::quadrature</a> contains a set of quadrature rules for all elements implemented in <a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a>. The quadrature library is mostly independent from the rest of the codebase and it is based on the open-source library quadpy.</p>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Time Integration</h2>
+<p >For transient problems, <a class="el" href="namespacepolyfem_1_1time__integrator.html">polyfem::time_integrator</a> implements linear (Implicit Euler <a class="el" href="_implicit_euler_8hpp.html">ImplicitEuler.hpp</a>, Implicit Newmak <a class="el" href="_implicit_newmark_8hpp.html">ImplicitNewmark.hpp</a>) and non-linear time integrators (BDF BDF.hpp).</p>
+<h2><a class="anchor" id="autotoc_md7"></a>
+Collection of PDEs</h2>
+<p >Polyfem contains right hand side, boundary conditions, exact solutions, and initial conditions for many common PDEs. We refer to the documentation in the <a class="el" href="namespacepolyfem_1_1problem.html">polyfem::problem</a> section for more details. The major physics supported by polyfem are:</p>
+<ol type="1">
+<li>Laplace</li>
+<li>Helmholtz</li>
+<li>Linear Elasticity</li>
+<li>Saint-Venant Elasticity</li>
+<li>Neo-Hookean Elasticity</li>
+<li>Stokes</li>
+<li>Navier Stokes</li>
+</ol>
+<p >3,4,5 supports both static and transient problems, and model contact and friction forces using the incremental potential formulation (<a href="https://github.com/ipc-sim/ipc-toolkit">https://github.com/ipc-sim/ipc-toolkit</a>).</p>
+<h2><a class="anchor" id="autotoc_md8"></a>
+Automatic Code Generation</h2>
+<p ><a class="el" href="namespacepolyfem_1_1autogen.html">polyfem::autogen</a> contains python scripts to generate cpp code for:</p><ul>
+<li>Low-order basis in <a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a></li>
+<li>All quadrature rules used in <a class="el" href="namespacepolyfem_1_1quadrature.html">polyfem::quadrature</a></li>
+<li>All non-trivial rhs assembly in <a class="el" href="namespacepolyfem_1_1assembler.html">polyfem::assembler</a></li>
+</ul>
+<p >The code autogenerated by the python scripts is directly committed in the git repository, as the autogeneration is time consuming.</p>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Utilities</h2>
+<p >Smaller utilities are grouped in the <a class="el" href="namespacepolyfem_1_1utils.html">polyfem::utils</a> module, including mesh IO, hashing functions, logging Logger.h, matri utilities, parallelization, rasterization raster.h, function interpolation <a class="el" href="_r_b_f_interpolation_8hpp.html">RBFInterpolation.hpp</a>, and timers <a class="el" href="_timer_8hpp.html">Timer.hpp</a>.</p>
+<h1><a class="anchor" id="autotoc_md10"></a>
+Building PolyFEM as a stand-alone executable</h1>
+<p >All the C++ dependencies required to build the code are included and are compiled statically in a single executable. PolyFEM is compiled using automatic builds on Windows, macOS, and Linux using:</p>
 <div class="fragment"><div class="line">mkdir build</div>
 <div class="line">cd build</div>
 <div class="line">cmake ..</div>
 <div class="line">make -j4</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md2"></a>
-Using PolyFEM as dependency</h1>
-<p ><b>Polyfem</b> uses modern <code>cmake</code>, so it it should be enough to add this line </p><div class="fragment"><div class="line">add_subdirectory(&lt;path-to-polyfem&gt; polyfem)</div>
-</div><!-- fragment --><p> in your cmake project, and then simply add </p><div class="fragment"><div class="line">target_link_library(&lt;your_target&gt; polyfem::polyfem)</div>
-</div><!-- fragment --><p> in your cmake script. Polyfem will download the dependencies that it needs with the version that it needs.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
-Interface</h1>
-<p >This is the main interface of <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code>. </p>
+</div><!-- fragment --><p> After compilation, unit and integration tests tests/main.cpp can be run with:</p>
+<div class="fragment"><div class="line">./tests/unit_tests</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md11"></a>
+Building PolyFEM as a static library</h1>
+<p ><b>Polyfem</b> can be added to an existing <code>cmake</code> project with </p><div class="fragment"><div class="line">add_subdirectory(&lt;path-to-polyfem&gt; polyfem)</div>
+</div><!-- fragment --><p> and linked with </p><div class="fragment"><div class="line">target_link_library(&lt;your_target&gt; polyfem::polyfem)</div>
+</div><!-- fragment --><p> in your cmake script. We do not currently support other building systems. Polyfem will download the dependencies that it needs in the build folder. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
