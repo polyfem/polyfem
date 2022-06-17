@@ -30,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -136,7 +143,7 @@ $(document).ready(function(){initNavTree('_implicit_euler_8hpp_source.html','');
 <div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_euler_html_a3f43612a9fe0e445cccde6d6af035c5b"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b">polyfem::time_integrator::ImplicitEuler::update_quantities</a></div><div class="ttdeci">void update_quantities(const Eigen::VectorXd &amp;x) override</div><div class="ttdef"><b>Definition:</b> <a href="_implicit_euler_8cpp_source.html#l00009">ImplicitEuler.cpp:9</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_euler_html_a680898bf6872548e340fead0a3b3fc69"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a680898bf6872548e340fead0a3b3fc69">polyfem::time_integrator::ImplicitEuler::acceleration_scaling</a></div><div class="ttdeci">double acceleration_scaling() const override</div><div class="ttdoc">Compute the acceleration scaling used to scale forces when integrating a second order ODE.</div><div class="ttdef"><b>Definition:</b> <a href="_implicit_euler_8cpp_source.html#l00022">ImplicitEuler.cpp:22</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_euler_html_a8c5e5e5a9a440d0acb2ed8aa03d27264"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264">polyfem::time_integrator::ImplicitEuler::x_tilde</a></div><div class="ttdeci">Eigen::VectorXd x_tilde() const override</div><div class="ttdoc">Compute the predicted solution to be used in the inertia term .</div><div class="ttdef"><b>Definition:</b> <a href="_implicit_euler_8cpp_source.html#l00017">ImplicitEuler.cpp:17</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">polyfem::time_integrator::ImplicitTimeIntegrator</a></div><div class="ttdef"><b>Definition:</b> <a href="_implicit_time_integrator_8hpp_source.html#l00014">ImplicitTimeIntegrator.hpp:15</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1time__integrator_1_1_implicit_time_integrator_html"><div class="ttname"><a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">polyfem::time_integrator::ImplicitTimeIntegrator</a></div><div class="ttdoc">Implicit time integrator of a second order ODE (equivently a system of coupled first order ODEs).</div><div class="ttdef"><b>Definition:</b> <a href="_implicit_time_integrator_8hpp_source.html#l00013">ImplicitTimeIntegrator.hpp:14</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
