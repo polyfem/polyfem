@@ -126,5 +126,11 @@ namespace polyfem
 			const double beta = betas(x_prevs.size() - 1);
 			return beta * beta * dt() * dt();
 		}
+
+		double BDFTimeIntegrator::beta_dt() const
+		{
+			const double beta = betas(x_prevs.size() - 1);
+			return beta * dt();
+		}
 	} // namespace time_integrator
 } // namespace polyfem
