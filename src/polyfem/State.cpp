@@ -597,14 +597,14 @@ namespace polyfem
 
 		logger().info("Extracting boundary mesh...");
 		build_collision_mesh();
-		if (n_pressure_bases > 0)
-		{
-			extract_boundary_mesh(
-				pressure_bases,
-				boundary_nodes_pos_pressure,
-				boundary_edges_pressure,
-				boundary_triangles_pressure);
-		}
+		// if (n_pressure_bases > 0)
+		// {
+		// 	extract_boundary_mesh(
+		// 		pressure_bases,
+		// 		boundary_nodes_pos_pressure,
+		// 		boundary_edges_pressure,
+		// 		boundary_triangles_pressure);
+		// }
 		// const std::string export_surface = args["export"]["surface"];
 		// if (!export_surface.empty())
 		extract_vis_boundary_mesh();
@@ -1055,25 +1055,8 @@ namespace polyfem
 			args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		// if (!rhs_path.empty() || rhs_in.size() > 0)
-		// {
-		// 	logger().debug("Loading rhs...");
-
-		// 	if (rhs_in.size())
-		// 		rhs = rhs_in;
-		// 	else
-		// 		read_matrix(rhs_path, rhs);
-
-		// 	StiffnessMatrix tmp_mass;
-		// 	assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
-		// 	rhs = tmp_mass * rhs;
-		// 	logger().debug("done!");
-		// }
-		// else
-		{
-			step_data.rhs_assembler->assemble(density, rhs);
-			rhs *= -1;
-		}
+		step_data.rhs_assembler->assemble(density, rhs);
+		rhs *= -1;
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))

@@ -16,9 +16,6 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-// Instead of including this do a forward declaration
-// #include <polyfem/NonlinearSolver.hpp>
-
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
@@ -48,7 +45,7 @@ namespace cppoptlib
 
 namespace polyfem
 {
-	//class used to save the solution of time dependent problems in code instead of saving it to the disc
+	/// class used to save the solution of time dependent problems in code instead of saving it to the disc
 	class SolutionFrame
 	{
 	public:
@@ -69,6 +66,7 @@ namespace polyfem
 		class ALNLProblem;
 	} // namespace solver
 
+	/// class to store time stepping data
 	class StepData
 	{
 	public:
@@ -77,34 +75,38 @@ namespace polyfem
 		std::shared_ptr<solver::ALNLProblem> alnl_problem;
 	};
 
-	//main class that contains the polyfem solver
+	/// main class that contains the polyfem solver and all its state
 	class State
 	{
 	public:
+		//-----------------initializtion
 		~State() = default;
-
+		/// Constructor
+		/// @param[in] max_threads max number of threads
 		State(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
 
-		//initalizing the logger
-		//log_file is to write it to a file (use log_file="") to output to consolle
-		//log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		//quiet the log
+		/// initialize the polyfem solver with a json settings
+		/// @param[in] args input arguments
+		/// @param[in] output_dir output directory
+		void init(const json &args, const std::string &output_dir = "");
+
+		/// main input arguments containing all defaults
+		json args;
+
+		//-----------------logger
+		/// initalizing the logger
+		/// @param[in] log_file is to write it to a file (use log_file="") to output to consolle
+		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		/// @param[in] is_quit quiets the log
 		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
 
-		//initalizing the logger
-		//writes to an outputstream
+		/// initalizing the logger writes to an outputstream
+		/// @param[in] os output stream
+		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		void init_logger(std::ostream &os, int log_level);
 
-		//initalizing the logger meant for internal usage
-		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
-
-		//initialize the polyfem solver with a json settings
-		void init(const json &args, const std::string &output_dir = "");
-		// void init(const std::string &json);
-
-		void init_timesteps();
-
-		//change log level, log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		///change log level
+		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		void set_log_level(int log_level)
 		{
 			spdlog::level::level_enum level =
@@ -113,9 +115,9 @@ namespace polyfem
 			IPC_LOG(set_level(level));
 		}
 
-		//get the output log as json
-		//this is *not* what gets printed but more informative
-		//information, eg it contains runtimes, errors, etc.
+		/// gets the output log as json
+		/// this is *not* what gets printed but more informative
+		/// information, eg it contains runtimes, errors, etc.
 		std::string get_log()
 		{
 			std::stringstream ss;
@@ -123,232 +125,83 @@ namespace polyfem
 			return ss.str();
 		}
 
-		//solver settings
-		json args;
+	private:
+		/// initalizing the logger meant for internal usage
+		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
 
-		// Directory for output files
+	public:
+		void init_timesteps();
+
+		/// Directory for output files
 		std::string output_dir;
-
-		//assembler, it dispatches call to the differnt assembers based on the formulation
-		assembler::AssemblerUtils assembler;
-		//current problem, it contains rhs and bc
-		std::shared_ptr<assembler::Problem> problem;
-
-		//density of the input, default=1.
+		/// density of the input, default=1.
 		Density density;
 
-		//FE bases, the size is #elements
-		std::vector<ElementBases> bases;
-		//FE pressure bases for mixed elements, the size is #elements
-		std::vector<ElementBases> pressure_bases;
-
-		// Mapping from input nodes to FE nodes
-		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
-
-		//Geometric mapping bases, if the elements are isoparametric, this list is empty
-		std::vector<ElementBases> geom_bases;
-
-		//used to store assembly values for small problems
-		assembler::AssemblyValsCache ass_vals_cache;
-		assembler::AssemblyValsCache pressure_ass_vals_cache;
-
-		//list of boundary nodes
-		std::vector<int> boundary_nodes;
-		//list of neumann boundary nodes
-		std::vector<int> pressure_boundary_nodes;
-		//mapping from elements to nodes for all mesh
-		std::vector<mesh::LocalBoundary> total_local_boundary;
-		//mapping from elements to nodes for dirichlet boundary conditions
-		std::vector<mesh::LocalBoundary> local_boundary;
-		//mapping from elements to nodes for neumann boundary conditions
-		std::vector<mesh::LocalBoundary> local_neumann_boundary;
-		//nodes on the boundary of polygonal elements, used for harmonic bases
-		std::map<int, InterfaceData> poly_edge_to_data;
-
-		//current mesh, it can be a Mesh2D or Mesh3D
-		std::unique_ptr<mesh::Mesh> mesh;
-		//Obstacles used in collisions
-		mesh::Obstacle obstacle;
-		//used to sample the solution
-		utils::RefElementSampler ref_element_sampler;
-
-		//polygons, used since poly have no geom mapping
-		std::map<int, Eigen::MatrixXd> polys;
-		//polyhedra, used since poly have no geom mapping
-		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
-
-		//parent element used to track refinements
-		std::vector<int> parent_elements;
-
-		//average system mass, used for contact with IPC
+		/// average system mass, used for contact with IPC
 		double avg_mass;
 
-		//stiffness and mass matrix.
-		//Stiffness is not compute for non linear problems
-		//Mass is computed only for time dependent problems
-		StiffnessMatrix stiffness, mass;
-		//System righ-hand side.
-		//rhs_in is an input that, if not empty, gets copied to rhs
-		Eigen::MatrixXd rhs, rhs_in;
+		//-----------------assembly
+		/// assembler, it dispatches call to the differnt assembers based on the formulation
+		assembler::AssemblerUtils assembler;
+		/// current problem, it contains rhs and bc
+		std::shared_ptr<assembler::Problem> problem;
 
-		//solution and pressure solution
-		//if the problem is not mixed, pressure is empty
-		Eigen::MatrixXd sol, pressure;
+		/// FE bases, the size is #elements
+		std::vector<ElementBases> bases;
+		/// FE pressure bases for mixed elements, the size is #elements
+		std::vector<ElementBases> pressure_bases;
+		///Geometric mapping bases, if the elements are isoparametric, this list is empty
+		std::vector<ElementBases> geom_bases;
 
-		//boundary mesh used for collision
-		//boundary_nodes_pos contains the total number of nodes, the internal ones are zero
-		//for high-order fem the faces are triangulated
-		//this is currently supported only for tri and tet meshes
-		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_edges;     // indices into full vertices
-		Eigen::MatrixXi boundary_triangles; // indices into full vertices
-		ipc::CollisionMesh collision_mesh;  // indices into surface vertices
+		/// polygons, used since poly have no geom mapping
+		std::map<int, Eigen::MatrixXd> polys;
+		/// polyhedra, used since poly have no geom mapping
+		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 
-		Eigen::MatrixXd boundary_nodes_pos_pressure;
-		Eigen::MatrixXi boundary_edges_pressure;
-		Eigen::MatrixXi boundary_triangles_pressure;
-
-		//boundary visualization mesh
-		Eigen::MatrixXd boundary_vis_vertices;
-		Eigen::MatrixXd boundary_vis_local_vertices;
-		Eigen::MatrixXi boundary_vis_elements;
-		Eigen::MatrixXi boundary_vis_elements_ids;
-		Eigen::MatrixXi boundary_vis_primitive_ids;
-		Eigen::MatrixXd boundary_vis_normals;
-
-		//grid mesh
-		Eigen::MatrixXd grid_points;
-		Eigen::MatrixXi grid_points_to_elements;
-		Eigen::MatrixXd grid_points_bc;
-
-		//spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
-		Eigen::Vector4d spectrum;
-
-		//information of the solver, eg num iteration, time, errors, etc
-		//the informations varies depending on the solver
-		json solver_info;
-
-		//use average pressure for stokes problem to fix the additional dofs, true by default
-		//if false, it will fix one pressure node to zero
-		bool use_avg_pressure;
-
-		//stores if input json contains dhat
-		bool has_dhat = false;
-
-		//number of bases and pressure bases
-		int n_bases, n_pressure_bases;
-		//vector of discretization oders, used when not all elements have the same degree
-		//one per element
+		/// vector of discretization oders, used when not all elements have the same degree, one per element
 		Eigen::VectorXi disc_orders;
 
-		//max edge lenght
-		double mesh_size;
-		//min edge lenght
-		double min_edge_length;
-		//avg edge lenght
-		double average_edge_length;
+		/// Mapping from input nodes to FE nodes
+		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
 
-		//errors, lp_err is in fact an L8 error
-		double l2_err, linf_err, lp_err, h1_err, h1_semi_err, grad_max_err;
+		/// used to store assembly values for small problems
+		assembler::AssemblyValsCache ass_vals_cache;
+		/// used to store assembly values for pressure for small problems
+		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
-		//non zeros and sytem matrix size
-		//num dof is the totdal dof in the system
-		long long nn_zero, mat_size, num_dofs;
+		/// stiffness and mass matrix.
+		/// Stiffness is not compute for non linear problems
+		StiffnessMatrix stiffness;
+		/// Mass matrix, it is computed only for time dependent problems
+		StiffnessMatrix mass;
+		/// System righ-hand side.
+		Eigen::MatrixXd rhs;
 
-		//timings
-		//construct the basis
-		double building_basis_time;
-		//load the mesh
-		double loading_mesh_time;
-		//build the polygonal/polyhedral bases
-		double computing_poly_basis_time;
-		//assembly
-		double assembling_stiffness_mat_time;
-		//computing the rhs
-		double assigning_rhs_time;
-		//solve
-		double solving_time;
-		//compute error
-		double computing_errors_time;
+		/// solution
+		Eigen::MatrixXd sol;
+		/// pressure solution, if the problem is not mixed, pressure is empty
+		Eigen::MatrixXd pressure;
 
-		//statiscs on angle, compute only when using p_ref (false by default)
-		double max_angle;
-		double sigma_max, sigma_min, sigma_avg;
+		/// use average pressure for stokes problem to fix the additional dofs, true by default
+		/// if false, it will fix one pressure node to zero
+		bool use_avg_pressure;
 
-		//number of flipped elements, compute only when using count_flipped_els (false by default)
-		int n_flipped;
+		/// number of bases
+		int n_bases;
+		/// number of pressure bases
+		int n_pressure_bases;
 
-		//statiscs on the mesh, see Polyspline paper for desciption
-		int simplex_count;
-		int regular_count;
-		int regular_boundary_count;
-		int simple_singular_count;
-		int multi_singular_count;
-		int boundary_count;
-		int non_regular_boundary_count;
-		int non_regular_count;
-		int undefined_count;
-		int multi_singular_boundary_count;
+		/// builds the bases step 2 of solve
+		void build_basis();
+		/// compute rhs, step 3 of solve
+		void assemble_rhs();
+		/// assemble matrices, step 4 of solve
+		void assemble_stiffness_mat();
 
-		//flag to decide if exporting the time dependent solution to files
-		//or save it in the solution_frames array
-		bool solve_export_to_file = true;
-		std::vector<SolutionFrame> solution_frames;
-
-		//computes the mesh size, it samples every edges n_samples times
-		//uses curved_mesh_size (false by default) to compute the size of
-		//the linear mesh
-		void compute_mesh_size(const mesh::Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
-
-		//loads the mesh from the json arguments
-		void load_mesh(bool non_conforming = false,
-					   const std::vector<std::string> &names = std::vector<std::string>(),
-					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
-					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
-
-		/// loads a febio file, uses args_in for default
-		void load_febio(const std::string &path, const json &args_in);
-
-		/// loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset
-		/// the input of the lambda is the face barycenter, the output is the sideset id
-		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
-
-		/// loads a mesh from a path
-		void load_mesh(const std::string &path, bool non_conforming = false)
-		{
-			args["geometry"] = {{"mesh", path}};
-			load_mesh(non_conforming);
-		}
-
-		/// loads a mesh from a path and uses the bc_tag to assign sideset ids
-		/// the bc_tag file should contain a list of integers, one per face
-		void load_mesh(const std::string &path, const std::string &bc_tag, bool non_conforming = false)
-		{
-			args["geometry"] = {{"mesh", path}, {"surface_selection", bc_tag}};
-			load_mesh(non_conforming);
-		}
-
-		/// load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
-		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
-		{
-			mesh = mesh::Mesh::create(V, F, non_conforming);
-			load_mesh(non_conforming);
-		}
-
-		void reset_mesh();
-
-		//set the multimaterial, this is mean for internal usage.
-		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
-
-		//set the boundary sideset
-		//from a lambda that takes the face/edge barycenter
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		//from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		//from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
-		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-
-		//solves the problem
+		//-----------------solver
+		/// solves the proble, step 5
+		void solve_problem();
+		/// solves the problem, call other methods
 		void solve()
 		{
 			compute_mesh_stats();
@@ -364,78 +217,362 @@ namespace polyfem
 			solve_export_to_file = true;
 		}
 
-		//internal methods, they are called from solve
+		/// timedependent stuff cached
+		StepData step_data;
+		/// initialize transient solver
+		/// @param[in] c_sol current solution
+		void init_transient(Eigen::VectorXd &c_sol);
+		/// solves transient navier stokes with operator splitting
+		/// @param[in] time_steps number of time steps
+		/// @param[in] dt timestep size
+		/// @param[in] rhs_assembler rhs assembler
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		/// solves transient navier stokes with FEM
+		/// @param[in] time_steps number of time steps
+		/// @param[in] t0 initial times
+		/// @param[in] dt timestep size
+		/// @param[in] rhs_assembler rhs assembler
+		/// @param[out] c_sol solution
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		/// solves transient scalar problem
+		/// @param[in] time_steps number of time steps
+		/// @param[in] t0 initial times
+		/// @param[in] dt timestep size
+		/// @param[in] rhs_assembler rhs assembler
+		/// @param[out] x solution
+		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		/// solves transient linear problem
+		/// @param[in] time_steps number of time steps
+		/// @param[in] t0 initial times
+		/// @param[in] dt timestep size
+		/// @param[in] rhs_assembler rhs assembler
+		/// @param[out] x solution
+		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		/// solves transient tensor non linear problem
+		/// @param[in] time_steps number of time steps
+		/// @param[in] t0 initial times
+		/// @param[in] dt timestep size
+		/// @param[in] rhs_assembler rhs assembler
+		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		/// initialized the non linear solver
+		/// @param[in] t0 initial times
+		/// @param[in] dt timestep size
+		/// @param[in] rhs_assembler rhs assembler
+		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		/// steps trought time
+		/// @param[in] t0 initial times
+		/// @param[in] dt timestep size
+		/// @param[in] t time
+		/// @param[out] solver_info output solver stats
+		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
+		/// solves a linear problem
+		void solve_linear();
+		/// solves a navier stokes
+		void solve_navier_stokes();
+		/// solves nonlinear problems
+		void solve_non_linear();
 
-		//builds the bases step 2 of solve
-		void build_basis();
-		//extracts the boundary mesh for collision, called in build_basis
+		//-----------------nodes flags
+		/// list of boundary nodes
+		std::vector<int> boundary_nodes;
+		/// list of neumann boundary nodes
+		std::vector<int> pressure_boundary_nodes;
+		/// mapping from elements to nodes for all mesh
+		std::vector<mesh::LocalBoundary> total_local_boundary;
+		/// mapping from elements to nodes for dirichlet boundary conditions
+		std::vector<mesh::LocalBoundary> local_boundary;
+		/// mapping from elements to nodes for neumann boundary conditions
+		std::vector<mesh::LocalBoundary> local_neumann_boundary;
+		/// nodes on the boundary of polygonal elements, used for harmonic bases
+		std::map<int, InterfaceData> poly_edge_to_data;
+
+		/// stores if input json contains dhat
+		bool has_dhat = false;
+
+		//-----------------Geometry
+		/// current mesh, it can be a Mesh2D or Mesh3D
+		std::unique_ptr<mesh::Mesh> mesh;
+		/// Obstacles used in collisions
+		mesh::Obstacle obstacle;
+		/// used to sample the solution
+		utils::RefElementSampler ref_element_sampler;
+
+		/// computes the mesh size, it samples every edges n_samples times
+		/// uses curved_mesh_size (false by default) to compute the size of
+		/// the linear mesh
+		/// @param[in] mesh to compute stats
+		/// @param[in] bases geom bases
+		/// @param[in] n_samples used for curved meshes
+		void compute_mesh_size(const mesh::Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
+
+		/// loads the mesh from the json arguments
+		/// @param[in] non_conforming creates a conforming/non conforming mesh
+		/// @param[in] names keys in the hdf5
+		/// @param[in] cells list of cells from hdf5
+		/// @param[in] vertices list of vertices from hdf5
+		void load_mesh(bool non_conforming = false,
+					   const std::vector<std::string> &names = std::vector<std::string>(),
+					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
+					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
+
+		/// loads a febio file, uses args_in for default, [DEPRECATED]
+		void load_febio(const std::string &path, const json &args_in);
+
+		/// loads the mesh from a geogram mesh
+		/// @param[in] meshin geo mesh
+		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id
+		/// @param[in] non_conforming creates a conforming/non conforming mesh
+		/// @param[in] skip_boundary_sideset skip_boundary_sideset = false it uses the lambda boundary_marker to assign the sideset
+		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
+
+		/// loads the mesh from V and F,
+		/// @param[in] V is #vertices x dim
+		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
+		/// @param[in] non_conforming creates a conforming/non conforming mesh
+		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
+		{
+			mesh = mesh::Mesh::create(V, F, non_conforming);
+			load_mesh(non_conforming);
+		}
+
+		///set the boundary sideset from a lambda that takes the face/edge barycenter
+		/// @param[in] boundary_marker function from face/edge barycenter that returns the sideset id
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		///set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
+		/// @param[in] boundary_marker function from face/edge barycenter and a flag if the face/edge is boundary that returns the sideset id
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		///set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
+		/// @param[in] boundary_marker function from face/edge vertices and a flag if the face/edge is boundary that returns the sideset id
+		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+
+		/// Resets the mesh
+		void reset_mesh();
+
+		/// parent element used to track refinements
+		std::vector<int> parent_elements;
+
+		//-----------------IPC
+		/// boundary mesh used for collision
+		/// boundary_nodes_pos contains the total number of nodes, the internal ones are zero
+		/// for high-order fem the faces are triangulated
+		/// this is currently supported only for tri and tet meshes
+		Eigen::MatrixXd boundary_nodes_pos;
+		/// edge indices into full vertices
+		Eigen::MatrixXi boundary_edges;
+		/// triangle indices into full vertices
+		Eigen::MatrixXi boundary_triangles;
+		/// ipc collision mesh into surface vertices
+		ipc::CollisionMesh collision_mesh;
+
+		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
-		//extracts the boundary mesh
+
+		/// extracts the boundary mesh
+		/// @param[in] bases geom bases
+		/// @param[out] boundary_nodes_pos nodes positions
+		/// @param[out] boundary_edges edges
+		/// @param[out] boundary_triangles triangles
 		void extract_boundary_mesh(
 			const std::vector<ElementBases> &bases,
 			Eigen::MatrixXd &boundary_nodes_pos,
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles) const;
 
-		//extracts the boundary mesh for visualization, called in build_basis
+		// Eigen::MatrixXd boundary_nodes_pos_pressure;
+		// Eigen::MatrixXi boundary_edges_pressure;
+		// Eigen::MatrixXi boundary_triangles_pressure;
+
+		//-----------------OUTPUT
+		/// boundary visualization mesh vertices
+		Eigen::MatrixXd boundary_vis_vertices;
+		/// boundary visualization mesh vertices pre image in ref element
+		Eigen::MatrixXd boundary_vis_local_vertices;
+		/// boundary visualization mesh connectivity
+		Eigen::MatrixXi boundary_vis_elements;
+		/// boundary visualization mesh elements ids
+		Eigen::MatrixXi boundary_vis_elements_ids;
+		/// boundary visualization mesh edge/face id
+		Eigen::MatrixXi boundary_vis_primitive_ids;
+		/// boundary visualization mesh normals
+		Eigen::MatrixXd boundary_vis_normals;
+
+		/// grid mesh points to export solution sampled on a grid
+		Eigen::MatrixXd grid_points;
+		/// grid mesh mapping to fe elements
+		Eigen::MatrixXi grid_points_to_elements;
+		/// grid mesh boundaries
+		Eigen::MatrixXd grid_points_bc;
+
+		/// spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
+		Eigen::Vector4d spectrum;
+
+		/// information of the solver, eg num iteration, time, errors, etc
+		/// the informations varies depending on the solver
+		json solver_info;
+
+		/// max edge lenght
+		double mesh_size;
+		/// min edge lenght
+		double min_edge_length;
+		/// avg edge lenght
+		double average_edge_length;
+
+		/// errors, lp_err is in fact an L8 error
+		double l2_err, linf_err, lp_err, h1_err, h1_semi_err, grad_max_err;
+
+		/// non zeros and sytem matrix size
+		/// num dof is the total dof in the system
+		long long nn_zero, mat_size, num_dofs;
+
+		/// time to construct the basis
+		double building_basis_time;
+		/// time to load the mesh
+		double loading_mesh_time;
+		/// time to build the polygonal/polyhedral bases
+		double computing_poly_basis_time;
+		/// time to assembly
+		double assembling_stiffness_mat_time;
+		/// time to computing the rhs
+		double assigning_rhs_time;
+		/// time to solve
+		double solving_time;
+		/// time to compute error
+		double computing_errors_time;
+
+		/// statiscs on angle, compute only when using p_ref (false by default)
+		double max_angle;
+		/// statiscs on tri/tet quality, compute only when using p_ref (false by default)
+		double sigma_max, sigma_min, sigma_avg;
+
+		/// number of flipped elements, compute only when using count_flipped_els (false by default)
+		int n_flipped;
+
+		/// statiscs on the mesh (simplices)
+		int simplex_count;
+		/// statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption
+		int regular_count;
+		/// statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption
+		int regular_boundary_count;
+		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
+		int simple_singular_count;
+		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
+		int multi_singular_count;
+		/// statiscs on the mesh (boundary quads/hexs), see Polyspline paper for desciption
+		int boundary_count;
+		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
+		int non_regular_boundary_count;
+		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
+		int non_regular_count;
+		/// statiscs on the mesh (not quad/hex simplex), see Polyspline paper for desciption
+		int undefined_count;
+		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
+		int multi_singular_boundary_count;
+
+		/// flag to decide if exporting the time dependent solution to files
+		/// or save it in the solution_frames array
+		bool solve_export_to_file = true;
+		/// saves the frames in a vector instead of VTU
+		std::vector<SolutionFrame> solution_frames;
+
+		//set the multimaterial, this is mean for internal usage.
+		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
+
+		/// extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();
-		//assemble matrices, step 4 of solve
-		void assemble_stiffness_mat();
-		//compute rhs, step 3 of solve
-		void assemble_rhs();
-		//solves the proble, step 5
-		void solve_problem();
 
-		//timedependent stuff cached
-		StepData step_data;
-		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
-		void init_transient(Eigen::VectorXd &c_sol);
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
-		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
-		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
-		void solve_linear();
-		void solve_navier_stokes();
-		void solve_non_linear();
-
-		//compute the errors, not part of solve
+		/// compute the errors, not part of solve
 		void compute_errors();
-		//saves all data on the disk according to the input params
+		/// saves all data on the disk according to the input params
 		void export_data();
 
-		//evaluates the function fun at the vertices on the mesh
-		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		void compute_vertex_values(int actual_dim, const std::vector<ElementBases> &basis,
-								   const MatrixXd &fun, Eigen::MatrixXd &result);
-		//compute von mises stress at quadrature points for the function fun, also compute the interpolated function
+		/// evaluates the function fun at the vertices on the mesh
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] basis basis function
+		/// @param[in] fun function to interpolate
+		/// @param[out] result output
+		void compute_vertex_values(int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, Eigen::MatrixXd &result);
+		/// compute von mises stress at quadrature points for the function fun, also compute the interpolated function
+		/// @param[in] fun function to used
+		/// @param[out] result output displacement
+		/// @param[out] von_mises output von mises
 		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises);
-		//interpolate the function fun. n_points is the size of the output. boundary_only interpolates only at boundary elements
+		/// interpolate the function fun.
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
-		//interpolate the function fun. n_points is the size of the output. boundary_only interpolates only at boundary elements
-		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		///interpolate the function fun.
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] basis basis function
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
-		//interpolate solution and gradient at in element el_index for the local_pts in the reference element (calls interpolate_at_local_vals with sol)
+		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] el_index elemnt indes
+		/// @param[in] local_pts points in the reference element
+		/// @param[out] result output
+		/// @param[out] result_grad output gradients
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
-		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element
+		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] el_index elemnt indes
+		/// @param[in] local_pts points in the reference element
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[out] result_grad output gradients
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
-		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
-		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
+		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] el_index elemnt indes
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] bases basis function
+		/// @param[in] local_pts points in the reference element
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[out] result_grad output gradients
 		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 
+		/// checks if mises are not nan
+		/// @param[in] fun function to used
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		/// @return if mises are nan
 		bool check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only);
-		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result scalar value
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
-		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
-		//the scalar value is averaged around every node to make it continuos
+		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		/// the scalar value is averaged around every node to make it continuos
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result_scalar scalar value
+		/// @param[out] result_tensor tensor value
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
 		void average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool use_sampler, const bool boundary_only);
-		//compute tensor quantity (ie stress tensor or velocy)
+		/// compute tensor quantity (ie stress tensor or velocy)
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result resulting tensor
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
 		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
-		//computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
+		/// computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[in] compute_avg if compute the average across elements
+		/// @param[out] result resulting value
 		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
 		//computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
 		void interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
@@ -455,7 +592,7 @@ namespace polyfem
 		/// Resolve path relative to output_dir if the path is not absolute
 		std::string resolve_output_path(const std::string &path) const;
 
-		//saves the output statistic to a stream
+		/// saves the output statistic to a stream
 		void save_json(std::ostream &out);
 		//saves the output statistic to a json object
 		void save_json(nlohmann::json &j);
