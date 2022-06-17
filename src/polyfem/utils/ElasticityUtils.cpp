@@ -484,10 +484,15 @@ namespace polyfem
 		mu_or_nu_.emplace_back();
 		mu_or_nu_.back().init(1.0);
 		size_ = -1;
+		is_lambda_mu_ = true;
 	}
 
 	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
 	{
+		assert(lambda_or_E_.size() == 1 || lambda_or_E_.size() < el_id);
+		assert(mu_or_nu_.size() == 1 || mu_or_nu_.size() < el_id);
+		assert(size_ == 2 || size_ == 3);
+
 		const auto &tmp1 = lambda_or_E_.size() == 1 ? lambda_or_E_[0] : lambda_or_E_[el_id];
 		const auto &tmp2 = mu_or_nu_.size() == 1 ? mu_or_nu_[0] : mu_or_nu_[el_id];
 
@@ -504,6 +509,11 @@ namespace polyfem
 			lambda = llambda;
 			mu = mmu;
 		}
+
+		assert(!std::isnan(lambda));
+		assert(!std::isnan(mu));
+		assert(!std::isinf(lambda));
+		assert(!std::isinf(mu));
 	}
 
 	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume)
@@ -550,8 +560,12 @@ namespace polyfem
 
 	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
 	{
+		assert(rho_.size() == 1 || rho_.size() < el_id);
+
 		const auto &tmp = rho_.size() == 1 ? rho_[0] : rho_[el_id];
-		return tmp(x, y, z, 0, el_id);
+		const double res = tmp(x, y, z, 0, el_id);
+		assert(!std::isnan(res));
+		return res;
 	}
 
 	void Density::add_multimaterial(const int index, const json &params)
