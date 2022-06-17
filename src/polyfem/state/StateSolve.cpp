@@ -1,6 +1,5 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/time_integrator/BDFTimeIntegrator.hpp>
 #include <polyfem/solver/TransientNavierStokesSolver.hpp>
 #include <polyfem/solver/OperatorSplittingSolver.hpp>
@@ -253,7 +252,6 @@ namespace polyfem
 
 			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
-			// bdf.rhs(prev_sol);
 			prev_sol = time_integrator.weighted_sum_x_prevs();
 			rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
@@ -265,10 +263,9 @@ namespace polyfem
 				current_rhs.block(prev_size, 0, n_larger, current_rhs.cols()).setZero();
 			}
 
-			ns_solver.minimize(*this, sqrt(time_integrator.acceleration_scaling()), current_dt, prev_sol,
+			ns_solver.minimize(*this, sqrt(time_integrator.acceleration_scaling()), prev_sol,
 							   velocity_stiffness, mixed_stiffness, pressure_stiffness,
 							   velocity_mass, current_rhs, c_sol);
-			// bdf.new_solution(c_sol);
 			time_integrator.update_quantities(c_sol);
 			sol = c_sol;
 			sol_to_pressure();
@@ -289,11 +286,9 @@ namespace polyfem
 		Eigen::VectorXd b;
 		Eigen::MatrixXd current_rhs = rhs;
 
-		//TODO unify with other one!!!
-		const int BDF_order = args["time"]["BDF"]["steps"];
-		// const int aux_steps = BDF_order-1;
-		BDF bdf(BDF_order);
-		bdf.new_solution(x);
+		BDFTimeIntegrator time_integrator;
+		time_integrator.set_parameters(args["time"]["BDF"]);
+		time_integrator.init(x, Eigen::VectorXd::Zero(x.size()), Eigen::VectorXd::Zero(x.size()), dt);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
@@ -316,15 +311,15 @@ namespace polyfem
 				current_rhs.block(current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0, n_pressure_bases + use_avg_pressure, current_rhs.cols()).setZero();
 			}
 
-			A = (bdf.alpha() / current_dt) * mass + stiffness;
-			bdf.rhs(x);
-			b = (mass * x) / current_dt;
+			A = mass / time_integrator.beta_dt() + stiffness;
+			x = time_integrator.weighted_sum_x_prevs();
+			b = (mass * x) / time_integrator.beta_dt();
 			for (int i : boundary_nodes)
 				b[i] = 0;
 			b += current_rhs;
 
 			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], t == time_steps && args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
-			bdf.new_solution(x);
+			time_integrator.update_quantities(x);
 			sol = x;
 
 			const auto error = (A * x - b).norm();

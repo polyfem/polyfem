@@ -25,6 +25,7 @@ namespace polyfem
 			Eigen::VectorXd x_tilde() const override;
 
 			double acceleration_scaling() const override;
+			double beta_dt() const;
 
 			Eigen::VectorXd weighted_sum_x_prevs() const;
 			Eigen::VectorXd weighted_sum_v_prevs() const;

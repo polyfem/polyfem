@@ -32,7 +32,7 @@ namespace polyfem
 		}
 
 		void TransientNavierStokesSolver::minimize(
-			const State &state, const double alpha, const double dt, const Eigen::VectorXd &prev_sol,
+			const State &state, const double beta_dt, const Eigen::VectorXd &prev_sol,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			const StiffnessMatrix &velocity_mass1,
 			const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
@@ -46,7 +46,7 @@ namespace polyfem
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			const int precond_num = problem_dim * state.n_bases;
 
-			StiffnessMatrix velocity_mass = velocity_mass1 / alpha;
+			StiffnessMatrix velocity_mass = velocity_mass1 / beta_dt;
 			// velocity_mass.setZero();
 
 			igl::Timer time;
@@ -59,7 +59,6 @@ namespace polyfem
 			for (int i : state.boundary_nodes)
 				prev_sol_mass[i] = 0;
 
-			// velocity_mass *= alpha;
 			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 												 velocity_stiffness + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 stoke_stiffness);
@@ -112,8 +111,8 @@ namespace polyfem
 			{
 				b[b.size() - 1] = 0;
 			}
-			it += minimize_aux(state.formulation() + "Picard", skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
-			it += minimize_aux(state.formulation(), skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
+			it += minimize_aux(state.formulation() + "Picard", skipping, state, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
+			it += minimize_aux(state.formulation(), skipping, state, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
 
 			solver_info["iterations"] = it;
 			solver_info["gradNorm"] = nlres_norm;
@@ -130,7 +129,7 @@ namespace polyfem
 		}
 
 		int TransientNavierStokesSolver::minimize_aux(
-			const std::string &formulation, const std::vector<int> &skipping, const State &state, const double dt,
+			const std::string &formulation, const std::vector<int> &skipping, const State &state,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			const StiffnessMatrix &velocity_mass,
 			const Eigen::VectorXd &rhs, const double grad_norm,
