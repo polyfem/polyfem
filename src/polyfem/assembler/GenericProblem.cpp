@@ -983,6 +983,38 @@ namespace polyfem
 			}
 		}
 
+		void GenericScalarProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		{
+			val.resize(pts.rows(), 1);
+			if (initial_solution_.empty())
+			{
+				val.setZero();
+				return;
+			}
+
+			const bool planar = pts.cols() == 2;
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				const int id = mesh.get_body_id(global_ids(i));
+				int index = -1;
+				for (int j = 0; j < initial_solution_.size(); ++j)
+				{
+					if (initial_solution_[j].first == id)
+					{
+						index = j;
+						break;
+					}
+				}
+				if (index < 0)
+				{
+					val(i) = 0;
+					continue;
+				}
+
+				val(i) = planar ? initial_solution_[index].second(pts(i, 0), pts(i, 1)) : initial_solution_[index].second(pts(i, 0), pts(i, 1), pts(i, 2));
+			}
+		}
+
 		void GenericScalarProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			assert(has_exact_sol());
@@ -1101,6 +1133,19 @@ namespace polyfem
 						neumann_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 					else
 						neumann_interpolation_[i] = std::make_shared<NoInterpolation>();
+				}
+			}
+
+			if (is_param_valid(params, "solution"))
+			{
+				auto rr = params["solution"];
+				initial_solution_.resize(rr.size());
+				assert(rr.is_array());
+
+				for (size_t k = 0; k < rr.size(); ++k)
+				{
+					initial_solution_[k].first = rr[k]["id"];
+					initial_solution_[k].second.init(rr[k]["value"]);
 				}
 			}
 		}
