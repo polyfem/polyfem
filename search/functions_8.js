@@ -16,9 +16,8 @@ var searchData=
   ['hex_5fface_5flocal_5fnodes_13',['hex_face_local_nodes',['../classpolyfem_1_1basis_1_1_f_e_basis3d.html#af7a94ca631f9a4cdb5d5600e25f84815',1,'polyfem::basis::FEBasis3d']]],
   ['hex_5flocal_5fnode_5fcoordinates_5ffrom_5fface_14',['hex_local_node_coordinates_from_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a7d837e24efe5b9e75db8487e39f4c8a9',1,'polyfem::utils::BoundarySampler']]],
   ['hexquadrature_15',['HexQuadrature',['../classpolyfem_1_1quadrature_1_1_hex_quadrature.html#ae035e4d3b2e454b06c6cd5f95e5e22d4',1,'polyfem::quadrature::HexQuadrature']]],
-  ['hide_5fdata_16',['hide_data',['../classpolyfem_1_1_u_i_state.html#a06f32ded5decb7174129917e8bee91ae',1,'polyfem::UIState']]],
-  ['hooke_17',['hooke',['../namespaceelasticity__rhs.html#ac9ddcfd900a82f06105f1b39539b32b5',1,'elasticity_rhs']]],
-  ['hooke_5f2d_5ffunction_18',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a306ab3d5653385f3debab954cb237d5f',1,'polyfem::autogen']]],
-  ['hooke_5f3d_5ffunction_19',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#afb2847614459eb7fce5ba97b0bbd8ceb',1,'polyfem::autogen']]],
-  ['hookelinearelasticity_20',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a10b5f798ac54f0f315b79024e144d11c',1,'polyfem::assembler::HookeLinearElasticity']]]
+  ['hooke_16',['hooke',['../namespaceelasticity__rhs.html#ac9ddcfd900a82f06105f1b39539b32b5',1,'elasticity_rhs']]],
+  ['hooke_5f2d_5ffunction_17',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a306ab3d5653385f3debab954cb237d5f',1,'polyfem::autogen']]],
+  ['hooke_5f3d_5ffunction_18',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#afb2847614459eb7fce5ba97b0bbd8ceb',1,'polyfem::autogen']]],
+  ['hookelinearelasticity_19',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a10b5f798ac54f0f315b79024e144d11c',1,'polyfem::assembler::HookeLinearElasticity']]]
 ];

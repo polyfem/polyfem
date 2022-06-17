@@ -10,7 +10,6 @@ var dir_2dc3e3ac563c5097fbf94f8f985cc10c =
     [ "state", "dir_4dfdc3ae128380bc639a8f52263041e7.html", "dir_4dfdc3ae128380bc639a8f52263041e7" ],
     [ "time_integrator", "dir_b17ff10821c231211eb9dc3a971728a7.html", "dir_b17ff10821c231211eb9dc3a971728a7" ],
     [ "utils", "dir_45751013e7de66cb9317c15709b40c18.html", "dir_45751013e7de66cb9317c15709b40c18" ],
-    [ "viewer", "dir_666928e39818db812eb9eed7ed84faf5.html", "dir_666928e39818db812eb9eed7ed84faf5" ],
     [ "Common.hpp", "_common_8hpp.html", "_common_8hpp" ],
     [ "main.cpp", "main_8cpp.html", "main_8cpp" ],
     [ "State.cpp", "_state_8cpp.html", "_state_8cpp" ],

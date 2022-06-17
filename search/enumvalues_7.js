@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['pnodes_0',['PNodes',['../classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a35ad4cdfd8574ffdeecdb9a69d461531',1,'polyfem::UIState']]],
-  ['polygon_1',['Polygon',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a4c0a11247d92f73fb84baa51e37a3263',1,'polyfem::mesh']]],
-  ['polyhedron_2',['Polyhedron',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a3d217ee3a015efcd968eff5f36a5f671',1,'polyfem::mesh']]]
+  ['regularboundarycube_0',['RegularBoundaryCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f',1,'polyfem::mesh']]],
+  ['regularinteriorcube_1',['RegularInteriorCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba',1,'polyfem::mesh']]]
 ];

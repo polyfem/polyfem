@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['multisingularboundarycube_0',['MultiSingularBoundaryCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb',1,'polyfem::mesh']]],
-  ['multisingularinteriorcube_1',['MultiSingularInteriorCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64',1,'polyfem::mesh']]]
+  ['polygon_0',['Polygon',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a4c0a11247d92f73fb84baa51e37a3263',1,'polyfem::mesh']]],
+  ['polyhedron_1',['Polyhedron',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a3d217ee3a015efcd968eff5f36a5f671',1,'polyfem::mesh']]]
 ];

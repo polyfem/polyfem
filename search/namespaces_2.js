@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['filedialog_0',['FileDialog',['../namespace_file_dialog.html',1,'']]]
+  ['ipc_0',['ipc',['../namespaceipc.html',1,'']]]
 ];

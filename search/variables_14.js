@@ -20,10 +20,8 @@ var searchData=
   ['trans_5f1_5f_17',['trans_1_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a7aad22e4153794e623d085ffccaa1d46',1,'polyfem::problem::DoubleTorsionElasticProblem']]],
   ['translation_5f_18',['translation_',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a601975da37914f425bb948f0b37b0902',1,'polyfem::problem::PointBasedTensorProblem']]],
   ['tree_5f_19',['tree_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a843f96d811d92dd9cfd3e6ad9d59383a',1,'polyfem::utils::InterpolatedFunction2d']]],
-  ['tri_5ffaces_20',['tri_faces',['../classpolyfem_1_1_u_i_state.html#a3fdc4ac5c9c4f62ea507c6b0941880c9',1,'polyfem::UIState']]],
-  ['tri_5ffunc_21',['tri_func',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a9193d985e32abe72f0ebe197d39856de',1,'polyfem::problem::PointBasedTensorProblem::BCValue']]],
-  ['tri_5fpts_22',['tri_pts',['../classpolyfem_1_1_u_i_state.html#ad0a393514139dade66a66384b52ce565',1,'polyfem::UIState']]],
-  ['tris_5f_23',['tris_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a1db932e9fd98fedb3edfecade2a3c90d',1,'polyfem::utils::InterpolatedFunction2d']]],
-  ['type_24',['type',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a34540104fe4aff4c68b0cbdb1fcad9cb',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['type_5f_25',['type_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a14a22a021e572ad7b1ce1deac25a75c5',1,'polyfem::mesh::LocalBoundary']]]
+  ['tri_5ffunc_20',['tri_func',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a9193d985e32abe72f0ebe197d39856de',1,'polyfem::problem::PointBasedTensorProblem::BCValue']]],
+  ['tris_5f_21',['tris_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a1db932e9fd98fedb3edfecade2a3c90d',1,'polyfem::utils::InterpolatedFunction2d']]],
+  ['type_22',['type',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a34540104fe4aff4c68b0cbdb1fcad9cb',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['type_5f_23',['type_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a14a22a021e572ad7b1ce1deac25a75c5',1,'polyfem::mesh::LocalBoundary']]]
 ];

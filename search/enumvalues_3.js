@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['hex_0',['Hex',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa77b3ac06c59fd2083e1ee4874c433832',1,'polyfem::mesh']]],
-  ['hsur_1',['HSur',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caacc5883e092a3e5989ee2a1f05e6b2934',1,'polyfem::mesh']]],
-  ['hyb_2',['Hyb',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30',1,'polyfem::mesh']]]
+  ['multisingularboundarycube_0',['MultiSingularBoundaryCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb',1,'polyfem::mesh']]],
+  ['multisingularinteriorcube_1',['MultiSingularInteriorCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64',1,'polyfem::mesh']]]
 ];

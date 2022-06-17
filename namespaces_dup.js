@@ -46,7 +46,6 @@ var namespaces_dup =
       [ "y", "namespaceelasticity__rhs.html#aef0d8d8037b75153eb9212b88feb35c4", null ],
       [ "z", "namespaceelasticity__rhs.html#a7da2b62e54e8b30ff93de1396c5429c8", null ]
     ] ],
-    [ "FileDialog", "namespace_file_dialog.html", null ],
     [ "ipc", "namespaceipc.html", [
       [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespaceipc.html#a55762a53348e0ed962546f70cef7086c", null ],
       [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespaceipc.html#a86a8b4316e4051577f796299e3c00cad", null ]

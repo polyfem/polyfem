@@ -60,9 +60,6 @@ var hierarchy =
     [ "polyfem::assembler::Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", null ],
     [ "polyfem::quadrature::HexQuadrature", "classpolyfem_1_1quadrature_1_1_hex_quadrature.html", null ],
     [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
-    [ "igl::opengl::glfw::imgui::ImGuiMenu", null, [
-      [ "polyfem::UIState", "classpolyfem_1_1_u_i_state.html", null ]
-    ] ],
     [ "polyfem::time_integrator::ImplicitTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html", [
       [ "polyfem::time_integrator::BDFTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html", null ],
       [ "polyfem::time_integrator::ImplicitEuler", "classpolyfem_1_1time__integrator_1_1_implicit_euler.html", null ],

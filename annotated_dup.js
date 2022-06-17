@@ -216,8 +216,7 @@ var annotated_dup =
       [ "LameParameters", "classpolyfem_1_1_lame_parameters.html", "classpolyfem_1_1_lame_parameters" ],
       [ "SolutionFrame", "classpolyfem_1_1_solution_frame.html", "classpolyfem_1_1_solution_frame" ],
       [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
-      [ "StepData", "classpolyfem_1_1_step_data.html", "classpolyfem_1_1_step_data" ],
-      [ "UIState", "classpolyfem_1_1_u_i_state.html", "classpolyfem_1_1_u_i_state" ]
+      [ "StepData", "classpolyfem_1_1_step_data.html", "classpolyfem_1_1_step_data" ]
     ] ],
     [ "q_bases", "namespaceq__bases.html", [
       [ "Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['debug_0',['Debug',['../classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a8427609ba452127e77388543da52a69d',1,'polyfem::UIState']]],
-  ['discrmesh_1',['DiscrMesh',['../classpolyfem_1_1_u_i_state.html#a866528eb21d676aca2118b2290728333a83b5b422a4a6c4b135c09a98361900b7',1,'polyfem::UIState']]]
+  ['hex_0',['Hex',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa77b3ac06c59fd2083e1ee4874c433832',1,'polyfem::mesh']]],
+  ['hsur_1',['HSur',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caacc5883e092a3e5989ee2a1f05e6b2934',1,'polyfem::mesh']]],
+  ['hyb_2',['Hyb',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30',1,'polyfem::mesh']]]
 ];
