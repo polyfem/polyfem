@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: src/polyfem/state -&gt; time_integrator Relation</title>
+<title>PolyFEM: Polyfem as Libary</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
@@ -88,7 +88,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('dir_4dfdc3ae128380bc639a8f52263041e7.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('md_docs_main.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -106,14 +106,85 @@ $(document).ready(function(){initNavTree('dir_4dfdc3ae128380bc639a8f52263041e7.h
 </iframe>
 </div>
 
+<div><div class="header">
+  <div class="headertitle"><div class="title">Polyfem as Libary </div></div>
+</div><!--header-->
 <div class="contents">
-<h3>state &rarr; time_integrator Relation</h3><table class="dirtab"><tr class="dirtab"><th class="dirtab">File in src/polyfem/state</th><th class="dirtab">Includes file in src/polyfem/time_integrator</th></tr><tr class="dirtab"><td class="dirtab"><a class="el" href="_state_solve_8cpp.html">StateSolve.cpp</a></td><td class="dirtab"><a class="el" href="_b_d_f_8hpp.html">BDF.hpp</a></td></tr></table></div><!-- contents -->
+<div class="textblock"><p ><b>Polyfem</b> uses modern <code>cmake</code>, so it it should be enough to add this line </p><div class="fragment"><div class="line">add_subdirectory(&lt;path-to-polyfem&gt; polyfem)</div>
+</div><!-- fragment --><p> in your cmake project, and then simply add </p><div class="fragment"><div class="line">target_link_library(&lt;your_target&gt; polyfem)</div>
+</div><!-- fragment --><p> in your cmake script. Polyfem will download the dependencies that it needs with the version that it needs. If you dont need the viewer for your own project you can add </p><div class="fragment"><div class="line">SET(POLYFEM_NO_UI ON)</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md0"></a>
+Interface</h1>
+<p >The interface of polyfem is similar as Python. You should create a <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code> object and then call methods on it. Most of the fields are public for convenience but we discourage use or access them.</p>
+<p >This is the main interface of <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code>.</p>
+<h2><a class="anchor" id="autotoc_md1"></a>
+Initialization</h2>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void init(const json &amp;args)</div>
+<div class="line">void init(const std::string &amp;json_path)</div>
+</div><!-- fragment --><p >loads the settings from a json object or file</p>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Logging</h2>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void set_log_level(int log_level)</div>
+<div class="line">std::string get_log()</div>
+</div><!-- fragment --><p> Sets the log level (1-6) and gets the log at the end</p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Loading mesh</h2>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void load_mesh()</div>
+<div class="line">void load_mesh(const std::string &amp;path)</div>
+<div class="line">void load_mesh(const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F)</div>
+</div><!-- fragment --><p> Different ways of loading a mesh</p>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Set boundary sides sets</h2>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void set_boundary_side_set(const std::function&lt;int(const polyfem::RowVectorNd&amp;)&gt; &amp;boundary_marker)</div>
+<div class="line">void set_boundary_side_set(const std::function&lt;int(const polyfem::RowVectorNd&amp;, bool)&gt; &amp;boundary_marker)</div>
+<div class="line">void set_boundary_side_set(const std::function&lt;int(const std::vector&lt;int&gt;&amp;, bool)&gt; &amp;boundary_marker)</div>
+</div><!-- fragment --><p> All boundary side sets are assigned with a lambda function, the first 2 takes the barycenter of the face/edge, the last one the primite id. The second argument is a boolean that specifies if the sideset is boundary.</p>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Solving</h2>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void solve();</div>
+</div><!-- fragment --><p >Note the solver internally calls </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void build_basis();</div>
+<div class="line">void assemble_stiffness_mat();</div>
+<div class="line">void assemble_rhs();</div>
+<div class="line">void solve_problem();</div>
+</div><!-- fragment --><p> You can use these instead of solve.</p>
+<p >If you problem has a solution you can use </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void compute_errors();</div>
+</div><!-- fragment --><p> to obtain the error.</p>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Getters</h2>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">const Eigen::MatrixXd &amp;get_solution() const</div>
+<div class="line">const Eigen::MatrixXd &amp;get_pressure() const</div>
+</div><!-- fragment --><p> Gets the raw solution and pressure. The order of the coefficient is <b>unrelated</b> to the order of the vertices of the mesh.</p>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void get_sampled_solution(Eigen::MatrixXd &amp;points, Eigen::MatrixXi &amp;tets, Eigen::MatrixXd &amp;fun, bool boundary_only = false)</div>
+<div class="line">void get_stresses(Eigen::MatrixXd &amp;fun, bool boundary_only = false)</div>
+<div class="line">void get_sampled_mises(Eigen::MatrixXd &amp;fun, bool boundary_only = false)</div>
+<div class="line">void get_sampled_mises_avg(Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;tfun, bool boundary_only = false)</div>
+</div><!-- fragment --><p> Gets the solution/stresses on the visualization mesh, use <code>vismesh_rel_area</code> to control density</p>
+<h2><a class="anchor" id="autotoc_md7"></a>
+Exporting</h2>
+<p >Exports the solution to VTU for visualization</p>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">void get_sidesets(Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXd &amp;sidesets);</div>
+<div class="line"> </div>
+<div class="line">void export_data();</div>
+<div class="line"> </div>
+<div class="line">void save_vtu(const std::string &amp;name);</div>
+<div class="line">void save_wire(const std::string &amp;name, bool isolines = false);</div>
+</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_4dfdc3ae128380bc639a8f52263041e7.html">state</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>
