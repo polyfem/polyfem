@@ -18,7 +18,7 @@ namespace polyfem
 		public:
 			TransientNavierStokesSolver(const json &solver_param);
 
-			void minimize(const State &state, const double alpha, const double dt, const Eigen::VectorXd &prev_sol,
+			void minimize(const State &state, const double beta_dt, const Eigen::VectorXd &prev_sol,
 						  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 						  const StiffnessMatrix &velocity_mass,
 						  const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
@@ -30,7 +30,7 @@ namespace polyfem
 			int error_code() const { return 0; }
 
 		private:
-			int minimize_aux(const std::string &formulation, const std::vector<int> &skipping, const State &state, const double dt,
+			int minimize_aux(const std::string &formulation, const std::vector<int> &skipping, const State &state,
 							 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 							 const StiffnessMatrix &velocity_mass,
 							 const Eigen::VectorXd &rhs, const double grad_norm,
