@@ -25,11 +25,9 @@
 var NAVTREE =
 [
   [ "PolyFEM", "index.html", [
-    [ "PolyFEM", "md_docs_main.html", [
-      [ "Building PolyFEM", "md_docs_main.html#autotoc_md1", null ],
-      [ "Using PolyFEM as dependency", "md_docs_main.html#autotoc_md2", null ],
-      [ "Interface", "md_docs_main.html#autotoc_md3", null ]
-    ] ],
+    [ "Building PolyFEM", "index.html#autotoc_md1", null ],
+    [ "Using PolyFEM as dependency", "index.html#autotoc_md2", null ],
+    [ "Interface", "index.html#autotoc_md3", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -92,11 +90,11 @@ var NAVTREEINDEX =
 "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b",
 "classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e",
 "classq__bases_1_1_lagrange.html#a8896516a055bf71090fbbaf95f5839c1",
-"namespacemembers_func_l.html",
-"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a833056543775050cfa5dbd377fa8dee2",
-"struct_d_scalar1.html#a5a6808403fabf77732bd8b471de66a99",
+"namespacemembers_func_m.html",
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#aa975a13eb914b8249046475137f6ffd5",
+"struct_d_scalar1.html#a5fc77d3ec5f33e932e56c2ec7598d808",
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ae9754c6f15bfd8f7f406e7a8da394310",
-"triangle_8py.html#a72919946fd8d7cdd07d68f2d0588ee94"
+"triangle_8py.html#a93eb19f077204c6aa8e5025b11665270"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

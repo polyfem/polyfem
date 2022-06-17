@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: Main Page</title>
+<title>PolyFEM: PolyFEM</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
@@ -106,10 +106,27 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </iframe>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">PolyFEM Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">PolyFEM </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p ><a class="anchor" id="md_docs_main"></a> </p>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Building PolyFEM</h1>
+<p >All the C++ dependencies required to build the code are included. It should work on Windows, macOS, and Linux, and it should build out-of-the-box with CMake:</p>
+<div class="fragment"><div class="line">mkdir build</div>
+<div class="line">cd build</div>
+<div class="line">cmake ..</div>
+<div class="line">make -j4</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md2"></a>
+Using PolyFEM as dependency</h1>
+<p ><b>Polyfem</b> uses modern <code>cmake</code>, so it it should be enough to add this line </p><div class="fragment"><div class="line">add_subdirectory(&lt;path-to-polyfem&gt; polyfem)</div>
+</div><!-- fragment --><p> in your cmake project, and then simply add </p><div class="fragment"><div class="line">target_link_library(&lt;your_target&gt; polyfem::polyfem)</div>
+</div><!-- fragment --><p> in your cmake script. Polyfem will download the dependencies that it needs with the version that it needs.</p>
+<h1><a class="anchor" id="autotoc_md3"></a>
+Interface</h1>
+<p >This is the main interface of <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code>. </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

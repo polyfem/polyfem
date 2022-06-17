@@ -54,7 +54,7 @@ var searchData=
   ['polar_5fsplit_51',['polar_split',['../namespacepolyfem_1_1mesh_1_1_polygons.html#a189a52f2c610b304fb40efeb1abc5306',1,'polyfem::mesh::Polygons']]],
   ['polar_5fsplit_5ffunc_52',['polar_split_func',['../namespacepolyfem_1_1mesh_1_1_polygons.html#ac31ff909dfd5103385f00a7c4ad2fcd4',1,'polyfem::mesh::Polygons']]],
   ['poly_5fedge_5fto_5fdata_53',['poly_edge_to_data',['../classpolyfem_1_1_state.html#ac1bda9d71641d63325f0f45acc3e59f6',1,'polyfem::State']]],
-  ['polyfem_54',['PolyFEM',['../md_docs_main.html',1,'']]],
+  ['polyfem_54',['PolyFEM',['../index.html',1,'']]],
   ['polyfem_55',['polyfem',['../namespacepolyfem.html',1,'']]],
   ['polyfem_5fscoped_5ftimer_56',['POLYFEM_SCOPED_TIMER',['../_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56',1,'Timer.hpp']]],
   ['polygon_57',['Polygon',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a4c0a11247d92f73fb84baa51e37a3263',1,'polyfem::mesh']]],
