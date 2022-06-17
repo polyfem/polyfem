@@ -46,7 +46,7 @@ namespace polyfem
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			const int precond_num = problem_dim * state.n_bases;
 
-			StiffnessMatrix velocity_mass = velocity_mass1 / dt;
+			StiffnessMatrix velocity_mass = velocity_mass1 / alpha;
 			// velocity_mass.setZero();
 
 			igl::Timer time;
@@ -59,7 +59,7 @@ namespace polyfem
 			for (int i : state.boundary_nodes)
 				prev_sol_mass[i] = 0;
 
-			velocity_mass *= alpha;
+			// velocity_mass *= alpha;
 			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 												 velocity_stiffness + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 stoke_stiffness);

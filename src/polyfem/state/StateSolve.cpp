@@ -1,6 +1,7 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
+#include <polyfem/time_integrator/BDFTimeIntegrator.hpp>
 #include <polyfem/solver/TransientNavierStokesSolver.hpp>
 #include <polyfem/solver/OperatorSplittingSolver.hpp>
 #include <polyfem/solver/NavierStokesSolver.hpp>
@@ -232,10 +233,9 @@ namespace polyfem
 
 		Eigen::VectorXd prev_sol;
 
-		int BDF_order = args["time"]["BDF"].value("steps", 1);
-		// int aux_steps = BDF_order-1;
-		BDF bdf(BDF_order);
-		bdf.new_solution(c_sol);
+		BDFTimeIntegrator time_integrator;
+		time_integrator.set_parameters(args["time"]["BDF"]);
+		time_integrator.init(c_sol, Eigen::VectorXd::Zero(c_sol.size()), Eigen::VectorXd::Zero(c_sol.size()), dt);	
 
 		assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
 		assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
@@ -253,7 +253,8 @@ namespace polyfem
 
 			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
-			bdf.rhs(prev_sol);
+			// bdf.rhs(prev_sol);
+			prev_sol = time_integrator.weighted_sum_x_prevs();
 			rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
 
@@ -264,10 +265,11 @@ namespace polyfem
 				current_rhs.block(prev_size, 0, n_larger, current_rhs.cols()).setZero();
 			}
 
-			ns_solver.minimize(*this, bdf.alpha(), current_dt, prev_sol,
+			ns_solver.minimize(*this, sqrt(time_integrator.acceleration_scaling()), current_dt, prev_sol,
 							   velocity_stiffness, mixed_stiffness, pressure_stiffness,
 							   velocity_mass, current_rhs, c_sol);
-			bdf.new_solution(c_sol);
+			// bdf.new_solution(c_sol);
+			time_integrator.update_quantities(c_sol);
 			sol = c_sol;
 			sol_to_pressure();
 

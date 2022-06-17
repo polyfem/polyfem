@@ -26,6 +26,9 @@ namespace polyfem
 
 			double acceleration_scaling() const override;
 
+			Eigen::VectorXd weighted_sum_x_prevs() const;
+			Eigen::VectorXd weighted_sum_v_prevs() const;
+
 		protected:
 			int num_steps;
 
@@ -33,9 +36,6 @@ namespace polyfem
 			static const std::vector<double> &alphas(const int i);
 			static double betas(const int i);
 			static const std::vector<double> test_betas;
-
-			Eigen::VectorXd weighted_sum_x_prevs() const;
-			Eigen::VectorXd weighted_sum_v_prevs() const;
 		};
 	} // namespace time_integrator
 } // namespace polyfem
