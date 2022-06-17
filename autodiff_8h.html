@@ -13,11 +13,13 @@
 <title>PolyFEM: src/polyfem/utils/autodiff.h File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -145,7 +147,6 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a78868c5bb48a430b0cf4247122dbc73b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autodiff_8h.html#a78868c5bb48a430b0cf4247122dbc73b">EIGEN_DONT_PARALLELIZE</a></td></tr>
-<tr class="memdesc:a78868c5bb48a430b0cf4247122dbc73b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automatic differentiation data type for C++, depends on the Eigen linear algebra library.  <a href="autodiff_8h.html#a78868c5bb48a430b0cf4247122dbc73b">More...</a><br /></td></tr>
 <tr class="separator:a78868c5bb48a430b0cf4247122dbc73b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e8df454775bd15e4c1a19ef8c091c24"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autodiff_8h.html#a9e8df454775bd15e4c1a19ef8c091c24">DECLARE_DIFFSCALAR_BASE</a>()&#160;&#160;&#160;	thread_local size_t <a class="el" href="struct_diff_scalar_base.html#a1be247330a1f9ec54c7c4b664306955b">DiffScalarBase::m_variableCount</a> = 0</td></tr>
 <tr class="separator:a9e8df454775bd15e4c1a19ef8c091c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,8 +189,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Automatic differentiation data type for C++, depends on the Eigen linear algebra library. </p>
+<p >Automatic differentiation data type for C++, depends on the Eigen linear algebra library.</p>
 <p >Copyright (c) 2012 by Wenzel Jakob. Based on code by Jon Kaldor and Eitan Grinspun.</p>
 <p >This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p>
 <p >This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p>

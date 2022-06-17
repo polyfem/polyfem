@@ -25,9 +25,14 @@
 var NAVTREE =
 [
   [ "PolyFEM", "index.html", [
-    [ "Building PolyFEM", "index.html#autotoc_md1", null ],
-    [ "Using PolyFEM as dependency", "index.html#autotoc_md2", null ],
-    [ "Interface", "index.html#autotoc_md3", null ],
+    [ "Compilation", "index.html#autotoc_md0", [
+      [ "Optional", "index.html#autotoc_md1", null ]
+    ] ],
+    [ "Usage", "index.html#autotoc_md2", null ],
+    [ "Documentation", "index.html#autotoc_md3", null ],
+    [ "License", "index.html#autotoc_md4", null ],
+    [ "Citation", "index.html#autotoc_md5", null ],
+    [ "Acknowledgments & Funding", "index.html#autotoc_md6", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -67,34 +72,33 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_l_n_l_problem_8cpp.html",
-"_maybe_parallel_for_8hpp_source.html",
-"_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e",
-"classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae",
-"classpolyfem_1_1_state.html#a2c30674733746185004044209edf6055",
-"classpolyfem_1_1_state.html#aeff40b2c0997dfbc80cc8b9fe496f7c2",
-"classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a8aaca71f4aafa893f85fa87094cb6571",
-"classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a7d002a480bb87bf3c7863531a1a4d226",
-"classpolyfem_1_1assembler_1_1_ogden_elasticity.html#ade28059de6e425566d02a7c820123fc4",
-"classpolyfem_1_1basis_1_1_basis.html#afe218649534756d6c0d5853bd94ff8d1",
-"classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a566277a8e813cd3d6df77548e0b0fdcf",
-"classpolyfem_1_1mesh_1_1_mesh.html#a13548082edfcbe6bc4bc7ca39ee8be4a",
-"classpolyfem_1_1mesh_1_1_mesh3_d.html#a786f4a920dd29f5584136be44de9e1ef",
-"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a5a602fc86b0705aab7943db1cf4fa106",
-"classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a7243aed3a7b37ad3bc0b869a2167a93f",
-"classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a6a8870f73826a55b66d25a38bcd531e8",
-"classpolyfem_1_1problem_1_1_elastic_problem_exact.html#aa02e75388f0f0c414b7132d17a10a6ce",
-"classpolyfem_1_1problem_1_1_node_problem.html#a2855592ddcb2cfc34343a3a16bc36192",
-"classpolyfem_1_1problem_1_1_stokes_law_problem.html#a9dcc8da2a74f106456a230464ecc9c39",
-"classpolyfem_1_1quadrature_1_1_tri_quadrature.html",
-"classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4389527c8d9a46cfeef3be734ca5f8fb",
-"classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b",
-"classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e",
-"classq__bases_1_1_lagrange.html#a8896516a055bf71090fbbaf95f5839c1",
-"namespacemembers_func_m.html",
-"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#aa975a13eb914b8249046475137f6ffd5",
-"struct_d_scalar1.html#a5fc77d3ec5f33e932e56c2ec7598d808",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ae9754c6f15bfd8f7f406e7a8da394310",
-"triangle_8py.html#a93eb19f077204c6aa8e5025b11665270"
+"_mesh2_d_8hpp.html",
+"_saint_venant_elasticity_8cpp.html",
+"classcppoptlib_1_1_nonlinear_solver.html#ab17c6e91d53cd79ebc45e2bb9a840b0d",
+"classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48",
+"classpolyfem_1_1_state.html#af36fe5c88eafe5e22eccd8b7c8e0593a",
+"classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7dd3484a279ffc8426edf6ad4c07ea06",
+"classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a5fe43b0fc79a225202ec7d78daf8b01e",
+"classpolyfem_1_1assembler_1_1_ogden_elasticity.html#ad54734b4e7bf687eaacb7d1db947d615",
+"classpolyfem_1_1basis_1_1_basis.html#ad724f7e408ed7966571960c4d462fd2e",
+"classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a5618fa951386cdc253702eeecb18e4d6",
+"classpolyfem_1_1mesh_1_1_mesh.html#a129dd721dab31ee5bf7b8a775af30473",
+"classpolyfem_1_1mesh_1_1_mesh3_d.html#a73c53a8588f963cab62965b85e29ed15",
+"classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a5a425c8ffcb5bd8f061725153af63396",
+"classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a71702aab18449a3091b582bc82c892d2",
+"classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a60adffc4e06931841a5d0fb4c41118ce",
+"classpolyfem_1_1problem_1_1_elastic_problem_exact.html#a8486e60fa70096949025a69a82bee58d",
+"classpolyfem_1_1problem_1_1_node_problem.html#a1c837353d969395d1474abc4aafb5dea",
+"classpolyfem_1_1problem_1_1_stokes_law_problem.html#a878d85329913fb69680016c8b1bee319",
+"classpolyfem_1_1quadrature_1_1_tet_quadrature.html#ae3c4e1802be940d26ed95907c1b21cb5",
+"classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a417a0005e1d694353faa1fc5de741b4a",
+"classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#abc022a0d423d25988b975c070c9c481a",
+"classpolyfem_1_1utils_1_1_ref_element_sampler.html#a37e9b6173be9fd37ca8890359f0ab837",
+"classq__bases_1_1_lagrange.html#afc75e6daa2b48508bc11fb591eca4e63",
+"namespacemembers_func_u.html",
+"namespacepolyfem_1_1mesh_1_1_polygons.html#a3f1754102d92ff3ac4ee842b732dcc69",
+"struct_d_scalar1.html#a96d8ded6f5bcc16fca1b2d936258c526",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a1bca8ed4b01e3a638debdb3ecf82aac1"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

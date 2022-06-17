@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::assembler::GenericScalarProblem Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -139,6 +141,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0c7d66f60a9edb2ee7659368f514cd5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea31b32c1834fef06b028268ec042560"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea31b32c1834fef06b028268ec042560">neumann_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;normals, const double t, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const override</td></tr>
 <tr class="separator:aea31b32c1834fef06b028268ec042560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13ae1127a02b89c15d3997fef95b4896"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a13ae1127a02b89c15d3997fef95b4896">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const override</td></tr>
+<tr class="separator:a13ae1127a02b89c15d3997fef95b4896"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea048f90d8ae340782bf1756cfc6b6b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea048f90d8ae340782bf1756cfc6b6b4">has_exact_sol</a> () const override</td></tr>
 <tr class="separator:aea048f90d8ae340782bf1756cfc6b6b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa86b35163129fcd063f7595c61d0c44a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa86b35163129fcd063f7595c61d0c44a">is_scalar</a> () const override</td></tr>
@@ -239,6 +243,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a9a78702a34492dbc4a48ca3880e4b692"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7285fe398d7345c989a5c1c90fa9df2c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7285fe398d7345c989a5c1c90fa9df2c">dirichlet_</a></td></tr>
 <tr class="separator:a7285fe398d7345c989a5c1c90fa9df2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147a22030df98953f5a3383b1724abbf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int, <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a147a22030df98953f5a3383b1724abbf">initial_solution_</a></td></tr>
+<tr class="separator:a147a22030df98953f5a3383b1724abbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0236481a9f87ee1fdfa3610897aaa71d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_interpolation.html">Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a0236481a9f87ee1fdfa3610897aaa71d">neumann_interpolation_</a></td></tr>
 <tr class="separator:a0236481a9f87ee1fdfa3610897aaa71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a752370ebb83ad5b30be703c89e311731"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_interpolation.html">Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a752370ebb83ad5b30be703c89e311731">dirichlet_interpolation_</a></td></tr>
@@ -695,6 +701,56 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
+
+</div>
+</div>
+<a id="a13ae1127a02b89c15d3997fef95b4896" name="a13ae1127a02b89c15d3997fef95b4896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ae1127a02b89c15d3997fef95b4896">&#9670;&nbsp;</a></span>initial_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::GenericScalarProblem::initial_solution </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>global_ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3">polyfem::assembler::Problem</a>.</p>
 
 </div>
 </div>
@@ -1337,6 +1393,28 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">bool polyfem::assembler::GenericScalarProblem::has_exact_grad_ = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a147a22030df98953f5a3383b1724abbf" name="a147a22030df98953f5a3383b1724abbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147a22030df98953f5a3383b1724abbf">&#9670;&nbsp;</a></span>initial_solution_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::pair&lt;int, <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>&gt; &gt; polyfem::assembler::GenericScalarProblem::initial_solution_</td>
         </tr>
       </table>
   </td>

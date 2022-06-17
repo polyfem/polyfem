@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::utils Namespace Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -183,11 +185,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9f16cddaaf4c88645ca864f4e99beb19"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">deg2rad</a> (T deg)</td></tr>
 <tr class="separator:a9f16cddaaf4c88645ca864f4e99beb19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2456056f352b15603bf9f8bc2948a14f"><td class="memItemLeft" align="right" valign="top">spdlog::logger &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">logger</a> ()</td></tr>
-<tr class="memdesc:a2456056f352b15603bf9f8bc2948a14f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the current logger.  <a href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">More...</a><br /></td></tr>
 <tr class="separator:a2456056f352b15603bf9f8bc2948a14f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae25127c02d1c7df4b9dc38b4e9064d51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ae25127c02d1c7df4b9dc38b4e9064d51">set_logger</a> (std::shared_ptr&lt; spdlog::logger &gt; <a class="el" href="namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f">logger</a>)</td></tr>
-<tr class="memdesc:ae25127c02d1c7df4b9dc38b4e9064d51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup a logger object to be used by Polyfem.  <a href="namespacepolyfem_1_1utils.html#ae25127c02d1c7df4b9dc38b4e9064d51">More...</a><br /></td></tr>
-<tr class="separator:ae25127c02d1c7df4b9dc38b4e9064d51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63b2658b7eea7bb7a124e27e1956ac2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a63b2658b7eea7bb7a124e27e1956ac2f">set_logger</a> (std::shared_ptr&lt; spdlog::logger &gt; <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:a63b2658b7eea7bb7a124e27e1956ac2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a719017c6c406fba78aee8fbaa4103b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a3a719017c6c406fba78aee8fbaa4103b">show_matrix_stats</a> (const Eigen::MatrixXd &amp;M)</td></tr>
 <tr class="separator:a3a719017c6c406fba78aee8fbaa4103b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe6b8c4990a1c67602ca66d6d522d557"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -239,10 +239,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a3b3a8934d13e48dc3a51ed8efe25e11e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e">get_n_threads</a> ()</td></tr>
 <tr class="separator:a3b3a8934d13e48dc3a51ed8efe25e11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c9c5e9f9e93fd2d77c1f5ce6e1ad854"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854">regular_2d_grid</a> (const int n, bool tri, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;F)</td></tr>
-<tr class="memdesc:a7c9c5e9f9e93fd2d77c1f5ce6e1ad854"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a canonical triangle/quad subdivided from a regular grid.  <a href="namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854">More...</a><br /></td></tr>
 <tr class="separator:a7c9c5e9f9e93fd2d77c1f5ce6e1ad854"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cdf057fa8c31024c63a2104c61ae16e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a1cdf057fa8c31024c63a2104c61ae16e">regular_3d_grid</a> (const int nn, bool tet, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;F, Eigen::MatrixXi &amp;T)</td></tr>
-<tr class="memdesc:a1cdf057fa8c31024c63a2104c61ae16e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a canonical tet/hex subdivided from a regular grid.  <a href="namespacepolyfem_1_1utils.html#a1cdf057fa8c31024c63a2104c61ae16e">More...</a><br /></td></tr>
 <tr class="separator:a1cdf057fa8c31024c63a2104c61ae16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc2e59d21d66809d2273ae115be0b73"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73">resolve_path</a> (const std::string &amp;path, const std::string &amp;input_file_path, const bool only_if_exists=false)</td></tr>
 <tr class="separator:a4dc2e59d21d66809d2273ae115be0b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -499,8 +497,7 @@ template&lt;typename Storages &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Retrieves the current logger. </p>
+<p >Retrieves the current logger.</p>
 <dl class="section return"><dt>Returns</dt><dd>A const reference to Polyfem's logger object. </dd></dl>
 
 </div>
@@ -764,8 +761,7 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Generate a canonical triangle/quad subdivided from a regular grid. </p>
+<p >Generate a canonical triangle/quad subdivided from a regular grid</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>n grid quads </td></tr>
@@ -821,8 +817,7 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Generate a canonical tet/hex subdivided from a regular grid. </p>
+<p >Generate a canonical tet/hex subdivided from a regular grid</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>n grid quads </td></tr>
@@ -870,8 +865,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ae25127c02d1c7df4b9dc38b4e9064d51" name="ae25127c02d1c7df4b9dc38b4e9064d51"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae25127c02d1c7df4b9dc38b4e9064d51">&#9670;&nbsp;</a></span>set_logger()</h2>
+<a id="a63b2658b7eea7bb7a124e27e1956ac2f" name="a63b2658b7eea7bb7a124e27e1956ac2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63b2658b7eea7bb7a124e27e1956ac2f">&#9670;&nbsp;</a></span>set_logger()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -885,9 +880,7 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Setup a logger object to be used by Polyfem. </p>
-<p >Calling this function with other Polyfem function is not thread-safe.</p>
+<p >Setup a logger object to be used by Polyfem. Calling this function with other Polyfem function is not thread-safe.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">logger</td><td>New logger object to be used by Polyfem. Ownership is shared with Polyfem. s </td></tr>

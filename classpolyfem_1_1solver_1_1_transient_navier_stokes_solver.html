@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::solver::TransientNavierStokesSolver Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -120,8 +122,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_transient_n
 Public Member Functions</h2></td></tr>
 <tr class="memitem:acfaf9eafdf7d3ae4aeaf1552cb4d9e0e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acfaf9eafdf7d3ae4aeaf1552cb4d9e0e">TransientNavierStokesSolver</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad4c88601d3245270674cf56591f1a6bd">solver_param</a>)</td></tr>
 <tr class="separator:acfaf9eafdf7d3ae4aeaf1552cb4d9e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a434a6f1ab1b41b69ab6098c2ef2f6235"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a434a6f1ab1b41b69ab6098c2ef2f6235">minimize</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const double alpha, const double dt, const Eigen::VectorXd &amp;prev_sol, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a434a6f1ab1b41b69ab6098c2ef2f6235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0458e99fa5b79f747a8ab2e4f9315893"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a0458e99fa5b79f747a8ab2e4f9315893">minimize</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const double beta_dt, const Eigen::VectorXd &amp;prev_sol, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:a0458e99fa5b79f747a8ab2e4f9315893"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1bab8522985414412d35958363ddcb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad1bab8522985414412d35958363ddcb4">getInfo</a> (<a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
 <tr class="separator:ad1bab8522985414412d35958363ddcb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad117f423c35bdee04d7ce9cc4fc8040d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad117f423c35bdee04d7ce9cc4fc8040d">error_code</a> () const</td></tr>
@@ -129,8 +131,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a8c2190d00b32097e81193549ca5d870c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a8c2190d00b32097e81193549ca5d870c">minimize_aux</a> (const std::string &amp;formulation, const std::vector&lt; int &gt; &amp;skipping, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const double dt, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;solver, double &amp;nlres_norm, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a8c2190d00b32097e81193549ca5d870c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc9e8c0f4d894346307f55daec03a7fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acc9e8c0f4d894346307f55daec03a7fd">minimize_aux</a> (const std::string &amp;formulation, const std::vector&lt; int &gt; &amp;skipping, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;solver, double &amp;nlres_norm, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:acc9e8c0f4d894346307f55daec03a7fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc3fe194412e9ddd23a890d01a33891b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acc3fe194412e9ddd23a890d01a33891b">has_nans</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> &amp;hessian)</td></tr>
 <tr class="separator:acc3fe194412e9ddd23a890d01a33891b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -256,8 +258,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a434a6f1ab1b41b69ab6098c2ef2f6235" name="a434a6f1ab1b41b69ab6098c2ef2f6235"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a434a6f1ab1b41b69ab6098c2ef2f6235">&#9670;&nbsp;</a></span>minimize()</h2>
+<a id="a0458e99fa5b79f747a8ab2e4f9315893" name="a0458e99fa5b79f747a8ab2e4f9315893"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0458e99fa5b79f747a8ab2e4f9315893">&#9670;&nbsp;</a></span>minimize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -272,13 +274,7 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>dt</em>, </td>
+          <td class="paramname"><em>beta_dt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -332,8 +328,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a8c2190d00b32097e81193549ca5d870c" name="a8c2190d00b32097e81193549ca5d870c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c2190d00b32097e81193549ca5d870c">&#9670;&nbsp;</a></span>minimize_aux()</h2>
+<a id="acc9e8c0f4d894346307f55daec03a7fd" name="acc9e8c0f4d894346307f55daec03a7fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc9e8c0f4d894346307f55daec03a7fd">&#9670;&nbsp;</a></span>minimize_aux()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -358,12 +354,6 @@ Private Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>dt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

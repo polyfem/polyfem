@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::basis::ElementBases Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -138,7 +140,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9fde226f98331cb0c54e13baa95d5a98"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a9fde226f98331cb0c54e13baa95d5a98">local_nodes_for_primitive</a> (const int local_index, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh) const</td></tr>
 <tr class="separator:a9fde226f98331cb0c54e13baa95d5a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47d52083f050e4cb34eeab5656a86523"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">eval_geom_mapping</a> (const Eigen::MatrixXd &amp;samples, Eigen::MatrixXd &amp;mapped) const</td></tr>
-<tr class="memdesc:a47d52083f050e4cb34eeab5656a86523"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map the sample positions in the parametric domain to the object domain (if the element has no parameterization, e.g.  <a href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">More...</a><br /></td></tr>
+<tr class="memdesc:a47d52083f050e4cb34eeab5656a86523"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map the sample positions in the parametric domain to the object domain (if the element has no parameterization, e.g. harmonic bases, then the parametric domain = object domain, and the mapping is identity)  <a href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">More...</a><br /></td></tr>
 <tr class="separator:a47d52083f050e4cb34eeab5656a86523"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6ed093f463318ed61f89280cd7c2e55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#aa6ed093f463318ed61f89280cd7c2e55">eval_geom_mapping_grads</a> (const Eigen::MatrixXd &amp;samples, std::vector&lt; Eigen::MatrixXd &gt; &amp;grads) const</td></tr>
 <tr class="memdesc:aa6ed093f463318ed61f89280cd7c2e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the gradients of the geometric mapping defined above.  <a href="classpolyfem_1_1basis_1_1_element_bases.html#aa6ed093f463318ed61f89280cd7c2e55">More...</a><br /></td></tr>
@@ -287,8 +289,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Map the sample positions in the parametric domain to the object domain (if the element has no parameterization, e.g. </p>
-<p >harmonic bases, then the parametric domain = object domain, and the mapping is identity)</p>
+<p>Map the sample positions in the parametric domain to the object domain (if the element has no parameterization, e.g. harmonic bases, then the parametric domain = object domain, and the mapping is identity) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>#S x dim matrix of sample positions to evaluate </td></tr>

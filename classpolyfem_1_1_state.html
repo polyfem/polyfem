@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::State Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -130,30 +132,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a80eb52cce88b5ffab25a27892174b6e4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4">~State</a> ()=default</td></tr>
 <tr class="separator:a80eb52cce88b5ffab25a27892174b6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d73206b9320c623d01cbb47fe139feb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a8d73206b9320c623d01cbb47fe139feb">State</a> (const unsigned int max_threads=std::numeric_limits&lt; unsigned int &gt;::max())</td></tr>
-<tr class="memdesc:a8d73206b9320c623d01cbb47fe139feb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="classpolyfem_1_1_state.html#a8d73206b9320c623d01cbb47fe139feb">More...</a><br /></td></tr>
 <tr class="separator:a8d73206b9320c623d01cbb47fe139feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1649c010ebecb92f2b8089619f3dbacb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1649c010ebecb92f2b8089619f3dbacb">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>, const std::string &amp;<a class="el" href="classpolyfem_1_1_state.html#a34ad4df546a9f0f7e5bd8425d47288aa">output_dir</a>=&quot;&quot;)</td></tr>
-<tr class="memdesc:a1649c010ebecb92f2b8089619f3dbacb"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialize the polyfem solver with a json settings  <a href="classpolyfem_1_1_state.html#a1649c010ebecb92f2b8089619f3dbacb">More...</a><br /></td></tr>
 <tr class="separator:a1649c010ebecb92f2b8089619f3dbacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75a923360b34f2fde320fc23b5afde47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a75a923360b34f2fde320fc23b5afde47">init_logger</a> (const std::string &amp;log_file, int log_level, const bool is_quiet)</td></tr>
-<tr class="memdesc:a75a923360b34f2fde320fc23b5afde47"><td class="mdescLeft">&#160;</td><td class="mdescRight">initalizing the logger  <a href="classpolyfem_1_1_state.html#a75a923360b34f2fde320fc23b5afde47">More...</a><br /></td></tr>
 <tr class="separator:a75a923360b34f2fde320fc23b5afde47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2ea04e17108eeedd7d14652245a62e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#aa2ea04e17108eeedd7d14652245a62e7">init_logger</a> (std::ostream &amp;os, int log_level)</td></tr>
-<tr class="memdesc:aa2ea04e17108eeedd7d14652245a62e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">initalizing the logger writes to an outputstream  <a href="classpolyfem_1_1_state.html#aa2ea04e17108eeedd7d14652245a62e7">More...</a><br /></td></tr>
 <tr class="separator:aa2ea04e17108eeedd7d14652245a62e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00ad8e93e3a176f709d4408a746ee3db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a00ad8e93e3a176f709d4408a746ee3db">set_log_level</a> (int log_level)</td></tr>
-<tr class="memdesc:a00ad8e93e3a176f709d4408a746ee3db"><td class="mdescLeft">&#160;</td><td class="mdescRight">change log level  <a href="classpolyfem_1_1_state.html#a00ad8e93e3a176f709d4408a746ee3db">More...</a><br /></td></tr>
 <tr class="separator:a00ad8e93e3a176f709d4408a746ee3db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe6bfb60bf2e8581e0584eac77c2a3e1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#afe6bfb60bf2e8581e0584eac77c2a3e1">get_log</a> ()</td></tr>
-<tr class="memdesc:afe6bfb60bf2e8581e0584eac77c2a3e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">gets the output log as json this is <em>not</em> what gets printed but more informative information, eg it contains runtimes, errors, etc.  <a href="classpolyfem_1_1_state.html#afe6bfb60bf2e8581e0584eac77c2a3e1">More...</a><br /></td></tr>
 <tr class="separator:afe6bfb60bf2e8581e0584eac77c2a3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9deda49dd05c34bd6934d30f7cd0640f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9deda49dd05c34bd6934d30f7cd0640f">init_timesteps</a> ()</td></tr>
 <tr class="separator:a9deda49dd05c34bd6934d30f7cd0640f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0acd0b93140ea778ac836ee0a1a29dfd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd">formulation</a> () const</td></tr>
-<tr class="memdesc:a0acd0b93140ea778ac836ee0a1a29dfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the formulation (checks if the problem is scalar or not and delas wih multiphisics)  <a href="classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd">More...</a><br /></td></tr>
 <tr class="separator:a0acd0b93140ea778ac836ee0a1a29dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab956f7e3ad92b7ffc1ca1a45ee47903f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f">iso_parametric</a> () const</td></tr>
-<tr class="memdesc:ab956f7e3ad92b7ffc1ca1a45ee47903f"><td class="mdescLeft">&#160;</td><td class="mdescRight">check if using iso parametric bases  <a href="classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f">More...</a><br /></td></tr>
 <tr class="separator:ab956f7e3ad92b7ffc1ca1a45ee47903f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75cfcf28f3bc27e8e30b41c7347c799b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">build_basis</a> ()</td></tr>
 <tr class="memdesc:a75cfcf28f3bc27e8e30b41c7347c799b"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds the bases step 2 of solve  <a href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">More...</a><br /></td></tr>
@@ -165,13 +159,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:acde0d85c7ad662775d7d9b89b3248462"><td class="mdescLeft">&#160;</td><td class="mdescRight">assemble matrices, step 4 of solve  <a href="classpolyfem_1_1_state.html#acde0d85c7ad662775d7d9b89b3248462">More...</a><br /></td></tr>
 <tr class="separator:acde0d85c7ad662775d7d9b89b3248462"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f244ce7a68b1230a497746a9e4fa5b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4">n_boundary_samples</a> () const</td></tr>
-<tr class="memdesc:a0f244ce7a68b1230a497746a9e4fa5b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">quadrature used for projecting boundary conditions  <a href="classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4">More...</a><br /></td></tr>
 <tr class="separator:a0f244ce7a68b1230a497746a9e4fa5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af64eecfd8303a8e67c856538984176b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#af64eecfd8303a8e67c856538984176b2">p_refinement</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh2d)</td></tr>
-<tr class="memdesc:af64eecfd8303a8e67c856538984176b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute a priori prefinement in 2d, fills disc_orders  <a href="classpolyfem_1_1_state.html#af64eecfd8303a8e67c856538984176b2">More...</a><br /></td></tr>
 <tr class="separator:af64eecfd8303a8e67c856538984176b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c30674733746185004044209edf6055"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2c30674733746185004044209edf6055">p_refinement</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh3d)</td></tr>
-<tr class="memdesc:a2c30674733746185004044209edf6055"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute a priori prefinement in 3d, fills disc_orders  <a href="classpolyfem_1_1_state.html#a2c30674733746185004044209edf6055">More...</a><br /></td></tr>
 <tr class="separator:a2c30674733746185004044209edf6055"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f707e0e648aa0e3ffd866f9599f39d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a5f707e0e648aa0e3ffd866f9599f39d0">solve_problem</a> ()</td></tr>
 <tr class="memdesc:a5f707e0e648aa0e3ffd866f9599f39d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves the proble, step 5  <a href="classpolyfem_1_1_state.html#a5f707e0e648aa0e3ffd866f9599f39d0">More...</a><br /></td></tr>
@@ -180,28 +171,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aedf3207db0c8d717766f410878876cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves the problem, call other methods  <a href="classpolyfem_1_1_state.html#aedf3207db0c8d717766f410878876cab">More...</a><br /></td></tr>
 <tr class="separator:aedf3207db0c8d717766f410878876cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5af0b6144ef4a5b96a71d70a10f3eec4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a5af0b6144ef4a5b96a71d70a10f3eec4">init_transient</a> (Eigen::VectorXd &amp;c_sol)</td></tr>
-<tr class="memdesc:a5af0b6144ef4a5b96a71d70a10f3eec4"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialize transient solver  <a href="classpolyfem_1_1_state.html#a5af0b6144ef4a5b96a71d70a10f3eec4">More...</a><br /></td></tr>
 <tr class="separator:a5af0b6144ef4a5b96a71d70a10f3eec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0280cce8ee6cdef4bd41e0f44681fa63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a0280cce8ee6cdef4bd41e0f44681fa63">solve_transient_navier_stokes_split</a> (const int time_steps, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler)</td></tr>
-<tr class="memdesc:a0280cce8ee6cdef4bd41e0f44681fa63"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves transient navier stokes with operator splitting  <a href="classpolyfem_1_1_state.html#a0280cce8ee6cdef4bd41e0f44681fa63">More...</a><br /></td></tr>
 <tr class="separator:a0280cce8ee6cdef4bd41e0f44681fa63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc3761c8a65b7439bbe1837e4fdca37c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#afc3761c8a65b7439bbe1837e4fdca37c">solve_transient_navier_stokes</a> (const int time_steps, const double t0, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, Eigen::VectorXd &amp;c_sol)</td></tr>
-<tr class="memdesc:afc3761c8a65b7439bbe1837e4fdca37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves transient navier stokes with FEM  <a href="classpolyfem_1_1_state.html#afc3761c8a65b7439bbe1837e4fdca37c">More...</a><br /></td></tr>
 <tr class="separator:afc3761c8a65b7439bbe1837e4fdca37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe50aca411990a4b6449b7e960e6597a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#abe50aca411990a4b6449b7e960e6597a">solve_transient_scalar</a> (const int time_steps, const double t0, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="memdesc:abe50aca411990a4b6449b7e960e6597a"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves transient scalar problem  <a href="classpolyfem_1_1_state.html#abe50aca411990a4b6449b7e960e6597a">More...</a><br /></td></tr>
 <tr class="separator:abe50aca411990a4b6449b7e960e6597a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4c32f9d48dec68d6e5ce343f309a51a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae4c32f9d48dec68d6e5ce343f309a51a">solve_transient_tensor_linear</a> (const int time_steps, const double t0, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler)</td></tr>
-<tr class="memdesc:ae4c32f9d48dec68d6e5ce343f309a51a"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves transient linear problem  <a href="classpolyfem_1_1_state.html#ae4c32f9d48dec68d6e5ce343f309a51a">More...</a><br /></td></tr>
 <tr class="separator:ae4c32f9d48dec68d6e5ce343f309a51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54d7fdb2ff62cf895a832fde7e467d41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a54d7fdb2ff62cf895a832fde7e467d41">solve_transient_tensor_non_linear</a> (const int time_steps, const double t0, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler)</td></tr>
-<tr class="memdesc:a54d7fdb2ff62cf895a832fde7e467d41"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves transient tensor non linear problem  <a href="classpolyfem_1_1_state.html#a54d7fdb2ff62cf895a832fde7e467d41">More...</a><br /></td></tr>
 <tr class="separator:a54d7fdb2ff62cf895a832fde7e467d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb0853f957801d8aa005f7e014ef2825"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#acb0853f957801d8aa005f7e014ef2825">solve_transient_tensor_non_linear_init</a> (const double t0, const double dt, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler)</td></tr>
-<tr class="memdesc:acb0853f957801d8aa005f7e014ef2825"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialized the non linear solver  <a href="classpolyfem_1_1_state.html#acb0853f957801d8aa005f7e014ef2825">More...</a><br /></td></tr>
 <tr class="separator:acb0853f957801d8aa005f7e014ef2825"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ad8210b5469eae99d6381fdf372f176"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1ad8210b5469eae99d6381fdf372f176">solve_transient_tensor_non_linear_step</a> (const double t0, const double dt, const int t, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">solver_info</a>)</td></tr>
-<tr class="memdesc:a1ad8210b5469eae99d6381fdf372f176"><td class="mdescLeft">&#160;</td><td class="mdescRight">steps trought time  <a href="classpolyfem_1_1_state.html#a1ad8210b5469eae99d6381fdf372f176">More...</a><br /></td></tr>
 <tr class="separator:a1ad8210b5469eae99d6381fdf372f176"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d47bb299f06cc3fa8472fe5330a301f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a8d47bb299f06cc3fa8472fe5330a301f">solve_linear</a> ()</td></tr>
 <tr class="memdesc:a8d47bb299f06cc3fa8472fe5330a301f"><td class="mdescLeft">&#160;</td><td class="mdescRight">solves a linear problem  <a href="classpolyfem_1_1_state.html#a8d47bb299f06cc3fa8472fe5330a301f">More...</a><br /></td></tr>
@@ -214,31 +197,23 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4c6dfdc70f7f60d5e83e72dcd92bd12a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfeed3b1b3607b844a01f519ff149161"><td class="memTemplParams" colspan="2">template&lt;typename ProblemType &gt; </td></tr>
 <tr class="memitem:adfeed3b1b3607b844a01f519ff149161"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; ProblemType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#adfeed3b1b3607b844a01f519ff149161">make_nl_solver</a> () const</td></tr>
-<tr class="memdesc:adfeed3b1b3607b844a01f519ff149161"><td class="mdescLeft">&#160;</td><td class="mdescRight">factory to create the nl solver depdending on input  <a href="classpolyfem_1_1_state.html#adfeed3b1b3607b844a01f519ff149161">More...</a><br /></td></tr>
 <tr class="separator:adfeed3b1b3607b844a01f519ff149161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3675021f11df56e39be90ed4045125d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a3675021f11df56e39be90ed4045125d2">compute_mesh_size</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;<a class="el" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1_state.html#a621210532209805e520415654a6c505e">bases</a>, const int n_samples)</td></tr>
-<tr class="memdesc:a3675021f11df56e39be90ed4045125d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by default) to compute the size of the linear mesh  <a href="classpolyfem_1_1_state.html#a3675021f11df56e39be90ed4045125d2">More...</a><br /></td></tr>
 <tr class="separator:a3675021f11df56e39be90ed4045125d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a> (bool non_conforming=false, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;())</td></tr>
-<tr class="memdesc:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from the json arguments  <a href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">More...</a><br /></td></tr>
 <tr class="separator:a37cc0825d6cd66410b5c1a0c46778a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">load_febio</a> (const std::string &amp;path, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args_in)</td></tr>
 <tr class="memdesc:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads a febio file, uses args_in for default, [DEPRECATED]  <a href="classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0">More...</a><br /></td></tr>
 <tr class="separator:a9c5014836e7b662f7ec64eb8c844d7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d7e06f66912cc77b1d942340211ddb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9">load_mesh</a> (GEO::Mesh &amp;meshin, const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;)&gt; &amp;boundary_marker, bool non_conforming=false, bool skip_boundary_sideset=false)</td></tr>
-<tr class="memdesc:a2d7e06f66912cc77b1d942340211ddb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from a geogram mesh  <a href="classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9">More...</a><br /></td></tr>
 <tr class="separator:a2d7e06f66912cc77b1d942340211ddb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ce16a4580b29c071e8fd84fbada3497"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497">load_mesh</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, bool non_conforming=false)</td></tr>
-<tr class="memdesc:a4ce16a4580b29c071e8fd84fbada3497"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads the mesh from V and F,  <a href="classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497">More...</a><br /></td></tr>
 <tr class="separator:a4ce16a4580b29c071e8fd84fbada3497"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99fb2c04916c701c3ca3575b2acf67df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a99fb2c04916c701c3ca3575b2acf67df">set_boundary_side_set</a> (const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;)&gt; &amp;boundary_marker)</td></tr>
-<tr class="memdesc:a99fb2c04916c701c3ca3575b2acf67df"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the boundary sideset from a lambda that takes the face/edge barycenter  <a href="classpolyfem_1_1_state.html#a99fb2c04916c701c3ca3575b2acf67df">More...</a><br /></td></tr>
 <tr class="separator:a99fb2c04916c701c3ca3575b2acf67df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d1520df8d7dbff34e16f75fa7dc86ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a0d1520df8d7dbff34e16f75fa7dc86ef">set_boundary_side_set</a> (const std::function&lt; int(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;, bool)&gt; &amp;boundary_marker)</td></tr>
-<tr class="memdesc:a0d1520df8d7dbff34e16f75fa7dc86ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)  <a href="classpolyfem_1_1_state.html#a0d1520df8d7dbff34e16f75fa7dc86ef">More...</a><br /></td></tr>
 <tr class="separator:a0d1520df8d7dbff34e16f75fa7dc86ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06021e39b951c4f5647c495883fd97f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a06021e39b951c4f5647c495883fd97f4">set_boundary_side_set</a> (const std::function&lt; int(const std::vector&lt; int &gt; &amp;, bool)&gt; &amp;boundary_marker)</td></tr>
-<tr class="memdesc:a06021e39b951c4f5647c495883fd97f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)  <a href="classpolyfem_1_1_state.html#a06021e39b951c4f5647c495883fd97f4">More...</a><br /></td></tr>
 <tr class="separator:a06021e39b951c4f5647c495883fd97f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d904b274f338bfa96d3110531cc0aa7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7">reset_mesh</a> ()</td></tr>
 <tr class="memdesc:a6d904b274f338bfa96d3110531cc0aa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the mesh.  <a href="classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7">More...</a><br /></td></tr>
@@ -247,10 +222,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae73637bc6b2260ba3b25d50cc9b212cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">extracts the boundary mesh for collision, called in build_basis  <a href="classpolyfem_1_1_state.html#ae73637bc6b2260ba3b25d50cc9b212cc">More...</a><br /></td></tr>
 <tr class="separator:ae73637bc6b2260ba3b25d50cc9b212cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e0192203baf1e55bd148493230b4122"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9e0192203baf1e55bd148493230b4122">extract_boundary_mesh</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1_state.html#a621210532209805e520415654a6c505e">bases</a>, Eigen::MatrixXd &amp;<a class="el" href="classpolyfem_1_1_state.html#aefce6ee76cd68e01f63d19132417b39c">boundary_nodes_pos</a>, Eigen::MatrixXi &amp;<a class="el" href="classpolyfem_1_1_state.html#aeff40b2c0997dfbc80cc8b9fe496f7c2">boundary_edges</a>, Eigen::MatrixXi &amp;<a class="el" href="classpolyfem_1_1_state.html#a547c2063098ac99d49c19b056272c385">boundary_triangles</a>) const</td></tr>
-<tr class="memdesc:a9e0192203baf1e55bd148493230b4122"><td class="mdescLeft">&#160;</td><td class="mdescRight">extracts the boundary mesh  <a href="classpolyfem_1_1_state.html#a9e0192203baf1e55bd148493230b4122">More...</a><br /></td></tr>
 <tr class="separator:a9e0192203baf1e55bd148493230b4122"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd8e8dc2e05969c2e9901ba03bfcb48d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#acd8e8dc2e05969c2e9901ba03bfcb48d">is_obstacle_vertex</a> (const size_t vi) const</td></tr>
-<tr class="memdesc:acd8e8dc2e05969c2e9901ba03bfcb48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">checks if vertex is obstacle  <a href="classpolyfem_1_1_state.html#acd8e8dc2e05969c2e9901ba03bfcb48d">More...</a><br /></td></tr>
 <tr class="separator:acd8e8dc2e05969c2e9901ba03bfcb48d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73346b44da0cc930e1f7375cd7ce965a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a73346b44da0cc930e1f7375cd7ce965a">set_multimaterial</a> (const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;)&gt; &amp;setter)</td></tr>
 <tr class="separator:a73346b44da0cc930e1f7375cd7ce965a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -264,97 +237,68 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ace95e485ec689c24e293b317da6505c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves all data on the disk according to the input params  <a href="classpolyfem_1_1_state.html#ace95e485ec689c24e293b317da6505c3">More...</a><br /></td></tr>
 <tr class="separator:ace95e485ec689c24e293b317da6505c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b51101cfaa31b6a3b0f701923b4716e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1b51101cfaa31b6a3b0f701923b4716e">save_json</a> (std::ostream &amp;out)</td></tr>
-<tr class="memdesc:a1b51101cfaa31b6a3b0f701923b4716e"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to a stream  <a href="classpolyfem_1_1_state.html#a1b51101cfaa31b6a3b0f701923b4716e">More...</a><br /></td></tr>
 <tr class="separator:a1b51101cfaa31b6a3b0f701923b4716e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9379a451939e1ccb3f055c7acc591ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae9379a451939e1ccb3f055c7acc591ee">save_json</a> (nlohmann::json &amp;j)</td></tr>
-<tr class="memdesc:ae9379a451939e1ccb3f055c7acc591ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to a json object  <a href="classpolyfem_1_1_state.html#ae9379a451939e1ccb3f055c7acc591ee">More...</a><br /></td></tr>
 <tr class="separator:ae9379a451939e1ccb3f055c7acc591ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56de5a26227bca2913c2e89274e3e58c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a56de5a26227bca2913c2e89274e3e58c">save_json</a> ()</td></tr>
 <tr class="memdesc:a56de5a26227bca2913c2e89274e3e58c"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to disc accoding to params  <a href="classpolyfem_1_1_state.html#a56de5a26227bca2913c2e89274e3e58c">More...</a><br /></td></tr>
 <tr class="separator:a56de5a26227bca2913c2e89274e3e58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf3b7055db30b4c70df5ed55f091ccdc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#adf3b7055db30b4c70df5ed55f091ccdc">compute_vertex_values</a> (int actual_dim, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;basis, const MatrixXd &amp;fun, Eigen::MatrixXd &amp;result)</td></tr>
-<tr class="memdesc:adf3b7055db30b4c70df5ed55f091ccdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">evaluates the function fun at the vertices on the mesh  <a href="classpolyfem_1_1_state.html#adf3b7055db30b4c70df5ed55f091ccdc">More...</a><br /></td></tr>
 <tr class="separator:adf3b7055db30b4c70df5ed55f091ccdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57bf27122c32e56f2558b9703cf86119"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a57bf27122c32e56f2558b9703cf86119">compute_stress_at_quadrature_points</a> (const MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, Eigen::VectorXd &amp;von_mises)</td></tr>
-<tr class="memdesc:a57bf27122c32e56f2558b9703cf86119"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute von mises stress at quadrature points for the function fun, also compute the interpolated function  <a href="classpolyfem_1_1_state.html#a57bf27122c32e56f2558b9703cf86119">More...</a><br /></td></tr>
 <tr class="separator:a57bf27122c32e56f2558b9703cf86119"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe90fe0e434ec63595eb741317377940"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#afe90fe0e434ec63595eb741317377940">interpolate_function</a> (const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:afe90fe0e434ec63595eb741317377940"><td class="mdescLeft">&#160;</td><td class="mdescRight">interpolate the function fun.  <a href="classpolyfem_1_1_state.html#afe90fe0e434ec63595eb741317377940">More...</a><br /></td></tr>
 <tr class="separator:afe90fe0e434ec63595eb741317377940"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5a07925a63ff996a8e61d53c5a4b4de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ac5a07925a63ff996a8e61d53c5a4b4de">interpolate_function</a> (const int n_points, const int actual_dim, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;basis, const MatrixXd &amp;fun, MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:ac5a07925a63ff996a8e61d53c5a4b4de"><td class="mdescLeft">&#160;</td><td class="mdescRight">interpolate the function fun.  <a href="classpolyfem_1_1_state.html#ac5a07925a63ff996a8e61d53c5a4b4de">More...</a><br /></td></tr>
 <tr class="separator:ac5a07925a63ff996a8e61d53c5a4b4de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac545172c327ed6357ef801fec9a9f6d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ac545172c327ed6357ef801fec9a9f6d2">interpolate_at_local_vals</a> (const int el_index, const MatrixXd &amp;local_pts, MatrixXd &amp;result, MatrixXd &amp;result_grad)</td></tr>
-<tr class="memdesc:ac545172c327ed6357ef801fec9a9f6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)  <a href="classpolyfem_1_1_state.html#ac545172c327ed6357ef801fec9a9f6d2">More...</a><br /></td></tr>
 <tr class="separator:ac545172c327ed6357ef801fec9a9f6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7ded095c8541535a029504e64fe994a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ad7ded095c8541535a029504e64fe994a">interpolate_at_local_vals</a> (const int el_index, const MatrixXd &amp;local_pts, const MatrixXd &amp;fun, MatrixXd &amp;result, MatrixXd &amp;result_grad)</td></tr>
-<tr class="memdesc:ad7ded095c8541535a029504e64fe994a"><td class="mdescLeft">&#160;</td><td class="mdescRight">interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)  <a href="classpolyfem_1_1_state.html#ad7ded095c8541535a029504e64fe994a">More...</a><br /></td></tr>
 <tr class="separator:ad7ded095c8541535a029504e64fe994a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae763ad4f0676fd8ca0ba810a14256112"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ae763ad4f0676fd8ca0ba810a14256112">interpolate_at_local_vals</a> (const int el_index, const int actual_dim, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1_state.html#a621210532209805e520415654a6c505e">bases</a>, const MatrixXd &amp;local_pts, const MatrixXd &amp;fun, MatrixXd &amp;result, MatrixXd &amp;result_grad)</td></tr>
-<tr class="memdesc:ae763ad4f0676fd8ca0ba810a14256112"><td class="mdescLeft">&#160;</td><td class="mdescRight">interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)  <a href="classpolyfem_1_1_state.html#ae763ad4f0676fd8ca0ba810a14256112">More...</a><br /></td></tr>
 <tr class="separator:ae763ad4f0676fd8ca0ba810a14256112"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9c4b97b39589a3e6c3e9b2de4e623d5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#af9c4b97b39589a3e6c3e9b2de4e623d5">check_scalar_value</a> (const Eigen::MatrixXd &amp;fun, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:af9c4b97b39589a3e6c3e9b2de4e623d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">checks if mises are not nan  <a href="classpolyfem_1_1_state.html#af9c4b97b39589a3e6c3e9b2de4e623d5">More...</a><br /></td></tr>
 <tr class="separator:af9c4b97b39589a3e6c3e9b2de4e623d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10145a98a3d23afd18b854adf68d818b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a10145a98a3d23afd18b854adf68d818b">compute_scalar_value</a> (const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:a10145a98a3d23afd18b854adf68d818b"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)  <a href="classpolyfem_1_1_state.html#a10145a98a3d23afd18b854adf68d818b">More...</a><br /></td></tr>
 <tr class="separator:a10145a98a3d23afd18b854adf68d818b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25700f70149e461c119febc056c7a5bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a25700f70149e461c119febc056c7a5bb">average_grad_based_function</a> (const int n_points, const MatrixXd &amp;fun, MatrixXd &amp;result_scalar, MatrixXd &amp;result_tensor, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:a25700f70149e461c119febc056c7a5bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos  <a href="classpolyfem_1_1_state.html#a25700f70149e461c119febc056c7a5bb">More...</a><br /></td></tr>
 <tr class="separator:a25700f70149e461c119febc056c7a5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da0cf56a2c0aa8f7a360776b7397596"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a7da0cf56a2c0aa8f7a360776b7397596">compute_tensor_value</a> (const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:a7da0cf56a2c0aa8f7a360776b7397596"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute tensor quantity (ie stress tensor or velocy)  <a href="classpolyfem_1_1_state.html#a7da0cf56a2c0aa8f7a360776b7397596">More...</a><br /></td></tr>
 <tr class="separator:a7da0cf56a2c0aa8f7a360776b7397596"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a842d0c719f1511e76ce5584699d8fede"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a842d0c719f1511e76ce5584699d8fede">interpolate_boundary_function</a> (const MatrixXd &amp;pts, const MatrixXi &amp;faces, const MatrixXd &amp;fun, const bool compute_avg, MatrixXd &amp;result)</td></tr>
-<tr class="memdesc:a842d0c719f1511e76ce5584699d8fede"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes integrated solution (fun) per surface face.  <a href="classpolyfem_1_1_state.html#a842d0c719f1511e76ce5584699d8fede">More...</a><br /></td></tr>
 <tr class="separator:a842d0c719f1511e76ce5584699d8fede"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d099ce2b5c36d4b1ddcee68924f4cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a6d099ce2b5c36d4b1ddcee68924f4cb3">interpolate_boundary_function_at_vertices</a> (const MatrixXd &amp;pts, const MatrixXi &amp;faces, const MatrixXd &amp;fun, MatrixXd &amp;result)</td></tr>
-<tr class="memdesc:a6d099ce2b5c36d4b1ddcee68924f4cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes integrated solution (fun) per surface face vertex.  <a href="classpolyfem_1_1_state.html#a6d099ce2b5c36d4b1ddcee68924f4cb3">More...</a><br /></td></tr>
 <tr class="separator:a6d099ce2b5c36d4b1ddcee68924f4cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24fdc1040e81e6600289728a3a2ac11e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a24fdc1040e81e6600289728a3a2ac11e">interpolate_boundary_tensor_function</a> (const MatrixXd &amp;pts, const MatrixXi &amp;faces, const MatrixXd &amp;fun, const MatrixXd &amp;disp, const bool compute_avg, MatrixXd &amp;result, MatrixXd &amp;stresses, MatrixXd &amp;mises, const bool skip_orientation=false)</td></tr>
-<tr class="memdesc:a24fdc1040e81e6600289728a3a2ac11e"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face.  <a href="classpolyfem_1_1_state.html#a24fdc1040e81e6600289728a3a2ac11e">More...</a><br /></td></tr>
 <tr class="separator:a24fdc1040e81e6600289728a3a2ac11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cac5e0351b67fc9f3efdd3480ea7015"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a8cac5e0351b67fc9f3efdd3480ea7015">interpolate_boundary_tensor_function</a> (const MatrixXd &amp;pts, const MatrixXi &amp;faces, const MatrixXd &amp;fun, const bool compute_avg, MatrixXd &amp;result, MatrixXd &amp;stresses, MatrixXd &amp;mises, const bool skip_orientation=false)</td></tr>
-<tr class="memdesc:a8cac5e0351b67fc9f3efdd3480ea7015"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as interpolate_boundary_tensor_function with disp=0  <a href="classpolyfem_1_1_state.html#a8cac5e0351b67fc9f3efdd3480ea7015">More...</a><br /></td></tr>
 <tr class="separator:a8cac5e0351b67fc9f3efdd3480ea7015"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75b702eb832ecfd6e8e26738867d265b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a75b702eb832ecfd6e8e26738867d265b">get_sidesets</a> (Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXd &amp;sidesets)</td></tr>
-<tr class="memdesc:a75b702eb832ecfd6e8e26738867d265b"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns a triangulated representation of the sideset.  <a href="classpolyfem_1_1_state.html#a75b702eb832ecfd6e8e26738867d265b">More...</a><br /></td></tr>
 <tr class="separator:a75b702eb832ecfd6e8e26738867d265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18c94c14eb94feb4a1f82cf8d053b97f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f">root_path</a> () const</td></tr>
-<tr class="memdesc:a18c94c14eb94feb4a1f82cf8d053b97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the root path for the state (e.g., args["root_path"] or ".")  <a href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f">More...</a><br /></td></tr>
 <tr class="separator:a18c94c14eb94feb4a1f82cf8d053b97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfcd600796cd24e1555454a1d31f2fc2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2">resolve_input_path</a> (const std::string &amp;path, const bool only_if_exists=false) const</td></tr>
-<tr class="memdesc:acfcd600796cd24e1555454a1d31f2fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve input path relative to <a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">root_path()</a> if the path is not absolute.  <a href="classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2">More...</a><br /></td></tr>
 <tr class="separator:acfcd600796cd24e1555454a1d31f2fc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d27977bcc27d9827913ea573e6fef3a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a> (const std::string &amp;path) const</td></tr>
-<tr class="memdesc:a2d27977bcc27d9827913ea573e6fef3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve output path relative to output_dir if the path is not absolute.  <a href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">More...</a><br /></td></tr>
 <tr class="separator:a2d27977bcc27d9827913ea573e6fef3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adee23ad92ee3a791188de7e952160f5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#adee23ad92ee3a791188de7e952160f5c">compute_mesh_stats</a> ()</td></tr>
 <tr class="memdesc:adee23ad92ee3a791188de7e952160f5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute stats (counts els type, mesh lenght, etc), step 1 of solve  <a href="classpolyfem_1_1_state.html#adee23ad92ee3a791188de7e952160f5c">More...</a><br /></td></tr>
 <tr class="separator:adee23ad92ee3a791188de7e952160f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3bfff2ae02cf0474f01425a7d813f62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab3bfff2ae02cf0474f01425a7d813f62">build_vis_mesh</a> (Eigen::MatrixXd &amp;points, Eigen::MatrixXi &amp;tets, Eigen::MatrixXi &amp;el_id, Eigen::MatrixXd &amp;discr)</td></tr>
-<tr class="memdesc:ab3bfff2ae02cf0474f01425a7d813f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d.  <a href="classpolyfem_1_1_state.html#ab3bfff2ae02cf0474f01425a7d813f62">More...</a><br /></td></tr>
 <tr class="separator:ab3bfff2ae02cf0474f01425a7d813f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24ca99111b65a0a8525d25150c87ea7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a24ca99111b65a0a8525d25150c87ea7c">build_high_oder_vis_mesh</a> (Eigen::MatrixXd &amp;points, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, Eigen::MatrixXi &amp;el_id, Eigen::MatrixXd &amp;discr)</td></tr>
-<tr class="memdesc:a24ca99111b65a0a8525d25150c87ea7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">builds high-der visualzation mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d.  <a href="classpolyfem_1_1_state.html#a24ca99111b65a0a8525d25150c87ea7c">More...</a><br /></td></tr>
 <tr class="separator:a24ca99111b65a0a8525d25150c87ea7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dddcc33605e488f476977a659d21a16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9dddcc33605e488f476977a659d21a16">save_vtu</a> (const std::string &amp;name, const double t)</td></tr>
-<tr class="memdesc:a9dddcc33605e488f476977a659d21a16"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the vtu file for time t  <a href="classpolyfem_1_1_state.html#a9dddcc33605e488f476977a659d21a16">More...</a><br /></td></tr>
 <tr class="separator:a9dddcc33605e488f476977a659d21a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c984bc2b9fe7228aefd06803a0a5cad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a9c984bc2b9fe7228aefd06803a0a5cad">save_volume</a> (const std::string &amp;path, const double t)</td></tr>
-<tr class="memdesc:a9c984bc2b9fe7228aefd06803a0a5cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the volume vtu file  <a href="classpolyfem_1_1_state.html#a9c984bc2b9fe7228aefd06803a0a5cad">More...</a><br /></td></tr>
 <tr class="separator:a9c984bc2b9fe7228aefd06803a0a5cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1156c2aaa12967751c1c0e6deac3f930"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1156c2aaa12967751c1c0e6deac3f930">save_surface</a> (const std::string &amp;name)</td></tr>
-<tr class="memdesc:a1156c2aaa12967751c1c0e6deac3f930"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the surface vtu file for for surface quantites, eg traction forces  <a href="classpolyfem_1_1_state.html#a1156c2aaa12967751c1c0e6deac3f930">More...</a><br /></td></tr>
 <tr class="separator:a1156c2aaa12967751c1c0e6deac3f930"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c517cbe9e5ba58a09a3f6d898eda21a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a1c517cbe9e5ba58a09a3f6d898eda21a">save_wire</a> (const std::string &amp;name, const double t)</td></tr>
-<tr class="memdesc:a1c517cbe9e5ba58a09a3f6d898eda21a"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the wireframe  <a href="classpolyfem_1_1_state.html#a1c517cbe9e5ba58a09a3f6d898eda21a">More...</a><br /></td></tr>
 <tr class="separator:a1c517cbe9e5ba58a09a3f6d898eda21a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac45fb84d8da6304438e2d493f4e3583c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ac45fb84d8da6304438e2d493f4e3583c">save_pvd</a> (const std::string &amp;name, const std::function&lt; std::string(int)&gt; &amp;vtu_names, int time_steps, double t0, double dt, int skip_frame=1)</td></tr>
-<tr class="memdesc:ac45fb84d8da6304438e2d493f4e3583c"><td class="mdescLeft">&#160;</td><td class="mdescRight">save a PVD of a time dependent simulation  <a href="classpolyfem_1_1_state.html#ac45fb84d8da6304438e2d493f4e3583c">More...</a><br /></td></tr>
 <tr class="separator:ac45fb84d8da6304438e2d493f4e3583c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61ff1981be991580c3c68c323145d4e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a61ff1981be991580c3c68c323145d4e6">save_timestep</a> (const double time, const int t, const double t0, const double dt)</td></tr>
-<tr class="memdesc:a61ff1981be991580c3c68c323145d4e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves a timestep  <a href="classpolyfem_1_1_state.html#a61ff1981be991580c3c68c323145d4e6">More...</a><br /></td></tr>
 <tr class="separator:a61ff1981be991580c3c68c323145d4e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab413537dbe7a90c1cc41bc30e53b6e8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab413537dbe7a90c1cc41bc30e53b6e8e">get_sampled_solution</a> (Eigen::MatrixXd &amp;points, Eigen::MatrixXi &amp;tets, Eigen::MatrixXd &amp;fun, bool boundary_only=false)</td></tr>
 <tr class="memdesc:ab413537dbe7a90c1cc41bc30e53b6e8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)  <a href="classpolyfem_1_1_state.html#ab413537dbe7a90c1cc41bc30e53b6e8e">More...</a><br /></td></tr>
@@ -417,7 +361,6 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:aa8ecaf8f1d265e0b1d35d774d1511056"><td class="mdescLeft">&#160;</td><td class="mdescRight">used to store assembly values for pressure for small problems  <a href="classpolyfem_1_1_state.html#aa8ecaf8f1d265e0b1d35d774d1511056">More...</a><br /></td></tr>
 <tr class="separator:aa8ecaf8f1d265e0b1d35d774d1511056"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8da27c5e8aaacd2c5dccfd5fc4f99218"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a8da27c5e8aaacd2c5dccfd5fc4f99218">stiffness</a></td></tr>
-<tr class="memdesc:a8da27c5e8aaacd2c5dccfd5fc4f99218"><td class="mdescLeft">&#160;</td><td class="mdescRight">stiffness and mass matrix.  <a href="classpolyfem_1_1_state.html#a8da27c5e8aaacd2c5dccfd5fc4f99218">More...</a><br /></td></tr>
 <tr class="separator:a8da27c5e8aaacd2c5dccfd5fc4f99218"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a702330df4565849e4b2abe429afe7663"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a></td></tr>
 <tr class="memdesc:a702330df4565849e4b2abe429afe7663"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mass matrix, it is computed only for time dependent problems.  <a href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">More...</a><br /></td></tr>
@@ -432,7 +375,6 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a45c6de3b79a7b1040be114cf3cdd5d5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">pressure solution, if the problem is not mixed, pressure is empty  <a href="classpolyfem_1_1_state.html#a45c6de3b79a7b1040be114cf3cdd5d5d">More...</a><br /></td></tr>
 <tr class="separator:a45c6de3b79a7b1040be114cf3cdd5d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c6c57f7ebcb9808be8e53671afafe48"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48">use_avg_pressure</a></td></tr>
-<tr class="memdesc:a2c6c57f7ebcb9808be8e53671afafe48"><td class="mdescLeft">&#160;</td><td class="mdescRight">use average pressure for stokes problem to fix the additional dofs, true by default if false, it will fix one pressure node to zero  <a href="classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48">More...</a><br /></td></tr>
 <tr class="separator:a2c6c57f7ebcb9808be8e53671afafe48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a096d1ecae0577a376befd99612f6fffd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a></td></tr>
 <tr class="memdesc:a096d1ecae0577a376befd99612f6fffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of bases  <a href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">More...</a><br /></td></tr>
@@ -477,7 +419,6 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a8d32dfcbd6ed231840bc1913fa12219a"><td class="mdescLeft">&#160;</td><td class="mdescRight">parent element used to track refinements  <a href="classpolyfem_1_1_state.html#a8d32dfcbd6ed231840bc1913fa12219a">More...</a><br /></td></tr>
 <tr class="separator:a8d32dfcbd6ed231840bc1913fa12219a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefce6ee76cd68e01f63d19132417b39c"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#aefce6ee76cd68e01f63d19132417b39c">boundary_nodes_pos</a></td></tr>
-<tr class="memdesc:aefce6ee76cd68e01f63d19132417b39c"><td class="mdescLeft">&#160;</td><td class="mdescRight">boundary mesh used for collision boundary_nodes_pos contains the total number of nodes, the internal ones are zero for high-order fem the faces are triangulated this is currently supported only for tri and tet meshes  <a href="classpolyfem_1_1_state.html#aefce6ee76cd68e01f63d19132417b39c">More...</a><br /></td></tr>
 <tr class="separator:aefce6ee76cd68e01f63d19132417b39c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeff40b2c0997dfbc80cc8b9fe496f7c2"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#aeff40b2c0997dfbc80cc8b9fe496f7c2">boundary_edges</a></td></tr>
 <tr class="memdesc:aeff40b2c0997dfbc80cc8b9fe496f7c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">edge indices into full vertices  <a href="classpolyfem_1_1_state.html#aeff40b2c0997dfbc80cc8b9fe496f7c2">More...</a><br /></td></tr>
@@ -519,7 +460,6 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ae526ab000cd9872931d1553bc330478e"><td class="mdescLeft">&#160;</td><td class="mdescRight">spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)  <a href="classpolyfem_1_1_state.html#ae526ab000cd9872931d1553bc330478e">More...</a><br /></td></tr>
 <tr class="separator:ae526ab000cd9872931d1553bc330478e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab84ec10e82427628979cdcf5c010892b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">solver_info</a></td></tr>
-<tr class="memdesc:ab84ec10e82427628979cdcf5c010892b"><td class="mdescLeft">&#160;</td><td class="mdescRight">information of the solver, eg num iteration, time, errors, etc the informations varies depending on the solver  <a href="classpolyfem_1_1_state.html#ab84ec10e82427628979cdcf5c010892b">More...</a><br /></td></tr>
 <tr class="separator:ab84ec10e82427628979cdcf5c010892b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad788d1ffa64a6b1471e494f224e3587b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ad788d1ffa64a6b1471e494f224e3587b">mesh_size</a></td></tr>
 <tr class="memdesc:ad788d1ffa64a6b1471e494f224e3587b"><td class="mdescLeft">&#160;</td><td class="mdescRight">max edge lenght  <a href="classpolyfem_1_1_state.html#ad788d1ffa64a6b1471e494f224e3587b">More...</a><br /></td></tr>
@@ -544,7 +484,6 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aa9aa2964469dc482b76396db2465070f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#aa9aa2964469dc482b76396db2465070f">grad_max_err</a></td></tr>
 <tr class="separator:aa9aa2964469dc482b76396db2465070f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad16a786cf3a059f18094e8adf7edeb76"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ad16a786cf3a059f18094e8adf7edeb76">nn_zero</a></td></tr>
-<tr class="memdesc:ad16a786cf3a059f18094e8adf7edeb76"><td class="mdescLeft">&#160;</td><td class="mdescRight">non zeros and sytem matrix size num dof is the total dof in the system  <a href="classpolyfem_1_1_state.html#ad16a786cf3a059f18094e8adf7edeb76">More...</a><br /></td></tr>
 <tr class="separator:ad16a786cf3a059f18094e8adf7edeb76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac373b31c6c3aea55be7a8812c00fb32a"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#ac373b31c6c3aea55be7a8812c00fb32a">mat_size</a></td></tr>
 <tr class="separator:ac373b31c6c3aea55be7a8812c00fb32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -615,7 +554,6 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:aca914a06a4364a7eed8e353773bf8bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption  <a href="classpolyfem_1_1_state.html#aca914a06a4364a7eed8e353773bf8bbb">More...</a><br /></td></tr>
 <tr class="separator:aca914a06a4364a7eed8e353773bf8bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af52dc26a1b15cd556c1715c8662b0a8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#af52dc26a1b15cd556c1715c8662b0a8a">solve_export_to_file</a> = true</td></tr>
-<tr class="memdesc:af52dc26a1b15cd556c1715c8662b0a8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">flag to decide if exporting the time dependent solution to files or save it in the solution_frames array  <a href="classpolyfem_1_1_state.html#af52dc26a1b15cd556c1715c8662b0a8a">More...</a><br /></td></tr>
 <tr class="separator:af52dc26a1b15cd556c1715c8662b0a8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46e08c25db92ec7f59e4d535631bb110"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1_solution_frame.html">SolutionFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_state.html#a46e08c25db92ec7f59e4d535631bb110">solution_frames</a></td></tr>
 <tr class="memdesc:a46e08c25db92ec7f59e4d535631bb110"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the frames in a vector instead of VTU  <a href="classpolyfem_1_1_state.html#a46e08c25db92ec7f59e4d535631bb110">More...</a><br /></td></tr>
@@ -676,9 +614,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Constructor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >Constructor </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">max_threads</td><td>max number of threads </td></tr>
   </table>
@@ -775,9 +711,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n_points</td><td>is the size of the output. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fun</td><td>function to used </td></tr>
@@ -866,9 +800,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>builds high-der visualzation mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d. </p>
-<p >if the mesh is not simplicial it gets tri/tet halized </p><dl class="params"><dt>Parameters</dt><dd>
+<p >builds high-der visualzation mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">points</td><td>mesh points </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">elements</td><td>mesh high-order cells </td></tr>
@@ -944,9 +876,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d. </p>
-<p >if the mesh is not simplicial it gets tri/tet halized </p><dl class="params"><dt>Parameters</dt><dd>
+<p >builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mesh per element all disconnected it also retuns the mapping to element id and discretization of every elment works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">points</td><td>mesh points </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">tets</td><td>mesh cells </td></tr>
@@ -989,9 +919,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>checks if mises are not nan </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >checks if mises are not nan </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">fun</td><td>function to used </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">use_sampler</td><td>uses the sampler or not </td></tr>
@@ -1053,9 +981,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by default) to compute the size of the linear mesh </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by default) to compute the size of the linear mesh </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>to compute stats </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>geom bases </td></tr>
@@ -1128,9 +1054,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n_points</td><td>is the size of the output. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fun</td><td>function to used </td></tr>
@@ -1174,9 +1098,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>compute von mises stress at quadrature points for the function fun, also compute the interpolated function </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >compute von mises stress at quadrature points for the function fun, also compute the interpolated function </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">fun</td><td>function to used </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>output displacement </td></tr>
@@ -1230,9 +1152,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>compute tensor quantity (ie stress tensor or velocy) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >compute tensor quantity (ie stress tensor or velocy) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n_points</td><td>is the size of the output. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fun</td><td>function to used </td></tr>
@@ -1282,9 +1202,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>evaluates the function fun at the vertices on the mesh </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >evaluates the function fun at the vertices on the mesh </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">actual_dim</td><td>is the size of the problem (e.g., 1 for Laplace, dim for elasticity) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">basis</td><td>basis function </td></tr>
@@ -1352,9 +1270,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>extracts the boundary mesh </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >extracts the boundary mesh </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>geom bases </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundary_nodes_pos</td><td>nodes positions </td></tr>
@@ -1399,9 +1315,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>return the formulation (checks if the problem is scalar or not and delas wih multiphisics) </p>
-<dl class="section return"><dt>Returns</dt><dd>fomulation </dd></dl>
+<p >return the formulation (checks if the problem is scalar or not and delas wih multiphisics) </p><dl class="section return"><dt>Returns</dt><dd>fomulation </dd></dl>
 
 </div>
 </div>
@@ -1427,8 +1341,7 @@ Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>gets the output log as json this is <em>not</em> what gets printed but more informative information, eg it contains runtimes, errors, etc. </p>
+<p >gets the output log as json this is <em>not</em> what gets printed but more informative information, eg it contains runtimes, errors, etc. </p>
 
 </div>
 </div>
@@ -1595,9 +1508,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>returns a triangulated representation of the sideset. </p>
-<p >sidesets contains integers mapping to faces </p><dl class="params"><dt>Parameters</dt><dd>
+<p >returns a triangulated representation of the sideset. sidesets contains integers mapping to faces </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pts</td><td>boundary points </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">faces</td><td>boundary faces </td></tr>
@@ -1671,9 +1582,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>initialize the polyfem solver with a json settings </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >initialize the polyfem solver with a json settings </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>input arguments </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">output_dir</td><td>output directory </td></tr>
@@ -1714,9 +1623,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>initalizing the logger </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >initalizing the logger </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">log_file</td><td>is to write it to a file (use log_file="") to output to consolle </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">log_level</td><td>0 all message, 6 no message. 2 is info, 1 is debug </td></tr>
@@ -1752,9 +1659,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>initalizing the logger writes to an outputstream </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >initalizing the logger writes to an outputstream </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>output stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">log_level</td><td>0 all message, 6 no message. 2 is info, 1 is debug </td></tr>
@@ -1834,9 +1739,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>initialize transient solver </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >initialize transient solver </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">c_sol</td><td>current solution </td></tr>
   </table>
@@ -1900,9 +1803,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases interpolate solution and gradient at element (calls interpolate_at_local_vals with sol) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases interpolate solution and gradient at element (calls interpolate_at_local_vals with sol) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">el_index</td><td>elemnt indes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">actual_dim</td><td>is the size of the problem (e.g., 1 for Laplace, dim for elasticity) </td></tr>
@@ -1960,9 +1861,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>interpolate solution and gradient at element (calls interpolate_at_local_vals with sol) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >interpolate solution and gradient at element (calls interpolate_at_local_vals with sol) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">el_index</td><td>elemnt indes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">local_pts</td><td>points in the reference element </td></tr>
@@ -2012,9 +1911,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>interpolate solution and gradient at element (calls interpolate_at_local_vals with sol) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >interpolate solution and gradient at element (calls interpolate_at_local_vals with sol) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">el_index</td><td>elemnt indes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">local_pts</td><td>points in the reference element </td></tr>
@@ -2069,9 +1966,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>computes integrated solution (fun) per surface face. </p>
-<p >pts and faces are the boundary are the boundary on the rest configuration </p><dl class="params"><dt>Parameters</dt><dd>
+<p >computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pts</td><td>boundary points </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">faces</td><td>boundary faces </td></tr>
@@ -2121,9 +2016,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>computes integrated solution (fun) per surface face vertex. </p>
-<p >pts and faces are the boundary are the boundary on the rest configuration </p><dl class="params"><dt>Parameters</dt><dd>
+<p >computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pts</td><td>boundary points </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">faces</td><td>boundary faces </td></tr>
@@ -2196,9 +2089,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>same as interpolate_boundary_tensor_function with disp=0 </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >same as interpolate_boundary_tensor_function with disp=0 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pts</td><td>boundary points </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">faces</td><td>boundary faces </td></tr>
@@ -2281,9 +2172,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. </p>
-<p >pts and faces are the boundary on the rest configuration. disp is the displacement of the surface vertices </p><dl class="params"><dt>Parameters</dt><dd>
+<p >computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration. disp is the displacement of the surface vertices </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pts</td><td>boundary points </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">faces</td><td>boundary faces </td></tr>
@@ -2343,9 +2232,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>interpolate the function fun. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >interpolate the function fun. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n_points</td><td>is the size of the output. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fun</td><td>function to used </td></tr>
@@ -2413,9 +2300,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>interpolate the function fun. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >interpolate the function fun. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n_points</td><td>is the size of the output. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">actual_dim</td><td>is the size of the problem (e.g., 1 for Laplace, dim for elasticity) </td></tr>
@@ -2453,9 +2338,7 @@ Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>checks if vertex is obstacle </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >checks if vertex is obstacle </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">vi</td><td>vertex indes </td></tr>
   </table>
@@ -2479,9 +2362,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>check if using iso parametric bases </p>
-<dl class="section return"><dt>Returns</dt><dd>if basis are isoparametric </dd></dl>
+<p >check if using iso parametric bases </p><dl class="section return"><dt>Returns</dt><dd>if basis are isoparametric </dd></dl>
 
 </div>
 </div>
@@ -2552,9 +2433,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>loads the mesh from the json arguments </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >loads the mesh from the json arguments </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">non_conforming</td><td>creates a conforming/non conforming mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">names</td><td>keys in the hdf5 </td></tr>
@@ -2605,9 +2484,7 @@ Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>loads the mesh from V and F, </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >loads the mesh from V and F, </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>is #vertices x dim </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2) </td></tr>
@@ -2655,9 +2532,7 @@ Private Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>loads the mesh from a geogram mesh </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >loads the mesh from a geogram mesh </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshin</td><td>geo mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">boundary_marker</td><td>the input of the lambda is the face barycenter, the output is the sideset id </td></tr>
@@ -2685,9 +2560,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>factory to create the nl solver depdending on input </p>
-<dl class="section return"><dt>Returns</dt><dd>non linear solver (eg newton or LBFGS) </dd></dl>
+<p >factory to create the nl solver depdending on input </p><dl class="section return"><dt>Returns</dt><dd>non linear solver (eg newton or LBFGS) </dd></dl>
 
 </div>
 </div>
@@ -2713,9 +2586,7 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>quadrature used for projecting boundary conditions </p>
-<dl class="section return"><dt>Returns</dt><dd>the quadrature used for projecting boundary conditions </dd></dl>
+<p >quadrature used for projecting boundary conditions </p><dl class="section return"><dt>Returns</dt><dd>the quadrature used for projecting boundary conditions </dd></dl>
 
 </div>
 </div>
@@ -2734,9 +2605,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>compute a priori prefinement in 2d, fills disc_orders </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >compute a priori prefinement in 2d, fills disc_orders </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>mesh </td></tr>
   </table>
@@ -2760,9 +2629,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>compute a priori prefinement in 3d, fills disc_orders </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >compute a priori prefinement in 3d, fills disc_orders </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>mesh </td></tr>
   </table>
@@ -2815,9 +2682,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Resolve input path relative to <a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">root_path()</a> if the path is not absolute. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >Resolve input path relative to <a class="el" href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f">root_path()</a> if the path is not absolute. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>path to resolve </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">only_if_exists</td><td>resolve only if relative path exists </td></tr>
@@ -2843,9 +2708,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Resolve output path relative to output_dir if the path is not absolute. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >Resolve output path relative to output_dir if the path is not absolute </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>path to resolve </td></tr>
   </table>
@@ -2869,9 +2732,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Get the root path for the state (e.g., args["root_path"] or ".") </p>
-<dl class="section return"><dt>Returns</dt><dd>root path </dd></dl>
+<p >Get the root path for the state (e.g., args["root_path"] or ".") </p><dl class="section return"><dt>Returns</dt><dd>root path </dd></dl>
 
 </div>
 </div>
@@ -2909,9 +2770,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves the output statistic to a json object </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves the output statistic to a json object </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>output json </td></tr>
   </table>
@@ -2935,9 +2794,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves the output statistic to a stream </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves the output statistic to a stream </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">out</td><td>stream to write output </td></tr>
   </table>
@@ -2995,9 +2852,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>save a PVD of a time dependent simulation </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >save a PVD of a time dependent simulation </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>filename </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">vtu_names</td><td>names of the vtu files </td></tr>
@@ -3026,9 +2881,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves the surface vtu file for for surface quantites, eg traction forces </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves the surface vtu file for for surface quantites, eg traction forces </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>filename </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
@@ -3075,9 +2928,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves a timestep </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves a timestep </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">time</td><td>time in secs </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time indes </td></tr>
@@ -3114,9 +2965,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves the volume vtu file </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves the volume vtu file </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>filename </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
@@ -3151,9 +3000,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves the vtu file for time t </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves the vtu file for time t </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>filename </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
@@ -3188,9 +3035,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>saves the wireframe </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >saves the wireframe </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>filename </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>time </td></tr>
@@ -3223,9 +3068,7 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>set the boundary sideset from a lambda that takes the face/edge barycenter </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >set the boundary sideset from a lambda that takes the face/edge barycenter </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">boundary_marker</td><td>function from face/edge barycenter that returns the sideset id </td></tr>
   </table>
@@ -3257,9 +3100,7 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">boundary_marker</td><td>function from face/edge barycenter and a flag if the face/edge is boundary that returns the sideset id </td></tr>
   </table>
@@ -3291,9 +3132,7 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries) </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">boundary_marker</td><td>function from face/edge vertices and a flag if the face/edge is boundary that returns the sideset id </td></tr>
   </table>
@@ -3325,9 +3164,7 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>change log level </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >change log level </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">log_level</td><td>0 all message, 6 no message. 2 is info, 1 is debug </td></tr>
   </table>
@@ -3527,9 +3364,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>solves transient navier stokes with FEM </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >solves transient navier stokes with FEM </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">time_steps</td><td>number of time steps </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>initial times </td></tr>
@@ -3573,9 +3408,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>solves transient navier stokes with operator splitting </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >solves transient navier stokes with operator splitting </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">time_steps</td><td>number of time steps </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>timestep size </td></tr>
@@ -3629,9 +3462,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>solves transient scalar problem </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >solves transient scalar problem </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">time_steps</td><td>number of time steps </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>initial times </td></tr>
@@ -3681,9 +3512,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>solves transient linear problem </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >solves transient linear problem </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">time_steps</td><td>number of time steps </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>initial times </td></tr>
@@ -3733,9 +3562,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>solves transient tensor non linear problem </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >solves transient tensor non linear problem </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">time_steps</td><td>number of time steps </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>initial times </td></tr>
@@ -3778,9 +3605,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>initialized the non linear solver </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >initialized the non linear solver </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>initial times </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>timestep size </td></tr>
@@ -3828,9 +3653,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>steps trought time </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >steps trought time </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>initial times </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>timestep size </td></tr>
@@ -4030,8 +3853,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>boundary mesh used for collision boundary_nodes_pos contains the total number of nodes, the internal ones are zero for high-order fem the faces are triangulated this is currently supported only for tri and tet meshes </p>
+<p >boundary mesh used for collision boundary_nodes_pos contains the total number of nodes, the internal ones are zero for high-order fem the faces are triangulated this is currently supported only for tri and tet meshes </p>
 
 </div>
 </div>
@@ -4658,8 +4480,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>non zeros and sytem matrix size num dof is the total dof in the system </p>
+<p >non zeros and sytem matrix size num dof is the total dof in the system </p>
 
 </div>
 </div>
@@ -5068,8 +4889,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>flag to decide if exporting the time dependent solution to files or save it in the solution_frames array </p>
+<p >flag to decide if exporting the time dependent solution to files or save it in the solution_frames array </p>
 
 </div>
 </div>
@@ -5084,8 +4904,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>information of the solver, eg num iteration, time, errors, etc the informations varies depending on the solver </p>
+<p >information of the solver, eg num iteration, time, errors, etc the informations varies depending on the solver </p>
 
 </div>
 </div>
@@ -5148,9 +4967,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>stiffness and mass matrix. </p>
-<p >Stiffness is not compute for non linear problems </p>
+<p >stiffness and mass matrix. Stiffness is not compute for non linear problems </p>
 
 </div>
 </div>
@@ -5197,8 +5014,7 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>use average pressure for stokes problem to fix the additional dofs, true by default if false, it will fix one pressure node to zero </p>
+<p >use average pressure for stokes problem to fix the additional dofs, true by default if false, it will fix one pressure node to zero </p>
 
 </div>
 </div>

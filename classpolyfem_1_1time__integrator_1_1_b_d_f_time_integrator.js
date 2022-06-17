@@ -2,6 +2,7 @@ var classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator =
 [
     [ "BDFTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a9130785578a14d566e7723605f390912", null ],
     [ "acceleration_scaling", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a510706e3c7555aae3cbf8c84fcd36d56", null ],
+    [ "beta_dt", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a6a5f6b174ea2ca302a18a0bca1eb324e", null ],
     [ "init", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af", null ],
     [ "init", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a41a921a6e3525ab82c995f40aa8634d3", null ],
     [ "set_parameters", "classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a62c45c2981fc7b0b186024f5f8d7f815", null ],

@@ -13,11 +13,13 @@
 <title>PolyFEM: cppoptlib::LBFGSSolver&lt; ProblemType &gt; Class Template Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -205,7 +207,6 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:addb84c8025e0aacd6f587448e280718d"><td class="memItemLeft" align="right" valign="top">LBFGSpp::BFGSMat&lt; Scalar &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a></td></tr>
 <tr class="separator:addb84c8025e0aacd6f587448e280718d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa741292644bb9a929b34394594516c99"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a> = 6</td></tr>
-<tr class="memdesc:aa741292644bb9a929b34394594516c99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of corrections to approximate the inverse Hessian matrix.  <a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">More...</a><br /></td></tr>
 <tr class="separator:aa741292644bb9a929b34394594516c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1b0b66c3406dd4407cac203a50e01dd"><td class="memItemLeft" align="right" valign="top">TVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a></td></tr>
 <tr class="separator:aa1b0b66c3406dd4407cac203a50e01dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -604,9 +605,7 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>The number of corrections to approximate the inverse Hessian matrix. </p>
-<p >The L-BFGS routine stores the computation results of previous m iterations to approximate the inverse Hessian matrix of the current iteration. This parameter controls the size of the limited memories (corrections). The default value is <code>6</code>. Values less than <code>3</code> are not recommended. Large values will result in excessive computing time. </p>
+<p >The number of corrections to approximate the inverse Hessian matrix. The L-BFGS routine stores the computation results of previous m iterations to approximate the inverse Hessian matrix of the current iteration. This parameter controls the size of the limited memories (corrections). The default value is <code>6</code>. Values less than <code>3</code> are not recommended. Large values will result in excessive computing time. </p>
 
 </div>
 </div>
