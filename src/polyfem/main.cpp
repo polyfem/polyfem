@@ -118,7 +118,9 @@ int main(int argc, char **argv)
 
 	CLI11_PARSE(command_line, argc, argv);
 
-
+	std::vector<std::string> names;
+	std::vector<Eigen::MatrixXi> cells;
+	std::vector<Eigen::MatrixXd> vertices;
 
 	json in_args = json({});
 
