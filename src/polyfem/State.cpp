@@ -342,6 +342,41 @@ namespace polyfem
 		basis_integrals -= rhs;
 	}
 
+	bool State::iso_parametric() const
+	{
+		if (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
+			return true;
+
+		if (args["space"]["advanced"]["use_spline"])
+			return true;
+
+		if (mesh->is_rational())
+			return false;
+
+		if (args["space"]["use_p_ref"])
+			return false;
+
+		if (mesh->orders().size() <= 0)
+		{
+			if (args["space"]["discr_order"] == 1)
+				return true;
+			else
+				return args["space"]["advanced"]["isoparametric"];
+		}
+
+		if (mesh->orders().minCoeff() != mesh->orders().maxCoeff())
+			return false;
+
+		if (args["space"]["discr_order"] == mesh->orders().minCoeff())
+			return true;
+
+		//TODO?
+		// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
+		// 	return true;
+
+		return args["space"]["advanced"]["isoparametric"];
+	}
+
 	void State::build_basis()
 	{
 		if (!mesh)

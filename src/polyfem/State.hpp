@@ -79,7 +79,10 @@ namespace polyfem
 	class State
 	{
 	public:
-		//-----------------initializtion
+		//---------------------------------------------------
+		//-----------------initializtion----------------------------------
+		//---------------------------------------------------
+
 		~State() = default;
 		/// Constructor
 		/// @param[in] max_threads max number of threads
@@ -93,7 +96,10 @@ namespace polyfem
 		/// main input arguments containing all defaults
 		json args;
 
-		//-----------------logger
+		//---------------------------------------------------
+		//-----------------logger----------------------------------
+		//---------------------------------------------------
+
 		/// initalizing the logger
 		/// @param[in] log_file is to write it to a file (use log_file="") to output to consolle
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
@@ -140,7 +146,10 @@ namespace polyfem
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 
-		//-----------------assembly
+		//---------------------------------------------------
+		//-----------------assembly----------------------------------
+		//---------------------------------------------------
+
 		/// assembler, it dispatches call to the differnt assembers based on the formulation
 		assembler::AssemblerUtils assembler;
 		/// current problem, it contains rhs and bc
@@ -191,6 +200,14 @@ namespace polyfem
 		/// number of pressure bases
 		int n_pressure_bases;
 
+		/// return the formulation (checks if the problem is scalar or not and delas wih multiphisics)
+		/// @return fomulation
+		std::string formulation() const;
+
+		/// check if using iso parametric bases
+		/// @return if basis are isoparametric
+		bool iso_parametric() const;
+
 		/// builds the bases step 2 of solve
 		void build_basis();
 		/// compute rhs, step 3 of solve
@@ -198,7 +215,29 @@ namespace polyfem
 		/// assemble matrices, step 4 of solve
 		void assemble_stiffness_mat();
 
-		//-----------------solver
+		/// quadrature used for projecting boundary conditions
+		/// @return the quadrature used for projecting boundary conditions
+		int n_boundary_samples() const
+		{
+			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
+			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
+			//TODO verify me
+			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
+
+			return n_b_samples;
+		}
+
+		/// compute a priori prefinement in 2d, fills disc_orders
+		/// @param[in] mesh2d mesh
+		void p_refinement(const mesh::Mesh2D &mesh2d);
+		/// compute a priori prefinement in 3d, fills disc_orders
+		/// @param[in] mesh2d mesh
+		void p_refinement(const mesh::Mesh3D &mesh3d);
+
+		//---------------------------------------------------
+		//-----------------solver----------------------------------
+		//---------------------------------------------------
+
 		/// solves the proble, step 5
 		void solve_problem();
 		/// solves the problem, call other methods
@@ -272,7 +311,15 @@ namespace polyfem
 		/// solves nonlinear problems
 		void solve_non_linear();
 
-		//-----------------nodes flags
+		/// factory to create the nl solver depdending on input
+		/// @return non linear solver (eg newton or LBFGS)
+		template <typename ProblemType>
+		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
+
+		//---------------------------------------------------
+		//-----------------nodes flags----------------------------------
+		//---------------------------------------------------
+
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -289,7 +336,10 @@ namespace polyfem
 		/// stores if input json contains dhat
 		bool has_dhat = false;
 
-		//-----------------Geometry
+		//---------------------------------------------------
+		//-----------------Geometry----------------------------------
+		//---------------------------------------------------
+
 		/// current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<mesh::Mesh> mesh;
 		/// Obstacles used in collisions
@@ -351,7 +401,10 @@ namespace polyfem
 		/// parent element used to track refinements
 		std::vector<int> parent_elements;
 
-		//-----------------IPC
+		//---------------------------------------------------
+		//-----------------IPC----------------------------------
+		//---------------------------------------------------
+
 		/// boundary mesh used for collision
 		/// boundary_nodes_pos contains the total number of nodes, the internal ones are zero
 		/// for high-order fem the faces are triangulated
@@ -378,11 +431,22 @@ namespace polyfem
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles) const;
 
+		/// checks if vertex is obstacle
+		/// @param[in] vi vertex indes
+		/// @return if vertex is obstalce
+		bool is_obstacle_vertex(const size_t vi) const
+		{
+			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
+		}
+
 		// Eigen::MatrixXd boundary_nodes_pos_pressure;
 		// Eigen::MatrixXi boundary_edges_pressure;
 		// Eigen::MatrixXi boundary_triangles_pressure;
 
-		//-----------------OUTPUT
+		//---------------------------------------------------
+		//-----------------OUTPUT----------------------------------
+		//---------------------------------------------------
+
 		/// boundary visualization mesh vertices
 		Eigen::MatrixXd boundary_vis_vertices;
 		/// boundary visualization mesh vertices pre image in ref element
@@ -485,6 +549,15 @@ namespace polyfem
 		/// saves all data on the disk according to the input params
 		void export_data();
 
+		/// saves the output statistic to a stream
+		/// @param[in] out stream to write output
+		void save_json(std::ostream &out);
+		/// saves the output statistic to a json object
+		/// @param[in] j output json
+		void save_json(nlohmann::json &j);
+		/// saves the output statistic to disc accoding to params
+		void save_json();
+
 		/// evaluates the function fun at the vertices on the mesh
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		/// @param[in] basis basis function
@@ -574,55 +647,108 @@ namespace polyfem
 		/// @param[in] compute_avg if compute the average across elements
 		/// @param[out] result resulting value
 		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
-		//computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
+		/// computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[out] result resulting value
 		void interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
-		//computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
-		//disp is the displacement of the surface vertices
+		/// computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
+		/// disp is the displacement of the surface vertices
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[in] disp displacement to deform mesh
+		/// @param[in] compute_avg if compute the average across elements
+		/// @param[out] result resulting value
+		/// @param[out] stresses resulting stresses
+		/// @param[out] mises resulting mises
+		/// @param[in] skip_orientation skip reorientation of surface
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, const bool skip_orientation = false);
-		//same as above with disp=0
+		/// same as interpolate_boundary_tensor_function with disp=0
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[in] compute_avg if compute the average across elements
+		/// @param[out] result resulting value
+		/// @param[out] stresses resulting stresses
+		/// @param[out] mises resulting mises
+		/// @param[in] skip_orientation skip reorientation of surface
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, const bool skip_orientation = false);
 
-		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
+		/// returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[out] sidesets resulting sidesets
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
 
+		//-----------PATH management
 		/// Get the root path for the state (e.g., args["root_path"] or ".")
+		/// @return root path
 		std::string root_path() const;
-		/// Resolve path relative to root_path() if the path is not absolute.
+		/// Resolve input path relative to root_path() if the path is not absolute.
+		/// @param[in] path path to resolve
+		/// @param[in] only_if_exists resolve only if relative path exists
+		/// @return path
 		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
-		/// Resolve path relative to output_dir if the path is not absolute
+		/// Resolve output path relative to output_dir if the path is not absolute
+		/// @param[in] path path to resolve
+		/// @return resolvedpath
 		std::string resolve_output_path(const std::string &path) const;
 
-		/// saves the output statistic to a stream
-		void save_json(std::ostream &out);
-		//saves the output statistic to a json object
-		void save_json(nlohmann::json &j);
-		//saves the output statistic to disc accoding to params
-		void save_json();
-
-		//compute stats (counts els type, mesh lenght, etc), step 1 of solve
+		/// compute stats (counts els type, mesh lenght, etc), step 1 of solve
 		void compute_mesh_stats();
 
-		//builds visualzation mesh, upsampled mesh used for visualization
-		//the visualization mesh is a dense mesh per element all disconnected
-		//it also retuns the mapping to element id and discretization of every elment
-		//works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// builds visualzation mesh, upsampled mesh used for visualization
+		/// the visualization mesh is a dense mesh per element all disconnected
+		/// it also retuns the mapping to element id and discretization of every elment
+		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// @param[out] points mesh points
+		/// @param[out] tets mesh cells
+		/// @param[out] el_id mapping from points to elements id
+		/// @param[out] discr mapping from points to discretization order
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
+		/// builds high-der visualzation mesh per element all disconnected
+		/// it also retuns the mapping to element id and discretization of every elment
+		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// @param[out] points mesh points
+		/// @param[out] elements mesh high-order cells
+		/// @param[out] el_id mapping from points to elements id
+		/// @param[out] discr mapping from points to discretization order
 		void build_high_oder_vis_mesh(Eigen::MatrixXd &points, std::vector<std::vector<int>> &elements, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
 
-		//saves the vtu file for time t
+		/// saves the vtu file for time t
+		/// @param[in] name filename
+		/// @param[in] t time
 		void save_vtu(const std::string &name, const double t);
-		//saves the volume vtu file
+		/// saves the volume vtu file
+		/// @param[in] name filename
+		/// @param[in] t time
 		void save_volume(const std::string &path, const double t);
-		//saves the surface vtu file for for surface quantites, eg traction forces
+		/// saves the surface vtu file for for surface quantites, eg traction forces
+		/// @param[in] name filename
+		/// @param[in] t time
 		void save_surface(const std::string &name);
-		//saves an obj of the wireframe
+		///saves the wireframe
+		/// @param[in] name filename
+		/// @param[in] t time
 		void save_wire(const std::string &name, const double t);
-		// save a PVD of a time dependent simulation
+		/// save a PVD of a time dependent simulation
+		/// @param[in] name filename
+		/// @param[in] vtu_names names of the vtu files
+		/// @param[in] time_steps total time stesp
+		/// @param[in] t0 initial time
+		/// @param[in] dt delta t
+		/// @param[in] skip_frame every which frame to skip
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
-		// saves a timestep
+		/// saves a timestep
+		/// @param[in] time time in secs
+		/// @param[in] t time indes
+		/// @param[in] t0 initial time
+		/// @param[in] dt delta t
 		void save_timestep(const double time, const int t, const double t0, const double dt);
 
-		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
+		/// samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			//TODO fix me TESEO
@@ -637,7 +763,7 @@ namespace polyfem
 			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
-		//samples to stess tensor on the visualization mesh and return them (fun)
+		/// samples to stess tensor on the visualization mesh and return them (fun)
 		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			//TODO fix me TESEO
@@ -654,7 +780,7 @@ namespace polyfem
 			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
-		//samples to von mises stesses on the visualization mesh and return them (fun)
+		/// samples to von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			//TODO fix me TESEO
@@ -671,7 +797,7 @@ namespace polyfem
 			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
-		//samples to averaged von mises stesses on the visualization mesh and return them (fun)
+		/// samples to averaged von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
 		{
 			//TODO fix me TESEO
@@ -688,74 +814,14 @@ namespace polyfem
 			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
-		//return the formulation (checks if the problem is scalar or not)
-		std::string formulation() const;
-
-		//check if using iso parametric bases
-		inline bool iso_parametric() const
-		{
-			if (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
-				return true;
-
-			if (args["space"]["advanced"]["use_spline"])
-				return true;
-
-			if (mesh->is_rational())
-				return false;
-
-			if (args["space"]["use_p_ref"])
-				return false;
-
-			if (mesh->orders().size() <= 0)
-			{
-				if (args["space"]["discr_order"] == 1)
-					return true;
-				else
-					return args["space"]["advanced"]["isoparametric"];
-			}
-
-			if (mesh->orders().minCoeff() != mesh->orders().maxCoeff())
-				return false;
-
-			if (args["space"]["discr_order"] == mesh->orders().minCoeff())
-				return true;
-
-			//TODO?
-			// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
-			// 	return true;
-
-			return args["space"]["advanced"]["isoparametric"];
-		}
-
-		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
-
-		//compute a priori prefinement in 2d and 3d, fills disc_orders
-		void p_refinement(const mesh::Mesh2D &mesh2d);
-		void p_refinement(const mesh::Mesh3D &mesh3d);
-
-		bool is_obstacle_vertex(const size_t vi) const
-		{
-			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
-		}
-
-		int n_boundary_samples() const
-		{
-			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			//TODO verify me
-			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
-
-			return n_b_samples;
-		}
-
 	private:
-		//splits the solution in solution and pressure for mixed problems
+		/// splits the solution in solution and pressure for mixed problems
 		void sol_to_pressure();
-		//builds bases for polygons, called inside build_basis
+		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
 #ifdef POLYFEM_WITH_TBB
+		/// limits the number of used threads
 		std::shared_ptr<tbb::global_control> thread_limiter;
 #endif
 	};
