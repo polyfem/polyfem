@@ -8,16 +8,11 @@ var dir_15d4893607df4bf7106bb9ed16128612 =
     [ "Mesh.cpp", "_mesh_8cpp.html", null ],
     [ "Mesh.hpp", "_mesh_8hpp.html", "_mesh_8hpp" ],
     [ "MeshNodes.cpp", "_mesh_nodes_8cpp.html", null ],
-    [ "MeshNodes.hpp", "_mesh_nodes_8hpp.html", [
-      [ "MeshNodes", "classpolyfem_1_1mesh_1_1_mesh_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_nodes" ]
-    ] ],
+    [ "MeshNodes.hpp", "_mesh_nodes_8hpp.html", "_mesh_nodes_8hpp" ],
     [ "MeshUtils.cpp", "_mesh_utils_8cpp.html", "_mesh_utils_8cpp" ],
     [ "MeshUtils.hpp", "_mesh_utils_8hpp.html", "_mesh_utils_8hpp" ],
     [ "Obstacle.cpp", "_obstacle_8cpp.html", null ],
-    [ "Obstacle.hpp", "_obstacle_8hpp.html", [
-      [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", "classpolyfem_1_1mesh_1_1_obstacle" ],
-      [ "Plane", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane" ]
-    ] ],
+    [ "Obstacle.hpp", "_obstacle_8hpp.html", "_obstacle_8hpp" ],
     [ "VTUWriter.cpp", "_v_t_u_writer_8cpp.html", null ],
     [ "VTUWriter.hpp", "_v_t_u_writer_8hpp.html", "_v_t_u_writer_8hpp" ]
 ];

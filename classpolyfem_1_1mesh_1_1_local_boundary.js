@@ -11,7 +11,7 @@ var classpolyfem_1_1mesh_1_1_local_boundary =
     [ "remove_tag_for_index", "classpolyfem_1_1mesh_1_1_local_boundary.html#a6e9f77a7c97e66f73195d78f41124b2d", null ],
     [ "size", "classpolyfem_1_1mesh_1_1_local_boundary.html#a958c24908487b959468e380dccb42644", null ],
     [ "type", "classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b", null ],
-    [ "operator<<", "classpolyfem_1_1mesh_1_1_local_boundary.html#a8d95903264ba70b97ff9268d560eb680", null ],
+    [ "operator<<", "classpolyfem_1_1mesh_1_1_local_boundary.html#a5c303952742fa254b3e5ccd998928ec7", null ],
     [ "counter_", "classpolyfem_1_1mesh_1_1_local_boundary.html#ac988b1b24bcb27c263f3b1e4cca8a34d", null ],
     [ "global_element_id_", "classpolyfem_1_1mesh_1_1_local_boundary.html#a3243a8c158121e32492682332726f840", null ],
     [ "global_primitive_id_", "classpolyfem_1_1mesh_1_1_local_boundary.html#a798235b3c3624c42e89a456295ceee6b", null ],

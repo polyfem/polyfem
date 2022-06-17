@@ -30,7 +30,7 @@ var classpolyfem_1_1_u_i_state =
     [ "color_mesh", "classpolyfem_1_1_u_i_state.html#a4670881204faabc68425384eb11973a9", null ],
     [ "compute_errors", "classpolyfem_1_1_u_i_state.html#a6fe7fd0b449f73978592e8ebfe1b0190", null ],
     [ "data", "classpolyfem_1_1_u_i_state.html#a1558372e7119599777410d542193f51b", null ],
-    [ "debug_data", "classpolyfem_1_1_u_i_state.html#a404330d8b2c92dd882016bc7b92b9eef", null ],
+    [ "debug_data", "classpolyfem_1_1_u_i_state.html#a332750eafb59c4851c47782b4748ab65", null ],
     [ "draw_debug", "classpolyfem_1_1_u_i_state.html#a2396a61f7c7560c589190268e78843d5", null ],
     [ "draw_elasticity_bc", "classpolyfem_1_1_u_i_state.html#a8c45a310bd98789b4f6582373fbe444f", null ],
     [ "draw_menu", "classpolyfem_1_1_u_i_state.html#a7be715bd0081e1407aa191b3aa30d5fd", null ],

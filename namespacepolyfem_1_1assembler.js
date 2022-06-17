@@ -33,5 +33,7 @@ var namespacepolyfem_1_1assembler =
     [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity" ],
     [ "StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", "classpolyfem_1_1assembler_1_1_stokes_mixed" ],
     [ "StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", "classpolyfem_1_1assembler_1_1_stokes_pressure" ],
-    [ "StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_stokes_velocity" ]
+    [ "StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_stokes_velocity" ],
+    [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
+    [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
 ];

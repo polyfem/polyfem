@@ -12,43 +12,43 @@
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#bfbfbf" stroke="black" points="79,-67.5 79,-97.5 225,-97.5 225,-67.5 79,-67.5"/>
-<text text-anchor="start" x="87" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/function</text>
-<text text-anchor="middle" x="152" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">/QuadraticBSpline3d.hpp</text>
+<polygon fill="#bfbfbf" stroke="black" points="74,-67.5 74,-97.5 220,-97.5 220,-67.5 74,-67.5"/>
+<text text-anchor="start" x="82" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/function</text>
+<text text-anchor="middle" x="147" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">/QuadraticBSpline3d.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_quadratic_b_spline3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="0,-0.5 0,-30.5 146,-30.5 146,-0.5 0,-0.5"/>
-<text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/function</text>
-<text text-anchor="middle" x="73" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">/QuadraticBSpline3d.cpp</text>
+<g id="a_node2"><a xlink:href="_spline_basis3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="0,-0.5 0,-30.5 136,-30.5 136,-0.5 0,-0.5"/>
+<text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Spline</text>
+<text text-anchor="middle" x="68" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="midnightblue" d="M126.94,-60.88C114.94,-51.01 100.87,-39.43 90.11,-30.58"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="124.91,-63.75 134.86,-67.4 129.36,-58.34 124.91,-63.75"/>
+<path fill="none" stroke="midnightblue" d="M121.94,-60.88C109.94,-51.01 95.87,-39.43 85.11,-30.58"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="119.91,-63.75 129.86,-67.4 124.36,-58.34 119.91,-63.75"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_spline_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="164,-0.5 164,-30.5 300,-30.5 300,-0.5 164,-0.5"/>
-<text text-anchor="start" x="172" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Spline</text>
-<text text-anchor="middle" x="232" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
+<g id="a_node3"><a xlink:href="_quadratic_b_spline3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="154,-0.5 154,-30.5 300,-30.5 300,-0.5 154,-0.5"/>
+<text text-anchor="start" x="162" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/function</text>
+<text text-anchor="middle" x="227" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">/QuadraticBSpline3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="midnightblue" d="M177.37,-60.88C189.53,-51.01 203.78,-39.43 214.68,-30.58"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="174.91,-58.37 169.36,-67.4 179.33,-63.81 174.91,-58.37"/>
+<path fill="none" stroke="midnightblue" d="M172.37,-60.88C184.53,-51.01 198.78,-39.43 209.68,-30.58"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="169.91,-58.37 164.36,-67.4 174.33,-63.81 169.91,-58.37"/>
 </g>
 </g>
 </svg>

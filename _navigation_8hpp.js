@@ -1,6 +1,6 @@
 var _navigation_8hpp =
 [
-    [ "Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation_1_1_index" ],
+    [ "polyfem::mesh::Navigation::Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation_1_1_index" ],
     [ "get_index_from_face", "_navigation_8hpp.html#a1b9d2ef721df947c3827b416016918fd", null ],
     [ "next_around_edge", "_navigation_8hpp.html#aaf5d4f00cc4dd68391471af5a598b1dd", null ],
     [ "next_around_face", "_navigation_8hpp.html#a7d6b7789d9155623da6a8ec00c3086ec", null ],

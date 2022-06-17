@@ -1,6 +1,6 @@
 var _navigation3_d_8hpp =
 [
-    [ "Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index" ],
+    [ "polyfem::mesh::Navigation3D::Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index" ],
     [ "get_index_from_element_edge", "_navigation3_d_8hpp.html#a607e035b18f148e24b45c2943699c2a0", null ],
     [ "get_index_from_element_face", "_navigation3_d_8hpp.html#a51ba1bb8ce325cc20213ffe364f87ab8", null ],
     [ "get_index_from_element_face", "_navigation3_d_8hpp.html#aa975a13eb914b8249046475137f6ffd5", null ],

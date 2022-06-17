@@ -19,7 +19,7 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "is_scalar", "classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec", null ],
     [ "is_time_dependent", "classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923", null ],
     [ "might_have_no_dirichlet", "classpolyfem_1_1assembler_1_1_problem.html#aa5e9069b4bf80363dc85825bee00bf1e", null ],
-    [ "name", "classpolyfem_1_1assembler_1_1_problem.html#a24299bf4ccea3e256756f77939678492", null ],
+    [ "name", "classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c", null ],
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_problem.html#a0a756bb1ea13fad6a955c9b5a884cba9", null ],
     [ "rhs", "classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0", null ],

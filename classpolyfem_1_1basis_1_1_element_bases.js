@@ -16,7 +16,7 @@ var classpolyfem_1_1basis_1_1_element_bases =
     [ "set_grads_func", "classpolyfem_1_1basis_1_1_element_bases.html#aa5af92cc96cae3fdb89dbbaf20524f33", null ],
     [ "set_local_node_from_primitive_func", "classpolyfem_1_1basis_1_1_element_bases.html#a4d8eaf01d57981f0e7449692a742ceb4", null ],
     [ "set_quadrature", "classpolyfem_1_1basis_1_1_element_bases.html#a2f199c4f37379930fb492028060f9a1c", null ],
-    [ "operator<<", "classpolyfem_1_1basis_1_1_element_bases.html#ae632007f9317ed5883533f791dbc3aa4", null ],
+    [ "operator<<", "classpolyfem_1_1basis_1_1_element_bases.html#afa8d9280d20122cc31eda26ff6b1ae32", null ],
     [ "bases", "classpolyfem_1_1basis_1_1_element_bases.html#ab3e049455c895d613294cfd10a1bbd9e", null ],
     [ "eval_bases_func_", "classpolyfem_1_1basis_1_1_element_bases.html#a4e780b2e0aa26209bd5ed6e60e841ba8", null ],
     [ "eval_grads_func_", "classpolyfem_1_1basis_1_1_element_bases.html#af991f80d3057d11973733b07f13e644d", null ],

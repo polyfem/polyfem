@@ -12,72 +12,72 @@
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#bfbfbf" stroke="black" points="263.5,-67.5 263.5,-86.5 440.5,-86.5 440.5,-67.5 263.5,-67.5"/>
-<text text-anchor="middle" x="352" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.hpp</text>
+<polygon fill="#bfbfbf" stroke="black" points="232,-67.5 232,-86.5 409,-86.5 409,-67.5 232,-67.5"/>
+<text text-anchor="middle" x="320.5" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_f_e_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="0,-6 0,-25 176,-25 176,-6 0,-6"/>
-<text text-anchor="middle" x="88" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.cpp</text>
+<g id="a_node2"><a xlink:href="_state_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="0,-6 0,-25 123,-25 123,-6 0,-6"/>
+<text text-anchor="middle" x="61.5" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/State.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="midnightblue" d="M304.34,-65.26C253.13,-53.72 172.77,-35.61 125.75,-25.01"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="303.65,-68.69 314.18,-67.48 305.19,-61.86 303.65,-68.69"/>
+<path fill="none" stroke="midnightblue" d="M273.43,-65.19C223.17,-53.64 144.57,-35.58 98.54,-25.01"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="272.86,-68.65 283.39,-67.48 274.43,-61.82 272.86,-68.65"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_polygonal_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="194,-0.5 194,-30.5 348,-30.5 348,-0.5 194,-0.5"/>
-<text text-anchor="start" x="202" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Polygonal</text>
-<text text-anchor="middle" x="271" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
+<g id="a_node3"><a xlink:href="_f_e_basis3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="141.5,-6 141.5,-25 317.5,-25 317.5,-6 141.5,-6"/>
+<text text-anchor="middle" x="229.5" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="midnightblue" d="M332.22,-61.47C319.39,-52.05 302.77,-39.84 290.09,-30.52"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="330.26,-64.38 340.39,-67.48 334.41,-58.73 330.26,-64.38"/>
+<path fill="none" stroke="midnightblue" d="M298.98,-61.93C281.44,-50.46 257.23,-34.63 242.51,-25.01"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="297.18,-64.93 307.46,-67.48 301.01,-59.07 297.18,-64.93"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="_spline_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="366,-0.5 366,-30.5 502,-30.5 502,-0.5 366,-0.5"/>
-<text text-anchor="start" x="374" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Spline</text>
-<text text-anchor="middle" x="434" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
+<g id="a_node4"><a xlink:href="_polygonal_basis3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="335.5,-0.5 335.5,-30.5 489.5,-30.5 489.5,-0.5 335.5,-0.5"/>
+<text text-anchor="start" x="343.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Polygonal</text>
+<text text-anchor="middle" x="412.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="midnightblue" d="M372.03,-61.47C385.01,-52.05 401.83,-39.84 414.67,-30.52"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="369.79,-58.77 363.75,-67.48 373.9,-64.43 369.79,-58.77"/>
+<path fill="none" stroke="midnightblue" d="M342.13,-62.01C356.81,-52.52 376.13,-40.02 390.82,-30.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="340.18,-59.11 333.68,-67.48 343.98,-64.98 340.18,-59.11"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="_state_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="520.5,-6 520.5,-25 643.5,-25 643.5,-6 520.5,-6"/>
-<text text-anchor="middle" x="582" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/State.cpp</text>
+<g id="a_node5"><a xlink:href="_spline_basis3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="507.5,-0.5 507.5,-30.5 643.5,-30.5 643.5,-0.5 507.5,-0.5"/>
+<text text-anchor="start" x="515.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Spline</text>
+<text text-anchor="middle" x="575.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node1&#45;&gt;Node5</title>
-<path fill="none" stroke="midnightblue" d="M394.64,-64.97C439.3,-53.41 508.49,-35.52 549.11,-25.01"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="393.76,-61.58 384.95,-67.48 395.51,-68.36 393.76,-61.58"/>
+<path fill="none" stroke="midnightblue" d="M366.92,-65.17C408.59,-55.45 470,-41.12 515.4,-30.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="365.98,-61.79 357.04,-67.48 367.57,-68.61 365.98,-61.79"/>
 </g>
 </g>
 </svg>

@@ -1,7 +1,7 @@
 var p__bases_8py =
 [
-    [ "ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", "classp__bases_1_1_reference_simplex" ],
-    [ "Lagrange", "classp__bases_1_1_lagrange.html", "classp__bases_1_1_lagrange" ],
+    [ "p_bases.ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", "classp__bases_1_1_reference_simplex" ],
+    [ "p_bases.Lagrange", "classp__bases_1_1_lagrange.html", "classp__bases_1_1_lagrange" ],
     [ "bernstein_space", "p__bases_8py.html#acd38449a04a9542e513ea3393a28044b", null ],
     [ "create_matrix", "p__bases_8py.html#aef49fb5f34197f17e36c704e503d9616", null ],
     [ "create_point_set", "p__bases_8py.html#ad00f58e23bcb0a65e9d8f3f34f8fd55c", null ],

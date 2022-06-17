@@ -17,5 +17,7 @@ var namespacepolyfem_1_1basis =
     [ "RBFWithQuadraticLagrange", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange" ],
     [ "SpectralBasis2d", "classpolyfem_1_1basis_1_1_spectral_basis2d.html", null ],
     [ "SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
-    [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ]
+    [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
+    [ "compute_epsilon", "namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482", null ],
+    [ "compute_epsilon", "namespacepolyfem_1_1basis.html#a05c9a37e7bf673cecb9e7961ec47f656", null ]
 ];

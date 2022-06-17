@@ -1,7 +1,7 @@
 var q__bases_8py =
 [
-    [ "ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", "classq__bases_1_1_reference_simplex" ],
-    [ "Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],
+    [ "q_bases.ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", "classq__bases_1_1_reference_simplex" ],
+    [ "q_bases.Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],
     [ "create_point_set", "q__bases_8py.html#a13209816834bfbd803ab75e13798ac1f", null ],
     [ "parse_args", "q__bases_8py.html#ae12d70eb9f96c650569661316f3133ca", null ],
     [ "args", "q__bases_8py.html#a2360a2c83912aad89610988623a146a4", null ],

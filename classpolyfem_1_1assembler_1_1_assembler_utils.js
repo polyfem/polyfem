@@ -14,7 +14,7 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "init_multimaterial", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a8f9ae31d73fc6142ebeea37193f1a38f", null ],
     [ "init_multimodels", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a0998defe6831960aa8ce69168a866539", null ],
     [ "kernel", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aac5bf54ebb15b1a41efe23cf78792f4b", null ],
-    [ "lame_params", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aab050a2ac56075b3977bf4ebf3f42997", null ],
+    [ "lame_params", "classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13", null ],
     [ "local_assemble", "classpolyfem_1_1assembler_1_1_assembler_utils.html#af89a5ecea1a6e133a1227d1122305ef8", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a3b63723d939898c8f2b1c26d2774eb56", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_assembler_utils.html#abe2f8c1cf59acdc177b302c605cce350", null ],

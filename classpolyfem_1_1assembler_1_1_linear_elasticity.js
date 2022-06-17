@@ -13,7 +13,7 @@ var classpolyfem_1_1assembler_1_1_linear_elasticity =
     [ "compute_von_mises_stresses", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#ab9ebf6310a4fb9ead16155261b30a3c1", null ],
     [ "init_multimaterial", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#ac2d418d0b920c97517f4af7735eeba4a", null ],
     [ "kernel", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a1c21d8e3de03d6cde3b56691da004c1f", null ],
-    [ "lame_params", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a0a63ac61bc84544071fe5f3458dc5740", null ],
+    [ "lame_params", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a8688b72c40c17e4f2043cf1d392f0b9e", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a03f827ebe001ce25a50f967ddb9ad6ce", null ],
     [ "set_params", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a6ed0d51fb66d2fe3c92d3d4ea7d106ca", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_linear_elasticity.html#a4d10ce132b69d8a5046481b00fbe47e1", null ],

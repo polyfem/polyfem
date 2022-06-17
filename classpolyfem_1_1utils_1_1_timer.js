@@ -6,7 +6,7 @@ var classpolyfem_1_1utils_1_1_timer =
     [ "Timer", "classpolyfem_1_1utils_1_1_timer.html#a3654668bd2c2c9fa7a7ac7f32d1dab79", null ],
     [ "~Timer", "classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e", null ],
     [ "getElapsedTimeInSec", "classpolyfem_1_1utils_1_1_timer.html#aec21b389df0af88d3a382b957d693f82", null ],
-    [ "igl_timer", "classpolyfem_1_1utils_1_1_timer.html#a24cc60a6fd520992e975ded88abba23b", null ],
+    [ "igl_timer", "classpolyfem_1_1utils_1_1_timer.html#a1127efc8c59a3168b03938b9986cec2d", null ],
     [ "log_msg", "classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492", null ],
     [ "start", "classpolyfem_1_1utils_1_1_timer.html#ae53a5ca589deb3dc3ac8a562c1aaac96", null ],
     [ "stop", "classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8", null ],

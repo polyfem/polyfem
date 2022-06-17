@@ -12,44 +12,44 @@
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#bfbfbf" stroke="black" points="93,-0.5 93,-30.5 257,-30.5 257,-0.5 93,-0.5"/>
-<text text-anchor="start" x="101" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::PointBased</text>
-<text text-anchor="middle" x="175" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">TensorProblem::BCValue</text>
+<polygon fill="#bfbfbf" stroke="black" points="81.5,-0.5 81.5,-30.5 245.5,-30.5 245.5,-0.5 81.5,-0.5"/>
+<text text-anchor="start" x="89.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::PointBased</text>
+<text text-anchor="middle" x="163.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">TensorProblem::BCValue</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="0,-84 0,-103 172,-103 172,-84 0,-84"/>
-<text text-anchor="middle" x="86" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::RBFInterpolation</text>
+<g id="a_node2"><a xlink:href="classpolyfem_1_1utils_1_1_interpolated_function2d.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="0,-78.5 0,-108.5 149,-108.5 149,-78.5 0,-78.5"/>
+<text text-anchor="start" x="8" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Interpolated</text>
+<text text-anchor="middle" x="74.5" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">Function2d</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
 <g id="edge1" class="edge">
 <title>Node2&#45;&gt;Node1</title>
-<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M103.82,-77.28C119.8,-63.64 143.05,-43.78 158.58,-30.52"/>
-<polygon fill="#9a32cd" stroke="#9a32cd" points="101.54,-74.63 96.21,-83.78 106.09,-79.95 101.54,-74.63"/>
-<text text-anchor="middle" x="157.5" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00"> rbf_func</text>
+<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M99.22,-71.39C114.4,-58.43 133.43,-42.18 146.83,-30.73"/>
+<polygon fill="#9a32cd" stroke="#9a32cd" points="96.57,-69.05 91.24,-78.2 101.12,-74.37 96.57,-69.05"/>
+<text text-anchor="middle" x="144.5" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00"> tri_func</text>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1utils_1_1_interpolated_function2d.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="190.5,-78.5 190.5,-108.5 339.5,-108.5 339.5,-78.5 190.5,-78.5"/>
-<text text-anchor="start" x="198.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Interpolated</text>
-<text text-anchor="middle" x="265" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">Function2d</text>
+<g id="a_node3"><a xlink:href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="167.5,-84 167.5,-103 339.5,-103 339.5,-84 167.5,-84"/>
+<text text-anchor="middle" x="253.5" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::RBFInterpolation</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node1 -->
 <g id="edge2" class="edge">
 <title>Node3&#45;&gt;Node1</title>
-<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M240.01,-71.39C224.66,-58.43 205.41,-42.18 191.85,-30.73"/>
-<polygon fill="#9a32cd" stroke="#9a32cd" points="238.17,-74.43 248.07,-78.2 242.69,-69.08 238.17,-74.43"/>
-<text text-anchor="middle" x="245" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00"> tri_func</text>
+<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M235.48,-77.28C219.32,-63.64 195.81,-43.78 180.1,-30.52"/>
+<polygon fill="#9a32cd" stroke="#9a32cd" points="233.28,-80 243.18,-83.78 237.79,-74.66 233.28,-80"/>
+<text text-anchor="middle" x="235" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00"> rbf_func</text>
 </g>
 </g>
 </svg>

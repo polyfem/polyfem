@@ -1,9 +1,9 @@
 var _mesh_8hpp =
 [
-    [ "Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", "classpolyfem_1_1mesh_1_1_mesh" ],
-    [ "EdgeNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes" ],
-    [ "FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes" ],
-    [ "CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes" ],
+    [ "polyfem::mesh::Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", "classpolyfem_1_1mesh_1_1_mesh" ],
+    [ "polyfem::mesh::Mesh::EdgeNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes" ],
+    [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes" ],
+    [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes" ],
     [ "ElementType", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2", [
       [ "Simplex", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789", null ],
       [ "RegularInteriorCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba", null ],

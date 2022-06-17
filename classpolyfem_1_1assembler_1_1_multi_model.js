@@ -8,7 +8,7 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "compute_von_mises_stresses", "classpolyfem_1_1assembler_1_1_multi_model.html#aba7eaac60eb88cbce567c4c96fcf3623", null ],
     [ "init_multimaterial", "classpolyfem_1_1assembler_1_1_multi_model.html#aeae2a3ea89e20f8775f49542035c974b", null ],
     [ "init_multimodels", "classpolyfem_1_1assembler_1_1_multi_model.html#acdfedffa2ba1301ba1da351dd23a0d53", null ],
-    [ "lame_params", "classpolyfem_1_1assembler_1_1_multi_model.html#a8be1f8a76209dd80f06a93bf4207912a", null ],
+    [ "lame_params", "classpolyfem_1_1assembler_1_1_multi_model.html#a8c1f78e24b4fca369a46d75da33ed2cf", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_multi_model.html#a99533e5d9a49c5add8a8c349d84017eb", null ],
     [ "set_params", "classpolyfem_1_1assembler_1_1_multi_model.html#a8fdbfb929251559b51854c563ed94d5e", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_multi_model.html#a77ae67d7db21e6ac873e6143086f8216", null ],

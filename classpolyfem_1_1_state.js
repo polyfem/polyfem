@@ -7,7 +7,7 @@ var classpolyfem_1_1_state =
     [ "average_grad_based_function", "classpolyfem_1_1_state.html#a25700f70149e461c119febc056c7a5bb", null ],
     [ "build_basis", "classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b", null ],
     [ "build_collision_mesh", "classpolyfem_1_1_state.html#ae73637bc6b2260ba3b25d50cc9b212cc", null ],
-    [ "build_high_oder_vis_mesh", "classpolyfem_1_1_state.html#a5dd5e55e7d90fe49a5da1514afcd758e", null ],
+    [ "build_high_oder_vis_mesh", "classpolyfem_1_1_state.html#a24ca99111b65a0a8525d25150c87ea7c", null ],
     [ "build_polygonal_basis", "classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32", null ],
     [ "build_vis_mesh", "classpolyfem_1_1_state.html#ab3bfff2ae02cf0474f01425a7d813f62", null ],
     [ "check_scalar_value", "classpolyfem_1_1_state.html#af9c4b97b39589a3e6c3e9b2de4e623d5", null ],

@@ -14,10 +14,5 @@ var dir_2dc3e3ac563c5097fbf94f8f985cc10c =
     [ "Common.hpp", "_common_8hpp.html", "_common_8hpp" ],
     [ "main.cpp", "main_8cpp.html", "main_8cpp" ],
     [ "State.cpp", "_state_8cpp.html", "_state_8cpp" ],
-    [ "State.hpp", "_state_8hpp.html", [
-      [ "NonlinearSolver", "classcppoptlib_1_1_nonlinear_solver.html", "classcppoptlib_1_1_nonlinear_solver" ],
-      [ "SolutionFrame", "classpolyfem_1_1_solution_frame.html", "classpolyfem_1_1_solution_frame" ],
-      [ "StepData", "classpolyfem_1_1_step_data.html", "classpolyfem_1_1_step_data" ],
-      [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ]
-    ] ]
+    [ "State.hpp", "_state_8hpp.html", "_state_8hpp" ]
 ];

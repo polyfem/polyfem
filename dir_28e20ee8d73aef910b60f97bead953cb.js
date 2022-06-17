@@ -1,34 +1,18 @@
 var dir_28e20ee8d73aef910b60f97bead953cb =
 [
     [ "HexQuadrature.cpp", "_hex_quadrature_8cpp.html", null ],
-    [ "HexQuadrature.hpp", "_hex_quadrature_8hpp.html", [
-      [ "HexQuadrature", "classpolyfem_1_1quadrature_1_1_hex_quadrature.html", "classpolyfem_1_1quadrature_1_1_hex_quadrature" ]
-    ] ],
+    [ "HexQuadrature.hpp", "_hex_quadrature_8hpp.html", "_hex_quadrature_8hpp" ],
     [ "LineQuadrature.cpp", "_line_quadrature_8cpp.html", null ],
-    [ "LineQuadrature.hpp", "_line_quadrature_8hpp.html", [
-      [ "LineQuadrature", "classpolyfem_1_1quadrature_1_1_line_quadrature.html", "classpolyfem_1_1quadrature_1_1_line_quadrature" ]
-    ] ],
+    [ "LineQuadrature.hpp", "_line_quadrature_8hpp.html", "_line_quadrature_8hpp" ],
     [ "PolygonQuadrature.cpp", "_polygon_quadrature_8cpp.html", null ],
-    [ "PolygonQuadrature.hpp", "_polygon_quadrature_8hpp.html", [
-      [ "PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", "classpolyfem_1_1quadrature_1_1_polygon_quadrature" ]
-    ] ],
+    [ "PolygonQuadrature.hpp", "_polygon_quadrature_8hpp.html", "_polygon_quadrature_8hpp" ],
     [ "PolyhedronQuadrature.cpp", "_polyhedron_quadrature_8cpp.html", null ],
-    [ "PolyhedronQuadrature.hpp", "_polyhedron_quadrature_8hpp.html", [
-      [ "PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ]
-    ] ],
+    [ "PolyhedronQuadrature.hpp", "_polyhedron_quadrature_8hpp.html", "_polyhedron_quadrature_8hpp" ],
     [ "QuadQuadrature.cpp", "_quad_quadrature_8cpp.html", null ],
-    [ "QuadQuadrature.hpp", "_quad_quadrature_8hpp.html", [
-      [ "QuadQuadrature", "classpolyfem_1_1quadrature_1_1_quad_quadrature.html", "classpolyfem_1_1quadrature_1_1_quad_quadrature" ]
-    ] ],
-    [ "Quadrature.hpp", "_quadrature_8hpp.html", [
-      [ "Quadrature", "classpolyfem_1_1quadrature_1_1_quadrature.html", "classpolyfem_1_1quadrature_1_1_quadrature" ]
-    ] ],
+    [ "QuadQuadrature.hpp", "_quad_quadrature_8hpp.html", "_quad_quadrature_8hpp" ],
+    [ "Quadrature.hpp", "_quadrature_8hpp.html", "_quadrature_8hpp" ],
     [ "TetQuadrature.cpp", "_tet_quadrature_8cpp.html", null ],
-    [ "TetQuadrature.hpp", "_tet_quadrature_8hpp.html", [
-      [ "TetQuadrature", "classpolyfem_1_1quadrature_1_1_tet_quadrature.html", "classpolyfem_1_1quadrature_1_1_tet_quadrature" ]
-    ] ],
+    [ "TetQuadrature.hpp", "_tet_quadrature_8hpp.html", "_tet_quadrature_8hpp" ],
     [ "TriQuadrature.cpp", "_tri_quadrature_8cpp.html", null ],
-    [ "TriQuadrature.hpp", "_tri_quadrature_8hpp.html", [
-      [ "TriQuadrature", "classpolyfem_1_1quadrature_1_1_tri_quadrature.html", "classpolyfem_1_1quadrature_1_1_tri_quadrature" ]
-    ] ]
+    [ "TriQuadrature.hpp", "_tri_quadrature_8hpp.html", "_tri_quadrature_8hpp" ]
 ];

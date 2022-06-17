@@ -20,34 +20,34 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_geometry_reader_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="99,-67.5 99,-97.5 255,-97.5 255,-67.5 99,-67.5"/>
-<text text-anchor="start" x="107" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/Geometry</text>
-<text text-anchor="middle" x="177" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">Reader.hpp</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
-<title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="midnightblue" d="M215.58,-126.81C207.42,-117.65 197.31,-106.3 189.49,-97.52"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="213.14,-129.34 222.41,-134.48 218.37,-124.68 213.14,-129.34"/>
-</g>
-<!-- Node3 -->
-<g id="node3" class="node">
-<title>Node3</title>
-<g id="a_node3"><a xlink:href="_geometry_reader_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_node2"><a xlink:href="_geometry_reader_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="none" stroke="black" points="0,-0.5 0,-30.5 156,-30.5 156,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/Geometry</text>
 <text text-anchor="middle" x="78" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">Reader.cpp</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node3 -->
-<g id="edge4" class="edge">
-<title>Node1&#45;&gt;Node3</title>
+<!-- Node1&#45;&gt;Node2 -->
+<g id="edge1" class="edge">
+<title>Node1&#45;&gt;Node2</title>
 <path fill="none" stroke="midnightblue" d="M144.23,-131.55C123.78,-124.87 103.89,-114.39 90,-98 74,-79.12 74.15,-48.54 75.92,-30.69"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="143.38,-134.95 153.96,-134.45 145.37,-128.24 143.38,-134.95"/>
+</g>
+<!-- Node3 -->
+<g id="node3" class="node">
+<title>Node3</title>
+<g id="a_node3"><a xlink:href="_geometry_reader_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="99,-67.5 99,-97.5 255,-97.5 255,-67.5 99,-67.5"/>
+<text text-anchor="start" x="107" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/Geometry</text>
+<text text-anchor="middle" x="177" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">Reader.hpp</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node3 -->
+<g id="edge2" class="edge">
+<title>Node1&#45;&gt;Node3</title>
+<path fill="none" stroke="midnightblue" d="M215.58,-126.81C207.42,-117.65 197.31,-106.3 189.49,-97.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="213.14,-129.34 222.41,-134.48 218.37,-124.68 213.14,-129.34"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
@@ -79,15 +79,15 @@
 <path fill="none" stroke="midnightblue" d="M263.26,-130.93C295.14,-119.37 342.43,-102.21 370.55,-92.01"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="261.7,-127.77 253.5,-134.48 264.09,-134.35 261.7,-127.77"/>
 </g>
-<!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
-<title>Node2&#45;&gt;Node3</title>
+<!-- Node3&#45;&gt;Node2 -->
+<g id="edge3" class="edge">
+<title>Node3&#45;&gt;Node2</title>
 <path fill="none" stroke="midnightblue" d="M146.89,-61.73C131.58,-51.68 113.31,-39.68 99.44,-30.58"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="145.24,-64.83 155.52,-67.4 149.08,-58.98 145.24,-64.83"/>
 </g>
-<!-- Node2&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
-<title>Node2&#45;&gt;Node4</title>
+<!-- Node3&#45;&gt;Node4 -->
+<g id="edge4" class="edge">
+<title>Node3&#45;&gt;Node4</title>
 <path fill="none" stroke="midnightblue" d="M206.69,-61.81C225.23,-49.51 248.16,-34.3 262.17,-25.01"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="204.66,-58.95 198.26,-67.4 208.53,-64.79 204.66,-58.95"/>
 </g>
