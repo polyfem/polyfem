@@ -1102,7 +1102,8 @@ namespace polyfem
 			block->SetAttribute("name", "Volume");
 			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
 			dataset->SetAttribute("name", "data");
-			dataset->SetAttribute("file", fs_path.filename().c_str());
+			const std::string tmp(fs_path.filename().string());
+			dataset->SetAttribute("file", tmp.c_str());
 		}
 
 		if (export_surface)
