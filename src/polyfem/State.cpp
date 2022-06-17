@@ -191,7 +191,7 @@ namespace polyfem
 		logger().info("havg: {}", average_edge_length);
 	}
 
-	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
+	void State::set_materials()
 	{
 		if (!is_param_valid(args, "materials"))
 			return;
@@ -199,40 +199,31 @@ namespace polyfem
 		const auto &body_params = args["materials"];
 
 		if (!body_params.is_array())
+		{
+			assembler.add_multimaterial(0, body_params);
+			density.add_multimaterial(0, body_params);
 			return;
+		}
 
-		//FIXME with the new stuff
-		const json default_material = R"({
-			"id": -1,
-			"E": 100,
-			"nu": 0.3,
-			"rho": 1,
-			"density": 1,
-			"type": null
-		})"_json;
-
-		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
-		Es.setConstant(default_material["E"].get<double>());
-		nus.setConstant(default_material["nu"].get<double>());
-		rhos.setConstant(default_material["density"].get<double>());
-
-		std::map<int, std::tuple<double, double, double>> materials;
+		std::map<int, json> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
 			//TODO fix and check me
-			check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
-			json mat = default_material;
-			mat.merge_patch(body_params[i]);
-
-			const int mid = mat["id"];
-			Density d;
-			d.init(mat);
-
-			const double rho = d(0, 0, 0, 0, 0, 0, 0);
-			const double E = mat["E"];
-			const double nu = mat["nu"];
-
-			materials[mid] = std::tuple<double, double, double>(E, nu, rho);
+			// check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
+			// json mat = default_material;
+			// mat.merge_patch(body_params[i]);
+			json mat = body_params[i];
+			json id = mat["id"];
+			if (id.is_array())
+			{
+				for (int j = 0; j < id.size(); ++j)
+					materials[id[j]] = mat;
+			}
+			else
+			{
+				const int mid = id;
+				materials[mid] = mat;
+			}
 		}
 
 		std::set<int> missing;
@@ -256,13 +247,11 @@ namespace polyfem
 				continue;
 			}
 
-			Es(e) = std::get<0>(it->second);
-			nus(e) = std::get<1>(it->second);
-			rhos(e) = std::get<2>(it->second);
-			// std::cout << e << " " << Es(e) << " " << nus(e) << std::endl;
+			const json &tmp = it->second;
+			assembler.add_multimaterial(e, tmp);
+			density.add_multimaterial(e, tmp);
 		}
 
-		setter(Es, nus, rhos);
 		for (int bid : missing)
 		{
 			logger().warn("Missing material parameters for body {}", bid);
@@ -407,12 +396,6 @@ namespace polyfem
 		sigma_min = 0;
 
 		disc_orders.resize(mesh->n_elements());
-
-		if (!args["materials"].is_null() && !args["materials"].is_array())
-		{
-			assembler.set_parameters(args["materials"]);
-			density.init(args["materials"]);
-		}
 		problem->init(*mesh);
 
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));

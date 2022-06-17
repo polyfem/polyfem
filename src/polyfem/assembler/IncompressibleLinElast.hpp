@@ -30,8 +30,7 @@ namespace polyfem
 			void set_size(const int size);
 			inline int size() const { return size_; }
 
-			void set_parameters(const json &params);
-			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+			void add_multimaterial(const int index, const json &params);
 			void set_params(const LameParameters &params) { params_ = params; }
 
 			void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
@@ -61,8 +60,7 @@ namespace polyfem
 			inline int rows() const { return size_; }
 			inline int cols() const { return 1; }
 
-			void set_parameters(const json &params);
-			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+			void add_multimaterial(const int index, const json &params) {}
 			void set_params(const LameParameters &params) {}
 
 		private:
@@ -87,8 +85,7 @@ namespace polyfem
 			inline int size() const { return 1; }
 			void set_size(const int size) { size_ = size; }
 
-			void set_parameters(const json &params);
-			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+			void add_multimaterial(const int index, const json &params);
 			void set_params(const LameParameters &params) { params_ = params; }
 
 		private:

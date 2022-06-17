@@ -11,7 +11,7 @@ namespace polyfem
 	namespace assembler
 	{
 		template <bool full_gradient>
-		void NavierStokesVelocity<full_gradient>::set_parameters(const json &params)
+		void NavierStokesVelocity<full_gradient>::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
 

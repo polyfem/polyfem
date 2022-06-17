@@ -80,8 +80,7 @@ namespace polyfem
 	public:
 		LameParameters();
 
-		void init(const json &params, const int size);
-		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+		void add_multimaterial(const int index, const json &params, const bool is_volume);
 
 		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const;
 		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu) const
@@ -94,12 +93,11 @@ namespace polyfem
 		}
 
 	private:
-		void set_e_nu(const json &E, const json &nu);
+		void set_e_nu(const int index, const json &E, const json &nu);
 
 		int size_;
-		utils::ExpressionValue lambda_, mu_;
+		std::vector<utils::ExpressionValue> lambda_or_E_, mu_or_nu_;
 		bool is_lambda_mu_;
-		bool initialized_;
 	};
 
 	class Density
@@ -107,8 +105,7 @@ namespace polyfem
 	public:
 		Density();
 
-		void init(const json &params);
-		void init_multimaterial(const Eigen::MatrixXd &rho);
+		void add_multimaterial(const int index, const json &params);
 
 		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
@@ -122,7 +119,6 @@ namespace polyfem
 	private:
 		void set_rho(const json &rho);
 
-		utils::ExpressionValue rho_;
-		bool initialized_;
+		std::vector<utils::ExpressionValue> rho_;
 	};
 } // namespace polyfem

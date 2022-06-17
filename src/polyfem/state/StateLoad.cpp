@@ -84,10 +84,7 @@ namespace polyfem
 		// if (!skip_boundary_sideset)
 		// 	mesh->compute_boundary_ids(boundary_marker);
 		// BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-			density.init_multimaterial(rhos);
-		});
+		set_materials();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -159,25 +156,7 @@ namespace polyfem
 		// if (n_refs > 0)
 		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
-		// mesh->set_tag(1712, ElementType::InteriorPolytope);
-
-		// double boundary_id_threshold = args["boundary_id_threshold"];
-		// if (boundary_id_threshold <= 0)
-		// 	boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
-
-		// if (!mesh->has_boundary_ids())
-		// {
-		// 	const std::string bc_tag_path = resolve_input_path(args["bc_tag"]);
-		// 	if (bc_tag_path.empty())
-		// 		mesh->compute_boundary_ids(boundary_id_threshold);
-		// 	else
-		// 		mesh->load_boundary_ids(bc_tag_path);
-		// }
-		// BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-			density.init_multimaterial(rhos);
-		});
+		set_materials();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

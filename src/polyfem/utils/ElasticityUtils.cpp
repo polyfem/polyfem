@@ -478,17 +478,26 @@ namespace polyfem
 
 	LameParameters::LameParameters()
 	{
-		lambda_.init(1.0);
-		mu_.init(1.0);
+		lambda_or_E_.emplace_back();
+		lambda_or_E_.back().init(1.0);
+
+		mu_or_nu_.emplace_back();
+		mu_or_nu_.back().init(1.0);
+		size_ = -1;
 		is_lambda_mu_ = true;
-		initialized_ = false;
-		size_ = 2;
 	}
 
 	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
 	{
-		double llambda = lambda_(x, y, z, 0, el_id);
-		double mmu = mu_(x, y, z, 0, el_id);
+		assert(lambda_or_E_.size() == 1 || el_id < lambda_or_E_.size());
+		assert(mu_or_nu_.size() == 1 || el_id < mu_or_nu_.size());
+		assert(size_ == 2 || size_ == 3);
+
+		const auto &tmp1 = lambda_or_E_.size() == 1 ? lambda_or_E_[0] : lambda_or_E_[el_id];
+		const auto &tmp2 = mu_or_nu_.size() == 1 ? mu_or_nu_[0] : mu_or_nu_[el_id];
+
+		double llambda = tmp1(x, y, z, 0, el_id);
+		double mmu = tmp2(x, y, z, 0, el_id);
 
 		if (!is_lambda_mu_)
 		{
@@ -500,94 +509,81 @@ namespace polyfem
 			lambda = llambda;
 			mu = mmu;
 		}
+
+		assert(!std::isnan(lambda));
+		assert(!std::isnan(mu));
+		assert(!std::isinf(lambda));
+		assert(!std::isinf(mu));
 	}
 
-	void LameParameters::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume)
 	{
-		size_ = is_volume ? 3 : 2;
-		Eigen::MatrixXd lambda_mat(Es.size(), 1);
-		Eigen::MatrixXd mu_mat(nus.size(), 1);
-		assert(lambda_mat.size() == mu_mat.size());
-
-		for (int i = 0; i < lambda_mat.size(); ++i)
-		{
-			lambda_mat(i) = convert_to_lambda(is_volume, Es(i), nus(i));
-			mu_mat(i) = convert_to_mu(Es(i), nus(i));
-		}
-
-		lambda_.init(lambda_mat);
-		mu_.init(mu_mat);
-
-		initialized_ = true;
-		is_lambda_mu_ = true;
-	}
-
-	void LameParameters::init(const json &params, const int size)
-	{
+		const int size = is_volume ? 3 : 2;
+		assert(size_ == -1 || size == size_);
 		size_ = size;
 
-		if (initialized_)
-			return;
+		for (int i = lambda_or_E_.size(); i <= index; ++i)
+		{
+			lambda_or_E_.emplace_back();
+			mu_or_nu_.emplace_back();
+		}
 
 		if (params.count("young"))
 		{
-			set_e_nu(params["young"], params["nu"]);
+			set_e_nu(index, params["young"], params["nu"]);
 		}
 		else if (params.count("E"))
 		{
-			set_e_nu(params["E"], params["nu"]);
+			set_e_nu(index, params["E"], params["nu"]);
 		}
 		else if (params.count("lambda"))
 		{
-			lambda_.init(params["lambda"]);
-			mu_.init(params["mu"]);
+			lambda_or_E_[index].init(params["lambda"]);
+			mu_or_nu_[index].init(params["mu"]);
 			is_lambda_mu_ = true;
 		}
 	}
 
-	void LameParameters::set_e_nu(const json &E, const json &nu)
+	void LameParameters::set_e_nu(const int index, const json &E, const json &nu)
 	{
 		//TODO: conversion is always called
 		is_lambda_mu_ = false;
-		lambda_.init(E);
-		mu_.init(nu);
+		lambda_or_E_[index].init(E);
+		mu_or_nu_[index].init(nu);
 	}
 
 	Density::Density()
 	{
-		rho_.init(1.0);
-		initialized_ = false;
+		rho_.emplace_back();
+		rho_.back().init(1.0);
 	}
 
 	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
 	{
-		return rho_(x, y, z, 0, el_id);
+		assert(rho_.size() == 1 || el_id < rho_.size());
+
+		const auto &tmp = rho_.size() == 1 ? rho_[0] : rho_[el_id];
+		const double res = tmp(x, y, z, 0, el_id);
+		assert(!std::isnan(res));
+		assert(!std::isinf(res));
+		return res;
 	}
 
-	void Density::init_multimaterial(const Eigen::MatrixXd &rho)
+	void Density::add_multimaterial(const int index, const json &params)
 	{
-		rho_.init(rho);
-		initialized_ = true;
-	}
-
-	void Density::init(const json &params)
-	{
-		if (initialized_)
-			return;
+		for (int i = rho_.size(); i <= index; ++i)
+		{
+			rho_.emplace_back();
+		}
 
 		if (params.count("rho"))
 		{
-			set_rho(params["rho"]);
+			rho_[index].init(params["rho"]);
 		}
 		else if (params.count("density"))
 		{
-			set_rho(params["density"]);
+			rho_[index].init(params["density"]);
 		}
-	}
-
-	void Density::set_rho(const json &rho)
-	{
-		rho_.init(rho);
 	}
 
 	//template instantiation

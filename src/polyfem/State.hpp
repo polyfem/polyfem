@@ -538,9 +538,6 @@ namespace polyfem
 		/// saves the frames in a vector instead of VTU
 		std::vector<SolutionFrame> solution_frames;
 
-		//set the multimaterial, this is mean for internal usage.
-		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
-
 		/// extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();
 
@@ -819,6 +816,9 @@ namespace polyfem
 		void sol_to_pressure();
 		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
+
+		/// set the multimaterial, this is mean for internal usage.
+		void set_materials();
 
 #ifdef POLYFEM_WITH_TBB
 		/// limits the number of used threads
