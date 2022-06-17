@@ -148,6 +148,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">Mesh2D</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -207,6 +208,7 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360">Undefined</a>
 <br />
  }</td></tr>
+<tr class="memdesc:a52d29c294eac8e3515c8c721ac4879c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of Element, check [Poly-Spline Finite Element Method] for a complete description.  <a href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2">More...</a><br /></td></tr>
 <tr class="separator:a52d29c294eac8e3515c8c721ac4879c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1786d2b6b9b3bda8c6667456f9b1f5ca"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5ca">MeshType</a> { <br />
 &#160;&#160;<a class="el" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7">Tri</a> = 0
@@ -443,21 +445,35 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Type of <a class="el" href="structpolyfem_1_1mesh_1_1_element.html">Element</a>, check [Poly-Spline Finite <a class="el" href="structpolyfem_1_1mesh_1_1_element.html">Element</a> Method] for a complete description. </p>
+<p ><b>NOTE</b>: For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope are tagged as boundary, and vertices incident to a polytope are also considered as boundary. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789" name="a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789"></a>Simplex&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba" name="a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba"></a>RegularInteriorCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf" name="a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf"></a>SimpleSingularInteriorCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64" name="a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64"></a>MultiSingularInteriorCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f" name="a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f"></a>RegularBoundaryCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5" name="a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5"></a>SimpleSingularBoundaryCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb" name="a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb"></a>MultiSingularBoundaryCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65" name="a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65"></a>InterfaceCube&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af" name="a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af"></a>InteriorPolytope&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0" name="a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0"></a>BoundaryPolytope&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360" name="a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360"></a>Undefined&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba" name="a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba"></a>RegularInteriorCube&#160;</td><td class="fielddoc"><p >Triangle/tet element. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf" name="a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf"></a>SimpleSingularInteriorCube&#160;</td><td class="fielddoc"><p >Regular quad/hex inside a 3^n patch. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64" name="a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64"></a>MultiSingularInteriorCube&#160;</td><td class="fielddoc"><p >Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f" name="a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f"></a>RegularBoundaryCube&#160;</td><td class="fielddoc"><p >Quad/Hex incident to more than 1 singular vertices (should not happen in 2D) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5" name="a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5"></a>SimpleSingularBoundaryCube&#160;</td><td class="fielddoc"><p >Boundary quad/hex, where all boundary vertices/edges are incident to at most 2 quads/hexes. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb" name="a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb"></a>MultiSingularBoundaryCube&#160;</td><td class="fielddoc"><p >Quad incident to exactly 1 singular vertex (in 2D); hex incident to exactly 1 singular interior edge, 0 singular boundary edge, 1 boundary face (in 3D) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65" name="a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65"></a>InterfaceCube&#160;</td><td class="fielddoc"><p >Boundary hex that is not regular nor SimpleSingularBoundaryCube. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af" name="a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af"></a>InteriorPolytope&#160;</td><td class="fielddoc"><p >Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0" name="a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0"></a>BoundaryPolytope&#160;</td><td class="fielddoc"><p >Interior polytope. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360" name="a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360"></a>Undefined&#160;</td><td class="fielddoc"><p >Boundary polytope. </p>
+<p >For invalid configurations </p>
+</td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00019">19</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00020">20</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -1719,7 +1735,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">geometry</td><td>geometry JSON object(s) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">root_path</td><td>root path of JSON </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mesh</td><td>output <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mesh</td><td>output <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.">Mesh</a> </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,7 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"functions_vars_l.html":[4,3,2,12],
-"functions_vars_m.html":[4,3,2,13],
 "functions_vars_n.html":[4,3,2,14],
 "functions_vars_o.html":[4,3,2,15],
 "functions_vars_p.html":[4,3,2,16],
@@ -249,5 +247,7 @@ var NAVTREEINDEX24 =
 "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caacc5883e092a3e5989ee2a1f05e6b2934":[3,0,6,3,25,2],
 "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30":[3,0,6,3,25,4],
 "namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9":[3,0,6,3,62],
-"namespacepolyfem_1_1mesh.html#a1bf30fdb22def7c4ec86c6f387291bf5":[3,0,6,3,53]
+"namespacepolyfem_1_1mesh.html#a1bf30fdb22def7c4ec86c6f387291bf5":[3,0,6,3,53],
+"namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854":[3,0,6,3,50],
+"namespacepolyfem_1_1mesh.html#a23c11289ee171d378f95b975412b00d2":[3,0,6,3,46]
 };
