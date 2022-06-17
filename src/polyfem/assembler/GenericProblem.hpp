@@ -147,6 +147,7 @@ namespace polyfem
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return true; }
@@ -183,6 +184,7 @@ namespace polyfem
 		private:
 			std::vector<utils::ExpressionValue> neumann_;
 			std::vector<utils::ExpressionValue> dirichlet_;
+			std::vector<std::pair<int, utils::ExpressionValue>> initial_solution_;
 
 			std::vector<std::shared_ptr<Interpolation>> neumann_interpolation_;
 			std::vector<std::shared_ptr<Interpolation>> dirichlet_interpolation_;

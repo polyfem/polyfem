@@ -7,8 +7,6 @@ set(SOURCES
 	ImplicitNewmark.hpp
 	BDFTimeIntegrator.cpp
 	BDFTimeIntegrator.hpp
-	BDF.cpp
-	BDF.hpp
 )
 
 prepend_current_path(SOURCES)
