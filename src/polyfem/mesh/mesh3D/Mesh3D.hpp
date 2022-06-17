@@ -40,8 +40,6 @@ namespace polyfem
 
 			double tri_area(const int gid) const override;
 
-			virtual bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const = 0;
-
 			RowVectorNd edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
 			RowVectorNd face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
 			RowVectorNd cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
