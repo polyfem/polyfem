@@ -127,8 +127,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_transient_n
 Public Member Functions</h2></td></tr>
 <tr class="memitem:acfaf9eafdf7d3ae4aeaf1552cb4d9e0e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acfaf9eafdf7d3ae4aeaf1552cb4d9e0e">TransientNavierStokesSolver</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;<a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad4c88601d3245270674cf56591f1a6bd">solver_param</a>)</td></tr>
 <tr class="separator:acfaf9eafdf7d3ae4aeaf1552cb4d9e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a434a6f1ab1b41b69ab6098c2ef2f6235"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a434a6f1ab1b41b69ab6098c2ef2f6235">minimize</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const double alpha, const double dt, const Eigen::VectorXd &amp;prev_sol, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a434a6f1ab1b41b69ab6098c2ef2f6235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0458e99fa5b79f747a8ab2e4f9315893"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a0458e99fa5b79f747a8ab2e4f9315893">minimize</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const double beta_dt, const Eigen::VectorXd &amp;prev_sol, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::MatrixXd &amp;rhs, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:a0458e99fa5b79f747a8ab2e4f9315893"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1bab8522985414412d35958363ddcb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad1bab8522985414412d35958363ddcb4">getInfo</a> (<a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
 <tr class="separator:ad1bab8522985414412d35958363ddcb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad117f423c35bdee04d7ce9cc4fc8040d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad117f423c35bdee04d7ce9cc4fc8040d">error_code</a> () const</td></tr>
@@ -136,8 +136,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a8c2190d00b32097e81193549ca5d870c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a8c2190d00b32097e81193549ca5d870c">minimize_aux</a> (const std::string &amp;formulation, const std::vector&lt; int &gt; &amp;skipping, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const double dt, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;solver, double &amp;nlres_norm, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a8c2190d00b32097e81193549ca5d870c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc9e8c0f4d894346307f55daec03a7fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acc9e8c0f4d894346307f55daec03a7fd">minimize_aux</a> (const std::string &amp;formulation, const std::vector&lt; int &gt; &amp;skipping, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;solver, double &amp;nlres_norm, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:acc9e8c0f4d894346307f55daec03a7fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc3fe194412e9ddd23a890d01a33891b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acc3fe194412e9ddd23a890d01a33891b">has_nans</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> &amp;hessian)</td></tr>
 <tr class="separator:acc3fe194412e9ddd23a890d01a33891b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -276,8 +276,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a434a6f1ab1b41b69ab6098c2ef2f6235" name="a434a6f1ab1b41b69ab6098c2ef2f6235"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a434a6f1ab1b41b69ab6098c2ef2f6235">&#9670;&nbsp;</a></span>minimize()</h2>
+<a id="a0458e99fa5b79f747a8ab2e4f9315893" name="a0458e99fa5b79f747a8ab2e4f9315893"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0458e99fa5b79f747a8ab2e4f9315893">&#9670;&nbsp;</a></span>minimize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -292,13 +292,7 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>dt</em>, </td>
+          <td class="paramname"><em>beta_dt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -352,14 +346,14 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">34</a> of file <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html">TransientNavierStokesSolver.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00154">polyfem::State::assembler</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00051">assembly_time</a>, <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_state_8cpp_source.html#l00059">polyfem::State::formulation()</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00044">gradNorm</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00052">inverting_time</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00528">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00132">minimize_aux()</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, <a class="el" href="_state_8hpp_source.html#l00201">polyfem::State::n_pressure_bases</a>, <a class="el" href="p__bases_8py_source.html#l00238">p_bases::norm</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00042">precond_type</a>, <a class="el" href="_state_8hpp_source.html#l00156">polyfem::State::problem</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00047">solver_info</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00040">solver_param</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00041">solver_type</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00053">stokes_matrix_time</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00054">stokes_solve_time</a>, <a class="el" href="_state_8hpp_source.html#l00196">polyfem::State::use_avg_pressure</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00154">polyfem::State::assembler</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00051">assembly_time</a>, <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_state_8cpp_source.html#l00059">polyfem::State::formulation()</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00044">gradNorm</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00052">inverting_time</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00528">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">minimize_aux()</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, <a class="el" href="_state_8hpp_source.html#l00201">polyfem::State::n_pressure_bases</a>, <a class="el" href="p__bases_8py_source.html#l00238">p_bases::norm</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00042">precond_type</a>, <a class="el" href="_state_8hpp_source.html#l00156">polyfem::State::problem</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00047">solver_info</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00040">solver_param</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00041">solver_type</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00053">stokes_matrix_time</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00054">stokes_solve_time</a>, <a class="el" href="_state_8hpp_source.html#l00196">polyfem::State::use_avg_pressure</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 
 </div>
 </div>
-<a id="a8c2190d00b32097e81193549ca5d870c" name="a8c2190d00b32097e81193549ca5d870c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c2190d00b32097e81193549ca5d870c">&#9670;&nbsp;</a></span>minimize_aux()</h2>
+<a id="acc9e8c0f4d894346307f55daec03a7fd" name="acc9e8c0f4d894346307f55daec03a7fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc9e8c0f4d894346307f55daec03a7fd">&#9670;&nbsp;</a></span>minimize_aux()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -384,12 +378,6 @@ Private Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>dt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -458,7 +446,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00132">132</a> of file <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html">TransientNavierStokesSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">131</a> of file <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html">TransientNavierStokesSolver.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_state_8hpp_source.html#l00177">polyfem::State::ass_vals_cache</a>, <a class="el" href="_state_8hpp_source.html#l00154">polyfem::State::assembler</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00051">assembly_time</a>, <a class="el" href="_state_8hpp_source.html#l00159">polyfem::State::bases</a>, <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_state_8cpp_source.html#l00059">polyfem::State::formulation()</a>, <a class="el" href="_state_8hpp_source.html#l00163">polyfem::State::geom_bases</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00052">inverting_time</a>, <a class="el" href="_state_8cpp_source.html#l00345">polyfem::State::iso_parametric()</a>, <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00045">iterations</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00528">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, <a class="el" href="_state_8hpp_source.html#l00201">polyfem::State::n_pressure_bases</a>, <a class="el" href="_state_8hpp_source.html#l00156">polyfem::State::problem</a>, <a class="el" href="_state_8hpp_source.html#l00196">polyfem::State::use_avg_pressure</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
@@ -489,7 +477,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00051">51</a> of file <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html">TransientNavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00132">minimize_aux()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">minimize_aux()</a>.</p>
 
 </div>
 </div>
@@ -565,7 +553,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00052">52</a> of file <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html">TransientNavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00132">minimize_aux()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">minimize_aux()</a>.</p>
 
 </div>
 </div>
@@ -591,7 +579,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html#l00045">45</a> of file <a class="el" href="_transient_navier_stokes_solver_8hpp_source.html">TransientNavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00132">minimize_aux()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00025">TransientNavierStokesSolver()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">minimize_aux()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00025">TransientNavierStokesSolver()</a>.</p>
 
 </div>
 </div>

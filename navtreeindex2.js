@@ -1,9 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_polygonal_basis3d_8cpp.html":[5,0,1,0,2,14],
-"_polygonal_basis3d_8cpp.html#a05c9a37e7bf673cecb9e7961ec47f656":[5,0,1,0,2,14,0],
-"_polygonal_basis3d_8cpp_source.html":[5,0,1,0,2,14],
-"_polygonal_basis3d_8hpp.html":[5,0,1,0,2,15],
 "_polygonal_basis3d_8hpp_source.html":[5,0,1,0,2,15],
 "_polyhedron_quadrature_8cpp.html":[5,0,1,0,5,6],
 "_polyhedron_quadrature_8cpp_source.html":[5,0,1,0,5,6],
@@ -249,5 +245,9 @@ var NAVTREEINDEX2 =
 "auto__p__bases_8cpp.html#acb852da43087916bb4919c07218b4540":[5,0,1,0,1,5,0],
 "auto__p__bases_8cpp_source.html":[5,0,1,0,1,5],
 "auto__p__bases_8hpp.html":[5,0,1,0,1,6],
-"auto__p__bases_8hpp.html#a46ed52c4fc0f593215885e2088d4c80b":[5,0,1,0,1,6,2]
+"auto__p__bases_8hpp.html#a46ed52c4fc0f593215885e2088d4c80b":[5,0,1,0,1,6,2],
+"auto__p__bases_8hpp.html#a81e7dfa1d60c099807060e6f1bc78e94":[5,0,1,0,1,6,4],
+"auto__p__bases_8hpp.html#a9c2688a6744801097c2f8baa081ab3a7":[5,0,1,0,1,6,5],
+"auto__p__bases_8hpp.html#ab382930872a9372e2e2b81ef165471af":[5,0,1,0,1,6,3],
+"auto__p__bases_8hpp.html#ac26a7d8619bbd1be4b8133a921df2751":[5,0,1,0,1,6,1]
 };

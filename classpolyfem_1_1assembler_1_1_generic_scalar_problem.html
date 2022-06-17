@@ -146,6 +146,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0c7d66f60a9edb2ee7659368f514cd5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea31b32c1834fef06b028268ec042560"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea31b32c1834fef06b028268ec042560">neumann_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;normals, const double t, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const override</td></tr>
 <tr class="separator:aea31b32c1834fef06b028268ec042560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13ae1127a02b89c15d3997fef95b4896"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a13ae1127a02b89c15d3997fef95b4896">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const override</td></tr>
+<tr class="separator:a13ae1127a02b89c15d3997fef95b4896"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea048f90d8ae340782bf1756cfc6b6b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea048f90d8ae340782bf1756cfc6b6b4">has_exact_sol</a> () const override</td></tr>
 <tr class="separator:aea048f90d8ae340782bf1756cfc6b6b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa86b35163129fcd063f7595c61d0c44a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa86b35163129fcd063f7595c61d0c44a">is_scalar</a> () const override</td></tr>
@@ -246,6 +248,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a9a78702a34492dbc4a48ca3880e4b692"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7285fe398d7345c989a5c1c90fa9df2c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7285fe398d7345c989a5c1c90fa9df2c">dirichlet_</a></td></tr>
 <tr class="separator:a7285fe398d7345c989a5c1c90fa9df2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147a22030df98953f5a3383b1724abbf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int, <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a147a22030df98953f5a3383b1724abbf">initial_solution_</a></td></tr>
+<tr class="separator:a147a22030df98953f5a3383b1724abbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0236481a9f87ee1fdfa3610897aaa71d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_interpolation.html">Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a0236481a9f87ee1fdfa3610897aaa71d">neumann_interpolation_</a></td></tr>
 <tr class="separator:a0236481a9f87ee1fdfa3610897aaa71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a752370ebb83ad5b30be703c89e311731"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_interpolation.html">Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a752370ebb83ad5b30be703c89e311731">dirichlet_interpolation_</a></td></tr>
@@ -334,9 +338,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01108">1108</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01153">1153</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -372,9 +376,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01218">1218</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01263">1263</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -410,9 +414,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01164">1164</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01209">1209</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, and <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, and <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>.</p>
 
 </div>
 </div>
@@ -448,9 +452,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01136">1136</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01181">1181</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -486,9 +490,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01229">1229</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01274">1274</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -524,9 +528,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01191">1191</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01236">1236</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>.</p>
+<p class="reference">References <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>.</p>
 
 </div>
 </div>
@@ -555,11 +559,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2563e3166f5ce50bb630575686b46ebd">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01286">1286</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01331">1331</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00039">polyfem::utils::ExpressionValue::clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00191">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00192">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00194">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00195">has_exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00193">is_all_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">is_time_dept_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00190">rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00039">polyfem::utils::ExpressionValue::clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00193">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00194">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">has_exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00195">is_all_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00198">is_time_dept_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00192">rhs_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>.</p>
 
 </div>
 </div>
@@ -625,7 +629,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l00935">935</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, <a class="el" href="_mesh_8hpp_source.html#l00164">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00193">is_all_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, <a class="el" href="_mesh_8hpp_source.html#l00164">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00195">is_all_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
 
 </div>
 </div>
@@ -671,9 +675,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#add068e57938271170ec204f843611cca">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l00986">986</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01018">1018</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00191">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00151">has_exact_sol()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00193">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00152">has_exact_sol()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
 
 </div>
 </div>
@@ -719,9 +723,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7ec16ec0a2556437ba3c67788c7032f4">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l00999">999</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01031">1031</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00192">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00195">has_exact_grad_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00194">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">has_exact_grad_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
 
 </div>
 </div>
@@ -750,11 +754,65 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00151">151</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00152">152</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00194">has_exact_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00196">has_exact_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00986">exact()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01018">exact()</a>.</p>
+
+</div>
+</div>
+<a id="a13ae1127a02b89c15d3997fef95b4896" name="a13ae1127a02b89c15d3997fef95b4896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ae1127a02b89c15d3997fef95b4896">&#9670;&nbsp;</a></span>initial_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::GenericScalarProblem::initial_solution </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>global_ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l00986">986</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00165">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">initial_solution_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -783,9 +841,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ad9568d26c49d9dcafebf429cd1025d78">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00155">155</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00156">156</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00196">is_time_dept_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00198">is_time_dept_</a>.</p>
 
 </div>
 </div>
@@ -816,7 +874,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00146">146</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00027">polyfem::utils::ExpressionValue::is_zero()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00190">rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00027">polyfem::utils::ExpressionValue::is_zero()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00192">rhs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00919">rhs()</a>.</p>
 
@@ -847,7 +905,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00152">152</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00153">153</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -876,9 +934,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00153">153</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00154">154</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00196">is_time_dept_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00198">is_time_dept_</a>.</p>
 
 </div>
 </div>
@@ -907,9 +965,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa5e9069b4bf80363dc85825bee00bf1e">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00156">156</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00157">157</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00193">is_all_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00195">is_all_</a>.</p>
 
 </div>
 </div>
@@ -981,7 +1039,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l00965">965</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00164">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00164">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
 
 </div>
 </div>
@@ -1041,7 +1099,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l00919">919</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00146">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">rhs_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00146">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00192">rhs_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
 
 </div>
 </div>
@@ -1071,9 +1129,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01016">1016</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01048">1048</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00191">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00192">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00194">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00195">has_exact_grad_</a>, <a class="el" href="_expression_value_8cpp_source.html#l00108">polyfem::utils::ExpressionValue::init()</a>, <a class="el" href="_problem_8hpp_source.html#l00025">polyfem::assembler::Problem::init()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00193">is_all_</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00132">polyfem::utils::is_param_valid()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">is_time_dept_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00190">rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00193">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00194">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">has_exact_grad_</a>, <a class="el" href="_expression_value_8cpp_source.html#l00108">polyfem::utils::ExpressionValue::init()</a>, <a class="el" href="_problem_8hpp_source.html#l00025">polyfem::assembler::Problem::init()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">initial_solution_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00195">is_all_</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00132">polyfem::utils::is_param_valid()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00198">is_time_dept_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00192">rhs_</a>.</p>
 
 </div>
 </div>
@@ -1101,9 +1159,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00154">154</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00155">155</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00196">is_time_dept_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00198">is_time_dept_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -1139,9 +1197,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01116">1116</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01161">1161</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -1177,9 +1235,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01240">1240</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01285">1285</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -1215,9 +1273,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01172">1172</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01217">1217</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00188">dirichlet_interpolation_</a>, and <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00186">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00190">dirichlet_interpolation_</a>, and <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>.</p>
 
 </div>
 </div>
@@ -1253,9 +1311,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01144">1144</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01189">1189</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -1291,9 +1349,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01263">1263</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01308">1308</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8cpp_source.html#l00039">polyfem::assembler::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -1329,9 +1387,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01199">1199</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01244">1244</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00184">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00187">neumann_interpolation_</a>.</p>
+<p class="reference">References <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00185">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00189">neumann_interpolation_</a>.</p>
 
 </div>
 </div>
@@ -1356,9 +1414,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00185">185</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00186">186</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01108">add_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00935">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01116">update_dirichlet_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01153">add_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00935">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01161">update_dirichlet_boundary()</a>.</p>
 
 </div>
 </div>
@@ -1382,9 +1440,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00188">188</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00190">190</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01108">add_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00935">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01116">update_dirichlet_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01153">add_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00935">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01161">update_dirichlet_boundary()</a>.</p>
 
 </div>
 </div>
@@ -1408,9 +1466,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00191">191</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00193">193</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00986">exact()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01018">exact()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1434,9 +1492,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00192">192</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00194">194</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00999">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01031">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1460,9 +1518,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00194">194</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00196">196</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00151">has_exact_sol()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00152">has_exact_sol()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1486,9 +1544,35 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00195">195</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00197">197</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00999">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01031">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
+
+</div>
+</div>
+<a id="a147a22030df98953f5a3383b1724abbf" name="a147a22030df98953f5a3383b1724abbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147a22030df98953f5a3383b1724abbf">&#9670;&nbsp;</a></span>initial_solution_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::pair&lt;int, <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>&gt; &gt; polyfem::assembler::GenericScalarProblem::initial_solution_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00187">187</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00986">initial_solution()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1512,9 +1596,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00193">193</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00195">195</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00935">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00156">might_have_no_dirichlet()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00935">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00157">might_have_no_dirichlet()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1538,9 +1622,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00196">196</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00198">198</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00155">is_constant_in_time()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00153">is_time_dependent()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00154">set_time_dependent()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00156">is_constant_in_time()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00154">is_time_dependent()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00155">set_time_dependent()</a>.</p>
 
 </div>
 </div>
@@ -1564,9 +1648,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00184">184</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00185">185</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01136">add_neumann_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00965">neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01144">update_neumann_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01181">add_neumann_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00965">neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01189">update_neumann_boundary()</a>.</p>
 
 </div>
 </div>
@@ -1590,9 +1674,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00187">187</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00189">189</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01136">add_neumann_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00965">neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01144">update_neumann_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01181">add_neumann_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00965">neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01189">update_neumann_boundary()</a>.</p>
 
 </div>
 </div>
@@ -1616,9 +1700,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00190">190</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00192">192</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01286">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00146">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00919">rhs()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01016">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01331">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00146">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00919">rhs()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01048">set_parameters()</a>.</p>
 
 </div>
 </div>

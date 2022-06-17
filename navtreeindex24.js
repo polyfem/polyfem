@@ -1,17 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"functions_vars.html":[4,3,2],
-"functions_vars_a.html":[4,3,2,1],
-"functions_vars_b.html":[4,3,2,2],
-"functions_vars_c.html":[4,3,2,3],
-"functions_vars_d.html":[4,3,2,4],
-"functions_vars_e.html":[4,3,2,5],
-"functions_vars_f.html":[4,3,2,6],
-"functions_vars_g.html":[4,3,2,7],
-"functions_vars_h.html":[4,3,2,8],
-"functions_vars_i.html":[4,3,2,9],
-"functions_vars_j.html":[4,3,2,10],
-"functions_vars_k.html":[4,3,2,11],
 "functions_vars_l.html":[4,3,2,12],
 "functions_vars_m.html":[4,3,2,13],
 "functions_vars_n.html":[4,3,2,14],
@@ -249,5 +237,17 @@ var NAVTREEINDEX24 =
 "namespacepolyfem_1_1basis.html#a05c9a37e7bf673cecb9e7961ec47f656":[3,0,6,2,19],
 "namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482":[3,0,6,2,18],
 "namespacepolyfem_1_1mesh.html":[3,0,6,3],
-"namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc":[3,0,6,3,29]
+"namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc":[3,0,6,3,29],
+"namespacepolyfem_1_1mesh.html#a0eb020dda8244f82ea9450b2d655cadd":[3,0,6,3,43],
+"namespacepolyfem_1_1mesh.html#a0fd912c9c209068769d339932c8b7c79":[3,0,6,3,52],
+"namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d":[3,0,6,3,65],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5ca":[3,0,6,3,25],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa11b8c9e9feec9bfa3206f5dffb736b9b":[3,0,6,3,25,1],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7":[3,0,6,3,25,0],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa77501a193048c70975005a2a1dfc15d1":[3,0,6,3,25,3],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa77b3ac06c59fd2083e1ee4874c433832":[3,0,6,3,25,5],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caacc5883e092a3e5989ee2a1f05e6b2934":[3,0,6,3,25,2],
+"namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30":[3,0,6,3,25,4],
+"namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9":[3,0,6,3,62],
+"namespacepolyfem_1_1mesh.html#a1bf30fdb22def7c4ec86c6f387291bf5":[3,0,6,3,53]
 };

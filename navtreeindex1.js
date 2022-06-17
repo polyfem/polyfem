@@ -1,9 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"_mass_matrix_assembler_8cpp.html":[5,0,1,0,0,23],
-"_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666":[5,0,1,0,0,23,0],
-"_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2":[5,0,1,0,0,23,1],
-"_mass_matrix_assembler_8cpp.html#abe0e1cf3f1e12c4acd332be713329144":[5,0,1,0,0,23,3],
 "_mass_matrix_assembler_8cpp.html#ac5aceb98894ff82070f5ec3698f7b827":[5,0,1,0,0,23,2],
 "_mass_matrix_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e":[5,0,1,0,0,23,4],
 "_mass_matrix_assembler_8cpp_source.html":[5,0,1,0,0,23],
@@ -249,5 +245,9 @@ var NAVTREEINDEX1 =
 "_polygonal_basis2d_8cpp.html#a499aa1c6971b36fc766d06a74a7e1482":[5,0,1,0,2,12,0],
 "_polygonal_basis2d_8cpp_source.html":[5,0,1,0,2,12],
 "_polygonal_basis2d_8hpp.html":[5,0,1,0,2,13],
-"_polygonal_basis2d_8hpp_source.html":[5,0,1,0,2,13]
+"_polygonal_basis2d_8hpp_source.html":[5,0,1,0,2,13],
+"_polygonal_basis3d_8cpp.html":[5,0,1,0,2,14],
+"_polygonal_basis3d_8cpp.html#a05c9a37e7bf673cecb9e7961ec47f656":[5,0,1,0,2,14,0],
+"_polygonal_basis3d_8cpp_source.html":[5,0,1,0,2,14],
+"_polygonal_basis3d_8hpp.html":[5,0,1,0,2,15]
 };
