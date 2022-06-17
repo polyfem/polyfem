@@ -1,9 +1,8 @@
-name: Build
+name: Nightly
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  schedule:
+    - cron: "0 4 * * *"
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
@@ -21,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        config: [Debug]
-        threading: [TBB]
+        config: [Debug, Release]
+        threading: [CPP, TBB, NONE]
         include:
           - os: ubuntu-latest
             name: Linux
@@ -83,8 +82,8 @@ jobs:
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [Debug]
-        threading: [TBB]
+        config: [Debug, Release]
+        threading: [CPP, TBB, NONE]
         include:
           - os: macos-latest
             name: macOS
@@ -155,7 +154,7 @@ jobs:
       fail-fast: false
       matrix:
         config: [Debug]
-        threading: [TBB]
+        threading: [TBB, NONE]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
