@@ -1,9 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a9be2c876ca9b310c9741791aa6367ea0":[4,0,3,2,15,5,13],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a9be2c876ca9b310c9741791aa6367ea0":[3,0,6,3,17,5,13],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a9edfa4d84ccb9c1e4ae98770f74a7f5c":[3,0,6,3,17,5,11],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a9edfa4d84ccb9c1e4ae98770f74a7f5c":[4,0,3,2,15,5,11],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aa2d0a988be2e30721361bb08ac949a81":[3,0,6,3,17,5,12],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aa2d0a988be2e30721361bb08ac949a81":[4,0,3,2,15,5,12],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aa4f6be3020eb1d8caa9b4ce65e6dec87":[3,0,6,3,17,5,9],

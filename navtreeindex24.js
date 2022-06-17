@@ -1,9 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"functions_type.html":[4,3,3],
-"functions_u.html":[4,3,0,21],
-"functions_v.html":[4,3,0,22],
-"functions_vars.html":[4,3,2,0],
 "functions_vars.html":[4,3,2],
 "functions_vars_a.html":[4,3,2,1],
 "functions_vars_b.html":[4,3,2,2],
@@ -249,5 +245,9 @@ var NAVTREEINDEX24 =
 "namespacepolyfem_1_1autogen.html#af3ae2da6aa68917e5419e2e036a8fadc":[3,0,6,1,23],
 "namespacepolyfem_1_1autogen.html#afb2847614459eb7fce5ba97b0bbd8ceb":[3,0,6,1,4],
 "namespacepolyfem_1_1autogen.html#affa69accbfb13eb3669550bb6c4f2d7b":[3,0,6,1,6],
-"namespacepolyfem_1_1basis.html":[3,0,6,2]
+"namespacepolyfem_1_1basis.html":[3,0,6,2],
+"namespacepolyfem_1_1basis.html#a05c9a37e7bf673cecb9e7961ec47f656":[3,0,6,2,19],
+"namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482":[3,0,6,2,18],
+"namespacepolyfem_1_1mesh.html":[3,0,6,3],
+"namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc":[3,0,6,3,29]
 };
