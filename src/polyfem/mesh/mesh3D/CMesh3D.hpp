@@ -20,7 +20,10 @@ namespace polyfem
 		public:
 			CMesh3D() = default;
 			virtual ~CMesh3D() = default;
-			POLYFEM_DEFAULT_MOVE_COPY(CMesh3D)
+			CMesh3D(CMesh3D &&) = default;
+			CMesh3D &operator=(CMesh3D &&) = default;
+			CMesh3D(const CMesh3D &) = default;
+			CMesh3D &operator=(const CMesh3D &) = default;
 
 			bool is_conforming() const override { return true; }
 

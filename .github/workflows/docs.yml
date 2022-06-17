@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - docs
 
 permissions: 
   contents: write
@@ -13,12 +14,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       
-      - name: Dependencies
-        run: sudo apt-get install graphviz
+      - name: Checkout Repository
+        uses: actions/checkout@v2.4.2
 
-      - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+      - name: Install Dependencies
+        run: |
+          wget --quiet https://www.doxygen.nl/files/doxygen-1.9.4.linux.bin.tar.gz
+          tar -xzf doxygen-1.9.4.linux.bin.tar.gz
+          cd doxygen-1.9.4
+          sudo make install
+          sudo apt-get install graphviz
+
+      - name: Generate Doxygen Documentation
+        run: doxygen Doxyfile
+
+      - name: Create .nojekyll
+        run: touch docs/html/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
           folder: docs/html
-          config_file: Doxyfile
+
+      # - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: gh-pages
+      #     folder: docs/html
+      #     config_file: Doxyfile
+      
+

@@ -7,6 +7,7 @@
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
@@ -142,7 +143,7 @@ namespace polyfem
 		std::vector<ElementBases> pressure_bases;
 
 		// Mapping from input nodes to FE nodes
-		std::vector<int> primitive_to_node;
+		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
 
 		//Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
@@ -447,12 +448,11 @@ namespace polyfem
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
 
-		// Resolve path relative to args["root_path"] if the path is not absolute
-		std::string resolve_input_path(const std::string &path) const
-		{
-			return utils::resolve_path(path, args["root_path"]);
-		}
-		// Resolve path relative to output_dir if the path is not absolute
+		/// Get the root path for the state (e.g., args["root_path"] or ".")
+		std::string root_path() const;
+		/// Resolve path relative to root_path() if the path is not absolute.
+		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
+		/// Resolve path relative to output_dir if the path is not absolute
 		std::string resolve_output_path(const std::string &path) const;
 
 		//saves the output statistic to a stream

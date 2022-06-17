@@ -15,10 +15,10 @@ namespace polyfem
 		///
 		/// Generate a canonical triangle/quad subdivided from a regular grid
 		///
-		/// @param[in]  n  			 { n grid quads }
-		/// @param[in]  tri			 { is a tri or a quad }
-		/// @param[out] V            { #V x 2 output vertices positions }
-		/// @param[out] F            { #F x 3 output triangle indices }
+		/// @param[in]  n  			  n grid quads
+		/// @param[in]  tri			  is a tri or a quad
+		/// @param[out] V             #V x 2 output vertices positions
+		/// @param[out] F             #F x 3 output triangle indices
 		///
 		void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
 		{
@@ -99,11 +99,11 @@ namespace polyfem
 		///
 		/// Generate a canonical tet/hex subdivided from a regular grid
 		///
-		/// @param[in]  n  			 { n grid quads }
-		/// @param[in]  tet			 { is a tet or a hex }
-		/// @param[out] V            { #V x 3 output vertices positions }
-		/// @param[out] F            { #F x 3 output triangle indices }
-		/// @param[out] T            { #F x 4 output tet indices }
+		/// @param[in]  n  			  n grid quads
+		/// @param[in]  tet			  is a tet or a hex
+		/// @param[out] V             #V x 3 output vertices positions
+		/// @param[out] F             #F x 3 output triangle indices
+		/// @param[out] T             #F x 4 output tet indices
 		///
 		void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
 		{

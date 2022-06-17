@@ -7,7 +7,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OBJReader.hpp"
+#include "OBJ_IO.hpp"
 
 #include <cstdio>
 #include <fstream>
@@ -342,6 +342,26 @@ namespace polyfem
 			// 	E.conservativeResize(E.rows() + faceE.rows(), 2);
 			// 	E.bottomRows(faceE.rows()) = faceE;
 			// }
+
+			return true;
+		}
+
+		bool OBJWriter::save(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
+		{
+			std::ofstream obj(path, std::ios::out);
+			if (!obj.is_open())
+				return false;
+
+			obj.precision(15);
+
+			for (int i = 0; i < v.rows(); ++i)
+				obj << "v " << v(i, 0) << " " << v(i, 1) << " " << (v.cols() > 2 ? v(i, 2) : 0) << "\n";
+
+			for (int i = 0; i < e.rows(); ++i)
+				obj << "l " << e(i, 0) + 1 << " " << e(i, 1) + 1 << "\n";
+
+			for (int i = 0; i < f.rows(); ++i)
+				obj << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
 
 			return true;
 		}

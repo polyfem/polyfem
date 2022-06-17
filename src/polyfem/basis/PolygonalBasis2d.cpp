@@ -28,9 +28,7 @@ namespace polyfem
 
 			// -----------------------------------------------------------------------------
 
-			std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element_index,
-													   const std::vector<ElementBases> &bases,
-													   const std::map<int, InterfaceData> &poly_edge_to_data)
+			std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element_index, const std::vector<ElementBases> &bases, const std::map<int, InterfaceData> &poly_edge_to_data)
 			{
 				std::vector<int> local_to_global;
 
@@ -64,8 +62,7 @@ namespace polyfem
 
 			// -----------------------------------------------------------------------------
 
-			void sample_parametric_edge(
-				const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
+			void sample_parametric_edge(const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
 			{
 				// Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
 				const auto indices = FEBasis2d::quad_edge_local_nodes(1, mesh, index);
@@ -86,8 +83,7 @@ namespace polyfem
 
 			// -----------------------------------------------------------------------------
 
-			void compute_offset_kernels(const Eigen::MatrixXd &polygon, int n_kernels, double eps,
-										Eigen::MatrixXd &kernel_centers)
+			void compute_offset_kernels(const Eigen::MatrixXd &polygon, int n_kernels, double eps, Eigen::MatrixXd &kernel_centers)
 			{
 				Eigen::MatrixXd offset, samples;
 				std::vector<bool> inside;
@@ -109,22 +105,10 @@ namespace polyfem
 
 			// -----------------------------------------------------------------------------
 
-			///
-			/// @brief      { Compute boundary sample points + centers of harmonic bases for
-			///             the polygonal element }
-			///
-			void sample_polygon(
-				const int element_index,
-				const int n_samples_per_edge,
-				const Mesh2D &mesh,
-				const std::map<int, InterfaceData> &poly_edge_to_data,
-				const std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
-				const double eps,
-				std::vector<int> &local_to_global,
-				Eigen::MatrixXd &collocation_points,
-				Eigen::MatrixXd &kernel_centers,
-				Eigen::MatrixXd &rhs)
+			/// @brief Compute boundary sample points + centers of harmonic bases for the polygonal element
+			void sample_polygon(const int element_index, const int n_samples_per_edge, const Mesh2D &mesh, const std::map<int, InterfaceData> &poly_edge_to_data,
+								const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const double eps, std::vector<int> &local_to_global,
+								Eigen::MatrixXd &collocation_points, Eigen::MatrixXd &kernel_centers, Eigen::MatrixXd &rhs)
 			{
 				const int n_edges = mesh.n_face_vertices(element_index);
 
@@ -171,8 +155,7 @@ namespace polyfem
 							const int global_node_id = x.index;
 							const double weight = x.val;
 
-							const int poly_local_basis_id = std::distance(local_to_global.begin(),
-																		  std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
+							const int poly_local_basis_id = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
 							rhs.block(i * (n_samples_per_edge - 1), poly_local_basis_id, basis_val[other_local_basis_id].val.size(), 1) += basis_val[other_local_basis_id].val * weight;
 						}
 					}
@@ -188,14 +171,8 @@ namespace polyfem
 		////////////////////////////////////////////////////////////////////////////////
 
 		// Compute the integral constraints for each basis of the mesh
-		void PolygonalBasis2d::compute_integral_constraints(
-			const AssemblerUtils &assembler,
-			const std::string &assembler_name,
-			const Mesh2D &mesh,
-			const int n_bases,
-			const std::vector<ElementBases> &bases,
-			const std::vector<ElementBases> &gbases,
-			Eigen::MatrixXd &basis_integrals)
+		void PolygonalBasis2d::compute_integral_constraints(const AssemblerUtils &assembler, const std::string &assembler_name, const Mesh2D &mesh, const int n_bases,
+															const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, Eigen::MatrixXd &basis_integrals)
 		{
 			assert(!mesh.is_volume());
 
@@ -224,7 +201,7 @@ namespace polyfem
 				// Computes the discretized integral of the PDE over the element
 				const int n_local_bases = int(vals.basis_values.size());
 
-				//add monomials
+				// add monomials
 				vals.basis_values.resize(n_local_bases + 5);
 				RBFWithQuadratic::setup_monomials_vals_2d(n_local_bases, vals.val, vals);
 				RBFWithQuadratic::setup_monomials_strong_2d(dim, assembler, assembler_name, vals.val, da, strong);
@@ -364,18 +341,9 @@ namespace polyfem
 		// } // anonymous namespace
 		// -----------------------------------------------------------------------------
 
-		int PolygonalBasis2d::build_bases(
-			const AssemblerUtils &assembler,
-			const std::string &assembler_name,
-			const int n_samples_per_edge,
-			const Mesh2D &mesh,
-			const int n_bases,
-			const int quadrature_order,
-			const int integral_constraints,
-			std::vector<ElementBases> &bases,
-			const std::vector<ElementBases> &gbases,
-			const std::map<int, InterfaceData> &poly_edge_to_data,
-			std::map<int, Eigen::MatrixXd> &mapped_boundary)
+		int PolygonalBasis2d::build_bases(const AssemblerUtils &assembler, const std::string &assembler_name, const int n_samples_per_edge, const Mesh2D &mesh, const int n_bases,
+										  const int quadrature_order, const int integral_constraints, std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
+										  const std::map<int, InterfaceData> &poly_edge_to_data, std::map<int, Eigen::MatrixXd> &mapped_boundary)
 		{
 			assert(!mesh.is_volume());
 			if (poly_edge_to_data.empty())
@@ -407,8 +375,7 @@ namespace polyfem
 				Eigen::MatrixXd collocation_points, kernel_centers;
 				Eigen::MatrixXd rhs; // 1 row per collocation point, 1 column per basis that is nonzero on the polygon boundary
 
-				sample_polygon(e, n_samples_per_edge, mesh, poly_edge_to_data, bases, gbases,
-							   eps, local_to_global, collocation_points, kernel_centers, rhs);
+				sample_polygon(e, n_samples_per_edge, mesh, poly_edge_to_data, bases, gbases, eps, local_to_global, collocation_points, kernel_centers, rhs);
 
 				// igl::opengl::glfw::Viewer viewer;
 				// viewer.data().add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
@@ -477,18 +444,15 @@ namespace polyfem
 				};
 				if (integral_constraints == 0)
 				{
-					set_rbf(std::make_shared<RBFWithLinear>(
-						kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs, false));
+					set_rbf(std::make_shared<RBFWithLinear>(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs, false));
 				}
 				else if (integral_constraints == 1)
 				{
-					set_rbf(std::make_shared<RBFWithLinear>(
-						kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+					set_rbf(std::make_shared<RBFWithLinear>(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 				}
 				else if (integral_constraints == 2)
 				{
-					set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
-						assembler, assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+					set_rbf(std::make_shared<RBFWithQuadraticLagrange>(assembler, assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 				}
 				else
 				{

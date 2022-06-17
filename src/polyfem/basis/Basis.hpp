@@ -51,9 +51,9 @@ namespace polyfem
 			///
 			/// @brief      Initialize a basis function within an element
 			///
-			/// @param[in]  global_index  { Global index of the node associated to the basis }
-			/// @param[in]  local_index   { Local index of the node within the element }
-			/// @param[in]  node          { 1 x dim position of the node associated to the basis }
+			/// @param[in]  global_index   Global index of the node associated to the basis
+			/// @param[in]  local_index    Local index of the node within the element
+			/// @param[in]  node           1 x dim position of the node associated to the basis
 			///
 			void init(const int order, const int global_index, const int local_index, const RowVectorNd &node);
 
@@ -66,8 +66,8 @@ namespace polyfem
 			/// @brief      Evaluates the basis function over a set of uv
 			///             parameters.
 			///
-			/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
-			/// @param[out] val   { #uv x 1 vector of computed values }
+			/// @param[in]  uv     #uv x dim matrix of parameters to evaluate
+			/// @param[out] val    #uv x 1 vector of computed values
 			///
 			void eval_basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
 			{
@@ -78,8 +78,8 @@ namespace polyfem
 			///
 			/// @brief      Evaluate the gradient of the basis function.
 			///
-			/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
-			/// @param[out] val   { #uv x dim matrix of computed gradients }
+			/// @param[in]  uv     #uv x dim matrix of parameters to evaluate
+			/// @param[out] val    #uv x dim matrix of computed gradients
 			///
 			void eval_grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
 			{

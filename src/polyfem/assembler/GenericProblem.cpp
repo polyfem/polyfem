@@ -10,6 +10,32 @@ namespace polyfem
 
 	namespace assembler
 	{
+		namespace
+		{
+			std::vector<json> flatten_ids(const json &j_boundary_tmp)
+			{
+				std::vector<json> j_boundary;
+
+				for (size_t i = 0; i < j_boundary_tmp.size(); ++i)
+				{
+					const auto &tmp = j_boundary_tmp[i];
+					if (tmp["id"].is_array())
+					{
+						for (size_t j = 0; j < tmp["id"].size(); ++j)
+						{
+							json newj = tmp;
+							newj["id"] = tmp["id"][j].get<int>();
+							j_boundary.push_back(newj);
+						}
+					}
+					else
+						j_boundary.push_back(tmp);
+				}
+
+				return j_boundary;
+			}
+		} // namespace
+
 		std::shared_ptr<Interpolation> Interpolation::build(const json &params)
 		{
 			const std::string type = params["type"];
@@ -598,7 +624,8 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				int offset = boundary_ids_.size();
-				auto j_boundary = params["dirichlet_boundary"];
+				auto j_boundary_tmp = params["dirichlet_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				displacements_.resize(offset + j_boundary.size());
@@ -652,7 +679,8 @@ namespace polyfem
 				// neumann_boundary_ids_.clear();
 				const int offset = neumann_boundary_ids_.size();
 
-				auto j_boundary = params["neumann_boundary"];
+				auto j_boundary_tmp = params["neumann_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				neumann_boundary_ids_.resize(offset + j_boundary.size());
 				forces_.resize(offset + j_boundary.size());
@@ -688,7 +716,8 @@ namespace polyfem
 				// pressure_boundary_ids_.clear();
 				const int offset = pressure_boundary_ids_.size();
 
-				auto j_boundary = params["pressure_boundary"];
+				auto j_boundary_tmp = params["pressure_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				pressure_boundary_ids_.resize(offset + j_boundary.size());
 				pressures_.resize(offset + j_boundary.size());
@@ -1021,7 +1050,8 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				const int offset = boundary_ids_.size();
-				auto j_boundary = params["dirichlet_boundary"];
+				auto j_boundary_tmp = params["dirichlet_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				dirichlet_.resize(offset + j_boundary.size());
@@ -1053,7 +1083,8 @@ namespace polyfem
 			{
 				// neumann_boundary_ids_.clear();
 				const int offset = neumann_boundary_ids_.size();
-				auto j_boundary = params["neumann_boundary"];
+				auto j_boundary_tmp = params["neumann_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				neumann_boundary_ids_.resize(offset + j_boundary.size());
 				neumann_.resize(offset + j_boundary.size());

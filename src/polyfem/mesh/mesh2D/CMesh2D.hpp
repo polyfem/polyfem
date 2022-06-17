@@ -21,7 +21,10 @@ namespace polyfem
 			virtual ~CMesh2D() = default;
 			// We cannot move or copy CMesh2D because it has unique_ptrs which do
 			// not support copy and GEO::Mesh which does not support move.
-			POLYFEM_DELETE_MOVE_COPY(CMesh2D)
+			CMesh2D(CMesh2D &&) = delete;
+			CMesh2D &operator=(CMesh2D &&) = delete;
+			CMesh2D(const CMesh2D &) = delete;
+			CMesh2D &operator=(const CMesh2D &) = delete;
 
 			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
 
