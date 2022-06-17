@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/utils/EdgeSampler.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -129,12 +134,12 @@ $(document).ready(function(){initNavTree('_edge_sampler_8hpp_source.html',''); i
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        };</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html">polyfem::utils::EdgeSampler</a></div><div class="ttdef"><b>Definition:</b> EdgeSampler.hpp:10</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_a83bb23bb7271050106696488584391d8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#a83bb23bb7271050106696488584391d8">polyfem::utils::EdgeSampler::sample_3d_simplex</a></div><div class="ttdeci">static void sample_3d_simplex(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> EdgeSampler.cpp:61</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_a91e0382ff3633b4d66597f5ce2c7e42d"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#a91e0382ff3633b4d66597f5ce2c7e42d">polyfem::utils::EdgeSampler::sample_3d_cube</a></div><div class="ttdeci">static void sample_3d_cube(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> EdgeSampler.cpp:101</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_a96f10bbef426d4795d49b970068a3022"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#a96f10bbef426d4795d49b970068a3022">polyfem::utils::EdgeSampler::sample_2d_cube</a></div><div class="ttdeci">static void sample_2d_cube(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> EdgeSampler.cpp:7</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_aa971e86dfc73aed1768daacbea029c74"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#aa971e86dfc73aed1768daacbea029c74">polyfem::utils::EdgeSampler::sample_2d_simplex</a></div><div class="ttdeci">static void sample_2d_simplex(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> EdgeSampler.cpp:36</div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html">polyfem::utils::EdgeSampler</a></div><div class="ttdef"><b>Definition:</b> <a href="_edge_sampler_8hpp_source.html#l00009">EdgeSampler.hpp:10</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_a83bb23bb7271050106696488584391d8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#a83bb23bb7271050106696488584391d8">polyfem::utils::EdgeSampler::sample_3d_simplex</a></div><div class="ttdeci">static void sample_3d_simplex(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> <a href="_edge_sampler_8cpp_source.html#l00061">EdgeSampler.cpp:61</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_a91e0382ff3633b4d66597f5ce2c7e42d"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#a91e0382ff3633b4d66597f5ce2c7e42d">polyfem::utils::EdgeSampler::sample_3d_cube</a></div><div class="ttdeci">static void sample_3d_cube(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> <a href="_edge_sampler_8cpp_source.html#l00101">EdgeSampler.cpp:101</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_a96f10bbef426d4795d49b970068a3022"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#a96f10bbef426d4795d49b970068a3022">polyfem::utils::EdgeSampler::sample_2d_cube</a></div><div class="ttdeci">static void sample_2d_cube(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> <a href="_edge_sampler_8cpp_source.html#l00007">EdgeSampler.cpp:7</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_edge_sampler_html_aa971e86dfc73aed1768daacbea029c74"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_edge_sampler.html#aa971e86dfc73aed1768daacbea029c74">polyfem::utils::EdgeSampler::sample_2d_simplex</a></div><div class="ttdeci">static void sample_2d_simplex(const int resolution, Eigen::MatrixXd &amp;samples)</div><div class="ttdef"><b>Definition:</b> <a href="_edge_sampler_8cpp_source.html#l00036">EdgeSampler.cpp:36</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

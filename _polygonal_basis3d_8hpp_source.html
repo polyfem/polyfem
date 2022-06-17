@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/basis/PolygonalBasis3d.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -169,12 +174,12 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8hpp_source.html','
 <div class="ttc" id="a_element_bases_8hpp_html"><div class="ttname"><a href="_element_bases_8hpp.html">ElementBases.hpp</a></div></div>
 <div class="ttc" id="a_interface_data_8hpp_html"><div class="ttname"><a href="_interface_data_8hpp.html">InterfaceData.hpp</a></div></div>
 <div class="ttc" id="a_mesh3_d_8hpp_html"><div class="ttname"><a href="_mesh3_d_8hpp.html">Mesh3D.hpp</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_utils_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler_utils.html">polyfem::assembler::AssemblerUtils</a></div><div class="ttdef"><b>Definition:</b> AssemblerUtils.hpp:34</div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_polygonal_basis3d_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">polyfem::basis::PolygonalBasis3d</a></div><div class="ttdef"><b>Definition:</b> PolygonalBasis3d.hpp:18</div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_polygonal_basis3d_html_a95428a751c33c0ad1c42bff0298295f1"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a95428a751c33c0ad1c42bff0298295f1">polyfem::basis::PolygonalBasis3d::compute_integral_constraints</a></div><div class="ttdeci">static void compute_integral_constraints(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const mesh::Mesh3D &amp;mesh, const int n_bases, const std::vector&lt; ElementBases &gt; &amp;bases, const std::vector&lt; ElementBases &gt; &amp;gbases, Eigen::MatrixXd &amp;basis_integrals)</div><div class="ttdef"><b>Definition:</b> PolygonalBasis3d.cpp:394</div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_polygonal_basis3d_html_aa66161612405dfcb9a9f8656b3f24501"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#aa66161612405dfcb9a9f8656b3f24501">polyfem::basis::PolygonalBasis3d::build_bases</a></div><div class="ttdeci">static int build_bases(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const int n_samples_per_edge, const mesh::Mesh3D &amp;mesh, const int n_bases, const int quadrature_order, const int integral_constraints, std::vector&lt; ElementBases &gt; &amp;bases, const std::vector&lt; ElementBases &gt; &amp;gbases, const std::map&lt; int, InterfaceData &gt; &amp;poly_face_to_data, std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;mapped_boundary)</div><div class="ttdoc">Build bases over the remaining polygons of a mesh.</div><div class="ttdef"><b>Definition:</b> PolygonalBasis3d.cpp:569</div></div>
-<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh3_d_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh3_d.html">polyfem::mesh::Mesh3D</a></div><div class="ttdef"><b>Definition:</b> Mesh3D.hpp:19</div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_utils_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler_utils.html">polyfem::assembler::AssemblerUtils</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_utils_8hpp_source.html#l00033">AssemblerUtils.hpp:34</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_polygonal_basis3d_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">polyfem::basis::PolygonalBasis3d</a></div><div class="ttdef"><b>Definition:</b> <a href="_polygonal_basis3d_8hpp_source.html#l00017">PolygonalBasis3d.hpp:18</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_polygonal_basis3d_html_a95428a751c33c0ad1c42bff0298295f1"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a95428a751c33c0ad1c42bff0298295f1">polyfem::basis::PolygonalBasis3d::compute_integral_constraints</a></div><div class="ttdeci">static void compute_integral_constraints(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const mesh::Mesh3D &amp;mesh, const int n_bases, const std::vector&lt; ElementBases &gt; &amp;bases, const std::vector&lt; ElementBases &gt; &amp;gbases, Eigen::MatrixXd &amp;basis_integrals)</div><div class="ttdef"><b>Definition:</b> <a href="_polygonal_basis3d_8cpp_source.html#l00394">PolygonalBasis3d.cpp:394</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_polygonal_basis3d_html_aa66161612405dfcb9a9f8656b3f24501"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#aa66161612405dfcb9a9f8656b3f24501">polyfem::basis::PolygonalBasis3d::build_bases</a></div><div class="ttdeci">static int build_bases(const assembler::AssemblerUtils &amp;assembler, const std::string &amp;assembler_name, const int n_samples_per_edge, const mesh::Mesh3D &amp;mesh, const int n_bases, const int quadrature_order, const int integral_constraints, std::vector&lt; ElementBases &gt; &amp;bases, const std::vector&lt; ElementBases &gt; &amp;gbases, const std::map&lt; int, InterfaceData &gt; &amp;poly_face_to_data, std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;mapped_boundary)</div><div class="ttdoc">Build bases over the remaining polygons of a mesh.</div><div class="ttdef"><b>Definition:</b> <a href="_polygonal_basis3d_8cpp_source.html#l00569">PolygonalBasis3d.cpp:569</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh3_d_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh3_d.html">polyfem::mesh::Mesh3D</a></div><div class="ttdef"><b>Definition:</b> <a href="_mesh3_d_8hpp_source.html#l00018">Mesh3D.hpp:19</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

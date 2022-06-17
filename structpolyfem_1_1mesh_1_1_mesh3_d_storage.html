@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::mesh::Mesh3DStorage Struct Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -145,7 +150,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a24eb261043d5703973b1c353592c9382"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382">HF</a></td></tr>
 <tr class="separator:a24eb261043d5703973b1c353592c9382"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00064">64</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a5e5d4428b2739dcd05d90ac23e2e5f38" name="a5e5d4428b2739dcd05d90ac23e2e5f38"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5e5d4428b2739dcd05d90ac23e2e5f38">&#9670;&nbsp;</a></span>edges</h2>
 
@@ -157,6 +165,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00069">69</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01226">polyfem::mesh::CMesh3D::compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01449">polyfem::mesh::CMesh3D::edge_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00081">polyfem::mesh::CMesh3D::edge_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00045">polyfem::mesh::CMesh3D::edge_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01484">polyfem::mesh::CMesh3D::geomesh_2_mesh_storage()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00098">polyfem::mesh::CMesh3D::get_edge_elements_neighs()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00051">polyfem::mesh::CMesh3D::is_boundary_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00034">polyfem::mesh::CMesh3D::n_edges()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01496">polyfem::mesh::MeshProcessing3D::orient_surface_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, and <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01372">polyfem::mesh::MeshProcessing3D::straight_sweeping()</a>.</p>
 
 </div>
 </div>
@@ -172,6 +184,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00071">71</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01470">polyfem::mesh::CMesh3D::cell_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00043">polyfem::mesh::CMesh3D::cell_edge()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00042">polyfem::mesh::CMesh3D::cell_face()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00041">polyfem::mesh::CMesh3D::cell_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01226">polyfem::mesh::CMesh3D::compute_elements_tag()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01692">polyfem::mesh::MeshProcessing3D::ele_subdivison_levels()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00680">polyfem::mesh::MeshProcessing3D::global_orientation_hexes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01092">polyfem::mesh::CMesh3D::is_boundary_element()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01219">polyfem::mesh::CMesh3D::kernel()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00047">polyfem::mesh::CMesh3D::load()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00039">polyfem::mesh::CMesh3D::n_cell_edges()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00040">polyfem::mesh::CMesh3D::n_cell_faces()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00038">polyfem::mesh::CMesh3D::n_cell_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00032">polyfem::mesh::CMesh3D::n_cells()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00925">polyfem::mesh::CMesh3D::normalize()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">polyfem::mesh::CMesh3D::refine()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00715">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01123">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00493">polyfem::mesh::MeshProcessing3D::reorder_hex_mesh_propogation()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00609">polyfem::mesh::MeshProcessing3D::scaled_jacobian()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01372">polyfem::mesh::MeshProcessing3D::straight_sweeping()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00985">polyfem::mesh::CMesh3D::triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a1e5821bc0729272d0587fddf254f6323" name="a1e5821bc0729272d0587fddf254f6323"></a>
@@ -185,6 +201,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00073">73</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -200,6 +220,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00070">70</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01226">polyfem::mesh::CMesh3D::compute_elements_tag()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01692">polyfem::mesh::MeshProcessing3D::ele_subdivison_levels()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01456">polyfem::mesh::CMesh3D::face_barycenter()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00044">polyfem::mesh::CMesh3D::face_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01484">polyfem::mesh::CMesh3D::geomesh_2_mesh_storage()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00052">polyfem::mesh::CMesh3D::is_boundary_face()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00047">polyfem::mesh::CMesh3D::load()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00037">polyfem::mesh::CMesh3D::n_face_vertices()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00033">polyfem::mesh::CMesh3D::n_faces()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01496">polyfem::mesh::MeshProcessing3D::orient_surface_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01428">polyfem::mesh::CMesh3D::quad_area()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00715">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01123">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00493">polyfem::mesh::MeshProcessing3D::reorder_hex_mesh_propogation()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01372">polyfem::mesh::MeshProcessing3D::straight_sweeping()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00985">polyfem::mesh::CMesh3D::triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a08c9f5f8cbb08de1e06aa17688e9280a" name="a08c9f5f8cbb08de1e06aa17688e9280a"></a>
@@ -213,6 +237,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">74</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -228,6 +256,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">74</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
+
 </div>
 </div>
 <a id="ad407492c5d0656c9811dc1f7054c3e0f" name="ad407492c5d0656c9811dc1f7054c3e0f"></a>
@@ -241,6 +273,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">74</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -256,6 +292,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00074">74</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
+
 </div>
 </div>
 <a id="a24eb261043d5703973b1c353592c9382" name="a24eb261043d5703973b1c353592c9382"></a>
@@ -269,6 +309,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">75</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -284,6 +328,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00075">75</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>.</p>
+
 </div>
 </div>
 <a id="a23bc1bdff4b88058a4de1c37201ec467" name="a23bc1bdff4b88058a4de1c37201ec467"></a>
@@ -297,6 +345,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00067">67</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="p__bases_8py_source.html#l00129">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00071">q_bases.Lagrange::compute_basis()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01692">polyfem::mesh::MeshProcessing3D::ele_subdivison_levels()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01484">polyfem::mesh::CMesh3D::geomesh_2_mesh_storage()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00680">polyfem::mesh::MeshProcessing3D::global_orientation_hexes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00047">polyfem::mesh::CMesh3D::load()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00035">polyfem::mesh::CMesh3D::n_vertices()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00925">polyfem::mesh::CMesh3D::normalize()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01496">polyfem::mesh::MeshProcessing3D::orient_surface_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01213">polyfem::mesh::CMesh3D::point()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00715">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01123">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00493">polyfem::mesh::MeshProcessing3D::reorder_hex_mesh_propogation()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00609">polyfem::mesh::MeshProcessing3D::scaled_jacobian()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01372">polyfem::mesh::MeshProcessing3D::straight_sweeping()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00985">polyfem::mesh::CMesh3D::triangulate_faces()</a>.</p>
 
 </div>
 </div>
@@ -312,6 +364,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00066">66</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01484">polyfem::mesh::CMesh3D::geomesh_2_mesh_storage()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00680">polyfem::mesh::MeshProcessing3D::global_orientation_hexes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00171">polyfem::mesh::CMesh3D::load()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00018">polyfem::mesh::CMesh3D::refine()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00715">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01123">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00493">polyfem::mesh::MeshProcessing3D::reorder_hex_mesh_propogation()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00609">polyfem::mesh::MeshProcessing3D::scaled_jacobian()</a>, and <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01372">polyfem::mesh::MeshProcessing3D::straight_sweeping()</a>.</p>
+
 </div>
 </div>
 <a id="a786e5fcfd68edd5af3dc50a9501490d0" name="a786e5fcfd68edd5af3dc50a9501490d0"></a>
@@ -325,6 +381,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00068">68</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01226">polyfem::mesh::CMesh3D::compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01484">polyfem::mesh::CMesh3D::geomesh_2_mesh_storage()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00093">polyfem::mesh::CMesh3D::get_vertex_elements_neighs()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00680">polyfem::mesh::MeshProcessing3D::global_orientation_hexes()</a>, <a class="el" href="_c_mesh3_d_8hpp_source.html#l00050">polyfem::mesh::CMesh3D::is_boundary_vertex()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00047">polyfem::mesh::CMesh3D::load()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00715">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01123">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00493">polyfem::mesh::MeshProcessing3D::reorder_hex_mesh_propogation()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01372">polyfem::mesh::MeshProcessing3D::straight_sweeping()</a>, and <a class="el" href="_c_mesh3_d_8hpp_source.html#l00080">polyfem::mesh::CMesh3D::vertex_neighs()</a>.</p>
 
 </div>
 </div>

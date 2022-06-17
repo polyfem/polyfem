@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::OgdenElasticity Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -142,8 +147,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aef886b4bbd6435c1b087c5bd7a710968"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82742589096cd9ba3bfd7d7100361768"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a82742589096cd9ba3bfd7d7100361768">compute_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
 <tr class="separator:a82742589096cd9ba3bfd7d7100361768"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc5ee7a513fe138f90139222370530d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#afc5ee7a513fe138f90139222370530d8">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:afc5ee7a513fe138f90139222370530d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7834e8d55de6f6303d0c39e031885b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#ae7834e8d55de6f6303d0c39e031885b1">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:ae7834e8d55de6f6303d0c39e031885b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -164,7 +169,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a55ddd125576b71a0a96d036e13a9c3da"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a55ddd125576b71a0a96d036e13a9c3da">Ds_</a></td></tr>
 <tr class="separator:a55ddd125576b71a0a96d036e13a9c3da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00019">19</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a301aaf2ef1203301f03aaa8a43e091da" name="a301aaf2ef1203301f03aaa8a43e091da"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a301aaf2ef1203301f03aaa8a43e091da">&#9670;&nbsp;</a></span>OgdenElasticity()</h2>
 
@@ -180,37 +188,13 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00027">27</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00045">alphas_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00047">Ds_</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00046">mus_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="afc5ee7a513fe138f90139222370530d8" name="afc5ee7a513fe138f90139222370530d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc5ee7a513fe138f90139222370530d8">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::OgdenElasticity::add_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ade28059de6e425566d02a7c820123fc4" name="ade28059de6e425566d02a7c820123fc4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade28059de6e425566d02a7c820123fc4">&#9670;&nbsp;</a></span>assemble_grad()</h2>
 
@@ -242,6 +226,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00084">84</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00012">polyfem::gradient_from_energy()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -276,6 +264,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00106">106</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00109">polyfem::hessian_from_energy()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -349,6 +341,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00143">143</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00125">compute_stress_tensor()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00134">compute_von_mises_stresses()</a>.</p>
+
 </div>
 </div>
 <a id="aeb4db0539f9dc884af6c4768efb6329c" name="aeb4db0539f9dc884af6c4768efb6329c"></a>
@@ -382,6 +380,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00196">196</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -427,6 +429,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00203">203</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00045">alphas_</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00016">polyfem::utils::determinant()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00047">Ds_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00046">mus_</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
 </div>
 </div>
 <a id="a1e093387f9236412334a8c3fc5d44a3e" name="a1e093387f9236412334a8c3fc5d44a3e"></a>
@@ -444,6 +450,10 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00068">68</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>.</p>
 
 </div>
 </div>
@@ -497,6 +507,10 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00125">125</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8cpp_source.html#l00143">assign_stress_tensor()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+
 </div>
 </div>
 <a id="aef886b4bbd6435c1b087c5bd7a710968" name="aef886b4bbd6435c1b087c5bd7a710968"></a>
@@ -549,6 +563,32 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00134">134</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8cpp_source.html#l00143">assign_stress_tensor()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00243">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
+
+</div>
+</div>
+<a id="ae7834e8d55de6f6303d0c39e031885b1" name="ae7834e8d55de6f6303d0c39e031885b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7834e8d55de6f6303d0c39e031885b1">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::OgdenElasticity::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00038">38</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00045">alphas_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00047">Ds_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00046">mus_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00043">size_</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+
 </div>
 </div>
 <a id="ae718bf8a7c9d4eac8eee36cae9eeb715" name="ae718bf8a7c9d4eac8eee36cae9eeb715"></a>
@@ -566,6 +606,10 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00062">62</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00043">size_</a>.</p>
 
 </div>
 </div>
@@ -626,6 +670,12 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">31</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00043">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00084">assemble_grad()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00106">assemble_hessian()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00143">assign_stress_tensor()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00203">compute_energy_aux()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00068">compute_rhs()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00125">compute_stress_tensor()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00062">set_size()</a>.</p>
+
 </div>
 </div>
 <a id="afda59ed835843e15d20a01d499a526b9" name="afda59ed835843e15d20a01d499a526b9"></a>
@@ -677,6 +727,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00045">45</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00203">compute_energy_aux()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00027">OgdenElasticity()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00038">set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="a55ddd125576b71a0a96d036e13a9c3da" name="a55ddd125576b71a0a96d036e13a9c3da"></a>
@@ -698,6 +752,10 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00047">47</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00203">compute_energy_aux()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00027">OgdenElasticity()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00038">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -721,6 +779,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00046">46</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00203">compute_energy_aux()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00027">OgdenElasticity()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00038">set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="ad154a20f89ba2993f87da0223965e50e" name="ad154a20f89ba2993f87da0223965e50e"></a>
@@ -743,11 +805,15 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00043">43</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00038">set_parameters()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00062">set_size()</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00031">size()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_ogden_elasticity_8cpp.html">OgdenElasticity.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

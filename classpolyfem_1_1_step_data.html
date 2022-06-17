@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::StepData Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -130,6 +135,8 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >class to store time stepping data </p>
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00070">70</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="aa92f65ee11622b332bb96620f01cc9b6" name="aa92f65ee11622b332bb96620f01cc9b6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa92f65ee11622b332bb96620f01cc9b6">&#9670;&nbsp;</a></span>alnl_problem</h2>
@@ -142,6 +149,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00075">75</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
 
 </div>
 </div>
@@ -157,6 +168,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00074">74</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l01593">polyfem::State::save_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l01144">polyfem::State::save_volume()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00424">polyfem::State::solve_transient_tensor_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="ace4b57579d376c737880668e6cfa19e5" name="ace4b57579d376c737880668e6cfa19e5"></a>
@@ -170,6 +185,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00073">73</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00075">polyfem::State::init_transient()</a>, and <a class="el" href="_state_8cpp_source.html#l01192">polyfem::State::solve_problem()</a>.</p>
 
 </div>
 </div>

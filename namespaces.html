@@ -13,13 +13,11 @@
 <title>PolyFEM: Namespace List</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -168,7 +173,7 @@ $(document).ready(function(){initNavTree('namespaces.html',''); initResizable();
 <tr id="row_6_2_2_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis2d.html" target="_self">FEBasis2d</a></td><td class="desc"></td></tr>
 <tr id="row_6_2_3_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html" target="_self">FEBasis3d</a></td><td class="desc"></td></tr>
 <tr id="row_6_2_4_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html" target="_self">InterfaceData</a></td><td class="desc"></td></tr>
-<tr id="row_6_2_5_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html" target="_self">Local2Global</a></td><td class="desc">Represents a virtual node of the FEM mesh as a weighted sum of real (unknown) nodes. This class stores the id, weights and positions of the real mesh nodes to use in the weighted sum </td></tr>
+<tr id="row_6_2_5_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html" target="_self">Local2Global</a></td><td class="desc">Represents a virtual node of the FEM mesh as a weighted sum of real (unknown) nodes </td></tr>
 <tr id="row_6_2_6_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html" target="_self">MVPolygonalBasis2d</a></td><td class="desc"></td></tr>
 <tr id="row_6_2_7_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis2d.html" target="_self">PolygonalBasis2d</a></td><td class="desc"></td></tr>
 <tr id="row_6_2_8_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html" target="_self">PolygonalBasis3d</a></td><td class="desc"></td></tr>
@@ -194,10 +199,10 @@ $(document).ready(function(){initNavTree('namespaces.html',''); initResizable();
 <tr id="row_6_3_7_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="structpolyfem_1_1mesh_1_1_element.html" target="_self">Element</a></td><td class="desc"></td></tr>
 <tr id="row_6_3_8_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="structpolyfem_1_1mesh_1_1_face.html" target="_self">Face</a></td><td class="desc"></td></tr>
 <tr id="row_6_3_9_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html" target="_self">LocalBoundary</a></td><td class="desc"></td></tr>
-<tr id="row_6_3_10_" class="even" style="display:none;"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span id="arr_6_3_10_" class="arrow" onclick="toggleFolder('6_3_10_')">&#9658;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html" target="_self">Mesh</a></td><td class="desc"></td></tr>
-<tr id="row_6_3_10_0_" class="even" style="display:none;"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html" target="_self">CellNodes</a></td><td class="desc"></td></tr>
-<tr id="row_6_3_10_1_" class="even" style="display:none;"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html" target="_self">EdgeNodes</a></td><td class="desc"></td></tr>
-<tr id="row_6_3_10_2_" class="even" style="display:none;"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html" target="_self">FaceNodes</a></td><td class="desc"></td></tr>
+<tr id="row_6_3_10_" class="even" style="display:none;"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span id="arr_6_3_10_" class="arrow" onclick="toggleFolder('6_3_10_')">&#9658;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html" target="_self">Mesh</a></td><td class="desc">Abstract mesh class to capture 2d/3d conforming and non-conforming meshes </td></tr>
+<tr id="row_6_3_10_0_" class="even" style="display:none;"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html" target="_self">CellNodes</a></td><td class="desc">Class to store the high-order cells nodes </td></tr>
+<tr id="row_6_3_10_1_" class="even" style="display:none;"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html" target="_self">EdgeNodes</a></td><td class="desc">Class to store the high-order edge nodes </td></tr>
+<tr id="row_6_3_10_2_" class="even" style="display:none;"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html" target="_self">FaceNodes</a></td><td class="desc">Class to store the high-order face nodes </td></tr>
 <tr id="row_6_3_11_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html" target="_self">Mesh2D</a></td><td class="desc"></td></tr>
 <tr id="row_6_3_12_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html" target="_self">Mesh3D</a></td><td class="desc"></td></tr>
 <tr id="row_6_3_13_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="structpolyfem_1_1mesh_1_1_mesh3_d_storage.html" target="_self">Mesh3DStorage</a></td><td class="desc"></td></tr>
@@ -303,7 +308,7 @@ $(document).ready(function(){initNavTree('namespaces.html',''); initResizable();
 <tr id="row_6_8_0_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html" target="_self">BDFTimeIntegrator</a></td><td class="desc"></td></tr>
 <tr id="row_6_8_1_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html" target="_self">ImplicitEuler</a></td><td class="desc"></td></tr>
 <tr id="row_6_8_2_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html" target="_self">ImplicitNewmark</a></td><td class="desc"></td></tr>
-<tr id="row_6_8_3_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html" target="_self">ImplicitTimeIntegrator</a></td><td class="desc"></td></tr>
+<tr id="row_6_8_3_" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html" target="_self">ImplicitTimeIntegrator</a></td><td class="desc">Implicit time integrator of a second order ODE (equivently a system of coupled first order ODEs) </td></tr>
 <tr id="row_6_9_"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><span id="arr_6_9_" class="arrow" onclick="toggleFolder('6_9_')">&#9658;</span><span class="icona"><span class="icon">N</span></span><a class="el" href="namespacepolyfem_1_1utils.html" target="_self">utils</a></td><td class="desc"></td></tr>
 <tr id="row_6_9_0_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">N</span></span><a class="el" href="namespacepolyfem_1_1utils_1_1_string_utils.html" target="_self">StringUtils</a></td><td class="desc"></td></tr>
 <tr id="row_6_9_1_" class="even" style="display:none;"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html" target="_self">AxisPlaneSelection</a></td><td class="desc"></td></tr>

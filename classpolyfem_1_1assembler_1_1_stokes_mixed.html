@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::StokesMixed Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -129,51 +134,18 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9e77f7a2115d10d59c1d1804f2ccc0e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab861e092144a21d213998a691716919b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_mixed.html#ab861e092144a21d213998a691716919b">cols</a> () const</td></tr>
 <tr class="separator:ab861e092144a21d213998a691716919b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f1433e3dd5d781c8826eaadefaa6a4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_mixed.html#a5f1433e3dd5d781c8826eaadefaa6a4f">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a5f1433e3dd5d781c8826eaadefaa6a4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a251ed2a9ee827970e826516fc81d0e41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_mixed.html#a251ed2a9ee827970e826516fc81d0e41">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a251ed2a9ee827970e826516fc81d0e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a4accf229afcc5827a9996c7c3763ee7d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_mixed.html#a4accf229afcc5827a9996c7c3763ee7d">size_</a> = 2</td></tr>
 <tr class="separator:a4accf229afcc5827a9996c7c3763ee7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5f1433e3dd5d781c8826eaadefaa6a4f" name="a5f1433e3dd5d781c8826eaadefaa6a4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f1433e3dd5d781c8826eaadefaa6a4f">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::StokesMixed::add_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00043">43</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a9b4d69df69d2625b3bd54c985cac638f" name="a9b4d69df69d2625b3bd54c985cac638f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9b4d69df69d2625b3bd54c985cac638f">&#9670;&nbsp;</a></span>assemble()</h2>
 
@@ -218,6 +190,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00149">149</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_stokes_8hpp_source.html#l00056">cols()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, and <a class="el" href="_stokes_8hpp_source.html#l00055">rows()</a>.</p>
+
 </div>
 </div>
 <a id="ab861e092144a21d213998a691716919b" name="ab861e092144a21d213998a691716919b"></a>
@@ -243,6 +219,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00056">56</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_stokes_8cpp_source.html#l00149">assemble()</a>.</p>
+
 </div>
 </div>
 <a id="a0f92fe326a32617e972ed5ade963a329" name="a0f92fe326a32617e972ed5ade963a329"></a>
@@ -260,6 +240,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00170">170</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00055">rows()</a>.</p>
 
 </div>
 </div>
@@ -286,6 +270,34 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00055">55</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00061">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_stokes_8cpp_source.html#l00149">assemble()</a>, and <a class="el" href="_stokes_8cpp_source.html#l00170">compute_rhs()</a>.</p>
+
+</div>
+</div>
+<a id="a251ed2a9ee827970e826516fc81d0e41" name="a251ed2a9ee827970e826516fc81d0e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a251ed2a9ee827970e826516fc81d0e41">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::StokesMixed::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00138">138</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00061">size_</a>.</p>
+
 </div>
 </div>
 <a id="ac1f65e1e1a31122bf9c392eb886d0374" name="ac1f65e1e1a31122bf9c392eb886d0374"></a>
@@ -303,6 +315,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00143">143</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00061">size_</a>.</p>
 
 </div>
 </div>
@@ -327,11 +343,15 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00061">61</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_stokes_8hpp_source.html#l00055">rows()</a>, <a class="el" href="_stokes_8cpp_source.html#l00138">set_parameters()</a>, and <a class="el" href="_stokes_8cpp_source.html#l00143">set_size()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_stokes_8cpp.html">Stokes.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

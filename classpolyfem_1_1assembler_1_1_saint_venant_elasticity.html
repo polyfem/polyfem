@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::SaintVenantElasticity Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -148,8 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8e77f88163378982ba93c8d90524ff4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bc6fe6f6302e84c761917fcb06bc51a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a5bc6fe6f6302e84c761917fcb06bc51a">compute_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
 <tr class="separator:a5bc6fe6f6302e84c761917fcb06bc51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf97583fc693eca6f42e50998a0fb0f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#abf97583fc693eca6f42e50998a0fb0f8">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:abf97583fc693eca6f42e50998a0fb0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1daa1d3c7aa88b719c9ae306cfc422fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a1daa1d3c7aa88b719c9ae306cfc422fb">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a1daa1d3c7aa88b719c9ae306cfc422fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -169,7 +174,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ae323dbb4530ee0cc952df28e92ddc8ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html">ElasticityTensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#ae323dbb4530ee0cc952df28e92ddc8ab">elasticity_tensor_</a></td></tr>
 <tr class="separator:ae323dbb4530ee0cc952df28e92ddc8ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00019">19</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a579170927fcdb8ec26b6fc6052f0a41c" name="a579170927fcdb8ec26b6fc6052f0a41c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a579170927fcdb8ec26b6fc6052f0a41c">&#9670;&nbsp;</a></span>SaintVenantElasticity()</h2>
 
@@ -185,37 +193,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00042">42</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="abf97583fc693eca6f42e50998a0fb0f8" name="abf97583fc693eca6f42e50998a0fb0f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf97583fc693eca6f42e50998a0fb0f8">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::SaintVenantElasticity::add_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a22ce1d3bb7581d6c38ccd37807d03b74" name="a22ce1d3bb7581d6c38ccd37807d03b74"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a22ce1d3bb7581d6c38ccd37807d03b74">&#9670;&nbsp;</a></span>assemble_grad()</h2>
 
@@ -247,6 +229,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00109">109</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00012">polyfem::gradient_from_energy()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -281,6 +267,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00131">131</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00109">polyfem::hessian_from_energy()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -354,6 +344,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00168">168</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00216">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00150">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00159">compute_von_mises_stresses()</a>.</p>
+
 </div>
 </div>
 <a id="a413da656eaf458ee7b54323b70e2766e" name="a413da656eaf458ee7b54323b70e2766e"></a>
@@ -387,6 +383,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00217">217</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -432,6 +432,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00224">224</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
 </div>
 </div>
 <a id="a84dfd620d1f5f2fff7cb3df6b83917a9" name="a84dfd620d1f5f2fff7cb3df6b83917a9"></a>
@@ -449,6 +453,10 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00093">93</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00292">polyfem::autogen::saint_venant_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00382">polyfem::autogen::saint_venant_3d_function()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
 
 </div>
 </div>
@@ -502,6 +510,10 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00150">150</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00168">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+
 </div>
 </div>
 <a id="a8e77f88163378982ba93c8d90524ff4b" name="a8e77f88163378982ba93c8d90524ff4b"></a>
@@ -554,6 +566,32 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00159">159</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00168">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00243">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
+
+</div>
+</div>
+<a id="a1daa1d3c7aa88b719c9ae306cfc422fb" name="a1daa1d3c7aa88b719c9ae306cfc422fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1daa1d3c7aa88b719c9ae306cfc422fb">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::SaintVenantElasticity::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">46</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00298">polyfem::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00372">polyfem::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00416">polyfem::ElasticityTensor::set_from_young_poisson()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
+
 </div>
 </div>
 <a id="a7eeeb39737270cfccb427fbfb621bc5a" name="a7eeeb39737270cfccb427fbfb621bc5a"></a>
@@ -571,6 +609,10 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">75</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00264">polyfem::ElasticityTensor::resize()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
 
 </div>
 </div>
@@ -630,6 +672,12 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">31</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00109">assemble_grad()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00131">assemble_hessian()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00168">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00224">compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00093">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00150">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>.</p>
 
 </div>
 </div>
@@ -697,6 +745,12 @@ template&lt;typename T , unsigned long N&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">82</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, and <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00168">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00224">compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00150">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00159">compute_von_mises_stresses()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -720,6 +774,10 @@ template&lt;typename T , unsigned long N&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">45</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00093">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">set_parameters()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>.</p>
+
 </div>
 </div>
 <a id="af127df2d7a9581c289444e8d1bebe1fc" name="af127df2d7a9581c289444e8d1bebe1fc"></a>
@@ -742,11 +800,15 @@ template&lt;typename T , unsigned long N&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">43</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">set_parameters()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_saint_venant_elasticity_8cpp.html">SaintVenantElasticity.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

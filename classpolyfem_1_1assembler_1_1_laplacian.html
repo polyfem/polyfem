@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::Laplacian Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -126,46 +131,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa8e0ff38c8a29abddedc8c810f0d5c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2873136c84cb9fd31de2c61c8013bf9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#ae2873136c84cb9fd31de2c61c8013bf9">size</a> () const</td></tr>
 <tr class="separator:ae2873136c84cb9fd31de2c61c8013bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabdf3294f903abc4d56e009229be7aa1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#aabdf3294f903abc4d56e009229be7aa1">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:aabdf3294f903abc4d56e009229be7aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41948de154bfb24e01553ba05f9062ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a41948de154bfb24e01553ba05f9062ef">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a41948de154bfb24e01553ba05f9062ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="aabdf3294f903abc4d56e009229be7aa1" name="aabdf3294f903abc4d56e009229be7aa1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabdf3294f903abc4d56e009229be7aa1">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::Laplacian::add_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00014">14</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a58dfd69f41627cde022c4d3b8534fdbc" name="a58dfd69f41627cde022c4d3b8534fdbc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a58dfd69f41627cde022c4d3b8534fdbc">&#9670;&nbsp;</a></span>assemble()</h2>
 
@@ -204,6 +176,10 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00009">9</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
 </div>
 </div>
 <a id="a64ee41e5fb4d757a06ef826e38572c3f" name="a64ee41e5fb4d757a06ef826e38572c3f"></a>
@@ -221,6 +197,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00022">22</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
 </div>
 </div>
@@ -250,6 +228,36 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00030">30</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a41948de154bfb24e01553ba05f9062ef" name="a41948de154bfb24e01553ba05f9062ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41948de154bfb24e01553ba05f9062ef">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::Laplacian::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00035">35</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
+
 </div>
 </div>
 <a id="ae2873136c84cb9fd31de2c61c8013bf9" name="ae2873136c84cb9fd31de2c61c8013bf9"></a>
@@ -275,11 +283,13 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00031">31</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_laplacian_8cpp.html">Laplacian.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

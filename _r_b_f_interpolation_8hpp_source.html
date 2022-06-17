@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/utils/RBFInterpolation.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -155,15 +160,15 @@ $(document).ready(function(){initNavTree('_r_b_f_interpolation_8hpp_source.html'
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        };</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="a_v_t_u_writer_8hpp_html_acf5631d82c6b5d2e3fd25b621b014c3c"><div class="ttname"><a href="_v_t_u_writer_8hpp.html#acf5631d82c6b5d2e3fd25b621b014c3c">data_</a></div><div class="ttdeci">Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; data_</div><div class="ttdef"><b>Definition:</b> VTUWriter.hpp:74</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html">polyfem::utils::RBFInterpolation</a></div><div class="ttdef"><b>Definition:</b> RBFInterpolation.hpp:17</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a5b08103ad47753fbc245efdd4118a846"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a5b08103ad47753fbc245efdd4118a846">polyfem::utils::RBFInterpolation::RBFInterpolation</a></div><div class="ttdeci">RBFInterpolation()</div><div class="ttdef"><b>Definition:</b> RBFInterpolation.hpp:19</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a6ae7f38098ec764e96bfe91662f973a1"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a6ae7f38098ec764e96bfe91662f973a1">polyfem::utils::RBFInterpolation::init</a></div><div class="ttdeci">void init(const Eigen::MatrixXd &amp;fun, const Eigen::MatrixXd &amp;pts, const std::function&lt; double(double)&gt; &amp;rbf)</div><div class="ttdef"><b>Definition:</b> RBFInterpolation.cpp:94</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a746682cdb9e00f45807fea4c92b3c8c7"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a746682cdb9e00f45807fea4c92b3c8c7">polyfem::utils::RBFInterpolation::interpolate</a></div><div class="ttdeci">Eigen::MatrixXd interpolate(const Eigen::MatrixXd &amp;pts) const</div><div class="ttdef"><b>Definition:</b> RBFInterpolation.cpp:127</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a962a6d64d1e999464eb944fdde7c6727"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a962a6d64d1e999464eb944fdde7c6727">polyfem::utils::RBFInterpolation::centers_</a></div><div class="ttdeci">Eigen::MatrixXd centers_</div><div class="ttdef"><b>Definition:</b> RBFInterpolation.hpp:38</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_acd011eed9653d67d6fe32169caf5a778"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#acd011eed9653d67d6fe32169caf5a778">polyfem::utils::RBFInterpolation::rbf_</a></div><div class="ttdeci">std::function&lt; double(double)&gt; rbf_</div><div class="ttdef"><b>Definition:</b> RBFInterpolation.hpp:41</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_af3f992d871c8a7ea3d3eb045442a5789"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#af3f992d871c8a7ea3d3eb045442a5789">polyfem::utils::RBFInterpolation::weights_</a></div><div class="ttdeci">Eigen::MatrixXd weights_</div><div class="ttdef"><b>Definition:</b> RBFInterpolation.hpp:39</div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
+<div class="ttc" id="a_v_t_u_writer_8hpp_html_acf5631d82c6b5d2e3fd25b621b014c3c"><div class="ttname"><a href="_v_t_u_writer_8hpp.html#acf5631d82c6b5d2e3fd25b621b014c3c">data_</a></div><div class="ttdeci">Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; data_</div><div class="ttdef"><b>Definition:</b> <a href="_v_t_u_writer_8hpp_source.html#l00074">VTUWriter.hpp:74</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html">polyfem::utils::RBFInterpolation</a></div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8hpp_source.html#l00016">RBFInterpolation.hpp:17</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a5b08103ad47753fbc245efdd4118a846"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a5b08103ad47753fbc245efdd4118a846">polyfem::utils::RBFInterpolation::RBFInterpolation</a></div><div class="ttdeci">RBFInterpolation()</div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8hpp_source.html#l00019">RBFInterpolation.hpp:19</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a6ae7f38098ec764e96bfe91662f973a1"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a6ae7f38098ec764e96bfe91662f973a1">polyfem::utils::RBFInterpolation::init</a></div><div class="ttdeci">void init(const Eigen::MatrixXd &amp;fun, const Eigen::MatrixXd &amp;pts, const std::function&lt; double(double)&gt; &amp;rbf)</div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8cpp_source.html#l00094">RBFInterpolation.cpp:94</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a746682cdb9e00f45807fea4c92b3c8c7"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a746682cdb9e00f45807fea4c92b3c8c7">polyfem::utils::RBFInterpolation::interpolate</a></div><div class="ttdeci">Eigen::MatrixXd interpolate(const Eigen::MatrixXd &amp;pts) const</div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8cpp_source.html#l00127">RBFInterpolation.cpp:127</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_a962a6d64d1e999464eb944fdde7c6727"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a962a6d64d1e999464eb944fdde7c6727">polyfem::utils::RBFInterpolation::centers_</a></div><div class="ttdeci">Eigen::MatrixXd centers_</div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8hpp_source.html#l00038">RBFInterpolation.hpp:38</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_acd011eed9653d67d6fe32169caf5a778"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#acd011eed9653d67d6fe32169caf5a778">polyfem::utils::RBFInterpolation::rbf_</a></div><div class="ttdeci">std::function&lt; double(double)&gt; rbf_</div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8hpp_source.html#l00041">RBFInterpolation.hpp:41</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_r_b_f_interpolation_html_af3f992d871c8a7ea3d3eb045442a5789"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#af3f992d871c8a7ea3d3eb045442a5789">polyfem::utils::RBFInterpolation::weights_</a></div><div class="ttdeci">Eigen::MatrixXd weights_</div><div class="ttdef"><b>Definition:</b> <a href="_r_b_f_interpolation_8hpp_source.html#l00039">RBFInterpolation.hpp:39</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

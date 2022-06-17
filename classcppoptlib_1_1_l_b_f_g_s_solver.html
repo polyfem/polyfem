@@ -13,13 +13,11 @@
 <title>PolyFEM: cppoptlib::LBFGSSolver&lt; ProblemType &gt; Class Template Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -207,6 +212,7 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:addb84c8025e0aacd6f587448e280718d"><td class="memItemLeft" align="right" valign="top">LBFGSpp::BFGSMat&lt; Scalar &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d">m_bfgs</a></td></tr>
 <tr class="separator:addb84c8025e0aacd6f587448e280718d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa741292644bb9a929b34394594516c99"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">m_history_size</a> = 6</td></tr>
+<tr class="memdesc:aa741292644bb9a929b34394594516c99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of corrections to approximate the inverse Hessian matrix.  <a href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa741292644bb9a929b34394594516c99">More...</a><br /></td></tr>
 <tr class="separator:aa741292644bb9a929b34394594516c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1b0b66c3406dd4407cac203a50e01dd"><td class="memItemLeft" align="right" valign="top">TVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_l_b_f_g_s_solver.html#aa1b0b66c3406dd4407cac203a50e01dd">m_prev_x</a></td></tr>
 <tr class="separator:aa1b0b66c3406dd4407cac203a50e01dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -244,7 +250,11 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a8b7058680a67c72a2a6c06639d49cced inherit pro_attribs_classcppoptlib_1_1_nonlinear_solver"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a8b7058680a67c72a2a6c06639d49cced">obj_fun_time</a></td></tr>
 <tr class="separator:a8b7058680a67c72a2a6c06639d49cced inherit pro_attribs_classcppoptlib_1_1_nonlinear_solver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename ProblemType&gt;<br />
+class cppoptlib::LBFGSSolver&lt; ProblemType &gt;</div>
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00019">19</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a0aef5ce6596639e38020973e955ada16" name="a0aef5ce6596639e38020973e955ada16"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0aef5ce6596639e38020973e955ada16">&#9670;&nbsp;</a></span>Superclass</h2>
 
@@ -258,6 +268,8 @@ template&lt;typename ProblemType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00022">22</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -287,6 +299,8 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00026">26</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -341,6 +355,10 @@ template&lt;typename ProblemType &gt; </div>
 
 <p>Implements <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a50ae1ef959df52fddb792fb9880e9f80">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00086">86</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_nonlinear_solver_8hpp_source.html#l00338">cppoptlib::NonlinearSolver&lt; ProblemType &gt;::descent_strategy</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00061">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_bfgs</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00072">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_prev_grad</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00071">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_prev_x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
 </div>
 </div>
 <a id="a3bbc88f9f0f024f718f3bd23875a2e7b" name="a3bbc88f9f0f024f718f3bd23875a2e7b"></a>
@@ -369,6 +387,8 @@ template&lt;typename ProblemType &gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a2a5108b56a7a989b5edc1c455c09d36b">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00034">34</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -399,6 +419,8 @@ template&lt;typename ProblemType &gt; </div>
 
 <p>Reimplemented from <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a107a4558ff1894a3373b8ef1ae408b91">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_nonlinear_solver_8hpp_source.html#l00334">334</a> of file <a class="el" href="_nonlinear_solver_8hpp_source.html">NonlinearSolver.hpp</a>.</p>
+
 </div>
 </div>
 <a id="a54202b43d98e7d53422c2b601309b487" name="a54202b43d98e7d53422c2b601309b487"></a>
@@ -428,6 +450,10 @@ template&lt;typename ProblemType &gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a70ecc9f4b8a29111c8aae889f2ad77f3">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00037">37</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_nonlinear_solver_8hpp_source.html#l00338">cppoptlib::NonlinearSolver&lt; ProblemType &gt;::descent_strategy</a>.</p>
 
 </div>
 </div>
@@ -488,6 +514,10 @@ template&lt;typename ProblemType &gt; </div>
 
 <p>Implements <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#add8f592c83e28ed9b4d7967518248cde">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00050">50</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_nonlinear_solver_8hpp_source.html#l00338">cppoptlib::NonlinearSolver&lt; ProblemType &gt;::descent_strategy</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00061">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_bfgs</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00069">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_history_size</a>, and <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00071">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_prev_x</a>.</p>
+
 </div>
 </div>
 <a id="abff7a650655eb86d5251ca45bf3922b3" name="abff7a650655eb86d5251ca45bf3922b3"></a>
@@ -516,6 +546,8 @@ template&lt;typename ProblemType &gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#abe4300acf51ac72a5904c65d091bd8c5">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00031">31</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -557,6 +589,10 @@ template&lt;typename ProblemType &gt; </div>
 
 <p>Reimplemented from <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#ab1651c7dcd4f7269ba77b4d55335a351">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00074">74</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_nonlinear_solver_8hpp_source.html#l00338">cppoptlib::NonlinearSolver&lt; ProblemType &gt;::descent_strategy</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00061">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_bfgs</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00069">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_history_size</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00072">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_prev_grad</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00071">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::m_prev_x</a>, <a class="el" href="_nonlinear_solver_8hpp_source.html#l00316">cppoptlib::NonlinearSolver&lt; ProblemType &gt;::reset()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -582,6 +618,10 @@ template&lt;typename ProblemType &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00061">61</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00086">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::compute_update_direction()</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00050">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::increase_descent_strategy()</a>, and <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00074">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::reset()</a>.</p>
+
 </div>
 </div>
 <a id="aa741292644bb9a929b34394594516c99" name="aa741292644bb9a929b34394594516c99"></a>
@@ -605,7 +645,13 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >The number of corrections to approximate the inverse Hessian matrix. The L-BFGS routine stores the computation results of previous m iterations to approximate the inverse Hessian matrix of the current iteration. This parameter controls the size of the limited memories (corrections). The default value is <code>6</code>. Values less than <code>3</code> are not recommended. Large values will result in excessive computing time. </p>
+
+<p>The number of corrections to approximate the inverse Hessian matrix. </p>
+<p >The L-BFGS routine stores the computation results of previous m iterations to approximate the inverse Hessian matrix of the current iteration. This parameter controls the size of the limited memories (corrections). The default value is <code>6</code>. Values less than <code>3</code> are not recommended. Large values will result in excessive computing time. </p>
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00069">69</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00050">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::increase_descent_strategy()</a>, and <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00074">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::reset()</a>.</p>
 
 </div>
 </div>
@@ -631,6 +677,10 @@ template&lt;typename ProblemType &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00072">72</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00086">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::compute_update_direction()</a>, and <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00074">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::reset()</a>.</p>
+
 </div>
 </div>
 <a id="aa1b0b66c3406dd4407cac203a50e01dd" name="aa1b0b66c3406dd4407cac203a50e01dd"></a>
@@ -654,6 +704,10 @@ template&lt;typename ProblemType &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00071">71</a> of file <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html">LBFGSSolver.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00086">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::compute_update_direction()</a>, <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00050">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::increase_descent_strategy()</a>, and <a class="el" href="_l_b_f_g_s_solver_8hpp_source.html#l00074">cppoptlib::LBFGSSolver&lt; ProblemType &gt;::reset()</a>.</p>
 
 </div>
 </div>

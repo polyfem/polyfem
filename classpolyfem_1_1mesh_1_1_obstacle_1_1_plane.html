@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::mesh::Obstacle::Plane Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -153,7 +158,10 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:afc7fe04b1a13466cfb6118db2227a3f7"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#afc7fe04b1a13466cfb6118db2227a3f7">vis_e_</a></td></tr>
 <tr class="separator:afc7fe04b1a13466cfb6118db2227a3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00069">69</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a3138591dda10ee1cb9c67a9c1205726b" name="a3138591dda10ee1cb9c67a9c1205726b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3138591dda10ee1cb9c67a9c1205726b">&#9670;&nbsp;</a></span>Plane()</h2>
 
@@ -188,6 +196,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00072">72</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00192">construct_vis_mesh()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00082">normal()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00094">normal_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00081">origin()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -214,6 +226,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00192">192</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00388">polyfem::assembler::cross()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00091">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00082">normal()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00098">vis_e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00097">vis_f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00096">vis_v_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8hpp_source.html#l00072">Plane()</a>.</p>
+
 </div>
 </div>
 <a id="ac7477d65d1416630ff8b40369854474f" name="ac7477d65d1416630ff8b40369854474f"></a>
@@ -238,6 +256,12 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00082">82</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00094">normal_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00192">construct_vis_mesh()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00072">Plane()</a>.</p>
 
 </div>
 </div>
@@ -264,6 +288,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00081">81</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00093">origin_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8hpp_source.html#l00072">Plane()</a>.</p>
+
 </div>
 </div>
 <a id="aca0b1e457353454fb15c2720ff716e53" name="aca0b1e457353454fb15c2720ff716e53"></a>
@@ -288,6 +318,10 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00086">86</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00098">vis_e_</a>.</p>
 
 </div>
 </div>
@@ -314,6 +348,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00085">85</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00097">vis_f_</a>.</p>
+
 </div>
 </div>
 <a id="aaa965c347548471284fcecb2b00602a3" name="aaa965c347548471284fcecb2b00602a3"></a>
@@ -339,6 +377,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00084">84</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00096">vis_v_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -362,6 +404,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00091">91</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00192">construct_vis_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="ade628a8e0a1e8f74dedab392a0548a36" name="ade628a8e0a1e8f74dedab392a0548a36"></a>
@@ -383,6 +429,10 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00094">94</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8hpp_source.html#l00082">normal()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00072">Plane()</a>.</p>
 
 </div>
 </div>
@@ -406,6 +456,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00093">93</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8hpp_source.html#l00081">origin()</a>.</p>
+
 </div>
 </div>
 <a id="afc7fe04b1a13466cfb6118db2227a3f7" name="afc7fe04b1a13466cfb6118db2227a3f7"></a>
@@ -427,6 +481,10 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00098">98</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00192">construct_vis_mesh()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00086">vis_e()</a>.</p>
 
 </div>
 </div>
@@ -450,6 +508,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00097">97</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00192">construct_vis_mesh()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00085">vis_f()</a>.</p>
+
 </div>
 </div>
 <a id="a422e186b8d48985cbe65026c33d6aa3c" name="a422e186b8d48985cbe65026c33d6aa3c"></a>
@@ -472,11 +534,15 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00096">96</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00192">construct_vis_mesh()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00084">vis_v()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/mesh/<a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a></li>
-<li>src/polyfem/mesh/<a class="el" href="_obstacle_8cpp.html">Obstacle.cpp</a></li>
+<li>src/polyfem/mesh/<a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

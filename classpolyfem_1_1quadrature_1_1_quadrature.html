@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::quadrature::Quadrature Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -123,7 +128,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aa4c4c3ae343c37060d42ebe0611f6034"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html#aa4c4c3ae343c37060d42ebe0611f6034">weights</a></td></tr>
 <tr class="separator:aa4c4c3ae343c37060d42ebe0611f6034"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_quadrature_8hpp_source.html#l00009">9</a> of file <a class="el" href="_quadrature_8hpp_source.html">Quadrature.hpp</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a46c318d4c3492e2e2e34be997c832b98" name="a46c318d4c3492e2e2e34be997c832b98"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a46c318d4c3492e2e2e34be997c832b98">&#9670;&nbsp;</a></span>points</h2>
 
@@ -135,6 +143,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_quadrature_8hpp_source.html#l00012">12</a> of file <a class="el" href="_quadrature_8hpp_source.html">Quadrature.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_element_assembly_values_8cpp_source.html#l00199">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="p__bases_8py_source.html#l00129">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00071">q_bases.Lagrange::compute_basis()</a>, <a class="el" href="_r_b_f_with_linear_8cpp_source.html#l00152">polyfem::basis::RBFWithLinear::compute_constraints_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00195">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00370">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_3d()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00597">polyfem::State::compute_stress_at_quadrature_points()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">polyfem::basis::RBFWithQuadratic::compute_weights()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00457">polyfem::basis::RBFWithQuadraticLagrange::compute_weights()</a>, <a class="el" href="_polygon_quadrature_8cpp_source.html#l00034">polyfem::quadrature::PolygonQuadrature::get_quadrature()</a>, <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>, <a class="el" href="_hex_quadrature_8cpp_source.html#l00017">polyfem::quadrature::HexQuadrature::get_quadrature()</a>, <a class="el" href="_line_quadrature_8cpp_source.html#l04707">polyfem::quadrature::LineQuadrature::get_quadrature()</a>, <a class="el" href="_quad_quadrature_8cpp_source.html#l00016">polyfem::quadrature::QuadQuadrature::get_quadrature()</a>, <a class="el" href="_tet_quadrature_8cpp_source.html#l00031">polyfem::quadrature::TetQuadrature::get_quadrature()</a>, <a class="el" href="_tri_quadrature_8cpp_source.html#l00030">polyfem::quadrature::TriQuadrature::get_quadrature()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00353">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00103">polyfem::utils::BoundarySampler::quadrature_for_quad_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00149">polyfem::utils::BoundarySampler::quadrature_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00126">polyfem::utils::BoundarySampler::quadrature_for_tri_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00184">polyfem::utils::BoundarySampler::quadrature_for_tri_face()</a>.</p>
 
 </div>
 </div>
@@ -149,6 +161,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_quadrature_8hpp_source.html#l00013">13</a> of file <a class="el" href="_quadrature_8hpp_source.html">Quadrature.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00622">polyfem::assembler::NLAssembler&lt; LocalAssembler &gt;::assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00054">polyfem::assembler::RhsAssembler::assemble()</a>, <a class="el" href="_assembler_8cpp_source.html#l00419">polyfem::assembler::NLAssembler&lt; LocalAssembler &gt;::assemble_grad()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00399">polyfem::State::average_grad_based_function()</a>, <a class="el" href="_r_b_f_with_linear_8cpp_source.html#l00152">polyfem::basis::RBFWithLinear::compute_constraints_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00195">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00370">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_3d()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00669">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_state_8cpp_source.html#l00272">polyfem::compute_integral_constraints()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">polyfem::basis::RBFWithQuadratic::compute_weights()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00457">polyfem::basis::RBFWithQuadraticLagrange::compute_weights()</a>, <a class="el" href="_r_b_f_with_linear_8cpp_source.html#l00192">polyfem::basis::RBFWithLinear::compute_weights()</a>, <a class="el" href="_polygon_quadrature_8cpp_source.html#l00034">polyfem::quadrature::PolygonQuadrature::get_quadrature()</a>, <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>, <a class="el" href="_hex_quadrature_8cpp_source.html#l00017">polyfem::quadrature::HexQuadrature::get_quadrature()</a>, <a class="el" href="_line_quadrature_8cpp_source.html#l04707">polyfem::quadrature::LineQuadrature::get_quadrature()</a>, <a class="el" href="_quad_quadrature_8cpp_source.html#l00016">polyfem::quadrature::QuadQuadrature::get_quadrature()</a>, <a class="el" href="_tet_quadrature_8cpp_source.html#l00031">polyfem::quadrature::TetQuadrature::get_quadrature()</a>, <a class="el" href="_tri_quadrature_8cpp_source.html#l00030">polyfem::quadrature::TriQuadrature::get_quadrature()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00103">polyfem::utils::BoundarySampler::quadrature_for_quad_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00149">polyfem::utils::BoundarySampler::quadrature_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00126">polyfem::utils::BoundarySampler::quadrature_for_tri_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00184">polyfem::utils::BoundarySampler::quadrature_for_tri_face()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00123">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
 
 </div>
 </div>

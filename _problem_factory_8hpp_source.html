@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/problem/ProblemFactory.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -138,14 +143,14 @@ $(document).ready(function(){initNavTree('_problem_factory_8hpp_source.html','')
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    } <span class="comment">// namespace problem</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_problem_8hpp_html"><div class="ttname"><a href="_problem_8hpp.html">Problem.hpp</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html">polyfem::problem::ProblemFactory</a></div><div class="ttdef"><b>Definition:</b> ProblemFactory.hpp:14</div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a2e6f46d52ecd01d0e15c261ca8baa65f"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a2e6f46d52ecd01d0e15c261ca8baa65f">polyfem::problem::ProblemFactory::ProblemFactory</a></div><div class="ttdeci">ProblemFactory()</div><div class="ttdef"><b>Definition:</b> ProblemFactory.cpp:29</div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a51f2a49c57cea74cd4de1f8291aebac9"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9">polyfem::problem::ProblemFactory::problem_names_</a></div><div class="ttdeci">std::vector&lt; std::string &gt; problem_names_</div><div class="ttdef"><b>Definition:</b> ProblemFactory.hpp:24</div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a57ec3ee51e2a5f56c8720c8db78409da"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da">polyfem::problem::ProblemFactory::problems_</a></div><div class="ttdeci">std::map&lt; std::string, std::function&lt; std::shared_ptr&lt; assembler::Problem &gt;()&gt; &gt; problems_</div><div class="ttdef"><b>Definition:</b> ProblemFactory.hpp:23</div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a99180df965ca121a69d75d1059074019"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a99180df965ca121a69d75d1059074019">polyfem::problem::ProblemFactory::get_problem_names</a></div><div class="ttdeci">const std::vector&lt; std::string &gt; &amp; get_problem_names() const</div><div class="ttdef"><b>Definition:</b> ProblemFactory.hpp:19</div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_aa0b0d09b559f11aeb691c69b593ec4e6"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#aa0b0d09b559f11aeb691c69b593ec4e6">polyfem::problem::ProblemFactory::factory</a></div><div class="ttdeci">static const ProblemFactory &amp; factory()</div><div class="ttdef"><b>Definition:</b> ProblemFactory.cpp:22</div></div>
-<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_ac6f349b50bb9005320043fc708d128f3"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#ac6f349b50bb9005320043fc708d128f3">polyfem::problem::ProblemFactory::get_problem</a></div><div class="ttdeci">std::shared_ptr&lt; assembler::Problem &gt; get_problem(const std::string &amp;problem) const</div><div class="ttdef"><b>Definition:</b> ProblemFactory.cpp:84</div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html">polyfem::problem::ProblemFactory</a></div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8hpp_source.html#l00013">ProblemFactory.hpp:14</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a2e6f46d52ecd01d0e15c261ca8baa65f"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a2e6f46d52ecd01d0e15c261ca8baa65f">polyfem::problem::ProblemFactory::ProblemFactory</a></div><div class="ttdeci">ProblemFactory()</div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8cpp_source.html#l00029">ProblemFactory.cpp:29</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a51f2a49c57cea74cd4de1f8291aebac9"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9">polyfem::problem::ProblemFactory::problem_names_</a></div><div class="ttdeci">std::vector&lt; std::string &gt; problem_names_</div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8hpp_source.html#l00024">ProblemFactory.hpp:24</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a57ec3ee51e2a5f56c8720c8db78409da"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da">polyfem::problem::ProblemFactory::problems_</a></div><div class="ttdeci">std::map&lt; std::string, std::function&lt; std::shared_ptr&lt; assembler::Problem &gt;()&gt; &gt; problems_</div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8hpp_source.html#l00023">ProblemFactory.hpp:23</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_a99180df965ca121a69d75d1059074019"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#a99180df965ca121a69d75d1059074019">polyfem::problem::ProblemFactory::get_problem_names</a></div><div class="ttdeci">const std::vector&lt; std::string &gt; &amp; get_problem_names() const</div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8hpp_source.html#l00019">ProblemFactory.hpp:19</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_aa0b0d09b559f11aeb691c69b593ec4e6"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#aa0b0d09b559f11aeb691c69b593ec4e6">polyfem::problem::ProblemFactory::factory</a></div><div class="ttdeci">static const ProblemFactory &amp; factory()</div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8cpp_source.html#l00022">ProblemFactory.cpp:22</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1problem_1_1_problem_factory_html_ac6f349b50bb9005320043fc708d128f3"><div class="ttname"><a href="classpolyfem_1_1problem_1_1_problem_factory.html#ac6f349b50bb9005320043fc708d128f3">polyfem::problem::ProblemFactory::get_problem</a></div><div class="ttdeci">std::shared_ptr&lt; assembler::Problem &gt; get_problem(const std::string &amp;problem) const</div><div class="ttdef"><b>Definition:</b> <a href="_problem_factory_8cpp_source.html#l00084">ProblemFactory.cpp:84</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

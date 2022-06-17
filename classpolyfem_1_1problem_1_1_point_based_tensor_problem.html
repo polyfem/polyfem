@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::problem::PointBasedTensorProblem Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -248,7 +253,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050">splitting_pressure_boundary_ids_</a></td></tr>
 <tr class="separator:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00016">16</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac57ac13376bd505732090c546a004a1a" name="ac57ac13376bd505732090c546a004a1a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac57ac13376bd505732090c546a004a1a">&#9670;&nbsp;</a></span>PointBasedTensorProblem()</h2>
 
@@ -264,6 +272,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00109">109</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00141">translation_</a>.</p>
 
 </div>
 </div>
@@ -301,6 +313,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00108">108</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00108">add_constant()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8hpp_source.html#l00108">add_constant()</a>.</p>
 
 </div>
 </div>
@@ -341,6 +359,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00158">158</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00138">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00142">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -395,6 +417,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00115">115</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00115">add_function()</a>, and <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8hpp_source.html#l00115">add_function()</a>.</p>
 
 </div>
 </div>
@@ -453,6 +481,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00175">175</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00138">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00142">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -513,6 +545,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00122">122</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00115">add_function()</a>, and <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>.</p>
 
 </div>
 </div>
@@ -578,6 +614,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00193">193</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00138">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00142">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="p__bases_8py_source.html#l00385">p_bases::func</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">neumann_bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>.</p>
+
 </div>
 </div>
 <a id="a55666aae9bf7e95a86ca4282d363b74f" name="a55666aae9bf7e95a86ca4282d363b74f"></a>
@@ -604,6 +644,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7a6babbba43f88cfb5a966ff68593fab">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00134">134</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00138">all_dimensions_dirichlet_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00014">polyfem::problem::PointBasedTensorProblem::BCValue::init()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00217">is_dimension_dirichet()</a>.</p>
 
 </div>
 </div>
@@ -667,6 +713,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00120">120</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00142">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00131">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00404">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00140">scaling_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00141">translation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="ae52c3df204c90e59973150565c7be06c" name="ae52c3df204c90e59973150565c7be06c"></a>
@@ -693,6 +743,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00103">103</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -732,6 +784,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a58751552ead1c373f759824138efcbb9">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00217">217</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00134">all_dimensions_dirichlet()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00142">bc_</a>, and <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>.</p>
+
 </div>
 </div>
 <a id="abeff2f754f43ae499dbc413de4a2b42f" name="abeff2f754f43ae499dbc413de4a2b42f"></a>
@@ -759,6 +815,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00098">98</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00139">rhs_</a>.</p>
+
 </div>
 </div>
 <a id="ac50debe5b3a962040225ea0b0590f837" name="ac50debe5b3a962040225ea0b0590f837"></a>
@@ -785,6 +845,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00104">104</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -854,6 +916,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a0a756bb1ea13fad6a955c9b5a884cba9">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00139">139</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00131">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00404">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">neumann_bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00140">scaling_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00141">translation_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="a7725968ed3521eaa33e12a0542a2cc23" name="a7725968ed3521eaa33e12a0542a2cc23"></a>
@@ -910,6 +976,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00115">115</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00139">rhs_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="a4dab4f2bc4f0e91e529e2f5354a99caf" name="a4dab4f2bc4f0e91e529e2f5354a99caf"></a>
@@ -938,6 +1008,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00234">234</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_point_based_problem_8hpp_source.html#l00138">all_dimensions_dirichlet_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00142">bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00137">initialized_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00143">neumann_bc_</a>, <a class="el" href="_problem_8hpp_source.html#l00060">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00139">rhs_</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00140">scaling_</a>, and <a class="el" href="_point_based_problem_8hpp_source.html#l00141">translation_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -961,6 +1035,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00138">138</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">add_function()</a>, <a class="el" href="_point_based_problem_8hpp_source.html#l00134">all_dimensions_dirichlet()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="acb3def64177fad34fa048ee8fc07af45" name="acb3def64177fad34fa048ee8fc07af45"></a>
@@ -982,6 +1060,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00142">142</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">add_function()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00120">dirichlet_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00217">is_dimension_dirichet()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1005,6 +1087,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00137">137</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="a85f1457a662f93d8b4140a7aa9452656" name="a85f1457a662f93d8b4140a7aa9452656"></a>
@@ -1026,6 +1112,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00143">143</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00158">add_constant()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00175">add_function()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00139">neumann_bc()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1049,6 +1139,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00139">139</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8hpp_source.html#l00098">is_rhs_zero()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00115">rhs()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="a1ba494ea763c1e6407e03fe91b76c223" name="a1ba494ea763c1e6407e03fe91b76c223"></a>
@@ -1070,6 +1164,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00140">140</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00120">dirichlet_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00139">neumann_bc()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1093,11 +1191,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_point_based_problem_8hpp_source.html#l00141">141</a> of file <a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_point_based_problem_8cpp_source.html#l00120">dirichlet_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00139">neumann_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00109">PointBasedTensorProblem()</a>, and <a class="el" href="_point_based_problem_8cpp_source.html#l00234">set_parameters()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/problem/<a class="el" href="_point_based_problem_8hpp_source.html">PointBasedProblem.hpp</a></li>
-<li>src/polyfem/problem/<a class="el" href="_point_based_problem_8cpp.html">PointBasedProblem.cpp</a></li>
+<li>src/polyfem/problem/<a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

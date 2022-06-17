@@ -12,7 +12,7 @@ var classpolyfem_1_1problem_1_1_elastic_cantilever_exact =
     [ "is_scalar", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a52f0b06b74f836bdeb52857d2143ca71", null ],
     [ "neumann_bc", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a6ba31b5dd378ce28984e9cd93b81c20f", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#ad890dddc0d8f1a0ed3fa5bbeda990298", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a66bdfdeb9ccf4b9f9b3b944b7b7589a9", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#ad503917ad4aff030859f902130c4140f", null ],
     [ "size_for", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a51eb6c3fe6a6c4cb55a94dcf9787f0e3", null ],
     [ "E", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#aea8b1559cb29ca65fd14d461930d5e54", null ],
     [ "formulation", "classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a7298d65425e3c4dde962434e6fb8e240", null ],

@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::ElasticityTensor Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -146,7 +151,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a0e01f177c6a8d2268949d2a6a1c583c9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_elasticity_tensor.html#a0e01f177c6a8d2268949d2a6a1c583c9">size_</a></td></tr>
 <tr class="separator:a0e01f177c6a8d2268949d2a6a1c583c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00052">52</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a404363e5d9bae3f95214fc750155391f" name="a404363e5d9bae3f95214fc750155391f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a404363e5d9bae3f95214fc750155391f">&#9670;&nbsp;</a></span>compute_stress()</h2>
 
@@ -174,6 +182,10 @@ template&lt;int DIM&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00469">469</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00079">polyfem::assembler::HookeLinearElasticity::assemble()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00212">polyfem::assembler::HookeLinearElasticity::assign_stress_tensor()</a>.</p>
 
 </div>
 </div>
@@ -203,6 +215,10 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00287">287</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">stifness_tensor_</a>.</p>
+
 </div>
 </div>
 <a id="a4e9f39c5516c90409a9f784e1abcfbbd" name="a4e9f39c5516c90409a9f784e1abcfbbd"></a>
@@ -231,6 +247,10 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">276</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">stifness_tensor_</a>.</p>
+
 </div>
 </div>
 <a id="a4ee91fa8fb9d2aebc875e37ad8b06a91" name="a4ee91fa8fb9d2aebc875e37ad8b06a91"></a>
@@ -249,6 +269,12 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00264">264</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">size_</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">stifness_tensor_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00072">polyfem::assembler::HookeLinearElasticity::set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">polyfem::assembler::SaintVenantElasticity::set_size()</a>.</p>
+
 </div>
 </div>
 <a id="ad50c73bf54e7e4cfe324fa0758d6eb96" name="ad50c73bf54e7e4cfe324fa0758d6eb96"></a>
@@ -266,6 +292,12 @@ template&lt;int DIM&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00298">298</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00439">set_orthotropic()</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00043">polyfem::assembler::HookeLinearElasticity::set_parameters()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">polyfem::assembler::SaintVenantElasticity::set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -295,6 +327,12 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00372">372</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00043">polyfem::assembler::HookeLinearElasticity::set_parameters()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">polyfem::assembler::SaintVenantElasticity::set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="a51d7746954da06122bab9ec57287f203" name="a51d7746954da06122bab9ec57287f203"></a>
@@ -322,6 +360,12 @@ template&lt;int DIM&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00416">416</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">size_</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">stifness_tensor_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00043">polyfem::assembler::HookeLinearElasticity::set_parameters()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">polyfem::assembler::SaintVenantElasticity::set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -393,6 +437,12 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00439">439</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">size_</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">stifness_tensor_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00298">set_from_entries()</a>.</p>
+
 </div>
 </div>
 <a id="aceeae7a73f8f73040879fb0b2c7157b1" name="aceeae7a73f8f73040879fb0b2c7157b1"></a>
@@ -433,6 +483,10 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00457">457</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">size_</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">stifness_tensor_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -456,6 +510,10 @@ template&lt;int DIM&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00075">75</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00264">resize()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00298">set_from_entries()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00372">set_from_lambda_mu()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00416">set_from_young_poisson()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00439">set_orthotropic()</a>.</p>
+
 </div>
 </div>
 <a id="a9418a73c2ef3ac7c027dd18a47bca6b1" name="a9418a73c2ef3ac7c027dd18a47bca6b1"></a>
@@ -478,11 +536,15 @@ template&lt;int DIM&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00074">74</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">operator()()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00264">resize()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00416">set_from_young_poisson()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00439">set_orthotropic()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a></li>
-<li>src/polyfem/utils/<a class="el" href="_elasticity_utils_8cpp.html">ElasticityUtils.cpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

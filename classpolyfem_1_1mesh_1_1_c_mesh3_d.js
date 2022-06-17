@@ -56,8 +56,6 @@ var classpolyfem_1_1mesh_1_1_c_mesh3_d =
     [ "point", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a33601f3e6fc6787f568737b846d4688b", null ],
     [ "quad_area", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a74d6d178ff12b1a81530b6f8e45ebb12", null ],
     [ "refine", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a225f0a878aa728022dbbbf9ac0f10673", null ],
-    [ "save", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2576b69505c88c88e91e13407a0715f5", null ],
-    [ "save", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a7bc4ecc9f1b674e0e9b8587b9d19843f", null ],
     [ "switch_edge", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aeb4a7e49a0c18eb64fefebcf24fc5105", null ],
     [ "switch_element", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3cfea403309bceeed37f9451562db2fb", null ],
     [ "switch_face", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aef9a81ceaffffad57aaa36e910c567b0", null ],

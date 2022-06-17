@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/assembler/MassMatrixAssembler.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -147,16 +152,16 @@ $(document).ready(function(){initNavTree('_mass_matrix_assembler_8hpp_source.htm
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        };</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    } <span class="comment">// namespace assembler</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="a_assembler_8cpp_html_a75b8caa5c3e5e68853e282a4792eeb95"><div class="ttname"><a href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a></div><div class="ttdeci">SpareMatrixCache cache</div><div class="ttdef"><b>Definition:</b> Assembler.cpp:38</div></div>
+<div class="ttc" id="a_assembler_8cpp_html_a75b8caa5c3e5e68853e282a4792eeb95"><div class="ttname"><a href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a></div><div class="ttdeci">SpareMatrixCache cache</div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00038">Assembler.cpp:38</a></div></div>
 <div class="ttc" id="a_assembly_vals_cache_8hpp_html"><div class="ttname"><a href="_assembly_vals_cache_8hpp.html">AssemblyValsCache.hpp</a></div></div>
 <div class="ttc" id="a_elasticity_utils_8hpp_html"><div class="ttname"><a href="_elasticity_utils_8hpp.html">ElasticityUtils.hpp</a></div></div>
 <div class="ttc" id="a_element_assembly_values_8hpp_html"><div class="ttname"><a href="_element_assembly_values_8hpp.html">ElementAssemblyValues.hpp</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_density_html"><div class="ttname"><a href="classpolyfem_1_1_density.html">polyfem::Density</a></div><div class="ttdef"><b>Definition:</b> ElasticityUtils.hpp:104</div></div>
-<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembly_vals_cache_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">polyfem::assembler::AssemblyValsCache</a></div><div class="ttdef"><b>Definition:</b> AssemblyValsCache.hpp:10</div></div>
-<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html">polyfem::assembler::MassMatrixAssembler</a></div><div class="ttdef"><b>Definition:</b> MassMatrixAssembler.hpp:19</div></div>
-<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html_a331b61c7a70e3d0f42a199d4d87444ef"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef">polyfem::assembler::MassMatrixAssembler::assemble</a></div><div class="ttdeci">void assemble(const bool is_volume, const int size, const int n_basis, const Density &amp;density, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, StiffnessMatrix &amp;mass) const</div><div class="ttdef"><b>Definition:</b> MassMatrixAssembler.cpp:43</div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
-<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> Types.hpp:20</div></div>
+<div class="ttc" id="aclasspolyfem_1_1_density_html"><div class="ttname"><a href="classpolyfem_1_1_density.html">polyfem::Density</a></div><div class="ttdef"><b>Definition:</b> <a href="_elasticity_utils_8hpp_source.html#l00105">ElasticityUtils.hpp:106</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembly_vals_cache_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">polyfem::assembler::AssemblyValsCache</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembly_vals_cache_8hpp_source.html#l00009">AssemblyValsCache.hpp:10</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html">polyfem::assembler::MassMatrixAssembler</a></div><div class="ttdef"><b>Definition:</b> <a href="_mass_matrix_assembler_8hpp_source.html#l00018">MassMatrixAssembler.hpp:19</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html_a331b61c7a70e3d0f42a199d4d87444ef"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef">polyfem::assembler::MassMatrixAssembler::assemble</a></div><div class="ttdeci">void assemble(const bool is_volume, const int size, const int n_basis, const Density &amp;density, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, StiffnessMatrix &amp;mass) const</div><div class="ttdef"><b>Definition:</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00043">MassMatrixAssembler.cpp:43</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00020">Types.hpp:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

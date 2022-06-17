@@ -13,13 +13,11 @@
 <title>PolyFEM: Member List</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -113,11 +118,11 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_helmholt
 
 <p>This is the complete list of members for <a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a638cf913d2bdc4f0a30a371d72448f0f">add_multimaterial</a>(const int index, const json &amp;params)</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a60ba75be6329f7a4611c1ba0286e7a4d">assemble</a>(const ElementAssemblyValues &amp;vals, const int i, const int j, const QuadratureVector &amp;da) const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#aabcaefa898d19f27af59c5fcb6097e1c">compute_rhs</a>(const AutodiffHessianPt &amp;pt) const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#afb70ebb12dd6b22aa2d04cc7e07ef9cf">k_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a870bcf124763649093c90542ed60fc23">kernel</a>(const int dim, const AutodiffScalarGrad &amp;r) const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a60ba75be6329f7a4611c1ba0286e7a4d">assemble</a>(const ElementAssemblyValues &amp;vals, const int i, const int j, const QuadratureVector &amp;da) const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#aabcaefa898d19f27af59c5fcb6097e1c">compute_rhs</a>(const AutodiffHessianPt &amp;pt) const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#afb70ebb12dd6b22aa2d04cc7e07ef9cf">k_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a870bcf124763649093c90542ed60fc23">kernel</a>(const int dim, const AutodiffScalarGrad &amp;r) const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a1d8b2088c915230e784c38f57938ec82">set_parameters</a>(const json &amp;params)</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a1d56bab4f6940501a2a933dc97b4e32f">size</a>() const</td><td class="entry"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html">polyfem::assembler::Helmholtz</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->

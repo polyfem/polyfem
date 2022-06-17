@@ -71,7 +71,6 @@ var classpolyfem_1_1mesh_1_1_n_c_mesh2_d =
     [ "refine", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a26bbdbd857d5b281246377a3bd1bee4e", null ],
     [ "refine_element", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a50e382eaf326b016c28ddffc49ff4f87", null ],
     [ "refine_elements", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3c09d41233578a9401ece6f8c5dd4205", null ],
-    [ "save", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a1461e7258330bd10bd682f6ded5d9cae", null ],
     [ "set_body_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3acabbd2c02512959425d9baba4fed59", null ],
     [ "set_body_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a6d72541b49d66a4f149b10ae90f8c4a2", null ],
     [ "set_boundary_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a54af5317781b52ecc4300d3785845357", null ],

@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/utils/autodiff.h File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -147,6 +152,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a78868c5bb48a430b0cf4247122dbc73b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autodiff_8h.html#a78868c5bb48a430b0cf4247122dbc73b">EIGEN_DONT_PARALLELIZE</a></td></tr>
+<tr class="memdesc:a78868c5bb48a430b0cf4247122dbc73b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automatic differentiation data type for C++, depends on the Eigen linear algebra library.  <a href="autodiff_8h.html#a78868c5bb48a430b0cf4247122dbc73b">More...</a><br /></td></tr>
 <tr class="separator:a78868c5bb48a430b0cf4247122dbc73b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e8df454775bd15e4c1a19ef8c091c24"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autodiff_8h.html#a9e8df454775bd15e4c1a19ef8c091c24">DECLARE_DIFFSCALAR_BASE</a>()&#160;&#160;&#160;	thread_local size_t <a class="el" href="struct_diff_scalar_base.html#a1be247330a1f9ec54c7c4b664306955b">DiffScalarBase::m_variableCount</a> = 0</td></tr>
 <tr class="separator:a9e8df454775bd15e4c1a19ef8c091c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,6 +182,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00084">84</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
+
 </div>
 </div>
 <a id="a78868c5bb48a430b0cf4247122dbc73b" name="a78868c5bb48a430b0cf4247122dbc73b"></a>
@@ -189,11 +197,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Automatic differentiation data type for C++, depends on the Eigen linear algebra library.</p>
+
+<p>Automatic differentiation data type for C++, depends on the Eigen linear algebra library. </p>
 <p >Copyright (c) 2012 by Wenzel Jakob. Based on code by Jon Kaldor and Eitan Grinspun.</p>
 <p >This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p>
 <p >This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p>
 <p >You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA </p>
+
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00027">27</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -226,6 +237,10 @@ template&lt;typename Scalar , typename VecType &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00459">459</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
+
+<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00150">DScalar1&lt; _Scalar, _Gradient &gt;::getGradient()</a>, and <a class="el" href="autodiff_8h_source.html#l00149">DScalar1&lt; _Scalar, _Gradient &gt;::getValue()</a>.</p>
+
 </div>
 </div>
 <a id="aa4f772b41e81a014a1bf9c9fa8d627aa" name="aa4f772b41e81a014a1bf9c9fa8d627aa"></a>
@@ -255,6 +270,10 @@ template&lt;typename Scalar , typename VecType , typename MatType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00969">969</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
+
+<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00538">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::getGradient()</a>, <a class="el" href="autodiff_8h_source.html#l00539">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::getHessian()</a>, and <a class="el" href="autodiff_8h_source.html#l00537">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::getValue()</a>.</p>
 
 </div>
 </div>

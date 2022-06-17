@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/utils/Types.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -132,12 +137,12 @@ $(document).ready(function(){initNavTree('_types_8hpp_source.html',''); initResi
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">   20</a></span>    <span class="keyword">typedef</span> Eigen::SparseMatrix&lt;double, Eigen::ColMajor&gt; <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
-<div class="ttc" id="anamespacepolyfem_html_a5d46d4510849a3d306dc60d4f365dc2c"><div class="ttname"><a href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">polyfem::VectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; VectorNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:11</div></div>
-<div class="ttc" id="anamespacepolyfem_html_a6fa9b5aafa6c994633a25aa454efc18f"><div class="ttname"><a href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">polyfem::QuadratureVector</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1 &gt; QuadratureVector</div><div class="ttdef"><b>Definition:</b> Types.hpp:15</div></div>
-<div class="ttc" id="anamespacepolyfem_html_a9b6c0c90bf84bff37213e17517526dd2"><div class="ttname"><a href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">polyfem::MatrixNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3 &gt; MatrixNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:13</div></div>
-<div class="ttc" id="anamespacepolyfem_html_abe6f92d10f655cb8c4ded3f58a6dc321"><div class="ttname"><a href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">polyfem::RowVectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3 &gt; RowVectorNd</div><div class="ttdef"><b>Definition:</b> Types.hpp:12</div></div>
-<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> Types.hpp:20</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_a5d46d4510849a3d306dc60d4f365dc2c"><div class="ttname"><a href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">polyfem::VectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; VectorNd</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00011">Types.hpp:11</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_a6fa9b5aafa6c994633a25aa454efc18f"><div class="ttname"><a href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">polyfem::QuadratureVector</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1 &gt; QuadratureVector</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00015">Types.hpp:15</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_a9b6c0c90bf84bff37213e17517526dd2"><div class="ttname"><a href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">polyfem::MatrixNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3 &gt; MatrixNd</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00013">Types.hpp:13</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_abe6f92d10f655cb8c4ded3f58a6dc321"><div class="ttname"><a href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">polyfem::RowVectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3 &gt; RowVectorNd</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00012">Types.hpp:12</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00020">Types.hpp:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

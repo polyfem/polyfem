@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::utils::BoundarySampler Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -157,7 +162,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:add6e33ea8fafcdfd2580f0949a7df48d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#add6e33ea8fafcdfd2580f0949a7df48d">boundary_quadrature</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &amp;local_boundary, const int order, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool skip_computation, Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;points, Eigen::MatrixXd &amp;normals, Eigen::VectorXd &amp;weights, Eigen::VectorXi &amp;global_primitive_ids)</td></tr>
 <tr class="separator:add6e33ea8fafcdfd2580f0949a7df48d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8hpp_source.html#l00012">12</a> of file <a class="el" href="_boundary_sampler_8hpp_source.html">BoundarySampler.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="add6e33ea8fafcdfd2580f0949a7df48d" name="add6e33ea8fafcdfd2580f0949a7df48d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#add6e33ea8fafcdfd2580f0949a7df48d">&#9670;&nbsp;</a></span>boundary_quadrature()</h2>
 
@@ -234,6 +242,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">462</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00048">polyfem::mesh::LocalBoundary::element_id()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00058">polyfem::mesh::LocalBoundary::global_primitive_id()</a>, <a class="el" href="p__bases_8py_source.html#l00225">p_bases::points</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00045">polyfem::mesh::LocalBoundary::size()</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00056">polyfem::mesh::Tri</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00050">polyfem::mesh::LocalBoundary::type()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00669">polyfem::assembler::RhsAssembler::compute_energy()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00471">polyfem::assembler::RhsAssembler::integrate_bc()</a>.</p>
+
 </div>
 </div>
 <a id="a7d837e24efe5b9e75db8487e39f4c8a9" name="a7d837e24efe5b9e75db8487e39f4c8a9"></a>
@@ -259,6 +273,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00086">86</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
 
 </div>
 </div>
@@ -308,6 +326,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">431</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00053">edge_id</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">polyfem::mesh::CMesh2D::get_index_from_face()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">polyfem::mesh::CMesh2D::n_face_vertices()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">polyfem::mesh::CMesh2D::point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">polyfem::mesh::CMesh2D::switch_edge()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a2fe4e23eb3764fe8f7b25db3e4209fad" name="a2fe4e23eb3764fe8f7b25db3e4209fad"></a>
@@ -343,6 +367,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00387">387</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
 
 </div>
 </div>
@@ -380,6 +408,10 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00407">407</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>, and <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
+
 </div>
 </div>
 <a id="a3cb05c15f577e549c9ec1aff534bfccf" name="a3cb05c15f577e549c9ec1aff534bfccf"></a>
@@ -416,6 +448,10 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00397">397</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a9ba642e0745173decb0b36d4af7e7d17" name="a9ba642e0745173decb0b36d4af7e7d17"></a>
@@ -451,6 +487,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00419">419</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>, and <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
 
 </div>
 </div>
@@ -518,6 +558,10 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">344</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00053">edge_id</a>, <a class="el" href="_mesh_8hpp_source.html#l00245">polyfem::mesh::Mesh::edge_length()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">polyfem::mesh::CMesh2D::get_index_from_face()</a>, <a class="el" href="_line_quadrature_8cpp_source.html#l04707">polyfem::quadrature::LineQuadrature::get_quadrature()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">polyfem::mesh::CMesh2D::n_face_vertices()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">polyfem::mesh::CMesh2D::point()</a>, <a class="el" href="p__bases_8py_source.html#l00225">p_bases::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">polyfem::mesh::CMesh2D::switch_edge()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>.</p>
+
 </div>
 </div>
 <a id="a282676a00275bf4a0e51d8638f9558f8" name="a282676a00275bf4a0e51d8638f9558f8"></a>
@@ -583,6 +627,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00103">103</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00245">polyfem::mesh::Mesh::edge_length()</a>, <a class="el" href="_line_quadrature_8cpp_source.html#l04707">polyfem::quadrature::LineQuadrature::get_quadrature()</a>, <a class="el" href="p__bases_8py_source.html#l00225">p_bases::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>.</p>
 
 </div>
 </div>
@@ -650,6 +698,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00149">149</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_quad_quadrature_8cpp_source.html#l00016">polyfem::quadrature::QuadQuadrature::get_quadrature()</a>, <a class="el" href="p__bases_8py_source.html#l00225">p_bases::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_mesh_8hpp_source.html#l00254">polyfem::mesh::Mesh::quad_area()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_interpolation_8cpp_source.html#l00025">polyfem::State::interpolate_boundary_function()</a>, and <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
+
 </div>
 </div>
 <a id="aec92b1bb3ff635fb517a2c26882d98a9" name="aec92b1bb3ff635fb517a2c26882d98a9"></a>
@@ -715,6 +769,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00126">126</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00245">polyfem::mesh::Mesh::edge_length()</a>, <a class="el" href="_line_quadrature_8cpp_source.html#l04707">polyfem::quadrature::LineQuadrature::get_quadrature()</a>, <a class="el" href="p__bases_8py_source.html#l00225">p_bases::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>.</p>
 
 </div>
 </div>
@@ -782,6 +840,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00184">184</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_tri_quadrature_8cpp_source.html#l00030">polyfem::quadrature::TriQuadrature::get_quadrature()</a>, <a class="el" href="p__bases_8py_source.html#l00225">p_bases::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_mesh_8hpp_source.html#l00263">polyfem::mesh::Mesh::tri_area()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_interpolation_8cpp_source.html#l00025">polyfem::State::interpolate_boundary_function()</a>, and <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
+
 </div>
 </div>
 <a id="a21ae5defcab5faf5539c6d776f5c10b8" name="a21ae5defcab5faf5539c6d776f5c10b8"></a>
@@ -848,6 +912,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">529</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00048">polyfem::mesh::LocalBoundary::element_id()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00058">polyfem::mesh::LocalBoundary::global_primitive_id()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00045">polyfem::mesh::LocalBoundary::size()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00056">polyfem::mesh::Tri</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00050">polyfem::mesh::LocalBoundary::type()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00215">polyfem::assembler::RhsAssembler::lsq_bc()</a>.</p>
+
 </div>
 </div>
 <a id="ac12965de419a6fe6b793263d39d94895" name="ac12965de419a6fe6b793263d39d94895"></a>
@@ -895,6 +965,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00216">216</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
 
 </div>
 </div>
@@ -944,6 +1018,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00250">250</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="aedbf480f1e32d3fad5ee6e2946b91099" name="aedbf480f1e32d3fad5ee6e2946b91099"></a>
@@ -992,6 +1072,10 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00233">233</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a762ea74cf87bbaff2f6877765eea7821" name="a762ea74cf87bbaff2f6877765eea7821"></a>
@@ -1039,6 +1123,10 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00275">275</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1100,6 +1188,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">306</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00053">edge_id</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">polyfem::mesh::CMesh2D::get_index_from_face()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">polyfem::mesh::CMesh2D::n_face_vertices()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">polyfem::mesh::CMesh2D::point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">polyfem::mesh::CMesh2D::switch_edge()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00152">polyfem::State::extract_vis_boundary_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="ab61e5d9274a1b87dd7d11110fd33f324" name="ab61e5d9274a1b87dd7d11110fd33f324"></a>
@@ -1126,11 +1220,15 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_boundary_sampler_8cpp_source.html#l00071">71</a> of file <a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_boundary_sampler_8hpp_source.html">BoundarySampler.hpp</a></li>
-<li>src/polyfem/utils/<a class="el" href="_boundary_sampler_8cpp.html">BoundarySampler.cpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_boundary_sampler_8cpp_source.html">BoundarySampler.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

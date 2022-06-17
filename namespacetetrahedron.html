@@ -13,13 +13,11 @@
 <title>PolyFEM: tetrahedron Namespace Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -150,6 +155,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <pre class="fragment">Generate cpp code to fill points &amp; weights.
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00142">142</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00169">main()</a>.</p>
+
 </div>
 </div>
 <a id="a06d630e86a5d3499521e2013f3325a95" name="a06d630e86a5d3499521e2013f3325a95"></a>
@@ -169,6 +178,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <pre class="fragment">Generate trivariate monomials up to given order.
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00070">70</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00101">pick_scheme()</a>.</p>
+
 </div>
 </div>
 <a id="a17a7bd7db0e17083ba27e5ca1bef1853" name="a17a7bd7db0e17083ba27e5ca1bef1853"></a>
@@ -198,6 +211,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <pre class="fragment">Integrate numerically over the reference tetrahedron.
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00029">29</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00101">pick_scheme()</a>.</p>
+
 </div>
 </div>
 <a id="a75c9bafaad4276c08e52bc8a69cdce94" name="a75c9bafaad4276c08e52bc8a69cdce94"></a>
@@ -217,6 +234,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <pre class="fragment">Integrate a function over the reference tetrahedron (0,0), (1,0), (0,1).
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00010">10</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00101">pick_scheme()</a>.</p>
+
 </div>
 </div>
 <a id="a668b9a1147d5e3431070e292760130ad" name="a668b9a1147d5e3431070e292760130ad"></a>
@@ -256,6 +277,10 @@ Functions</h2></td></tr>
 3. All its points are inside the reference tetrahedron;
 4. No point lie on an face.
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00084">84</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00101">pick_scheme()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00023">polyfem::mesh::NCMesh2D.refine()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00026">polyfem::mesh::NCMesh3D.refine()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00622">polyfem::mesh::NCMesh3D.refine_element()</a>.</p>
+
 </div>
 </div>
 <a id="a25c5bf7d54573feb2b7d1c6d109dc6d0" name="a25c5bf7d54573feb2b7d1c6d109dc6d0"></a>
@@ -274,6 +299,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <pre class="fragment">List all existing schemes for tetrahedra.
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00042">42</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00169">main()</a>.</p>
+
 </div>
 </div>
 <a id="a7a30f3081ce9820ed5be706027cb7936" name="a7a30f3081ce9820ed5be706027cb7936"></a>
@@ -290,6 +319,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00169">169</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">References <a class="el" href="tetrahedron_8py_source.html#l00142">generate_cpp()</a>, <a class="el" href="tetrahedron_8py_source.html#l00042">list_schemes()</a>, <a class="el" href="tetrahedron_8py_source.html#l00169">main()</a>, and <a class="el" href="tetrahedron_8py_source.html#l00101">pick_scheme()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00169">main()</a>.</p>
 
 </div>
 </div>
@@ -334,6 +369,12 @@ Functions</h2></td></tr>
 - Among those, keep the one with fewer number of integration points.
 - Finally, break ties using the integration error accumulated over the monomials.
 </pre> 
+<p class="definition">Definition at line <a class="el" href="tetrahedron_8py_source.html#l00101">101</a> of file <a class="el" href="tetrahedron_8py_source.html">tetrahedron.py</a>.</p>
+
+<p class="reference">References <a class="el" href="tetrahedron_8py_source.html#l00070">generate_monomials()</a>, <a class="el" href="tetrahedron_8py_source.html#l00029">integrate_approx()</a>, <a class="el" href="tetrahedron_8py_source.html#l00010">integrate_exact()</a>, and <a class="el" href="tetrahedron_8py_source.html#l00084">is_valid()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tetrahedron_8py_source.html#l00169">main()</a>.</p>
+
 </div>
 </div>
 </div><!-- contents -->

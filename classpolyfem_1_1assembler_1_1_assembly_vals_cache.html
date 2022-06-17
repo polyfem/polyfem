@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::AssemblyValsCache Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -131,7 +136,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a927a13315d2c48728a01bdcf0e0302d0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a927a13315d2c48728a01bdcf0e0302d0">cache</a></td></tr>
 <tr class="separator:a927a13315d2c48728a01bdcf0e0302d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00009">9</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5dfa837551731809bc88c9eb6f491187" name="a5dfa837551731809bc88c9eb6f491187"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5dfa837551731809bc88c9eb6f491187">&#9670;&nbsp;</a></span>clear()</h2>
 
@@ -154,6 +162,10 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00015">15</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00021">cache</a>.</p>
 
 </div>
 </div>
@@ -201,6 +213,12 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00023">23</a> of file <a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00021">cache</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00054">polyfem::assembler::RhsAssembler::assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00669">polyfem::assembler::RhsAssembler::compute_energy()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00123">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
+
 </div>
 </div>
 <a id="a9ce23aed8cb14ca35995702052fcdd26" name="a9ce23aed8cb14ca35995702052fcdd26"></a>
@@ -235,6 +253,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00010">10</a> of file <a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00021">cache</a>, and <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -258,11 +280,15 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00021">21</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00015">clear()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00023">compute()</a>, and <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00010">init()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_assembly_vals_cache_8cpp.html">AssemblyValsCache.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

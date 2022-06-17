@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::problem::ProblemFactory Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -143,7 +148,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a51f2a49c57cea74cd4de1f8291aebac9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9">problem_names_</a></td></tr>
 <tr class="separator:a51f2a49c57cea74cd4de1f8291aebac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8hpp_source.html#l00013">13</a> of file <a class="el" href="_problem_factory_8hpp_source.html">ProblemFactory.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2e6f46d52ecd01d0e15c261ca8baa65f" name="a2e6f46d52ecd01d0e15c261ca8baa65f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2e6f46d52ecd01d0e15c261ca8baa65f">&#9670;&nbsp;</a></span>ProblemFactory()</h2>
 
@@ -166,6 +174,10 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8cpp_source.html#l00029">29</a> of file <a class="el" href="_problem_factory_8cpp_source.html">ProblemFactory.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_problem_factory_8hpp_source.html#l00024">problem_names_</a>, and <a class="el" href="_problem_factory_8hpp_source.html#l00023">problems_</a>.</p>
 
 </div>
 </div>
@@ -193,6 +205,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8cpp_source.html#l00022">22</a> of file <a class="el" href="_problem_factory_8cpp_source.html">ProblemFactory.cpp</a>.</p>
+
 </div>
 </div>
 <a id="ac6f349b50bb9005320043fc708d128f3" name="ac6f349b50bb9005320043fc708d128f3"></a>
@@ -210,6 +224,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8cpp_source.html#l00084">84</a> of file <a class="el" href="_problem_factory_8cpp_source.html">ProblemFactory.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_problem_factory_8hpp_source.html#l00023">problems_</a>.</p>
 
 </div>
 </div>
@@ -236,6 +254,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8hpp_source.html#l00019">19</a> of file <a class="el" href="_problem_factory_8hpp_source.html">ProblemFactory.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_problem_factory_8hpp_source.html#l00024">problem_names_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -259,6 +281,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8hpp_source.html#l00024">24</a> of file <a class="el" href="_problem_factory_8hpp_source.html">ProblemFactory.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_problem_factory_8hpp_source.html#l00019">get_problem_names()</a>, and <a class="el" href="_problem_factory_8cpp_source.html#l00029">ProblemFactory()</a>.</p>
+
 </div>
 </div>
 <a id="a57ec3ee51e2a5f56c8720c8db78409da" name="a57ec3ee51e2a5f56c8720c8db78409da"></a>
@@ -281,11 +307,15 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_problem_factory_8hpp_source.html#l00023">23</a> of file <a class="el" href="_problem_factory_8hpp_source.html">ProblemFactory.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_problem_factory_8cpp_source.html#l00084">get_problem()</a>, and <a class="el" href="_problem_factory_8cpp_source.html#l00029">ProblemFactory()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/problem/<a class="el" href="_problem_factory_8hpp_source.html">ProblemFactory.hpp</a></li>
-<li>src/polyfem/problem/<a class="el" href="_problem_factory_8cpp.html">ProblemFactory.cpp</a></li>
+<li>src/polyfem/problem/<a class="el" href="_problem_factory_8cpp_source.html">ProblemFactory.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

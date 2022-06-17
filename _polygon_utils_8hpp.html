@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/mesh/mesh2D/PolygonUtils.hpp File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -140,16 +145,22 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a0d4be3bab49d477dc6c218108b278acc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc">polyfem::mesh::clip_polygon_by_half_plane</a> (const Eigen::MatrixXd &amp;P, const Eigen::RowVector2d &amp;q1, const Eigen::RowVector2d &amp;q2, Eigen::MatrixXd &amp;result)</td></tr>
+<tr class="memdesc:a0d4be3bab49d477dc6c218108b278acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clip a polygon by a half-plane.  <a href="namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc">More...</a><br /></td></tr>
 <tr class="separator:a0d4be3bab49d477dc6c218108b278acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa907e396724bca7b40434c67f80f2c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9">polyfem::mesh::compute_visibility_kernel</a> (const Eigen::MatrixXd &amp;IV, Eigen::MatrixXd &amp;OV)</td></tr>
+<tr class="memdesc:aaa907e396724bca7b40434c67f80f2c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine the kernel of the given polygon.  <a href="namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9">More...</a><br /></td></tr>
 <tr class="separator:aaa907e396724bca7b40434c67f80f2c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1e56322029f56281de64523a44a2b18"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18">polyfem::mesh::is_star_shaped</a> (const Eigen::MatrixXd &amp;IV, Eigen::RowVector3d &amp;bary)</td></tr>
+<tr class="memdesc:ae1e56322029f56281de64523a44a2b18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether a polygon is star-shaped or not.  <a href="namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18">More...</a><br /></td></tr>
 <tr class="separator:ae1e56322029f56281de64523a44a2b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ffb307ad1f47d970021d26cff0653d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7">polyfem::mesh::offset_polygon</a> (const Eigen::MatrixXd &amp;IV, Eigen::MatrixXd &amp;OV, double eps)</td></tr>
+<tr class="memdesc:a8ffb307ad1f47d970021d26cff0653d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute offset polygon.  <a href="namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7">More...</a><br /></td></tr>
 <tr class="separator:a8ffb307ad1f47d970021d26cff0653d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee0e69679f580e427e1db3922b2a5311"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aee0e69679f580e427e1db3922b2a5311">polyfem::mesh::is_inside</a> (const Eigen::MatrixXd &amp;IV, const Eigen::MatrixXd &amp;Q, std::vector&lt; bool &gt; &amp;inside)</td></tr>
+<tr class="memdesc:aee0e69679f580e427e1db3922b2a5311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute whether points are inside a polygon.  <a href="namespacepolyfem_1_1mesh.html#aee0e69679f580e427e1db3922b2a5311">More...</a><br /></td></tr>
 <tr class="separator:aee0e69679f580e427e1db3922b2a5311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b53129ddbb617fbeb6b26d82171fd56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a5b53129ddbb617fbeb6b26d82171fd56">polyfem::mesh::sample_polygon</a> (const Eigen::MatrixXd &amp;IV, int num_samples, Eigen::MatrixXd &amp;S)</td></tr>
+<tr class="memdesc:a5b53129ddbb617fbeb6b26d82171fd56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample points on a polygon, evenly spaced from each other.  <a href="namespacepolyfem_1_1mesh.html#a5b53129ddbb617fbeb6b26d82171fd56">More...</a><br /></td></tr>
 <tr class="separator:a5b53129ddbb617fbeb6b26d82171fd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

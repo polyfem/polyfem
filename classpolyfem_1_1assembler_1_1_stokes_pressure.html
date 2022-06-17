@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::StokesPressure Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -124,46 +129,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a140dc4fa1a012047acc8793b02d54ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1087b7f81d6e58285193104dfa93632b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#a1087b7f81d6e58285193104dfa93632b">size</a> () const</td></tr>
 <tr class="separator:a1087b7f81d6e58285193104dfa93632b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae53e224afc926812de094209671e0fb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#ae53e224afc926812de094209671e0fb6">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:ae53e224afc926812de094209671e0fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5f9c0fe4b19235f7357236cf13b2c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#a5e5f9c0fe4b19235f7357236cf13b2c7">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a5e5f9c0fe4b19235f7357236cf13b2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae53e224afc926812de094209671e0fb6" name="ae53e224afc926812de094209671e0fb6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae53e224afc926812de094209671e0fb6">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::StokesPressure::add_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00065">65</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a122a58cb7b03886cba07a0c4058cb49f" name="a122a58cb7b03886cba07a0c4058cb49f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a122a58cb7b03886cba07a0c4058cb49f">&#9670;&nbsp;</a></span>assemble()</h2>
 
@@ -210,6 +182,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00070">70</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
 </div>
 </div>
 <a id="a140dc4fa1a012047acc8793b02d54ba5" name="a140dc4fa1a012047acc8793b02d54ba5"></a>
@@ -236,6 +210,36 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00076">76</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a5e5f9c0fe4b19235f7357236cf13b2c7" name="a5e5f9c0fe4b19235f7357236cf13b2c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e5f9c0fe4b19235f7357236cf13b2c7">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::StokesPressure::set_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00084">84</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
 </div>
 </div>
 <a id="a1087b7f81d6e58285193104dfa93632b" name="a1087b7f81d6e58285193104dfa93632b"></a>
@@ -260,6 +264,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00082">82</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 
 </div>
 </div>

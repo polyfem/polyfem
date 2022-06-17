@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::solver::NLProblem Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -129,7 +134,7 @@ Inheritance diagram for polyfem::solver::NLProblem:</div>
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::NLProblem:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_n_l_problem__coll__graph.svg" width="2307" height="1602"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_n_l_problem__coll__graph.svg" width="2307" height="1660"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -318,7 +323,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:af472f4554c0b7215838731e244418297"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#af472f4554c0b7215838731e244418297">_time_integrator</a></td></tr>
 <tr class="separator:af472f4554c0b7215838731e244418297"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00019">19</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a0c0f0c01bb1c106408bf6c8346194657" name="a0c0f0c01bb1c106408bf6c8346194657"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0c0f0c01bb1c106408bf6c8346194657">&#9670;&nbsp;</a></span>THessian</h2>
 
@@ -330,6 +338,8 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00024">24</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -378,6 +388,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00074">74</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00165">_barrier_stiffness</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00193">_broad_phase_method</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00195">_ccd_max_iterations</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00194">_ccd_tolerance</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00182">_dhat</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00187">_epsv</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00190">_lagged_damping_weight</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00188">_mu</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00183">_prev_distance</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>, <a class="el" href="_state_8hpp_source.html#l00097">polyfem::State::args</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00044">polyfem::time_integrator::ImplicitTimeIntegrator::construct_time_integrator()</a>, <a class="el" href="_state_8cpp_source.html#l00059">polyfem::State::formulation()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00046">polyfem::assembler::AssemblerUtils::is_mixed()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00132">polyfem::utils::is_param_valid()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00164">use_adaptive_barrier_stiffness</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -404,6 +418,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00158">158</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00165">_barrier_stiffness</a>.</p>
+
 </div>
 </div>
 <a id="a7041ba4b4face5e45297787dea2b0204" name="a7041ba4b4face5e45297787dea2b0204"></a>
@@ -428,6 +446,12 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00504">504</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00177">polyfem::State::ass_vals_cache</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">polyfem::assembler::AssemblerUtils::assemble_problem()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_state_8hpp_source.html#l00159">polyfem::State::bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00172">cached_stiffness</a>, <a class="el" href="_state_8cpp_source.html#l00059">polyfem::State::formulation()</a>, <a class="el" href="_state_8hpp_source.html#l00163">polyfem::State::geom_bases</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00057">polyfem::assembler::AssemblerUtils::is_linear()</a>, <a class="el" href="_state_8cpp_source.html#l00345">polyfem::State::iso_parametric()</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>.</p>
 
 </div>
 </div>
@@ -457,6 +481,12 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00270">270</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00412">polyfem::State::boundary_nodes_pos</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00541">polyfem::utils::unflatten()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00276">reduced_to_full_displaced_points()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00074">polyfem::solver::ALNLProblem::value()</a>.</p>
+
 </div>
 </div>
 <a id="a0cb4b96209bb5d2f9239fa041c1dad14" name="a0cb4b96209bb5d2f9239fa041c1dad14"></a>
@@ -475,6 +505,12 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00192">192</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00516">gradient()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00201">lagging_converged()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="a790a1b07df8151327dca173dc1bc7932" name="a790a1b07df8151327dca173dc1bc7932"></a>
@@ -491,6 +527,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00235">235</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00171">_current_rhs</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00644">polyfem::assembler::RhsAssembler::compute_energy_grad()</a>, <a class="el" href="_state_8hpp_source.html#l00144">polyfem::State::density</a>, <a class="el" href="_state_8cpp_source.html#l00059">polyfem::State::formulation()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00175">ignore_inertia</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00046">polyfem::assembler::AssemblerUtils::is_mixed()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_state_8hpp_source.html#l00330">polyfem::State::local_boundary</a>, <a class="el" href="_state_8hpp_source.html#l00332">polyfem::State::local_neumann_boundary</a>, <a class="el" href="_state_8hpp_source.html#l00185">polyfem::State::mass</a>, <a class="el" href="_state_8hpp_source.html#l00220">polyfem::State::n_boundary_samples()</a>, <a class="el" href="_state_8hpp_source.html#l00201">polyfem::State::n_pressure_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>, <a class="el" href="_state_8hpp_source.html#l00187">polyfem::State::rhs</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00166">rhs_assembler</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00179">rhs_computed</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a89c629e0dab67a1b5be772fdb4a6e42b">polyfem::assembler::RhsAssembler::set_bc()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00178">t</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00521">gradient()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>.</p>
 
 </div>
 </div>
@@ -517,6 +559,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00159">159</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00189">_displaced_prev</a>.</p>
+
 </div>
 </div>
 <a id="a6b2d9637d06bc6858f5ad0a9f20f95a7" name="a6b2d9637d06bc6858f5ad0a9f20f95a7"></a>
@@ -541,6 +587,12 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00197">197</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00197">dt()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00197">dt()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00160">init_time_integrator()</a>.</p>
 
 </div>
 </div>
@@ -569,6 +621,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00662">662</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="p__bases_8py_source.html#l00232">p_bases::indices</a>, <a class="el" href="_timer_8hpp_source.html#l00005">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00574">hessian()</a>.</p>
 
 </div>
 </div>
@@ -607,6 +665,12 @@ template&lt;class FullVector &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00119">119</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00053">full_to_reduced_aux()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00521">gradient()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
 
 </div>
 </div>
@@ -664,6 +728,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00053">53</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00119">full_to_reduced()</a>.</p>
+
 </div>
 </div>
 <a id="a727281312b26149dbbce7d9e4f283d58" name="a727281312b26149dbbce7d9e4f283d58"></a>
@@ -700,6 +770,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00516">516</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00516">gradient()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00192">compute_lagging_error()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00516">gradient()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00432">is_step_valid()</a>.</p>
+
 </div>
 </div>
 <a id="af9a1e29b49c9bac86d05da9da827b0f3" name="af9a1e29b49c9bac86d05da9da827b0f3"></a>
@@ -733,6 +809,10 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00521">521</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00119">full_to_reduced()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -778,6 +858,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#a9f510579eefb6c863960b085914639bf">polyfem::solver::ALNLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00531">531</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00177">polyfem::State::ass_vals_cache</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">polyfem::assembler::AssemblerUtils::assemble_energy_gradient()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_state_8hpp_source.html#l00159">polyfem::State::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">polyfem::assembler::RhsAssembler::formulation()</a>, <a class="el" href="_state_8hpp_source.html#l00163">polyfem::State::geom_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00175">ignore_inertia</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_state_8cpp_source.html#l00345">polyfem::State::iso_parametric()</a>, <a class="el" href="_state_8hpp_source.html#l00185">polyfem::State::mass</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00166">rhs_assembler</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00521">gradient()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00104">polyfem::solver::ALNLProblem::gradient_no_rhs()</a>.</p>
+
 </div>
 </div>
 <a id="aee5bdb770e33bd7a895a070eef78d9e1" name="aee5bdb770e33bd7a895a070eef78d9e1"></a>
@@ -813,6 +899,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00574">574</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00662">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00574">hessian()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00574">hessian()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00117">polyfem::solver::ALNLProblem::hessian_full()</a>.</p>
 
 </div>
 </div>
@@ -852,6 +944,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#ad781876177d0e650edcb6201c6c1ef3f">polyfem::solver::ALNLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00581">581</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00177">polyfem::State::ass_vals_cache</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">polyfem::assembler::AssemblerUtils::assemble_energy_hessian()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_state_8hpp_source.html#l00159">polyfem::State::bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00172">cached_stiffness</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00504">compute_cached_stiffness()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">polyfem::assembler::RhsAssembler::formulation()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_state_8hpp_source.html#l00163">polyfem::State::geom_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00175">ignore_inertia</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00057">polyfem::assembler::AssemblerUtils::is_linear()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_state_8cpp_source.html#l00345">polyfem::State::iso_parametric()</a>, <a class="el" href="_state_8hpp_source.html#l00185">polyfem::State::mass</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00173">mat_cache</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, <a class="el" href="_timer_8hpp_source.html#l00005">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00180">project_to_psd</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00166">rhs_assembler</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00574">hessian()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00117">polyfem::solver::ALNLProblem::hessian_full()</a>.</p>
+
 </div>
 </div>
 <a id="a3b3a0880062ee5d63453baeaa2c1bac6" name="a3b3a0880062ee5d63453baeaa2c1bac6"></a>
@@ -869,6 +967,8 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00726">726</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
 
 </div>
 </div>
@@ -888,6 +988,10 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00113">113</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="a2d01a343df2f2414b50fad1b16ce59ea" name="a2d01a343df2f2414b50fad1b16ce59ea"></a>
@@ -905,6 +1009,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00167">167</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00189">_displaced_prev</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00276">reduced_to_full_displaced_points()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
 
 </div>
 </div>
@@ -946,6 +1056,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00160">160</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00197">dt()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>.</p>
+
 </div>
 </div>
 <a id="aaf977a037ecdecf93c79fcc4cdb4679f" name="aaf977a037ecdecf93c79fcc4cdb4679f"></a>
@@ -981,6 +1097,8 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00421">421</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
 </div>
 </div>
 <a id="adfebeeaaa01f6d9823efb881b99b5da0" name="adfebeeaaa01f6d9823efb881b99b5da0"></a>
@@ -1005,6 +1123,10 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00151">151</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00180">project_to_psd</a>.</p>
 
 </div>
 </div>
@@ -1034,6 +1156,10 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00381">381</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="ad8e4939560b4c7cef792259491da927f" name="ad8e4939560b4c7cef792259491da927f"></a>
@@ -1062,6 +1188,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00432">432</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00516">gradient()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="a173faf3793d187b2b49be48bef3e4c45" name="a173faf3793d187b2b49be48bef3e4c45"></a>
@@ -1087,6 +1219,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00153">153</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00190">_lagged_damping_weight</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>.</p>
+
 </div>
 </div>
 <a id="ad9c7a025ea8abf8cf7d68934d61a4807" name="ad9c7a025ea8abf8cf7d68934d61a4807"></a>
@@ -1104,6 +1242,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00201">201</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00097">polyfem::State::args</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00192">compute_lagging_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
 
 </div>
 </div>
@@ -1133,6 +1277,10 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00303">303</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="a5bd756f5d6b374b32081f9349968f290" name="a5bd756f5d6b374b32081f9349968f290"></a>
@@ -1149,6 +1297,12 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00323">323</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00210">_candidates</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00211">_use_cached_candidates</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
 
 </div>
 </div>
@@ -1178,6 +1332,8 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00329">329</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
 </div>
 </div>
 <a id="a7af3a3023aedf0d05b1e3b21c63955a0" name="a7af3a3023aedf0d05b1e3b21c63955a0"></a>
@@ -1205,6 +1361,8 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00745">745</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
 
 </div>
 </div>
@@ -1243,6 +1401,12 @@ template&lt;class FullVector &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00124">124</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">reduced_to_full_aux()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00276">reduced_to_full_displaced_points()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
 
 </div>
 </div>
@@ -1306,6 +1470,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00084">84</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00177">reduced_size</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>.</p>
+
 </div>
 </div>
 <a id="a538bcb0107e656136c94a26e24755d5b" name="a538bcb0107e656136c94a26e24755d5b"></a>
@@ -1333,6 +1503,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00276">276</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00270">compute_displaced_points()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00167">init_lagging()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -1368,6 +1544,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00790">790</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00424">polyfem::State::solve_transient_tensor_non_linear()</a>.</p>
+
 </div>
 </div>
 <a id="a4dc10f7bf1bd6567d32263acc6907ad8" name="a4dc10f7bf1bd6567d32263acc6907ad8"></a>
@@ -1393,6 +1575,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00148">148</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00195">_ccd_max_iterations</a>.</p>
 
 </div>
 </div>
@@ -1420,6 +1606,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00150">150</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00180">project_to_psd</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="a6f02804ddd453cc8d751dcb1e04d4829" name="a6f02804ddd453cc8d751dcb1e04d4829"></a>
@@ -1437,6 +1627,8 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00715">715</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
 
 </div>
 </div>
@@ -1466,6 +1658,8 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#a078ab7cdf7e9e9b50393b95f088e6133">polyfem::solver::ALNLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00142">142</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
 </div>
 </div>
 <a id="a084037e1e945e1697068062ee2b13ab1" name="a084037e1e945e1697068062ee2b13ab1"></a>
@@ -1483,6 +1677,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00226">226</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00179">rhs_computed</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00178">t</a>.</p>
 
 </div>
 </div>
@@ -1508,6 +1706,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00160">160</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00197">dt()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00790">save_raw()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
 
 </div>
 </div>
@@ -1535,6 +1739,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00126">126</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00165">_barrier_stiffness</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00177">full_size</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>.</p>
+
 </div>
 </div>
 <a id="ab4db7f9846e876349e8c139706eaf0b3" name="ab4db7f9846e876349e8c139706eaf0b3"></a>
@@ -1561,6 +1771,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00283">283</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00193">_broad_phase_method</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00210">_candidates</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00208">_constraint_set</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00182">_dhat</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00211">_use_cached_candidates</a>, <a class="el" href="_state_8hpp_source.html#l00418">polyfem::State::collision_mesh</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
+
 </div>
 </div>
 <a id="a86e8f09bcbf59af94801a12a0890d4f3" name="a86e8f09bcbf59af94801a12a0890d4f3"></a>
@@ -1578,6 +1794,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00173">173</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00165">_barrier_stiffness</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00208">_constraint_set</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00182">_dhat</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00209">_friction_constraint_set</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00188">_mu</a>, <a class="el" href="_state_8hpp_source.html#l00418">polyfem::State::collision_mesh</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00276">reduced_to_full_displaced_points()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00191">x_lagged</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00167">init_lagging()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
 
 </div>
 </div>
@@ -1617,6 +1839,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#aa59616fd77a849a2e3538c415a6df6ad">polyfem::solver::ALNLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00209">209</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00175">ignore_inertia</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00179">rhs_computed</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00178">t</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00126">update_barrier_stiffness()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00164">use_adaptive_barrier_stiffness</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00057">polyfem::solver::ALNLProblem::update_quantities()</a>.</p>
+
 </div>
 </div>
 <a id="ab854a9e6e1e661a25bcb1bf9e2eaa2a6" name="ab854a9e6e1e661a25bcb1bf9e2eaa2a6"></a>
@@ -1644,6 +1872,12 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#a2b63d2a7f3fe443b169db547d363bde8">polyfem::solver::ALNLProblem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00449">449</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00449">value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00449">value()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00074">polyfem::solver::ALNLProblem::value()</a>.</p>
 
 </div>
 </div>
@@ -1683,6 +1917,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#a2718409877ee5d0727b9520992ff5af0">polyfem::solver::ALNLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00454">454</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00177">polyfem::State::ass_vals_cache</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00172">polyfem::assembler::AssemblerUtils::assemble_energy()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_state_8hpp_source.html#l00159">polyfem::State::bases</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00669">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_state_8hpp_source.html#l00144">polyfem::State::density</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">polyfem::assembler::RhsAssembler::formulation()</a>, <a class="el" href="_state_8hpp_source.html#l00163">polyfem::State::geom_bases</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00175">ignore_inertia</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_state_8cpp_source.html#l00345">polyfem::State::iso_parametric()</a>, <a class="el" href="_state_8hpp_source.html#l00332">polyfem::State::local_neumann_boundary</a>, <a class="el" href="_state_8hpp_source.html#l00185">polyfem::State::mass</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00220">polyfem::State::n_boundary_samples()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00166">rhs_assembler</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00178">t</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -1706,6 +1944,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00165">165</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00158">barrier_stiffness()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00126">update_barrier_stiffness()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
+
 </div>
 </div>
 <a id="a2ebbe1e8c7b1433022d5a2248cc51825" name="a2ebbe1e8c7b1433022d5a2248cc51825"></a>
@@ -1727,6 +1969,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00193">193</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>.</p>
 
 </div>
 </div>
@@ -1750,6 +1996,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00210">210</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00323">line_search_end()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>.</p>
+
 </div>
 </div>
 <a id="aae00e8cad067c57dce568ad17a63bbb4" name="aae00e8cad067c57dce568ad17a63bbb4"></a>
@@ -1771,6 +2021,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00195">195</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00148">set_ccd_max_iterations()</a>.</p>
 
 </div>
 </div>
@@ -1794,6 +2048,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00194">194</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>.</p>
+
 </div>
 </div>
 <a id="a300d95457e62e72eb9eebe399c942c48" name="a300d95457e62e72eb9eebe399c942c48"></a>
@@ -1815,6 +2073,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00208">208</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -1838,6 +2100,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00171">171</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>.</p>
+
 </div>
 </div>
 <a id="a528f3ccf024cb9ecf21a1781198547d7" name="a528f3ccf024cb9ecf21a1781198547d7"></a>
@@ -1859,6 +2125,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00182">182</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -1884,6 +2154,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>Displaced vertices at the start of the time-step. </p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00189">189</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00159">displaced_prev()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00167">init_lagging()</a>.</p>
+
 </div>
 </div>
 <a id="ae4303e0ef484fa0232534c240f5a84ca" name="ae4303e0ef484fa0232534c240f5a84ca"></a>
@@ -1908,6 +2182,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>The boundary between static and dynamic friction. </p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00187">187</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>.</p>
+
 </div>
 </div>
 <a id="a55703debe510d9d6e7202d94a46aaec8" name="a55703debe510d9d6e7202d94a46aaec8"></a>
@@ -1929,6 +2207,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00209">209</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -1954,6 +2236,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>Weight for lagged damping (static solve). </p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00190">190</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00153">lagged_damping_weight()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>.</p>
+
 </div>
 </div>
 <a id="a1518bf8c55004e597ba71bf68f840436" name="a1518bf8c55004e597ba71bf68f840436"></a>
@@ -1978,6 +2264,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>Coefficient of friction. </p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00188">188</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
+
 </div>
 </div>
 <a id="ac13de48c22c15751b511f5b3f34ac0d8" name="ac13de48c22c15751b511f5b3f34ac0d8"></a>
@@ -1999,6 +2289,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00183">183</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>.</p>
 
 </div>
 </div>
@@ -2022,6 +2316,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00213">213</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00197">dt()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00160">init_time_integrator()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00160">time_integrator()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>.</p>
+
 </div>
 </div>
 <a id="ab1a2af0e578c57ac97ea77068b2c27dc" name="ab1a2af0e578c57ac97ea77068b2c27dc"></a>
@@ -2043,6 +2341,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00211">211</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00323">line_search_end()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>.</p>
 
 </div>
 </div>
@@ -2066,6 +2368,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00170">170</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00504">compute_cached_stiffness()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
+
 </div>
 </div>
 <a id="a502b8e1a1944c898133b03fa0d527cd9" name="a502b8e1a1944c898133b03fa0d527cd9"></a>
@@ -2087,6 +2393,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00172">172</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00504">compute_cached_stiffness()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>.</p>
 
 </div>
 </div>
@@ -2110,6 +2420,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00177">177</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00270">compute_displaced_points()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00662">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00119">full_to_reduced()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00053">full_to_reduced_aux()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">reduced_to_full_aux()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00126">update_barrier_stiffness()</a>.</p>
+
 </div>
 </div>
 <a id="a0465b0ed82cefee6c85deaf6ea1abca2" name="a0465b0ed82cefee6c85deaf6ea1abca2"></a>
@@ -2131,6 +2445,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00175">175</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
 
 </div>
 </div>
@@ -2154,6 +2472,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00167">167</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00226">substepping()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00057">polyfem::solver::ALNLProblem::update_quantities()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
+
 </div>
 </div>
 <a id="a181493c7a333867393d40a8506ccc3eb" name="a181493c7a333867393d40a8506ccc3eb"></a>
@@ -2175,6 +2497,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00173">173</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>.</p>
 
 </div>
 </div>
@@ -2198,6 +2524,8 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00184">184</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
 </div>
 </div>
 <a id="ac55b786776d7702e60ebc87e0cc116df" name="ac55b786776d7702e60ebc87e0cc116df"></a>
@@ -2219,6 +2547,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00180">180</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00151">is_project_to_psd()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00150">set_project_to_psd()</a>.</p>
 
 </div>
 </div>
@@ -2242,6 +2574,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00177">177</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00662">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00119">full_to_reduced()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00053">full_to_reduced_aux()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00432">is_step_valid()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00084">reduced_to_full_aux()</a>.</p>
+
 </div>
 </div>
 <a id="a9e187a648e375b94b0f12a5a318694b4" name="a9e187a648e375b94b0f12a5a318694b4"></a>
@@ -2263,6 +2599,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00166">166</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">polyfem::solver::ALNLProblem::update_target()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
 
 </div>
 </div>
@@ -2286,6 +2626,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00179">179</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00226">substepping()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>.</p>
+
 </div>
 </div>
 <a id="a841b1ce313e7fce53707ef16b69afd99" name="a841b1ce313e7fce53707ef16b69afd99"></a>
@@ -2307,6 +2651,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00163">163</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">polyfem::solver::ALNLProblem::ALNLProblem()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00504">compute_cached_stiffness()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00270">compute_displaced_points()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00662">full_hessian_to_reduced_hessian()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00119">full_to_reduced()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00053">full_to_reduced_aux()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">gradient_no_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">hessian_full()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00201">lagging_converged()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00124">reduced_to_full()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00084">reduced_to_full_aux()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00283">update_constraint_set()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">polyfem::solver::ALNLProblem::update_target()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
 
 </div>
 </div>
@@ -2330,6 +2678,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00178">178</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">polyfem::solver::ALNLProblem::ALNLProblem()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00235">current_rhs()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00226">substepping()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00057">polyfem::solver::ALNLProblem::update_quantities()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">polyfem::solver::ALNLProblem::update_target()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00454">value()</a>.</p>
+
 </div>
 </div>
 <a id="a7f125d1bedca6689e0d225fdcd21b328" name="a7f125d1bedca6689e0d225fdcd21b328"></a>
@@ -2351,6 +2703,10 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00164">164</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">NLProblem()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00209">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -2376,11 +2732,15 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p>The full variables from the previous lagging solve. </p>
 
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00191">191</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00173">update_lagging()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/solver/<a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a></li>
-<li>src/polyfem/solver/<a class="el" href="_n_l_problem_8cpp.html">NLProblem.cpp</a></li>
+<li>src/polyfem/solver/<a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -13,13 +13,11 @@
 <title>PolyFEM: Class Members - Variables</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -149,7 +154,7 @@ $(document).ready(function(){initNavTree('functions_vars_m.html',''); initResiza
 <li>min_edge_length&#160;:&#160;<a class="el" href="classpolyfem_1_1_state.html#addf3a2eed4b8f6c1ad861473880c6f8a">polyfem::State</a></li>
 <li>min_Jacobian&#160;:&#160;<a class="el" href="structpolyfem_1_1mesh_1_1_mesh___quality.html#a5a54a06c0dafcf90d1d250a3451cdcb2">polyfem::mesh::Mesh_Quality</a></li>
 <li>min_step_size&#160;:&#160;<a class="el" href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137">polyfem::solver::line_search::LineSearch&lt; ProblemType &gt;</a></li>
-<li>mu_or_nu_&#160;:&#160;<a class="el" href="classpolyfem_1_1_lame_parameters.html#a8d3f8ec61fbddcf9e92b5139ae843b60">polyfem::LameParameters</a></li>
+<li>mu_&#160;:&#160;<a class="el" href="classpolyfem_1_1_lame_parameters.html#a68027207f2618b93e337cfb25dfee0a7">polyfem::LameParameters</a></li>
 <li>multi_material_models_&#160;:&#160;<a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748">polyfem::assembler::MultiModel</a></li>
 <li>multi_models_elasticity_&#160;:&#160;<a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a2bd3f1bfb62a9a32dccd85e910f1336e">polyfem::assembler::AssemblerUtils</a></li>
 <li>multi_singular_boundary_count&#160;:&#160;<a class="el" href="classpolyfem_1_1_state.html#aca914a06a4364a7eed8e353773bf8bbb">polyfem::State</a></li>

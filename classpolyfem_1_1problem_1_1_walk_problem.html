@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::problem::WalkProblem Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -214,7 +219,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050">splitting_pressure_boundary_ids_</a></td></tr>
 <tr class="separator:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00165">165</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae20a3ab2eb3e3b53e35c10fd749e3eb5" name="ae20a3ab2eb3e3b53e35c10fd749e3eb5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae20a3ab2eb3e3b53e35c10fd749e3eb5">&#9670;&nbsp;</a></span>WalkProblem()</h2>
 
@@ -230,6 +238,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00594">594</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -294,6 +306,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00605">605</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00131">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00404">polyfem::mesh::Mesh::get_boundary_id()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="aa66f9409667d4c279ebed84809869ea1" name="aa66f9409667d4c279ebed84809869ea1"></a>
@@ -320,6 +336,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00179">179</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -371,6 +389,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a8625b12c6eeb7a73a8e7c67d05895367">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00628">628</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="acb7b8b34b46867eec63f2feb85210971" name="acb7b8b34b46867eec63f2feb85210971"></a>
@@ -420,6 +442,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00618">618</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
@@ -471,6 +497,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aca3a4f086b8a9fcba93d32e4258e4136">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00623">623</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="a1ff9883a17ade56963f52cd06efcbcb6" name="a1ff9883a17ade56963f52cd06efcbcb6"></a>
@@ -497,6 +527,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ad9568d26c49d9dcafebf429cd1025d78">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00182">182</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -525,6 +557,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00171">171</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
+
 </div>
 </div>
 <a id="ad2f6c49c833a9144986555d4064ae0d2" name="ad2f6c49c833a9144986555d4064ae0d2"></a>
@@ -552,6 +586,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00180">180</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
+
 </div>
 </div>
 <a id="ad8f93962fa8b3b42db9501b343c35f76" name="ad8f93962fa8b3b42db9501b343c35f76"></a>
@@ -578,6 +614,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8hpp_source.html#l00181">181</a> of file <a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -635,11 +673,15 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00600">600</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/problem/<a class="el" href="_elastic_problem_8hpp_source.html">ElasticProblem.hpp</a></li>
-<li>src/polyfem/problem/<a class="el" href="_elastic_problem_8cpp.html">ElasticProblem.cpp</a></li>
+<li>src/polyfem/problem/<a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

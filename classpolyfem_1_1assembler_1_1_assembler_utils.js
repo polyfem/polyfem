@@ -1,7 +1,6 @@
 var classpolyfem_1_1assembler_1_1_assembler_utils =
 [
     [ "AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a5ccbedc128d08706b8e53db7a2600072", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a68b9c1cc03f0b68e8e67e4bb8ff74764", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a985dc43a7a41e638f40fedf3a98afe84", null ],
     [ "assemble_energy_gradient", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a2660efadf43cc5ba1058fcd814353f78", null ],
     [ "assemble_energy_hessian", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a21c99811d569522dc7e4f57d86ac93f3", null ],
@@ -12,10 +11,12 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a74f032d63e9ded58875c38053b8ad0d0", null ],
     [ "compute_scalar_value", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aa5eb30cf750a18e20c19ecde93fc3bde", null ],
     [ "compute_tensor_value", "classpolyfem_1_1assembler_1_1_assembler_utils.html#addd752547163ac089167266b4895bf4a", null ],
+    [ "init_multimaterial", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a8f9ae31d73fc6142ebeea37193f1a38f", null ],
     [ "init_multimodels", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a0998defe6831960aa8ce69168a866539", null ],
     [ "kernel", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aac5bf54ebb15b1a41efe23cf78792f4b", null ],
     [ "lame_params", "classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13", null ],
     [ "local_assemble", "classpolyfem_1_1assembler_1_1_assembler_utils.html#af89a5ecea1a6e133a1227d1122305ef8", null ],
+    [ "set_parameters", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a3b63723d939898c8f2b1c26d2774eb56", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_assembler_utils.html#abe2f8c1cf59acdc177b302c605cce350", null ],
     [ "update_lame_params", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a223b53485a1fa49a8259d1095e1ff27d", null ],
     [ "bilaplacian_aux_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab6c7090b8dc55deb3ec74934592e509f", null ],

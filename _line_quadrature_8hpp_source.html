@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/quadrature/LineQuadrature.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -32,6 +30,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -128,11 +133,11 @@ $(document).ready(function(){initNavTree('_line_quadrature_8hpp_source.html','')
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    } <span class="comment">// namespace quadrature</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_quadrature_8hpp_html"><div class="ttname"><a href="_quadrature_8hpp.html">Quadrature.hpp</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_line_quadrature_html"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_line_quadrature.html">polyfem::quadrature::LineQuadrature</a></div><div class="ttdef"><b>Definition:</b> LineQuadrature.hpp:10</div></div>
-<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_line_quadrature_html_a7b6a2130c51516ba457ded68ba66846c"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_line_quadrature.html#a7b6a2130c51516ba457ded68ba66846c">polyfem::quadrature::LineQuadrature::LineQuadrature</a></div><div class="ttdeci">LineQuadrature()</div><div class="ttdef"><b>Definition:</b> LineQuadrature.cpp:4703</div></div>
-<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_line_quadrature_html_aa26b406c4715e3e1ab5ebef7eebd8af7"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_line_quadrature.html#aa26b406c4715e3e1ab5ebef7eebd8af7">polyfem::quadrature::LineQuadrature::get_quadrature</a></div><div class="ttdeci">void get_quadrature(const int order, Quadrature &amp;quad)</div><div class="ttdef"><b>Definition:</b> LineQuadrature.cpp:4707</div></div>
-<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_quadrature_html"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_quadrature.html">polyfem::quadrature::Quadrature</a></div><div class="ttdef"><b>Definition:</b> Quadrature.hpp:10</div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
+<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_line_quadrature_html"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_line_quadrature.html">polyfem::quadrature::LineQuadrature</a></div><div class="ttdef"><b>Definition:</b> <a href="_line_quadrature_8hpp_source.html#l00009">LineQuadrature.hpp:10</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_line_quadrature_html_a7b6a2130c51516ba457ded68ba66846c"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_line_quadrature.html#a7b6a2130c51516ba457ded68ba66846c">polyfem::quadrature::LineQuadrature::LineQuadrature</a></div><div class="ttdeci">LineQuadrature()</div><div class="ttdef"><b>Definition:</b> <a href="_line_quadrature_8cpp_source.html#l04703">LineQuadrature.cpp:4703</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_line_quadrature_html_aa26b406c4715e3e1ab5ebef7eebd8af7"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_line_quadrature.html#aa26b406c4715e3e1ab5ebef7eebd8af7">polyfem::quadrature::LineQuadrature::get_quadrature</a></div><div class="ttdeci">void get_quadrature(const int order, Quadrature &amp;quad)</div><div class="ttdef"><b>Definition:</b> <a href="_line_quadrature_8cpp_source.html#l04707">LineQuadrature.cpp:4707</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1quadrature_1_1_quadrature_html"><div class="ttname"><a href="classpolyfem_1_1quadrature_1_1_quadrature.html">polyfem::quadrature::Quadrature</a></div><div class="ttdef"><b>Definition:</b> <a href="_quadrature_8hpp_source.html#l00009">Quadrature.hpp:10</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
