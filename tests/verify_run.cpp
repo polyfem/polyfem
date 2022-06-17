@@ -43,6 +43,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	if (true)
 	{
 		args["output"] = json({});
+		args["output"]["advanced"]["save_time_sequence"] = false;
 		if (args.contains("time"))
 		{
 			json t_args = args["time"];
@@ -85,9 +86,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		args["root_path"] = json_file;
 	}
 
-	size_t max_threads = std::numeric_limits<size_t>::max();
-
-	State state(max_threads);
+	State state(1);
 	state.init_logger("", 2, false);
 	state.init(args, "");
 	state.load_mesh();
@@ -148,9 +147,15 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	return 0;
 }
 
-TEST_CASE("runners", "[.]")
+#if defined(NDEBUG) && !defined(WIN32)
+std::string tags = "[run]";
+#else
+std::string tags = "[.]";
+#endif
+TEST_CASE("runners", tags)
 {
-	std::ifstream file("all_json.txt");
+	// Disabled on Windows CI, due to the requirement for Pardiso.
+	std::ifstream file(POLYFEM_DATA_DIR "/system_test_list.txt");
 	std::string line;
 	spdlog::set_level(spdlog::level::info);
 	while (std::getline(file, line))
@@ -166,7 +171,7 @@ TEST_CASE("runners", "[.]")
 				line = line.substr(1);
 			}
 			spdlog::info("Processing {}", line);
-			auto flag = authenticate_json(line, allow_append);
+			auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, allow_append);
 			CAPTURE(line);
 			CHECK(flag == 0);
 		}
