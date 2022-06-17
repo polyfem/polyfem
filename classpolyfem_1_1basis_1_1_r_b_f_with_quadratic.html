@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::basis::RBFWithQuadratic Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -168,7 +166,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a2529dc76e554298d4c840f9dccf4dfd6"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a2529dc76e554298d4c840f9dccf4dfd6">weights_</a></td></tr>
 <tr class="separator:a2529dc76e554298d4c840f9dccf4dfd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00013">13</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6e9070c30c8f0862727db6998a7edd2b" name="a6e9070c30c8f0862727db6998a7edd2b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6e9070c30c8f0862727db6998a7edd2b">&#9670;&nbsp;</a></span>RBFWithQuadratic()</h2>
 
@@ -244,6 +245,10 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00185">185</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -289,6 +294,12 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">237</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">grad()</a>.</p>
+
 </div>
 </div>
 <a id="a423295c4a8d424c9572f15221b4c52e8" name="a423295c4a8d424c9572f15221b4c52e8"></a>
@@ -325,6 +336,12 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">225</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00202">basis()</a>.</p>
 
 </div>
 </div>
@@ -369,6 +386,12 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00202">202</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">bases_values()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
 
 </div>
 </div>
@@ -436,6 +459,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">504</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00031">polyfem::assembler::ElementAssemblyValues::has_parameterization</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00042">polyfem::assembler::AssemblerUtils::is_tensor()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">polyfem::assembler::AssemblerUtils::local_assemble()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">setup_monomials_strong_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00139">setup_monomials_vals_2d()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+
 </div>
 </div>
 <a id="a5359898f644358a097589155295aa195" name="a5359898f644358a097589155295aa195"></a>
@@ -489,6 +518,10 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">413</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
 
 </div>
 </div>
@@ -556,6 +589,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">614</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+
 </div>
 </div>
 <a id="af027c7a81967196281bb067570c129c9" name="af027c7a81967196281bb067570c129c9"></a>
@@ -591,6 +630,12 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">384</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">bases_values()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
 
 </div>
 </div>
@@ -658,6 +703,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">715</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00202">basis()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">grad()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_quadrature_8hpp_source.html#l00013">polyfem::quadrature::Quadrature::weights</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00185">RBFWithQuadratic()</a>.</p>
+
 </div>
 </div>
 <a id="aecdf265e10eaa4c031447615db9c1e6f" name="aecdf265e10eaa4c031447615db9c1e6f"></a>
@@ -701,6 +752,12 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">211</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
 
 </div>
 </div>
@@ -750,6 +807,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00016">16</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
+
 </div>
 </div>
 <a id="a10e9128482791ec06df9e525c1bada8b" name="a10e9128482791ec06df9e525c1bada8b"></a>
@@ -774,6 +835,12 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">74</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
 
 </div>
 </div>
@@ -835,6 +902,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">83</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00332">polyfem::assembler::AssemblerUtils::compute_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
+
 </div>
 </div>
 <a id="a699276b593b76cf2523f9e2c995b33b6" name="a699276b593b76cf2523f9e2c995b33b6"></a>
@@ -877,6 +950,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00139">139</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -900,6 +979,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">98</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">grad()</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>.</p>
+
 </div>
 </div>
 <a id="a2529dc76e554298d4c840f9dccf4dfd6" name="a2529dc76e554298d4c840f9dccf4dfd6"></a>
@@ -922,11 +1005,15 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">101</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">bases_values()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a></li>
-<li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_quadratic_8cpp.html">RBFWithQuadratic.cpp</a></li>
+<li>src/polyfem/basis/function/<a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

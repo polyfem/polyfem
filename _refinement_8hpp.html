@@ -13,13 +13,11 @@
 <title>PolyFEM: src/polyfem/mesh/mesh2D/Refinement.hpp File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -159,11 +157,13 @@ Functions</h2></td></tr>
 <tr class="memitem:a4a98f8d68f49e3a96c2948a812d03521"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a4a98f8d68f49e3a96c2948a812d03521">polyfem::mesh::refine_quad_mesh</a> (const Eigen::MatrixXd &amp;IV, const Eigen::MatrixXi &amp;IF, Eigen::MatrixXd &amp;OV, Eigen::MatrixXi &amp;OF)</td></tr>
 <tr class="separator:a4a98f8d68f49e3a96c2948a812d03521"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a189a52f2c610b304fb40efeb1abc5306"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a189a52f2c610b304fb40efeb1abc5306">polyfem::mesh::Polygons::polar_split</a> (const Eigen::MatrixXd &amp;IV, Eigen::MatrixXd &amp;OV, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;OF, double t=0.5)</td></tr>
+<tr class="memdesc:a189a52f2c610b304fb40efeb1abc5306"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split a polygon using polar refinement.  <a href="namespacepolyfem_1_1mesh_1_1_polygons.html#a189a52f2c610b304fb40efeb1abc5306">More...</a><br /></td></tr>
 <tr class="separator:a189a52f2c610b304fb40efeb1abc5306"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac31ff909dfd5103385f00a7c4ad2fcd4"><td class="memItemLeft" align="right" valign="top">SplitFunction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#ac31ff909dfd5103385f00a7c4ad2fcd4">polyfem::mesh::Polygons::polar_split_func</a> (double t)</td></tr>
 <tr class="memdesc:ac31ff909dfd5103385f00a7c4ad2fcd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function.  <a href="namespacepolyfem_1_1mesh_1_1_polygons.html#ac31ff909dfd5103385f00a7c4ad2fcd4">More...</a><br /></td></tr>
 <tr class="separator:ac31ff909dfd5103385f00a7c4ad2fcd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25750e2e0917bfbd86951438fffe0370"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a25750e2e0917bfbd86951438fffe0370">polyfem::mesh::Polygons::catmul_clark_split</a> (const Eigen::MatrixXd &amp;IV, Eigen::MatrixXd &amp;OV, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;OF)</td></tr>
+<tr class="memdesc:a25750e2e0917bfbd86951438fffe0370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split a polygon using polar refinement.  <a href="namespacepolyfem_1_1mesh_1_1_polygons.html#a25750e2e0917bfbd86951438fffe0370">More...</a><br /></td></tr>
 <tr class="separator:a25750e2e0917bfbd86951438fffe0370"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e9c499beb732835ffabd7da78996803"><td class="memItemLeft" align="right" valign="top">SplitFunction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a7e9c499beb732835ffabd7da78996803">polyfem::mesh::Polygons::catmul_clark_split_func</a> ()</td></tr>
 <tr class="separator:a7e9c499beb732835ffabd7da78996803"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,8 +173,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a8860e137e145e42b463efa89442b4ece"><td class="memItemLeft" align="right" valign="top">SplitFunction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a8860e137e145e42b463efa89442b4ece">polyfem::mesh::Polygons::no_split_func</a> ()</td></tr>
 <tr class="separator:a8860e137e145e42b463efa89442b4ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc2511254531ec745f412fc383ba050d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d">polyfem::mesh::refine_polygonal_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out, Polygons::SplitFunction split_func)</td></tr>
+<tr class="memdesc:acc2511254531ec745f412fc383ba050d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a polygonal mesh.  <a href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d">More...</a><br /></td></tr>
 <tr class="separator:acc2511254531ec745f412fc383ba050d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9">polyfem::mesh::refine_triangle_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out)</td></tr>
+<tr class="memdesc:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a triangle mesh.  <a href="namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9">More...</a><br /></td></tr>
 <tr class="separator:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9edb1ab6286b5c93e9f2a564ea072559"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559">polyfem::mesh::refine_polygonal_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out, bool refine_polygons=false, double t=0.5)</td></tr>
 <tr class="separator:a9edb1ab6286b5c93e9f2a564ea072559"><td class="memSeparator" colspan="2">&#160;</td></tr>

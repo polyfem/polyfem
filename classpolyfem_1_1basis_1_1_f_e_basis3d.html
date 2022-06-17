@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::basis::FEBasis3d Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -120,10 +118,10 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_f_e_basis3d.
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aaf5a0b3b244c936f810700f68f2d4747"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#aaf5a0b3b244c936f810700f68f2d4747">build_bases</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, const int quadrature_order, const int discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;poly_face_to_data, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">polyfem::mesh::MeshNodes</a> &gt; &amp;mesh_nodes)</td></tr>
-<tr class="memdesc:aaf5a0b3b244c936f810700f68f2d4747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class.  <a href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#aaf5a0b3b244c936f810700f68f2d4747">More...</a><br /></td></tr>
+<tr class="memdesc:aaf5a0b3b244c936f810700f68f2d4747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes).  <a href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#aaf5a0b3b244c936f810700f68f2d4747">More...</a><br /></td></tr>
 <tr class="separator:aaf5a0b3b244c936f810700f68f2d4747"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d2d3c6e677b487c35208733aae68a07"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a7d2d3c6e677b487c35208733aae68a07">build_bases</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, const int quadrature_order, const Eigen::VectorXi &amp;discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;poly_face_to_data, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">polyfem::mesh::MeshNodes</a> &gt; &amp;mesh_nodes)</td></tr>
-<tr class="memdesc:a7d2d3c6e677b487c35208733aae68a07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class.  <a href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a7d2d3c6e677b487c35208733aae68a07">More...</a><br /></td></tr>
+<tr class="memdesc:a7d2d3c6e677b487c35208733aae68a07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes).  <a href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a7d2d3c6e677b487c35208733aae68a07">More...</a><br /></td></tr>
 <tr class="separator:a7d2d3c6e677b487c35208733aae68a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a265df67955a0a057c3355bdce8e7d25f"><td class="memItemLeft" align="right" valign="top">static Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#a265df67955a0a057c3355bdce8e7d25f">tet_face_local_nodes</a> (const int p, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, <a class="el" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html">mesh::Navigation3D::Index</a> index)</td></tr>
 <tr class="separator:a265df67955a0a057c3355bdce8e7d25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,7 +135,10 @@ Static Private Member Functions</h2></td></tr>
 <tr class="memitem:abc4f11a99a3bb579ae0f8f46179de7df"><td class="memItemLeft" align="right" valign="top">static Eigen::RowVector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#abc4f11a99a3bb579ae0f8f46179de7df">quadr_hex_local_node_coordinates</a> (int local_index)</td></tr>
 <tr class="separator:abc4f11a99a3bb579ae0f8f46179de7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_f_e_basis3d_8hpp_source.html#l00018">18</a> of file <a class="el" href="_f_e_basis3d_8hpp_source.html">FEBasis3d.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7d2d3c6e677b487c35208733aae68a07" name="a7d2d3c6e677b487c35208733aae68a07"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7d2d3c6e677b487c35208733aae68a07">&#9670;&nbsp;</a></span>build_bases() <span class="overload">[1/2]</span></h2>
 
@@ -220,7 +221,8 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class. </p>
+<p>Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). </p>
+<p >Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The input volumetric mesh </td></tr>
@@ -321,7 +323,8 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class. </p>
+<p>Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes). </p>
+<p >Polygonal facets with &gt; 4 vertices are dealt later on by the <a class="el" href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html">PolygonalBasis3d</a> class.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The input volumetric mesh </td></tr>
@@ -385,6 +388,10 @@ Static Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_f_e_basis3d_8cpp_source.html#l01188">1188</a> of file <a class="el" href="_f_e_basis3d_8cpp_source.html">FEBasis3d.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">polyfem::mesh::Mesh3D::get_index_from_element_edge()</a>, <a class="el" href="_mesh_8cpp_source.html#l00216">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D::next_around_face()</a>, <a class="el" href="p__bases_8py_source.html#l00315">p_bases::nn</a>, <a class="el" href="p__bases_8py_source.html#l00372">p_bases::nodes</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="p__bases_8py_source.html#l00364">p_bases::reverse</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f">polyfem::mesh::Mesh3D::switch_vertex()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -490,11 +497,15 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_f_e_basis3d_8cpp_source.html#l00877">877</a> of file <a class="el" href="_f_e_basis3d_8cpp_source.html">FEBasis3d.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">polyfem::mesh::Mesh3D::get_index_from_element_edge()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aee466a14dafa19538b169d77e49ccff1">polyfem::mesh::Mesh3D::get_index_from_element_face()</a>, <a class="el" href="p__bases_8py_source.html#l00232">p_bases::indices</a>, <a class="el" href="_mesh_8cpp_source.html#l00258">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D::next_around_face()</a>, <a class="el" href="p__bases_8py_source.html#l00315">p_bases::nn</a>, <a class="el" href="p__bases_8py_source.html#l00372">p_bases::nodes</a>, <a class="el" href="p__bases_8py_source.html#l00238">p_bases::norm</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="p__bases_8py_source.html#l00364">p_bases::reverse</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f">polyfem::mesh::Mesh3D::switch_vertex()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/<a class="el" href="_f_e_basis3d_8hpp_source.html">FEBasis3d.hpp</a></li>
-<li>src/polyfem/basis/<a class="el" href="_f_e_basis3d_8cpp.html">FEBasis3d.cpp</a></li>
+<li>src/polyfem/basis/<a class="el" href="_f_e_basis3d_8cpp_source.html">FEBasis3d.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

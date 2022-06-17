@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::utils::OBJReader Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -134,10 +132,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5807dad3aca4b208b5ebc778f4a16815"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just read V, F, and L from obj file.  <a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a5807dad3aca4b208b5ebc778f4a16815">More...</a><br /></td></tr>
 <tr class="separator:a5807dad3aca4b208b5ebc778f4a16815"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82a77dd24b073f22d36f654089d54cc5"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a82a77dd24b073f22d36f654089d54cc5">load</a> (const std::string str, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;E, Eigen::MatrixXi &amp;F)</td></tr>
-<tr class="memdesc:a82a77dd24b073f22d36f654089d54cc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eigen Wrappers of read_obj. @retruns These will return true only if the data is perfectly "rectangular": All faces are the same degree, all have the same number of textures/normals etc.  <a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a82a77dd24b073f22d36f654089d54cc5">More...</a><br /></td></tr>
+<tr class="memdesc:a82a77dd24b073f22d36f654089d54cc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eigen Wrappers of read_obj.  <a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a82a77dd24b073f22d36f654089d54cc5">More...</a><br /></td></tr>
 <tr class="separator:a82a77dd24b073f22d36f654089d54cc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_o_b_j___i_o_8hpp_source.html#l00021">21</a> of file <a class="el" href="_o_b_j___i_o_8hpp_source.html">OBJ_IO.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2914bf25d433db3d8a4df0991db723fc" name="a2914bf25d433db3d8a4df0991db723fc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2914bf25d433db3d8a4df0991db723fc">&#9670;&nbsp;</a></span>OBJReader()</h2>
 
@@ -251,6 +252,12 @@ Static Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false on errors </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00036">36</a> of file <a class="el" href="_o_b_j___i_o_8cpp_source.html">OBJ_IO.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00036">load()</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00036">load()</a>.</p>
+
 </div>
 </div>
 <a id="a5807dad3aca4b208b5ebc778f4a16815" name="a5807dad3aca4b208b5ebc778f4a16815"></a>
@@ -301,6 +308,10 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Just read V, F, and L from obj file. </p>
 
+<p class="definition">Definition at line <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00286">286</a> of file <a class="el" href="_o_b_j___i_o_8cpp_source.html">OBJ_IO.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00036">load()</a>, and <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>.</p>
+
 </div>
 </div>
 <a id="a82a77dd24b073f22d36f654089d54cc5" name="a82a77dd24b073f22d36f654089d54cc5"></a>
@@ -349,7 +360,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Eigen Wrappers of read_obj. @retruns These will return true only if the data is perfectly "rectangular": All faces are the same degree, all have the same number of textures/normals etc. </p>
+<p>Eigen Wrappers of read_obj. </p>
+<p >@retruns These will return true only if the data is perfectly "rectangular": All faces are the same degree, all have the same number of textures/normals etc. </p>
+
+<p class="definition">Definition at line <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00297">297</a> of file <a class="el" href="_o_b_j___i_o_8cpp_source.html">OBJ_IO.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00036">load()</a>, and <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>.</p>
 
 </div>
 </div>
@@ -431,11 +447,15 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_o_b_j___i_o_8cpp_source.html#l00056">56</a> of file <a class="el" href="_o_b_j___i_o_8cpp_source.html">OBJ_IO.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_o_b_j___i_o_8hpp_source.html">OBJ_IO.hpp</a></li>
-<li>src/polyfem/utils/<a class="el" href="_o_b_j___i_o_8cpp.html">OBJ_IO.cpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_o_b_j___i_o_8cpp_source.html">OBJ_IO.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::utils::PlaneSelection Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -168,7 +166,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:aef8ce1cc0a8d7fbb13142099a52074c6 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#aef8ce1cc0a8d7fbb13142099a52074c6">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;selection, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="separator:aef8ce1cc0a8d7fbb13142099a52074c6 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00090">90</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a96fe5a99034ca656398bdaca12a69725" name="a96fe5a99034ca656398bdaca12a69725"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a96fe5a99034ca656398bdaca12a69725">&#9670;&nbsp;</a></span>PlaneSelection()</h2>
 
@@ -206,6 +207,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00178">178</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00101">normal_</a>, and <a class="el" href="_selection_8hpp_source.html#l00102">point_</a>.</p>
 
 </div>
 </div>
@@ -246,6 +251,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a15693545140baece5e4decb6e8d8ef57">polyfem::utils::Selection</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00197">197</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00024">polyfem::utils::Selection::inside()</a>, <a class="el" href="_selection_8hpp_source.html#l00101">normal_</a>, and <a class="el" href="_selection_8hpp_source.html#l00102">point_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -269,6 +278,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00101">101</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00197">inside()</a>, and <a class="el" href="_selection_8cpp_source.html#l00178">PlaneSelection()</a>.</p>
+
 </div>
 </div>
 <a id="a945ac175837b39c3bf785ba7154b23c8" name="a945ac175837b39c3bf785ba7154b23c8"></a>
@@ -291,11 +304,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00102">102</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00197">inside()</a>, and <a class="el" href="_selection_8cpp_source.html#l00178">PlaneSelection()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_selection_8hpp_source.html">Selection.hpp</a></li>
-<li>src/polyfem/utils/<a class="el" href="_selection_8cpp.html">Selection.cpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_selection_8cpp_source.html">Selection.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

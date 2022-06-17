@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::basis::PolygonalBasis2d Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -124,7 +122,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa8d348e8e9800d665160b7cc290ea1e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build bases over the remaining polygons of a mesh.  <a href="classpolyfem_1_1basis_1_1_polygonal_basis2d.html#aa8d348e8e9800d665160b7cc290ea1e6">More...</a><br /></td></tr>
 <tr class="separator:aa8d348e8e9800d665160b7cc290ea1e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_polygonal_basis2d_8hpp_source.html#l00018">18</a> of file <a class="el" href="_polygonal_basis2d_8hpp_source.html">PolygonalBasis2d.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aa8d348e8e9800d665160b7cc290ea1e6" name="aa8d348e8e9800d665160b7cc290ea1e6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8d348e8e9800d665160b7cc290ea1e6">&#9670;&nbsp;</a></span>build_bases()</h2>
 
@@ -232,6 +233,12 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">344</a> of file <a class="el" href="_polygonal_basis2d_8cpp_source.html">PolygonalBasis2d.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00238">polyfem::basis::compute_epsilon()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">compute_integral_constraints()</a>, <a class="el" href="_polygon_quadrature_8cpp_source.html#l00034">polyfem::quadrature::PolygonQuadrature::get_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::has_parameterization</a>, <a class="el" href="_mesh_8cpp_source.html#l00229">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00042">polyfem::assembler::AssemblerUtils::is_tensor()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00025">polyfem::mesh::Mesh2D::is_volume()</a>, <a class="el" href="_mesh_8hpp_source.html#l00077">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_polygon_utils_8cpp_source.html#l00312">polyfem::mesh::sample_polygon()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00084">polyfem::basis::ElementBases::set_bases_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00085">polyfem::basis::ElementBases::set_grads_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00058">polyfem::basis::ElementBases::set_quadrature()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00811">polyfem::State::build_polygonal_basis()</a>.</p>
+
 </div>
 </div>
 <a id="a61108bb4aab742e0c272274dc506be88" name="a61108bb4aab742e0c272274dc506be88"></a>
@@ -298,11 +305,17 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">174</a> of file <a class="el" href="_polygonal_basis2d_8cpp_source.html">PolygonalBasis2d.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00019">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00016">polyfem::basis::RBFWithQuadratic::index_mapping()</a>, <a class="el" href="_mesh_8cpp_source.html#l00229">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00042">polyfem::assembler::AssemblerUtils::is_tensor()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00025">polyfem::mesh::Mesh2D::is_volume()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">polyfem::assembler::AssemblerUtils::local_assemble()</a>, <a class="el" href="_mesh_8hpp_source.html#l00077">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">polyfem::basis::RBFWithQuadratic::setup_monomials_strong_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00139">polyfem::basis::RBFWithQuadratic::setup_monomials_vals_2d()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00022">polyfem::assembler::AssemblyValues::val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">build_bases()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/basis/<a class="el" href="_polygonal_basis2d_8hpp_source.html">PolygonalBasis2d.hpp</a></li>
-<li>src/polyfem/basis/<a class="el" href="_polygonal_basis2d_8cpp.html">PolygonalBasis2d.cpp</a></li>
+<li>src/polyfem/basis/<a class="el" href="_polygonal_basis2d_8cpp_source.html">PolygonalBasis2d.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

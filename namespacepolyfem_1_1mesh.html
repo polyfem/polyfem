@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::mesh Namespace Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -248,16 +246,22 @@ Functions</h2></td></tr>
 <tr class="memitem:add37eb917dcfad1ce25e9f2aca7ca9db"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#add37eb917dcfad1ce25e9f2aca7ca9db">line_weight</a> (Eigen::Matrix&lt; double, 2, 2 &gt; &amp;e, Eigen::VectorXd &amp;v)</td></tr>
 <tr class="separator:add37eb917dcfad1ce25e9f2aca7ca9db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d4be3bab49d477dc6c218108b278acc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc">clip_polygon_by_half_plane</a> (const Eigen::MatrixXd &amp;P, const Eigen::RowVector2d &amp;q1, const Eigen::RowVector2d &amp;q2, Eigen::MatrixXd &amp;result)</td></tr>
+<tr class="memdesc:a0d4be3bab49d477dc6c218108b278acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clip a polygon by a half-plane.  <a href="namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc">More...</a><br /></td></tr>
 <tr class="separator:a0d4be3bab49d477dc6c218108b278acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa907e396724bca7b40434c67f80f2c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9">compute_visibility_kernel</a> (const Eigen::MatrixXd &amp;IV, Eigen::MatrixXd &amp;OV)</td></tr>
+<tr class="memdesc:aaa907e396724bca7b40434c67f80f2c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine the kernel of the given polygon.  <a href="namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9">More...</a><br /></td></tr>
 <tr class="separator:aaa907e396724bca7b40434c67f80f2c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1e56322029f56281de64523a44a2b18"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18">is_star_shaped</a> (const Eigen::MatrixXd &amp;IV, Eigen::RowVector3d &amp;bary)</td></tr>
+<tr class="memdesc:ae1e56322029f56281de64523a44a2b18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether a polygon is star-shaped or not.  <a href="namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18">More...</a><br /></td></tr>
 <tr class="separator:ae1e56322029f56281de64523a44a2b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ffb307ad1f47d970021d26cff0653d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7">offset_polygon</a> (const Eigen::MatrixXd &amp;IV, Eigen::MatrixXd &amp;OV, double eps)</td></tr>
+<tr class="memdesc:a8ffb307ad1f47d970021d26cff0653d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute offset polygon.  <a href="namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7">More...</a><br /></td></tr>
 <tr class="separator:a8ffb307ad1f47d970021d26cff0653d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee0e69679f580e427e1db3922b2a5311"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aee0e69679f580e427e1db3922b2a5311">is_inside</a> (const Eigen::MatrixXd &amp;IV, const Eigen::MatrixXd &amp;Q, std::vector&lt; bool &gt; &amp;inside)</td></tr>
+<tr class="memdesc:aee0e69679f580e427e1db3922b2a5311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute whether points are inside a polygon.  <a href="namespacepolyfem_1_1mesh.html#aee0e69679f580e427e1db3922b2a5311">More...</a><br /></td></tr>
 <tr class="separator:aee0e69679f580e427e1db3922b2a5311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b53129ddbb617fbeb6b26d82171fd56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a5b53129ddbb617fbeb6b26d82171fd56">sample_polygon</a> (const Eigen::MatrixXd &amp;IV, int num_samples, Eigen::MatrixXd &amp;S)</td></tr>
+<tr class="memdesc:a5b53129ddbb617fbeb6b26d82171fd56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample points on a polygon, evenly spaced from each other.  <a href="namespacepolyfem_1_1mesh.html#a5b53129ddbb617fbeb6b26d82171fd56">More...</a><br /></td></tr>
 <tr class="separator:a5b53129ddbb617fbeb6b26d82171fd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ad4233b995aa8aba9440009505693d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0">edge_adjacency_graph</a> (const Eigen::MatrixXi &amp;Q, Eigen::MatrixXi &amp;edge_index, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;adj, std::vector&lt; std::pair&lt; int, int &gt; &gt; *pairs_of_edges=nullptr, std::vector&lt; std::pair&lt; int, int &gt; &gt; *pairs_of_quads=nullptr, Eigen::MatrixXi *quad_index=nullptr)</td></tr>
 <tr class="separator:a9ad4233b995aa8aba9440009505693d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,8 +270,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a4a98f8d68f49e3a96c2948a812d03521"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a4a98f8d68f49e3a96c2948a812d03521">refine_quad_mesh</a> (const Eigen::MatrixXd &amp;IV, const Eigen::MatrixXi &amp;IF, Eigen::MatrixXd &amp;OV, Eigen::MatrixXi &amp;OF)</td></tr>
 <tr class="separator:a4a98f8d68f49e3a96c2948a812d03521"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc2511254531ec745f412fc383ba050d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d">refine_polygonal_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out, <a class="el" href="namespacepolyfem_1_1mesh_1_1_polygons.html#a3f1754102d92ff3ac4ee842b732dcc69">Polygons::SplitFunction</a> split_func)</td></tr>
+<tr class="memdesc:acc2511254531ec745f412fc383ba050d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a polygonal mesh.  <a href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d">More...</a><br /></td></tr>
 <tr class="separator:acc2511254531ec745f412fc383ba050d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9">refine_triangle_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out)</td></tr>
+<tr class="memdesc:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a triangle mesh.  <a href="namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9">More...</a><br /></td></tr>
 <tr class="separator:a1ba258a79feeaaadcd741cd4fa889ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9edb1ab6286b5c93e9f2a564ea072559"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559">refine_polygonal_mesh</a> (const GEO::Mesh &amp;M_in, GEO::Mesh &amp;M_out, bool refine_polygons=false, double t=0.5)</td></tr>
 <tr class="separator:a9edb1ab6286b5c93e9f2a564ea072559"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -280,6 +286,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a6c2f88605218d9c84cb80764dd0887db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db">create_patch_around_singularities</a> (GEO::Mesh &amp;M, const Eigen::VectorXi &amp;V, const Eigen::MatrixX2i &amp;E, double t=0.5)</td></tr>
 <tr class="separator:a6c2f88605218d9c84cb80764dd0887db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73cc0f7013b784e8a488a1840e62d034"><td class="memItemLeft" align="right" valign="top">GEO::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a73cc0f7013b784e8a488a1840e62d034">mesh_vertex</a> (const GEO::Mesh &amp;M, GEO::index_t v)</td></tr>
+<tr class="memdesc:a73cc0f7013b784e8a488a1840e62d034"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a 3D vector with the position of a given vertex.  <a href="namespacepolyfem_1_1mesh.html#a73cc0f7013b784e8a488a1840e62d034">More...</a><br /></td></tr>
 <tr class="separator:a73cc0f7013b784e8a488a1840e62d034"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f801017db21aa959f16cfc91c986a04"><td class="memItemLeft" align="right" valign="top">GEO::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04">facet_barycenter</a> (const GEO::Mesh &amp;M, GEO::index_t f)</td></tr>
 <tr class="separator:a9f801017db21aa959f16cfc91c986a04"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -295,7 +302,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a37d707ded3f8dcf2686648b6d2c4aee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reorder vertices of a mesh using color tags, so that vertices are ordered by increasing colors.  <a href="namespacepolyfem_1_1mesh.html#a37d707ded3f8dcf2686648b6d2c4aee3">More...</a><br /></td></tr>
 <tr class="separator:a37d707ded3f8dcf2686648b6d2c4aee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a816bc73f845b5cd77603ab5804e15356"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356">signed_squared_distances</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, const Eigen::MatrixXd &amp;P, Eigen::VectorXd &amp;D)</td></tr>
-<tr class="memdesc:a816bc73f845b5cd77603ab5804e15356"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the signed squared distance from a list of points to a triangle mesh. This function build a AABB tree of the input mesh, computes the distance for each query point to the closest triangle, and then determines the sign by casting a vertical ray from the query point and counting the number of intersections with the input mesh.  <a href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356">More...</a><br /></td></tr>
+<tr class="memdesc:a816bc73f845b5cd77603ab5804e15356"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the signed squared distance from a list of points to a triangle mesh.  <a href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356">More...</a><br /></td></tr>
 <tr class="separator:a816bc73f845b5cd77603ab5804e15356"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da2ae1a2cf19143192bb198c5ebb5b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">to_geogram_mesh</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, GEO::Mesh &amp;M)</td></tr>
 <tr class="memdesc:a7da2ae1a2cf19143192bb198c5ebb5b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a triangle mesh to a Geogram mesh.  <a href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">More...</a><br /></td></tr>
@@ -356,6 +363,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_refinement_8hpp_source.html#l00030">30</a> of file <a class="el" href="_refinement_8hpp_source.html">Refinement.hpp</a>.</p>
+
 </div>
 </div>
 <a id="adb5543570018cfbaaaf1932e5f1ba21a" name="adb5543570018cfbaaaf1932e5f1ba21a"></a>
@@ -369,6 +378,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_refinement_8hpp_source.html#l00031">31</a> of file <a class="el" href="_refinement_8hpp_source.html">Refinement.hpp</a>.</p>
 
 </div>
 </div>
@@ -401,6 +412,8 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826a3d217ee3a015efcd968eff5f36a5f671" name="ac25a28c10b676e06e484d9e1f496f826a3d217ee3a015efcd968eff5f36a5f671"></a>Polyhedron&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826a4bbb8f967da6d1a610596d7257179c2b" name="ac25a28c10b676e06e484d9e1f496f826a4bbb8f967da6d1a610596d7257179c2b"></a>Invalid&#160;</td><td class="fielddoc"></td></tr>
 </table>
+
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00012">12</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
 </div>
 </div>
@@ -437,6 +450,8 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360" name="a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360"></a>Undefined&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00019">19</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+
 </div>
 </div>
 <a id="a1786d2b6b9b3bda8c6667456f9b1f5ca" name="a1786d2b6b9b3bda8c6667456f9b1f5ca"></a>
@@ -458,6 +473,8 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30" name="a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30"></a>Hyb&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a1786d2b6b9b3bda8c6667456f9b1f5caa77b3ac06c59fd2083e1ee4874c433832" name="a1786d2b6b9b3bda8c6667456f9b1f5caa77b3ac06c59fd2083e1ee4874c433832"></a>Hex&#160;</td><td class="fielddoc"></td></tr>
 </table>
+
+<p class="definition">Definition at line <a class="el" href="_mesh3_d_storage_8hpp_source.html#l00054">54</a> of file <a class="el" href="_mesh3_d_storage_8hpp_source.html">Mesh3DStorage.hpp</a>.</p>
 
 </div>
 </div>
@@ -552,6 +569,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00631">631</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00029">polyfem::utils::Selection::build()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00022">log_and_throw_error()</a>.</p>
+
 </div>
 </div>
 <a id="aa6d084b6f52a0af47a0f7b9d1e11fc33" name="aa6d084b6f52a0af47a0f7b9d1e11fc33"></a>
@@ -595,6 +616,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00473">473</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00104">polyfem::utils::check_for_unknown_args()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00156">read_obstacle_geometry()</a>.</p>
+
 </div>
 </div>
 <a id="a0d4be3bab49d477dc6c218108b278acc" name="a0d4be3bab49d477dc6c218108b278acc"></a>
@@ -634,7 +661,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Clip a polygon by a half-plane. <a href="https://github.com/alicevision/geogram/blob/cfbc0a5827d71d59f8bcf0369cc1731ef12f82ef/src/examples/graphics/demo_Delaunay2d/main.cpp#L677">https://github.com/alicevision/geogram/blob/cfbc0a5827d71d59f8bcf0369cc1731ef12f82ef/src/examples/graphics/demo_Delaunay2d/main.cpp#L677</a></p>
+
+<p>Clip a polygon by a half-plane. </p>
+<p ><a href="https://github.com/alicevision/geogram/blob/cfbc0a5827d71d59f8bcf0369cc1731ef12f82ef/src/examples/graphics/demo_Delaunay2d/main.cpp#L677">https://github.com/alicevision/geogram/blob/cfbc0a5827d71d59f8bcf0369cc1731ef12f82ef/src/examples/graphics/demo_Delaunay2d/main.cpp#L677</a></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">P</td><td>Input polygon </td></tr>
@@ -644,6 +673,10 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00052">52</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_polygon_utils_8cpp_source.html#l00122">compute_visibility_kernel()</a>.</p>
 
 </div>
 </div>
@@ -682,6 +715,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00096">96</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, and <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00536">polyfem::mesh::CMesh2D::compute_elements_tag()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00542">polyfem::mesh::CMesh2D::update_elements_tag()</a>.</p>
+
 </div>
 </div>
 <a id="aaa907e396724bca7b40434c67f80f2c9" name="aaa907e396724bca7b40434c67f80f2c9"></a>
@@ -709,7 +748,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Determine the kernel of the given polygon.</p>
+
+<p>Determine the kernel of the given polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x (2|3) vertex positions around the input polygon </td></tr>
@@ -717,6 +757,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00122">122</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_polygon_utils_8cpp_source.html#l00052">clip_polygon_by_half_plane()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_polygon_utils_8cpp_source.html#l00152">is_star_shaped()</a>.</p>
 
 </div>
 </div>
@@ -747,6 +793,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh) </p>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01282">1282</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -787,6 +835,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_singularities_8cpp_source.html#l00084">84</a> of file <a class="el" href="_singularities_8cpp_source.html">Singularities.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00063">facet_barycenter()</a>, <a class="el" href="_navigation_8cpp_source.html#l00097">polyfem::mesh::Navigation::get_index_from_face()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00076">mesh_create_vertex()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00043">mesh_vertex()</a>, <a class="el" href="_navigation_8hpp_source.html#l00034">polyfem::mesh::Navigation::next_around_face()</a>, <a class="el" href="p__bases_8py_source.html#l00364">p_bases::reverse</a>, <a class="el" href="_navigation_8cpp_source.html#l00137">polyfem::mesh::Navigation::switch_edge()</a>, <a class="el" href="_navigation_8cpp_source.html#l00116">polyfem::mesh::Navigation::switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -839,6 +891,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_refinement_8cpp_source.html#l00016">16</a> of file <a class="el" href="_refinement_8cpp_source.html">Refinement.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
 
 </div>
 </div>
@@ -898,6 +954,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00945">945</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
 </div>
 </div>
 <a id="ad5d500b681dc6c18ea395e2a4424dff8" name="ad5d500b681dc6c18ea395e2a4424dff8"></a>
@@ -940,6 +998,10 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00714">714</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a04627e0048f0e5d66c44bbb137661277">polyfem::mesh::Mesh3D::get_index_from_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00229">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a401ef2460066f72c227da977938377d2">polyfem::mesh::Mesh3D::kernel()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a7dab62efe81146a8df44713bf07c6302">polyfem::mesh::Mesh3D::n_cell_faces()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aabb8f39b3828bb4e20d355760dd421b1">polyfem::mesh::Mesh3D::n_cell_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh::n_cells()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D::next_around_face()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>.</p>
 
 </div>
 </div>
@@ -990,6 +1052,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01141">1141</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l01107">find_triangle_surface_from_tets()</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
 </div>
 </div>
 <a id="a9f801017db21aa959f16cfc91c986a04" name="a9f801017db21aa959f16cfc91c986a04"></a>
@@ -1018,6 +1084,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00063">63</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00043">mesh_vertex()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_singularities_8cpp_source.html#l00084">create_patch_around_singularities()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00620">refine_polygonal_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a2c9e86a0cbb90821ce9b4c1f37b8df6c" name="a2c9e86a0cbb90821ce9b4c1f37b8df6c"></a>
@@ -1045,6 +1117,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00309">309</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00073">vec</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00019">polyfem::mesh::MeshProcessing3D::build_connectivity()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00395">polyfem::mesh::NCMesh2D::build_element_vertex_adjacency()</a>, <a class="el" href="_navigation3_d_8cpp_source.html#l00027">polyfem::mesh::Navigation3D::get_index_from_element_face()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00047">polyfem::mesh::CMesh3D::load()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00215">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01496">polyfem::mesh::MeshProcessing3D::orient_surface_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01554">polyfem::mesh::MeshProcessing3D::orient_volume_mesh()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00715">polyfem::mesh::MeshProcessing3D::refine_catmul_clark_polar()</a>, <a class="el" href="_mesh_processing3_d_8cpp_source.html#l00493">polyfem::mesh::MeshProcessing3D::reorder_hex_mesh_propogation()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00409">polyfem::assembler::RhsAssembler::sample_bc()</a>, <a class="el" href="_problem_8cpp_source.html#l00019">polyfem::assembler::Problem::setup_bc()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00634">polyfem::mesh::NCMesh2D::switch_edge()</a>.</p>
 
 </div>
 </div>
@@ -1096,6 +1174,10 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00638">638</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
 
 </div>
 </div>
@@ -1167,6 +1249,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_refinement_8cpp_source.html#l00278">278</a> of file <a class="el" href="_refinement_8cpp_source.html">Refinement.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00507">refine_quad_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="aee0e69679f580e427e1db3922b2a5311" name="aee0e69679f580e427e1db3922b2a5311"></a>
@@ -1200,7 +1288,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Compute whether points are inside a polygon</p>
+
+<p>Compute whether points are inside a polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 2 of vertex positions for the input polygon </td></tr>
@@ -1210,6 +1299,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of points inside </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00290">290</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1241,6 +1332,12 @@ Functions</h2></td></tr>
 
 <p>Determine if the given mesh is planar (2D or tiny z-range). </p>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00030">30</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00027">polyfem::mesh::Mesh::create()</a>.</p>
+
 </div>
 </div>
 <a id="ae1e56322029f56281de64523a44a2b18" name="ae1e56322029f56281de64523a44a2b18"></a>
@@ -1268,7 +1365,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Determine whether a polygon is star-shaped or not.</p>
+
+<p>Determine whether a polygon is star-shaped or not. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x (2|3) of vertex positions around the polygon </td></tr>
@@ -1277,6 +1375,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if star shaped, False otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00152">152</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_polygon_utils_8cpp_source.html#l00122">compute_visibility_kernel()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00583">polyfem::mesh::Polygons::catmul_clark_split()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00534">polyfem::mesh::Polygons::polar_split()</a>.</p>
 
 </div>
 </div>
@@ -1306,6 +1410,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00384">384</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00395">polyfem::mesh::NCMesh2D::build_element_vertex_adjacency()</a>.</p>
+
 </div>
 </div>
 <a id="a23c11289ee171d378f95b975412b00d2" name="a23c11289ee171d378f95b975412b00d2"></a>
@@ -1323,6 +1431,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00022">22</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00631">append_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00028">read_fem_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00265">read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00156">read_obstacle_geometry()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00420">read_obstacle_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1352,6 +1466,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00076">76</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_singularities_8cpp_source.html#l00084">create_patch_around_singularities()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00736">refine_triangle_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a73cc0f7013b784e8a488a1840e62d034" name="a73cc0f7013b784e8a488a1840e62d034"></a>
@@ -1379,7 +1499,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Retrieve a 3D vector with the position of a given vertex. Contrary to geogram's version, this function works with both single and double precision meshes, as well as 2D meshes too.</p>
+
+<p>Retrieve a 3D vector with the position of a given vertex. </p>
+<p >Contrary to geogram's version, this function works with both single and double precision meshes, as well as 2D meshes too.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>Input mesh </td></tr>
@@ -1388,6 +1510,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Position of the given vertex in 3D </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00043">43</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_singularities_8cpp_source.html#l00084">create_patch_around_singularities()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00063">facet_barycenter()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00736">refine_triangle_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1422,7 +1548,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Compute offset polygon</p>
+
+<p>Compute offset polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 2 of vertex positions for the input polygon </td></tr>
@@ -1431,6 +1558,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00227">227</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1476,6 +1605,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00701">701</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00680">signed_volume()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00569">polyfem::basis::PolygonalBasis3d::build_bases()</a>.</p>
+
 </div>
 </div>
 <a id="a3f115973d5927d123c20eb7941c5169e" name="a3f115973d5927d123c20eb7941c5169e"></a>
@@ -1501,6 +1636,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00303">303</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, and <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00155">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00039">polyfem::mesh::NCMesh2D::build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00124">polyfem::mesh::CMesh2D::load()</a>, and <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00544">polyfem::mesh::NCMesh2D::load()</a>.</p>
 
 </div>
 </div>
@@ -1569,6 +1710,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00028">28</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00022">log_and_throw_error()</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00106">polyfem::State::load_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1639,6 +1786,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00265">265</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00132">polyfem::utils::is_param_valid()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00022">log_and_throw_error()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
 
 </div>
 </div>
@@ -1787,6 +1938,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00985">985</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
 </div>
 </div>
 <a id="adc649d2ea30d21c08a016921d553ec90" name="adc649d2ea30d21c08a016921d553ec90"></a>
@@ -1868,6 +2021,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00156">156</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00037">polyfem::mesh::Obstacle::append_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00473">apply_default_geometry_parameters()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00018">polyfem::mesh::Obstacle::clear()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00132">polyfem::utils::is_param_valid()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00022">log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00420">read_obstacle_mesh()</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00196">polyfem::State::load_febio()</a>.</p>
+
 </div>
 </div>
 <a id="ad2b062ad34fe687b7f1fb23a07e0696d" name="ad2b062ad34fe687b7f1fb23a07e0696d"></a>
@@ -1933,6 +2092,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00420">420</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00132">polyfem::utils::is_param_valid()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00022">log_and_throw_error()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01180">read_surface_mesh()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00550">transform_mesh_from_json()</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00156">read_obstacle_geometry()</a>.</p>
+
 </div>
 </div>
 <a id="ad5cb1c08fb1f96a1f0c2bd635457e25f" name="ad5cb1c08fb1f96a1f0c2bd635457e25f"></a>
@@ -1991,6 +2156,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01180">1180</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_string_utils_8cpp_source.html#l00048">polyfem::utils::StringUtils::endswith()</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00420">read_obstacle_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a9edb1ab6286b5c93e9f2a564ea072559" name="a9edb1ab6286b5c93e9f2a564ea072559"></a>
@@ -2039,6 +2210,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_refinement_8hpp_source.html#l00137">137</a> of file <a class="el" href="_refinement_8hpp_source.html">Refinement.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_refinement_8hpp_source.html#l00113">polyfem::mesh::Polygons::no_split_func()</a>, <a class="el" href="_refinement_8hpp_source.html#l00087">polyfem::mesh::Polygons::polar_split_func()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00620">refine_polygonal_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="acc2511254531ec745f412fc383ba050d" name="acc2511254531ec745f412fc383ba050d"></a>
@@ -2072,7 +2247,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Refine a polygonal mesh. Quads and triangles are split into quads. If <code>refine_polygons</code> is set to <code>true</code>, then polygonal facets are also split into a layer of padding quads, and a new polygon is created around the barycenter</p>
+
+<p>Refine a polygonal mesh. </p>
+<p >Quads and triangles are split into quads. If <code>refine_polygons</code> is set to <code>true</code>, then polygonal facets are also split into a layer of padding quads, and a new polygon is created around the barycenter</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">M_in</td><td>Surface mesh to subdivide </td></tr>
@@ -2081,6 +2258,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_refinement_8cpp_source.html#l00620">620</a> of file <a class="el" href="_refinement_8cpp_source.html">Refinement.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00063">facet_barycenter()</a>, <a class="el" href="_navigation_8cpp_source.html#l00097">polyfem::mesh::Navigation::get_index_from_face()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00076">mesh_create_vertex()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00043">mesh_vertex()</a>, <a class="el" href="_navigation_8hpp_source.html#l00034">polyfem::mesh::Navigation::next_around_face()</a>, <a class="el" href="p__n__bases_8cpp_source.html#l00041">polyfem::autogen::P()</a>, <a class="el" href="_navigation_8cpp_source.html#l00137">polyfem::mesh::Navigation::switch_edge()</a>, <a class="el" href="_navigation_8cpp_source.html#l00116">polyfem::mesh::Navigation::switch_vertex()</a>, <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>, and <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_refinement_8hpp_source.html#l00137">refine_polygonal_mesh()</a>.</p>
 
 </div>
 </div>
@@ -2122,6 +2305,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_refinement_8cpp_source.html#l00507">507</a> of file <a class="el" href="_refinement_8cpp_source.html">Refinement.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_refinement_8cpp_source.html#l00278">instantiate_pattern()</a>.</p>
+
 </div>
 </div>
 <a id="a1ba258a79feeaaadcd741cd4fa889ca9" name="a1ba258a79feeaaadcd741cd4fa889ca9"></a>
@@ -2149,7 +2336,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Refine a triangle mesh. Each input triangle is split into 4 new triangles</p>
+
+<p>Refine a triangle mesh. </p>
+<p >Each input triangle is split into 4 new triangles</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">M_in</td><td>Input surface mesh </td></tr>
@@ -2157,6 +2346,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_refinement_8cpp_source.html#l00736">736</a> of file <a class="el" href="_refinement_8cpp_source.html">Refinement.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_navigation_8cpp_source.html#l00097">polyfem::mesh::Navigation::get_index_from_face()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00076">mesh_create_vertex()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00043">mesh_vertex()</a>, <a class="el" href="_navigation_8hpp_source.html#l00034">polyfem::mesh::Navigation::next_around_face()</a>, <a class="el" href="_navigation_8cpp_source.html#l00137">polyfem::mesh::Navigation::switch_edge()</a>, <a class="el" href="_navigation_8cpp_source.html#l00116">polyfem::mesh::Navigation::switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>.</p>
 
 </div>
 </div>
@@ -2209,6 +2404,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00324">324</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>.</p>
+
 </div>
 </div>
 <a id="a5b53129ddbb617fbeb6b26d82171fd56" name="a5b53129ddbb617fbeb6b26d82171fd56"></a>
@@ -2242,7 +2441,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Sample points on a polygon, evenly spaced from each other</p>
+
+<p>Sample points on a polygon, evenly spaced from each other. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">IV</td><td>#IV x 2 vertex positions for the input polygon </td></tr>
@@ -2251,6 +2451,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00312">312</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="p__bases_8py_source.html#l00238">p_bases::norm</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">polyfem::basis::PolygonalBasis2d::build_bases()</a>.</p>
 
 </div>
 </div>
@@ -2324,6 +2530,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00883">883</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, <a class="el" href="p__n__bases_8cpp_source.html#l00041">polyfem::autogen::P()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00574">to_geogram_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="abf27b815869b42b765af5c67692707a1" name="abf27b815869b42b765af5c67692707a1"></a>
@@ -2368,6 +2578,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01269">1269</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
 </div>
 </div>
 <a id="a816bc73f845b5cd77603ab5804e15356" name="a816bc73f845b5cd77603ab5804e15356"></a>
@@ -2408,7 +2620,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Computes the signed squared distance from a list of points to a triangle mesh. This function build a AABB tree of the input mesh, computes the distance for each query point to the closest triangle, and then determines the sign by casting a vertical ray from the query point and counting the number of intersections with the input mesh. </p>
+<p>Computes the signed squared distance from a list of points to a triangle mesh. </p>
+<p >This function build a AABB tree of the input mesh, computes the distance for each query point to the closest triangle, and then determines the sign by casting a vertical ray from the query point and counting the number of intersections with the input mesh</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input mesh vertices </td></tr>
@@ -2418,6 +2631,10 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00668">668</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="p__n__bases_8cpp_source.html#l00041">polyfem::autogen::P()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00574">to_geogram_mesh()</a>.</p>
 
 </div>
 </div>
@@ -2457,6 +2674,12 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Signed volume of the surface </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00680">680</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mesh_utils_8cpp_source.html#l00701">orient_closed_surface()</a>, and <a class="el" href="_mesh_processing3_d_8cpp_source.html#l01123">polyfem::mesh::MeshProcessing3D::refine_red_refinement_tet()</a>.</p>
+
 </div>
 </div>
 <a id="ad0c1bdc69a7ad16cfa3eeb7d23b60867" name="ad0c1bdc69a7ad16cfa3eeb7d23b60867"></a>
@@ -2490,6 +2713,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_singularities_8cpp_source.html#l00048">48</a> of file <a class="el" href="_singularities_8cpp_source.html">Singularities.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_singularities_8cpp_source.html#l00075">singularity_graph()</a>.</p>
 
 </div>
 </div>
@@ -2530,6 +2759,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_singularities_8cpp_source.html#l00008">8</a> of file <a class="el" href="_singularities_8cpp_source.html">Singularities.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, and <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_singularities_8cpp_source.html#l00075">singularity_graph()</a>.</p>
 
 </div>
 </div>
@@ -2576,6 +2811,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_singularities_8cpp_source.html#l00075">75</a> of file <a class="el" href="_singularities_8cpp_source.html">Singularities.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="_singularities_8cpp_source.html#l00048">singular_edges()</a>, and <a class="el" href="_singularities_8cpp_source.html#l00008">singular_vertices()</a>.</p>
 
 </div>
 </div>
@@ -2642,6 +2881,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00868">868</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>.</p>
+
 </div>
 </div>
 <a id="a7da2ae1a2cf19143192bb198c5ebb5b0" name="a7da2ae1a2cf19143192bb198c5ebb5b0"></a>
@@ -2686,6 +2929,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00574">574</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00155">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00039">polyfem::mesh::NCMesh2D::build_from_matrices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00883">sample_surface()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00383">polyfem::mesh::CMesh3D::save()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00668">signed_squared_distances()</a>.</p>
+
 </div>
 </div>
 <a id="ad071b94c821ca0409fc672bd5c520bda" name="ad071b94c821ca0409fc672bd5c520bda"></a>
@@ -2723,6 +2972,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00810">810</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh::face_vertex()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00322">polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00216">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh::n_cells()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>, and <a class="el" href="p__bases_8py_source.html#l00364">p_bases::reverse</a>.</p>
+
 </div>
 </div>
 <a id="a6039e86ea6e80037d8fe94e72181ada2" name="a6039e86ea6e80037d8fe94e72181ada2"></a>
@@ -2759,6 +3012,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00550">550</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="p__bases_8py_source.html#l00211">p_bases::vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00420">read_obstacle_mesh()</a>.</p>
 
 </div>
 </div>

@@ -24,6 +24,7 @@ var hierarchy =
     [ "polyfem::utils::base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html", null ],
     [ "polyfem::basis::Basis", "classpolyfem_1_1basis_1_1_basis.html", null ],
     [ "polyfem::problem::PointBasedTensorProblem::BCValue", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html", null ],
+    [ "polyfem::time_integrator::BDF", "classpolyfem_1_1time__integrator_1_1_b_d_f.html", null ],
     [ "polyfem::assembler::BilaplacianAux", "classpolyfem_1_1assembler_1_1_bilaplacian_aux.html", null ],
     [ "polyfem::assembler::BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", null ],
     [ "polyfem::assembler::BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", null ],

@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::solver::ALNLProblem Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -288,7 +286,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a1f81b46adbbd19849f0a055120409d48 inherit pro_attribs_classpolyfem_1_1solver_1_1_n_l_problem"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a1f81b46adbbd19849f0a055120409d48">is_time_dependent</a></td></tr>
 <tr class="separator:a1f81b46adbbd19849f0a055120409d48 inherit pro_attribs_classpolyfem_1_1solver_1_1_n_l_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00014">14</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a5fd09254342bd7c6a1beac68688ff04f" name="a5fd09254342bd7c6a1beac68688ff04f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5fd09254342bd7c6a1beac68688ff04f">&#9670;&nbsp;</a></span>super</h2>
 
@@ -300,6 +301,8 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00017">17</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -314,6 +317,8 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00024">24</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -362,6 +367,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">25</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00041">hessian_AL_</a>, <a class="el" href="_state_8hpp_source.html#l00344">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00199">polyfem::State::n_bases</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00042">not_boundary_</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">polyfem::solver::NLProblem::state</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00178">polyfem::solver::NLProblem::t</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">update_target()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -398,6 +407,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00066">66</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00042">not_boundary_</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00043">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00104">gradient_no_rhs()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00074">value()</a>.</p>
 
 </div>
 </div>
@@ -443,6 +458,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a8b0644d52b12b2d099f31df4f3ad7090">polyfem::solver::NLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00104">104</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00066">compute_distance()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00531">polyfem::solver::NLProblem::gradient_no_rhs()</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00039">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
 </div>
 </div>
 <a id="ad781876177d0e650edcb6201c6c1ef3f" name="ad781876177d0e650edcb6201c6c1ef3f"></a>
@@ -480,6 +499,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a894eae1bcee243655b7deaab3e7b3416">polyfem::solver::NLProblem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00117">117</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00574">polyfem::solver::NLProblem::hessian()</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00041">hessian_AL_</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">polyfem::solver::NLProblem::hessian_full()</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00039">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -524,6 +547,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00024">24</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00039">weight_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00767">polyfem::State::solve_non_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00581">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="a078ab7cdf7e9e9b50393b95f088e6133" name="a078ab7cdf7e9e9b50393b95f088e6133"></a>
@@ -551,6 +580,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a547816d169bf851dfb8b24d13712a7a2">polyfem::solver::NLProblem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00124">124</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
 
 </div>
 </div>
@@ -590,6 +621,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a7110f930d05e90196a0824700ff9bca5">polyfem::solver::NLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00057">57</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00167">polyfem::solver::NLProblem::is_time_dependent</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00178">polyfem::solver::NLProblem::t</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00209">polyfem::solver::NLProblem::update_quantities()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">update_target()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00581">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+
 </div>
 </div>
 <a id="ad382d51772a4d36c3666179a63ab18e0" name="ad382d51772a4d36c3666179a63ab18e0"></a>
@@ -607,6 +644,12 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">51</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::boundary_nodes</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00041">hessian_AL_</a>, <a class="el" href="_state_8hpp_source.html#l00330">polyfem::State::local_boundary</a>, <a class="el" href="_state_8hpp_source.html#l00332">polyfem::State::local_neumann_boundary</a>, <a class="el" href="_state_8hpp_source.html#l00220">polyfem::State::n_boundary_samples()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00166">polyfem::solver::NLProblem::rhs_assembler</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a89c629e0dab67a1b5be772fdb4a6e42b">polyfem::assembler::RhsAssembler::set_bc()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">polyfem::solver::NLProblem::state</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00178">polyfem::solver::NLProblem::t</a>, and <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00043">target_x_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">ALNLProblem()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00057">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -635,6 +678,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ab854a9e6e1e661a25bcb1bf9e2eaa2a6">polyfem::solver::NLProblem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00026">26</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00449">polyfem::solver::NLProblem::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -674,6 +721,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ad74bdfb865c9f517b83bd4f7724fdad1">polyfem::solver::NLProblem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00074">74</a> of file <a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_l_problem_8cpp_source.html#l00270">polyfem::solver::NLProblem::compute_displaced_points()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00066">compute_distance()</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00449">polyfem::solver::NLProblem::value()</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00039">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -697,6 +748,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00041">41</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">ALNLProblem()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00117">hessian_full()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">update_target()</a>.</p>
+
 </div>
 </div>
 <a id="a192dca679eba1e70aa7c93e134696495" name="a192dca679eba1e70aa7c93e134696495"></a>
@@ -718,6 +773,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00042">42</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">ALNLProblem()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00066">compute_distance()</a>.</p>
 
 </div>
 </div>
@@ -741,6 +800,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00040">40</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
 </div>
 </div>
 <a id="acbe45b392e174f2a9ddd044e65bb2aee" name="acbe45b392e174f2a9ddd044e65bb2aee"></a>
@@ -762,6 +823,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00043">43</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00066">compute_distance()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00051">update_target()</a>.</p>
 
 </div>
 </div>
@@ -785,11 +850,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00039">39</a> of file <a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00104">gradient_no_rhs()</a>, <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00117">hessian_full()</a>, <a class="el" href="_a_l_n_l_problem_8hpp_source.html#l00024">set_weight()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00074">value()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/solver/<a class="el" href="_a_l_n_l_problem_8hpp_source.html">ALNLProblem.hpp</a></li>
-<li>src/polyfem/solver/<a class="el" href="_a_l_n_l_problem_8cpp.html">ALNLProblem.cpp</a></li>
+<li>src/polyfem/solver/<a class="el" href="_a_l_n_l_problem_8cpp_source.html">ALNLProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

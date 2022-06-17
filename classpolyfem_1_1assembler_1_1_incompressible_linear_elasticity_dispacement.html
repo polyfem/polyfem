@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::assembler::IncompressibleLinearElasticityDispacement Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -157,7 +155,10 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a948bccecd2834ec9864f1795aece9719"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a948bccecd2834ec9864f1795aece9719">params_</a></td></tr>
 <tr class="separator:a948bccecd2834ec9864f1795aece9719"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00020">20</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a443fecec1cc2974dcef23b3bf6e782ef" name="a443fecec1cc2974dcef23b3bf6e782ef"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a443fecec1cc2974dcef23b3bf6e782ef">&#9670;&nbsp;</a></span>assemble()</h2>
 
@@ -195,6 +196,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00037">37</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00043">params_</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">size()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">size_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -268,6 +273,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00103">103</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00216">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00043">params_</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">size()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">size_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00085">compute_stress_tensor()</a>, and <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00094">compute_von_mises_stresses()</a>.</p>
+
 </div>
 </div>
 <a id="ae7d591453a70e50878b2f8584181e746" name="ae7d591453a70e50878b2f8584181e746"></a>
@@ -285,6 +296,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00077">77</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">size()</a>.</p>
 
 </div>
 </div>
@@ -338,6 +353,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00085">85</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00103">assign_stress_tensor()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">size()</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+
 </div>
 </div>
 <a id="a53bf90ebe8521bc75e434a1a9efbcfdb" name="a53bf90ebe8521bc75e434a1a9efbcfdb"></a>
@@ -390,6 +409,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00094">94</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00103">assign_stress_tensor()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00243">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
+
 </div>
 </div>
 <a id="a0efbd967cc8161eefd05886f9e722b2a" name="a0efbd967cc8161eefd05886f9e722b2a"></a>
@@ -424,6 +447,10 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00013">13</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00505">polyfem::LameParameters::init_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00043">params_</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">size_</a>.</p>
+
 </div>
 </div>
 <a id="af05e60d3913462dcac80fc75337530e4" name="af05e60d3913462dcac80fc75337530e4"></a>
@@ -441,6 +468,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00020">20</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00525">polyfem::LameParameters::init()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00043">params_</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">size_</a>.</p>
 
 </div>
 </div>
@@ -468,6 +499,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00035">35</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00043">params_</a>.</p>
+
 </div>
 </div>
 <a id="af17d57dd06f0bcb73ca8ac3b25db3f8d" name="af17d57dd06f0bcb73ca8ac3b25db3f8d"></a>
@@ -485,6 +520,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00030">30</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">size_</a>.</p>
 
 </div>
 </div>
@@ -511,6 +550,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">31</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00037">assemble()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00103">assign_stress_tensor()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00077">compute_rhs()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00085">compute_stress_tensor()</a>, and <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00030">set_size()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -534,6 +579,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00043">43</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00037">assemble()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00103">assign_stress_tensor()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00013">init_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00020">set_parameters()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00035">set_params()</a>.</p>
+
 </div>
 </div>
 <a id="a3cdc9871a2c1126f6eba738881c7375e" name="a3cdc9871a2c1126f6eba738881c7375e"></a>
@@ -556,11 +605,15 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00041">41</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00037">assemble()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00103">assign_stress_tensor()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00013">init_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00020">set_parameters()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00030">set_size()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00031">size()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_incompressible_lin_elast_8cpp.html">IncompressibleLinElast.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

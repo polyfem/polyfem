@@ -13,13 +13,11 @@
 <title>PolyFEM: DiffScalarBase Struct Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -143,6 +141,8 @@ Static Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Base class of all automatic differentiation types. </p>
 <p >This class records the number of independent variables with respect to which derivatives are computed. </p>
+
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00040">40</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a663329a7a315a38a711116c4dd056995" name="a663329a7a315a38a711116c4dd056995"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a663329a7a315a38a711116c4dd056995">&#9670;&nbsp;</a></span>getVariableCount()</h2>
@@ -168,6 +168,12 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the variable count used by the automatic differentiation layer. </p>
+
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00060">60</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
+
+<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00073">m_variableCount</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00124">DScalar1&lt; _Scalar, _Gradient &gt;::DScalar1()</a>, and <a class="el" href="autodiff_8h_source.html#l00506">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::DScalar2()</a>.</p>
 
 </div>
 </div>
@@ -198,6 +204,12 @@ Static Public Attributes</h2></td></tr>
 <p>Set the independent variable count used by the automatic differentiation layer. </p>
 <p >This function must be called before doing any computations with <a class="el" href="struct_d_scalar1.html">DScalar1</a> or <a class="el" href="struct_d_scalar2.html">DScalar2</a>. The value will be recorded in thread-local storage. </p>
 
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00054">54</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
+
+<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00073">m_variableCount</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_linear_elasticity_8cpp_source.html#l00105">polyfem::assembler::LinearElasticity::compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00294">polyfem::assembler::NeoHookeanElasticity::compute_energy_aux()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00203">polyfem::assembler::OgdenElasticity::compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00224">polyfem::assembler::SaintVenantElasticity::compute_energy_aux()</a>, <a class="el" href="_kernel_problem_8cpp_source.html#l00017">polyfem::problem::KernelProblem::eval_fun()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00714">polyfem::problem::ElasticCantileverExact::exact_grad()</a>, <a class="el" href="_problem_with_solution_8cpp_source.html#l00048">polyfem::problem::ProblemWithSolution::exact_grad()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00737">polyfem::problem::ElasticCantileverExact::neumann_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00675">polyfem::problem::ElasticCantileverExact::rhs()</a>, <a class="el" href="_problem_with_solution_8cpp_source.html#l00014">polyfem::problem::ProblemWithSolution::rhs()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">polyfem::basis::RBFWithQuadratic::setup_monomials_strong_2d()</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -220,6 +232,10 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00073">73</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00060">getVariableCount()</a>, and <a class="el" href="autodiff_8h_source.html#l00054">setVariableCount()</a>.</p>
 
 </div>
 </div>

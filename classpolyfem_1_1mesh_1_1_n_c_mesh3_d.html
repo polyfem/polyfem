@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::mesh::NCMesh3D Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -694,7 +692,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a5a5cfda12f4c4a2a534ca3c396858015 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5a5cfda12f4c4a2a534ca3c396858015">create</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;cells, const bool non_conforming=false)</td></tr>
 <tr class="separator:a5a5cfda12f4c4a2a534ca3c396858015 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00011">11</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a47e4ed2c71bac6dd8289aa91d665a17d" name="a47e4ed2c71bac6dd8289aa91d665a17d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a47e4ed2c71bac6dd8289aa91d665a17d">&#9670;&nbsp;</a></span>NCMesh3D() <span class="overload">[1/3]</span></h2>
 
@@ -832,6 +833,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">1199</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00980">get_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01001">get_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00915">load()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>.</p>
+
 </div>
 </div>
 <a id="a7243aed3a7b37ad3bc0b869a2167a93f" name="a7243aed3a7b37ad3bc0b869a2167a93f"></a>
@@ -857,6 +864,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">392</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00475">all_to_valid_edgeMap</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00222">cell_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00285">leader_edge_of_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00280">leader_edge_of_vertex()</a>.</p>
 
 </div>
 </div>
@@ -884,6 +897,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">416</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00473">all_to_valid_elemMap</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00549">edge_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00634">get_edge_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00640">get_face_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00628">get_vertex_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">switch_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00541">vertex_neighs()</a>.</p>
+
 </div>
 </div>
 <a id="addc58a8fd57e3d78433438c68577c57b" name="addc58a8fd57e3d78433438c68577c57b"></a>
@@ -910,6 +929,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">404</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00476">all_to_valid_faceMap</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00297">leader_face_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00303">leader_face_of_face()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00291">leader_face_of_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="a095ce65007b1fc4c1e312ee5dab56608" name="a095ce65007b1fc4c1e312ee5dab56608"></a>
@@ -935,6 +960,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00380">380</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00474">all_to_valid_vertexMap</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>.</p>
 
 </div>
 </div>
@@ -974,6 +1005,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad1cc49ad1ae481001afbf52721dcfe49">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00105">105</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, and <a class="el" href="p__bases_8py_source.html#l00372">p_bases::nodes</a>.</p>
+
 </div>
 </div>
 <a id="a4b68232593f26bdc5a7d82bab9a84953" name="a4b68232593f26bdc5a7d82bab9a84953"></a>
@@ -1012,6 +1047,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00169">169</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">compute_boundary_ids()</a>.</p>
+
 </div>
 </div>
 <a id="aa7ab9382a70d70531eb588dbfb45a9a2" name="aa7ab9382a70d70531eb588dbfb45a9a2"></a>
@@ -1036,6 +1075,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01038">1038</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">traverse_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1062,6 +1107,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01144">1144</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="aa581d4f0bcc45018ce61506afe1a6ddd" name="aa581d4f0bcc45018ce61506afe1a6ddd"></a>
@@ -1086,6 +1137,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01107">1107</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1125,6 +1182,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a47f0e3391109b093b2e1c8782c68caa2">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">52</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00470">edgeMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00471">faceMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00469">midpointMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00478">refineHistory</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
 </div>
 </div>
 <a id="acac1b735da681dbf09755f104856de64" name="acac1b735da681dbf09755f104856de64"></a>
@@ -1141,6 +1202,12 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">851</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00475">all_to_valid_edgeMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00473">all_to_valid_elemMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00476">all_to_valid_faceMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00474">all_to_valid_vertexMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00197">n_edges()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00205">n_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00475">valid_to_all_edgeMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00473">valid_to_all_elemMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00476">valid_to_all_faceMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00474">valid_to_all_vertexMap</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1169,6 +1236,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae8d68bc06906aa64d4757c7c6fc5f6c2">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00160">160</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00282">compute_body_ids()</a>.</p>
 
 </div>
 </div>
@@ -1208,6 +1281,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a3ff76dbfc406b591c3fa82bd6c6269e7">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00222">222</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
+
 </div>
 </div>
 <a id="a8366c4c1ef90370c7cb2c20260bcdc76" name="a8366c4c1ef90370c7cb2c20260bcdc76"></a>
@@ -1246,6 +1323,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">221</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00428">get_index_from_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">switch_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00579">switch_face()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a17fbbd159d8c4e9d3da70d50cf98a8c1" name="a17fbbd159d8c4e9d3da70d50cf98a8c1"></a>
@@ -1271,6 +1354,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00227">227</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
 
 </div>
 </div>
@@ -1310,6 +1397,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0424129f0b565f3f3b1743ee3ccffbe">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">220</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00380">all_to_valid_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01195">get_ordered_vertices_from_tet()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00042">is_boundary_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00079">save()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a99b7047d27ef694824339ca9d7c95c44" name="a99b7047d27ef694824339ca9d7c95c44"></a>
@@ -1327,6 +1420,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">760</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00478">refineHistory</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
 
 </div>
 </div>
@@ -1356,6 +1453,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae226ec0e107162494cfc9931cf9ed3f3">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00282">282</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00212">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00160">cell_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
+
 </div>
 </div>
 <a id="ad1b83c2243a36af8b3181f0ce4f58257" name="ad1b83c2243a36af8b3181f0ce4f58257"></a>
@@ -1383,6 +1484,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8a6de9cbe928b4411f9413eb102b66d3">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">186</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00211">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00169">bounding_box()</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">face_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
 
 </div>
 </div>
@@ -1412,6 +1517,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa77157cc1c817bb90b4e30d0f51f5b5f">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00220">220</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00211">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">face_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
 </div>
 </div>
 <a id="a7664e65861f04e8b65e526e86ede538b" name="a7664e65861f04e8b65e526e86ede538b"></a>
@@ -1439,6 +1548,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3788f7ec79a7dab5333430631f010730">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00236">236</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00211">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">face_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
 
 </div>
 </div>
@@ -1468,6 +1581,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a129dd721dab31ee5bf7b8a775af30473">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00250">250</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00211">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">face_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
 </div>
 </div>
 <a id="afdf4f657f97acf9d5fa26598af1f4303" name="afdf4f657f97acf9d5fa26598af1f4303"></a>
@@ -1496,6 +1613,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a33528f94d714d562fc736567c63a5a82">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00264">264</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00211">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">n_face_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
 </div>
 </div>
 <a id="a89ee5afccb067cb71680df636929e885" name="a89ee5afccb067cb71680df636929e885"></a>
@@ -1522,6 +1643,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a46596119e02dda1e34dac2f448eb87dc">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00124">124</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00210">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1551,6 +1678,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00145">145</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>.</p>
+
 </div>
 </div>
 <a id="a4e73c6795687666c5d7b040f977480b6" name="a4e73c6795687666c5d7b040f977480b6"></a>
@@ -1579,6 +1710,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0d51b3e9aa1a6db8cf897a98ac7dc486">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00132">132</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>.</p>
+
 </div>
 </div>
 <a id="a5ff1e639748f464536567ce8d46404bc" name="a5ff1e639748f464536567ce8d46404bc"></a>
@@ -1606,6 +1741,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a8bae5d8ae2745f6f2a599d2d6a75d6a4">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00549">549</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -1645,6 +1784,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a9b0565e52cac4ce041bbe6d359e2c73f">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">225</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00380">all_to_valid_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00145">edge_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00132">edge_length()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">switch_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="aa64af23717d68dab7ada1fb02f8b8c62" name="aa64af23717d68dab7ada1fb02f8b8c62"></a>
@@ -1673,6 +1818,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">152</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">compute_boundary_ids()</a>.</p>
+
 </div>
 </div>
 <a id="a2140d89e8b4da0d18e7dd386f6af1ea8" name="a2140d89e8b4da0d18e7dd386f6af1ea8"></a>
@@ -1700,6 +1851,12 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">18</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00428">get_index_from_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00571">switch_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00579">switch_face()</a>.</p>
 
 </div>
 </div>
@@ -1739,6 +1896,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">223</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00380">all_to_valid_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00160">cell_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00264">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">face_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00428">get_index_from_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00579">switch_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">switch_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a173fe4804a2090c9aac284ac73ea9264" name="a173fe4804a2090c9aac284ac73ea9264"></a>
@@ -1775,6 +1938,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00436">436</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00436">find_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00436">find_edge()</a>.</p>
+
 </div>
 </div>
 <a id="a91745979c297cfd7873980b73eff7790" name="a91745979c297cfd7873980b73eff7790"></a>
@@ -1800,6 +1969,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">971</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00470">edgeMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00980">get_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00802">mark_boundary()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">traverse_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
 
 </div>
 </div>
@@ -1843,6 +2018,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00444">444</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00444">find_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00444">find_face()</a>.</p>
+
 </div>
 </div>
 <a id="ace6449e49e440b37b896c3139356eb2a" name="ace6449e49e440b37b896c3139356eb2a"></a>
@@ -1868,6 +2049,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00992">992</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00471">faceMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01001">get_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
 
 </div>
 </div>
@@ -1905,6 +2092,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00429">429</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00429">find_vertex()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00429">find_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="a10a4afcddcba70de1676c24d1387feb1" name="a10a4afcddcba70de1676c24d1387feb1"></a>
@@ -1930,6 +2123,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00949">949</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00469">midpointMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00958">get_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">traverse_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
 
 </div>
 </div>
@@ -1959,6 +2158,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00265">265</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
+
 </div>
 </div>
 <a id="a3a45c205d0bcd4b4428c8c797586ff0e" name="a3a45c205d0bcd4b4428c8c797586ff0e"></a>
@@ -1986,6 +2189,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00264">264</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
 
 </div>
 </div>
@@ -2023,6 +2230,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00440">440</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00440">get_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00440">get_edge()</a>.</p>
+
 </div>
 </div>
 <a id="a56e1c956ddbc8b25a2bacdf3f77c6f69" name="a56e1c956ddbc8b25a2bacdf3f77c6f69"></a>
@@ -2048,6 +2261,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00980">980</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00470">edgeMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>.</p>
 
 </div>
 </div>
@@ -2086,6 +2305,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a28637adc0a06c3787149499711181af1">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00634">634</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -2129,6 +2352,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00447">447</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00447">get_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00447">get_face()</a>.</p>
+
 </div>
 </div>
 <a id="a5a10b67c98745d09807c7267a1996a61" name="a5a10b67c98745d09807c7267a1996a61"></a>
@@ -2154,6 +2383,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01001">1001</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00471">faceMap</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00992">find_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>.</p>
 
 </div>
 </div>
@@ -2183,6 +2418,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00640">640</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
 </div>
 </div>
 <a id="a0e4569ab1d7c0aaa3de6ab8bc9a617d3" name="a0e4569ab1d7c0aaa3de6ab8bc9a617d3"></a>
@@ -2210,6 +2449,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#af93fa061f0b2cbae9302397653ea654d">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00446">446</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00025">polyfem::mesh::Navigation3D::Index::element_patch</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -2255,6 +2498,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a04627e0048f0e5d66c44bbb137661277">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00428">428</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00025">polyfem::mesh::Navigation3D::Index::element_patch</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
+
 </div>
 </div>
 <a id="a6899bc07d12b5d6118e963e3c698c227" name="a6899bc07d12b5d6118e963e3c698c227"></a>
@@ -2298,6 +2545,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">460</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00025">polyfem::mesh::Navigation3D::Index::element_patch</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">n_face_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">switch_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -2349,6 +2600,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aee466a14dafa19538b169d77e49ccff1">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">493</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00025">polyfem::mesh::Navigation3D::Index::element_patch</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00992">find_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">n_face_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00571">switch_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">switch_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
+
 </div>
 </div>
 <a id="abad51bc57787d0d8a82065fc46b82dfb" name="abad51bc57787d0d8a82065fc46b82dfb"></a>
@@ -2377,6 +2632,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ad6d21fb4c79bcfb88e03f70af01975cb">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01195">1195</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="accf1a3bcc9fa912f71d899d422538509" name="accf1a3bcc9fa912f71d899d422538509"></a>
@@ -2402,6 +2661,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00958">958</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00949">find_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00469">midpointMap</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>.</p>
 
 </div>
 </div>
@@ -2441,6 +2706,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ad30a8601ac4bea1d116791aff536f891">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00628">628</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
 </div>
 </div>
 <a id="aab8a1e9f158c47d62faa39607b8e7229" name="aab8a1e9f158c47d62faa39607b8e7229"></a>
@@ -2468,6 +2737,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00230">230</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -2497,6 +2770,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00042">42</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00229">is_boundary_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00218">n_cell_edges()</a>.</p>
+
 </div>
 </div>
 <a id="a97d13a4d4bc9761600db541d15684fa6" name="a97d13a4d4bc9761600db541d15684fa6"></a>
@@ -2524,6 +2801,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">231</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">compute_boundary_ids()</a>.</p>
 
 </div>
 </div>
@@ -2553,6 +2836,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a621933dae34168bbcde32aba1aae763c">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00229">229</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00042">is_boundary_element()</a>.</p>
+
 </div>
 </div>
 <a id="adb5907d506429c0ba77580f054e1194b" name="adb5907d506429c0ba77580f054e1194b"></a>
@@ -2579,6 +2868,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a361e99b40e151869564304da752e4ea4">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00186">186</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
 
 </div>
 </div>
@@ -2608,6 +2899,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a401ef2460066f72c227da977938377d2">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00423">423</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
 </div>
 </div>
 <a id="a99c6e21c689ff5ee8f4f6f3f5b3bf335" name="a99c6e21c689ff5ee8f4f6f3f5b3bf335"></a>
@@ -2633,6 +2926,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00285">285</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -2660,6 +2957,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00280">280</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
 </div>
 </div>
 <a id="a7e1a60355c0c0b68d76c4608b4f7a58d" name="a7e1a60355c0c0b68d76c4608b4f7a58d"></a>
@@ -2685,6 +2986,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00297">297</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -2712,6 +3017,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00303">303</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
 </div>
 </div>
 <a id="a16fc24b3ef9e88cdf0c3e20ed38cc514" name="a16fc24b3ef9e88cdf0c3e20ed38cc514"></a>
@@ -2737,6 +3046,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00291">291</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
 
 </div>
 </div>
@@ -2766,6 +3079,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a939979be61d7499528476866d9b58270">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00915">915</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
 </div>
 </div>
 <a id="aeb9f5ad4e98ca78ae0d45c6da27aa663" name="aeb9f5ad4e98ca78ae0d45c6da27aa663"></a>
@@ -2794,6 +3111,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab8cf908389fe077868331f225c115be7">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00905">905</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_string_utils_8cpp_source.html#l00048">polyfem::utils::StringUtils::endswith()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00905">load()</a>, <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>, and <a class="el" href="eigs_8py_source.html#l00128">eigs::path</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00905">load()</a>.</p>
+
 </div>
 </div>
 <a id="aa40925ab61348aee70034846b4815dac" name="aa40925ab61348aee70034846b4815dac"></a>
@@ -2810,6 +3133,12 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00802">802</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
 
 </div>
 </div>
@@ -2839,6 +3168,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a3edb2fef89f899c90e7bb68df80505cc">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00218">218</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00042">is_boundary_element()</a>.</p>
+
 </div>
 </div>
 <a id="a2f5dd8a8cca5baf0f564d29afab47d61" name="a2f5dd8a8cca5baf0f564d29afab47d61"></a>
@@ -2866,6 +3199,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a7dab62efe81146a8df44713bf07c6302">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00219">219</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">switch_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
 
 </div>
 </div>
@@ -2895,6 +3232,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aabb8f39b3828bb4e20d355760dd421b1">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00217">217</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00079">save()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a3f281a6c7d029664820117dcb51ade52" name="a3f281a6c7d029664820117dcb51ade52"></a>
@@ -2922,6 +3263,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">188</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00105">attach_higher_order_nodes()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00282">compute_body_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00124">compute_elements_tag()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00302">set_body_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00128">update_elements_tag()</a>.</p>
+
 </div>
 </div>
 <a id="a35441365bfd5321ddfe293654d8c1d7b" name="a35441365bfd5321ddfe293654d8c1d7b"></a>
@@ -2947,6 +3294,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00216">216</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -2975,6 +3326,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00197">197</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>.</p>
+
 </div>
 </div>
 <a id="ae0c8e0e2b45e6a3bb25bfb3e93970c94" name="ae0c8e0e2b45e6a3bb25bfb3e93970c94"></a>
@@ -3000,6 +3357,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00215">215</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
 
 </div>
 </div>
@@ -3029,6 +3390,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">214</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00264">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00579">switch_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">switch_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a191cd97819df87cdf6ce7d5aff357f99" name="a191cd97819df87cdf6ce7d5aff357f99"></a>
@@ -3056,6 +3421,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">189</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00294">set_boundary_ids()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a56368df680c2271c98417ce783513cae" name="a56368df680c2271c98417ce783513cae"></a>
@@ -3081,6 +3452,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00311">311</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -3108,6 +3483,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00316">316</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
 </div>
 </div>
 <a id="a64cac406c75cd339040c67ac6e6c4d07" name="a64cac406c75cd339040c67ac6e6c4d07"></a>
@@ -3134,6 +3513,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00205">205</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00079">save()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
 
 </div>
 </div>
@@ -3163,6 +3548,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aae474e9bb4c3a280b8157e1ae8ed1450">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00619">619</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">switch_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00579">switch_face()</a>.</p>
+
 </div>
 </div>
 <a id="a9ec219f3f419a3b0de13accf4064ce33" name="a9ec219f3f419a3b0de13accf4064ce33"></a>
@@ -3191,6 +3580,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00623">623</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00571">switch_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">switch_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="a70bdeea0280ec9b79249fd9189c5a177" name="a70bdeea0280ec9b79249fd9189c5a177"></a>
@@ -3217,6 +3610,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6a0669fa090fe02438840545e6da8dc1">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00112">112</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
 
 </div>
 </div>
@@ -3298,6 +3693,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">140</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00160">cell_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00145">edge_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00132">edge_length()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00152">face_barycenter()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00079">save()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">triangulate_faces()</a>.</p>
+
 </div>
 </div>
 <a id="a41c990b52d185a073d710f88b603c6e6" name="a41c990b52d185a073d710f88b603c6e6"></a>
@@ -3324,6 +3725,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6b77da95a959586a711ee1f4b177d43b">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">343</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">adj_prepared</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01038">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01144">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01107">build_face_follower_chain()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00124">compute_elements_tag()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00802">mark_boundary()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00915">load()</a>.</p>
 
 </div>
 </div>
@@ -3369,6 +3776,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad85a6611e9273063472c5339624b12fe">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00026">26</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="tetrahedron_8py_source.html#l00084">tetrahedron::is_valid()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00026">refine()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00026">refine()</a>.</p>
+
 </div>
 </div>
 <a id="a7bfe24f02e444983ea0d9717db259ed8" name="a7bfe24f02e444983ea0d9717db259ed8"></a>
@@ -3387,6 +3800,12 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">647</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00053">edge_id</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00992">find_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00949">find_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00980">get_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01001">get_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00958">get_vertex()</a>, <a class="el" href="tetrahedron_8py_source.html#l00084">tetrahedron::is_valid()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00478">refineHistory</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00026">refine()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00750">refine_elements()</a>.</p>
+
 </div>
 </div>
 <a id="ac8bd31195b915a0944dfb161af6a5b1b" name="ac8bd31195b915a0944dfb161af6a5b1b"></a>
@@ -3404,6 +3823,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00750">750</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
 
 </div>
 </div>
@@ -3432,6 +3855,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae86080f4154e582d1e54087b2477281c">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00079">79</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00217">n_cell_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">n_elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00205">n_vertices()</a>, <a class="el" href="eigs_8py_source.html#l00128">eigs::path</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>.</p>
 
 </div>
 </div>
@@ -3477,6 +3904,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a025fdc77cc0b452bc9a28187ff8e420a">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00099">99</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
 </div>
 </div>
 <a id="a42edf0d76871b6cfe066d2e50a385d97" name="a42edf0d76871b6cfe066d2e50a385d97"></a>
@@ -3504,6 +3933,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a7f2e83710adcd0112b142fbfa38d34ee">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00310">310</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
 
 </div>
 </div>
@@ -3533,6 +3966,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00302">302</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">elements</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
+
 </div>
 </div>
 <a id="af52695f8c7e3fb49b6e79f567b5a6ea3" name="af52695f8c7e3fb49b6e79f567b5a6ea3"></a>
@@ -3560,6 +3997,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeee997a3775b8eb3e7b764bebfc68520">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00294">294</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
 
 </div>
 </div>
@@ -3589,6 +4030,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ab2a59e977bce042ef0e75782536f49c4">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00571">571</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00623">next_around_face()</a>.</p>
+
 </div>
 </div>
 <a id="aafa63f24c5cb494d47a7c6a361604562" name="aafa63f24c5cb494d47a7c6a361604562"></a>
@@ -3616,6 +4063,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a15941e582b4232ce48273e741d52f1bf">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">600</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00025">polyfem::mesh::Navigation3D::Index::element_patch</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00219">n_cell_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00619">next_around_edge()</a>.</p>
 
 </div>
 </div>
@@ -3645,6 +4098,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00579">579</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00024">polyfem::mesh::Navigation3D::Index::element</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00025">polyfem::mesh::Navigation3D::Index::element_patch</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">n_face_vertices()</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00619">next_around_edge()</a>.</p>
+
 </div>
 </div>
 <a id="a7d32ea3985e408f0c4f367f02b8fb774" name="a7d32ea3985e408f0c4f367f02b8fb774"></a>
@@ -3672,6 +4131,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f">polyfem::mesh::Mesh3D</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00558">558</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_navigation3_d_8hpp_source.html#l00021">polyfem::mesh::Navigation3D::Index::edge</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00022">polyfem::mesh::Navigation3D::Index::face</a>, <a class="el" href="_navigation3_d_8hpp_source.html#l00023">polyfem::mesh::Navigation3D::Index::face_corner</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">n_face_vertices()</a>, and <a class="el" href="_navigation3_d_8hpp_source.html#l00020">polyfem::mesh::Navigation3D::Index::vertex</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00623">next_around_face()</a>.</p>
 
 </div>
 </div>
@@ -3726,6 +4191,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">1013</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">edges</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00949">find_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">traverse_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01038">build_edge_follower_chain()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">traverse_edge()</a>.</p>
 
 </div>
 </div>
@@ -3805,6 +4276,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">1069</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">faces</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00992">find_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00949">find_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01107">build_face_follower_chain()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
+
 </div>
 </div>
 <a id="a672d9b8453c5bcd4205c795c068c4945" name="a672d9b8453c5bcd4205c795c068c4945"></a>
@@ -3849,6 +4326,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a61552f3bfd14586834855334677a11b5">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00319">319</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00184">polyfem::mesh::Mesh::cell_barycenters()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_mesh_8cpp_source.html#l00175">polyfem::mesh::Mesh::face_barycenters()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00219">n_cell_faces()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00217">n_cell_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00214">n_face_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00205">n_vertices()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>.</p>
+
 </div>
 </div>
 <a id="abbae94c2658ba39b272e7f9a3b3cab6b" name="abbae94c2658ba39b272e7f9a3b3cab6b"></a>
@@ -3876,6 +4357,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a42eacd6c5a9ca45ff6c38e70351c1f8a">polyfem::mesh::Mesh</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00128">128</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00210">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
+
 </div>
 </div>
 <a id="a1c00a11ce11f518aa3eb55fa16e58ed4" name="a1c00a11ce11f518aa3eb55fa16e58ed4"></a>
@@ -3901,6 +4386,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">397</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00475">valid_to_all_edgeMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00549">edge_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00634">get_edge_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00230">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00285">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00297">leader_face_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00216">n_edge_cells()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00311">n_follower_edges()</a>.</p>
 
 </div>
 </div>
@@ -3928,6 +4419,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">421</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00473">valid_to_all_elemMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00222">cell_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00227">cell_ref_level()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00282">compute_body_ids()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00265">get_body_id()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00750">refine_elements()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00302">set_body_ids()</a>.</p>
+
 </div>
 </div>
 <a id="a4a1f44a47eebdf4bdea5981678812a22" name="a4a1f44a47eebdf4bdea5981678812a22"></a>
@@ -3954,6 +4451,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">409</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00476">valid_to_all_faceMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00264">get_boundary_id()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00640">get_face_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00303">leader_face_of_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00215">n_face_cells()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00316">n_follower_faces()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00294">set_boundary_ids()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">switch_element()</a>.</p>
+
 </div>
 </div>
 <a id="ac0f5cb1c220c2224aa730bcb475dde80" name="ac0f5cb1c220c2224aa730bcb475dde80"></a>
@@ -3979,6 +4482,12 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">385</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">index_prepared</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00474">valid_to_all_vertexMap</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00460">get_index_from_element_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00493">get_index_from_element_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00628">get_vertex_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00229">is_boundary_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00280">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00291">leader_face_of_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00541">vertex_neighs()</a>.</p>
 
 </div>
 </div>
@@ -4008,6 +4517,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#ac2300c979e5771bac8ffa2b2e40eeb65">polyfem::mesh::Mesh3D</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00541">541</a> of file <a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">vertices</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -4031,6 +4544,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00462">462</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00285">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00280">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00297">leader_face_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00303">leader_face_of_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00291">leader_face_of_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00311">n_follower_edges()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00316">n_follower_faces()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00343">prepare_mesh()</a>.</p>
+
 </div>
 </div>
 <a id="a91279384ac29b0de7e5e69db139887b8" name="a91279384ac29b0de7e5e69db139887b8"></a>
@@ -4052,6 +4569,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00475">475</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>.</p>
 
 </div>
 </div>
@@ -4075,6 +4596,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00473">473</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>.</p>
+
 </div>
 </div>
 <a id="a98872d39f21398cf8c98a1d5c7c10d37" name="a98872d39f21398cf8c98a1d5c7c10d37"></a>
@@ -4096,6 +4621,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00476">476</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>.</p>
 
 </div>
 </div>
@@ -4119,6 +4648,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00474">474</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00380">all_to_valid_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>.</p>
+
 </div>
 </div>
 <a id="a691a85d379d5675f5c78faa380e73969" name="a691a85d379d5675f5c78faa380e73969"></a>
@@ -4140,6 +4673,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00470">470</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00971">find_edge()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00980">get_edge()</a>.</p>
 
 </div>
 </div>
@@ -4163,6 +4700,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00466">466</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01038">build_edge_follower_chain()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01144">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01107">build_face_follower_chain()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00222">cell_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">coarsen_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00549">edge_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00980">get_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00634">get_edge_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00230">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00285">leader_edge_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00297">leader_face_of_edge()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00802">mark_boundary()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00216">n_edge_cells()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00197">n_edges()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00311">n_follower_edges()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01013">traverse_edge()</a>.</p>
+
 </div>
 </div>
 <a id="ada73ce92b73d88a4146c637a0b0f02be" name="ada73ce92b73d88a4146c637a0b0f02be"></a>
@@ -4184,6 +4725,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00481">481</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
 
 </div>
 </div>
@@ -4207,6 +4750,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00464">464</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00222">cell_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00227">cell_ref_level()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">coarsen_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00282">compute_body_ids()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00265">get_body_id()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00026">refine()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00302">set_body_ids()</a>.</p>
+
 </div>
 </div>
 <a id="ab76b97e471b4c5b2019ddc5bde668d2a" name="ab76b97e471b4c5b2019ddc5bde668d2a"></a>
@@ -4228,6 +4775,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00471">471</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00992">find_face()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01001">get_face()</a>.</p>
 
 </div>
 </div>
@@ -4251,6 +4802,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00467">467</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01144">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01107">build_face_follower_chain()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00221">cell_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">coarsen_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00186">compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00018">face_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00264">get_boundary_id()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01001">get_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00640">get_face_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00231">is_boundary_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00303">leader_face_of_face()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00802">mark_boundary()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00215">n_face_cells()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00189">n_faces()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00316">n_follower_faces()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00294">set_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00600">switch_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01069">traverse_face()</a>.</p>
+
 </div>
 </div>
 <a id="a5d98ec161cf24488729a89022bb9a3d7" name="a5d98ec161cf24488729a89022bb9a3d7"></a>
@@ -4272,6 +4827,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00461">461</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00392">all_to_valid_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00416">all_to_valid_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00404">all_to_valid_face()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00380">all_to_valid_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00042">is_boundary_element()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>.</p>
 
 </div>
 </div>
@@ -4295,6 +4854,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00469">469</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00949">find_vertex()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00958">get_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="a6ba34425796731ff13b570bc38354475" name="a6ba34425796731ff13b570bc38354475"></a>
@@ -4316,6 +4879,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00459">459</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">coarsen_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00915">load()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00188">n_cells()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00079">save()</a>.</p>
 
 </div>
 </div>
@@ -4339,6 +4906,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00478">478</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">coarsen_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>.</p>
+
 </div>
 </div>
 <a id="aa329c6298ec7230f2548796de38531e5" name="aa329c6298ec7230f2548796de38531e5"></a>
@@ -4360,6 +4931,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00475">475</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00397">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -4383,6 +4958,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00473">473</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00421">valid_to_all_elem()</a>.</p>
+
 </div>
 </div>
 <a id="ab8abcf108412e6045f638bb09b4646a4" name="ab8abcf108412e6045f638bb09b4646a4"></a>
@@ -4404,6 +4983,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00476">476</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00409">valid_to_all_face()</a>.</p>
 
 </div>
 </div>
@@ -4427,6 +5010,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00474">474</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, and <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00385">valid_to_all_vertex()</a>.</p>
+
 </div>
 </div>
 <a id="a66c20666c3920b0d4143bfc2fa94c7b3" name="a66c20666c3920b0d4143bfc2fa94c7b3"></a>
@@ -4449,11 +5036,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00465">465</a> of file <a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01199">add_element()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l01144">build_element_vertex_adjacency()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00851">build_index_mapping()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00220">cell_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00760">coarsen_element()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00225">edge_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00223">face_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00958">get_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00628">get_vertex_elements_neighs()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00229">is_boundary_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00280">leader_edge_of_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00291">leader_face_of_vertex()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00915">load()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00802">mark_boundary()</a>, <a class="el" href="_n_c_mesh3_d_8hpp_source.html#l00205">n_vertices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00140">point()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00647">refine_element()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00541">vertex_neighs()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/mesh/mesh3D/<a class="el" href="_n_c_mesh3_d_8hpp_source.html">NCMesh3D.hpp</a></li>
-<li>src/polyfem/mesh/mesh3D/<a class="el" href="_n_c_mesh3_d_8cpp.html">NCMesh3D.cpp</a></li>
+<li>src/polyfem/mesh/mesh3D/<a class="el" href="_n_c_mesh3_d_8cpp_source.html">NCMesh3D.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

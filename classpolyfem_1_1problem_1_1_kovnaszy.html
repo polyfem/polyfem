@@ -13,13 +13,11 @@
 <title>PolyFEM: polyfem::problem::Kovnaszy Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
-<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -222,7 +220,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050">splitting_pressure_boundary_ids_</a></td></tr>
 <tr class="separator:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00126">126</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a852ff56bd75f951540d42120499d5cb1" name="a852ff56bd75f951540d42120499d5cb1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a852ff56bd75f951540d42120499d5cb1">&#9670;&nbsp;</a></span>Kovnaszy()</h2>
 
@@ -238,6 +239,10 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00393">393</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, and <a class="el" href="_stokes_problem_8hpp_source.html#l00148">is_time_dependent_</a>.</p>
 
 </div>
 </div>
@@ -302,6 +307,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00462">462</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_problem_8cpp_source.html#l00417">exact()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="a7883a5de03e21cbfe08b6fd6d07b1407" name="a7883a5de03e21cbfe08b6fd6d07b1407"></a>
@@ -345,6 +354,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#add068e57938271170ec204f843611cca">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00417">417</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_stokes_problem_8hpp_source.html#l00147">viscosity_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_stokes_problem_8cpp_source.html#l00462">dirichlet_bc()</a>, and <a class="el" href="_stokes_problem_8cpp_source.html#l00400">initial_solution()</a>.</p>
 
 </div>
 </div>
@@ -390,6 +405,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7ec16ec0a2556437ba3c67788c7032f4">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00440">440</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_stokes_problem_8hpp_source.html#l00147">viscosity_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
+
 </div>
 </div>
 <a id="a0dc27e1393814294ed6a5cf0abfc5440" name="a0dc27e1393814294ed6a5cf0abfc5440"></a>
@@ -416,6 +435,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00131">131</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -467,6 +488,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00400">400</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_problem_8cpp_source.html#l00417">exact()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="ad31ac88c2772d1faf3b6843708395c0e" name="ad31ac88c2772d1faf3b6843708395c0e"></a>
@@ -493,6 +518,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00132">132</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -521,6 +548,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00133">133</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
+
 </div>
 </div>
 <a id="a6468840dad58e13dee5e4bb1dda2e688" name="a6468840dad58e13dee5e4bb1dda2e688"></a>
@@ -547,6 +576,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00134">134</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_problem_8hpp_source.html#l00148">is_time_dependent_</a>.</p>
 
 </div>
 </div>
@@ -604,6 +637,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00456">456</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+
 </div>
 </div>
 <a id="a07cbaf805c0030195756722d23e680e7" name="a07cbaf805c0030195756722d23e680e7"></a>
@@ -632,6 +669,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00405">405</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_problem_8hpp_source.html#l00148">is_time_dependent_</a>, and <a class="el" href="_stokes_problem_8hpp_source.html#l00147">viscosity_</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -647,6 +688,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00148">148</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_stokes_problem_8hpp_source.html#l00134">is_time_dependent()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00393">Kovnaszy()</a>, and <a class="el" href="_stokes_problem_8cpp_source.html#l00405">set_parameters()</a>.</p>
+
 </div>
 </div>
 <a id="a11425fe7f6dce2591bb556327ca26ae2" name="a11425fe7f6dce2591bb556327ca26ae2"></a>
@@ -661,11 +706,15 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00147">147</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_stokes_problem_8cpp_source.html#l00417">exact()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00440">exact_grad()</a>, and <a class="el" href="_stokes_problem_8cpp_source.html#l00405">set_parameters()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/problem/<a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a></li>
-<li>src/polyfem/problem/<a class="el" href="_stokes_problem_8cpp.html">StokesProblem.cpp</a></li>
+<li>src/polyfem/problem/<a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
