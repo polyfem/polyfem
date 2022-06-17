@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: |
           wget https://www.doxygen.nl/files/doxygen-1.9.4.linux.bin.tar.gz
-          tar -xvzf doxygen-1.9.4.linux.bin.tar.gz
+          tar -xzf doxygen-1.9.4.linux.bin.tar.gz
           cd doxygen-1.9.4
           sudo make install
           sudo apt-get install graphviz
@@ -34,7 +34,6 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
           folder: docs/html
 
