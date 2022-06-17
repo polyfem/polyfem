@@ -11,11 +11,11 @@ permissions:
 
 jobs:
   docs:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       
       - name: Dependencies
-        run: brew install doxygen graphviz
+        run: sudo apt-get update && sudo apt-get install doxygen graphviz
 
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
