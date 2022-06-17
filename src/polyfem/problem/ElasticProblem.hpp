@@ -195,10 +195,10 @@ namespace polyfem
 
 			bool has_exact_sol() const override { return true; }
 			void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;		
+			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_scalar() const override { return false; }
 
-			void set_parameters(const json &params);
+			void set_parameters(const json &params) override;
 
 		private:
 			VectorNd eval_fun(const VectorNd &pt, const double t) const;

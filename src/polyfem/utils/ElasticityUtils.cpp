@@ -489,8 +489,8 @@ namespace polyfem
 
 	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
 	{
-		assert(lambda_or_E_.size() == 1 || lambda_or_E_.size() < el_id);
-		assert(mu_or_nu_.size() == 1 || mu_or_nu_.size() < el_id);
+		assert(lambda_or_E_.size() == 1 || el_id < lambda_or_E_.size());
+		assert(mu_or_nu_.size() == 1 || el_id < mu_or_nu_.size());
 		assert(size_ == 2 || size_ == 3);
 
 		const auto &tmp1 = lambda_or_E_.size() == 1 ? lambda_or_E_[0] : lambda_or_E_[el_id];
@@ -560,11 +560,12 @@ namespace polyfem
 
 	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
 	{
-		assert(rho_.size() == 1 || rho_.size() < el_id);
+		assert(rho_.size() == 1 || el_id < rho_.size());
 
 		const auto &tmp = rho_.size() == 1 ? rho_[0] : rho_[el_id];
 		const double res = tmp(x, y, z, 0, el_id);
 		assert(!std::isnan(res));
+		assert(!std::isinf(res));
 		return res;
 	}
 
