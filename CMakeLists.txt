@@ -291,6 +291,7 @@ add_library(polyfem::polyfem ALIAS polyfem)
 # Main executable
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
+    add_executable(${PROJECT_NAME}_homo src/polyfem/homo.cpp)
 
     source_group("gui" FILES src/polyfem/main.cpp)
     if(NOT POLYFEM_NO_UI)
@@ -306,6 +307,12 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
     include(cli11)
     target_link_libraries(${PROJECT_NAME}_bin
+        PUBLIC
+            polyfem::polyfem
+            warnings::all
+            CLI11::CLI11
+    )
+    target_link_libraries(${PROJECT_NAME}_homo
         PUBLIC
             polyfem::polyfem
             warnings::all

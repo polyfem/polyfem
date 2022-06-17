@@ -47,17 +47,19 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     for (int i = 0; i < dim; i++)
         for (int j = 0; j < dim; j++)
         {
+            Eigen::MatrixXd grad(dim, dim);
+            grad.setZero();
+            grad(i, j) = 1;
             auto &unit_strain = unit_strains[i * dim + j];
-            unit_strain(i, j) = 1;
-            unit_strain = (unit_strain + unit_strain.transpose()) / 2;
+            unit_strain = (grad + grad.transpose()) / 2;
         }
 
     // assemble unit test force rhs
     for (int e = 0; e < bases.size(); e++)
     {
-        const auto &bs = bases[e];
         ElementAssemblyValues vals;
-        vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
         const Quadrature &quadrature = vals.quadrature;
 
@@ -72,17 +74,17 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
                     if (k < l)
                         continue;
                     
-                    Eigen::MatrixXd &unit_strain = unit_strains[k * dim + l];
+                    const Eigen::MatrixXd &unit_strain = unit_strains[k * dim + l];
 
                     for (int d = 0; d < dim; d++)
                     {
                         double rhs_value = 0;
                         for (int q = 0; q < quadrature.weights.size(); q++)
                         {
-                            Eigen::MatrixXd test_strain(dim, dim);
-                            test_strain.setZero();
-                            test_strain.row(d) = v.grad_t_m.row(q);
-                            test_strain = 0.5 * (test_strain + test_strain.transpose());
+                            Eigen::MatrixXd grad(dim, dim);
+                            grad.setZero();
+                            grad.row(d) = v.grad_t_m.row(q);
+                            Eigen::MatrixXd test_strain = 0.5 * (grad + grad.transpose());
                             
                             double lambda, mu;
                             params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
@@ -135,9 +137,27 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
         std::swap(rhs, rhs_periodic);
     }
 
-    // fix rigid transformation
-    const int n_extra_constraints = remove_pure_neumann_singularity(A);
-    rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
+    if (boundary_nodes.size() > 0)
+    {
+        logger().error("Homogenization with Dirichlet BC not implemented!");
+        return;
+    }
+
+    // fix translations
+    int n_lagrange_multiplier = 0;
+    if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+    {
+        if (assembler.is_mixed(formulation()))
+        {
+            logger().error("Pure periodic without Dirichlet not supported for mixed formulation!");
+            return;
+        }
+        else
+            logger().info("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
+        
+        n_lagrange_multiplier = remove_pure_periodic_singularity(A);
+        rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
+    }
 
     Eigen::MatrixXd w;
     w.setZero(rhs.rows(), rhs.cols());
@@ -145,9 +165,10 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     solver->setParameters(args["solver"]["linear"]);
     for (int k = 0; k < rhs.cols(); k++)
     {
+        auto A_tmp = A;
         Eigen::VectorXd b = rhs.col(k);
         Eigen::VectorXd x = w.col(k);
-        polysolve::dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+        polysolve::dirichlet_solve(*solver, A_tmp, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
         solver->getInfo(solver_info);
         w.col(k) = x;
     }
@@ -186,7 +207,8 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     for (int e = 0; e < bases.size(); e++)
     {
         ElementAssemblyValues vals;
-        vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
         const Quadrature &quadrature = vals.quadrature;
 
@@ -200,22 +222,31 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
             std::vector<Eigen::MatrixXd> react_strains(3 * (dim - 1), Eigen::MatrixXd::Zero(dim, dim));
 
             for (int i = 0, id = 0; i < dim; i++)
+            {
                 for (int j = 0; j < dim; j++)
                 {
                     if (i < j)
                         continue;
 
-                    auto &react_strain = react_strains[id];
-                    for (int b = 0; b < vals.basis_values.size(); b++)
-                        for (int ii = 0; ii < vals.basis_values[b].global.size(); ii++)
-                            for (int d = 0; d < dim; d++)
-                                react_strain.row(d) += vals.basis_values[b].grad_t_m.row(q) * w(vals.basis_values[b].global[ii].index * dim + d, id) * vals.basis_values[b].global[ii].val;
-                    react_strain = (react_strain + react_strain.transpose()) / 2;
+                    Eigen::MatrixXd grad(dim, dim);
+                    grad.setZero();
+                    for (const auto &v : vals.basis_values)
+                        for (int d = 0; d < dim; d++)
+                        {
+                            double coeff = 0;
+                            for (const auto &g : v.global)
+                                coeff += w(g.index * dim + d, id) * g.val;
+                            grad.row(d) += v.grad_t_m.row(q) * coeff;
+                        }
+                    
+                    react_strains[id] = (grad + grad.transpose()) / 2;
 
                     id++;
                 }
+            }
 
             for (int i = 0, row_id = 0; i < dim; i++)
+            {
                 for (int j = 0; j < dim; j++)
                 {
                     if (i < j)
@@ -224,6 +255,7 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
                     Eigen::MatrixXd strain_diff_ij = unit_strains[i * dim + j] - react_strains[row_id];
 
                     for (int k = 0, col_id = 0; k < dim; k++)
+                    {
                         for (int l = 0; l < dim; l++)
                         {
                             if (k < l)
@@ -236,8 +268,10 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
 
                             col_id++;
                         }
+                    }
                     row_id++;
                 }
+            }
         }
     }
 
@@ -282,7 +316,6 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
     // assemble unit test force rhs
     for (int e = 0; e < bases.size(); e++)
     {
-        const auto &bs = bases[e];
         ElementAssemblyValues vals;
         vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
@@ -396,9 +429,9 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
     double volume = 0;
     for (int e = 0; e < bases.size(); e++)
     {
-        const auto &bs = bases[e];
         ElementAssemblyValues vals;
-        vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
         const Quadrature &quadrature = vals.quadrature;
 
