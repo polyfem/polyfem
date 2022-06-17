@@ -13,11 +13,13 @@
 <title>PolyFEM: src/polyfem/basis/function/QuadraticBSpline.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -147,14 +142,14 @@ $(document).ready(function(){initNavTree('_quadratic_b_spline_8hpp_source.html',
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        };</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    } <span class="comment">// namespace basis</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html">polyfem::basis::QuadraticBSpline</a></div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8hpp_source.html#l00011">QuadraticBSpline.hpp:12</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a08f1ec5c60a13589cc129479e14e83f9"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a08f1ec5c60a13589cc129479e14e83f9">polyfem::basis::QuadraticBSpline::init</a></div><div class="ttdeci">void init(const std::array&lt; double, 4 &gt; &amp;knots)</div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8cpp_source.html#l00009">QuadraticBSpline.cpp:9</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a29e9bd02780bf46faa2384cf93bf0fd9"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a29e9bd02780bf46faa2384cf93bf0fd9">polyfem::basis::QuadraticBSpline::interpolate</a></div><div class="ttdeci">void interpolate(const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8cpp_source.html#l00014">QuadraticBSpline.cpp:14</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a64f6ea8586440136c008841eacdaf74b"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a64f6ea8586440136c008841eacdaf74b">polyfem::basis::QuadraticBSpline::QuadraticBSpline</a></div><div class="ttdeci">QuadraticBSpline()</div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8hpp_source.html#l00014">QuadraticBSpline.hpp:14</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a7c6b55fb875945ac57ed60c359f12e22"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a7c6b55fb875945ac57ed60c359f12e22">polyfem::basis::QuadraticBSpline::QuadraticBSpline</a></div><div class="ttdeci">QuadraticBSpline(const std::array&lt; double, 4 &gt; &amp;knots)</div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8hpp_source.html#l00015">QuadraticBSpline.hpp:15</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_ae155943a730782f90fa6fd4086d1a836"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#ae155943a730782f90fa6fd4086d1a836">polyfem::basis::QuadraticBSpline::derivative</a></div><div class="ttdeci">void derivative(const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8cpp_source.html#l00043">QuadraticBSpline.cpp:43</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_afbb473c4a6348979923cb838277d31f6"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#afbb473c4a6348979923cb838277d31f6">polyfem::basis::QuadraticBSpline::knots_</a></div><div class="ttdeci">std::array&lt; double, 4 &gt; knots_</div><div class="ttdef"><b>Definition:</b> <a href="_quadratic_b_spline_8hpp_source.html#l00029">QuadraticBSpline.hpp:29</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html">polyfem::basis::QuadraticBSpline</a></div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.hpp:12</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a08f1ec5c60a13589cc129479e14e83f9"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a08f1ec5c60a13589cc129479e14e83f9">polyfem::basis::QuadraticBSpline::init</a></div><div class="ttdeci">void init(const std::array&lt; double, 4 &gt; &amp;knots)</div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.cpp:9</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a29e9bd02780bf46faa2384cf93bf0fd9"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a29e9bd02780bf46faa2384cf93bf0fd9">polyfem::basis::QuadraticBSpline::interpolate</a></div><div class="ttdeci">void interpolate(const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.cpp:14</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a64f6ea8586440136c008841eacdaf74b"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a64f6ea8586440136c008841eacdaf74b">polyfem::basis::QuadraticBSpline::QuadraticBSpline</a></div><div class="ttdeci">QuadraticBSpline()</div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.hpp:14</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_a7c6b55fb875945ac57ed60c359f12e22"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a7c6b55fb875945ac57ed60c359f12e22">polyfem::basis::QuadraticBSpline::QuadraticBSpline</a></div><div class="ttdeci">QuadraticBSpline(const std::array&lt; double, 4 &gt; &amp;knots)</div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.hpp:15</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_ae155943a730782f90fa6fd4086d1a836"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#ae155943a730782f90fa6fd4086d1a836">polyfem::basis::QuadraticBSpline::derivative</a></div><div class="ttdeci">void derivative(const Eigen::MatrixXd &amp;ts, Eigen::MatrixXd &amp;result) const</div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.cpp:43</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_quadratic_b_spline_html_afbb473c4a6348979923cb838277d31f6"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#afbb473c4a6348979923cb838277d31f6">polyfem::basis::QuadraticBSpline::knots_</a></div><div class="ttdeci">std::array&lt; double, 4 &gt; knots_</div><div class="ttdef"><b>Definition:</b> QuadraticBSpline.hpp:29</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

@@ -13,11 +13,13 @@
 <title>PolyFEM: src/polyfem/utils/MshReader.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -138,11 +133,11 @@ $(document).ready(function(){initNavTree('_msh_reader_8hpp_source.html',''); ini
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        };</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_msh_reader_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_msh_reader.html">polyfem::utils::MshReader</a></div><div class="ttdef"><b>Definition:</b> <a href="_msh_reader_8hpp_source.html#l00011">MshReader.hpp:12</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_msh_reader_html_a2e5df51e021610729787b7537a17f175"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_msh_reader.html#a2e5df51e021610729787b7537a17f175">polyfem::utils::MshReader::load</a></div><div class="ttdeci">static bool load(const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</div><div class="ttdef"><b>Definition:</b> <a href="_msh_reader_8cpp_source.html#l00031">MshReader.cpp:31</a></div></div>
-<div class="ttc" id="anamespaceeigs_html_a9fe38deb6414bc39f39d8ed436b42d3e"><div class="ttname"><a href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">eigs.path</a></div><div class="ttdeci">path</div><div class="ttdef"><b>Definition:</b> <a href="eigs_8py_source.html#l00128">eigs.py:128</a></div></div>
-<div class="ttc" id="anamespacep__bases_html_a6e09a924d6202680eb9918f91c1e504b"><div class="ttname"><a href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">p_bases.vertices</a></div><div class="ttdeci">list vertices</div><div class="ttdef"><b>Definition:</b> <a href="p__bases_8py_source.html#l00211">p_bases.py:211</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_msh_reader_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_msh_reader.html">polyfem::utils::MshReader</a></div><div class="ttdef"><b>Definition:</b> MshReader.hpp:12</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_msh_reader_html_a2e5df51e021610729787b7537a17f175"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_msh_reader.html#a2e5df51e021610729787b7537a17f175">polyfem::utils::MshReader::load</a></div><div class="ttdeci">static bool load(const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</div><div class="ttdef"><b>Definition:</b> MshReader.cpp:31</div></div>
+<div class="ttc" id="anamespaceeigs_html_a9fe38deb6414bc39f39d8ed436b42d3e"><div class="ttname"><a href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">eigs.path</a></div><div class="ttdeci">path</div><div class="ttdef"><b>Definition:</b> eigs.py:128</div></div>
+<div class="ttc" id="anamespacep__bases_html_a6e09a924d6202680eb9918f91c1e504b"><div class="ttname"><a href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">p_bases.vertices</a></div><div class="ttdeci">list vertices</div><div class="ttdef"><b>Definition:</b> p_bases.py:211</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

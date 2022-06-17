@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::problem::KernelProblem Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -131,7 +126,7 @@ Inheritance diagram for polyfem::problem::KernelProblem:</div>
 <div class="dynheader">
 Collaboration diagram for polyfem::problem::KernelProblem:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1problem_1_1_kernel_problem__coll__graph.svg" width="2963" height="1678"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1problem_1_1_kernel_problem__coll__graph.svg" width="2592" height="1567"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -255,10 +250,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050">splitting_pressure_boundary_ids_</a></td></tr>
 <tr class="separator:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00017">17</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a466b5557ea91554ae32227dfde241a96" name="a466b5557ea91554ae32227dfde241a96"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a466b5557ea91554ae32227dfde241a96">&#9670;&nbsp;</a></span>KernelProblem()</h2>
 
@@ -274,8 +266,6 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00012">12</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
 
 </div>
 </div>
@@ -316,10 +306,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#aae577273688cdc5133ac2f7ca9259d70">polyfem::problem::ProblemWithSolution</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00035">35</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00154">polyfem::State::assembler</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00038">formulation_</a>, <a class="el" href="_kernel_problem_8cpp_source.html#l00236">is_scalar()</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00040">kernel_distance_</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00041">kernel_weights_</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00039">n_kernels_</a>, and <a class="el" href="_kernel_problem_8hpp_source.html#l00035">state</a>.</p>
-
 </div>
 </div>
 <a id="a1fe3e495c6380af680921474de733915" name="a1fe3e495c6380af680921474de733915"></a>
@@ -357,8 +343,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#ab35a9234eb3695fa30c4bc1491f7a950">polyfem::problem::ProblemWithSolution</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00024">24</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -398,12 +382,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#ab7ef1ebf3e2800bddc0aa1a6e27acafa">polyfem::problem::ProblemWithSolution</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00017">17</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_kernel_problem_8cpp_source.html#l00017">eval_fun()</a>, and <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00017">eval_fun()</a>.</p>
-
 </div>
 </div>
 <a id="a5ae35168ec08106ffada783ba52aa30c" name="a5ae35168ec08106ffada783ba52aa30c"></a>
@@ -430,12 +408,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00236">236</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00154">polyfem::State::assembler</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00038">formulation_</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00032">polyfem::assembler::AssemblerUtils::is_scalar()</a>, and <a class="el" href="_kernel_problem_8hpp_source.html#l00035">state</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00035">eval_fun()</a>.</p>
 
 </div>
 </div>
@@ -493,10 +465,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html#a7ac8515f2014c5b98b91146bf5b7ed13">polyfem::problem::ProblemWithSolution</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00205">205</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_problem_with_solution_8hpp_source.html#l00033">polyfem::problem::ProblemWithSolution::size_for()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
-
 </div>
 </div>
 <a id="afe745f16c75df5e8d7f6301cc1ac0adb" name="afe745f16c75df5e8d7f6301cc1ac0adb"></a>
@@ -525,10 +493,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00212">212</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_kernel_problem_8hpp_source.html#l00038">formulation_</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00040">kernel_distance_</a>, <a class="el" href="_kernel_problem_8hpp_source.html#l00041">kernel_weights_</a>, and <a class="el" href="_kernel_problem_8hpp_source.html#l00039">n_kernels_</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -552,10 +516,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00038">38</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00035">eval_fun()</a>, <a class="el" href="_kernel_problem_8cpp_source.html#l00236">is_scalar()</a>, and <a class="el" href="_kernel_problem_8cpp_source.html#l00212">set_parameters()</a>.</p>
-
 </div>
 </div>
 <a id="a5a7e27aafe923d6acca8e8d15ac35c2a" name="a5a7e27aafe923d6acca8e8d15ac35c2a"></a>
@@ -577,10 +537,6 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00040">40</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00035">eval_fun()</a>, and <a class="el" href="_kernel_problem_8cpp_source.html#l00212">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -604,10 +560,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00041">41</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00035">eval_fun()</a>, and <a class="el" href="_kernel_problem_8cpp_source.html#l00212">set_parameters()</a>.</p>
-
 </div>
 </div>
 <a id="a82ffb87d386f50c924226d21451d178e" name="a82ffb87d386f50c924226d21451d178e"></a>
@@ -630,10 +582,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00039">39</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00035">eval_fun()</a>, and <a class="el" href="_kernel_problem_8cpp_source.html#l00212">set_parameters()</a>.</p>
-
 </div>
 </div>
 <a id="ab31e105aedf0c33c599eebca116dc9da" name="ab31e105aedf0c33c599eebca116dc9da"></a>
@@ -648,15 +596,11 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_kernel_problem_8hpp_source.html#l00035">35</a> of file <a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_kernel_problem_8cpp_source.html#l00035">eval_fun()</a>, and <a class="el" href="_kernel_problem_8cpp_source.html#l00236">is_scalar()</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/problem/<a class="el" href="_kernel_problem_8hpp_source.html">KernelProblem.hpp</a></li>
-<li>src/polyfem/problem/<a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a></li>
+<li>src/polyfem/problem/<a class="el" href="_kernel_problem_8cpp.html">KernelProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

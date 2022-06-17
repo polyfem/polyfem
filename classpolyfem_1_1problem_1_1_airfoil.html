@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::problem::Airfoil Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -225,10 +220,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050">splitting_pressure_boundary_ids_</a></td></tr>
 <tr class="separator:ac0a7d65cf5de7b0aae392ddd1d8b7050 inherit pro_attribs_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00250">250</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a863f2ea436b509d28f2a043197bbd785" name="a863f2ea436b509d28f2a043197bbd785"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a863f2ea436b509d28f2a043197bbd785">&#9670;&nbsp;</a></span>Airfoil()</h2>
 
@@ -244,10 +236,6 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00750">750</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00059">polyfem::assembler::Problem::boundary_ids_</a>, and <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>.</p>
 
 </div>
 </div>
@@ -312,10 +300,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00798">798</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00404">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
-
 </div>
 </div>
 <a id="ab2d9c1564afed6b23ee9da25dbb3cb47" name="ab2d9c1564afed6b23ee9da25dbb3cb47"></a>
@@ -359,12 +343,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#add068e57938271170ec204f843611cca">polyfem::assembler::Problem</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00770">770</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_stokes_problem_8cpp_source.html#l00757">initial_solution()</a>.</p>
 
 </div>
 </div>
@@ -410,10 +388,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a7ec16ec0a2556437ba3c67788c7032f4">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00786">786</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
-
 </div>
 </div>
 <a id="a496ece0d3fd9158c1061e054c0724872" name="a496ece0d3fd9158c1061e054c0724872"></a>
@@ -440,8 +414,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00255">255</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -493,10 +465,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00757">757</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_stokes_problem_8cpp_source.html#l00770">exact()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
-
 </div>
 </div>
 <a id="ac32753a32abbaf79e48a128aad9b3ba2" name="ac32753a32abbaf79e48a128aad9b3ba2"></a>
@@ -523,8 +491,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00256">256</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -553,8 +519,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00257">257</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
-
 </div>
 </div>
 <a id="a59e59aa1b0a6ce8dbe5687ed29e79672" name="a59e59aa1b0a6ce8dbe5687ed29e79672"></a>
@@ -581,10 +545,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923">polyfem::assembler::Problem</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00258">258</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>.</p>
 
 </div>
 </div>
@@ -642,10 +602,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00792">792</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
-
 </div>
 </div>
 <a id="a011e21435986268097914ee31f41a936" name="a011e21435986268097914ee31f41a936"></a>
@@ -674,10 +630,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00762">762</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_stokes_problem_8hpp_source.html#l00271">is_time_dependent_</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -693,15 +645,11 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stokes_problem_8hpp_source.html#l00271">271</a> of file <a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_stokes_problem_8cpp_source.html#l00750">Airfoil()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00798">dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00770">exact()</a>, <a class="el" href="_stokes_problem_8hpp_source.html#l00258">is_time_dependent()</a>, and <a class="el" href="_stokes_problem_8cpp_source.html#l00762">set_parameters()</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/problem/<a class="el" href="_stokes_problem_8hpp_source.html">StokesProblem.hpp</a></li>
-<li>src/polyfem/problem/<a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a></li>
+<li>src/polyfem/problem/<a class="el" href="_stokes_problem_8cpp.html">StokesProblem.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

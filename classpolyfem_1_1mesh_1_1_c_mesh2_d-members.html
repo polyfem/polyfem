@@ -13,11 +13,13 @@
 <title>PolyFEM: Member List</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -172,7 +167,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1mesh_1_1_c_mesh2_d.htm
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a7b5ce1cd9d3337d3eb7a57101f109a08">get_edges</a>(Eigen::MatrixXd &amp;p0, Eigen::MatrixXd &amp;p1, const std::vector&lt; bool &gt; &amp;valid_elements) const override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">polyfem::mesh::Mesh2D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#acd82435a4005fe54dc87c97ce2903a19">get_index_from_face</a>(int f, int lv=0) const override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">polyfem::mesh::CMesh2D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6714c8e53f6fdfae01933119d8ad152c">has_body_ids</a>() const</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1">has_boundary_ids</a>() const</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aba9656dfbc876661b7370c8ff289e047">has_boundary_ids</a>() const</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa9e6bd69e6a7dff10d11a335390c1062">has_poly</a>() const</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aa375b8de70a44ba0a42ebbabaf1d18b9">is_boundary_edge</a>(const int edge_global_id) const override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">polyfem::mesh::CMesh2D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a6d6af3e70809917f468ea0daa49df7b2">is_boundary_element</a>(const int element_global_id) const override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">polyfem::mesh::CMesh2D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
@@ -218,7 +213,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1mesh_1_1_c_mesh2_d.htm
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6b77da95a959586a711ee1f4b177d43b">prepare_mesh</a>()</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a65cc4b375ec05193348b3bfb8c09c581">quad_area</a>(const int gid) const</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac760f65572170c6870a7d911890de473">refine</a>(const int n_refinement, const double t, std::vector&lt; int &gt; &amp;parent_nodes) override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">polyfem::mesh::CMesh2D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af2a31f6c06e35fe81183228b25eed7c6">save</a>(const std::string &amp;path) const override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">polyfem::mesh::CMesh2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af2a31f6c06e35fe81183228b25eed7c6">save</a>(const std::string &amp;path) const override</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html">polyfem::mesh::CMesh2D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">set_body_ids</a>(const std::vector&lt; int &gt; &amp;body_ids)</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a7f2e83710adcd0112b142fbfa38d34ee">set_body_ids</a>(const Eigen::VectorXi &amp;body_ids)</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aeee997a3775b8eb3e7b764bebfc68520">set_boundary_ids</a>(const std::vector&lt; int &gt; &amp;boundary_ids)</td><td class="entry"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>

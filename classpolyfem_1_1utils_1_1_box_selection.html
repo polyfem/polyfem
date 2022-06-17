@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::utils::BoxSelection Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -171,10 +166,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:aef8ce1cc0a8d7fbb13142099a52074c6 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#aef8ce1cc0a8d7fbb13142099a52074c6">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;selection, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="separator:aef8ce1cc0a8d7fbb13142099a52074c6 inherit pub_static_methods_classpolyfem_1_1utils_1_1_selection"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00040">40</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4c7e3f700f2107515ac43ef440350a92" name="a4c7e3f700f2107515ac43ef440350a92"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4c7e3f700f2107515ac43ef440350a92">&#9670;&nbsp;</a></span>BoxSelection()</h2>
 
@@ -212,10 +204,6 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00052">52</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00051">bbox_</a>.</p>
 
 </div>
 </div>
@@ -256,12 +244,6 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a15693545140baece5e4decb6e8d8ef57">polyfem::utils::Selection</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00075">75</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00051">bbox_</a>, <a class="el" href="_selection_8cpp_source.html#l00024">polyfem::utils::Selection::inside()</a>, and <a class="el" href="_selection_8cpp_source.html#l00075">inside()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00075">inside()</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -285,15 +267,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00051">51</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00052">BoxSelection()</a>, and <a class="el" href="_selection_8cpp_source.html#l00075">inside()</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_selection_8hpp_source.html">Selection.hpp</a></li>
-<li>src/polyfem/utils/<a class="el" href="_selection_8cpp_source.html">Selection.cpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_selection_8cpp.html">Selection.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

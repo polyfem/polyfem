@@ -52,7 +52,7 @@ var namespacepolyfem_1_1utils =
     [ "regular_2d_grid", "namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854", null ],
     [ "regular_3d_grid", "namespacepolyfem_1_1utils.html#a1cdf057fa8c31024c63a2104c61ae16e", null ],
     [ "resolve_path", "namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73", null ],
-    [ "set_logger", "namespacepolyfem_1_1utils.html#ae25127c02d1c7df4b9dc38b4e9064d51", null ],
+    [ "set_logger", "namespacepolyfem_1_1utils.html#a63b2658b7eea7bb7a124e27e1956ac2f", null ],
     [ "show_matrix_stats", "namespacepolyfem_1_1utils.html#a3a719017c6c406fba78aee8fbaa4103b", null ],
     [ "sparse_identity", "namespacepolyfem_1_1utils.html#a691a83ca0c9ab36d64ab2bd56eb394e0", null ],
     [ "to_rotation_matrix", "namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15", null ],

@@ -70,7 +70,7 @@ var classpolyfem_1_1_state =
     [ "set_boundary_side_set", "classpolyfem_1_1_state.html#a0d1520df8d7dbff34e16f75fa7dc86ef", null ],
     [ "set_boundary_side_set", "classpolyfem_1_1_state.html#a06021e39b951c4f5647c495883fd97f4", null ],
     [ "set_log_level", "classpolyfem_1_1_state.html#a00ad8e93e3a176f709d4408a746ee3db", null ],
-    [ "set_multimaterial", "classpolyfem_1_1_state.html#a73346b44da0cc930e1f7375cd7ce965a", null ],
+    [ "set_materials", "classpolyfem_1_1_state.html#a0bb7c26ed3624ba3e3578b545abb5c9e", null ],
     [ "sol_to_pressure", "classpolyfem_1_1_state.html#a002afac11ed6aa50fb193240bc2be0b7", null ],
     [ "solve", "classpolyfem_1_1_state.html#aedf3207db0c8d717766f410878876cab", null ],
     [ "solve_linear", "classpolyfem_1_1_state.html#a8d47bb299f06cc3fa8472fe5330a301f", null ],

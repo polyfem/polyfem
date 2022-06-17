@@ -10,10 +10,11 @@ var searchData=
   ['rbfwithquadratic_2ehpp_7',['RBFWithQuadratic.hpp',['../_r_b_f_with_quadratic_8hpp.html',1,'']]],
   ['rbfwithquadraticlagrange_2ecpp_8',['RBFWithQuadraticLagrange.cpp',['../_r_b_f_with_quadratic_lagrange_8cpp.html',1,'']]],
   ['rbfwithquadraticlagrange_2ehpp_9',['RBFWithQuadraticLagrange.hpp',['../_r_b_f_with_quadratic_lagrange_8hpp.html',1,'']]],
-  ['refelementsampler_2ecpp_10',['RefElementSampler.cpp',['../_ref_element_sampler_8cpp.html',1,'']]],
-  ['refelementsampler_2ehpp_11',['RefElementSampler.hpp',['../_ref_element_sampler_8hpp.html',1,'']]],
-  ['refinement_2ecpp_12',['Refinement.cpp',['../_refinement_8cpp.html',1,'']]],
-  ['refinement_2ehpp_13',['Refinement.hpp',['../_refinement_8hpp.html',1,'']]],
-  ['rhsassembler_2ecpp_14',['RhsAssembler.cpp',['../_rhs_assembler_8cpp.html',1,'']]],
-  ['rhsassembler_2ehpp_15',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]]
+  ['readme_2emd_10',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['refelementsampler_2ecpp_11',['RefElementSampler.cpp',['../_ref_element_sampler_8cpp.html',1,'']]],
+  ['refelementsampler_2ehpp_12',['RefElementSampler.hpp',['../_ref_element_sampler_8hpp.html',1,'']]],
+  ['refinement_2ecpp_13',['Refinement.cpp',['../_refinement_8cpp.html',1,'']]],
+  ['refinement_2ehpp_14',['Refinement.hpp',['../_refinement_8hpp.html',1,'']]],
+  ['rhsassembler_2ecpp_15',['RhsAssembler.cpp',['../_rhs_assembler_8cpp.html',1,'']]],
+  ['rhsassembler_2ehpp_16',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]]
 ];

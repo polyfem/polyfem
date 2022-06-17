@@ -13,11 +13,13 @@
 <title>PolyFEM: src/polyfem/basis/FEBasis2d.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -173,14 +168,14 @@ $(document).ready(function(){initNavTree('_f_e_basis2d_8hpp_source.html',''); in
 <div class="ttc" id="a_mesh_nodes_8hpp_html"><div class="ttname"><a href="_mesh_nodes_8hpp.html">MeshNodes.hpp</a></div></div>
 <div class="ttc" id="a_n_c_mesh2_d_8hpp_html"><div class="ttname"><a href="_n_c_mesh2_d_8hpp.html">NCMesh2D.hpp</a></div></div>
 <div class="ttc" id="a_navigation_8hpp_html"><div class="ttname"><a href="_navigation_8hpp.html">Navigation.hpp</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html">polyfem::basis::FEBasis2d</a></div><div class="ttdef"><b>Definition:</b> <a href="_f_e_basis2d_8hpp_source.html#l00019">FEBasis2d.hpp:20</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_a4ed8f8e33890eee947de79ba7dc7347e"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#a4ed8f8e33890eee947de79ba7dc7347e">polyfem::basis::FEBasis2d::build_bases</a></div><div class="ttdeci">static int build_bases(const mesh::Mesh2D &amp;mesh, const int quadrature_order, const Eigen::VectorXi &amp;discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; ElementBases &gt; &amp;bases, std::vector&lt; mesh::LocalBoundary &gt; &amp;local_boundary, std::map&lt; int, InterfaceData &gt; &amp;poly_edge_to_data, std::shared_ptr&lt; polyfem::mesh::MeshNodes &gt; &amp;mesh_nodes)</div><div class="ttdoc">Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads).</div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_aa319774ad27c99a081445ad8a74f1ede"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#aa319774ad27c99a081445ad8a74f1ede">polyfem::basis::FEBasis2d::tri_edge_local_nodes</a></div><div class="ttdeci">static Eigen::VectorXi tri_edge_local_nodes(const int p, const mesh::Mesh2D &amp;mesh, mesh::Navigation::Index index)</div><div class="ttdef"><b>Definition:</b> <a href="_f_e_basis2d_8cpp_source.html#l00609">FEBasis2d.cpp:609</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_ad2d3703dee3e20af15609abaa5a72b9b"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#ad2d3703dee3e20af15609abaa5a72b9b">polyfem::basis::FEBasis2d::quad_edge_local_nodes</a></div><div class="ttdeci">static Eigen::VectorXi quad_edge_local_nodes(const int q, const mesh::Mesh2D &amp;mesh, mesh::Navigation::Index index)</div><div class="ttdef"><b>Definition:</b> <a href="_f_e_basis2d_8cpp_source.html#l00640">FEBasis2d.cpp:640</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_af9d3ebc7656cb35a323fb6aed0e72fe4"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#af9d3ebc7656cb35a323fb6aed0e72fe4">polyfem::basis::FEBasis2d::build_bases</a></div><div class="ttdeci">static int build_bases(const mesh::Mesh2D &amp;mesh, const int quadrature_order, const int discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; ElementBases &gt; &amp;bases, std::vector&lt; mesh::LocalBoundary &gt; &amp;local_boundary, std::map&lt; int, InterfaceData &gt; &amp;poly_edge_to_data, std::shared_ptr&lt; polyfem::mesh::MeshNodes &gt; &amp;mesh_nodes)</div><div class="ttdoc">Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads).</div></div>
-<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html">polyfem::mesh::Mesh2D</a></div><div class="ttdef"><b>Definition:</b> <a href="_mesh2_d_8hpp_source.html#l00015">Mesh2D.hpp:16</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
-<div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation_1_1_index_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">polyfem::mesh::Navigation::Index</a></div><div class="ttdef"><b>Definition:</b> <a href="_navigation_8hpp_source.html#l00013">Navigation.hpp:14</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html">polyfem::basis::FEBasis2d</a></div><div class="ttdef"><b>Definition:</b> FEBasis2d.hpp:20</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_a4ed8f8e33890eee947de79ba7dc7347e"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#a4ed8f8e33890eee947de79ba7dc7347e">polyfem::basis::FEBasis2d::build_bases</a></div><div class="ttdeci">static int build_bases(const mesh::Mesh2D &amp;mesh, const int quadrature_order, const Eigen::VectorXi &amp;discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; ElementBases &gt; &amp;bases, std::vector&lt; mesh::LocalBoundary &gt; &amp;local_boundary, std::map&lt; int, InterfaceData &gt; &amp;poly_edge_to_data, std::shared_ptr&lt; polyfem::mesh::MeshNodes &gt; &amp;mesh_nodes)</div><div class="ttdoc">Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)....</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_aa319774ad27c99a081445ad8a74f1ede"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#aa319774ad27c99a081445ad8a74f1ede">polyfem::basis::FEBasis2d::tri_edge_local_nodes</a></div><div class="ttdeci">static Eigen::VectorXi tri_edge_local_nodes(const int p, const mesh::Mesh2D &amp;mesh, mesh::Navigation::Index index)</div><div class="ttdef"><b>Definition:</b> FEBasis2d.cpp:609</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_ad2d3703dee3e20af15609abaa5a72b9b"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#ad2d3703dee3e20af15609abaa5a72b9b">polyfem::basis::FEBasis2d::quad_edge_local_nodes</a></div><div class="ttdeci">static Eigen::VectorXi quad_edge_local_nodes(const int q, const mesh::Mesh2D &amp;mesh, mesh::Navigation::Index index)</div><div class="ttdef"><b>Definition:</b> FEBasis2d.cpp:640</div></div>
+<div class="ttc" id="aclasspolyfem_1_1basis_1_1_f_e_basis2d_html_af9d3ebc7656cb35a323fb6aed0e72fe4"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#af9d3ebc7656cb35a323fb6aed0e72fe4">polyfem::basis::FEBasis2d::build_bases</a></div><div class="ttdeci">static int build_bases(const mesh::Mesh2D &amp;mesh, const int quadrature_order, const int discr_order, const bool serendipity, const bool has_polys, const bool is_geom_bases, std::vector&lt; ElementBases &gt; &amp;bases, std::vector&lt; mesh::LocalBoundary &gt; &amp;local_boundary, std::map&lt; int, InterfaceData &gt; &amp;poly_edge_to_data, std::shared_ptr&lt; polyfem::mesh::MeshNodes &gt; &amp;mesh_nodes)</div><div class="ttdoc">Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)....</div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_mesh2_d_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_mesh2_d.html">polyfem::mesh::Mesh2D</a></div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:16</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
+<div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation_1_1_index_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">polyfem::mesh::Navigation::Index</a></div><div class="ttdef"><b>Definition:</b> Navigation.hpp:14</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

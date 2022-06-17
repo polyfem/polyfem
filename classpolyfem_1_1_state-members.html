@@ -13,11 +13,13 @@
 <title>PolyFEM: Member List</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -256,7 +251,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_state.html',''); init
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#a0d1520df8d7dbff34e16f75fa7dc86ef">set_boundary_side_set</a>(const std::function&lt; int(const RowVectorNd &amp;, bool)&gt; &amp;boundary_marker)</td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#a06021e39b951c4f5647c495883fd97f4">set_boundary_side_set</a>(const std::function&lt; int(const std::vector&lt; int &gt; &amp;, bool)&gt; &amp;boundary_marker)</td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#a00ad8e93e3a176f709d4408a746ee3db">set_log_level</a>(int log_level)</td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#a73346b44da0cc930e1f7375cd7ce965a">set_multimaterial</a>(const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;)&gt; &amp;setter)</td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#a0bb7c26ed3624ba3e3578b545abb5c9e">set_materials</a>()</td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#ace0736935e7620e57fa247b0f5bec4a3">sigma_avg</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#aca3c7a2985a1cd193eea269ef7df1ec9">sigma_max</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_state.html#a8fd206182aa15f772f1b226b49f58c29">sigma_min</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_state.html">polyfem::State</a></td><td class="entry"></td></tr>

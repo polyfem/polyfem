@@ -13,11 +13,13 @@
 <title>PolyFEM: src/polyfem/utils/OBJ_IO.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -194,17 +189,17 @@ $(document).ready(function(){initNavTree('_o_b_j___i_o_8hpp_source.html',''); in
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        };</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_reader_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html">polyfem::utils::OBJReader</a></div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j___i_o_8hpp_source.html#l00021">OBJ_IO.hpp:22</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_reader_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html">polyfem::utils::OBJReader</a></div><div class="ttdef"><b>Definition:</b> OBJ_IO.hpp:22</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_reader_html_a2914bf25d433db3d8a4df0991db723fc"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a2914bf25d433db3d8a4df0991db723fc">polyfem::utils::OBJReader::OBJReader</a></div><div class="ttdeci">OBJReader()=delete</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_reader_html_a4598dd71dc1d8195bee9121f23f3f5fe"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a4598dd71dc1d8195bee9121f23f3f5fe">polyfem::utils::OBJReader::load</a></div><div class="ttdeci">static bool load(const std::string obj_file_name, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;V, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;TC, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;N, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;F, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;FTC, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;FN, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;L)</div><div class="ttdoc">Read a mesh from an ascii obj file.</div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j___i_o_8cpp_source.html#l00036">OBJ_IO.cpp:36</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html">polyfem::utils::OBJWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j___i_o_8hpp_source.html#l00082">OBJ_IO.hpp:83</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_reader_html_a4598dd71dc1d8195bee9121f23f3f5fe"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_reader.html#a4598dd71dc1d8195bee9121f23f3f5fe">polyfem::utils::OBJReader::load</a></div><div class="ttdeci">static bool load(const std::string obj_file_name, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;V, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;TC, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;N, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;F, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;FTC, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;FN, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;L)</div><div class="ttdoc">Read a mesh from an ascii obj file.</div><div class="ttdef"><b>Definition:</b> OBJ_IO.cpp:36</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html">polyfem::utils::OBJWriter</a></div><div class="ttdef"><b>Definition:</b> OBJ_IO.hpp:83</div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html_a00db9563ac1d28aa2d3826508bcf56a1"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html#a00db9563ac1d28aa2d3826508bcf56a1">polyfem::utils::OBJWriter::OBJWriter</a></div><div class="ttdeci">OBJWriter()=delete</div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html_ad47668c0216f52f31ed922fca5790b2f"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html#ad47668c0216f52f31ed922fca5790b2f">polyfem::utils::OBJWriter::save</a></div><div class="ttdeci">static bool save(const std::string &amp;path, const Eigen::MatrixXd &amp;v, const Eigen::MatrixXi &amp;e, const Eigen::MatrixXi &amp;f)</div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j___i_o_8cpp_source.html#l00349">OBJ_IO.cpp:349</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html_adb60103a713d9a01915f886ef5220f1e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html#adb60103a713d9a01915f886ef5220f1e">polyfem::utils::OBJWriter::save</a></div><div class="ttdeci">static bool save(const std::string &amp;path, const Eigen::MatrixXd &amp;v, const Eigen::MatrixXi &amp;f)</div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j___i_o_8hpp_source.html#l00093">OBJ_IO.hpp:93</a></div></div>
-<div class="ttc" id="anamespaceeigs_html_a9fe38deb6414bc39f39d8ed436b42d3e"><div class="ttname"><a href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">eigs.path</a></div><div class="ttdeci">path</div><div class="ttdef"><b>Definition:</b> <a href="eigs_8py_source.html#l00128">eigs.py:128</a></div></div>
-<div class="ttc" id="anamespaceelasticity__rhs_html_a40cac4cd15d87571365bca9e062442d8"><div class="ttname"><a href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">elasticity_rhs.f</a></div><div class="ttdeci">f</div><div class="ttdef"><b>Definition:</b> <a href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs.py:173</a></div></div>
-<div class="ttc" id="anamespacep__bases_html_ab15f9d8371b900b8377954090297b324"><div class="ttname"><a href="namespacep__bases.html#ab15f9d8371b900b8377954090297b324">p_bases.N</a></div><div class="ttdeci">N</div><div class="ttdef"><b>Definition:</b> <a href="p__bases_8py_source.html#l00222">p_bases.py:222</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html_ad47668c0216f52f31ed922fca5790b2f"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html#ad47668c0216f52f31ed922fca5790b2f">polyfem::utils::OBJWriter::save</a></div><div class="ttdeci">static bool save(const std::string &amp;path, const Eigen::MatrixXd &amp;v, const Eigen::MatrixXi &amp;e, const Eigen::MatrixXi &amp;f)</div><div class="ttdef"><b>Definition:</b> OBJ_IO.cpp:349</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_o_b_j_writer_html_adb60103a713d9a01915f886ef5220f1e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_o_b_j_writer.html#adb60103a713d9a01915f886ef5220f1e">polyfem::utils::OBJWriter::save</a></div><div class="ttdeci">static bool save(const std::string &amp;path, const Eigen::MatrixXd &amp;v, const Eigen::MatrixXi &amp;f)</div><div class="ttdef"><b>Definition:</b> OBJ_IO.hpp:93</div></div>
+<div class="ttc" id="anamespaceeigs_html_a9fe38deb6414bc39f39d8ed436b42d3e"><div class="ttname"><a href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">eigs.path</a></div><div class="ttdeci">path</div><div class="ttdef"><b>Definition:</b> eigs.py:128</div></div>
+<div class="ttc" id="anamespaceelasticity__rhs_html_a40cac4cd15d87571365bca9e062442d8"><div class="ttname"><a href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">elasticity_rhs.f</a></div><div class="ttdeci">f</div><div class="ttdef"><b>Definition:</b> elasticity_rhs.py:173</div></div>
+<div class="ttc" id="anamespacep__bases_html_ab15f9d8371b900b8377954090297b324"><div class="ttname"><a href="namespacep__bases.html#ab15f9d8371b900b8377954090297b324">p_bases.N</a></div><div class="ttdeci">N</div><div class="ttdef"><b>Definition:</b> p_bases.py:222</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

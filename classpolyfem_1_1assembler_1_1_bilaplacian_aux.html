@@ -13,11 +13,13 @@
 <title>PolyFEM: polyfem::assembler::BilaplacianAux Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -129,13 +124,46 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5b9be39a4466b232006c89d169cfe030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa49429804bd754461f7c6941073eeb17"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#aa49429804bd754461f7c6941073eeb17">size</a> () const</td></tr>
 <tr class="separator:aa49429804bd754461f7c6941073eeb17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0567f1a4070f054fe0ea4a311261aa3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#ae0567f1a4070f054fe0ea4a311261aa3">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:ae0567f1a4070f054fe0ea4a311261aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1b498b92d2a006ef48009cc7429ffb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_bilaplacian_aux.html#a2b1b498b92d2a006ef48009cc7429ffb">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a2b1b498b92d2a006ef48009cc7429ffb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_bilaplacian_8hpp_source.html#l00057">57</a> of file <a class="el" href="_bilaplacian_8hpp_source.html">Bilaplacian.hpp</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2b1b498b92d2a006ef48009cc7429ffb" name="a2b1b498b92d2a006ef48009cc7429ffb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1b498b92d2a006ef48009cc7429ffb">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::BilaplacianAux::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2163801234987479e02ce9b108c4ceb6" name="a2163801234987479e02ce9b108c4ceb6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2163801234987479e02ce9b108c4ceb6">&#9670;&nbsp;</a></span>assemble()</h2>
 
@@ -174,10 +202,6 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_bilaplacian_8cpp_source.html#l00036">36</a> of file <a class="el" href="_bilaplacian_8cpp_source.html">Bilaplacian.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
-
 </div>
 </div>
 <a id="a5b9be39a4466b232006c89d169cfe030" name="a5b9be39a4466b232006c89d169cfe030"></a>
@@ -204,36 +228,6 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_bilaplacian_8hpp_source.html#l00065">65</a> of file <a class="el" href="_bilaplacian_8hpp_source.html">Bilaplacian.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ae0567f1a4070f054fe0ea4a311261aa3" name="ae0567f1a4070f054fe0ea4a311261aa3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0567f1a4070f054fe0ea4a311261aa3">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::BilaplacianAux::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_bilaplacian_8hpp_source.html#l00073">73</a> of file <a class="el" href="_bilaplacian_8hpp_source.html">Bilaplacian.hpp</a>.</p>
-
 </div>
 </div>
 <a id="aa49429804bd754461f7c6941073eeb17" name="aa49429804bd754461f7c6941073eeb17"></a>
@@ -259,13 +253,11 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_bilaplacian_8hpp_source.html#l00071">71</a> of file <a class="el" href="_bilaplacian_8hpp_source.html">Bilaplacian.hpp</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/assembler/<a class="el" href="_bilaplacian_8hpp_source.html">Bilaplacian.hpp</a></li>
-<li>src/polyfem/assembler/<a class="el" href="_bilaplacian_8cpp_source.html">Bilaplacian.cpp</a></li>
+<li>src/polyfem/assembler/<a class="el" href="_bilaplacian_8cpp.html">Bilaplacian.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

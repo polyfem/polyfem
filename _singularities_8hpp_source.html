@@ -13,11 +13,13 @@
 <title>PolyFEM: src/polyfem/mesh/mesh2D/Singularities.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -171,12 +166,12 @@ $(document).ready(function(){initNavTree('_singularities_8hpp_source.html',''); 
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db">create_patch_around_singularities</a>(GEO::Mesh &amp;<a class="code hl_variable" href="namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2">M</a>, <span class="keyword">const</span> Eigen::VectorXi &amp;V, <span class="keyword">const</span> Eigen::MatrixX2i &amp;E, <span class="keywordtype">double</span> t = 0.5);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    } <span class="comment">// namespace mesh</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="ttc" id="anamespaceeigs_html_a1cb62336f71a067a062cca9e82f830f2"><div class="ttname"><a href="namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2">eigs.M</a></div><div class="ttdeci">M</div><div class="ttdef"><b>Definition:</b> <a href="eigs_8py_source.html#l00094">eigs.py:94</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a6c2f88605218d9c84cb80764dd0887db"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db">polyfem::mesh::create_patch_around_singularities</a></div><div class="ttdeci">void create_patch_around_singularities(GEO::Mesh &amp;M, const Eigen::VectorXi &amp;V, const Eigen::MatrixX2i &amp;E, double t=0.5)</div><div class="ttdef"><b>Definition:</b> <a href="_singularities_8cpp_source.html#l00084">Singularities.cpp:84</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a78a20bc192a325efd376142bae8605c0"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a78a20bc192a325efd376142bae8605c0">polyfem::mesh::singularity_graph</a></div><div class="ttdeci">void singularity_graph(const GEO::Mesh &amp;M, Eigen::VectorXi &amp;V, Eigen::MatrixX2i &amp;E, int regular_degree=4, bool ignore_border=true)</div><div class="ttdef"><b>Definition:</b> <a href="_singularities_8cpp_source.html#l00075">Singularities.cpp:75</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ad0c1bdc69a7ad16cfa3eeb7d23b60867"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">polyfem::mesh::singular_edges</a></div><div class="ttdeci">void singular_edges(const GEO::Mesh &amp;M, const Eigen::VectorXi &amp;V, Eigen::MatrixX2i &amp;E)</div><div class="ttdef"><b>Definition:</b> <a href="_singularities_8cpp_source.html#l00048">Singularities.cpp:48</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_aeb087429296c4e79bd346db0fce81ec5"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aeb087429296c4e79bd346db0fce81ec5">polyfem::mesh::singular_vertices</a></div><div class="ttdeci">void singular_vertices(const GEO::Mesh &amp;M, Eigen::VectorXi &amp;V, int regular_degree=4, bool ignore_border=true)</div><div class="ttdef"><b>Definition:</b> <a href="_singularities_8cpp_source.html#l00008">Singularities.cpp:8</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00025">Assembler.cpp:26</a></div></div>
+<div class="ttc" id="anamespaceeigs_html_a1cb62336f71a067a062cca9e82f830f2"><div class="ttname"><a href="namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2">eigs.M</a></div><div class="ttdeci">M</div><div class="ttdef"><b>Definition:</b> eigs.py:94</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a6c2f88605218d9c84cb80764dd0887db"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db">polyfem::mesh::create_patch_around_singularities</a></div><div class="ttdeci">void create_patch_around_singularities(GEO::Mesh &amp;M, const Eigen::VectorXi &amp;V, const Eigen::MatrixX2i &amp;E, double t=0.5)</div><div class="ttdef"><b>Definition:</b> Singularities.cpp:84</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a78a20bc192a325efd376142bae8605c0"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a78a20bc192a325efd376142bae8605c0">polyfem::mesh::singularity_graph</a></div><div class="ttdeci">void singularity_graph(const GEO::Mesh &amp;M, Eigen::VectorXi &amp;V, Eigen::MatrixX2i &amp;E, int regular_degree=4, bool ignore_border=true)</div><div class="ttdef"><b>Definition:</b> Singularities.cpp:75</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ad0c1bdc69a7ad16cfa3eeb7d23b60867"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">polyfem::mesh::singular_edges</a></div><div class="ttdeci">void singular_edges(const GEO::Mesh &amp;M, const Eigen::VectorXi &amp;V, Eigen::MatrixX2i &amp;E)</div><div class="ttdef"><b>Definition:</b> Singularities.cpp:48</div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_aeb087429296c4e79bd346db0fce81ec5"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aeb087429296c4e79bd346db0fce81ec5">polyfem::mesh::singular_vertices</a></div><div class="ttdeci">void singular_vertices(const GEO::Mesh &amp;M, Eigen::VectorXi &amp;V, int regular_degree=4, bool ignore_border=true)</div><div class="ttdef"><b>Definition:</b> Singularities.cpp:8</div></div>
+<div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition:</b> Assembler.cpp:26</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

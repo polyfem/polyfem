@@ -13,11 +13,13 @@
 <title>PolyFEM: DScalar2&lt; _Scalar, _Gradient, _Hessian &gt; Struct Template Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -308,8 +303,6 @@ struct DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;</div><p >Automatic differe
 <p >This is an extended C++ port of Jon Kaldor's implementation, which is based on a C version by Eitan Grinspun at Caltech)</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="struct_d_scalar1.html" title="Automatic differentiation scalar with first-order derivatives.">DScalar1</a> </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Wenzel Jakob </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00492">492</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a05ac50d4b0eceb899d824c12efb34fe8" name="a05ac50d4b0eceb899d824c12efb34fe8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a05ac50d4b0eceb899d824c12efb34fe8">&#9670;&nbsp;</a></span>DVector2</h2>
@@ -324,8 +317,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00498">498</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -343,8 +334,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00499">499</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="ab6a97892c7465037f3deeef07cd7fcfd" name="ab6a97892c7465037f3deeef07cd7fcfd"></a>
@@ -360,8 +349,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00496">496</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -379,8 +366,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00497">497</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="af7af35c5422abf47074e17cfc977d1df" name="af7af35c5422abf47074e17cfc977d1df"></a>
@@ -396,8 +381,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00495">495</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -429,12 +412,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </div><div class="memdoc">
 
 <p>Create a new constant automatic differentiation scalar. </p>
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00506">506</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00060">DiffScalarBase::getVariableCount()</a>, <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, and <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00949">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::vector()</a>.</p>
 
 </div>
 </div>
@@ -475,10 +452,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </div><div class="memdoc">
 
 <p>Construct a new scalar with the specified value and one first derivative set to 1. </p>
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00517">517</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00060">DiffScalarBase::getVariableCount()</a>, <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, and <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>.</p>
 
 </div>
 </div>
@@ -526,8 +499,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 
 <p>Construct a scalar associated with the given gradient and Hessian. </p>
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00530">530</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a75a752c6033fe91c0ccc24fd3c782eda" name="a75a752c6033fe91c0ccc24fd3c782eda"></a>
@@ -558,8 +529,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 
 <p>Copy constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00534">534</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -588,12 +557,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00538">538</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00969">operator&lt;&lt;()</a>.</p>
-
 </div>
 </div>
 <a id="a84aeec58789bc484d8e56369d723c613" name="a84aeec58789bc484d8e56369d723c613"></a>
@@ -621,12 +584,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00539">539</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00969">operator&lt;&lt;()</a>.</p>
-
 </div>
 </div>
 <a id="a3881245b59ef8abcb2dada50b2470bd5" name="a3881245b59ef8abcb2dada50b2470bd5"></a>
@@ -653,12 +610,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00537">537</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00969">operator&lt;&lt;()</a>.</p>
 
 </div>
 </div>
@@ -688,10 +639,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00913">913</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="ae7a3029e4c909f6de5b7b17e70d06af5" name="ae7a3029e4c909f6de5b7b17e70d06af5"></a>
@@ -719,10 +666,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00697">697</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>, and <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -752,10 +695,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00560">560</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>, and <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="a5a8f755ccfacec2566abf82507354d66" name="a5a8f755ccfacec2566abf82507354d66"></a>
@@ -783,10 +722,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00568">568</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -816,10 +751,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00601">601</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>, and <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="ad1445650ba8bd9f1de5404a9e87f8846" name="ad1445650ba8bd9f1de5404a9e87f8846"></a>
@@ -847,10 +778,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00609">609</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -880,10 +807,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00658">658</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>, and <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="a3da7806e9de311a72709d4133e99dc25" name="a3da7806e9de311a72709d4133e99dc25"></a>
@@ -911,10 +834,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00904">904</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -944,10 +863,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00908">908</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="ab4b21b2ec2abfe4afb271373d9c4aa92" name="ab4b21b2ec2abfe4afb271373d9c4aa92"></a>
@@ -975,10 +890,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00905">905</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -1008,10 +919,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00909">909</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="ab0d0a96c36f23a308531b6c049b9b69d" name="ab0d0a96c36f23a308531b6c049b9b69d"></a>
@@ -1039,10 +946,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00892">892</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>, and <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -1072,10 +975,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00898">898</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00964">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::grad</a>, <a class="el" href="autodiff_8h_source.html#l00965">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::hess</a>, and <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="a561cdd3ae42960efc690d29f5fe633c9" name="a561cdd3ae42960efc690d29f5fe633c9"></a>
@@ -1103,10 +1002,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00912">912</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -1136,10 +1031,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00906">906</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="a295410ad0b699311fede727ce5fc6275" name="a295410ad0b699311fede727ce5fc6275"></a>
@@ -1167,10 +1058,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00910">910</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -1200,10 +1087,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00907">907</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
-
 </div>
 </div>
 <a id="a7147907b950c9d747460d4de8f893105" name="a7147907b950c9d747460d4de8f893105"></a>
@@ -1231,10 +1114,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00911">911</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00963">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::value</a>.</p>
 
 </div>
 </div>
@@ -1266,10 +1145,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 
 <p>Initialize a constant two-dimensional vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00949">949</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00506">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::DScalar2()</a>.</p>
-
 </div>
 </div>
 <a id="ae377b712e9c3e3c351661dc2b1e9b4e5" name="ae377b712e9c3e3c351661dc2b1e9b4e5"></a>
@@ -1300,10 +1175,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 
 <p>Create a constant three-dimensional vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00955">955</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00506">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::DScalar2()</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
@@ -1333,8 +1204,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00818">818</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="ad0d98c068c13277fc22f9091028b0157" name="ad0d98c068c13277fc22f9091028b0157"></a>
@@ -1362,8 +1231,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00839">839</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1403,8 +1270,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00860">860</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a60f1e4e2c029f87b8e10b83ec4867d4d" name="a60f1e4e2c029f87b8e10b83ec4867d4d"></a>
@@ -1432,8 +1297,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00801">801</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1463,8 +1326,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00749">749</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a452415bbc44e4897fe03c061fa65e294" name="a452415bbc44e4897fe03c061fa65e294"></a>
@@ -1493,8 +1354,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00638">638</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a8f48d90e88ad1f0a2e1b2a0913f1c778" name="a8f48d90e88ad1f0a2e1b2a0913f1c778"></a>
@@ -1522,8 +1381,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00767">767</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1564,8 +1421,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </div><div class="memdoc">
 <p >Product rule</p>
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00681">681</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a4b0829d98285873b8bbc82276b934ac7" name="a4b0829d98285873b8bbc82276b934ac7"></a>
@@ -1603,8 +1458,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00671">671</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1644,8 +1497,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00676">676</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a3c4e3a28a17ace078b0a2564477dd925" name="a3c4e3a28a17ace078b0a2564477dd925"></a>
@@ -1683,8 +1534,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00544">544</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1724,8 +1573,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00550">550</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="ab1f2b0b1844b64d403ce751628b03d0c" name="ab1f2b0b1844b64d403ce751628b03d0c"></a>
@@ -1763,8 +1610,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00555">555</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1804,8 +1649,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00581">581</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="afa50b6af8bab0bc51d633e09abdff0d7" name="afa50b6af8bab0bc51d633e09abdff0d7"></a>
@@ -1844,8 +1687,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00586">586</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="ac45fef855856195dfdd7ce35c9b58291" name="ac45fef855856195dfdd7ce35c9b58291"></a>
@@ -1873,8 +1714,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00596">596</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1914,8 +1753,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00591">591</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="aec9ac875715861553a48e25edab5892e" name="aec9ac875715861553a48e25edab5892e"></a>
@@ -1953,8 +1790,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00633">633</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -1994,8 +1829,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00620">620</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="ab82578b12ee9963f6ad8d121db846316" name="ab82578b12ee9963f6ad8d121db846316"></a>
@@ -2033,8 +1866,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00628">628</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -2074,8 +1905,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00731">731</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <a id="a1fc19581ee54d688660d127dff05a428" name="a1fc19581ee54d688660d127dff05a428"></a>
@@ -2103,8 +1932,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00783">783</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
 
 </div>
 </div>
@@ -2134,8 +1961,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00712">712</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -2161,10 +1986,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00964">964</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00506">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::DScalar2()</a>, <a class="el" href="autodiff_8h_source.html#l00538">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::getGradient()</a>, <a class="el" href="autodiff_8h_source.html#l00697">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator*=()</a>, <a class="el" href="autodiff_8h_source.html#l00560">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator+=()</a>, <a class="el" href="autodiff_8h_source.html#l00601">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator-=()</a>, <a class="el" href="autodiff_8h_source.html#l00658">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator/=()</a>, and <a class="el" href="autodiff_8h_source.html#l00892">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator=()</a>.</p>
-
 </div>
 </div>
 <a id="a15737f75543ecbaba980e825dee51bdb" name="a15737f75543ecbaba980e825dee51bdb"></a>
@@ -2189,10 +2010,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00965">965</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00506">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::DScalar2()</a>, <a class="el" href="autodiff_8h_source.html#l00539">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::getHessian()</a>, <a class="el" href="autodiff_8h_source.html#l00697">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator*=()</a>, <a class="el" href="autodiff_8h_source.html#l00560">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator+=()</a>, <a class="el" href="autodiff_8h_source.html#l00601">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator-=()</a>, <a class="el" href="autodiff_8h_source.html#l00658">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator/=()</a>, and <a class="el" href="autodiff_8h_source.html#l00892">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator=()</a>.</p>
-
 </div>
 </div>
 <a id="a95a8b9016aa89344983169917c1c0671" name="a95a8b9016aa89344983169917c1c0671"></a>
@@ -2216,10 +2033,6 @@ template&lt;typename _Scalar , typename _Gradient  = Eigen::Matrix&lt;_Scalar, E
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="autodiff_8h_source.html#l00963">963</a> of file <a class="el" href="autodiff_8h_source.html">autodiff.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="autodiff_8h_source.html#l00537">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::getValue()</a>, <a class="el" href="autodiff_8h_source.html#l00913">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator!=()</a>, <a class="el" href="autodiff_8h_source.html#l00697">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator*=()</a>, <a class="el" href="autodiff_8h_source.html#l00560">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator+=()</a>, <a class="el" href="autodiff_8h_source.html#l00601">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator-=()</a>, <a class="el" href="autodiff_8h_source.html#l00658">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator/=()</a>, <a class="el" href="autodiff_8h_source.html#l00904">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator&lt;()</a>, <a class="el" href="autodiff_8h_source.html#l00905">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator&lt;=()</a>, <a class="el" href="autodiff_8h_source.html#l00892">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator=()</a>, <a class="el" href="autodiff_8h_source.html#l00912">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator==()</a>, <a class="el" href="autodiff_8h_source.html#l00906">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator&gt;()</a>, and <a class="el" href="autodiff_8h_source.html#l00907">DScalar2&lt; _Scalar, _Gradient, _Hessian &gt;::operator&gt;=()</a>.</p>
 
 </div>
 </div>

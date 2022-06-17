@@ -13,11 +13,13 @@
 <title>PolyFEM: Member List</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
@@ -30,13 +32,6 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  jax: ["input/TeX","output/HTML-CSS"],
-});
-</script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
@@ -118,16 +113,14 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_lame_parameters.html'
 
 <p>This is the complete list of members for <a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#ac0fc18649b7b7a7b2892ed4e2c6bbd03">init</a>(const json &amp;params, const int size)</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a217a7a5e25658be6cb79de42e4e94609">init_multimaterial</a>(const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#ad8936e1ca5de3b033cb7a449369ec008">initialized_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a24738aaf4ef62f65e51eae229592acd1">add_multimaterial</a>(const int index, const json &amp;params, const bool is_volume)</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a6e1e8149ed2a2559bd81455af95a6474">is_lambda_mu_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#aaadfcd35bdfb72cc4fee850b4cfc57f3">lambda_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#adbe7284ebd8d24b11a16df2235931afd">lambda_mu</a>(double px, double py, double pz, double x, double y, double z, int el_id, double &amp;lambda, double &amp;mu) const</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a9c34e8ec3c5b27e806417fc643065f74">lambda_mu</a>(const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id, double &amp;lambda, double &amp;mu) const</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#adbe7284ebd8d24b11a16df2235931afd">lambda_mu</a>(double px, double py, double pz, double x, double y, double z, int el_id, double &amp;lambda, double &amp;mu) const</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a9c34e8ec3c5b27e806417fc643065f74">lambda_mu</a>(const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id, double &amp;lambda, double &amp;mu) const</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a2a57d1ca9744a7335d160548da60ed20">lambda_or_E_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a7a8072d472d64e99f4ce803d3ef56714">LameParameters</a>()</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a68027207f2618b93e337cfb25dfee0a7">mu_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#ae7323c6e01896047cdbaf2e4fa72419a">set_e_nu</a>(const json &amp;E, const json &amp;nu)</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a8d3f8ec61fbddcf9e92b5139ae843b60">mu_or_nu_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a92cd01f97ebb70081fe931ce85cd0854">set_e_nu</a>(const int index, const json &amp;E, const json &amp;nu)</td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html#a8a70f63cf2849d617f69ab20326d256b">size_</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_lame_parameters.html">polyfem::LameParameters</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
