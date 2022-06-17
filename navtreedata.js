@@ -25,14 +25,17 @@
 var NAVTREE =
 [
   [ "PolyFEM", "index.html", [
-    [ "Compilation", "index.html#autotoc_md0", [
-      [ "Optional", "index.html#autotoc_md1", null ]
+    [ "Polyfem as Libary", "md_docs_main.html", [
+      [ "Interface", "md_docs_main.html#autotoc_md0", [
+        [ "Initialization", "md_docs_main.html#autotoc_md1", null ],
+        [ "Logging", "md_docs_main.html#autotoc_md2", null ],
+        [ "Loading mesh", "md_docs_main.html#autotoc_md3", null ],
+        [ "Set boundary sides sets", "md_docs_main.html#autotoc_md4", null ],
+        [ "Solving", "md_docs_main.html#autotoc_md5", null ],
+        [ "Getters", "md_docs_main.html#autotoc_md6", null ],
+        [ "Exporting", "md_docs_main.html#autotoc_md7", null ]
+      ] ]
     ] ],
-    [ "Usage", "index.html#autotoc_md2", null ],
-    [ "Documentation", "index.html#autotoc_md3", null ],
-    [ "License", "index.html#autotoc_md4", null ],
-    [ "Citation", "index.html#autotoc_md5", null ],
-    [ "Acknowledgments & Funding", "index.html#autotoc_md6", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -95,11 +98,11 @@ var NAVTREEINDEX =
 "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#ae82b98abb213a3a79a64299bffa4a36b",
 "classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e",
 "classq__bases_1_1_lagrange.html#a8896516a055bf71090fbbaf95f5839c1",
-"namespacemembers_func_h.html",
-"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a607e035b18f148e24b45c2943699c2a0",
-"struct_d_scalar1.html#a595a82569106724d630c087846b6760b",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ac97ef9198566e6dbda507c1e2ad22243",
-"triangle_8py.html#a2ef3f501f213fb6d2ba5ec927a44fc7e"
+"namespacemembers_func_e.html",
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a150d66c2859254eef3c66d3ee57dca41",
+"struct_d_scalar1.html#a3fbf6a4149a9c114a6cd497917d0f6b2",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aaf4c3e0d60e5e2976084bef9ec437f48",
+"tetrahedron_8py.html#a7a30f3081ce9820ed5be706027cb7936"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
