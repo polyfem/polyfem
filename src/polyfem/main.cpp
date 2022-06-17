@@ -98,7 +98,6 @@ int main(int argc, char **argv)
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
 	command_line.add_option("--hdf5", hdf5_file, "Simulation hdf5 file")->check(CLI::ExistingFile);
 
-
 	// IO
 	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
 
@@ -117,10 +116,6 @@ int main(int argc, char **argv)
 		->transform(CLI::CheckedTransformer(SPDLOG_LEVEL_NAMES_TO_LEVELS, CLI::ignore_case));
 
 	CLI11_PARSE(command_line, argc, argv);
-
-	std::vector<std::string> names;
-	std::vector<Eigen::MatrixXi> cells;
-	std::vector<Eigen::MatrixXd> vertices;
 
 	json in_args = json({});
 
@@ -173,31 +168,31 @@ int main(int argc, char **argv)
 		create_directories(output_dir);
 	}
 
-		State state(max_threads);
-		state.init_logger(log_file, log_level, is_quiet);
-		state.init(in_args, output_dir);
-			state.load_mesh(false, names, cells, vertices);
+	State state(max_threads);
+	state.init_logger(log_file, log_level, is_quiet);
+	state.init(in_args, output_dir);
+	state.load_mesh(false, names, cells, vertices);
 
-		// Mesh was not loaded successfully; load_mesh() logged the error.
-		if (state.mesh == nullptr)
-		{
-			// Cannot proceed without a mesh.
-			return EXIT_FAILURE;
-		}
+	// Mesh was not loaded successfully; load_mesh() logged the error.
+	if (state.mesh == nullptr)
+	{
+		// Cannot proceed without a mesh.
+		return EXIT_FAILURE;
+	}
 
-		state.compute_mesh_stats();
+	state.compute_mesh_stats();
 
-		state.build_basis();
+	state.build_basis();
 
-		state.assemble_rhs();
-		state.assemble_stiffness_mat();
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
 
-		state.solve_problem();
+	state.solve_problem();
 
-		state.compute_errors();
+	state.compute_errors();
 
-		state.save_json();
-		state.export_data();
+	state.save_json();
+	state.export_data();
 
 	return EXIT_SUCCESS;
 }
