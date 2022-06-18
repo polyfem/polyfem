@@ -24,7 +24,7 @@ namespace polyfem::time_integrator
 		virtual void set_parameters(const nlohmann::json &params) {}
 
 		///
-		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\$.
+		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
 		///
 		/// @param x_prev previous value for the solution
 		/// @param v_prev previous value for the velocity
@@ -34,7 +34,7 @@ namespace polyfem::time_integrator
 		virtual void init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt);
 
 		///
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\$).
+		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		///
 		/// @param x new solution vector
 		///
@@ -43,7 +43,7 @@ namespace polyfem::time_integrator
 		///
 		/// @brief Compute the predicted solution to be used in the inertia term \f$(x-\tilde{x})^TM(x-\tilde{x})\f$.
 		///
-		/// @return value for $\tilde{x}$
+		/// @return value for \f$\tilde{x}\f$
 		///
 		virtual Eigen::VectorXd x_tilde() const = 0;
 

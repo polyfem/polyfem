@@ -145,7 +145,7 @@ def PolyFEM_convert(old):
     copy_entry("tend", old, j["time"])
     copy_entry("dt", old, j["time"])
     copy_entry("time_steps", old, j["time"])
-    copy_entry("integrator", old, j["time"])
+    rename_entry("time_integrator", old, "integrator", j["time"])
 
     if "time_integrator_params" in old:
         j["time"]["newmark"] = {}

@@ -2,33 +2,33 @@
 
 ## Code Structure
 
-The high-level functions of PolyFEM are in polyfem::State, a class containing the application state and depending on all the PolyFEM submodules.
+The high-level functions of PolyFEM are in `polyfem::State`, a class containing the application state and depending on all the PolyFEM submodules.
 
 ### Finite Element Assembler
 
-polyfem::Assembler assembles the system matrix and right hand side (rhs). The assembler relies on finite element basis (polyfem::basis), quadrature rules (polyfem::quadrature), and for transient problems on polyfem::Time_integrator.
+`polyfem::assembler` assembles the system matrix and right hand side (rhs). The assembler relies on finite element basis (`polyfem::basis`), quadrature rules (`polyfem::quadrature`), and for transient problems on `polyfem::time_integrator`.
 
 ### Finite Element Bases
 
-polyfem::basis contains the implementation of finite element basis functions. 
+`polyfem::basis` contains the implementation of finite element basis functions. 
 
 The module supports the following 2 dimensional elements:
-* Lagrangian triangular elements of degree 1 to 8 (FEBasis2d.hpp)
-* Lagrangian quadrilateral elements of degree 1 to 8 (FEBasis2d.hpp)
-* Spline (IGA) elements of degree 1 to 4 (SplineBasis2d.hpp)
-* Polygonal elements (PolygonalBasis2d.hpp)
+* Lagrangian triangular elements of degree 1 to 8 (`FEBasis2d.hpp`)
+* Lagrangian quadrilateral elements of degree 1 to 8 (`FEBasis2d.hpp`)
+* Spline (IGA) elements of degree 1 to 4 (`SplineBasis2d.hpp`)
+* Polygonal elements (`PolygonalBasis2d.hpp`)
 
 The module supports the following 3 dimensional elements:
-* Lagrangian tetrahedral elements of degree 1 to 8 (FEBasis3d.hpp)
-* Lagrangian hexahedral elements of degree 1 to 8 (FEBasis3d.hpp)
-* Spline (IGA) elements of degree 1 to 4 (SplineBasis3d.hpp)
-* Polygonal elements (PolygonalBasis3d.hpp)
+* Lagrangian tetrahedral elements of degree 1 to 8 (`FEBasis3d.hpp`)
+* Lagrangian hexahedral elements of degree 1 to 8 (`FEBasis3d.hpp`)
+* Spline (IGA) elements of degree 1 to 4 (`SplineBasis3d.hpp`)
+* Polygonal elements (`PolygonalBasis3d.hpp`)
 
 ### Mesh data structure, Input/Output, and Navigation
 
-polyfem::mesh contains data structures and algorithms for simplicial and polygonal meshes. 
+`polyfem::mesh` contains data structures and algorithms for simplicial and polygonal meshes. 
 
-The interface is generic (Mesh2D.hpp, Mesh3D.hpp). There are two specializations: a conforming implementation which supports conforming polygonal meshes (CMesh2D.hpp, CMesh3D.hpp) without hanging nodes, and a non-conforming version (CMesh2D.hpp, CMesh3D.hpp) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.
+The interface is generic (`Mesh2D.hpp`, `Mesh3D.hpp`). There are two specializations: a conforming implementation which supports conforming polygonal meshes (`CMesh2D.hpp`, `CMesh3D.hpp`) without hanging nodes, and a non-conforming version (`CMesh2D.hpp`, `CMesh3D.hpp`) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.
 
 Many input formats are supported (see the JSON documentation for the complete list), and it outputs meshes in VTU (the format used by paraview/VTK).
 
@@ -36,15 +36,15 @@ In PolyFEM the mesh is used to define a collection of dofs (in case of linear el
 
 ### Quadrature Rules
 
-polyfem::quadrature contains a set of quadrature rules for all elements implemented in polyfem::basis. The quadrature library is mostly independent from the rest of the codebase and it is based on the open-source library quadpy.
+`polyfem::quadrature` contains a set of quadrature rules for all elements implemented in `polyfem::basis`. The quadrature library is mostly independent from the rest of the codebase and it is based on the open-source library quadpy.
 
 ### Time Integration
 
-For transient problems, polyfem::time_integrator implements linear (Implicit Euler ImplicitEuler.hpp, Implicit Newmak ImplicitNewmark.hpp) and non-linear time integrators (BDF BDF.hpp). 
+For transient problems, `polyfem::time_integrator` implements first-order (Implicit Euler `ImplicitEuler.hpp`) and higher-order time integrators (Implicit Newmak `ImplicitNewmark.hpp`, BDF `BDF.hpp`).
 
 ### Collection of PDEs 
 
-Polyfem contains right hand side, boundary conditions, exact solutions, and initial conditions for many common PDEs. We refer to the documentation in the polyfem::problem section for more details. The major physics supported by polyfem are:
+Polyfem contains right hand side, boundary conditions, exact solutions, and initial conditions for many common PDEs. We refer to the documentation in the `polyfem::problem` section for more details. The major physics supported by polyfem are:
 
 1. Laplace
 2. Helmholtz
@@ -52,22 +52,22 @@ Polyfem contains right hand side, boundary conditions, exact solutions, and init
 4. Saint-Venant Elasticity
 5. Neo-Hookean Elasticity
 6. Stokes
-7. Navier Stokes
+7. Navier-Stokes
 
-3,4,5 supports both static and transient problems, and model contact and friction forces using the incremental potential formulation (https://github.com/ipc-sim/ipc-toolkit).
+From these, 1, 3--5, and 7 supports both static and transient problems, and 3--5 model contact and friction forces using the Incremental Potential Contact formulation (https://github.com/ipc-sim/ipc-toolkit).
 
 ### Automatic Code Generation
 
-polyfem::autogen contains python scripts to generate cpp code for:
-* Low-order basis in polyfem::basis
-* All quadrature rules used in polyfem::quadrature
-* All non-trivial rhs assembly in polyfem::assembler
+`polyfem::autogen` contains python scripts to generate C++ code for:
+* Low-order basis in `polyfem::basis`
+* All quadrature rules used in `polyfem::quadrature`
+* All non-trivial rhs assembly in `polyfem::assembler`
 
-The code autogenerated by the python scripts is directly committed in the git repository, as the autogeneration is time consuming.
+The code autogenerated by the python scripts is directly committed in the code repository, as the autogeneration is time consuming.
 
 ### Utilities
 
-Smaller utilities are grouped in the polyfem::utils module, including mesh IO, hashing functions, logging Logger.h, matri utilities, parallelization, rasterization raster.h, function interpolation RBFInterpolation.hpp, and timers Timer.hpp.
+Smaller utilities are grouped in the `polyfem::utils` module, including mesh IO, hashing functions, logging, matrix utilities, parallelization, rasterization, function interpolation (`RBFInterpolation.hpp`), and timers (`Timer.hpp`).
 
 ## Building PolyFEM as a stand-alone executable
 
@@ -79,7 +79,8 @@ cd build
 cmake ..
 make -j4
 ```
-After compilation, unit and integration tests tests/main.cpp can be run with:
+
+After compilation, unit and system tests (`tests/main.cpp`) can be run with:
 
 ```bash
 ./tests/unit_tests
@@ -95,4 +96,4 @@ and linked with
 ```cmake
 target_link_library(<your_target> polyfem::polyfem)
 ```
-in your cmake script. We do not currently support other building systems. Polyfem will download the dependencies that it needs in the build folder.
+in your cmake script. We do not currently support other building systems. PolyFEM will download the dependencies that it needs in the build folder.

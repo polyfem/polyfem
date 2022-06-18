@@ -1,8 +1,9 @@
 #include "ImplicitTimeIntegrator.hpp"
 
-#include "ImplicitEuler.hpp"
-#include "ImplicitNewmark.hpp"
-#include "BDFTimeIntegrator.hpp"
+#include <polyfem/time_integrator/ImplicitEuler.hpp>
+#include <polyfem/time_integrator/ImplicitNewmark.hpp>
+#include <polyfem/time_integrator/BDFTimeIntegrator.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 

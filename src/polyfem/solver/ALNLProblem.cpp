@@ -76,12 +76,13 @@ namespace polyfem
 			const double val = super::value(x, only_elastic);
 
 			// ₙ
-			// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖²
+			// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (xₖ - x̂ₖ)ᵀ M (xₖ - x̂ₖ)
 			// ᵏ
 			TVector distv;
 			compute_distance(x, distv);
-			// TODO: multiply by the (lumped?) mass matrix
-			const double AL_penalty = weight_ / 2 * distv.squaredNorm();
+			// TODO: replace this with the actual mass matrix
+			Eigen::SparseMatrix<double> M = sparse_identity(x.size());
+			const double AL_penalty = weight_ / 2 * distv.transpose() * M * distv;
 
 			// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
 			// ₙ    __
