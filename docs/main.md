@@ -1,5 +1,10 @@
 # PolyFEM
 
+![Build](https://github.com/polyfem/polyfem/workflows/Build/badge.svg)
+![Commit](https://img.shields.io/github/last-commit/polyfem/polyfem)
+[![License](https://img.shields.io/github/license/polyfem/polyfem.svg?color=blue)](https://github.com/polyfem/polyfem/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/polyfem/polyfem?style=social)](https://github.com/polyfem/polyfem)
+
 ## Code Structure
 
 The high-level functions of PolyFEM are in `polyfem::State`, a class containing the application state and depending on all the PolyFEM submodules.
