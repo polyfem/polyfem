@@ -132,8 +132,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a870bcf124763649093c90542ed60fc23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d56bab4f6940501a2a933dc97b4e32f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a1d56bab4f6940501a2a933dc97b4e32f">size</a> () const</td></tr>
 <tr class="separator:a1d56bab4f6940501a2a933dc97b4e32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d8b2088c915230e784c38f57938ec82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a1d8b2088c915230e784c38f57938ec82">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a1d8b2088c915230e784c38f57938ec82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638cf913d2bdc4f0a30a371d72448f0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a638cf913d2bdc4f0a30a371d72448f0f">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a638cf913d2bdc4f0a30a371d72448f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -144,6 +144,38 @@ Private Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_helmholtz_8hpp_source.html#l00014">14</a> of file <a class="el" href="_helmholtz_8hpp_source.html">Helmholtz.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a638cf913d2bdc4f0a30a371d72448f0f" name="a638cf913d2bdc4f0a30a371d72448f0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638cf913d2bdc4f0a30a371d72448f0f">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::Helmholtz::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_helmholtz_8cpp_source.html#l00034">34</a> of file <a class="el" href="_helmholtz_8cpp_source.html">Helmholtz.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00028">k_</a>.</p>
+
+</div>
+</div>
 <a id="a60ba75be6329f7a4611c1ba0286e7a4d" name="a60ba75be6329f7a4611c1ba0286e7a4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a60ba75be6329f7a4611c1ba0286e7a4d">&#9670;&nbsp;</a></span>assemble()</h2>
 
@@ -242,28 +274,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1d8b2088c915230e784c38f57938ec82" name="a1d8b2088c915230e784c38f57938ec82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d8b2088c915230e784c38f57938ec82">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::Helmholtz::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_helmholtz_8cpp_source.html#l00034">34</a> of file <a class="el" href="_helmholtz_8cpp_source.html">Helmholtz.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00028">k_</a>.</p>
-
-</div>
-</div>
 <a id="a1d56bab4f6940501a2a933dc97b4e32f" name="a1d56bab4f6940501a2a933dc97b4e32f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d56bab4f6940501a2a933dc97b4e32f">&#9670;&nbsp;</a></span>size()</h2>
 
@@ -314,7 +324,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_helmholtz_8hpp_source.html#l00028">28</a> of file <a class="el" href="_helmholtz_8hpp_source.html">Helmholtz.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_helmholtz_8cpp_source.html#l00010">assemble()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00026">compute_rhs()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00042">kernel()</a>, and <a class="el" href="_helmholtz_8cpp_source.html#l00034">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_helmholtz_8cpp_source.html#l00034">add_multimaterial()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00010">assemble()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00026">compute_rhs()</a>, and <a class="el" href="_helmholtz_8cpp_source.html#l00042">kernel()</a>.</p>
 
 </div>
 </div>

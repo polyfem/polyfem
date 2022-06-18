@@ -42,7 +42,7 @@ var searchData=
   ['min_5fedge_5flength_39',['min_edge_length',['../classpolyfem_1_1_state.html#addf3a2eed4b8f6c1ad861473880c6f8a',1,'polyfem::State']]],
   ['min_5fjacobian_40',['min_Jacobian',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a5a54a06c0dafcf90d1d250a3451cdcb2',1,'polyfem::mesh::Mesh_Quality']]],
   ['min_5fstep_5fsize_41',['min_step_size',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137',1,'polyfem::solver::line_search::LineSearch']]],
-  ['mu_5f_42',['mu_',['../classpolyfem_1_1_lame_parameters.html#a68027207f2618b93e337cfb25dfee0a7',1,'polyfem::LameParameters']]],
+  ['mu_5for_5fnu_5f_42',['mu_or_nu_',['../classpolyfem_1_1_lame_parameters.html#a8d3f8ec61fbddcf9e92b5139ae843b60',1,'polyfem::LameParameters']]],
   ['multi_5fmaterial_5fmodels_5f_43',['multi_material_models_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748',1,'polyfem::assembler::MultiModel']]],
   ['multi_5fmodels_5felasticity_5f_44',['multi_models_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a2bd3f1bfb62a9a32dccd85e910f1336e',1,'polyfem::assembler::AssemblerUtils']]],
   ['multi_5fsingular_5fboundary_5fcount_45',['multi_singular_boundary_count',['../classpolyfem_1_1_state.html#aca914a06a4364a7eed8e353773bf8bbb',1,'polyfem::State']]],

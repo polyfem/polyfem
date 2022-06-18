@@ -153,8 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8e77f88163378982ba93c8d90524ff4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bc6fe6f6302e84c761917fcb06bc51a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a5bc6fe6f6302e84c761917fcb06bc51a">compute_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
 <tr class="separator:a5bc6fe6f6302e84c761917fcb06bc51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1daa1d3c7aa88b719c9ae306cfc422fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a1daa1d3c7aa88b719c9ae306cfc422fb">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a1daa1d3c7aa88b719c9ae306cfc422fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf97583fc693eca6f42e50998a0fb0f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#abf97583fc693eca6f42e50998a0fb0f8">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:abf97583fc693eca6f42e50998a0fb0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -198,6 +198,38 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="abf97583fc693eca6f42e50998a0fb0f8" name="abf97583fc693eca6f42e50998a0fb0f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf97583fc693eca6f42e50998a0fb0f8">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::SaintVenantElasticity::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">46</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00298">polyfem::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00372">polyfem::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00416">polyfem::ElasticityTensor::set_from_young_poisson()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
+
+</div>
+</div>
 <a id="a22ce1d3bb7581d6c38ccd37807d03b74" name="a22ce1d3bb7581d6c38ccd37807d03b74"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a22ce1d3bb7581d6c38ccd37807d03b74">&#9670;&nbsp;</a></span>assemble_grad()</h2>
 
@@ -572,28 +604,6 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a1daa1d3c7aa88b719c9ae306cfc422fb" name="a1daa1d3c7aa88b719c9ae306cfc422fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1daa1d3c7aa88b719c9ae306cfc422fb">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::SaintVenantElasticity::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">46</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00298">polyfem::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00372">polyfem::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00416">polyfem::ElasticityTensor::set_from_young_poisson()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
-
-</div>
-</div>
 <a id="a7eeeb39737270cfccb427fbfb621bc5a" name="a7eeeb39737270cfccb427fbfb621bc5a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7eeeb39737270cfccb427fbfb621bc5a">&#9670;&nbsp;</a></span>set_size()</h2>
 
@@ -776,7 +786,7 @@ template&lt;typename T , unsigned long N&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">45</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00093">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">set_parameters()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">add_multimaterial()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00093">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00082">stress()</a>.</p>
 
 </div>
 </div>
@@ -802,7 +812,7 @@ template&lt;typename T , unsigned long N&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">43</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">set_parameters()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00046">add_multimaterial()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00075">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
 
 </div>
 </div>

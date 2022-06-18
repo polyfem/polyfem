@@ -122,21 +122,13 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_density.html',''); in
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for polyfem::Density:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_density__coll__graph.svg" width="202" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:afa6f351296bae77dafc95a63671d0819"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#afa6f351296bae77dafc95a63671d0819">Density</a> ()</td></tr>
 <tr class="separator:afa6f351296bae77dafc95a63671d0819"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7be21d49d510ad7a53704ac63c9b21f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#a7be21d49d510ad7a53704ac63c9b21f9">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a7be21d49d510ad7a53704ac63c9b21f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a916cea13388617b0b2f804dbded35d97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#a916cea13388617b0b2f804dbded35d97">init_multimaterial</a> (const Eigen::MatrixXd &amp;rho)</td></tr>
-<tr class="separator:a916cea13388617b0b2f804dbded35d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340f443525e72cb2fef2823a164e9e57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#a340f443525e72cb2fef2823a164e9e57">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a340f443525e72cb2fef2823a164e9e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54cab63c56f2da57fe819b27720005e5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#a54cab63c56f2da57fe819b27720005e5">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, int el_id) const</td></tr>
 <tr class="separator:a54cab63c56f2da57fe819b27720005e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27d88c2ffc03a3e3cfbdab8d2631dc24"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#a27d88c2ffc03a3e3cfbdab8d2631dc24">operator()</a> (const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id) const</td></tr>
@@ -149,14 +141,12 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ab3a71533de9574d179c217669686eaf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#ab3a71533de9574d179c217669686eaf8">rho_</a></td></tr>
-<tr class="separator:ab3a71533de9574d179c217669686eaf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc6eb7bbb64a45c692fcca5c8f433dd6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#adc6eb7bbb64a45c692fcca5c8f433dd6">initialized_</a></td></tr>
-<tr class="separator:adc6eb7bbb64a45c692fcca5c8f433dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0c95f6937970dad01c66f642ffe17de"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_density.html#ae0c95f6937970dad01c66f642ffe17de">rho_</a></td></tr>
+<tr class="separator:ae0c95f6937970dad01c66f642ffe17de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00105">105</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00103">103</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="afa6f351296bae77dafc95a63671d0819" name="afa6f351296bae77dafc95a63671d0819"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afa6f351296bae77dafc95a63671d0819">&#9670;&nbsp;</a></span>Density()</h2>
@@ -173,56 +163,44 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00556">556</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00555">555</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00108">polyfem::utils::ExpressionValue::init()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00126">initialized_</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00125">rho_</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00122">rho_</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a7be21d49d510ad7a53704ac63c9b21f9" name="a7be21d49d510ad7a53704ac63c9b21f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7be21d49d510ad7a53704ac63c9b21f9">&#9670;&nbsp;</a></span>init()</h2>
+<a id="a340f443525e72cb2fef2823a164e9e57" name="a340f443525e72cb2fef2823a164e9e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a340f443525e72cb2fef2823a164e9e57">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::Density::init </td>
+          <td class="memname">void polyfem::Density::add_multimaterial </td>
           <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"><em>params</em>&#160;</td>
         </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00573">573</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00126">initialized_</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00588">set_rho()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00380">polyfem::State::build_basis()</a>, and <a class="el" href="_state_8cpp_source.html#l00194">polyfem::State::set_multimaterial()</a>.</p>
-
-</div>
-</div>
-<a id="a916cea13388617b0b2f804dbded35d97" name="a916cea13388617b0b2f804dbded35d97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a916cea13388617b0b2f804dbded35d97">&#9670;&nbsp;</a></span>init_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
         <tr>
-          <td class="memname">void polyfem::Density::init_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>rho</em></td><td>)</td>
           <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00567">567</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00572">572</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00108">polyfem::utils::ExpressionValue::init()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00126">initialized_</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00125">rho_</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00122">rho_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00194">polyfem::State::set_materials()</a>.</p>
 
 </div>
 </div>
@@ -266,7 +244,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00114">114</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00111">111</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
 
 </div>
 </div>
@@ -326,9 +304,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00562">562</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00561">561</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00125">rho_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00122">rho_</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">z</a>.</p>
 
 </div>
 </div>
@@ -356,17 +334,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8cpp_source.html#l00588">588</a> of file <a class="el" href="_elasticity_utils_8cpp_source.html">ElasticityUtils.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00108">polyfem::utils::ExpressionValue::init()</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00125">rho_</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00573">init()</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="adc6eb7bbb64a45c692fcca5c8f433dd6" name="adc6eb7bbb64a45c692fcca5c8f433dd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc6eb7bbb64a45c692fcca5c8f433dd6">&#9670;&nbsp;</a></span>initialized_</h2>
+<a id="ae0c95f6937970dad01c66f642ffe17de" name="ae0c95f6937970dad01c66f642ffe17de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c95f6937970dad01c66f642ffe17de">&#9670;&nbsp;</a></span>rho_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -375,7 +347,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool polyfem::Density::initialized_</td>
+          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>&gt; polyfem::Density::rho_</td>
         </tr>
       </table>
   </td>
@@ -385,35 +357,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00126">126</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00122">122</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00556">Density()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00573">init()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00567">init_multimaterial()</a>.</p>
-
-</div>
-</div>
-<a id="ab3a71533de9574d179c217669686eaf8" name="ab3a71533de9574d179c217669686eaf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab3a71533de9574d179c217669686eaf8">&#9670;&nbsp;</a></span>rho_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> polyfem::Density::rho_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_elasticity_utils_8hpp_source.html#l00125">125</a> of file <a class="el" href="_elasticity_utils_8hpp_source.html">ElasticityUtils.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00556">Density()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00567">init_multimaterial()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00562">operator()()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00588">set_rho()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_elasticity_utils_8cpp_source.html#l00572">add_multimaterial()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00555">Density()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00561">operator()()</a>.</p>
 
 </div>
 </div>

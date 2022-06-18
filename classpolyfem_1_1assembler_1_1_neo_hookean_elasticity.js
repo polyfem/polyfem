@@ -1,6 +1,7 @@
 var classpolyfem_1_1assembler_1_1_neo_hookean_elasticity =
 [
     [ "NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a4948c73846ce32e7a889bde9e4ee8b09", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a4c1014af9ac99bcae89152ce702623eb", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a63bf828f88d32cc2337385795a1df0be", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ae5ceee444ac732655891458cd4c05140", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a300889af25162255f26b1379ba3ccdee", null ],
@@ -14,8 +15,6 @@ var classpolyfem_1_1assembler_1_1_neo_hookean_elasticity =
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a35e5ba545d5bdb8563f4b7bc14ab2fea", null ],
     [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ad54d103a5a66083cacd68a0e3091a1d7", null ],
     [ "compute_von_mises_stresses", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a883982c1ca7030cb6f65dbe5cf51afba", null ],
-    [ "init_multimaterial", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a323b370e868cba41c20fdc93f5283cfb", null ],
-    [ "set_parameters", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3c579b3d5b8dd4f67eadb787e632fb8f", null ],
     [ "set_params", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a8d8a0f078d148d1c6bd9e4862e41932c", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ac0ced2d3c93738e1cb246a5c3260dbe1", null ],
     [ "size", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a1dcf7dfb673e85dfda1c0dcd00359e8d", null ],

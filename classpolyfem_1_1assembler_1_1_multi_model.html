@@ -124,7 +124,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_multi_mo
 <div class="dynheader">
 Collaboration diagram for polyfem::assembler::MultiModel:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_multi_model__coll__graph.svg" width="367" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_multi_model__coll__graph.svg" width="367" height="246"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -146,10 +146,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac65036006951b43451ad87a5d91becbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77ae67d7db21e6ac873e6143086f8216"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#a77ae67d7db21e6ac873e6143086f8216">set_size</a> (const int <a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#ac65036006951b43451ad87a5d91becbb">size</a>)</td></tr>
 <tr class="separator:a77ae67d7db21e6ac873e6143086f8216"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99533e5d9a49c5add8a8c349d84017eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#a99533e5d9a49c5add8a8c349d84017eb">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a99533e5d9a49c5add8a8c349d84017eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeae2a3ea89e20f8775f49542035c974b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#aeae2a3ea89e20f8775f49542035c974b">init_multimaterial</a> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
-<tr class="separator:aeae2a3ea89e20f8775f49542035c974b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4fffd61f5bd34e9fef169503621a060"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#ab4fffd61f5bd34e9fef169503621a060">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:ab4fffd61f5bd34e9fef169503621a060"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdfedffa2ba1301ba1da351dd23a0d53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#acdfedffa2ba1301ba1da351dd23a0d53">init_multimodels</a> (const std::vector&lt; std::string &gt; &amp;mats)</td></tr>
 <tr class="separator:acdfedffa2ba1301ba1da351dd23a0d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c1f78e24b4fca369a46d75da33ed2cf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html#a8c1f78e24b4fca369a46d75da33ed2cf">lame_params</a> () const</td></tr>
@@ -172,6 +170,38 @@ Private Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00022">22</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab4fffd61f5bd34e9fef169503621a060" name="ab4fffd61f5bd34e9fef169503621a060"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4fffd61f5bd34e9fef169503621a060">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::MultiModel::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00024">24</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00014">polyfem::assembler::LinearElasticity::add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">polyfem::assembler::NeoHookeanElasticity::add_multimaterial()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00061">size_</a>.</p>
+
+</div>
+</div>
 <a id="a6c710d892dd4decc993c2b8c9045ac82" name="a6c710d892dd4decc993c2b8c9045ac82"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c710d892dd4decc993c2b8c9045ac82">&#9670;&nbsp;</a></span>assemble_grad()</h2>
 
@@ -204,9 +234,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00053">53</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00044">44</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00068">polyfem::assembler::LinearElasticity::assemble_grad()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00117">polyfem::assembler::NeoHookeanElasticity::assemble_grad()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00064">multi_material_models_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00061">polyfem::assembler::LinearElasticity::assemble_grad()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00110">polyfem::assembler::NeoHookeanElasticity::assemble_grad()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00062">multi_material_models_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -242,9 +272,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00073">73</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00064">64</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00086">polyfem::assembler::LinearElasticity::assemble_hessian()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00173">polyfem::assembler::NeoHookeanElasticity::assemble_hessian()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00064">multi_material_models_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00079">polyfem::assembler::LinearElasticity::assemble_hessian()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00166">polyfem::assembler::NeoHookeanElasticity::assemble_hessian()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00062">multi_material_models_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -280,9 +310,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00092">92</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00083">83</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00063">polyfem::assembler::LinearElasticity::compute_energy()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00287">polyfem::assembler::NeoHookeanElasticity::compute_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00064">multi_material_models_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00056">polyfem::assembler::LinearElasticity::compute_energy()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00280">polyfem::assembler::NeoHookeanElasticity::compute_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00062">multi_material_models_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -302,7 +332,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00043">43</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00034">34</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00044">size()</a>.</p>
 
@@ -358,9 +388,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00111">111</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00102">102</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00198">polyfem::assembler::LinearElasticity::compute_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00236">polyfem::assembler::NeoHookeanElasticity::compute_stress_tensor()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00064">multi_material_models_</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>.</p>
+<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00191">polyfem::assembler::LinearElasticity::compute_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00229">polyfem::assembler::NeoHookeanElasticity::compute_stress_tensor()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00062">multi_material_models_</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>.</p>
 
 </div>
 </div>
@@ -414,47 +444,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00129">129</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00120">120</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00207">polyfem::assembler::LinearElasticity::compute_von_mises_stresses()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00245">polyfem::assembler::NeoHookeanElasticity::compute_von_mises_stresses()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00064">multi_material_models_</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>.</p>
-
-</div>
-</div>
-<a id="aeae2a3ea89e20f8775f49542035c974b" name="aeae2a3ea89e20f8775f49542035c974b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeae2a3ea89e20f8775f49542035c974b">&#9670;&nbsp;</a></span>init_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::MultiModel::init_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_volume</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>Es</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>nus</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00024">24</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00014">polyfem::assembler::LinearElasticity::init_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">polyfem::assembler::NeoHookeanElasticity::init_multimaterial()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00063">size_</a>.</p>
+<p class="reference">References <a class="el" href="_linear_elasticity_8cpp_source.html#l00200">polyfem::assembler::LinearElasticity::compute_von_mises_stresses()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00238">polyfem::assembler::NeoHookeanElasticity::compute_von_mises_stresses()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00062">multi_material_models_</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>.</p>
 
 </div>
 </div>
@@ -482,9 +474,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00052">52</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00050">50</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00064">multi_material_models_</a>.</p>
+<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00062">multi_material_models_</a>.</p>
 
 </div>
 </div>
@@ -511,31 +503,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00055">55</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00053">53</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_linear_elasticity_8hpp_source.html#l00062">polyfem::assembler::LinearElasticity::lame_params()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>.</p>
-
-</div>
-</div>
-<a id="a99533e5d9a49c5add8a8c349d84017eb" name="a99533e5d9a49c5add8a8c349d84017eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99533e5d9a49c5add8a8c349d84017eb">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::MultiModel::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00033">33</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, <a class="el" href="_linear_elasticity_8cpp_source.html#l00021">polyfem::assembler::LinearElasticity::set_parameters()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">polyfem::assembler::NeoHookeanElasticity::set_parameters()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00063">size_</a>.</p>
+<p class="reference">References <a class="el" href="_linear_elasticity_8hpp_source.html#l00060">polyfem::assembler::LinearElasticity::lame_params()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>.</p>
 
 </div>
 </div>
@@ -563,9 +533,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00056">56</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00054">54</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, <a class="el" href="_linear_elasticity_8hpp_source.html#l00063">polyfem::assembler::LinearElasticity::set_params()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00047">polyfem::assembler::NeoHookeanElasticity::set_params()</a>.</p>
+<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>, <a class="el" href="_linear_elasticity_8hpp_source.html#l00061">polyfem::assembler::LinearElasticity::set_params()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00046">polyfem::assembler::NeoHookeanElasticity::set_params()</a>.</p>
 
 </div>
 </div>
@@ -587,7 +557,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_multi_model_8cpp_source.html#l00016">16</a> of file <a class="el" href="_multi_model_8cpp_source.html">MultiModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00068">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00067">neo_hookean_</a>, <a class="el" href="_linear_elasticity_8hpp_source.html#l00053">polyfem::assembler::LinearElasticity::set_size()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00033">polyfem::assembler::NeoHookeanElasticity::set_size()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00044">size()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00063">size_</a>.</p>
+<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00066">linear_elasticity_</a>, <a class="el" href="_multi_model_8hpp_source.html#l00065">neo_hookean_</a>, <a class="el" href="_linear_elasticity_8hpp_source.html#l00053">polyfem::assembler::LinearElasticity::set_size()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">polyfem::assembler::NeoHookeanElasticity::set_size()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00044">size()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00061">size_</a>.</p>
 
 </div>
 </div>
@@ -616,9 +586,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00044">44</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00063">size_</a>.</p>
+<p class="reference">References <a class="el" href="_multi_model_8hpp_source.html#l00061">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00043">compute_rhs()</a>, and <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00034">compute_rhs()</a>, and <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>.</p>
 
 </div>
 </div>
@@ -643,9 +613,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00068">68</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00066">66</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00053">assemble_grad()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00073">assemble_hessian()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00092">compute_energy()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00111">compute_stress_tensor()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00129">compute_von_mises_stresses()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00024">init_multimaterial()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00055">lame_params()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00033">set_parameters()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00056">set_params()</a>, and <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">add_multimaterial()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00044">assemble_grad()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00064">assemble_hessian()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00083">compute_energy()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00102">compute_stress_tensor()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00120">compute_von_mises_stresses()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00053">lame_params()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00054">set_params()</a>, and <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>.</p>
 
 </div>
 </div>
@@ -669,9 +639,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00064">64</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00062">62</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00053">assemble_grad()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00073">assemble_hessian()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00092">compute_energy()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00111">compute_stress_tensor()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00129">compute_von_mises_stresses()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00052">init_multimodels()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00044">assemble_grad()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00064">assemble_hessian()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00083">compute_energy()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00102">compute_stress_tensor()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00120">compute_von_mises_stresses()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00050">init_multimodels()</a>.</p>
 
 </div>
 </div>
@@ -695,9 +665,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00067">67</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00065">65</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00053">assemble_grad()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00073">assemble_hessian()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00092">compute_energy()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00111">compute_stress_tensor()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00129">compute_von_mises_stresses()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00024">init_multimaterial()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00033">set_parameters()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00056">set_params()</a>, and <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">add_multimaterial()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00044">assemble_grad()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00064">assemble_hessian()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00083">compute_energy()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00102">compute_stress_tensor()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00120">compute_von_mises_stresses()</a>, <a class="el" href="_multi_model_8hpp_source.html#l00054">set_params()</a>, and <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>.</p>
 
 </div>
 </div>
@@ -721,9 +691,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00063">63</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_multi_model_8hpp_source.html#l00061">61</a> of file <a class="el" href="_multi_model_8hpp_source.html">MultiModel.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">init_multimaterial()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00033">set_parameters()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00044">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">add_multimaterial()</a>, <a class="el" href="_multi_model_8cpp_source.html#l00016">set_size()</a>, and <a class="el" href="_multi_model_8hpp_source.html#l00044">size()</a>.</p>
 
 </div>
 </div>

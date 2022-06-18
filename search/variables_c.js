@@ -1,7 +1,7 @@
 var searchData=
 [
   ['l2_5ferr_0',['l2_err',['../classpolyfem_1_1_state.html#aa213543bd3913e0bb2a0bf1f1d90c2a1',1,'polyfem::State']]],
-  ['lambda_5f_1',['lambda_',['../classpolyfem_1_1_lame_parameters.html#aaadfcd35bdfb72cc4fee850b4cfc57f3',1,'polyfem::LameParameters']]],
+  ['lambda_5for_5fe_5f_1',['lambda_or_E_',['../classpolyfem_1_1_lame_parameters.html#a2a57d1ca9744a7335d160548da60ed20',1,'polyfem::LameParameters']]],
   ['lambdaa_2',['lambdaa',['../namespaceeigs.html#a4aaad36d400d8a14a1a8cfd4101d9163',1,'eigs']]],
   ['lambdas_3',['lambdas',['../namespaceeigs.html#a5183913e478c91d4dd02e2a51b21c226',1,'eigs']]],
   ['laplacian_5f_4',['laplacian_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#ac9b1ca490356d93d1d7c0070a833ee33',1,'polyfem::assembler::AssemblerUtils']]],

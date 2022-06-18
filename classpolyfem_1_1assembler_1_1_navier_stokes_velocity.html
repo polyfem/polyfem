@@ -137,8 +137,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adcd662291f09883f479fcb9b352cc155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9db2987d012141d11aae95755d23fe34"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a9db2987d012141d11aae95755d23fe34">size</a> () const</td></tr>
 <tr class="separator:a9db2987d012141d11aae95755d23fe34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc4e5f8980f059aff573e32c6cb2d37a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#acc4e5f8980f059aff573e32c6cb2d37a">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:acc4e5f8980f059aff573e32c6cb2d37a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba07c6ba3a93a74d0c3adb35a80fc59f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#aba07c6ba3a93a74d0c3adb35a80fc59f">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:aba07c6ba3a93a74d0c3adb35a80fc59f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a061f170aec436b2cd37863298fa20a26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a061f170aec436b2cd37863298fa20a26">compute_norm_velocity</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;velocity, Eigen::MatrixXd &amp;norms) const</td></tr>
 <tr class="separator:a061f170aec436b2cd37863298fa20a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3b8437e858137a63e9ffea627f49ddb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ac3b8437e858137a63e9ffea627f49ddb">compute_stress_tensor</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;velocity, Eigen::MatrixXd &amp;tensor) const</td></tr>
@@ -163,6 +163,38 @@ Private Attributes</h2></td></tr>
 class polyfem::assembler::NavierStokesVelocity&lt; full_gradient &gt;</div>
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00020">20</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aba07c6ba3a93a74d0c3adb35a80fc59f" name="aba07c6ba3a93a74d0c3adb35a80fc59f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba07c6ba3a93a74d0c3adb35a80fc59f">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool full_gradient&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html">polyfem::assembler::NavierStokesVelocity</a>&lt; full_gradient &gt;::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00014">14</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a94f9707b2e5113ce41d1f52ee9aecc34" name="a94f9707b2e5113ce41d1f52ee9aecc34"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a94f9707b2e5113ce41d1f52ee9aecc34">&#9670;&nbsp;</a></span>assemble_grad()</h2>
 
@@ -508,28 +540,6 @@ template&lt;bool full_gradient&gt; </div>
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00224">224</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
-
-</div>
-</div>
-<a id="acc4e5f8980f059aff573e32c6cb2d37a" name="acc4e5f8980f059aff573e32c6cb2d37a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc4e5f8980f059aff573e32c6cb2d37a">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;bool full_gradient&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html">polyfem::assembler::NavierStokesVelocity</a>&lt; full_gradient &gt;::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00014">14</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
 </div>
 </div>

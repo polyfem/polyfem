@@ -125,7 +125,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_assemble
 <div class="dynheader">
 Collaboration diagram for polyfem::assembler::AssemblerUtils:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils__coll__graph.svg" width="2184" height="1564"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembler_utils__coll__graph.svg" width="1884" height="1564"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -157,12 +157,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af89a5ecea1a6e133a1227d1122305ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac5bf54ebb15b1a41efe23cf78792f4b"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aac5bf54ebb15b1a41efe23cf78792f4b">kernel</a> (const std::string &amp;assembler, const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;rvect, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const</td></tr>
 <tr class="separator:aac5bf54ebb15b1a41efe23cf78792f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b63723d939898c8f2b1c26d2774eb56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a3b63723d939898c8f2b1c26d2774eb56">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a3b63723d939898c8f2b1c26d2774eb56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68b9c1cc03f0b68e8e67e4bb8ff74764"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a68b9c1cc03f0b68e8e67e4bb8ff74764">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a68b9c1cc03f0b68e8e67e4bb8ff74764"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe2f8c1cf59acdc177b302c605cce350"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#abe2f8c1cf59acdc177b302c605cce350">set_size</a> (const int dim)</td></tr>
 <tr class="separator:abe2f8c1cf59acdc177b302c605cce350"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f9ae31d73fc6142ebeea37193f1a38f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a8f9ae31d73fc6142ebeea37193f1a38f">init_multimaterial</a> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
-<tr class="separator:a8f9ae31d73fc6142ebeea37193f1a38f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0998defe6831960aa8ce69168a866539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a0998defe6831960aa8ce69168a866539">init_multimodels</a> (const std::vector&lt; std::string &gt; &amp;materials)</td></tr>
 <tr class="separator:a0998defe6831960aa8ce69168a866539"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affab12827817e4d41a0c502bcbc4bc13"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13">lame_params</a> () const</td></tr>
@@ -258,6 +256,40 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a68b9c1cc03f0b68e8e67e4bb8ff74764" name="a68b9c1cc03f0b68e8e67e4bb8ff74764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68b9c1cc03f0b68e8e67e4bb8ff74764">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::AssemblerUtils::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00482">482</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00179">bilaplacian_aux_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00177">bilaplacian_main_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00178">bilaplacian_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00174">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00194">navier_stokes_velocity_picard_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00192">stokes_pressure_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00194">polyfem::State::set_materials()</a>.</p>
+
+</div>
+</div>
 <a id="a985dc43a7a41e638f40fedf3a98afe84" name="a985dc43a7a41e638f40fedf3a98afe84"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a985dc43a7a41e638f40fedf3a98afe84">&#9670;&nbsp;</a></span>assemble_energy()</h2>
 
@@ -310,7 +342,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00172">172</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00454">polyfem::solver::NLProblem::value()</a>.</p>
 
@@ -380,7 +412,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00194">194</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00531">polyfem::solver::NLProblem::gradient_no_rhs()</a>.</p>
 
@@ -462,7 +494,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00220">220</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_picard_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00194">navier_stokes_velocity_picard_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00581">polyfem::solver::NLProblem::hessian_full()</a>.</p>
 
@@ -532,9 +564,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00104">104</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00043">polyfem::assembler::MassMatrixAssembler::assemble()</a>, <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00174">mass_mat_assembler_</a>.</p>
+<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00043">polyfem::assembler::MassMatrixAssembler::assemble()</a>, <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00173">mass_mat_assembler_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00123">polyfem::State::solve_transient_navier_stokes_split()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00123">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00123">polyfem::State::solve_transient_navier_stokes_split()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00123">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
 
 </div>
 </div>
@@ -614,9 +646,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00120">120</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00179">bilaplacian_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_mixed_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00192">stokes_mixed_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00178">bilaplacian_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_mixed_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_mixed_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00123">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00123">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 
 </div>
 </div>
@@ -678,9 +710,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00148">148</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00180">bilaplacian_aux_</a>, <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00200">incompressible_lin_elast_pressure_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00193">stokes_pressure_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00179">bilaplacian_aux_</a>, <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_pressure_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00192">stokes_pressure_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 
 </div>
 </div>
@@ -742,9 +774,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00062">62</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00178">bilaplacian_main_</a>, <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00176">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00177">bilaplacian_main_</a>, <a class="el" href="_assembler_8cpp_source.html#l00038">cache</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00174">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00504">polyfem::solver::NLProblem::compute_cached_stiffness()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00123">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00504">polyfem::solver::NLProblem::compute_cached_stiffness()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00123">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 
 </div>
 </div>
@@ -776,7 +808,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00332">332</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00178">bilaplacian_main_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00176">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00177">bilaplacian_main_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00174">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_problem_8cpp_source.html#l00675">polyfem::problem::ElasticCantileverExact::rhs()</a>, <a class="el" href="_problem_with_solution_8cpp_source.html#l00014">polyfem::problem::ProblemWithSolution::rhs()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">polyfem::basis::RBFWithQuadratic::setup_monomials_strong_2d()</a>.</p>
 
@@ -840,7 +872,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00251">251</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_interpolation_8cpp_source.html#l00399">polyfem::State::average_grad_based_function()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00833">polyfem::State::check_scalar_value()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00908">polyfem::State::compute_scalar_value()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00597">polyfem::State::compute_stress_at_quadrature_points()</a>, and <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>.</p>
 
@@ -904,47 +936,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00292">292</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_interpolation_8cpp_source.html#l00597">polyfem::State::compute_stress_at_quadrature_points()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00983">polyfem::State::compute_tensor_value()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>, and <a class="el" href="_state_output_8cpp_source.html#l01593">polyfem::State::save_surface()</a>.</p>
-
-</div>
-</div>
-<a id="a8f9ae31d73fc6142ebeea37193f1a38f" name="a8f9ae31d73fc6142ebeea37193f1a38f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f9ae31d73fc6142ebeea37193f1a38f">&#9670;&nbsp;</a></span>init_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::AssemblerUtils::init_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_volume</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>Es</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>nus</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00461">461</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00200">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>.</p>
 
 </div>
 </div>
@@ -964,9 +958,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00493">493</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00477">477</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>.</p>
 
 </div>
 </div>
@@ -996,7 +990,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00037">37</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_8cpp_source.html#l00097">polyfem::State::sol_to_pressure()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00692">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00340">polyfem::State::solve_transient_tensor_linear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_8cpp_source.html#l00097">polyfem::State::sol_to_pressure()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00692">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00340">polyfem::State::solve_transient_tensor_linear()</a>.</p>
 
 </div>
 </div>
@@ -1026,7 +1020,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00057">57</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00504">polyfem::solver::NLProblem::compute_cached_stiffness()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">polyfem::solver::NLProblem::hessian_full()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00692">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_8cpp_source.html#l01192">polyfem::State::solve_problem()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00340">polyfem::State::solve_transient_tensor_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00504">polyfem::solver::NLProblem::compute_cached_stiffness()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00581">polyfem::solver::NLProblem::hessian_full()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00692">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_8cpp_source.html#l01175">polyfem::State::solve_problem()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00340">polyfem::State::solve_transient_tensor_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>.</p>
 
 </div>
 </div>
@@ -1056,7 +1050,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00046">46</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_8cpp_source.html#l00380">polyfem::State::build_basis()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00235">polyfem::solver::NLProblem::current_rhs()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00075">polyfem::State::init_transient()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">polyfem::solver::NLProblem::NLProblem()</a>, <a class="el" href="_state_output_8cpp_source.html#l01593">polyfem::State::save_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l01144">polyfem::State::save_volume()</a>, <a class="el" href="_state_8cpp_source.html#l00097">polyfem::State::sol_to_pressure()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00692">polyfem::State::solve_linear()</a>, <a class="el" href="_state_8cpp_source.html#l01192">polyfem::State::solve_problem()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00340">polyfem::State::solve_transient_tensor_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_state_8cpp_source.html#l00369">polyfem::State::build_basis()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00235">polyfem::solver::NLProblem::current_rhs()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00075">polyfem::State::init_transient()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">polyfem::solver::NLProblem::NLProblem()</a>, <a class="el" href="_state_output_8cpp_source.html#l01593">polyfem::State::save_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l01144">polyfem::State::save_volume()</a>, <a class="el" href="_state_8cpp_source.html#l00097">polyfem::State::sol_to_pressure()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00692">polyfem::State::solve_linear()</a>, <a class="el" href="_state_8cpp_source.html#l01175">polyfem::State::solve_problem()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00340">polyfem::State::solve_transient_tensor_linear()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>.</p>
 
 </div>
 </div>
@@ -1188,7 +1182,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00409">409</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00176">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, and <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00175">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00174">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, and <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>.</p>
 
 </div>
 </div>
@@ -1215,9 +1209,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00141">141</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00140">140</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l01593">polyfem::State::save_surface()</a>, and <a class="el" href="_state_output_8cpp_source.html#l01144">polyfem::State::save_volume()</a>.</p>
 
@@ -1269,7 +1263,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00372">372</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00178">bilaplacian_main_</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00176">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00177">bilaplacian_main_</a>, <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00174">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_logger_8cpp_source.html#l00023">polyfem::utils::logger()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">polyfem::basis::RBFWithQuadratic::compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
 
@@ -1345,11 +1339,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00528">528</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00512">512</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00934">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">polyfem::solver::TransientNavierStokesSolver::minimize()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">polyfem::solver::NavierStokesSolver::minimize()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00113">polyfem::solver::NavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00917">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00034">polyfem::solver::TransientNavierStokesSolver::minimize()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">polyfem::solver::NavierStokesSolver::minimize()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00113">polyfem::solver::NavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00131">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>.</p>
 
 </div>
 </div>
@@ -1380,30 +1374,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a3b63723d939898c8f2b1c26d2774eb56" name="a3b63723d939898c8f2b1c26d2774eb56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b63723d939898c8f2b1c26d2774eb56">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::AssemblerUtils::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00498">498</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00180">bilaplacian_aux_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00178">bilaplacian_main_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00179">bilaplacian_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00176">helmholtz_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00200">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00175">laplacian_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_picard_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00192">stokes_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00193">stokes_pressure_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00380">polyfem::State::build_basis()</a>.</p>
-
-</div>
-</div>
 <a id="abe2f8c1cf59acdc177b302c605cce350" name="abe2f8c1cf59acdc177b302c605cce350"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abe2f8c1cf59acdc177b302c605cce350">&#9670;&nbsp;</a></span>set_size()</h2>
 
@@ -1422,7 +1392,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00438">438</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00184">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00200">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00196">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_picard_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">saint_venant_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00192">stokes_mixed_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_velocity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00183">hooke_linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00195">navier_stokes_velocity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00194">navier_stokes_velocity_picard_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00185">saint_venant_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00191">stokes_mixed_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00190">stokes_velocity_</a>.</p>
 
 </div>
 </div>
@@ -1469,9 +1439,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00477">477</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00461">461</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00200">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00183">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00188">multi_models_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00187">neo_hookean_elasticity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8hpp_source.html#l00197">incompressible_lin_elast_displacement_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00198">incompressible_lin_elast_mixed_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00199">incompressible_lin_elast_pressure_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00181">linear_elasticity_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00182">linear_elasticity_energy_</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00187">multi_models_elasticity_</a>, and <a class="el" href="_assembler_utils_8hpp_source.html#l00186">neo_hookean_elasticity_</a>.</p>
 
 </div>
 </div>
@@ -1496,9 +1466,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00180">180</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00179">179</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00148">assemble_pressure_problem()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00148">assemble_pressure_problem()</a>.</p>
 
 </div>
 </div>
@@ -1522,9 +1492,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00178">178</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00177">177</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>.</p>
 
 </div>
 </div>
@@ -1548,9 +1518,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00179">179</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00178">178</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00120">assemble_mixed_problem()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00120">assemble_mixed_problem()</a>.</p>
 
 </div>
 </div>
@@ -1574,9 +1544,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00176">176</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00175">175</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00409">kernel()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00409">kernel()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>.</p>
 
 </div>
 </div>
@@ -1600,9 +1570,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00184">184</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00183">183</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
 
 </div>
 </div>
@@ -1626,9 +1596,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00198">198</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00197">197</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1652,9 +1622,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00199">199</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00198">198</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00120">assemble_mixed_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00120">assemble_mixed_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1678,9 +1648,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00200">200</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00199">199</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00148">assemble_pressure_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00148">assemble_pressure_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1704,9 +1674,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00175">175</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00174">174</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00409">kernel()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00409">kernel()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>.</p>
 
 </div>
 </div>
@@ -1730,9 +1700,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00182">182</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00181">181</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00409">kernel()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00141">lame_params()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00409">kernel()</a>, <a class="el" href="_assembler_utils_8hpp_source.html#l00140">lame_params()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1756,9 +1726,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00183">183</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00182">182</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1782,7 +1752,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00174">174</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00173">173</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00104">assemble_mass_matrix()</a>.</p>
 
@@ -1808,9 +1778,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00188">188</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00187">187</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00493">init_multimodels()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00477">init_multimodels()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1834,9 +1804,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00196">196</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00195">195</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
 
 </div>
 </div>
@@ -1860,9 +1830,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00195">195</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00194">194</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
 
 </div>
 </div>
@@ -1886,9 +1856,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00187">187</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00186">186</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00461">init_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00477">update_lame_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00461">update_lame_params()</a>.</p>
 
 </div>
 </div>
@@ -1912,9 +1882,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00186">186</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00185">185</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00172">assemble_energy()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00194">assemble_energy_gradient()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00220">assemble_energy_hessian()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
 
 </div>
 </div>
@@ -1938,9 +1908,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00192">192</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00191">191</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00120">assemble_mixed_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00120">assemble_mixed_problem()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
 
 </div>
 </div>
@@ -1964,9 +1934,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00193">193</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00192">192</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00148">assemble_pressure_problem()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00148">assemble_pressure_problem()</a>.</p>
 
 </div>
 </div>
@@ -1990,9 +1960,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00191">191</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_utils_8hpp_source.html#l00190">190</a> of file <a class="el" href="_assembler_utils_8hpp_source.html">AssemblerUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00498">set_parameters()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_utils_8cpp_source.html#l00482">add_multimaterial()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00062">assemble_problem()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00332">compute_rhs()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00251">compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00292">compute_tensor_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00372">local_assemble()</a>, and <a class="el" href="_assembler_utils_8cpp_source.html#l00438">set_size()</a>.</p>
 
 </div>
 </div>

@@ -125,7 +125,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_neo_hook
 <div class="dynheader">
 Collaboration diagram for polyfem::assembler::NeoHookeanElasticity:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity__coll__graph.svg" width="206" height="260"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity__coll__graph.svg" width="206" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -153,10 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0b39f0843081d7ed6832d57faca3114b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a654cf6e8591ee7757924e270f9196b85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a654cf6e8591ee7757924e270f9196b85">compute_dstress_dmu_dlambda</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
 <tr class="separator:a654cf6e8591ee7757924e270f9196b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c579b3d5b8dd4f67eadb787e632fb8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3c579b3d5b8dd4f67eadb787e632fb8f">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a3c579b3d5b8dd4f67eadb787e632fb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a323b370e868cba41c20fdc93f5283cfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a323b370e868cba41c20fdc93f5283cfb">init_multimaterial</a> (const bool is_volume, const Eigen::MatrixXd &amp;Es, const Eigen::MatrixXd &amp;nus)</td></tr>
-<tr class="separator:a323b370e868cba41c20fdc93f5283cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c1014af9ac99bcae89152ce702623eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a4c1014af9ac99bcae89152ce702623eb">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:a4c1014af9ac99bcae89152ce702623eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d8a0f078d148d1c6bd9e4862e41932c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a8d8a0f078d148d1c6bd9e4862e41932c">set_params</a> (const <a class="el" href="classpolyfem_1_1_lame_parameters.html">LameParameters</a> &amp;params)</td></tr>
 <tr class="separator:a8d8a0f078d148d1c6bd9e4862e41932c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a197d01ab966e97ca7c1f687108183e26"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
@@ -208,6 +206,40 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4c1014af9ac99bcae89152ce702623eb" name="a4c1014af9ac99bcae89152ce702623eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c1014af9ac99bcae89152ce702623eb">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::add_multimaterial </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">19</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00519">polyfem::LameParameters::add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00049">size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">polyfem::assembler::MultiModel::add_multimaterial()</a>.</p>
+
+</div>
+</div>
 <a id="a63bf828f88d32cc2337385795a1df0be" name="a63bf828f88d32cc2337385795a1df0be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a63bf828f88d32cc2337385795a1df0be">&#9670;&nbsp;</a></span>assemble_grad()</h2>
 
@@ -240,11 +272,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00117">117</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00110">110</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00053">polyfem::assembler::MultiModel::assemble_grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00044">polyfem::assembler::MultiModel::assemble_grad()</a>.</p>
 
 </div>
 </div>
@@ -280,11 +312,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00173">173</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00166">166</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00073">polyfem::assembler::MultiModel::assemble_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00064">polyfem::assembler::MultiModel::assemble_hessian()</a>.</p>
 
 </div>
 </div>
@@ -358,11 +390,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00254">254</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">247</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00216">polyfem::compute_diplacement_grad()</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00216">polyfem::compute_diplacement_grad()</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00236">compute_stress_tensor()</a>, and <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00245">compute_von_mises_stresses()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00229">compute_stress_tensor()</a>, and <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00238">compute_von_mises_stresses()</a>.</p>
 
 </div>
 </div>
@@ -422,9 +454,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00605">605</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00598">598</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>.</p>
 
 </div>
 </div>
@@ -478,7 +510,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00617">617</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00610">610</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>.</p>
 
@@ -516,11 +548,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00287">287</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00280">280</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00092">polyfem::assembler::MultiModel::compute_energy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00083">polyfem::assembler::MultiModel::compute_energy()</a>.</p>
 
 </div>
 </div>
@@ -566,9 +598,9 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00294">294</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00287">287</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00016">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00016">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -612,9 +644,9 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00402">402</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00395">395</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -716,9 +748,9 @@ template&lt;int n_basis, int dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00494">494</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00487">487</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00179">elasticity_rhs::def_grad</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="p__bases_8py_source.html#l00222">p_bases::N</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
 
 </div>
 </div>
@@ -738,9 +770,9 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00039">39</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00032">32</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00488">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00639">polyfem::autogen::neo_hookean_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00705">polyfem::autogen::neo_hookean_3d_function()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00050">size_</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00639">polyfem::autogen::neo_hookean_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00705">polyfem::autogen::neo_hookean_3d_function()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00049">size_</a>.</p>
 
 </div>
 </div>
@@ -794,11 +826,11 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00236">236</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00229">229</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00254">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00111">polyfem::assembler::MultiModel::compute_stress_tensor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00102">polyfem::assembler::MultiModel::compute_stress_tensor()</a>.</p>
 
 </div>
 </div>
@@ -852,75 +884,11 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00245">245</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00238">238</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00254">assign_stress_tensor()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00243">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">assign_stress_tensor()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00243">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00129">polyfem::assembler::MultiModel::compute_von_mises_stresses()</a>.</p>
-
-</div>
-</div>
-<a id="a323b370e868cba41c20fdc93f5283cfb" name="a323b370e868cba41c20fdc93f5283cfb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a323b370e868cba41c20fdc93f5283cfb">&#9670;&nbsp;</a></span>init_multimaterial()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::init_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_volume</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>Es</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>nus</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">19</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00505">polyfem::LameParameters::init_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00050">size_</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">polyfem::assembler::MultiModel::init_multimaterial()</a>.</p>
-
-</div>
-</div>
-<a id="a3c579b3d5b8dd4f67eadb787e632fb8f" name="a3c579b3d5b8dd4f67eadb787e632fb8f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c579b3d5b8dd4f67eadb787e632fb8f">&#9670;&nbsp;</a></span>set_parameters()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::set_parameters </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">26</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00525">polyfem::LameParameters::init()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00050">size_</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00033">polyfem::assembler::MultiModel::set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00120">polyfem::assembler::MultiModel::compute_von_mises_stresses()</a>.</p>
 
 </div>
 </div>
@@ -948,11 +916,11 @@ template&lt;int n_basis, int dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00047">47</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00046">46</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">params_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_multi_model_8hpp_source.html#l00056">polyfem::assembler::MultiModel::set_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_multi_model_8hpp_source.html#l00054">polyfem::assembler::MultiModel::set_params()</a>.</p>
 
 </div>
 </div>
@@ -972,9 +940,9 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00033">33</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">26</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00050">size_</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00049">size_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00016">polyfem::assembler::MultiModel::set_size()</a>.</p>
 
@@ -1005,9 +973,9 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">34</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00050">size_</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00049">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00117">assemble_grad()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00173">assemble_hessian()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00254">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00294">compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00402">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00494">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00039">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00236">compute_stress_tensor()</a>, and <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00033">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00110">assemble_grad()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00166">assemble_hessian()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00287">compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00395">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00487">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00032">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00229">compute_stress_tensor()</a>, and <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">set_size()</a>.</p>
 
 </div>
 </div>
@@ -1032,9 +1000,9 @@ template&lt;int n_basis, int dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">52</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00051">51</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00254">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00605">compute_dstress_dgradu_multiply_mat()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00294">compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00402">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00494">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00039">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">init_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">set_parameters()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00047">set_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00598">compute_dstress_dgradu_multiply_mat()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00287">compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00395">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00487">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00032">compute_rhs()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00046">set_params()</a>.</p>
 
 </div>
 </div>
@@ -1058,9 +1026,9 @@ template&lt;int n_basis, int dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00050">50</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00049">49</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00039">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">init_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">set_parameters()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00033">set_size()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00032">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00026">set_size()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00034">size()</a>.</p>
 
 </div>
 </div>
