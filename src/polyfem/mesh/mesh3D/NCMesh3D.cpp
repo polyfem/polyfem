@@ -76,31 +76,6 @@ namespace polyfem
 
 			return true;
 		}
-		bool NCMesh3D::save(const std::string &path) const
-		{
-			Eigen::MatrixXd v;
-			v.setConstant(n_vertices(), 3, 0);
-			for (int i = 0; i < v.rows(); i++)
-				v.row(i) = point(i);
-
-			Eigen::MatrixXi tet;
-			tet.setConstant(n_elements, 4, -1);
-			for (int i = 0; i < tet.rows(); i++)
-			{
-				for (int lv = 0; lv < n_cell_vertices(i); lv++)
-					tet(i, lv) = cell_vertex(i, lv);
-			}
-
-			igl::writeMESH(path, v, tet, Eigen::MatrixXi());
-
-			return true;
-		}
-
-		bool NCMesh3D::save(const std::vector<int> &fs, const int ringN, const std::string &path) const
-		{
-			throw std::runtime_error("Not Implemented!");
-			return false;
-		}
 
 		void NCMesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
 		{

@@ -68,26 +68,6 @@ namespace polyfem
 			return true;
 		}
 
-		bool NCMesh2D::save(const std::string &path) const
-		{
-			Eigen::MatrixXd v;
-			v.setConstant(n_vertices(), 2, 0);
-			for (int i = 0; i < v.rows(); i++)
-				v.row(i) = point(i);
-
-			Eigen::MatrixXi f;
-			f.setConstant(n_elements, 3, -1);
-			for (int i = 0; i < f.rows(); i++)
-			{
-				for (int lv = 0; lv < n_face_vertices(i); lv++)
-					f(i, lv) = face_vertex(i, lv);
-			}
-
-			igl::writeOBJ(path, v, f);
-
-			return true;
-		}
-
 		void NCMesh2D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
 		{
 			for (int f = 0; f < n_faces(); ++f)

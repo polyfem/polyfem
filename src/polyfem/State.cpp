@@ -424,6 +424,7 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
+				//TODO b_discr_orders[i]["id"] can be an array
 				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
 				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
 			}
@@ -474,7 +475,7 @@ namespace polyfem
 				logger().error("p refinement not supported in mixed formulation!");
 				return;
 			}
-			
+
 			// same quadrature order as solution basis
 			quadrature_order = std::max(quadrature_order, (disc_order - 1) * 2 + 1);
 		}

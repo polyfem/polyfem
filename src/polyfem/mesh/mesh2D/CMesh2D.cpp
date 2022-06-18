@@ -71,8 +71,6 @@ namespace polyfem
 			}
 
 			compute_elements_tag();
-
-			// save("test.obj");
 		}
 
 		bool CMesh2D::load(const std::string &path)
@@ -141,14 +139,6 @@ namespace polyfem
 			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 
 			compute_elements_tag();
-			return true;
-		}
-
-		bool CMesh2D::save(const std::string &path) const
-		{
-			if (!mesh_save(mesh_, path))
-				return false;
-
 			return true;
 		}
 
