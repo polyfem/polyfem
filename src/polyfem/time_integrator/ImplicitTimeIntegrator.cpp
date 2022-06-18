@@ -54,7 +54,7 @@ namespace polyfem
 			}
 			else if (name == "BDF")
 			{
-				return std::make_shared<BDFTimeIntegrator>();
+				return std::make_shared<BDF>();
 			}
 			else
 			{
