@@ -1,6 +1,6 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/time_integrator/BDFTimeIntegrator.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/solver/TransientNavierStokesSolver.hpp>
 #include <polyfem/solver/OperatorSplittingSolver.hpp>
 #include <polyfem/solver/NavierStokesSolver.hpp>
@@ -234,7 +234,7 @@ namespace polyfem
 
 		BDFTimeIntegrator time_integrator;
 		time_integrator.set_parameters(args["time"]["BDF"]);
-		time_integrator.init(c_sol, Eigen::VectorXd::Zero(c_sol.size()), Eigen::VectorXd::Zero(c_sol.size()), dt);	
+		time_integrator.init(c_sol, Eigen::VectorXd::Zero(c_sol.size()), Eigen::VectorXd::Zero(c_sol.size()), dt);
 
 		assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
 		assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);

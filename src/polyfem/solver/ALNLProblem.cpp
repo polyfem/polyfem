@@ -81,7 +81,7 @@ namespace polyfem
 			TVector distv;
 			compute_distance(x, distv);
 			// TODO: replace this with the actual mass matrix
-			Eigen::SparseMatrix<double> M = sparse_identity(x.size());
+			Eigen::SparseMatrix<double> M = sparse_identity(x.size(), x.size());
 			const double AL_penalty = weight_ / 2 * distv.transpose() * M * distv;
 
 			// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)

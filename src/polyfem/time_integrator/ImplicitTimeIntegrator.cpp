@@ -2,7 +2,7 @@
 
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
-#include <polyfem/time_integrator/BDFTimeIntegrator.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
