@@ -4,7 +4,7 @@ var searchData=
   ['t_1',['t',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac1185839e5fd626d239bac666d073858',1,'polyfem::solver::NLProblem']]],
   ['target_5fx_5f_2',['target_x_',['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#acbe45b392e174f2a9ddd044e65bb2aee',1,'polyfem::solver::ALNLProblem']]],
   ['tau_3',['tau',['../classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html#a3659c0117607068507589d821a33358b',1,'polyfem::solver::line_search::ArmijoLineSearch']]],
-  ['test_5fbetas_4',['test_betas',['../classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#acbb4b92673816ae5fc70ab3bde3caa29',1,'polyfem::time_integrator::BDFTimeIntegrator']]],
+  ['test_5fbetas_4',['test_betas',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#aadf8796446f16c7a144143051c1b6e0f',1,'polyfem::time_integrator::BDF']]],
   ['tet_5fedges_5',['tet_edges',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a4371501d129aefe39bf7a3a87f349557',1,'polyfem::mesh::MeshProcessing3D']]],
   ['tet_5ffaces_6',['tet_faces',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a3ee92094bd01f05b924e0409e88f7342',1,'polyfem::mesh::MeshProcessing3D']]],
   ['tfunc_5f_7',['tfunc_',['../classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d',1,'polyfem::utils::ExpressionValue']]],

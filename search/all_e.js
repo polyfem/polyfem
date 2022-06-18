@@ -147,7 +147,7 @@ var searchData=
   ['num_5fface_5fnodes_144',['num_face_nodes',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a037efd120a3766b1783ebcda578bad84',1,'polyfem::mesh::MeshNodes']]],
   ['num_5fjs_145',['Num_Js',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a8e8a9a37cb5fb0cb54eb5d1888f06dae',1,'polyfem::mesh::Mesh_Quality']]],
   ['num_5fsamples_146',['num_samples',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e',1,'polyfem::utils::RefElementSampler']]],
-  ['num_5fsteps_147',['num_steps',['../classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a9ec83d2b31d909e97bc4523f2f78c588',1,'polyfem::time_integrator::BDFTimeIntegrator']]],
+  ['num_5fsteps_147',['num_steps',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#a9a9a97014458cc53b2670bd1daad11de',1,'polyfem::time_integrator::BDF']]],
   ['num_5fthreads_148',['num_threads',['../classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034',1,'polyfem::utils::NThread']]],
   ['num_5fvertex_5fnodes_149',['num_vertex_nodes',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a6d5a57e6fb6009e7026cf3a79cce9f13',1,'polyfem::mesh::MeshNodes']]],
   ['numeric_5ftype_5f_150',['numeric_type_',['../_v_t_u_writer_8hpp.html#abdf486bdffcf04b66f95d65d1a8e0a7c',1,'VTUWriter.hpp']]]

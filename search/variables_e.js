@@ -50,7 +50,7 @@ var searchData=
   ['nu_47',['nu',['../classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a343e2469bec71b0dfcacedc50a608e82',1,'polyfem::problem::ElasticCantileverExact']]],
   ['num_5fdofs_48',['num_dofs',['../classpolyfem_1_1_state.html#a143ddec41a894b06a4a30efdfc162ad9',1,'polyfem::State']]],
   ['num_5fjs_49',['Num_Js',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a8e8a9a37cb5fb0cb54eb5d1888f06dae',1,'polyfem::mesh::Mesh_Quality']]],
-  ['num_5fsteps_50',['num_steps',['../classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#a9ec83d2b31d909e97bc4523f2f78c588',1,'polyfem::time_integrator::BDFTimeIntegrator']]],
+  ['num_5fsteps_50',['num_steps',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#a9a9a97014458cc53b2670bd1daad11de',1,'polyfem::time_integrator::BDF']]],
   ['num_5fthreads_51',['num_threads',['../classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034',1,'polyfem::utils::NThread']]],
   ['numeric_5ftype_5f_52',['numeric_type_',['../_v_t_u_writer_8hpp.html#abdf486bdffcf04b66f95d65d1a8e0a7c',1,'VTUWriter.hpp']]]
 ];

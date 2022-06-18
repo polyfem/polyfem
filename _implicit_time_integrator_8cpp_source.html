@@ -148,7 +148,7 @@ $(document).ready(function(){initNavTree('_implicit_time_integrator_8cpp_source.
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        }</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5d2edb575418d564867ea6cfb8879d85">   33</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5d2edb575418d564867ea6cfb8879d85">ImplicitTimeIntegrator::save_raw</a>(<span class="keyword">const</span> std::string &amp;x_path, <span class="keyword">const</span> std::string &amp;v_path, <span class="keyword">const</span> std::string &amp;a_path)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">   34</a></span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#aa19b9d1885d166f24557a23e1612b2af">   34</a></span><span class="keyword">        </span>{</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">if</span> (!x_path.empty())</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <a class="code hl_function" href="namespacepolyfem_1_1utils.html#ae0c114b6005ccd9b561d17f38849418f">write_matrix</a>(x_path, <a class="code hl_function" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0">x_prev</a>());</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
@@ -171,7 +171,7 @@ $(document).ready(function(){initNavTree('_implicit_time_integrator_8cpp_source.
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            }</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (name == <span class="stringliteral">&quot;BDF&quot;</span>)</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <span class="keywordflow">return</span> std::make_shared&lt;BDFTimeIntegrator&gt;();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <span class="keywordflow">return</span> std::make_shared&lt;BDF&gt;();</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            }</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            {</div>

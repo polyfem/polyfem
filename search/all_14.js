@@ -7,7 +7,7 @@ var searchData=
   ['taylorgreenvortexproblem_4',['TaylorGreenVortexProblem',['../classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html',1,'polyfem::problem::TaylorGreenVortexProblem'],['../classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3614e15446131f68e9c657b73010e5f6',1,'polyfem::problem::TaylorGreenVortexProblem::TaylorGreenVortexProblem()']]],
   ['tensor_5fassemblers_5',['tensor_assemblers',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a94487ea320b19c217e37c4ad8fa4ad13',1,'polyfem::assembler::AssemblerUtils']]],
   ['tertrahedralize_5fstar_5fshaped_5fsurface_6',['tertrahedralize_star_shaped_surface',['../namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583',1,'polyfem::mesh']]],
-  ['test_5fbetas_7',['test_betas',['../classpolyfem_1_1time__integrator_1_1_b_d_f_time_integrator.html#acbb4b92673816ae5fc70ab3bde3caa29',1,'polyfem::time_integrator::BDFTimeIntegrator']]],
+  ['test_5fbetas_7',['test_betas',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#aadf8796446f16c7a144143051c1b6e0f',1,'polyfem::time_integrator::BDF']]],
   ['testproblem_8',['TestProblem',['../classpolyfem_1_1problem_1_1_test_problem.html',1,'polyfem::problem::TestProblem'],['../classpolyfem_1_1problem_1_1_test_problem.html#a972665b55983e0e6efba57c3aea49a94',1,'polyfem::problem::TestProblem::TestProblem()']]],
   ['testproblem_2ecpp_9',['TestProblem.cpp',['../_test_problem_8cpp.html',1,'']]],
   ['testproblem_2ehpp_10',['TestProblem.hpp',['../_test_problem_8hpp.html',1,'']]],
