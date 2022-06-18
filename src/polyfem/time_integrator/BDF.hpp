@@ -4,10 +4,10 @@
 
 namespace polyfem::time_integrator
 {
-	class BDFTimeIntegrator : public ImplicitTimeIntegrator
+	class BDF : public ImplicitTimeIntegrator
 	{
 	public:
-		BDFTimeIntegrator() {}
+		BDF() {}
 
 		void set_parameters(const nlohmann::json &params) override;
 

@@ -5,20 +5,20 @@
 namespace polyfem::time_integrator
 {
 	using namespace utils;
-	void BDFTimeIntegrator::set_parameters(const nlohmann::json &params)
+	void BDF::set_parameters(const nlohmann::json &params)
 	{
 		num_steps = params.value("num_steps", 1);
 		if (num_steps < 1 || num_steps > 6)
 		{
-			logger().warn("BDFTimeIntegrator num_steps must be 1 ≤ n ≤ 6}; using default of 1");
+			logger().warn("BDF num_steps must be 1 ≤ n ≤ 6}; using default of 1");
 			num_steps = 1;
 		}
 	}
 
-	void BDFTimeIntegrator::init(const std::vector<Eigen::VectorXd> &x_prevs,
-								 const std::vector<Eigen::VectorXd> &v_prevs,
-								 const std::vector<Eigen::VectorXd> &a_prevs,
-								 double dt)
+	void BDF::init(const std::vector<Eigen::VectorXd> &x_prevs,
+				   const std::vector<Eigen::VectorXd> &v_prevs,
+				   const std::vector<Eigen::VectorXd> &a_prevs,
+				   double dt)
 	{
 		assert(x_prevs.size() > 0 && x_prevs.size() <= 6);
 		assert(x_prevs.size() == v_prevs.size());
@@ -37,7 +37,7 @@ namespace polyfem::time_integrator
 		}
 	}
 
-	const std::vector<double> &BDFTimeIntegrator::alphas(const int i)
+	const std::vector<double> &BDF::alphas(const int i)
 	{
 		static const std::array<std::vector<double>, 6> _alphas = {{
 			{1},
@@ -51,7 +51,7 @@ namespace polyfem::time_integrator
 		return _alphas[i];
 	}
 
-	double BDFTimeIntegrator::betas(const int i)
+	double BDF::betas(const int i)
 	{
 		static const std::array<double, 6> _betas = {{
 			1.0,
@@ -65,7 +65,7 @@ namespace polyfem::time_integrator
 		return _betas[i];
 	}
 
-	Eigen::VectorXd BDFTimeIntegrator::weighted_sum_x_prevs() const
+	Eigen::VectorXd BDF::weighted_sum_x_prevs() const
 	{
 		const std::vector<double> &alpha = alphas(x_prevs.size() - 1);
 
@@ -78,7 +78,7 @@ namespace polyfem::time_integrator
 		return sum;
 	}
 
-	Eigen::VectorXd BDFTimeIntegrator::weighted_sum_v_prevs() const
+	Eigen::VectorXd BDF::weighted_sum_v_prevs() const
 	{
 		const std::vector<double> &alpha = alphas(v_prevs.size() - 1);
 
@@ -91,7 +91,7 @@ namespace polyfem::time_integrator
 		return sum;
 	}
 
-	void BDFTimeIntegrator::update_quantities(const Eigen::VectorXd &x)
+	void BDF::update_quantities(const Eigen::VectorXd &x)
 	{
 		const Eigen::VectorXd sum_x_prev = weighted_sum_x_prevs();
 		const Eigen::VectorXd sum_v_prev = weighted_sum_v_prevs();
@@ -112,19 +112,19 @@ namespace polyfem::time_integrator
 		assert(x_prevs.size() == a_prevs.size());
 	}
 
-	Eigen::VectorXd BDFTimeIntegrator::x_tilde() const
+	Eigen::VectorXd BDF::x_tilde() const
 	{
 		const double beta = betas(x_prevs.size() - 1);
 		return weighted_sum_x_prevs() + beta * dt() * weighted_sum_v_prevs();
 	}
 
-	double BDFTimeIntegrator::acceleration_scaling() const
+	double BDF::acceleration_scaling() const
 	{
 		const double beta = betas(x_prevs.size() - 1);
 		return beta * beta * dt() * dt();
 	}
 
-	double BDFTimeIntegrator::beta_dt() const
+	double BDF::beta_dt() const
 	{
 		const double beta = betas(x_prevs.size() - 1);
 		return beta * dt();

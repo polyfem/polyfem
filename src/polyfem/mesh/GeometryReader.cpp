@@ -230,7 +230,7 @@ namespace polyfem::mesh
 				if (is_param_valid(complete_geometry, "surface_selection"))
 				{
 					if (!complete_geometry["surface_selection"].is_number())
-						log_and_throw_error("Invalid surface_selection for obstable, needs to be a integer");
+						log_and_throw_error("Invalid surface_selection for obstable, needs to be an integer!");
 
 					const int id = complete_geometry["surface_selection"];
 					for (const json &disp : displacements)

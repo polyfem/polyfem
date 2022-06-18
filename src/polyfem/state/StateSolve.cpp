@@ -232,7 +232,7 @@ namespace polyfem
 
 		Eigen::VectorXd prev_sol;
 
-		BDFTimeIntegrator time_integrator;
+		BDF time_integrator;
 		time_integrator.set_parameters(args["time"]["BDF"]);
 		time_integrator.init(c_sol, Eigen::VectorXd::Zero(c_sol.size()), Eigen::VectorXd::Zero(c_sol.size()), dt);
 
@@ -286,7 +286,7 @@ namespace polyfem
 		Eigen::VectorXd b;
 		Eigen::MatrixXd current_rhs = rhs;
 
-		BDFTimeIntegrator time_integrator;
+		BDF time_integrator;
 		time_integrator.set_parameters(args["time"]["BDF"]);
 		time_integrator.init(x, Eigen::VectorXd::Zero(x.size()), Eigen::VectorXd::Zero(x.size()), dt);
 
