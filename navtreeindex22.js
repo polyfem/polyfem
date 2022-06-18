@@ -1,5 +1,13 @@
 var NAVTREEINDEX22 =
 {
+"classpolyfem_1_1utils_1_1_expression_value.html#a8effe5364a3f6cd7c2468f71e0cda632":[3,0,6,9,6,2],
+"classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee":[3,0,6,9,6,12],
+"classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee":[4,0,3,8,5,12],
+"classpolyfem_1_1utils_1_1_expression_value.html#a9cc0294637e7eb6eb9cf43d839f49f35":[4,0,3,8,5,10],
+"classpolyfem_1_1utils_1_1_expression_value.html#a9cc0294637e7eb6eb9cf43d839f49f35":[3,0,6,9,6,10],
+"classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d":[3,0,6,9,6,15],
+"classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d":[4,0,3,8,5,15],
+"classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5":[3,0,6,9,6,14],
 "classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5":[4,0,3,8,5,14],
 "classpolyfem_1_1utils_1_1_expression_value.html#ab58a9fdaa5507a7773a5f448022daf4a":[4,0,3,8,5,1],
 "classpolyfem_1_1utils_1_1_expression_value.html#ab58a9fdaa5507a7773a5f448022daf4a":[3,0,6,9,6,1],
@@ -241,13 +249,5 @@ var NAVTREEINDEX22 =
 "classpolyfem_1_1utils_1_1_sphere_selection.html":[4,0,3,8,21],
 "classpolyfem_1_1utils_1_1_sphere_selection.html#a14ccad7fc6475a4d728503f01dfdc2b5":[3,0,6,9,22,1],
 "classpolyfem_1_1utils_1_1_sphere_selection.html#a14ccad7fc6475a4d728503f01dfdc2b5":[4,0,3,8,21,1],
-"classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd":[4,0,3,8,21,2],
-"classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd":[3,0,6,9,22,2],
-"classpolyfem_1_1utils_1_1_sphere_selection.html#a87b4703466a0a211cdd078a2243047f8":[4,0,3,8,21,0],
-"classpolyfem_1_1utils_1_1_sphere_selection.html#a87b4703466a0a211cdd078a2243047f8":[3,0,6,9,22,0],
-"classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7":[4,0,3,8,21,3],
-"classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7":[3,0,6,9,22,3],
-"classpolyfem_1_1utils_1_1_timer.html":[4,0,3,8,22],
-"classpolyfem_1_1utils_1_1_timer.html":[3,0,6,9,23],
-"classpolyfem_1_1utils_1_1_timer.html#a1127efc8c59a3168b03938b9986cec2d":[3,0,6,9,23,6]
+"classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd":[4,0,3,8,21,2]
 };

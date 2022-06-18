@@ -97,13 +97,13 @@ var NAVTREEINDEX =
 "classpolyfem_1_1problem_1_1_two_spheres.html#a7265e14b45a95bbb313acf45801fad5d",
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a55a30802eb16559dd5ba4d6648e9c9e7",
 "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ac0041fcc75d57415683c290d467da5c9",
-"classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5",
-"classpolyfem_1_1utils_1_1_timer.html#a1127efc8c59a3168b03938b9986cec2d",
-"functions_~.html",
-"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2",
-"p__bases_8py.html#ad72a1e76d715321e683a0470b5e431ae",
-"structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a1c0a30867f9c9060f547f7436579b7f2",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html"
+"classpolyfem_1_1utils_1_1_expression_value.html#a8effe5364a3f6cd7c2468f71e0cda632",
+"classpolyfem_1_1utils_1_1_sphere_selection.html#a36745ef44b0743e77f899b8c9bfa54dd",
+"functions_vars_t.html",
+"namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854",
+"p__bases_8py.html#abbee4f4ea162c1b3fa265d47e35f3328",
+"structpolyfem_1_1mesh_1_1_face.html#a88b22bf0863914d50b8067fd91350f24",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aea85b3dd4d876853ed3f2209a6d11956"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

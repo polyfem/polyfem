@@ -119,6 +119,9 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1time__integrator_1_1_i
 </div><!--header-->
 <div class="contents">
 
+<p>Implicit Euler time integrator of a second order ODE (equivently a system of coupled first order ODEs).  
+ <a href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for polyfem::time_integrator::ImplicitEuler:</div>
@@ -138,6 +141,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0f1f63ab878f9254fbfa62da0d8d59e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a0f1f63ab878f9254fbfa62da0d8d59e1">ImplicitEuler</a> ()</td></tr>
 <tr class="separator:a0f1f63ab878f9254fbfa62da0d8d59e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f43612a9fe0e445cccde6d6af035c5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b">update_quantities</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
+<tr class="memdesc:a3f43612a9fe0e445cccde6d6af035c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the time integration quantaties (i.e., \(x\), \(v\), and \(a\)).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b">More...</a><br /></td></tr>
 <tr class="separator:a3f43612a9fe0e445cccde6d6af035c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c5e5e5a9a440d0acb2ed8aa03d27264"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264">x_tilde</a> () const override</td></tr>
 <tr class="memdesc:a8c5e5e5a9a440d0acb2ed8aa03d27264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the predicted solution to be used in the inertia term \((x-\tilde{x})^TM(x-\tilde{x})\).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264">More...</a><br /></td></tr>
@@ -153,7 +157,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac8ff8c31ac09bb424aaf80d59c234fbf inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">set_parameters</a> (const nlohmann::json &amp;params)</td></tr>
 <tr class="memdesc:ac8ff8c31ac09bb424aaf80d59c234fbf inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the time integrator parameters from a json object.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">More...</a><br /></td></tr>
 <tr class="separator:ac8ff8c31ac09bb424aaf80d59c234fbf inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa19b9d1885d166f24557a23e1612b2af inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">init</a> (const Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0">x_prev</a>, const Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81">v_prev</a>, const Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e">a_prev</a>, double <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932">dt</a>)</td></tr>
+<tr class="memdesc:aa19b9d1885d166f24557a23e1612b2af inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the time integrator with the previous values for \(x\), \(v\), and \(a\).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">More...</a><br /></td></tr>
+<tr class="separator:aa19b9d1885d166f24557a23e1612b2af inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d653f4e96217b478314dbabd3fd3d1c inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">update_quantities</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)=0</td></tr>
+<tr class="memdesc:a7d653f4e96217b478314dbabd3fd3d1c inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the time integration quantaties (i.e., \(x\), \(v\), and \(a\)).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">More...</a><br /></td></tr>
 <tr class="separator:a7d653f4e96217b478314dbabd3fd3d1c inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af69b612efd4bd4ceee5b8c05a8b023cc inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">x_tilde</a> () const =0</td></tr>
 <tr class="memdesc:af69b612efd4bd4ceee5b8c05a8b023cc inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the predicted solution to be used in the inertia term \((x-\tilde{x})^TM(x-\tilde{x})\).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">More...</a><br /></td></tr>
@@ -211,8 +219,16 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ad34ead24a22cb3aaf95daacefeddf40c inherit pro_attribs_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00009">9</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
+<div class="textblock"><p >Implicit Euler time integrator of a second order ODE (equivently a system of coupled first order ODEs). </p>
+<p class="formulaDsp">
+\[
+    x^{t+1} = x^t + \Delta t v^{t+1}\\
+    v^{t+1} = v^t + \Delta t a^{t+1}
+\]
+</p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Backward_Euler_method">https://en.wikipedia.org/wiki/Backward_Euler_method</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00015">15</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0f1f63ab878f9254fbfa62da0d8d59e1" name="a0f1f63ab878f9254fbfa62da0d8d59e1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f1f63ab878f9254fbfa62da0d8d59e1">&#9670;&nbsp;</a></span>ImplicitEuler()</h2>
@@ -237,7 +253,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00012">12</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00018">18</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
 
 </div>
 </div>
@@ -266,11 +282,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Compute the acceleration scaling used to scale forces when integrating a second order ODE. </p>
-<dl class="section return"><dt>Returns</dt><dd>value of the acceleration scaling </dd></dl>
-
+<p class="formulaDsp">
+\[
+    \Delta t^2
+\]
+</p>
+ 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00022">22</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00018">18</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00058">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
 
@@ -299,20 +319,24 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<pre class="fragment">@brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\$.
 
-@param x_prev previous value for the solution
-@param v_prev previous value for the velocity
-@param a_prev previous value for the acceleration
-@param dt time step size
-</pre><p> virtual void init(const Eigen::VectorXd &amp;x_prev, const Eigen::VectorXd &amp;v_prev, const Eigen::VectorXd &amp;a_prev, double dt);</p>
-<pre class="fragment">@brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\$).
+<p>Update the time integration quantaties (i.e., \(x\), \(v\), and \(a\)). </p>
+<p class="formulaDsp">
+\[
+    v^{t+1} = \frac{1}{\Delta t} (x - x^t)\\
+    a^{t+1} = \frac{1}{\Delta t} (v - v^t)
+\]
+</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>new solution vector </td></tr>
+  </table>
+  </dd>
+</dl>
 
-@param x new solution vector
-</pre> 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00009">9</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00005">5</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00058">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00087">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
@@ -342,11 +366,16 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Compute the predicted solution to be used in the inertia term \((x-\tilde{x})^TM(x-\tilde{x})\). </p>
-<dl class="section return"><dt>Returns</dt><dd>value for $\tilde{x}$ </dd></dl>
+<p class="formulaDsp">
+\[
+    \tilde{x} = x^t + \Delta t v^t
+\]
+</p>
+<dl class="section return"><dt>Returns</dt><dd>value for \(\tilde{x}\) </dd></dl>
 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00017">17</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00013">13</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00058">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00087">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
