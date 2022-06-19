@@ -16,71 +16,47 @@ namespace polyfem::time_integrator
 		ImplicitTimeIntegrator() {}
 		virtual ~ImplicitTimeIntegrator() = default;
 
-		///
 		/// @brief Set the time integrator parameters from a json object.
-		///
 		/// @param params json containing parameters specific to each time integrator
-		///
 		virtual void set_parameters(const nlohmann::json &params) {}
 
-		///
 		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
-		///
 		/// @param x_prev previous value for the solution
 		/// @param v_prev previous value for the velocity
 		/// @param a_prev previous value for the acceleration
 		/// @param dt time step size
-		///
 		virtual void init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt);
 
-		///
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
-		///
 		/// @param x new solution vector
-		///
 		virtual void update_quantities(const Eigen::VectorXd &x) = 0;
 
-		///
 		/// @brief Compute the predicted solution to be used in the inertia term \f$(x-\tilde{x})^TM(x-\tilde{x})\f$.
-		///
 		/// @return value for \f$\tilde{x}\f$
-		///
 		virtual Eigen::VectorXd x_tilde() const = 0;
 
-		///
 		/// @brief Compute the acceleration scaling used to scale forces when integrating a second order ODE.
-		///
 		/// @return value of the acceleration scaling
-		///
 		virtual double acceleration_scaling() const = 0;
 
 		/// @brief Access the time step size.
 		const double &dt() const { return _dt; }
 
-		///
 		/// @brief Save the values of \$x\$, \f$v\f$, and \f$a\f$.
-		///
 		/// @param x_path path for the output file containing \f$x\f$, if the extension is `.txt`
 		///               then it will write an ASCII file else if the extension is `.bin` it will
 		///               write a binary file.
 		/// @param v_path same as `x_path`, but for saving \f$v\f$
 		/// @param a_path same as `x_path`, but for saving \f$a\f$
-		///
 		virtual void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
 
-		///
 		/// @brief Factory method for constructing implicit time integrators from the name of the integrator.
-		///
 		/// @param name name of the type of ImplicitTimeIntegrator to construct
 		/// @return new implicit time integrator of type specfied by name
-		///
 		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const std::string &name);
 
-		///
 		/// @brief Get a vector of the names of possible ImplicitTimeIntegrators
-		///
 		/// @return names in no particular order
-		///
 		static const std::vector<std::string> &get_time_integrator_names();
 
 		/// Get the most recent previous solution value.

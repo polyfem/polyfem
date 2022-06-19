@@ -15,49 +15,36 @@ namespace polyfem::time_integrator
 	public:
 		ImplicitNewmark() {}
 
-		///
 		/// @brief Set the `gamma` and `beta` parameters from a json object.
-		///
 		/// @param params json containing `{"gamma": 0.5, "beta": 0.25}`
-		///
 		void set_parameters(const nlohmann::json &params) override;
 
-		///
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
-		///
 		/// @param x new solution vector
-		///
 		void update_quantities(const Eigen::VectorXd &x) override;
 
-		///
 		/// @brief Compute the predicted solution to be used in the inertia term \f$(x-\tilde{x})^TM(x-\tilde{x})\f$.
-		///
 		/// \f[
 		/// 	\tilde{x} = x^t + \Delta t (v^t + (0.5 - \beta) \Delta t a^t)
 		/// \f]
-		///
 		/// @return value for \f$\tilde{x}\f$
-		///
 		Eigen::VectorXd x_tilde() const override;
 
-		///
 		/// @brief Compute the acceleration scaling used to scale forces when integrating a second order ODE.
-		///
 		/// \f[
 		/// 	\beta \Delta t^2
 		/// \f]
-		///
 		double acceleration_scaling() const override;
 
-		/// \f$\beta\f$ parameter for blending accelerations in the solution update.
+		/// @brief \f$\beta\f$ parameter for blending accelerations in the solution update.
 		double beta() const { return m_beta; }
-		/// \f$\gamma\f$ parameter for blending accelerations in the velocity update.
+		/// @brief \f$\gamma\f$ parameter for blending accelerations in the velocity update.
 		double gamma() const { return m_gamma; }
 
 	protected:
-		/// \f$\beta\f$ parameter for blending accelerations in the solution update.
+		/// @brief \f$\beta\f$ parameter for blending accelerations in the solution update.
 		double m_beta = 0.25;
-		/// \f$\gamma\f$ parameter for blending accelerations in the velocity update.
+		/// @brief \f$\gamma\f$ parameter for blending accelerations in the velocity update.
 		double m_gamma = 0.5;
 	};
 } // namespace polyfem::time_integrator
