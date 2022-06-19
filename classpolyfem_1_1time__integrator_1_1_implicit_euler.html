@@ -226,9 +226,9 @@ Additional Inherited Members</h2></td></tr>
     v^{t+1} = v^t + \Delta t a^{t+1}
 \]
 </p>
-<dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Backward_Euler_method">https://en.wikipedia.org/wiki/Backward_Euler_method</a> </dd></dl>
+ <dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Backward_Euler_method">https://en.wikipedia.org/wiki/Backward_Euler_method</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00015">15</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00013">13</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0f1f63ab878f9254fbfa62da0d8d59e1" name="a0f1f63ab878f9254fbfa62da0d8d59e1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f1f63ab878f9254fbfa62da0d8d59e1">&#9670;&nbsp;</a></span>ImplicitEuler()</h2>
@@ -253,7 +253,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00018">18</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_euler_8hpp_source.html#l00016">16</a> of file <a class="el" href="_implicit_euler_8hpp_source.html">ImplicitEuler.hpp</a>.</p>
 
 </div>
 </div>
@@ -292,7 +292,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00018">18</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00058">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
 
 </div>
 </div>
@@ -327,7 +327,7 @@ Additional Inherited Members</h2></td></tr>
     a^{t+1} = \frac{1}{\Delta t} (v - v^t)
 \]
 </p>
-<dl class="params"><dt>Parameters</dt><dd>
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>new solution vector </td></tr>
   </table>
@@ -338,7 +338,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00005">5</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00058">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00087">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00067">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
 </div>
 </div>
@@ -371,13 +371,13 @@ Additional Inherited Members</h2></td></tr>
     \tilde{x} = x^t + \Delta t v^t
 \]
 </p>
-<dl class="section return"><dt>Returns</dt><dd>value for \(\tilde{x}\) </dd></dl>
+ <dl class="section return"><dt>Returns</dt><dd>value for \(\tilde{x}\) </dd></dl>
 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_euler_8cpp_source.html#l00013">13</a> of file <a class="el" href="_implicit_euler_8cpp_source.html">ImplicitEuler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00058">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00087">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
 </div>
 </div>
