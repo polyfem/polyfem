@@ -357,9 +357,11 @@ namespace polyfem::mesh
 		append_selections(
 			jmesh["volume_selection"], bbox, num_in_cells,
 			num_in_cells + cells.rows(), volume_selections);
+		if (jmesh["volume_selection"].is_object() && jmesh["volume_selection"].size() == 1 && jmesh["volume_selection"].contains("id_offset"))
+			for (int &id : volume_ids)
+				id += jmesh["volume_selection"]["id_offset"].get<int>();
 		volume_selections.push_back(std::make_shared<SpecifiedSelection>(
-			std::vector<int>(volume_ids.data(), volume_ids.data() + volume_ids.size()),
-			num_in_cells, num_in_cells + cells.rows()));
+			volume_ids, num_in_cells, num_in_cells + cells.rows()));
 
 		////////////////////////////////////////////////////////////////////////////
 

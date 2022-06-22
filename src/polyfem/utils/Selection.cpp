@@ -32,17 +32,30 @@ namespace polyfem
 			const size_t start_element_id,
 			const size_t end_element_id)
 		{
+			if (!selection.contains("id"))
+			{
+				logger().error("Selection does not contain an id field: {}", selection.dump());
+				throw std::runtime_error("Selection id not found");
+			}
+
 			std::shared_ptr<Selection> res = nullptr;
 			if (selection.contains("box"))
-				res = std::make_shared<BoxSelection>(selection, mesh_bbox);
+				res = std::make_shared<BoxSelection>(selection, mesh_bbox, start_element_id, end_element_id);
 			else if (selection.contains("center"))
-				res = std::make_shared<SphereSelection>(selection, mesh_bbox);
+				res = std::make_shared<SphereSelection>(selection, mesh_bbox, start_element_id, end_element_id);
 			else if (selection.contains("axis"))
-				res = std::make_shared<AxisPlaneSelection>(selection, mesh_bbox);
+				res = std::make_shared<AxisPlaneSelection>(selection, mesh_bbox, start_element_id, end_element_id);
 			else if (selection.contains("normal"))
-				res = std::make_shared<PlaneSelection>(selection, mesh_bbox);
-			else
+				res = std::make_shared<PlaneSelection>(selection, mesh_bbox, start_element_id, end_element_id);
+			else if (selection["id"].is_string()) // assume ID is a file path
+				res = std::make_shared<FileSelection>(selection["id"], start_element_id, end_element_id, selection.value("id_offset", 0));
+			else if (selection["id"].is_number_integer()) // assume ID is a file path
+				res = std::make_shared<UniformSelection>(selection["id"], start_element_id, end_element_id);
+			else if (selection["id"].is_string()) // assume ID is a file path
+			{
 				logger().error("Selection not recognized: {}", selection.dump());
+				throw std::runtime_error("Selection not recognized");
+			}
 
 			return res;
 		}
@@ -228,7 +241,8 @@ namespace polyfem
 		FileSelection::FileSelection(
 			const std::string &file_path,
 			const size_t start_element_id,
-			const size_t end_element_id)
+			const size_t end_element_id,
+			const int id_offset)
 			: SpecifiedSelection(std::vector<int>(), start_element_id, end_element_id)
 		{
 			std::ifstream file(file_path);
@@ -245,7 +259,9 @@ namespace polyfem
 			while (std::getline(file, line))
 			{
 				assert(i < this->ids_.size());
-				std::istringstream(line) >> this->ids_[i++];
+				int id;
+				std::istringstream(line) >> id;
+				this->ids_[i++] = id + id_offset;
 			}
 
 			if (i != this->ids_.size())

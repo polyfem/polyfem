@@ -137,7 +137,8 @@ namespace polyfem
 			FileSelection(
 				const std::string &file_path,
 				const size_t start_element_id = 0,
-				const size_t end_element_id = std::numeric_limits<size_t>::max());
+				const size_t end_element_id = std::numeric_limits<size_t>::max(),
+				const int id_offset = 0);
 		};
 	} // namespace utils
 } // namespace polyfem
