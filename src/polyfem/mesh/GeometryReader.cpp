@@ -137,7 +137,7 @@ namespace polyfem::mesh
 		// TODO: set default boundary ids to the side of the cube thing per mesh
 		if (surface_selections.size() == 0)
 		{
-			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+			const double boundary_id_threshold = mesh->is_volume() ? 1e-3 : 1e-7;
 			mesh->compute_boundary_ids(boundary_id_threshold);
 		}
 

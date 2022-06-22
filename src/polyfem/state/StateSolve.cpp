@@ -1006,7 +1006,7 @@ namespace polyfem
 
 			return 1;
 		}
-		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean")
+		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean" || formulation() == "Stokes")
 		{
 			Eigen::MatrixXd test_func;
 			if (problem_dim == 2)
@@ -1205,6 +1205,9 @@ namespace polyfem
 			for (int k = 0; k < b.size(); k++)
 				b_periodic(index_map(k)) += b(k);
 
+			for (int k : boundary_nodes)
+				b_periodic(index_map(k)) = b(k); 
+
 			std::swap(b, b_periodic);
 		}
 		
@@ -1213,12 +1216,12 @@ namespace polyfem
 		{
 			if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
 			{
-				if (assembler.is_mixed(formulation()))
-				{
-					logger().error("Pure periodic without Dirichlet not supported for mixed formulation!");
-					return;
-				}
-				else
+				// if (assembler.is_mixed(formulation()))
+				// {
+				// 	logger().error("Pure periodic without Dirichlet not supported for mixed formulation!");
+				// 	return;
+				// }
+				// else
 					logger().info("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
 				
 				n_lagrange_multiplier = remove_pure_periodic_singularity(A);
