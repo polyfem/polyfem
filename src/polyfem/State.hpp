@@ -93,6 +93,9 @@ namespace polyfem
 		/// @param[in] output_dir output directory
 		void init(const json &args, const std::string &output_dir = "");
 
+		/// initialize time settings if args contains "time"
+		void init_time();
+
 		/// main input arguments containing all defaults
 		json args;
 
@@ -135,8 +138,6 @@ namespace polyfem
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
 	public:
-		void init_timesteps();
-
 		/// Directory for output files
 		std::string output_dir;
 		/// density of the input, default=1.
@@ -428,7 +429,7 @@ namespace polyfem
 			Eigen::MatrixXi &boundary_triangles) const;
 
 		/// checks if vertex is obstacle
-		/// @param[in] vi vertex indes
+		/// @param[in] vi vertex index
 		/// @return if vertex is obstalce
 		bool is_obstacle_vertex(const size_t vi) const
 		{
@@ -580,13 +581,13 @@ namespace polyfem
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index elemnt indes
+		/// @param[in] el_index element index
 		/// @param[in] local_pts points in the reference element
 		/// @param[out] result output
 		/// @param[out] result_grad output gradients
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index elemnt indes
+		/// @param[in] el_index element index
 		/// @param[in] local_pts points in the reference element
 		/// @param[in] fun function to used
 		/// @param[out] result output
@@ -594,7 +595,7 @@ namespace polyfem
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 		/// interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index elemnt indes
+		/// @param[in] el_index element index
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		/// @param[in] bases basis function
 		/// @param[in] local_pts points in the reference element
@@ -736,10 +737,14 @@ namespace polyfem
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
 		/// saves a timestep
 		/// @param[in] time time in secs
-		/// @param[in] t time indes
+		/// @param[in] t time index
 		/// @param[in] t0 initial time
 		/// @param[in] dt delta t
 		void save_timestep(const double time, const int t, const double t0, const double dt);
+		/// saves a subsolve when save_solve_sequence_debug is true
+		/// @param[in] i sub solve index
+		/// @param[in] t time index
+		void save_subsolve(const int i, const int t);
 
 		/// samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)

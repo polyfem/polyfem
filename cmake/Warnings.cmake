@@ -40,7 +40,7 @@ set(MY_FLAGS
 		-Werror=pointer-to-int-cast
 
 		-Wno-unused-variable
-		-Wunused-but-set-variable
+		-Wno-unused-but-set-variable
 		-Wno-unused-parameter
 
 		#-Weffc++

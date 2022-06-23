@@ -98,185 +98,185 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 
 		this->args = R"({
-						"common": "",
-						"root_path": "",
+			"common": "",
+			"root_path": "",
 
-						"geometry": null,
+			"geometry": null,
 
-					    "space": {
-        					"discr_order": 1,
-        					"pressure_discr_order": 1,
+			"space": {
+				"discr_order": 1,
+				"pressure_discr_order": 1,
 
-        					"use_p_ref": false,
+				"use_p_ref": false,
 
-        					"advanced": {
-            					"discr_order_max": 4,
+				"advanced": {
+					"discr_order_max": 4,
 
-								"serendipity": false,
-								"isoparametric": false,
-								"use_spline": false,
+					"serendipity": false,
+					"isoparametric": false,
+					"use_spline": false,
 
-								"bc_method": "lsq",
+					"bc_method": "lsq",
 
-								"n_boundary_samples": -1,
-								"quadrature_order": -1,
+					"n_boundary_samples": -1,
+					"quadrature_order": -1,
 
-								"poly_bases": "MFSHarmonic",
-								"integral_constraints": 2,
-								"n_harmonic_samples": 10,
-								"force_no_ref_for_harmonic": false,
+					"poly_bases": "MFSHarmonic",
+					"integral_constraints": 2,
+					"n_harmonic_samples": 10,
+					"force_no_ref_for_harmonic": false,
 
-								"B": 3,
-								"h1_formula": false,
+					"B": 3,
+					"h1_formula": false,
 
-								"count_flipped_els": true
-        					}
-    					},
+					"count_flipped_els": true
+				}
+			},
 
-    					"time": null,
+			"time": null,
 
-						"contact": {
-        					"enabled": false,
-        					"dhat": 1e-3,
-        					"dhat_percentage": 0.8,
-        					"epsv": 1e-3,
+			"contact": {
+				"enabled": false,
+				"dhat": 1e-3,
+				"dhat_percentage": 0.8,
+				"epsv": 1e-3,
 
-							"friction_coefficient": 0
-    					},
+				"friction_coefficient": 0
+			},
 
-						"solver": {
-							"linear": {
-								"solver": "",
-								"precond": ""
-							},
+			"solver": {
+				"linear": {
+					"solver": "",
+					"precond": ""
+				},
 
-							"nonlinear": {
-								"solver" : "newton",
-								"f_delta" : 1e-10,
-								"grad_norm" : 1e-8,
-								"max_iterations" : 1000,
-								"use_grad_norm" : true,
-								"relative_gradient" : false,
+				"nonlinear": {
+					"solver" : "newton",
+					"f_delta" : 1e-10,
+					"grad_norm" : 1e-8,
+					"max_iterations" : 1000,
+					"use_grad_norm" : true,
+					"relative_gradient" : false,
 
-								"line_search": {
-									"method" : "backtracking",
-									"use_grad_norm_tol" : 1e-4
-								}
-							},
+					"line_search": {
+						"method" : "backtracking",
+						"use_grad_norm_tol" : 1e-4
+					}
+				},
 
-							"augmented_lagrangian" : {
-								"initial_weight" : 1e6,
-								"max_weight" : 1e11,
+				"augmented_lagrangian" : {
+					"initial_weight" : 1e6,
+					"max_weight" : 1e11,
 
-								"force" : false
-							},
+					"force" : false
+				},
 
-							"contact": {
-								"CCD" : {
-									"broad_phase" : "hash_grid",
-									"tolerance" : 1e-6,
-									"max_iterations" : 1e6
-								},
-								"friction_iterations" : 1,
-								"friction_convergence_tol": 1e-2,
-								"barrier_stiffness": "adaptive",
-								"lagged_damping_weight": 0
-							},
+				"contact": {
+					"CCD" : {
+						"broad_phase" : "hash_grid",
+						"tolerance" : 1e-6,
+						"max_iterations" : 1e6
+					},
+					"friction_iterations" : 1,
+					"friction_convergence_tol": 1e-2,
+					"barrier_stiffness": "adaptive",
+					"lagged_damping_weight": 0
+				},
 
-							"ignore_inertia" : false,
+				"ignore_inertia" : false,
 
-							"advanced": {
-								"cache_size" : 900000,
-								"lump_mass_matrix" : false
-							}
-						},
+				"advanced": {
+					"cache_size" : 900000,
+					"lump_mass_matrix" : false
+				}
+			},
 
-						"materials" : null,
+			"materials" : null,
 
-						"boundary_conditions": {
-							"rhs": null,
-							"dirichlet_boundary": [],
-							"neumann_boundary": [],
-							"pressure_boundary": [],
-							"obstacle_displacements": []
-						},
+			"boundary_conditions": {
+				"rhs": null,
+				"dirichlet_boundary": [],
+				"neumann_boundary": [],
+				"pressure_boundary": [],
+				"obstacle_displacements": []
+			},
 
-						"initial_conditions": {
-							"solution": null,
-							"velocity": null,
-							"acceleration": null
-						},
+			"initial_conditions": {
+				"solution": null,
+				"velocity": null,
+				"acceleration": null
+			},
 
-						"output": {
-							"json" : "",
+			"output": {
+				"json" : "",
 
-							"paraview" : {
-								"file_name" : "",
-								"vismesh_rel_area" : 0.00001,
+				"paraview" : {
+					"file_name" : "",
+					"vismesh_rel_area" : 0.00001,
 
-								"skip_frame" : 1,
+					"skip_frame" : 1,
 
-								"high_order_mesh" : true,
+					"high_order_mesh" : true,
 
-								"volume" : true,
-								"surface" : false,
-								"wireframe" : false,
+					"volume" : true,
+					"surface" : false,
+					"wireframe" : false,
 
-								"options" : {
-									"material" : false,
-									"body_ids" : false,
-									"contact_forces" : false,
-									"friction_forces" : false,
-									"velocity" : false,
-									"acceleration" : false
-								},
+					"options" : {
+						"material" : false,
+						"body_ids" : false,
+						"contact_forces" : false,
+						"friction_forces" : false,
+						"velocity" : false,
+						"acceleration" : false
+					},
 
-								"reference": {
-									"solution": null,
-									"gradient": null
-								}
-							},
+					"reference": {
+						"solution": null,
+						"gradient": null
+					}
+				},
 
-							"data" : {
-								"solution" : "",
-								"full_mat" : "",
-								"stiffness_mat" : "",
-								"solution_mat" : "",
-								"stress_mat" : "",
-								"u_path" : "",
-								"v_path" : "",
-								"a_path" : "",
-								"mises" : "",
-								"nodes" : ""
-							},
+				"data" : {
+					"solution" : "",
+					"full_mat" : "",
+					"stiffness_mat" : "",
+					"solution_mat" : "",
+					"stress_mat" : "",
+					"u_path" : "",
+					"v_path" : "",
+					"a_path" : "",
+					"mises" : "",
+					"nodes" : ""
+				},
 
-							"advanced": {
-								"timestep_prefix" : "step_",
-								"sol_on_grid" : -1,
+				"advanced": {
+					"timestep_prefix" : "step_",
+					"sol_on_grid" : -1,
 
-								"compute_error" : true,
+					"compute_error" : true,
 
-								"sol_at_node" : -1,
+					"sol_at_node" : -1,
 
-								"vis_boundary_only" : false,
+					"vis_boundary_only" : false,
 
-								"curved_mesh_size" : false,
-								"save_solve_sequence_debug" : false,
-								"save_time_sequence" : true,
-								"save_nl_solve_sequence" : false,
+					"curved_mesh_size" : false,
+					"save_solve_sequence_debug" : false,
+					"save_time_sequence" : true,
+					"save_nl_solve_sequence" : false,
 
-								"spectrum" : false
-							}
-						},
+					"spectrum" : false
+				}
+			},
 
-						"input": {
-							"data" : {
-								"u_path" : "",
-								"v_path" : "",
-								"a_path" : ""
-							}
-						}
-					})"_json;
+			"input": {
+				"data" : {
+					"u_path" : "",
+					"v_path" : "",
+					"a_path" : ""
+				}
+			}
+		})"_json;
 
 		this->args["solver"]["linear"]["solver"] = LinearSolver::defaultSolver();
 		this->args["solver"]["linear"]["precond"] = LinearSolver::defaultPrecond();
@@ -333,28 +333,7 @@ namespace polyfem
 		this->args.merge_patch(args_in);
 		has_dhat = args_in["contact"].contains("dhat");
 
-		if (!args["time"].is_null())
-		{
-			const auto time_default = R"({
-				"t0": 0,
-				"tend": -1,
-				"dt": -1,
-				"time_steps": 10,
-
-				"integrator": "ImplicitEuler",
-				"newmark": {
-					"gamma": 0.5,
-					"beta": 0.25
-				},
-				"BDF": {
-					"steps": 1
-				}
-			})"_json;
-
-			const auto tmp = args["time"];
-			args["time"] = time_default;
-			args["time"].merge_patch(tmp);
-		}
+		init_time();
 
 		if (this->args["contact"]["enabled"])
 		{
@@ -419,6 +398,96 @@ namespace polyfem
 
 		// Save output directory and resolve output paths dynamically
 		this->output_dir = output_dir;
+	}
+
+	void State::init_time()
+	{
+		if (!is_param_valid(args, "time"))
+			return;
+
+		const json time_default = R"({
+			"t0": 0,
+			"tend": null,
+			"dt": null,
+			"time_steps": null,
+
+			"integrator": "ImplicitEuler",
+			"newmark": {
+				"gamma": 0.5,
+				"beta": 0.25
+			},
+			"BDF": {
+				"steps": 1
+			}
+		})"_json;
+
+		check_for_unknown_args(time_default, args["time"], "/time");
+
+		const auto tmp = args["time"];
+		args["time"] = time_default;
+		args["time"].merge_patch(tmp);
+
+		// from "tend", "dt", "time_steps" only two can be used at a time
+		const int num_valid = is_param_valid(args["time"], "tend")
+							  + is_param_valid(args["time"], "dt")
+							  + is_param_valid(args["time"], "time_steps");
+		if (num_valid != 2)
+		{
+			logger().error("Exactly two of (tend, dt, time_steps) must be specified");
+			throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
+		}
+
+		const double t0 = args["time"]["t0"];
+		double tend, dt;
+		int time_steps;
+		if (is_param_valid(args["time"], "tend"))
+		{
+			tend = args["time"]["tend"];
+			assert(tend > t0);
+			if (is_param_valid(args["time"], "dt"))
+			{
+				dt = args["time"]["dt"];
+				assert(dt > 0);
+				time_steps = int(ceil((tend - t0) / dt));
+				assert(time_steps > 0);
+			}
+			else if (is_param_valid(args["time"], "time_steps"))
+			{
+				time_steps = args["time"]["time_steps"];
+				assert(time_steps > 0);
+				dt = (tend - t0) / time_steps;
+				assert(dt > 0);
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+		else if (is_param_valid(args["time"], "dt"))
+		{
+			// tend is already confirmed to be invalid, so time_steps must be valid
+			assert(is_param_valid(args["time"], "time_steps"));
+
+			dt = args["time"]["dt"];
+			assert(dt > 0);
+
+			time_steps = args["time"]["time_steps"];
+			assert(time_steps > 0);
+
+			tend = t0 + time_steps * dt;
+		}
+		else
+		{
+			// tend and dt are already confirmed to be invalid
+			assert(false);
+		}
+
+		// Store these for use later
+		args["time"]["tend"] = tend;
+		args["time"]["dt"] = dt;
+		args["time"]["time_steps"] = time_steps;
+
+		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 	}
 
 } // namespace polyfem
