@@ -138,8 +138,8 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     w.setZero(rhs.rows(), rhs.cols());
     auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
+    auto A_tmp = A;
     {
-        auto A_tmp = A;
         prefactorize(*solver, A_tmp, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
     }
     for (int k = 0; k < rhs.cols(); k++)
@@ -153,7 +153,7 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
         w.col(k) = x;
     }
 
-    const auto error = (A * w - rhs).norm();
+    const auto error = (A_tmp * w - rhs).norm() / rhs.norm();
     if (error > 1e-4)
         logger().error("Solver error: {}", error);
     else
@@ -182,16 +182,19 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     for (int i = 0; i < C_H.rows(); i++)
         for (int j = 0; j < C_H.cols(); j++)
             C_H(i, j) = diff.col(i).transpose() * stiffness * diff.col(j);
-    double volume = 0;
-    for (int e = 0; e < bases.size(); e++)
-    {
-        ElementAssemblyValues vals;
-        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+    
+    RowVectorNd min, max;
+    mesh->bounding_box(min, max);
+    double volume = 1;
+    for (int d = 0; d < min.size(); d++)
+        volume *= (max(d) - min(d));
+    // for (int e = 0; e < bases.size(); e++)
+    // {
+    //     ElementAssemblyValues vals;
+    //     // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+    //     ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
-        const Quadrature &quadrature = vals.quadrature;
-
-        volume += (quadrature.weights.array() * vals.det.array()).sum();
+    //     const Quadrature &quadrature = vals.quadrature;
 
     //     for (int q = 0; q < quadrature.weights.size(); q++)
     //     {
@@ -229,7 +232,7 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     //             }
     //         }
     //     }
-    }
+    // }
 
     C_H /= volume;
 }
@@ -350,19 +353,28 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
 	auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
 
-    Eigen::MatrixXd w(rhs.rows(), rhs.cols());
+    Eigen::MatrixXd w;
+    w.setZero(rhs.rows(), rhs.cols());
+
+    // dirichlet bc
+    for (int b : boundary_nodes_tmp)
+        rhs.row(b).setZero();
 
     // solve for w: \sum_k w_{ji,kk} - p_{i,j} = -delta_{ji}
+    StiffnessMatrix A_tmp;
     for (int k = 0; k < dim; k++)
     {
         Eigen::VectorXd b = rhs.col(k);
         Eigen::VectorXd x = w.col(k);
-        polysolve::dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+        A_tmp = A;
+        polysolve::dirichlet_solve(*solver, A_tmp, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
         solver->getInfo(solver_info);
         w.col(k) = x;
     }
 
-    const auto error = (A * w - rhs).norm();
+    auto res = A_tmp * w - rhs;
+
+    const auto error = res.norm() / rhs.norm();
     if (error > 1e-4)
         logger().error("Solver error: {}", error);
     else
@@ -373,14 +385,28 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
         Eigen::MatrixXd tmp;
         tmp.setZero(n_bases * dim, w.cols());
         for (int i = 0; i < n_bases * dim; i++)
-            tmp(i) = w(periodic_reduce_map(i));
+            for (int l = 0; l < w.cols(); l++)
+                tmp(i, l) = w(periodic_reduce_map(i), l);
 
         std::swap(tmp, w);
     }
 
+    for (int id = 0; id < w.cols(); id++)
+    {       
+        sol = w.block(0, id, n_bases * dim, 1);
+        pressure.setZero(n_pressure_bases, 1);
+        save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
+    }
+
     // compute homogenized permeability
     K_H.setZero(dim, dim);
-    double volume = 0;
+
+    RowVectorNd min, max;
+    mesh->bounding_box(min, max);
+    double volume = 1;
+    for (int d = 0; d < min.size(); d++)
+        volume *= (max(d) - min(d));
+
     for (int e = 0; e < bases.size(); e++)
     {
         ElementAssemblyValues vals;
@@ -412,8 +438,6 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
                     {
                         K_H(i, j) += (grads[q].row(k * dim + i).array() * grads[q].row(k * dim + j).array()).sum() * vals.det(q) * quadrature.weights(q);
                     }
-
-        volume += (vals.det.array() * quadrature.weights.array()).sum();
     }
 
     K_H /= volume;

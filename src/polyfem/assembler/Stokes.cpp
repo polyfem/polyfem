@@ -177,8 +177,10 @@ namespace polyfem
 
 		void StokesPressure::set_parameters(const json &params)
 		{
-			if (params.contains("delta"))
-				delta_ = params["delta"];
+			if (params.contains("delta1"))
+				delta1_ = params["delta1"];
+			if (params.contains("delta2"))
+				delta2_ = params["delta2"];
 		}
 
 		Eigen::Matrix<double, 1, 1>
@@ -192,9 +194,13 @@ namespace polyfem
 			const Eigen::MatrixXd &gradphii = vals.basis_values[i].grad_t_m;
 			const Eigen::MatrixXd &gradphij = vals.basis_values[j].grad_t_m;
 
+			const Eigen::MatrixXd &phii = vals.basis_values[i].val;
+			const Eigen::MatrixXd &phij = vals.basis_values[j].val;
+
 			for (int k = 0; k < gradphij.rows(); ++k)
 			{
-				res(0) -= gradphii.row(k).dot(gradphij.row(k)) * da(k);
+				res(0) += delta1_ * gradphii.row(k).dot(gradphij.row(k)) * da(k);
+				res(0) += delta2_ * phii(k) * phij(k) * da(k);
 			}
 
 			return res;

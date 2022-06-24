@@ -77,7 +77,8 @@ namespace polyfem
 			void set_parameters(const json &params);
 
 		private:
-			double delta_ = 0;
+			double delta1_ = 0;
+			double delta2_ = 0;
 		};
 	} // namespace assembler
 } // namespace polyfem

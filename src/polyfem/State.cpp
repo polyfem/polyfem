@@ -691,9 +691,11 @@ namespace polyfem
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
-		const bool has_pressure_stablization = args["materials"].contains("delta") && (args["materials"]["delta"].get<double>() > 0);
+		const bool has_pressure_stablization = (args["materials"].contains("delta2") && (args["materials"]["delta2"].get<double>() > 0));
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size || has_pressure_stablization;
 		use_avg_pressure = !has_neumann;
+		if (args["materials"].contains("use_avg_pressure"))
+			use_avg_pressure = args["materials"]["use_avg_pressure"];
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{

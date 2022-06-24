@@ -1,0 +1,50 @@
+{
+    "geometry": [
+        {
+            "mesh": "cube.mesh",
+            "n_refs": 0
+        }
+    ],
+    "space": {
+        "discr_order": 1,
+        "pressure_discr_order": 1
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        }
+    },
+    "boundary_conditions": {
+        "rhs": ["pi*exp(-(8*pi^2)/5)*sin(4*pi*x) - 8*pi^2*exp(-(4*pi^2)/5)*cos(2*pi*x)*sin(2*pi*y)", "pi*exp(-(8*pi^2)/5)*sin(4*pi*y) + 8*pi^2*exp(-(4*pi^2)/5)*cos(2*pi*y)*sin(2*pi*x)", 0],
+        "periodic_boundary": true,
+        "dirichlet_boundary": [
+            {
+                "id": 7,
+                "value": [
+                    "-(exp(-0.8000*pi^2)*(cos(pi)*sin(pi)^3 - cos(2*x*pi)*sin(2*y*pi)*pi^2))/pi^2",
+                    "(exp(-0.8000*pi^2)*(cos(pi)*sin(pi)^3 - cos(2*y*pi)*sin(2*x*pi)*pi^2))/pi^2",
+                    "0"
+                ]
+            }
+        ]
+    },
+    "materials": {
+        "type": "Stokes",
+        "viscosity": 1,
+        "delta2": 4e-4
+    },
+    "output": {
+        "paraview": {
+            "file_name": "debug.vtu",
+            "surface": true
+        },
+        "reference": {
+            "solution": [
+                "-(exp(-0.8000*pi^2)*(cos(pi)*sin(pi)^3 - cos(2*x*pi)*sin(2*y*pi)*pi^2))/pi^2",
+                "(exp(-0.8000*pi^2)*(cos(pi)*sin(pi)^3 - cos(2*y*pi)*sin(2*x*pi)*pi^2))/pi^2",
+                "0"
+            ],
+            "gradient": [0,0,0,0,0,0,0,0,0]
+        }
+    }
+}
