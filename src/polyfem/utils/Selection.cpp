@@ -49,9 +49,9 @@ namespace polyfem
 				res = std::make_shared<PlaneSelection>(selection, mesh_bbox, start_element_id, end_element_id);
 			else if (selection["id"].is_string()) // assume ID is a file path
 				res = std::make_shared<FileSelection>(selection["id"], start_element_id, end_element_id, selection.value("id_offset", 0));
-			else if (selection["id"].is_number_integer()) // assume ID is a file path
+			else if (selection["id"].is_number_integer()) // assume ID is uniform
 				res = std::make_shared<UniformSelection>(selection["id"], start_element_id, end_element_id);
-			else if (selection["id"].is_string()) // assume ID is a file path
+			else
 			{
 				logger().error("Selection not recognized: {}", selection.dump());
 				throw std::runtime_error("Selection not recognized");
