@@ -1,7 +1,8 @@
 name: Nightly
 
 on:
-  push:
+  schedule:
+    - cron: "0 4 * * *"
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
