@@ -97,7 +97,7 @@ var NAVTREEINDEX =
 "classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#afe517dea2b275b16c014ce35c7760ad2",
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a7af3a3023aedf0d05b1e3b21c63955a0",
 "classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html",
-"classpolyfem_1_1utils_1_1_file_selection.html#adc4b144ce90187469bb597b0709a808e",
+"classpolyfem_1_1utils_1_1_file_selection.html#a87dd610214d0eabd4b088344e0942d43",
 "classpolyfem_1_1utils_1_1_timer.html#aa209c21dcc5ce4f5c4b61759b675596d",
 "index.html#autotoc_md2",
 "namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2",
