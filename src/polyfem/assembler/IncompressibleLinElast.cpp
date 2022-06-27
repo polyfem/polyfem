@@ -14,7 +14,7 @@ namespace polyfem
 		{
 			assert(size_ == 2 || size_ == 3);
 
-			params_.add_multimaterial(index, params, size_ = 3);
+			params_.add_multimaterial(index, params, size_ == 3);
 
 			// std::cout<<mu_<<std::endl;
 			// std::cout<<lambda_<<std::endl;
