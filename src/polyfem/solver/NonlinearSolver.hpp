@@ -10,6 +10,8 @@
 
 #include <cppoptlib/solver/isolver.h>
 
+extern "C" size_t getPeakRSS();
+
 namespace cppoptlib
 {
 	template <typename ProblemType /*, int Ord*/>
@@ -38,6 +40,7 @@ namespace cppoptlib
 			use_gradient_norm = solver_params["use_grad_norm"];
 			normalize_gradient = solver_params["relative_gradient"];
 			use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
+			solver_info_log = solver_params.contains("solver_info_log") ? solver_params["solver_info_log"].get<bool>() : false;
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -75,6 +78,12 @@ namespace cppoptlib
 			// Set these to nan to indicate they have not been computed yet
 			double old_energy = std::nan("");
 
+			utils::Timer timer("non-linear solver", this->total_time);
+			timer.start();
+
+			utils::Timer timer_cumulative;
+			timer_cumulative.start();
+
 			{
 				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
 				objFunc.solution_changed(x);
@@ -109,7 +118,7 @@ namespace cppoptlib
 				return;
 			}
 
-			utils::Timer timer("non-linear solver", this->total_time);
+			Timer timer("non-linear solver", this->total_time);
 			timer.start();
 
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
@@ -150,6 +159,13 @@ namespace cppoptlib
 					m_error_code = ErrorCode::NanEncountered;
 					throw std::runtime_error("Gradient is nan; stopping");
 					break;
+				}
+
+				objFunc.save_to_file(x);
+				if (outfile.is_open())
+				{
+					outfile << energy << "," << grad_norm << "\n";
+					outfile.flush();
 				}
 
 				// ------------------------
@@ -246,6 +262,15 @@ namespace cppoptlib
 					name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
 					this->m_current.gradNorm, this->m_stop.gradNorm, rate, step);
 				++this->m_current.iterations;
+
+				timer_cumulative.stop();
+				this->cumulative_total_time += timer_cumulative.getElapsedTimeInSec();
+
+				update_solver_info();
+				if (solver_info_log)
+					std::cout << solver_info << std::endl;
+
+				timer_cumulative.start();
 
 				if (objFunc.remesh(x))
 					remesh_reset(objFunc, x);
@@ -360,11 +385,13 @@ namespace cppoptlib
 		ErrorCode m_error_code;
 		bool use_gradient_norm;
 		bool normalize_gradient;
+		bool solver_info_log;
 		double use_grad_norm_tol;
 
 		json solver_info;
 
 		double total_time;
+		double cumulative_total_time;
 		double grad_time;
 		double assembly_time;
 		double inverting_time;
@@ -400,10 +427,11 @@ namespace cppoptlib
 			solver_info["condition"] = crit.condition;
 			solver_info["use_gradient_norm"] = use_gradient_norm;
 			solver_info["relative_gradient"] = normalize_gradient;
+			solver_info["peak_memory"] = getPeakRSS() / (double)(1024 * 1024);
 
 			double per_iteration = crit.iterations ? crit.iterations : 1;
 
-			solver_info["total_time"] = total_time;
+			solver_info["total_time"] = std::max(cumulative_total_time, total_time);
 			solver_info["time_grad"] = grad_time / per_iteration;
 			solver_info["time_assembly"] = assembly_time / per_iteration;
 			solver_info["time_inverting"] = inverting_time / per_iteration;

@@ -33,9 +33,9 @@ namespace cppoptlib
 	protected:
 		virtual int default_descent_strategy() override { return 0; }
 		using Superclass::descent_strategy_name;
-		std::string descent_strategy_name(int descent_strategy) const override
+		std::string descent_strategy_name(int descent_strategy_) const override
 		{
-			switch (descent_strategy)
+			switch (descent_strategy_)
 			{
 			case 0:
 				return "Newton";
