@@ -21,6 +21,8 @@ namespace polyfem
 		class OBJReader
 		{
 		public:
+			OBJReader() = delete;
+
 			/// @brief Read a mesh from an ascii obj file
 			///
 			/// Fills in vertex positions, normals and texture coordinates. Mesh may
@@ -75,6 +77,26 @@ namespace polyfem
 				Eigen::MatrixXd &V,
 				Eigen::MatrixXi &E,
 				Eigen::MatrixXi &F);
+		};
+
+		class OBJWriter
+		{
+		public:
+			OBJWriter() = delete;
+
+			static bool save(
+				const std::string &path,
+				const Eigen::MatrixXd &v,
+				const Eigen::MatrixXi &e,
+				const Eigen::MatrixXi &f);
+
+			static bool save(
+				const std::string &path,
+				const Eigen::MatrixXd &v,
+				const Eigen::MatrixXi &f)
+			{
+				return save(path, v, Eigen::MatrixXi(), f);
+			}
 		};
 	} // namespace utils
 } // namespace polyfem

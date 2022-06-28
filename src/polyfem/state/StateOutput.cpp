@@ -49,11 +49,11 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 
-			save_vtu(resolve_output_path(fmt::format(step_name + "_{:d}.vtu", t)), time);
+			save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
 
 			save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
-				[step_name](int i) { return fmt::format(step_name + "_{:d}.vtm", i); },
+				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
 				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 		}
 	}
@@ -385,6 +385,24 @@ namespace polyfem
 
 					std::vector<int> loc_nodes;
 
+					bool is_follower = false;
+					if (!mesh3d.is_conforming())
+					{
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+							{
+								is_follower = true;
+								break;
+							}
+						}
+					}
+
+					if (is_follower)
+						continue;
+
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						auto &bs = b.bases[nodes(n)];
@@ -453,45 +471,6 @@ namespace polyfem
 				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 			}
 
-			//TODO Zach
-			// if (args["min_component"] > 0)
-			// {
-			// 	Eigen::SparseMatrix<int> adj;
-			// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
-			// 	Eigen::MatrixXi C, counts;
-			// 	igl::connected_components(adj, C, counts);
-
-			// 	std::vector<int> valid;
-			// 	const int min_count = args["min_component"];
-
-			// 	for (int i = 0; i < counts.size(); ++i)
-			// 	{
-			// 		if (counts(i) >= min_count)
-			// 		{
-			// 			valid.push_back(i);
-			// 		}
-			// 	}
-
-			// 	tris.clear();
-			// 	for (int i = 0; i < C.size(); ++i)
-			// 	{
-			// 		for (int v : valid)
-			// 		{
-			// 			if (v == C(i))
-			// 			{
-			// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-
-			// 	boundary_triangles.resize(tris.size(), 3);
-			// 	for (int i = 0; i < tris.size(); ++i)
-			// 	{
-			// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
-			// 	}
-			// }
-
 			if (boundary_triangles.rows() > 0)
 			{
 				igl::edges(boundary_triangles, boundary_edges);
@@ -544,15 +523,6 @@ namespace polyfem
 		}
 	}
 
-	std::string State::resolve_output_path(const std::string &path) const
-	{
-		if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
-		{
-			return path;
-		}
-		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
-	}
-
 	void State::save_json()
 	{
 		const std::string out_path = resolve_output_path(args["output"]["json"]);
@@ -593,8 +563,6 @@ namespace polyfem
 		logger().info("Saving json...");
 
 		j["args"] = args;
-
-		j["mesh_path"] = mesh_path();
 
 		j["geom_order"] = mesh->orders().size() > 0 ? mesh->orders().maxCoeff() : 1;
 		j["geom_order_min"] = mesh->orders().size() > 0 ? mesh->orders().minCoeff() : 1;
@@ -759,7 +727,7 @@ namespace polyfem
 		if (tend <= 0)
 			tend = 1;
 
-		if (!vis_mesh_path.empty())
+		if (!vis_mesh_path.empty() && args["time"].is_null())
 		{
 			save_vtu(vis_mesh_path, tend);
 		}
@@ -1134,7 +1102,8 @@ namespace polyfem
 			block->SetAttribute("name", "Volume");
 			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
 			dataset->SetAttribute("name", "data");
-			dataset->SetAttribute("file", fs_path.filename().c_str());
+			const std::string tmp(fs_path.filename().string());
+			dataset->SetAttribute("file", tmp.c_str());
 		}
 
 		if (export_surface)
@@ -1511,7 +1480,7 @@ namespace polyfem
 					}
 					else
 					{
-						Es(index) = mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+						Es(index) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
 						nus(index) = lambda / (lambda + 2.0 * mu);
 					}
 
@@ -1541,7 +1510,7 @@ namespace polyfem
 				rhos.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			writer.add_field("llambda", lambdas);
+			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
 			writer.add_field("E", Es);
 			writer.add_field("nu", nus);
@@ -1802,8 +1771,16 @@ namespace polyfem
 				params.lambda_mu(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i), lambda, mu);
 				lambdas(i) = lambda;
 				mus(i) = mu;
-				Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-				nus(i) = lambda / (2.0 * (lambda + mu));
+				if (mesh->is_volume())
+				{
+					Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+					nus(i) = lambda / (2.0 * (lambda + mu));
+				}
+				else
+				{
+					Es(i) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+					nus(i) = lambda / (lambda + 2.0 * mu);
+				}
 				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
 			}
 

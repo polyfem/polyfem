@@ -117,7 +117,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 		}
 
-		void PointBasedTensorProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void PointBasedTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 

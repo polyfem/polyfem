@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include "ProblemWithSolution.hpp"
 
 #include <vector>
@@ -10,7 +10,7 @@ namespace polyfem
 {
 	namespace problem
 	{
-		class ElasticProblem : public Problem
+		class ElasticProblem : public assembler::Problem
 		{
 		public:
 			ElasticProblem(const std::string &name);
@@ -18,15 +18,13 @@ namespace polyfem
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return true; }
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
-
-			int n_incremental_load_steps(const double diag) const override { return 1 / diag; }
 		};
 
-		class TorsionElasticProblem : public Problem
+		class TorsionElasticProblem : public assembler::Problem
 		{
 		public:
 			TorsionElasticProblem(const std::string &name);
@@ -34,15 +32,13 @@ namespace polyfem
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return true; }
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
 			bool is_constant_in_time() const override { return false; }
 
 			void set_parameters(const json &params) override;
-
-			int n_incremental_load_steps(const double diag) const override { return 10 * n_turns_; }
 
 		private:
 			double n_turns_ = 0.5;
@@ -51,7 +47,7 @@ namespace polyfem
 			RowVectorNd trans_;
 		};
 
-		class DoubleTorsionElasticProblem : public Problem
+		class DoubleTorsionElasticProblem : public assembler::Problem
 		{
 		public:
 			DoubleTorsionElasticProblem(const std::string &name);
@@ -59,9 +55,7 @@ namespace polyfem
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return true; }
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -83,19 +77,17 @@ namespace polyfem
 			RowVectorNd trans_1_;
 		};
 
-		class ElasticProblemZeroBC : public Problem
+		class ElasticProblemZeroBC : public assembler::Problem
 		{
 		public:
 			ElasticProblemZeroBC(const std::string &name);
 			bool is_rhs_zero() const override { return false; }
 
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return false; }
-
-			int n_incremental_load_steps(const double diag) const override { return 2 / diag; }
 		};
 
 		class ElasticProblemExact : public ProblemWithSolution
@@ -146,7 +138,7 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 		};
 
-		class GravityProblem : public Problem
+		class GravityProblem : public assembler::Problem
 		{
 		public:
 			GravityProblem(const std::string &name);
@@ -154,9 +146,7 @@ namespace polyfem
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return false; }
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -172,7 +162,7 @@ namespace polyfem
 			double force_ = 0.1;
 		};
 
-		class WalkProblem : public Problem
+		class WalkProblem : public assembler::Problem
 		{
 		public:
 			WalkProblem(const std::string &name);
@@ -180,9 +170,7 @@ namespace polyfem
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return true; }
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -192,8 +180,38 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 			bool is_time_dependent() const override { return true; }
 			bool is_constant_in_time() const override { return false; }
+		};
 
-			int n_incremental_load_steps(const double diag) const override { return 1 / diag; }
+		class ElasticCantileverExact : public assembler::Problem
+		{
+		public:
+			ElasticCantileverExact(const std::string &name);
+
+			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			bool is_rhs_zero() const override { return false; }
+
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+
+			bool has_exact_sol() const override { return true; }
+			void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			bool is_scalar() const override { return false; }
+
+			void set_parameters(const json &params) override;
+
+		private:
+			VectorNd eval_fun(const VectorNd &pt, const double t) const;
+			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const;
+			AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const;
+			int size_for(const Eigen::MatrixXd &pts) const { return is_scalar() ? 1 : pts.cols(); }
+
+			double singular_point_displacement;
+			double E;
+			double nu;
+			std::string formulation;
+			double length;
+			double width;
 		};
 	} // namespace problem
 } // namespace polyfem

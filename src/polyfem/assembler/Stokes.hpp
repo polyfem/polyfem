@@ -29,7 +29,7 @@ namespace polyfem
 			void set_size(const int size);
 			inline int size() const { return size_; }
 
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params);
 
 			void compute_norm_velocity(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const;
 			void compute_stress_tensor(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const;
@@ -55,7 +55,7 @@ namespace polyfem
 			inline int rows() const { return size_; }
 			inline int cols() const { return 1; }
 
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params) {}
 
 		private:
 			int size_ = 2;
@@ -81,7 +81,7 @@ namespace polyfem
 
 			inline int size() const { return 1; }
 
-			void set_parameters(const json &params) {}
+			void add_multimaterial(const int index, const json &params) {}
 		};
 	} // namespace assembler
 } // namespace polyfem

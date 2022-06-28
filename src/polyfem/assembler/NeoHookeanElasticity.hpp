@@ -42,8 +42,7 @@ namespace polyfem
 			void compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const;
 
 			//sets material params
-			void set_parameters(const json &params);
-			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+			void add_multimaterial(const int index, const json &params);
 			void set_params(const LameParameters &params) { params_ = params; }
 
 		private:

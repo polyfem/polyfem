@@ -15,9 +15,9 @@
 #include <igl/edges.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace polyfem
+namespace polyfem::mesh
 {
-	using namespace utils;
+	using namespace polyfem::utils;
 
 	void log_and_throw_error(const std::string &msg)
 	{
@@ -25,17 +25,33 @@ namespace polyfem
 		throw std::runtime_error(msg);
 	}
 
-	void mesh::load_geometry(
+	void read_fem_geometry(
 		const json &geometry,
 		const std::string &root_path,
 		std::unique_ptr<Mesh> &mesh,
-		Obstacle &obstacle,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
 		const std::vector<Eigen::MatrixXi> &_cells,
 		const bool non_conforming)
 	{
-		// TODO: use these values
+		// TODO: fix me for hdf5
+		// {
+		// 	int index = -1;
+		// 	for (int i = 0; i < names.size(); ++i)
+		// 	{
+		// 		if (names[i] == args["meshes"])
+		// 		{
+		// 			index = i;
+		// 			break;
+		// 		}
+		// 	}
+		// 	assert(index >= 0);
+		// 	if (vertices[index].cols() == 2)
+		// 		mesh = std::make_unique<polyfem::CMesh2D>();
+		// 	else
+		// 		mesh = std::make_unique<polyfem::Mesh3D>();
+		// 	mesh->build_from_matrices(vertices[index], cells[index]);
+		// }
 		assert(_names.empty());
 		assert(_vertices.empty());
 		assert(_cells.empty());
@@ -71,11 +87,14 @@ namespace polyfem
 			if (!complete_geometry["enabled"].get<bool>())
 				continue;
 
-			// TODO: handle loading obstacles
 			if (complete_geometry["is_obstacle"].get<bool>())
-				log_and_throw_error("Collision obstacles not implemented!");
+				continue;
 
-			load_mesh(
+			if (complete_geometry["type"] != "mesh")
+				log_and_throw_error(
+					fmt::format("Invalid geometry type \"{}\" for FEM mesh!", complete_geometry["type"]));
+
+			read_fem_mesh(
 				complete_geometry, root_path, vertices, cells, elements,
 				weights, num_faces, surface_selections, volume_selections);
 		}
@@ -112,10 +131,15 @@ namespace polyfem
 			for (const auto &selection : surface_selections)
 				if (selection->inside(face_id, p))
 					return selection->id(face_id);
-			return -1;
+			return std::numeric_limits<int>::max(); // default for no selected boundary
 		});
 
-		// TODO: default boundary ids are all -1
+		// TODO: set default boundary ids to the side of the cube thing per mesh
+		if (surface_selections.size() == 0)
+		{
+			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+			mesh->compute_boundary_ids(boundary_id_threshold);
+		}
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -129,7 +153,116 @@ namespace polyfem
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void mesh::load_mesh(
+	void read_obstacle_geometry(
+		const json &geometry,
+		const std::vector<json> &displacements,
+		const std::string &root_path,
+		const int dim,
+		Obstacle &obstacle,
+		const std::vector<std::string> &_names,
+		const std::vector<Eigen::MatrixXd> &_vertices,
+		const std::vector<Eigen::MatrixXi> &_cells,
+		const bool non_conforming)
+	{
+		// TODO: fix me for hdf5
+		// {
+		// 	int index = -1;
+		// 	for (int i = 0; i < names.size(); ++i)
+		// 	{
+		// 		if (names[i] == args["meshes"])
+		// 		{
+		// 			index = i;
+		// 			break;
+		// 		}
+		// 	}
+		// 	assert(index >= 0);
+		// 	if (vertices[index].cols() == 2)
+		// 		mesh = std::make_unique<polyfem::CMesh2D>();
+		// 	else
+		// 		mesh = std::make_unique<polyfem::Mesh3D>();
+		// 	mesh->build_from_matrices(vertices[index], cells[index]);
+		// }
+		assert(_names.empty());
+		assert(_vertices.empty());
+		assert(_cells.empty());
+
+		obstacle.clear();
+
+		if (geometry.empty())
+			return;
+
+		std::vector<json> geometries;
+		// Note you can add more types here, just add them to geometries
+		if (geometry.is_object())
+		{
+			geometries.push_back(geometry);
+		}
+		else if (geometry.is_array())
+		{
+			geometries = geometry.get<std::vector<json>>();
+		}
+
+		for (int i = 0; i < geometries.size(); i++)
+		{
+			json complete_geometry;
+			apply_default_geometry_parameters(
+				geometries[i], complete_geometry, fmt::format("/geometry[{}]", i));
+
+			if (!complete_geometry["is_obstacle"].get<bool>())
+				continue;
+
+			if (!complete_geometry["enabled"].get<bool>())
+				continue;
+
+			if (complete_geometry["type"] == "mesh")
+			{
+				Eigen::MatrixXd vertices;
+				Eigen::VectorXi codim_vertices;
+				Eigen::MatrixXi codim_edges;
+				Eigen::MatrixXi faces;
+				read_obstacle_mesh(
+					complete_geometry, root_path, vertices, codim_vertices,
+					codim_edges, faces);
+
+				vertices.conservativeResize(vertices.rows(), dim);
+
+				json displacement = "{\"value\":[0, 0, 0]}"_json;
+				if (is_param_valid(complete_geometry, "surface_selection"))
+				{
+					if (!complete_geometry["surface_selection"].is_number())
+						log_and_throw_error("Invalid surface_selection for obstable, needs to be an integer!");
+
+					const int id = complete_geometry["surface_selection"];
+					for (const json &disp : displacements)
+					{
+						// TODO: Add support for array of ints
+						if ((disp["id"].is_string() && disp["id"].get<std::string>() == "all")
+							|| (disp["id"].is_number_integer() && disp["id"].get<int>() == id))
+						{
+							displacement = disp;
+							break;
+						}
+					}
+				}
+
+				obstacle.append_mesh(
+					vertices, codim_vertices, codim_edges, faces, displacement);
+			}
+			else if (complete_geometry["type"] == "plane")
+			{
+				// TODO
+			}
+			else
+			{
+				log_and_throw_error(
+					fmt::format("Invalid geometry type \"{}\" for obstacle!", complete_geometry["type"]));
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+
+	void read_fem_mesh(
 		const json &jmesh,
 		const std::string &root_path,
 		Eigen::MatrixXd &in_vertices,
@@ -155,7 +288,7 @@ namespace polyfem
 
 		if (!read_success)
 			// error already logged in read_fem_mesh()
-			throw std::runtime_error(fmt::format("Unable to load mesh: {}", mesh_path));
+			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
 		else if (vertices.size() == 0)
 			log_and_throw_error(fmt::format("Mesh {} has zero vertices!", mesh_path));
 		else if (cells.size() == 0)
@@ -186,20 +319,23 @@ namespace polyfem
 
 		////////////////////////////////////////////////////////////////////////////
 
-		// TODO: Use force_linear_geometry does.
-		// if (!jmesh["advanced"]["force_linear_geometry"].get<bool>())
-		// {
+		if (jmesh["advanced"]["force_linear_geometry"].get<bool>())
+			log_and_throw_error("Option \"force_linear_geometry\" in geometry not implement yet!");
+
 		// Shift vertex ids in elements
 		for (auto &element : elements)
 			for (auto &id : element)
 				id += num_in_vertices;
 		in_elements.insert(in_elements.end(), elements.begin(), elements.end());
 		in_weights.insert(in_weights.end(), weights.begin(), weights.end());
-		// }
 
 		///////////////////////////////////////////////////////////////////////
 
 		const Selection::BBox bbox = {{vertices.colwise().minCoeff(), vertices.colwise().maxCoeff()}};
+
+		// TODO: use tolerences in the selection
+		// const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+		// mesh->compute_boundary_ids(boundary_id_threshold);
 
 		if (!jmesh["point_selection"].is_null())
 			logger().warn("Geometry point seleections are not implemented nor used!");
@@ -217,13 +353,17 @@ namespace polyfem
 
 		////////////////////////////////////////////////////////////////////////////
 
-		// Specified volume selection has priority over mesh's stored ids
-		append_selections(
-			jmesh["volume_selection"], bbox, num_in_cells,
-			num_in_cells + cells.rows(), volume_selections);
+		// If the selection is of the form {"id_offset": ...}
+		if (jmesh["volume_selection"].is_object() && jmesh["volume_selection"].size() == 1 && jmesh["volume_selection"].contains("id_offset"))
+			for (int &id : volume_ids)
+				id += jmesh["volume_selection"]["id_offset"].get<int>();
+		else
+			// Specified volume selection has priority over mesh's stored ids
+			append_selections(
+				jmesh["volume_selection"], bbox, num_in_cells,
+				num_in_cells + cells.rows(), volume_selections);
 		volume_selections.push_back(std::make_shared<SpecifiedSelection>(
-			std::vector<int>(volume_ids.data(), volume_ids.data() + volume_ids.size()),
-			num_in_cells, num_in_cells + cells.rows()));
+			volume_ids, num_in_cells, num_in_cells + cells.rows()));
 
 		////////////////////////////////////////////////////////////////////////////
 
@@ -239,16 +379,107 @@ namespace polyfem
 
 		if (jmesh["advanced"]["min_component"].get<int>() != -1)
 			log_and_throw_error("Option \"min_component\" in geometry not implement yet!");
+		// TODO:
+		// if (args["min_component"] > 0)
+		// {
+		// 	Eigen::SparseMatrix<int> adj;
+		// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
+		// 	Eigen::MatrixXi C, counts;
+		// 	igl::connected_components(adj, C, counts);
+
+		// 	std::vector<int> valid;
+		// 	const int min_count = args["min_component"];
+
+		// 	for (int i = 0; i < counts.size(); ++i)
+		// 	{
+		// 		if (counts(i) >= min_count)
+		// 		{
+		// 			valid.push_back(i);
+		// 		}
+		// 	}
+
+		// 	tris.clear();
+		// 	for (int i = 0; i < C.size(); ++i)
+		// 	{
+		// 		for (int v : valid)
+		// 		{
+		// 			if (v == C(i))
+		// 			{
+		// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+
+		// 	boundary_triangles.resize(tris.size(), 3);
+		// 	for (int i = 0; i < tris.size(); ++i)
+		// 	{
+		// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+		// 	}
+		// }
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void mesh::apply_default_geometry_parameters(
+	void read_obstacle_mesh(
+		const json &jmesh,
+		const std::string &root_path,
+		Eigen::MatrixXd &vertices,
+		Eigen::VectorXi &codim_vertices,
+		Eigen::MatrixXi &codim_edges,
+		Eigen::MatrixXi &faces)
+	{
+		if (!is_param_valid(jmesh, "mesh"))
+			log_and_throw_error(fmt::format("Mesh obstacle {} is mising a \"mesh\" field!", jmesh));
+
+		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
+
+		bool read_success = read_surface_mesh(
+			mesh_path, vertices, codim_vertices, codim_edges, faces);
+
+		if (!read_success)
+			// error already logged in read_fem_mesh()
+			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
+
+		////////////////////////////////////////////////////////////////////////////
+
+		transform_mesh_from_json(jmesh["transformation"], vertices);
+
+		if (jmesh["extract"].get<std::string>() == "edges" && faces.size() != 0)
+		{
+			Eigen::MatrixXi edges;
+			igl::edges(faces, edges);
+			faces.resize(0, 0);
+			codim_edges.conservativeResize(codim_edges.rows() + edges.rows(), 2);
+			codim_edges.bottomRows(edges.rows()) = edges;
+		}
+		else if (jmesh["extract"].get<std::string>() == "points")
+		{
+			codim_edges.resize(0, 0);
+			faces.resize(0, 0);
+			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
+		}
+		else if (jmesh["extract"].get<std::string>() == "volume")
+		{
+			log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+		}
+
+		if (jmesh["n_refs"].get<int>() != 0)
+		{
+			log_and_throw_error("Option \"n_refs\" in obstacles not implement yet!");
+			if (jmesh["advanced"]["refinement_location"].get<double>() != 0.5)
+				log_and_throw_error("Option \"refinement_location\" in obstacles not implement yet!");
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+
+	void apply_default_geometry_parameters(
 		const json &geometry_in,
 		json &geometry_out,
 		const std::string &path_prefix)
 	{
-		geometry_out = R"({
+		static const json mesh_defaults = R"({
 			"type": "mesh",
 			"mesh": null,
 			"is_obstacle": false,
@@ -278,13 +509,49 @@ namespace polyfem
 				"min_component": -1
 			}
 		})"_json;
-		check_for_unknown_args(geometry_out, geometry_in, path_prefix);
+
+		static const json obstacle_defaults = R"({
+			"type": "mesh",
+			"mesh": null,
+			"is_obstacle": true,
+			"enabled": true,
+
+			"transformation": {
+				"translation": [0.0, 0.0, 0.0],
+				"rotation": null,
+				"rotation_mode": "xyz",
+				"scale": [1.0, 1.0, 1.0],
+				"dimensions": null
+			},
+
+			"extract": "surface",
+
+			"surface_selection": null,
+
+			"n_refs": 0,
+
+			"advanced": {
+				"refinement_location": 0.5,
+				"normalize_mesh": false
+			}
+		})"_json;
+
+		if (geometry_in.contains("is_obstacle") && geometry_in["is_obstacle"].get<bool>())
+		{
+			check_for_unknown_args(obstacle_defaults, geometry_in, path_prefix);
+			geometry_out = obstacle_defaults;
+		}
+		else
+		{
+			check_for_unknown_args(mesh_defaults, geometry_in, path_prefix);
+			geometry_out = mesh_defaults;
+		}
 		geometry_out.merge_patch(geometry_in);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void mesh::transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices)
+	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices)
 	{
 		const int dim = vertices.cols();
 		assert(dim == 2 || dim == 3);
@@ -365,7 +632,7 @@ namespace polyfem
 
 	////////////////////////////////////////////////////////////////////////////////
 
-	void mesh::append_selections(
+	void append_selections(
 		const json &new_selections,
 		const Selection::BBox &bbox,
 		const size_t &start_element_id,
@@ -402,4 +669,4 @@ namespace polyfem
 		}
 	}
 
-} // namespace polyfem
+} // namespace polyfem::mesh

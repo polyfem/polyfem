@@ -32,7 +32,7 @@ namespace polyfem
 
 			//laplacian has no parameters.
 			//in case these are passes trough params
-			void set_parameters(const json &params) {}
+			void add_multimaterial(const int index, const json &params) {}
 		};
 	} // namespace assembler
 } // namespace polyfem

@@ -8,8 +8,34 @@ namespace polyfem
 {
 	using namespace utils;
 
-	namespace problem
+	namespace assembler
 	{
+		namespace
+		{
+			std::vector<json> flatten_ids(const json &j_boundary_tmp)
+			{
+				std::vector<json> j_boundary;
+
+				for (size_t i = 0; i < j_boundary_tmp.size(); ++i)
+				{
+					const auto &tmp = j_boundary_tmp[i];
+					if (tmp["id"].is_array())
+					{
+						for (size_t j = 0; j < tmp["id"].size(); ++j)
+						{
+							json newj = tmp;
+							newj["id"] = tmp["id"][j].get<int>();
+							j_boundary.push_back(newj);
+						}
+					}
+					else
+						j_boundary.push_back(tmp);
+				}
+
+				return j_boundary;
+			}
+		} // namespace
+
 		std::shared_ptr<Interpolation> Interpolation::build(const json &params)
 		{
 			const std::string type = params["type"];
@@ -101,7 +127,7 @@ namespace polyfem
 			return true;
 		}
 
-		void GenericTensorProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -564,10 +590,10 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "exact"))
+			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
 				has_exact_ = true;
-				auto ex = params["exact"];
+				auto ex = params["reference"]["solution"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -579,10 +605,10 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "exact_grad"))
+			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "gradient"))
 			{
 				has_exact_grad_ = true;
-				auto ex = params["exact_grad"];
+				auto ex = params["reference"]["gradient"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -598,7 +624,8 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				int offset = boundary_ids_.size();
-				auto j_boundary = params["dirichlet_boundary"];
+				auto j_boundary_tmp = params["dirichlet_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				displacements_.resize(offset + j_boundary.size());
@@ -652,7 +679,8 @@ namespace polyfem
 				// neumann_boundary_ids_.clear();
 				const int offset = neumann_boundary_ids_.size();
 
-				auto j_boundary = params["neumann_boundary"];
+				auto j_boundary_tmp = params["neumann_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				neumann_boundary_ids_.resize(offset + j_boundary.size());
 				forces_.resize(offset + j_boundary.size());
@@ -688,7 +716,8 @@ namespace polyfem
 				// pressure_boundary_ids_.clear();
 				const int offset = pressure_boundary_ids_.size();
 
-				auto j_boundary = params["pressure_boundary"];
+				auto j_boundary_tmp = params["pressure_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				pressure_boundary_ids_.resize(offset + j_boundary.size());
 				pressures_.resize(offset + j_boundary.size());
@@ -708,9 +737,9 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "initial_solution"))
+			if (is_param_valid(params, "solution"))
 			{
-				auto rr = params["initial_solution"];
+				auto rr = params["solution"];
 				initial_position_.resize(rr.size());
 				assert(rr.is_array());
 
@@ -723,9 +752,9 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "initial_velocity"))
+			if (is_param_valid(params, "velocity"))
 			{
-				auto rr = params["initial_velocity"];
+				auto rr = params["velocity"];
 				initial_velocity_.resize(rr.size());
 				assert(rr.is_array());
 
@@ -738,9 +767,9 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "initial_acceleration"))
+			if (is_param_valid(params, "acceleration"))
 			{
-				auto rr = params["initial_acceleration"];
+				auto rr = params["acceleration"];
 				initial_acceleration_.resize(rr.size());
 				assert(rr.is_array());
 
@@ -752,56 +781,6 @@ namespace polyfem
 						initial_acceleration_[k].second[d].init(v[d]);
 				}
 			}
-		}
-
-		int GenericTensorProblem::n_incremental_load_steps(const double diag) const
-		{
-			double max;
-			Eigen::Matrix<double, 1, 3, Eigen::RowMajor> tmp;
-
-			for (const auto &vec : forces_)
-			{
-				const int dim = vec.size();
-				for (int i = 0; i < dim; ++i)
-				{
-					tmp[i] = vec[i](0, 0, 0);
-				}
-
-				max = std::max(max, tmp.norm());
-			}
-
-			for (const auto &vec : displacements_)
-			{
-				const int dim = vec.size();
-				for (int i = 0; i < dim; ++i)
-				{
-					tmp[i] = vec[i](0, 0, 0);
-				}
-
-				max = std::max(max, tmp.norm());
-			}
-
-			const int dim = rhs_.size();
-			for (int i = 0; i < dim; ++i)
-			{
-				tmp[i] = rhs_[i](0, 0, 0);
-			}
-
-			max = std::max(max, tmp.norm());
-
-			return 4 * max / diag;
-		}
-
-		void GenericTensorProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			//TODO
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void GenericTensorProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			//TODO
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
 		void GenericTensorProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -953,7 +932,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericScalarProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -1004,6 +983,38 @@ namespace polyfem
 			}
 		}
 
+		void GenericScalarProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		{
+			val.resize(pts.rows(), 1);
+			if (initial_solution_.empty())
+			{
+				val.setZero();
+				return;
+			}
+
+			const bool planar = pts.cols() == 2;
+			for (int i = 0; i < pts.rows(); ++i)
+			{
+				const int id = mesh.get_body_id(global_ids(i));
+				int index = -1;
+				for (int j = 0; j < initial_solution_.size(); ++j)
+				{
+					if (initial_solution_[j].first == id)
+					{
+						index = j;
+						break;
+					}
+				}
+				if (index < 0)
+				{
+					val(i) = 0;
+					continue;
+				}
+
+				val(i) = planar ? initial_solution_[index].second(pts(i, 0), pts(i, 1)) : initial_solution_[index].second(pts(i, 0), pts(i, 1), pts(i, 2));
+			}
+		}
+
 		void GenericScalarProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			assert(has_exact_sol());
@@ -1046,16 +1057,16 @@ namespace polyfem
 				rhs_.init(params["rhs"]);
 			}
 
-			if (is_param_valid(params, "exact"))
+			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
 				has_exact_ = true;
-				exact_.init(params["exact"]);
+				exact_.init(params["reference"]["solution"]);
 			}
 
-			if (is_param_valid(params, "exact_grad"))
+			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "gradient"))
 			{
 				has_exact_grad_ = true;
-				auto ex = params["exact_grad"];
+				auto ex = params["reference"]["gradient"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -1071,7 +1082,8 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				const int offset = boundary_ids_.size();
-				auto j_boundary = params["dirichlet_boundary"];
+				auto j_boundary_tmp = params["dirichlet_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				dirichlet_.resize(offset + j_boundary.size());
@@ -1103,7 +1115,8 @@ namespace polyfem
 			{
 				// neumann_boundary_ids_.clear();
 				const int offset = neumann_boundary_ids_.size();
-				auto j_boundary = params["neumann_boundary"];
+				auto j_boundary_tmp = params["neumann_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				neumann_boundary_ids_.resize(offset + j_boundary.size());
 				neumann_.resize(offset + j_boundary.size());
@@ -1120,6 +1133,19 @@ namespace polyfem
 						neumann_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 					else
 						neumann_interpolation_[i] = std::make_shared<NoInterpolation>();
+				}
+			}
+
+			if (is_param_valid(params, "solution"))
+			{
+				auto rr = params["solution"];
+				initial_solution_.resize(rr.size());
+				assert(rr.is_array());
+
+				for (size_t k = 0; k < rr.size(); ++k)
+				{
+					initial_solution_[k].first = rr[k]["id"];
+					initial_solution_[k].second.init(rr[k]["value"]);
 				}
 			}
 		}
@@ -1319,5 +1345,5 @@ namespace polyfem
 			has_exact_grad_ = false;
 			is_time_dept_ = false;
 		}
-	} // namespace problem
+	} // namespace assembler
 } // namespace polyfem

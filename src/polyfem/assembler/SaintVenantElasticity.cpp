@@ -43,7 +43,7 @@ namespace polyfem
 		{
 		}
 
-		void SaintVenantElasticity::set_parameters(const json &params)
+		void SaintVenantElasticity::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
 

@@ -458,22 +458,6 @@ namespace polyfem
 			navier_stokes_velocity_picard_.local_assembler().set_size(dim);
 		}
 
-		void AssemblerUtils::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
-		{
-			linear_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			linear_elasticity_energy_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			// hooke_linear_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-
-			// saint_venant_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			neo_hookean_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			multi_models_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			// ogden_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-
-			incompressible_lin_elast_displacement_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			incompressible_lin_elast_mixed_.local_assembler().init_multimaterial(is_volume, Es, nus);
-			incompressible_lin_elast_pressure_.local_assembler().init_multimaterial(is_volume, Es, nus);
-		}
-
 		void AssemblerUtils::update_lame_params(const LameParameters &newParams)
 		{
 			linear_elasticity_.local_assembler().set_params(newParams);
@@ -495,34 +479,34 @@ namespace polyfem
 			multi_models_elasticity_.local_assembler().init_multimodels(materials);
 		}
 
-		void AssemblerUtils::set_parameters(const json &params)
+		void AssemblerUtils::add_multimaterial(const int index, const json &params)
 		{
-			laplacian_.local_assembler().set_parameters(params);
-			helmholtz_.local_assembler().set_parameters(params);
+			laplacian_.local_assembler().add_multimaterial(index, params);
+			helmholtz_.local_assembler().add_multimaterial(index, params);
 
-			bilaplacian_main_.local_assembler().set_parameters(params);
-			bilaplacian_mixed_.local_assembler().set_parameters(params);
-			bilaplacian_aux_.local_assembler().set_parameters(params);
+			bilaplacian_main_.local_assembler().add_multimaterial(index, params);
+			bilaplacian_mixed_.local_assembler().add_multimaterial(index, params);
+			bilaplacian_aux_.local_assembler().add_multimaterial(index, params);
 
-			linear_elasticity_.local_assembler().set_parameters(params);
-			linear_elasticity_energy_.local_assembler().set_parameters(params);
-			hooke_linear_elasticity_.local_assembler().set_parameters(params);
+			linear_elasticity_.local_assembler().add_multimaterial(index, params);
+			linear_elasticity_energy_.local_assembler().add_multimaterial(index, params);
+			hooke_linear_elasticity_.local_assembler().add_multimaterial(index, params);
 
-			saint_venant_elasticity_.local_assembler().set_parameters(params);
-			neo_hookean_elasticity_.local_assembler().set_parameters(params);
-			multi_models_elasticity_.local_assembler().set_parameters(params);
-			// ogden_elasticity_.local_assembler().set_parameters(params);
+			saint_venant_elasticity_.local_assembler().add_multimaterial(index, params);
+			neo_hookean_elasticity_.local_assembler().add_multimaterial(index, params);
+			multi_models_elasticity_.local_assembler().add_multimaterial(index, params);
+			// ogden_elasticity_.local_assembler().add_multimaterial(index, params);
 
-			stokes_velocity_.local_assembler().set_parameters(params);
-			stokes_mixed_.local_assembler().set_parameters(params);
-			stokes_pressure_.local_assembler().set_parameters(params);
+			stokes_velocity_.local_assembler().add_multimaterial(index, params);
+			stokes_mixed_.local_assembler().add_multimaterial(index, params);
+			stokes_pressure_.local_assembler().add_multimaterial(index, params);
 
-			navier_stokes_velocity_.local_assembler().set_parameters(params);
-			navier_stokes_velocity_picard_.local_assembler().set_parameters(params);
+			navier_stokes_velocity_.local_assembler().add_multimaterial(index, params);
+			navier_stokes_velocity_picard_.local_assembler().add_multimaterial(index, params);
 
-			incompressible_lin_elast_displacement_.local_assembler().set_parameters(params);
-			incompressible_lin_elast_mixed_.local_assembler().set_parameters(params);
-			incompressible_lin_elast_pressure_.local_assembler().set_parameters(params);
+			incompressible_lin_elast_displacement_.local_assembler().add_multimaterial(index, params);
+			incompressible_lin_elast_mixed_.local_assembler().add_multimaterial(index, params);
+			incompressible_lin_elast_pressure_.local_assembler().add_multimaterial(index, params);
 		}
 
 		void AssemblerUtils::merge_mixed_matrices(

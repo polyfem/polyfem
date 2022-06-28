@@ -31,7 +31,7 @@ namespace polyfem
 
 			inline int size() const { return 1; }
 
-			void set_parameters(const json &params) {}
+			void add_multimaterial(const int index, const json &params) {}
 		};
 
 		class BilaplacianMixed
@@ -51,7 +51,7 @@ namespace polyfem
 			inline int rows() const { return 1; }
 			inline int cols() const { return 1; }
 
-			void set_parameters(const json &params) {}
+			void add_multimaterial(const int index, const json &params) {}
 		};
 
 		class BilaplacianAux
@@ -70,7 +70,7 @@ namespace polyfem
 
 			inline int size() const { return 1; }
 
-			void set_parameters(const json &params) {}
+			void add_multimaterial(const int index, const json &params) {}
 		};
 	} // namespace assembler
 } // namespace polyfem

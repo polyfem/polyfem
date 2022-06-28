@@ -54,9 +54,7 @@ namespace polyfem
 			inline int size() const { return size_; }
 
 			//inialize material parameter
-			void set_parameters(const json &params);
-			//initialize material param per element
-			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+			void add_multimaterial(const int index, const json &params);
 
 			//class that stores and compute lame parameters per point
 			const LameParameters &lame_params() const { return params_; }

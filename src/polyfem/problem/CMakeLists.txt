@@ -1,8 +1,6 @@
 set(SOURCES
 	PointBasedProblem.cpp
 	PointBasedProblem.hpp
-	GenericProblem.cpp
-	GenericProblem.hpp
 	ElasticProblem.cpp
 	ElasticProblem.hpp
 	FrankeProblem.cpp
@@ -15,8 +13,8 @@ set(SOURCES
 	NodeProblem.hpp
 	TestProblem.cpp
 	TestProblem.hpp
-	Problem.cpp
-	Problem.hpp
+	ProblemFactory.cpp
+	ProblemFactory.hpp
 	ProblemWithSolution.cpp
 	ProblemWithSolution.hpp
 	StokesProblem.cpp

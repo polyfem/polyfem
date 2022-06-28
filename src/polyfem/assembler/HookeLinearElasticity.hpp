@@ -35,7 +35,7 @@ namespace polyfem
 			void set_size(const int size);
 
 			//sets the elasticty tensor
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params);
 
 		private:
 			int size_ = -1;

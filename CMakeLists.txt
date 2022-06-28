@@ -68,8 +68,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
-option(POLYFEM_NO_UI            "Disables the user interface" OFF)
-option(POLYFEM_BUILD_DOCS       "Build doxygen"               OFF)
+option(POLYFEM_BUILD_DOCS       "Build documentation using Doxygen" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
@@ -109,23 +108,15 @@ option(LIBIGL_WITH_EMBREE                 "Use Embree"                   OFF)
 option(LIBIGL_WITH_LIM                    "Use LIM"                      OFF)
 option(LIBIGL_WITH_MATLAB                 "Use Matlab"                   OFF)
 option(LIBIGL_WITH_MOSEK                  "Use MOSEK"                    OFF)
-option(LIBIGL_WITH_OPENGL                 "Use OpenGL"                   ON)
-option(LIBIGL_WITH_OPENGL_GLFW            "Use GLFW"                     ON)
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI      "Use ImGui"                    ON)
+option(LIBIGL_WITH_OPENGL                 "Use OpenGL"                   OFF)
+option(LIBIGL_WITH_OPENGL_GLFW            "Use GLFW"                     OFF)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI      "Use ImGui"                    OFF)
 option(LIBIGL_WITH_PNG                    "Use PNG"                      OFF)
 option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
-option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
+option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            OFF)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
-
-
-if(POLYFEM_NO_UI)
-    set(LIBIGL_WITH_OPENGL             OFF  CACHE BOOL "" FORCE)
-    set(LIBIGL_WITH_OPENGL_GLFW        OFF  CACHE BOOL "" FORCE)
-    set(LIBIGL_WITH_OPENGL_GLFW_IMGUI  OFF  CACHE BOOL "" FORCE)
-    set(LIBIGL_WITH_VIEWER             OFF  CACHE BOOL "" FORCE)
-endif()
 
 ################################################################################
 
@@ -292,17 +283,6 @@ add_library(polyfem::polyfem ALIAS polyfem)
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
-    source_group("gui" FILES src/polyfem/main.cpp)
-    if(NOT POLYFEM_NO_UI)
-        source_group("gui" FILES src/polyfem/viewer/UIState.cpp)
-        source_group("gui" FILES src/polyfem/viewer/UIState.hpp)
-        source_group("gui" FILES src/polyfem/viewer/UIMenu.cpp)
-
-        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/polyfem/viewer)
-    else()
-        target_compile_definitions(${PROJECT_NAME}_bin PUBLIC -DPOLYFEM_NO_UI)
-    endif()
-
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
     include(cli11)
     target_link_libraries(${PROJECT_NAME}_bin
@@ -312,12 +292,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
             CLI11::CLI11
     )
 
-    if(NOT POLYFEM_NO_UI)
-        target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui)
-        # igl::png
-        # tinyfiledialogs::tinyfiledialogs
-    endif()
-
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
     endif()
@@ -326,20 +300,11 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         # check if Doxygen is installed
         find_package(Doxygen)
         if (DOXYGEN_FOUND)
-            # set input and output files
-            set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-            set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-
-            # request to configure the file
-            configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-            message("Doxygen build started")
-
-            # note the option ALL which allows to build the docs together with the application
-            add_custom_target( polyfem_doc_doxygen ALL
-                COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            add_custom_target(polyfem_doc_doxygen ALL
+                COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 COMMENT "Generating API documentation with Doxygen"
-                VERBATIM )
+                VERBATIM)
         else (DOXYGEN_FOUND)
             message("Doxygen need to be installed to generate the doxygen documentation")
         endif (DOXYGEN_FOUND)

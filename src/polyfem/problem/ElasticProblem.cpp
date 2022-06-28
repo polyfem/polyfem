@@ -18,7 +18,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void ElasticProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ElasticProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -49,7 +49,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void TorsionElasticProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TorsionElasticProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -128,15 +128,6 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void DoubleTorsionElasticProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-		void DoubleTorsionElasticProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
 		void DoubleTorsionElasticProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
@@ -150,7 +141,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void DoubleTorsionElasticProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DoubleTorsionElasticProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -255,7 +246,7 @@ namespace polyfem
 			val.col(1).setConstant(0.5);
 		}
 
-		void ElasticProblemZeroBC::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ElasticProblemZeroBC::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -356,6 +347,53 @@ namespace polyfem
 				res(0) = -t * (y + x + z) / 50.;
 				res(1) = -t * (3 * x + y - z) / 50.;
 				res(2) = -t * (x + y - 2 * z) / 50.;
+
+				return res;
+			}
+
+			template <typename T>
+			void compute_singularity(const T &x, const T &y, Eigen::Matrix<T, -1, 1> &res, const double a, const double mu, const double nu, const double lambda, const double t)
+			{
+				double b1, b2, b3, b4;
+				T r = sqrt(x * x + y * y);
+				T phi = atan2(y, x);
+				T ur, ut;
+
+				b1 = sin(M_PI * a / 2) * ((a - 1) * mu + (1 - 2 * nu) * lambda) * (a - 4 * nu + 3) / cos(M_PI * a / 2) / ((a - 4 * nu + 2) * mu + (1 - 2 * nu) * lambda) / (a + 1);
+				b2 = (a + 4 * nu - 3) / (a + 1);
+				b3 = -sin(M_PI * a / 2) * ((a - 1) * mu + (1 - 2 * nu) * lambda) / cos(M_PI * a / 2) / ((a - 4 * nu + 2) * mu + (1 - 2 * nu) * lambda);
+				b4 = -1;
+
+				ur = -1 / mu * pow(r, a) * (b4 * (a + (4 * nu) - 3) * cos((a - 1) * phi) + b3 * (a + (4 * nu) - 3) * sin((a - 1) * phi) + (b2 * cos((a + 1) * phi) + b1 * sin((a + 1) * phi)) * (a + 1)) / 2;
+				ut = -1 / mu * pow(r, a) * (b3 * (a - (4 * nu) + 3) * cos((a - 1) * phi) - b4 * (a - (4 * nu) + 3) * sin((a - 1) * phi) + (b1 * cos((a + 1) * phi) - b2 * sin((a + 1) * phi)) * (a + 1)) / 2;
+
+				res(0) = 79.17 * t * ur * cos(ut);
+				res(1) = 79.17 * t * ur * sin(ut);
+			}
+
+			template <typename T>
+			Eigen::Matrix<T, -1, 1> function_cantilever(T x, T y, const double t, const double delta, const double E, const double nu, const int dim, const double L, const double D)
+			{
+				Eigen::Matrix<T, -1, 1> res, res1, res2;
+				res.setZero(dim, 1);
+				res1.setZero(dim, 1);
+				res2.setZero(dim, 1);
+				const double lambda = (E * nu) / (1 + nu) / (1 - (dim - 1) * nu);
+				const double mu = E / (2 * (1 + nu));			
+
+				// Boundary condition related formulas in Rossel's paper
+				double a = 0.71117293; 			
+				double P = 100;	// force
+				double I = D * D * D / 12;	// second moment of area of the cross-section
+
+				// Add 2 singular solutions for an infinite wedge with  Dirichlet/Neumann sides
+				compute_singularity(y + delta, x + delta, res1, a, mu, nu, lambda, t);
+				compute_singularity(D - y + delta, x + delta, res2, a, mu, nu, lambda, t);
+				res = res1 + res2;
+
+				// Formulas in Charles's paper
+				res(0) += t * P * (y - D/2) / (6 * E * I) * ((6 * L - 3 * x) * x + (2 + nu) * ((y - D/2) * (y - D/2) - D * D / 4)) / 3;
+				res(1) += -t * P / (6 * E * I) * (3 * nu * (y - D/2) * (y - D/2) * (L - x) + (4 + 5 * nu) * D * D * x / 4 + (3 * L - x) * x * x) / 3;
 
 				return res;
 			}
@@ -533,17 +571,7 @@ namespace polyfem
 			val.col(1).setConstant(force_);
 		}
 
-		void GravityProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void GravityProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void GravityProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GravityProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -574,7 +602,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void WalkProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void WalkProblem::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -585,16 +613,6 @@ namespace polyfem
 				else if (mesh.get_boundary_id(global_ids(i)) == 2)
 					val(i, 2) = -0.2 * sin(t);
 			}
-		}
-
-		void WalkProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		}
-
-		void WalkProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
 		void WalkProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -610,6 +628,167 @@ namespace polyfem
 		void WalkProblem::initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		}
+
+		ElasticCantileverExact::ElasticCantileverExact(const std::string &name)
+			: Problem(name)
+		{
+			boundary_ids_.clear();
+			neumann_boundary_ids_.clear();
+
+			boundary_ids_ = {1, 5, 6};
+			neumann_boundary_ids_ = {2, 3, 4};
+
+			singular_point_displacement = 0;
+			E = 210000;
+			nu = 0.3;
+			formulation = "None";
+			length = 1;
+			width = 1/3.;
+		}
+
+		void ElasticCantileverExact::set_parameters(const json &params)
+		{
+			if (params.contains("displacement")) {
+				singular_point_displacement = params["displacement"];
+			}
+			if (params.contains("E")) {
+				E = params["E"];
+			}
+			if (params.contains("nu")) {
+				nu = params["nu"];
+			}
+			if (params.contains("formulation")) {
+				formulation = params["formulation"];
+			}
+			if (params.contains("mesh_size")) {
+				auto size = params["mesh_size"];
+				if (size.is_array()) {
+					length = size[0];
+					width = size[1];
+				} else {
+					throw std::invalid_argument("Mesh_size needs to be an array!");
+				}
+			}
+		}
+
+		void ElasticCantileverExact::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		{
+			const int size = size_for(pts);
+			val.resize(pts.rows(), size);
+
+			const double lambda = (E * nu) / (1.0 + nu) / (1.0 - (size - 1.0) * nu);
+			const double mu = E / (2.0 * (1.0 + nu));
+
+			for (long i = 0; i < pts.rows(); ++i)
+			{
+				Matrix<double, Dynamic, 1, 0, 3, 1> point(pts.cols()), result;
+				point = pts.row(i);
+
+				DiffScalarBase::setVariableCount(pts.cols());
+				AutodiffHessianPt pt(pts.cols());
+
+				for (long d = 0; d < pts.cols(); ++d)
+					pt(d) = AutodiffScalarHessian(d, pts(i, d));
+
+				const auto res = eval_fun(pt, t);
+				val.row(i) = assembler.compute_rhs(formulation, res).transpose();
+			}
+		}
+
+		void ElasticCantileverExact::dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		{
+			exact(pts, t, val);
+		}
+
+		void ElasticCantileverExact::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		{
+			val.resize(pts.rows(), size_for(pts));
+
+			for (long i = 0; i < pts.rows(); ++i)
+			{
+				val.row(i) = eval_fun(VectorNd(pts.row(i)), t);
+			}
+		}
+
+		void ElasticCantileverExact::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		{
+			const int size = size_for(pts);
+			val.resize(pts.rows(), pts.cols() * size);
+
+			for (long i = 0; i < pts.rows(); ++i)
+			{
+				DiffScalarBase::setVariableCount(pts.cols());
+				AutodiffGradPt pt(pts.cols());
+
+				for (long d = 0; d < pts.cols(); ++d)
+					pt(d) = AutodiffScalarGrad(d, pts(i, d));
+
+				const auto res = eval_fun(pt, t);
+
+				for (int m = 0; m < size; ++m)
+				{
+					const auto &tmp = res(m);
+					val.block(i, m * pts.cols(), 1, pts.cols()) = tmp.getGradient().transpose();
+				}
+			}
+		}
+
+		void ElasticCantileverExact::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		{
+			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+
+			const double lambda = (E * nu) / (1.0 + nu) / (1.0 - (mesh.dimension() - 1.0) * nu);
+			const double mu = E / 2.0 / (1.0 + nu);
+
+			for (long i = 0; i < pts.rows(); ++i)
+			{
+				const int id = mesh.get_boundary_id(global_ids(i));
+
+				DiffScalarBase::setVariableCount(pts.cols());
+				AutodiffHessianPt pt(pts.cols());
+				Eigen::VectorXd neumann_bc_normal = normals.row(i);
+				Eigen::MatrixXd sigma;
+
+				for (long d = 0; d < pts.cols(); ++d)
+					pt(d) = AutodiffScalarHessian(d, pts(i, d));
+
+				AutodiffHessianPt res = eval_fun(pt, t);
+				Eigen::MatrixXd grad_u(mesh.dimension(), mesh.dimension());
+				for (int d1 = 0; d1 < mesh.dimension(); d1++) {
+					for (int d2 = 0; d2 < mesh.dimension(); d2++) {
+						grad_u(d1, d2) = res(d1).getGradient()(d2);
+					}
+				}
+
+				if (formulation == "LinearElasticity") {
+					sigma = mu * (grad_u + grad_u.transpose()) + lambda * grad_u.trace() * Eigen::MatrixXd::Identity(mesh.dimension(), mesh.dimension());
+				} else if (formulation == "NeoHookean") {
+					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u.rows(), grad_u.cols()) + grad_u;
+					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+					sigma = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
+				} else {
+					throw std::invalid_argument("No specified formulation in params!");
+					assert(false);
+				}
+
+				val.row(i) = sigma * neumann_bc_normal;
+			}
+		}
+
+		VectorNd ElasticCantileverExact::eval_fun(const VectorNd &pt, const double t) const
+		{
+			return function_cantilever(pt(0), pt(1), t, singular_point_displacement, E, nu, pt.size(), length, width);
+		}
+
+		AutodiffGradPt ElasticCantileverExact::eval_fun(const AutodiffGradPt &pt, const double t) const
+		{
+			return function_cantilever(pt(0), pt(1), t, singular_point_displacement, E, nu, pt.size(), length, width);
+		}
+
+		AutodiffHessianPt ElasticCantileverExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
+		{
+			return function_cantilever(pt(0), pt(1), t, singular_point_displacement, E, nu, pt.size(), length, width);
 		}
 	} // namespace problem
 } // namespace polyfem

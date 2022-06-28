@@ -13,9 +13,9 @@ namespace polyfem
 	{
 		void apply_default_params(json &args)
 		{
-			assert(args.contains("default_params"));
+			assert(args.contains("common"));
 
-			std::string default_params_path = resolve_path(args["default_params"], args["root_path"]);
+			std::string default_params_path = resolve_path(args["common"], args["root_path"]);
 
 			if (default_params_path.empty())
 				return;
@@ -112,7 +112,8 @@ namespace polyfem
 					json::json_pointer new_path(op["path"].get<std::string>());
 					if (!args_in[new_path.parent_pointer()].is_array()
 						&& new_path.back().size() != 0
-						&& new_path.back().front() != '#')
+						&& new_path.back().front() != '#'
+						&& new_path.back() != "authen_t1")
 					{
 						json::json_pointer parent = new_path.parent_pointer();
 						if (parent.empty() || (parent.back() != "solver_params" && parent.back() != "problem_params"))

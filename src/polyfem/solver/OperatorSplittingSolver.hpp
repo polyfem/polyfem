@@ -2,7 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/Problem.hpp>
 #include <polysolve/FEMSolver.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -474,7 +474,7 @@ namespace polyfem
 
 			void advect_density_exact(const std::vector<basis::ElementBases> &gbases,
 									  const std::vector<basis::ElementBases> &bases,
-									  const std::shared_ptr<problem::Problem> problem,
+									  const std::shared_ptr<assembler::Problem> problem,
 									  const double t,
 									  const double dt,
 									  const int RK = 3)
@@ -1018,7 +1018,7 @@ namespace polyfem
 								const double dt,
 								Eigen::MatrixXd &sol,
 								const Eigen::MatrixXd &local_pts,
-								const std::shared_ptr<problem::Problem> problem,
+								const std::shared_ptr<assembler::Problem> problem,
 								const double time)
 			{
 #ifdef POLYFEM_WITH_TBB
@@ -1153,7 +1153,7 @@ namespace polyfem
 				}
 			}
 
-			void initialize_density(const std::shared_ptr<problem::Problem> &problem)
+			void initialize_density(const std::shared_ptr<assembler::Problem> &problem)
 			{
 				Eigen::MatrixXd pts(1, dim);
 				Eigen::MatrixXd tmp;

@@ -1,5 +1,8 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/problem/ProblemFactory.hpp>
+#include <polyfem/assembler/GenericProblem.hpp>
+
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -95,7 +98,7 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 
 		this->args = R"({
-						"defaults": "",
+						"common": "",
 						"root_path": "",
 
 						"geometry": null,
@@ -190,6 +193,20 @@ namespace polyfem
 
 						"materials" : null,
 
+						"boundary_conditions": {
+							"rhs": null,
+							"dirichlet_boundary": [],
+							"neumann_boundary": [],
+							"pressure_boundary": [],
+							"obstacle_displacements": []
+						},
+
+						"initial_conditions": {
+							"solution": null,
+							"velocity": null,
+							"acceleration": null
+						},
+
 						"output": {
 							"json" : "",
 
@@ -212,6 +229,11 @@ namespace polyfem
 									"friction_forces" : false,
 									"velocity" : false,
 									"acceleration" : false
+								},
+
+								"reference": {
+									"solution": null,
+									"gradient": null
 								}
 							},
 
@@ -300,7 +322,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		if (args_in.contains("default_params"))
+		if (args_in.contains("common"))
 			apply_default_params(args_in);
 
 		check_for_unknown_args(args, args_in);
@@ -331,41 +353,34 @@ namespace polyfem
 			args["time"].merge_patch(tmp);
 		}
 
-		// if (this->args["contact"]["enabled"])
-		// {
-		// 	if (!args_in.contains("line_search"))
-		// 	{
-		// 		args["solver"]["nonlinear"]["line_search"]["method"] = "backtracking";
-		// 		logger().warn("Changing default linesearch to backtracking");
-		// 	}
-
-		// 	if (args["solver"]["contact"]["friction_iterations"] == 0)
-		// 	{
-		// 		logger().info("specified friction_iterations is 0; disabling friction");
-		// 		args["mu"] = 0.0;
-		// 	}
-		// 	else if (args["solver"]["contact"]["friction_iterations"] < 0)
-		// 	{
-		// 		args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
-		// 	}
-
-		// 	if (args["mu"] == 0.0)
-		// 	{
-		// 		args["solver"]["contact"]["friction_iterations"] = 0;
-		// 	}
-		// }
-		// else
-		// {
-		// 	args["solver"]["contact"]["friction_iterations"] = 0;
-		// 	args["mu"] = 0;
-		// }
+		if (this->args["contact"]["enabled"])
+		{
+			if (args["solver"]["contact"]["friction_iterations"] == 0)
+			{
+				logger().info("specified friction_iterations is 0; disabling friction");
+				args["contact"]["friction_coefficient"] = 0.0;
+			}
+			else if (args["solver"]["contact"]["friction_iterations"] < 0)
+			{
+				args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
+			}
+			if (args["contact"]["friction_coefficient"] == 0.0)
+			{
+				args["solver"]["contact"]["friction_iterations"] = 0;
+			}
+		}
+		else
+		{
+			args["solver"]["contact"]["friction_iterations"] = 0;
+			args["contact"]["friction_coefficient"] = 0;
+		}
 
 		if (!args.contains("preset_problem"))
 		{
 			if (assembler.is_scalar(formulation()))
-				problem = ProblemFactory::factory().get_problem("GenericScalar");
+				problem = std::make_shared<assembler::GenericScalarProblem>("GenericScalar");
 			else
-				problem = ProblemFactory::factory().get_problem("GenericTensor");
+				problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
 
 			problem->clear();
 			if (!args["time"].is_null())
@@ -375,11 +390,9 @@ namespace polyfem
 			}
 			// important for the BC
 			problem->set_parameters(args["boundary_conditions"]);
-			if (args.contains("initial_conditions"))
-				problem->set_parameters(args["initial_conditions"]);
+			problem->set_parameters(args["initial_conditions"]);
 
-			if (args["output"].contains("reference"))
-				problem->set_parameters(args["output"]["reference"]);
+			problem->set_parameters(args["output"]);
 		}
 		else
 		{

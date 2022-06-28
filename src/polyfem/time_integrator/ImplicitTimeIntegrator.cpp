@@ -1,8 +1,9 @@
 #include "ImplicitTimeIntegrator.hpp"
 
-#include "ImplicitEuler.hpp"
-#include "ImplicitNewmark.hpp"
-#include "BDFTimeIntegrator.hpp"
+#include <polyfem/time_integrator/ImplicitEuler.hpp>
+#include <polyfem/time_integrator/ImplicitNewmark.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
@@ -53,7 +54,7 @@ namespace polyfem
 			}
 			else if (name == "BDF")
 			{
-				return std::make_shared<BDFTimeIntegrator>();
+				return std::make_shared<BDF>();
 			}
 			else
 			{

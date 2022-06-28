@@ -5,8 +5,6 @@ set(SOURCES
 	ImplicitEuler.hpp
 	ImplicitNewmark.cpp
 	ImplicitNewmark.hpp
-	BDFTimeIntegrator.cpp
-	BDFTimeIntegrator.hpp
 	BDF.cpp
 	BDF.hpp
 )

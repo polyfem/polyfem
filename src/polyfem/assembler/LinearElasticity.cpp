@@ -11,18 +11,11 @@ namespace polyfem
 
 	namespace assembler
 	{
-		void LinearElasticity::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+		void LinearElasticity::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
 
-			params_.init_multimaterial(is_volume, Es, nus);
-		}
-
-		void LinearElasticity::set_parameters(const json &params)
-		{
-			assert(size_ == 2 || size_ == 3);
-
-			params_.init(params, size_);
+			params_.add_multimaterial(index, params, size_ == 3);
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

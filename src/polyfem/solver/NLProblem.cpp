@@ -6,6 +6,8 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/OBJ_IO.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
@@ -67,30 +69,6 @@ namespace polyfem
 
 	namespace solver
 	{
-
-		namespace
-		{
-			bool write_obj(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
-			{
-				std::ofstream obj(path, std::ios::out);
-				if (!obj.is_open())
-					return false;
-
-				obj.precision(15);
-
-				for (int i = 0; i < v.rows(); ++i)
-					obj << "v " << v(i, 0) << " " << v(i, 1) << " " << (v.cols() > 2 ? v(i, 2) : 0) << "\n";
-
-				for (int i = 0; i < e.rows(); ++i)
-					obj << "l " << e(i, 0) + 1 << " " << e(i, 1) + 1 << "\n";
-
-				for (int i = 0; i < f.rows(); ++i)
-					obj << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
-
-				return true;
-			}
-		} // namespace
-
 		using namespace polysolve;
 
 		NLProblem::NLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool no_reduced)
@@ -120,9 +98,12 @@ namespace polyfem
 				logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 			}
 			_prev_distance = -1;
-			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-			_time_integrator->set_parameters(state.args["time"]["BDF"]);
-			_time_integrator->set_parameters(state.args["time"]["newmark"]);
+			if (utils::is_param_valid(state.args, "time"))
+			{
+				_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+				_time_integrator->set_parameters(state.args["time"]["BDF"]);
+				_time_integrator->set_parameters(state.args["time"]["newmark"]);
+			}
 
 			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
 			_ccd_tolerance = state.args["solver"]["contact"]["CCD"]["tolerance"];
@@ -179,7 +160,8 @@ namespace polyfem
 		void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 		{
 			assert(dt > 0);
-			_time_integrator->init(x_prev, v_prev, a_prev, dt);
+			if (_time_integrator)
+				_time_integrator->init(x_prev, v_prev, a_prev, dt);
 		}
 
 		void NLProblem::init_lagging(const TVector &x)
@@ -231,9 +213,6 @@ namespace polyfem
 				if (!ignore_inertia)
 					_time_integrator->update_quantities(x);
 
-				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, velocity, t);
-				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, acceleration, t);
-
 				rhs_computed = false;
 				this->t = t;
 
@@ -250,9 +229,6 @@ namespace polyfem
 			{
 				rhs_computed = false;
 				this->t = t;
-
-				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, velocity, t);
-				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, acceleration, t);
 			}
 		}
 
@@ -363,8 +339,8 @@ namespace polyfem
 			Eigen::MatrixXd V0 = state.collision_mesh.vertices(displaced0);
 			Eigen::MatrixXd V1 = state.collision_mesh.vertices(displaced1);
 
-			// write_obj("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
-			// write_obj("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
+			// OBJWriter::save("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
+			// OBJWriter::save("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
 
 			double max_step;
 			if (_use_cached_candidates
@@ -422,8 +398,8 @@ namespace polyfem
 				return true;
 			}
 
-			// write_obj("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
-			// write_obj("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
+			// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
+			// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
 
 			bool is_valid;
 			if (_use_cached_candidates)
@@ -781,8 +757,8 @@ namespace polyfem
 
 			if (state.args["output"]["advanced"]["save_nl_solve_sequence"])
 			{
-				write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-						  displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
+				OBJWriter::save(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+								displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
 			}
 
 			const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);

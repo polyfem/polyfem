@@ -1,0 +1,217 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ####################
+  # Linux
+  ####################
+
+  Linux:
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        config: [Debug, Release]
+        threading: [CPP, TBB, NONE]
+        include:
+          - os: ubuntu-latest
+            name: Linux
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -o Acquire::Retries=3 install \
+          libblas-dev \
+          libglu1-mesa-dev \
+          xorg-dev \
+          ccache
+          echo 'CACHE_PATH=~/.ccache' >> "$GITHUB_ENV"
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_THREADING=${{ matrix.threading }}
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Tests
+        run: cd build; ctest --verbose --output-on-failure
+
+  ####################
+  # MacOS
+  ####################
+
+  MacOS:
+    name: ${{ matrix.name }}-${{ matrix.arc }} (${{ matrix.config }}, ${{ matrix.threading }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        arc: [x86]
+        config: [Debug, Release]
+        threading: [CPP, TBB, NONE]
+        include:
+          - os: macos-latest
+            name: macOS
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+
+      - name: Dependencies
+        run: |
+          brew install ccache
+          echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-${{ matrix.arc }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-${{ matrix.arc }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure x86
+        if: matrix.arc == 'x86'
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_THREADING=${{ matrix.threading }}
+
+      - name: Configure arm64
+        if: matrix.arc == 'arm64'
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_THREADING=${{ matrix.threading }}
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Tests
+        if: matrix.arc == 'x86' # no ARM vm on actions yet
+        run: cd build; ctest --verbose --output-on-failure
+
+  ####################
+  # Windows
+  ####################
+
+  Windows:
+    runs-on: windows-2022
+    env:
+      SCCACHE_IDLE_TIMEOUT: "12000"
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Debug]
+        threading: [TBB, NONE]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Stetup Conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          conda-channels: anaconda, conda-forge
+
+      - name: Install Dependencies
+        run: |
+          conda install libblas libcblas suitesparse -y
+
+      - name: Set env
+        run: |
+          echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
+          conda init powershell
+
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.appdata }}\Mozilla\sccache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+
+      - name: Prepare sccache
+        run: |
+          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          scoop install sccache --global
+          # Scoop modifies the PATH so we make it available for the next steps of the job
+          echo "${env:PATH}" >> ${env:GITHUB_PATH}
+
+      - name: Configure and Build
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DPOLYFEM_WITH_CLIPPER=OFF ^
+            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
+            -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
+            -DPOLYSOLVE_WITH_MKL=OFF ^
+            -B build ^
+            -S .
+          cmake --build build -j1
+
+      - name: Tests
+        run: |
+          cd build
+          ctest --verbose --output-on-failure

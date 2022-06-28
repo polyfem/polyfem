@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/problem/Problem.hpp>
+#include "Problem.hpp"
 #include <polyfem/utils/ExpressionValue.hpp>
 
 #include <Eigen/Dense>
@@ -10,7 +10,7 @@
 
 namespace polyfem
 {
-	namespace problem
+	namespace assembler
 	{
 		class Interpolation
 		{
@@ -61,7 +61,7 @@ namespace polyfem
 				return true;
 			}
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return has_exact_; }
@@ -70,9 +70,6 @@ namespace polyfem
 			void set_time_dependent(const bool val) { is_time_dept_ = val; }
 			bool is_constant_in_time() const override { return !is_time_dept_; }
 			bool might_have_no_dirichlet() override { return !is_all_; }
-
-			void velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 			void initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -85,9 +82,6 @@ namespace polyfem
 
 			void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-
-			// bool is_mixed() const override { return is_mixed_; }
-			int n_incremental_load_steps(const double diag) const override;
 
 			void add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 			void add_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
@@ -151,8 +145,9 @@ namespace polyfem
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return rhs_.is_zero(); }
 
-			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return true; }
@@ -189,6 +184,7 @@ namespace polyfem
 		private:
 			std::vector<utils::ExpressionValue> neumann_;
 			std::vector<utils::ExpressionValue> dirichlet_;
+			std::vector<std::pair<int, utils::ExpressionValue>> initial_solution_;
 
 			std::vector<std::shared_ptr<Interpolation>> neumann_interpolation_;
 			std::vector<std::shared_ptr<Interpolation>> dirichlet_interpolation_;
@@ -201,5 +197,5 @@ namespace polyfem
 			bool has_exact_grad_ = false;
 			bool is_time_dept_ = false;
 		};
-	} // namespace problem
+	} // namespace assembler
 } // namespace polyfem
