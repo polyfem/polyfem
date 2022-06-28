@@ -24,7 +24,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	in_args["materials"]["type"] = "LinearElasticity";
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::off, false);
 	state.init(in_args);
 	state.load_mesh();
 

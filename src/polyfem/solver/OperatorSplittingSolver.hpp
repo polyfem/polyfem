@@ -86,7 +86,7 @@ namespace polyfem
 				for (int d = 0; d < dim; d++)
 				{
 					hash_table_cell_num[d] = (long)std::round((max_domain(d) - min_domain(d)) / avg_edge_length) * 4;
-					utils::logger().debug("hash grid in {} dimension: {}", d, hash_table_cell_num[d]);
+					logger().debug("hash grid in {} dimension: {}", d, hash_table_cell_num[d]);
 					total_cell_num *= hash_table_cell_num[d];
 				}
 				hash_table.resize(total_cell_num);
@@ -150,8 +150,8 @@ namespace polyfem
 					(hash_table[i].size() > max_intersection_num) ? (max_intersection_num = hash_table[i].size()) : 1;
 				}
 				average_intersection_num /= hash_table.size();
-				utils::logger().debug("average intersection number for hash grid: {}", average_intersection_num);
-				utils::logger().debug("max intersection number for hash grid: {}", max_intersection_num);
+				logger().debug("average intersection number for hash grid: {}", average_intersection_num);
+				logger().debug("max intersection number for hash grid: {}", max_intersection_num);
 			}
 
 			OperatorSplittingSolver() {}
@@ -196,7 +196,7 @@ namespace polyfem
 			{
 				initialize_solver(mesh, shape, n_el, local_boundary, bnd_nodes);
 
-				utils::logger().info("Prefactorization begins...");
+				logger().info("Prefactorization begins...");
 
 				solver_mass = LinearSolver::create(solver_type, precond);
 				solver_mass->setParameters(params);
@@ -246,13 +246,13 @@ namespace polyfem
 				mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
 				solver_projection = LinearSolver::create(solver_type, precond);
 				solver_projection->setParameters(params);
-				utils::logger().info("{}...", solver_projection->name());
+				logger().info("{}...", solver_projection->name());
 				// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
 				{
 					StiffnessMatrix mat2 = mat_projection;
 					prefactorize(*solver_projection, mat2, pressure_boundary_nodes, mat2.rows(), save_path);
 				}
-				utils::logger().info("Prefactorization ends!");
+				logger().info("Prefactorization ends!");
 			}
 
 			//         void initialize_solution(const mesh::Mesh& mesh,

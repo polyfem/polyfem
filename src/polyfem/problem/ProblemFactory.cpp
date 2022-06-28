@@ -87,7 +87,7 @@ namespace polyfem
 
 			if (it == problems_.end())
 			{
-				utils::logger().error("Problem {} does not exist", problem);
+				logger().error("Problem {} does not exist", problem);
 				return problems_.at("Linear")();
 			}
 

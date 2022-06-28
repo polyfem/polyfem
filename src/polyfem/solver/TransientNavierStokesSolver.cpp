@@ -41,7 +41,7 @@ namespace polyfem
 
 			auto solver = LinearSolver::create(solver_type, precond_type);
 			solver->setParameters(solver_param);
-			polyfem::logger().debug("\tinternal solver {}", solver->name());
+			logger().debug("\tinternal solver {}", solver->name());
 
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			const int precond_num = problem_dim * state.n_bases;
@@ -125,7 +125,7 @@ namespace polyfem
 			solver_info["time_stokes_assembly"] = stokes_matrix_time;
 			solver_info["time_stokes_solve"] = stokes_solve_time;
 
-			polyfem::logger().info("finished with niter: {},  ||g||_2 = {}", it, nlres_norm);
+			logger().info("finished with niter: {},  ||g||_2 = {}", it, nlres_norm);
 		}
 
 		int TransientNavierStokesSolver::minimize_aux(
@@ -207,8 +207,8 @@ namespace polyfem
 				// nlres[nlres.size() - 1] = 0;
 				nlres_norm = nlres.norm();
 
-				polyfem::logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",
-										it, nlres_norm, dx.norm());
+				logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",
+							   it, nlres_norm, dx.norm());
 			}
 
 			if (it >= iterations)

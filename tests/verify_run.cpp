@@ -87,7 +87,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	State state(1);
-	state.init_logger("", 2, false);
+	state.init_logger("", spdlog::level::info, false);
 	state.init(args, "");
 	state.load_mesh();
 

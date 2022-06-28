@@ -16,7 +16,6 @@
 using namespace polyfem;
 using namespace polyfem::basis;
 using namespace polyfem::quadrature;
-using namespace polyfem::utils;
 
 namespace
 {

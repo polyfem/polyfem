@@ -101,24 +101,23 @@ namespace polyfem
 		//---------------------------------------------------
 
 		/// initalizing the logger
-		/// @param[in] log_file is to write it to a file (use log_file="") to output to consolle
+		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
-		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
+		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
 
-		/// initalizing the logger writes to an outputstream
+		/// initalizing the logger writes to an output stream
 		/// @param[in] os output stream
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void init_logger(std::ostream &os, int log_level);
+		void init_logger(std::ostream &os, const spdlog::level::level_enum log_level);
 
-		///change log level
+		/// change log level
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void set_log_level(int log_level)
+		void set_log_level(const spdlog::level::level_enum log_level)
 		{
-			spdlog::level::level_enum level =
-				static_cast<spdlog::level::level_enum>(std::max(0, std::min(6, log_level)));
-			spdlog::set_level(level);
-			IPC_LOG(set_level(level));
+			spdlog::set_level(log_level);
+			logger().set_level(log_level);
+			IPC_LOG(set_level(log_level));
 		}
 
 		/// gets the output log as json
@@ -133,7 +132,7 @@ namespace polyfem
 
 	private:
 		/// initalizing the logger meant for internal usage
-		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
+		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
 	public:
 		void init_timesteps();

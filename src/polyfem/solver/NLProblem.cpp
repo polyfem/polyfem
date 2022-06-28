@@ -154,7 +154,7 @@ namespace polyfem
 			_barrier_stiffness = ipc::initial_barrier_stiffness(
 				ipc::world_bbox_diagonal_length(displaced), _dhat, state.avg_mass,
 				grad_energy, grad_barrier, max_barrier_stiffness_);
-			polyfem::logger().debug("adaptive barrier stiffness {}", _barrier_stiffness);
+			logger().debug("adaptive barrier stiffness {}", _barrier_stiffness);
 		}
 
 		void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
@@ -355,7 +355,7 @@ namespace polyfem
 				max_step = ipc::compute_collision_free_stepsize(
 					state.collision_mesh, V0, V1,
 					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
-				// polyfem::logger().trace("best step {}", max_step);
+				// logger().trace("best step {}", max_step);
 
 #ifndef NDEBUG
 			// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
@@ -491,7 +491,7 @@ namespace polyfem
 					state.collision_mesh, state.collision_mesh.vertices(displaced_prev()),
 					displaced_surface, _friction_constraint_set, _epsv * dt());
 
-				polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
+				logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 			}
 
 			double lagged_damping = _lagged_damping_weight * (full - x_lagged).squaredNorm();
@@ -762,7 +762,7 @@ namespace polyfem
 			}
 
 			const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);
-			polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
+			logger().trace("min_dist {}", sqrt(dist_sqr));
 
 			if (use_adaptive_barrier_stiffness)
 			{
@@ -774,7 +774,7 @@ namespace polyfem
 						_barrier_stiffness, ipc::world_bbox_diagonal_length(displaced_surface));
 					if (prev_barrier_stiffness != _barrier_stiffness)
 					{
-						polyfem::logger().debug(
+						logger().debug(
 							"updated barrier stiffness from {:g} to {:g}",
 							prev_barrier_stiffness, _barrier_stiffness);
 					}

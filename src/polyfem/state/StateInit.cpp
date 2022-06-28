@@ -282,40 +282,43 @@ namespace polyfem
 		this->args["solver"]["linear"]["precond"] = LinearSolver::defaultPrecond();
 	}
 
-	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
+	void State::init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet)
 	{
 		std::vector<spdlog::sink_ptr> sinks;
+
 		if (!is_quiet)
-		{
 			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-		}
+
 		if (!log_file.empty())
-		{
 			sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true));
-		}
+
 		init_logger(sinks, log_level);
 		spdlog::flush_every(std::chrono::seconds(3));
 	}
 
-	void State::init_logger(std::ostream &os, int log_level)
+	void State::init_logger(std::ostream &os, const spdlog::level::level_enum log_level)
 	{
 		std::vector<spdlog::sink_ptr> sinks;
 		sinks.emplace_back(std::make_shared<spdlog::sinks::ostream_sink_mt>(os, false));
 		init_logger(sinks, log_level);
 	}
 
-	void State::init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level)
+	void State::init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level)
 	{
-		spdlog::level::level_enum level =
-			static_cast<spdlog::level::level_enum>(std::max(0, std::min(6, log_level)));
-		spdlog::set_level(level);
+		spdlog::set_level(log_level);
+
+		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
+		logger().set_level(log_level);
 
 		GEO::Logger *geo_logger = GEO::Logger::instance();
 		geo_logger->unregister_all_clients();
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
 
-		IPC_LOG(set_level(level));
+#ifdef IPC_TOOLKIT_WITH_LOGGER
+		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
+		ipc::logger().set_level(log_level);
+#endif
 	}
 
 	void State::init(const json &p_args_in, const std::string &output_dir)

@@ -64,7 +64,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 	State state(1);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::off, false);
 	state.init(in_args);
 
 	state.load_mesh(true);
@@ -145,7 +145,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-186.msh";
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::off, false);
 	state.init(in_args);
 
 	state.load_mesh(true);
@@ -153,7 +153,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	for (int n = 0; n < 2; n++)
 	{
 		ncmesh.prepare_mesh();
-		std::vector<int> ref_ids(int(ncmesh.n_cells()/2.01));
+		std::vector<int> ref_ids(int(ncmesh.n_cells() / 2.01));
 		for (int i = 0; i < ref_ids.size(); i++)
 			ref_ids[i] = i * 2;
 
