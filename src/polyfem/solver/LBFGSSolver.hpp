@@ -75,6 +75,11 @@ namespace cppoptlib
 		{
 			Superclass::reset(objFunc, x);
 
+			reset_history(objFunc, x);
+		}
+
+		void reset_history(const ProblemType &objFunc, const TVector &x)
+		{
 			m_bfgs.reset(x.size(), m_history_size);
 			m_prev_x.resize(x.size());
 			m_prev_grad.resize(x.size());
@@ -87,12 +92,7 @@ namespace cppoptlib
 		{
 			Superclass::remesh_reset(objFunc, x);
 
-			m_bfgs.reset(x.size(), m_history_size);
-			m_prev_x.resize(x.size());
-			m_prev_grad.resize(x.size());
-
-			// Use gradient descent for first iteration
-			this->descent_strategy = 2;
+			reset_history(objFunc, x);
 		}
 
 		virtual bool compute_update_direction(
@@ -119,6 +119,27 @@ namespace cppoptlib
 
 			m_prev_x = x;
 			m_prev_grad = grad;
+
+			if (std::isnan(direction.squaredNorm()))
+			{
+				reset_history(objFunc, x);
+				increase_descent_strategy();
+				polyfem::logger().log(
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
+					"nan in direction {} (||∇f||={}); reverting to {}",
+					direction.dot(grad), this->descent_strategy_name());
+				return compute_update_direction(objFunc, x, grad, direction);
+			}
+			else if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
+			{
+				reset_history(objFunc, x);
+				increase_descent_strategy();
+				polyfem::logger().log(
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
+					"L-BFGS direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					direction.dot(grad), this->descent_strategy_name());
+				return compute_update_direction(objFunc, x, grad, direction);
+			}
 
 			return true;
 		}

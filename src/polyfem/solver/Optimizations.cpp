@@ -305,8 +305,10 @@ namespace polyfem
 		initial_problem->param_to_x(x, state.initial_sol_update, state.initial_vel_update);
 
 		nlsolver->minimize(*initial_problem, x);
-		json nl_solver_info;
-		nlsolver->getInfo(nl_solver_info);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
 	}
 
 	void material_optimization(State& state, const std::shared_ptr<CompositeFunctional> j, json &opt_params)
@@ -796,6 +798,10 @@ namespace polyfem
 		material_problem->param_to_x(x, state);
 
 		nlsolver->minimize(*material_problem, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
 	}
 
 	void shape_optimization(State& state, const std::shared_ptr<CompositeFunctional> j, json &opt_params)
@@ -824,5 +830,9 @@ namespace polyfem
 		Eigen::VectorXd x;
 		shape_problem->param_to_x(x, V);
 		nlsolver->minimize(*shape_problem, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
 	}
 }
