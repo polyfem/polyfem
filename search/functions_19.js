@@ -10,14 +10,15 @@ var searchData=
   ['_7emesh_7',['~Mesh',['../classpolyfem_1_1mesh_1_1_mesh.html#afbc74f93b8fdf5fde844201a33468c73',1,'polyfem::mesh::Mesh']]],
   ['_7emesh2d_8',['~Mesh2D',['../classpolyfem_1_1mesh_1_1_mesh2_d.html#abdd3fe7a2dec434aa4ea1005006faf80',1,'polyfem::mesh::Mesh2D']]],
   ['_7emesh3d_9',['~Mesh3D',['../classpolyfem_1_1mesh_1_1_mesh3_d.html#a3de844749eb1dfc19950dec5363dbc5d',1,'polyfem::mesh::Mesh3D']]],
-  ['_7encboundary_10',['~ncBoundary',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a28893b58fb7adebbfaf32f0b07ac859b',1,'polyfem::mesh::NCMesh3D::ncBoundary::~ncBoundary()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a5c8a1aa803b69cdedb829bca62ad6281',1,'polyfem::mesh::NCMesh2D::ncBoundary::~ncBoundary()']]],
+  ['_7encboundary_10',['~ncBoundary',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a5c8a1aa803b69cdedb829bca62ad6281',1,'polyfem::mesh::NCMesh2D::ncBoundary::~ncBoundary()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a28893b58fb7adebbfaf32f0b07ac859b',1,'polyfem::mesh::NCMesh3D::ncBoundary::~ncBoundary()']]],
   ['_7encelem_11',['~ncElem',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab9092f5082f7368dc0cd5721a1df0944',1,'polyfem::mesh::NCMesh2D::ncElem::~ncElem()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a01b65d850702ab315fdc3a6f529bf912',1,'polyfem::mesh::NCMesh3D::ncElem::~ncElem()']]],
   ['_7encmesh2d_12',['~NCMesh2D',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#adfd91c2af7ba1dd12ec046331052c3fd',1,'polyfem::mesh::NCMesh2D']]],
   ['_7encmesh3d_13',['~NCMesh3D',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6e98614dee4326776b2b050d5847d780',1,'polyfem::mesh::NCMesh3D']]],
   ['_7encvert_14',['~ncVert',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a378f488ec992c17fab0c1b7d9e43b8db',1,'polyfem::mesh::NCMesh2D::ncVert::~ncVert()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#ad9d0f9708ed8b304872812850cef9f1d',1,'polyfem::mesh::NCMesh3D::ncVert::~ncVert()']]],
-  ['_7eproblem_15',['~Problem',['../classpolyfem_1_1assembler_1_1_problem.html#acbc7a8f28a87fb9a4f0fb51502ba8983',1,'polyfem::assembler::Problem']]],
-  ['_7eproblemwithsolution_16',['~ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html#a3c02bef20f52ba9e5fee8c62d29a8f34',1,'polyfem::problem::ProblemWithSolution']]],
-  ['_7eselection_17',['~Selection',['../classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894',1,'polyfem::utils::Selection']]],
-  ['_7estate_18',['~State',['../classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4',1,'polyfem::State']]],
-  ['_7etimer_19',['~Timer',['../classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e',1,'polyfem::utils::Timer']]]
+  ['_7eobstacle_15',['~Obstacle',['../classpolyfem_1_1mesh_1_1_obstacle.html#ae7bb4805f07778cc2b4528bc2ce390ec',1,'polyfem::mesh::Obstacle']]],
+  ['_7eproblem_16',['~Problem',['../classpolyfem_1_1assembler_1_1_problem.html#acbc7a8f28a87fb9a4f0fb51502ba8983',1,'polyfem::assembler::Problem']]],
+  ['_7eproblemwithsolution_17',['~ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html#a3c02bef20f52ba9e5fee8c62d29a8f34',1,'polyfem::problem::ProblemWithSolution']]],
+  ['_7eselection_18',['~Selection',['../classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894',1,'polyfem::utils::Selection']]],
+  ['_7estate_19',['~State',['../classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4',1,'polyfem::State']]],
+  ['_7etimer_20',['~Timer',['../classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e',1,'polyfem::utils::Timer']]]
 ];

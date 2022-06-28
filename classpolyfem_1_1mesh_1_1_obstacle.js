@@ -1,6 +1,8 @@
 var classpolyfem_1_1mesh_1_1_obstacle =
 [
     [ "Plane", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane" ],
+    [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html#a608e002241d405ed009eea7e5772a8fc", null ],
+    [ "~Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html#ae7bb4805f07778cc2b4528bc2ce390ec", null ],
     [ "append_mesh", "classpolyfem_1_1mesh_1_1_obstacle.html#a82674621defd206a482a2842c33935e5", null ],
     [ "append_plane", "classpolyfem_1_1mesh_1_1_obstacle.html#a129cf729ea7db45f58ee5cf107301670", null ],
     [ "change_displacement", "classpolyfem_1_1mesh_1_1_obstacle.html#aafc3743c35fcb997c601528c8f060d42", null ],
