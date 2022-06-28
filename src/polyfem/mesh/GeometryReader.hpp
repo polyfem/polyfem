@@ -13,12 +13,12 @@ namespace polyfem::mesh
 	///
 	/// @param[in]  geometry        geometry JSON object(s)
 	/// @param[in]  root_path       root path of JSON
-	/// @param[out] mesh            output Mesh
 	///
-	void read_fem_geometry(
+	/// @return created Mesh object
+	///
+	std::unique_ptr<Mesh> read_fem_geometry(
 		const json &geometry,
 		const std::string &root_path,
-		std::unique_ptr<Mesh> &mesh,
 		const std::vector<std::string> &names = std::vector<std::string>(),
 		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
 		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
@@ -30,14 +30,14 @@ namespace polyfem::mesh
 	/// @param[in]  geometry        geometry JSON object(s)
 	/// @param[in]  displacements   displacements JSON object(s)
 	/// @param[in]  root_path       root path of JSON
-	/// @param[out] obstacle        output Obstacle
 	///
-	void read_obstacle_geometry(
+	/// @return created Obstacle object
+	///
+	Obstacle read_obstacle_geometry(
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::string &root_path,
 		const int dim,
-		Obstacle &obstacle,
 		const std::vector<std::string> &names = std::vector<std::string>(),
 		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
 		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),

@@ -79,9 +79,9 @@ namespace polyfem
 		// if (n_refs > 0)
 		// 	mesh->refine(n_refs, args["refinement_location"], parent_elements);
 
+		if (!skip_boundary_sideset)
+			mesh->compute_boundary_ids(boundary_marker);
 		// TODO: renable this
-		// if (!skip_boundary_sideset)
-		// 	mesh->compute_boundary_ids(boundary_marker);
 		// BoxSetter::set_sidesets(args, *mesh);
 		set_materials();
 
@@ -90,9 +90,9 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		mesh::read_obstacle_geometry(
+		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension(), obstacle);
+			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -116,8 +116,8 @@ namespace polyfem
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
-			mesh::read_fem_geometry(
-				args["geometry"], args["root_path"], mesh,
+			mesh = mesh::read_fem_geometry(
+				args["geometry"], args["root_path"],
 				names, vertices, cells, non_conforming);
 		}
 
@@ -153,9 +153,9 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		mesh::read_obstacle_geometry(
+		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension(), obstacle, names, vertices, cells);
+			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
@@ -167,9 +167,9 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading obstacles...");
-		mesh::read_obstacle_geometry(
+		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension(), obstacle);
+			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

@@ -25,10 +25,9 @@ namespace polyfem::mesh
 		throw std::runtime_error(msg);
 	}
 
-	void read_fem_geometry(
+	std::unique_ptr<Mesh> read_fem_geometry(
 		const json &geometry,
 		const std::string &root_path,
-		std::unique_ptr<Mesh> &mesh,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
 		const std::vector<Eigen::MatrixXi> &_cells,
@@ -114,7 +113,7 @@ namespace polyfem::mesh
 		if (vertices.size() == 0)
 			log_and_throw_error("No valid FEM meshes provided!");
 
-		mesh = Mesh::create(vertices, cells, non_conforming);
+		std::unique_ptr<Mesh> mesh = Mesh::create(vertices, cells, non_conforming);
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -185,16 +184,17 @@ namespace polyfem::mesh
 					return selection->id(cell_id);
 			return 0;
 		});
+
+		return mesh;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void read_obstacle_geometry(
+	Obstacle read_obstacle_geometry(
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::string &root_path,
 		const int dim,
-		Obstacle &obstacle,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
 		const std::vector<Eigen::MatrixXi> &_cells,
@@ -222,10 +222,10 @@ namespace polyfem::mesh
 		assert(_vertices.empty());
 		assert(_cells.empty());
 
-		obstacle.clear();
+		Obstacle obstacle;
 
 		if (geometry.empty())
-			return;
+			return obstacle;
 
 		std::vector<json> geometries;
 		// Note you can add more types here, just add them to geometries
@@ -294,6 +294,8 @@ namespace polyfem::mesh
 					fmt::format("Invalid geometry type \"{}\" for obstacle!", complete_geometry["type"]));
 			}
 		}
+
+		return obstacle;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
