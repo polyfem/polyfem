@@ -398,9 +398,6 @@ namespace polyfem
 		/// Resets the mesh
 		void reset_mesh();
 
-		/// parent element used to track refinements
-		std::vector<int> parent_elements;
-
 		//---------------------------------------------------
 		//-----------------IPC----------------------------------
 		//---------------------------------------------------

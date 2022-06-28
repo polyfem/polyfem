@@ -26,7 +26,7 @@ namespace polyfem
 			CMesh2D(const CMesh2D &) = delete;
 			CMesh2D &operator=(const CMesh2D &) = delete;
 
-			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
+			void refine(const int n_refinement, const double t) override;
 
 			bool is_conforming() const override { return true; }
 

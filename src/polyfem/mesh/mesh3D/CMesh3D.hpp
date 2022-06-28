@@ -27,7 +27,7 @@ namespace polyfem
 
 			bool is_conforming() const override { return true; }
 
-			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
+			void refine(const int n_refinement, const double t) override;
 
 			int n_cells() const override { return int(mesh_.elements.size()); }
 			int n_faces() const override { return int(mesh_.faces.size()); }

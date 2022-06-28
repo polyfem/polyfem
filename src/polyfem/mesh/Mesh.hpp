@@ -116,8 +116,7 @@ namespace polyfem
 			///
 			/// @param[in] n_refinement number of refinements
 			/// @param[in] t position of the refinement location (0.5 for standard refinement)
-			/// @param[out] parent_nodes connection to original elements
-			virtual void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) = 0;
+			virtual void refine(const int n_refinement, const double t) = 0;
 
 			///
 			/// @brief checks if mesh is volume

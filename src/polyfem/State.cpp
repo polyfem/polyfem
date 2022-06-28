@@ -610,9 +610,6 @@ namespace polyfem
 
 					logger().error("element {} is flipped, type {}", i, type);
 					throw "invalid mesh";
-
-					// if(!parent_elements.empty())
-					// 	flipped_elements.push_back(parent_elements[i]);
 				}
 			}
 

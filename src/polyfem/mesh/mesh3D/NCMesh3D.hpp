@@ -181,7 +181,7 @@ namespace polyfem
 			NCMesh3D(const NCMesh3D &) = default;
 			NCMesh3D &operator=(const NCMesh3D &) = default;
 
-			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
+			void refine(const int n_refinement, const double t) override;
 
 			bool is_conforming() const override { return false; }
 

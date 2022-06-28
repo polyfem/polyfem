@@ -15,7 +15,7 @@ namespace polyfem
 {
 	namespace mesh
 	{
-		void CMesh3D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)
+		void CMesh3D::refine(const int n_refinement, const double t)
 		{
 			if (n_refinement <= 0)
 			{
@@ -37,6 +37,7 @@ namespace polyfem
 				}
 
 				bool reverse_grow = false;
+				std::vector<int> parent_nodes;
 				MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refinement, reverse_grow, parent_nodes);
 			}
 

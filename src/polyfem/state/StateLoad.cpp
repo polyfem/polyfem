@@ -29,7 +29,6 @@ namespace polyfem
 		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
-		parent_elements.clear();
 		obstacle.clear();
 
 		stiffness.resize(0, 0);
@@ -78,7 +77,7 @@ namespace polyfem
 		// 		n_refs = 1;
 		// }
 		// if (n_refs > 0)
-		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
+		// 	mesh->refine(n_refs, args["refinement_location"], parent_elements);
 
 		// TODO: renable this
 		// if (!skip_boundary_sideset)
@@ -144,17 +143,6 @@ namespace polyfem
 			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
 		assembler.set_size(mesh->dimension());
-
-		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		// {
-		// 	if (args["force_no_ref_for_harmonic"])
-		// 		logger().warn("Using harmonic bases without refinement");
-		// 	else
-		// 		n_refs = 1;
-		// }
-
-		// if (n_refs > 0)
-		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
 		set_materials();
 

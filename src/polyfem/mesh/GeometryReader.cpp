@@ -78,6 +78,10 @@ namespace polyfem::mesh
 			geometries = geometry.get<std::vector<json>>();
 		}
 
+		// TODO: Temporary global h-refinement until appending meshes is implemented
+		int n_refs = 0;
+		double refinement_location = -1;
+
 		for (int i = 0; i < geometries.size(); i++)
 		{
 			json complete_geometry;
@@ -97,6 +101,14 @@ namespace polyfem::mesh
 			read_fem_mesh(
 				complete_geometry, root_path, vertices, cells, elements,
 				weights, num_faces, surface_selections, volume_selections);
+
+			// TODO: Temporary global h-refinement until appending meshes is implemented
+			n_refs = std::max(n_refs, complete_geometry["n_refs"].get<int>());
+			const json j_ref_loc = complete_geometry["advanced"]["refinement_location"];
+			if (refinement_location < 0)
+				refinement_location = j_ref_loc;
+			else if (refinement_location != j_ref_loc.get<double>())
+				log_and_throw_error("Multiple refinement locations are not supported yet!");
 		}
 
 		if (vertices.size() == 0)
@@ -104,7 +116,7 @@ namespace polyfem::mesh
 
 		mesh = Mesh::create(vertices, cells, non_conforming);
 
-		////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////
 
 		// Only tris and tets
 		if ((vertices.cols() == 2 && cells.cols() == 3) || (vertices.cols() == 3 && cells.cols() == 4))
@@ -123,6 +135,30 @@ namespace polyfem::mesh
 		}
 
 		///////////////////////////////////////////////////////////////////////
+
+		// TODO: renable this
+		// if (args["normalize_mesh"])
+		// 	mesh->normalize();
+
+		// TODO: renable this
+		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
+		// {
+		// 	if (args["force_no_ref_for_harmonic"])
+		// 		logger().warn("Using harmonic bases without refinement");
+		// 	else
+		// 		n_refs = 1;
+		// }
+		// if (n_refs > 0)
+		// {
+		// 	logger().warn("Performing global h-refinement with {} refinements", n_refs);
+		// 	mesh->refine(n_refs, refinement_location);
+		// }
+
+		///////////////////////////////////////////////////////////////////////
+
+		// TODO: renable this
+		// if (!skip_boundary_sideset)
+		// 	mesh->compute_boundary_ids(boundary_marker);
 
 		mesh->compute_boundary_ids([&](const size_t face_id, const RowVectorNd &p, bool is_boundary) {
 			if (!is_boundary)
