@@ -213,9 +213,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0a16db26f782d557c82502e14a5c80aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a0a16db26f782d557c82502e14a5c80aa">is_boundary_element</a> (const int element_global_id) const override</td></tr>
 <tr class="memdesc:a0a16db26f782d557c82502e14a5c80aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">is cell boundary  <a href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a0a16db26f782d557c82502e14a5c80aa">More...</a><br /></td></tr>
 <tr class="separator:a0a16db26f782d557c82502e14a5c80aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26bbdbd857d5b281246377a3bd1bee4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a26bbdbd857d5b281246377a3bd1bee4e">refine</a> (const int n_refinement, const double t, std::vector&lt; int &gt; &amp;parent_nodes) override</td></tr>
-<tr class="memdesc:a26bbdbd857d5b281246377a3bd1bee4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">refine the mesh  <a href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a26bbdbd857d5b281246377a3bd1bee4e">More...</a><br /></td></tr>
-<tr class="separator:a26bbdbd857d5b281246377a3bd1bee4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9803efa9b0a6b35ce5ccf61152e545c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9803efa9b0a6b35ce5ccf61152e545c4">refine</a> (const int n_refinement, const double t) override</td></tr>
+<tr class="memdesc:a9803efa9b0a6b35ce5ccf61152e545c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">refine the mesh  <a href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9803efa9b0a6b35ce5ccf61152e545c4">More...</a><br /></td></tr>
+<tr class="separator:a9803efa9b0a6b35ce5ccf61152e545c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7b8983d229e887ea539afb8ea597dcd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ac7b8983d229e887ea539afb8ea597dcd">build_from_matrices</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F) override</td></tr>
 <tr class="memdesc:ac7b8983d229e887ea539afb8ea597dcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">build a mesh from matrices  <a href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ac7b8983d229e887ea539afb8ea597dcd">More...</a><br /></td></tr>
 <tr class="separator:ac7b8983d229e887ea539afb8ea597dcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -385,9 +385,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afe427d4d84318b343c376d29eb1adbd4 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45c97204cce1364788f4ae7dec54a977 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a45c97204cce1364788f4ae7dec54a977">operator=</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;)=default</td></tr>
 <tr class="separator:a45c97204cce1364788f4ae7dec54a977 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad85a6611e9273063472c5339624b12fe inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad85a6611e9273063472c5339624b12fe">refine</a> (const int n_refinement, const double t, std::vector&lt; int &gt; &amp;parent_nodes)=0</td></tr>
-<tr class="memdesc:ad85a6611e9273063472c5339624b12fe inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">refine the mesh  <a href="classpolyfem_1_1mesh_1_1_mesh.html#ad85a6611e9273063472c5339624b12fe">More...</a><br /></td></tr>
-<tr class="separator:ad85a6611e9273063472c5339624b12fe inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a89e26cedb9d73a8a68b54fc1a33491 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8a89e26cedb9d73a8a68b54fc1a33491">refine</a> (const int n_refinement, const double t)=0</td></tr>
+<tr class="memdesc:a8a89e26cedb9d73a8a68b54fc1a33491 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">refine the mesh  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a8a89e26cedb9d73a8a68b54fc1a33491">More...</a><br /></td></tr>
+<tr class="separator:a8a89e26cedb9d73a8a68b54fc1a33491 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93c9ea4759ded33a8f25ff157033cfd9 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume</a> () const =0</td></tr>
 <tr class="memdesc:a93c9ea4759ded33a8f25ff157033cfd9 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">checks if mesh is volume  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">More...</a><br /></td></tr>
 <tr class="separator:a93c9ea4759ded33a8f25ff157033cfd9 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1320,7 +1320,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00778">778</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00511">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00381">elements</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00069">polyfem::mesh::Mesh2D::face_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00168">n_faces()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00342">valid_to_all_elem()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00510">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00381">elements</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00069">polyfem::mesh::Mesh2D::face_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00168">n_faces()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00342">valid_to_all_elem()</a>.</p>
 
 </div>
 </div>
@@ -1361,7 +1361,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00791">791</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00509">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00560">bounding_box()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00560">bounding_box()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -1401,7 +1401,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00823">823</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00509">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -1441,7 +1441,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00841">841</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00509">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -1481,7 +1481,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00854">854</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00509">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00687">edge_barycenter()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -1521,7 +1521,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00867">867</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00509">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00192">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00508">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00192">edge_vertex()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00383">edges</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00219">is_boundary_edge()</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00169">n_edges()</a>, and <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00329">valid_to_all_edge()</a>.</p>
 
 </div>
 </div>
@@ -1554,7 +1554,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00673">673</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00507">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00168">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00506">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00168">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00285">prepare_mesh()</a>.</p>
 
@@ -3063,8 +3063,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a26bbdbd857d5b281246377a3bd1bee4e" name="a26bbdbd857d5b281246377a3bd1bee4e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a26bbdbd857d5b281246377a3bd1bee4e">&#9670;&nbsp;</a></span>refine()</h2>
+<a id="a9803efa9b0a6b35ce5ccf61152e545c4" name="a9803efa9b0a6b35ce5ccf61152e545c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9803efa9b0a6b35ce5ccf61152e545c4">&#9670;&nbsp;</a></span>refine()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3082,13 +3082,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>t</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
-          <td class="paramname"><em>parent_nodes</em>&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -3108,12 +3102,11 @@ Protected Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">n_refinement</td><td>number of refinements </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>position of the refinement location (0.5 for standard refinement) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">parent_nodes</td><td>connection to original elements </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad85a6611e9273063472c5339624b12fe">polyfem::mesh::Mesh</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8a89e26cedb9d73a8a68b54fc1a33491">polyfem::mesh::Mesh</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00023">23</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
@@ -3578,7 +3571,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00677">677</a> of file <a class="el" href="_n_c_mesh2_d_8cpp_source.html">NCMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00507">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00168">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00506">polyfem::mesh::Mesh::elements_tag_</a>, <a class="el" href="_n_c_mesh2_d_8hpp_source.html#l00168">n_faces()</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
 
 </div>
 </div>

@@ -77,7 +77,7 @@ var searchData=
   ['log_5fand_5fthrow_5ferror_74',['log_and_throw_error',['../namespacepolyfem_1_1mesh.html#a23c11289ee171d378f95b975412b00d2',1,'polyfem::mesh']]],
   ['log_5fmsg_75',['log_msg',['../classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492',1,'polyfem::utils::Timer']]],
   ['log_5ftimes_76',['log_times',['../classcppoptlib_1_1_nonlinear_solver.html#ab17c6e91d53cd79ebc45e2bb9a840b0d',1,'cppoptlib::NonlinearSolver']]],
-  ['logger_77',['logger',['../namespacepolyfem_1_1utils.html#a2456056f352b15603bf9f8bc2948a14f',1,'polyfem::utils']]],
+  ['logger_77',['logger',['../namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd',1,'polyfem']]],
   ['logger_2ecpp_78',['Logger.cpp',['../_logger_8cpp.html',1,'']]],
   ['logger_2ehpp_79',['Logger.hpp',['../_logger_8hpp.html',1,'']]],
   ['logger_5f_80',['logger_',['../_state_init_8cpp.html#ac2b9c1c21e0f8366b6a8e57c3bae34fd',1,'StateInit.cpp']]],

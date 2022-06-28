@@ -36,7 +36,7 @@ var classpolyfem_1_1mesh_1_1_c_mesh2_d =
     [ "operator=", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ab81acf28efaa4c51151570f65fdb8de0", null ],
     [ "operator=", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a0dd60e13a1a9ffa317d543e0cdda32c5", null ],
     [ "point", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af83fbccdc67bac8c265979729cfe8640", null ],
-    [ "refine", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac760f65572170c6870a7d911890de473", null ],
+    [ "refine", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae585a5793769e0d6860d61ef6f03192e", null ],
     [ "set_point", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a9ddff0692147549ba44b6366e912e36d", null ],
     [ "switch_edge", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a0a627d17ee1efd05fd946bb46cbe5927", null ],
     [ "switch_face", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a6bc68ca43b2af673a5f8df3003926f57", null ],

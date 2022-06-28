@@ -97,7 +97,7 @@ var classpolyfem_1_1mesh_1_1_n_c_mesh3_d =
     [ "operator=", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a8ae1044121ed93e79ec81c7e07c6dda3", null ],
     [ "point", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a8b113b51ac14d31aa683bf9893c32c78", null ],
     [ "prepare_mesh", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a41c990b52d185a073d710f88b603c6e6", null ],
-    [ "refine", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a82a8c1b467f1212c943443611700d928", null ],
+    [ "refine", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6fdec4cc54af0219017946bd8ebe8029", null ],
     [ "refine_element", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a7bfe24f02e444983ea0d9717db259ed8", null ],
     [ "refine_elements", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ac8bd31195b915a0944dfb161af6a5b1b", null ],
     [ "set_body_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a42edf0d76871b6cfe066d2e50a385d97", null ],

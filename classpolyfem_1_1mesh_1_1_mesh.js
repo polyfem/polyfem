@@ -72,7 +72,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "point", "classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366", null ],
     [ "prepare_mesh", "classpolyfem_1_1mesh_1_1_mesh.html#a6b77da95a959586a711ee1f4b177d43b", null ],
     [ "quad_area", "classpolyfem_1_1mesh_1_1_mesh.html#a65cc4b375ec05193348b3bfb8c09c581", null ],
-    [ "refine", "classpolyfem_1_1mesh_1_1_mesh.html#ad85a6611e9273063472c5339624b12fe", null ],
+    [ "refine", "classpolyfem_1_1mesh_1_1_mesh.html#a8a89e26cedb9d73a8a68b54fc1a33491", null ],
     [ "set_body_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a7f2e83710adcd0112b142fbfa38d34ee", null ],
     [ "set_body_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14", null ],
     [ "set_boundary_ids", "classpolyfem_1_1mesh_1_1_mesh.html#aeee997a3775b8eb3e7b764bebfc68520", null ],
