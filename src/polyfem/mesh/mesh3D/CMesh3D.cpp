@@ -958,14 +958,14 @@ namespace polyfem
 			}
 
 			logger().debug("-- bbox before normalization:");
-			logger().debug("   min   : {} {} {}", minV(0), minV(1), minV(2));
-			logger().debug("   max   : {} {} {}", maxV(0), maxV(1), maxV(2));
-			logger().debug("   extent: {} {} {}", maxV(0) - minV(0), maxV(1) - minV(1), maxV(2) - minV(2));
+			logger().debug("   min   : {}", minV);
+			logger().debug("   max   : {}", maxV);
+			logger().debug("   extent: {}", maxV - minV);
 			bounding_box(minV, maxV);
 			logger().debug("-- bbox after normalization:");
-			logger().debug("   min   : {} {} {}", minV(0), minV(1), minV(2));
-			logger().debug("   max   : {} {} {}", maxV(0), maxV(1), maxV(2));
-			logger().debug("   extent: {} {} {}", maxV(0) - minV(0), maxV(1) - minV(1), maxV(2) - minV(2));
+			logger().debug("   min   : {}", minV);
+			logger().debug("   max   : {}", maxV);
+			logger().debug("   extent: {}", maxV - minV);
 
 			// V.row(1) /= 100.;
 

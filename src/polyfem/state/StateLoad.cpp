@@ -60,10 +60,7 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
-		if (min.size() == 2)
-			logger().info("mesh bb min [{} {}], max [{} {}]", min(0), min(1), max(0), max(1));
-		else
-			logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
 
@@ -137,10 +134,7 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
-		if (min.size() == 2)
-			logger().info("mesh bb min [{}, {}], max [{}, {}]", min(0), min(1), max(0), max(1));
-		else
-			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
 
