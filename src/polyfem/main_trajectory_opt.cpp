@@ -146,11 +146,13 @@ int main(int argc, char **argv)
 	const std::vector<std::string> bc_methods = {"", "sample", "lsq"}; //, "integrate"};
 	command_line.add_option("--bc_method", bc_method, "Method used for boundary conditions")->check(CLI::IsMember(bc_methods));
 
-	const std::vector<std::string> opt_types = {"material", "shape", "initial"};
-	command_line.add_option("--type", opt_type, "opt type")->check(CLI::IsMember(opt_types));
+	const std::set<std::string> opt_types = {"material", "shape", "initial"};
+	// const std::vector<std::string> opt_types = {"material", "shape", "initial"};
+	// command_line.add_option("--type", opt_type, "opt type")->check(CLI::IsMember(opt_types));
 
-	const std::vector<std::string> target_types = {"exact", "center", "sine", "max-height", "data", "last-center", "marker"};
-	command_line.add_option("--target", target_type, "functional type")->check(CLI::IsMember(target_types));
+	const std::set<std::string> target_types = {"exact", "exact-center", "sine", "max-height", "center-data", "last-center", "marker-data"};
+	// const std::vector<std::string> target_types = {"exact", "exact-center", "sine", "max-height", "center-data", "last-center", "marker-data"};
+	// command_line.add_option("--target", target_type, "functional type")->check(CLI::IsMember(target_types));
 
 	// IO
 	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
@@ -174,6 +176,8 @@ int main(int argc, char **argv)
 	json in_args = json({});
 	json target_in_args = json({});
 
+	Eigen::Vector3d target_position;
+	target_position.setZero();
 	if (!json_file.empty())
 	{
 		std::ifstream file(json_file);
@@ -191,6 +195,36 @@ int main(int argc, char **argv)
 			apply_default_params(in_args);
 			in_args.erase("default_params"); // Remove this so state does not redo the apply
 		}
+
+		if (in_args["optimization"].contains("parameter"))
+			opt_type = in_args["optimization"]["parameter"];
+		assert(opt_types.count(opt_type));
+		
+		if (in_args["optimization"].contains("trajectory"))
+		{
+			auto trajectory_params = in_args["optimization"]["trajectory"];
+
+			if (trajectory_params.contains("type"))
+				target_type = trajectory_params["type"];
+			assert(target_types.count(target_type));
+			
+			if (trajectory_params.contains("path"))
+				target_path = trajectory_params["path"];
+
+			if (target_type == "last-center")
+			{
+				assert(trajectory_params.contains("target_position"));
+				int i = 0;
+				for (double x : trajectory_params["target_position"].get<std::vector<double>>())
+				{
+					if (i >= target_position.size())
+						break;
+					target_position(i) = x;
+					i++;
+				}
+			}
+				
+		}
 	}
 	else
 	{
@@ -198,7 +232,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	if (target_type == "exact" || target_type == "center")
+	if (target_type == "exact" || target_type == "exact-center")
 	{
 		if (!target_path.empty())
 		{
@@ -232,7 +266,7 @@ int main(int argc, char **argv)
 
 	// compute reference solution
 	State state_reference(max_threads);
-	if (target_type == "exact" || target_type == "center") {
+	if (target_type == "exact" || target_type == "exact-center") {
 		logger().info("Start reference solve...");
 		state_reference.init_logger(log_file, log_level, is_quiet);
 		state_reference.init(target_in_args, output_dir);
@@ -309,7 +343,7 @@ int main(int argc, char **argv)
 	std::shared_ptr<CompositeFunctional> func;
 	if (target_type == "exact")
 		func = CompositeFunctional::create("Trajectory");
-	else if (target_type == "center")
+	else if (target_type == "exact-center")
 		func = CompositeFunctional::create("CenterTrajectory");
 	else if (target_type == "last-center")
 		func = CompositeFunctional::create("CenterTrajectory");
@@ -317,9 +351,9 @@ int main(int argc, char **argv)
 		func = CompositeFunctional::create("TargetY");
 	else if (target_type == "max-height")
 		func = CompositeFunctional::create("Height");
-	else if (target_type == "data")
+	else if (target_type == "center-data")
 		func = CompositeFunctional::create("CenterXYTrajectory");
-	else if (target_type == "marker")
+	else if (target_type == "marker-data")
 		func = CompositeFunctional::create("NodeTrajectory");
 	else logger().error("Invalid target type!");
 
@@ -330,7 +364,7 @@ int main(int argc, char **argv)
 		auto &f = *dynamic_cast<TrajectoryFunctional *>(func.get());
 		f.set_reference(&state_reference);
 	}
-	else if (target_type == "center")
+	else if (target_type == "exact-center")
 	{
 		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
 		std::vector<Eigen::VectorXd> barycenters;
@@ -346,8 +380,7 @@ int main(int argc, char **argv)
 		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
 		f.set_transient_integral_type("final");
 		std::vector<Eigen::VectorXd> barycenters(1);
-		barycenters[0].resize(3);
-		barycenters[0] << 0, 0.2, 0;
+		barycenters[0] = target_position;
 		f.set_center_series(barycenters);
 	}
 	else if (target_type == "sine")
@@ -360,7 +393,7 @@ int main(int argc, char **argv)
 			return cos(x) * 0.7;
 		});
 	}
-	else if (target_type == "data")
+	else if (target_type == "center-data")
 	{
 		auto &f = *dynamic_cast<CenterXYTrajectoryFunctional *>(func.get());
 		std::ifstream infile(target_path);
@@ -385,7 +418,7 @@ int main(int argc, char **argv)
 		f.set_center_series(centers);
 		print_centers(centers);
 	}
-	else if (target_type == "marker")
+	else if (target_type == "marker-data")
 	{
 		const std::string scene = "Unit-Cell"; // "Cube"
 		auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(func.get());
