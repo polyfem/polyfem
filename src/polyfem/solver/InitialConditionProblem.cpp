@@ -39,29 +39,17 @@ namespace polyfem
         };
     }
 
-    void InitialConditionProblem::line_search_begin(const TVector &x0, const TVector &x1)
-    {
-        descent_direction = x1 - x0;
-
-        // debug
-        if (opt_params.contains("debug_fd") && opt_params["debug_fd"].get<bool>()) {
-            double t = 1e-5;
-            TVector new_x = x0 + descent_direction * t;
-
-            solution_changed(new_x);
-            double J2 = value(new_x);
-
-            solution_changed(x0);
-            double J1 = value(x0);
-            TVector gradv;
-            gradient(x0, gradv);
-
-            logger().debug("finite difference: {}, derivative: {}", (J2 - J1) / t, gradv.dot(descent_direction));
-        }
-    }
-
     void InitialConditionProblem::line_search_end(bool failed)
     {
+        if (opt_params.contains("export_energies"))
+        {
+            std::ofstream outfile;
+            outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
+
+            outfile << value(cur_x) << "\n";
+            outfile.close();
+        }
+
         if (!failed)
             return;
     }
@@ -84,15 +72,9 @@ namespace polyfem
         dparam_to_dx(gradv, init_sol, init_vel);
     }
 
-    void InitialConditionProblem::post_step(const int iter_num, const TVector &x0)
-    {
-        iter++;
-    }
-
     void InitialConditionProblem::solution_changed(const TVector &newX)
     {
-        static TVector cache_x;
-        if (cache_x.size() == newX.size() && cache_x == newX)
+        if (cur_x.size() == newX.size() && cur_x == newX)
             return;
         
         Eigen::MatrixXd init_sol, init_vel;
@@ -101,6 +83,6 @@ namespace polyfem
         state.initial_vel_update = init_vel;
 
         solve_pde(newX);
-        cache_x = newX;
+        cur_x = newX;
     }
 }

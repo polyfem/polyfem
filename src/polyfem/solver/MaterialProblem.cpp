@@ -97,54 +97,16 @@ namespace polyfem
         }
     }
 
-    void MaterialProblem::line_search_begin(const TVector &x0, const TVector &x1)
-    {
-        descent_direction = x1 - x0;
-
-        // debug
-        if (opt_params.contains("debug_fd") && opt_params["debug_fd"].get<bool>()) {
-            double t = 1e-7;
-            TVector new_x = x0 + descent_direction * t;
-
-            solution_changed(new_x);
-            double J2 = value(new_x);
-
-            solution_changed(x0);
-            double J1 = value(x0);
-            TVector gradv;
-            gradient(x0, gradv);
-
-            logger().debug("finite difference: {}, derivative: {}", (J2 - J1) / t, gradv.dot(descent_direction));
-        }
-    }
-
     void MaterialProblem::line_search_end(bool failed)
     {
-        // if (failed) {
-        //     std::ofstream debug("debug.csv");
-        //     double t = 1e-7;
+        if (opt_params.contains("export_energies"))
+        {
+            std::ofstream outfile;
+            outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
 
-        //     TVector x;
-        //     state_to_x(x, state);
-
-        //     TVector grad;
-        //     double val;
-
-        //     while (t < 1e-2)
-        //     {
-        //         t *= 1.5;
-        //         TVector cur_x = x + descent_direction * t;
-        //         solution_changed(cur_x);
-        //         gradient(cur_x, grad);
-        //         val = value(cur_x);
-
-        //         debug << std::setprecision(16) << t << ", " << val << "," << grad.dot(descent_direction) << "\n";
-        //     }
-
-        //     debug.close();
-        // }
-        // else
-            descent_direction.resize(0);
+            outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << "\n";
+            outfile.close();
+        }
     }
 
     double MaterialProblem::max_step_size(const TVector &x0, const TVector &x1)
@@ -293,21 +255,15 @@ namespace polyfem
         return true;
     }
 
-    void MaterialProblem::post_step(const int iter_num, const TVector &x0)
-    {
-        iter++;
-    }
-
     void MaterialProblem::solution_changed(const TVector &newX)
     {
-        static TVector cache_x;
-        if (cache_x.size() == newX.size() && cache_x == newX)
+        if (cur_x.size() == newX.size() && cur_x == newX)
             return;
         
         x_to_param(newX, state);
         state.build_basis();
         solve_pde(newX);
 
-        cache_x = newX;
+        cur_x = newX;
     }
 }

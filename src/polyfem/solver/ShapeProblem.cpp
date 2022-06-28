@@ -538,24 +538,8 @@ namespace polyfem
 
     void ShapeProblem::line_search_begin(const TVector &x0, const TVector &x1)
     {
-        descent_direction = x1 - x0;
+        OptimizationProblem::line_search_begin(x0, x1);
         state.descent_direction = descent_direction;
-
-        // debug
-        if (opt_params.contains("debug_fd") && opt_params["debug_fd"].get<bool>()) {
-            double t = 1e-7;
-            TVector new_x = x0 + descent_direction * t;
-
-            solution_changed(new_x);
-            double J2 = value(new_x);
-
-            solution_changed(x0);
-            double J1 = value(x0);
-            TVector gradv;
-            gradient(x0, gradv);
-            
-            logger().debug("finite difference: {}, derivative: {}", (J2 - J1) / t, gradv.dot(descent_direction));
-        }
 
         x_at_ls_begin = x0;
         sol_at_ls_begin = state.sol;
@@ -583,71 +567,14 @@ namespace polyfem
 		_candidates.clear();
 		_use_cached_candidates = false;
 
-        if (opt_params.contains("export_energies") && opt_params["export_energies"].get<bool>())
+        if (opt_params.contains("export_energies"))
         {
             std::ofstream outfile;
-            outfile.open("energy.txt", std::ofstream::out | std::ofstream::app);
-            Eigen::MatrixXd V;
-            Eigen::MatrixXi F;
-            state.get_vf(V, F);
-            V.conservativeResize(V.rows(), state.mesh->dimension());
-            TVector x;
-            param_to_x(x, V);
-            outfile << target_value(x) << ", " << smooth_value(x) << ", " << volume_value(x) << ", " << barrier_energy(x) << "\n";
+            outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
+
+            outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << ", " << volume_value(cur_x) << ", " << barrier_energy(cur_x) << "\n";
             outfile.close();
         }
-
-        // if (failed) {
-        //     std::ofstream debug("debug1.csv");
-
-        //     TVector x;
-        //     Eigen::MatrixXd V;
-        //     state.get_vf(V, elements);
-        //     param_to_x(x, V);
-
-        //     TVector grad;
-        //     double val;
-
-        //     std::vector<double> ts;
-        //     ts.push_back(0);
-        //     double t = 1e-6;
-        //     while (t < 0.1)
-        //     {
-        //         t *= 2;
-        //         ts.push_back(t);
-        //     }
-
-        //     bool flag = false;
-        //     double val0;
-
-        //     for (auto t : ts)
-        //     {
-        //         TVector cur_x = x + descent_direction * t;
-        //         solution_changed(cur_x);
-        //         gradient(cur_x, grad);
-        //         val = value(cur_x);
-
-        //         if (t == 0)
-        //             val0 = val;
-
-        //         if (!is_step_valid(x, cur_x))
-        //             break;
-
-        //         const double diff = grad.dot(descent_direction);
-        //         if (t == 0 && diff >= 0)
-        //             flag = true;
-
-        //         debug << std::setprecision(16) << t << ", " << val - val0 << "," << diff << "\n";
-        //         logger().debug("no slim: t={}, real diff={}, expect diff = {}", t, val - val0, diff * t);
-        //     }
-
-        //     debug.close();
-        //     if (!flag) {
-        //         logger().error("something is wrong!");
-        //     }
-        // }
-        // else
-            // descent_direction.resize(0);
     }
 
     void ShapeProblem::save_to_file(const TVector &x0)
@@ -693,8 +620,7 @@ namespace polyfem
 
     void ShapeProblem::solution_changed(const TVector &newX)
     {
-        static TVector cache_x;
-        if (cache_x.size() == newX.size() && cache_x == newX)
+        if (cur_x.size() == newX.size() && cur_x == newX)
             return;
         
         Eigen::MatrixXd V;
@@ -707,7 +633,7 @@ namespace polyfem
         else
             solve_pde(newX);
 
-        cache_x = newX;
+        cur_x = newX;
         cur_grad.resize(0);
         cur_val = std::nan("");
 

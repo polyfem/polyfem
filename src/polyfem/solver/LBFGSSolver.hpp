@@ -83,6 +83,18 @@ namespace cppoptlib
 			this->descent_strategy = 2;
 		}
 
+		void remesh_reset(const ProblemType &objFunc, const TVector &x) override
+		{
+			Superclass::remesh_reset(objFunc, x);
+
+			m_bfgs.reset(x.size(), m_history_size);
+			m_prev_x.resize(x.size());
+			m_prev_grad.resize(x.size());
+
+			// Use gradient descent for first iteration
+			this->descent_strategy = 2;
+		}
+
 		virtual bool compute_update_direction(
 			ProblemType &objFunc,
 			const TVector &x,

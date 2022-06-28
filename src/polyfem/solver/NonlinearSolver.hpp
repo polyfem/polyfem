@@ -49,6 +49,12 @@ namespace cppoptlib
 		{
 			m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
 			solver_info["line_search"] = line_search_name;
+
+			if (solver_params.contains("min_step_size") && solver_params["min_step_size"] >= 0)
+				m_line_search->set_min_step_size(solver_params["min_step_size"]);
+
+			if (solver_params.contains("save_energy_over_line_if_fail"))
+				m_line_search->save_energy_over_line_if_fail = solver_params["save_energy_over_line_if_fail"];
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x)
@@ -120,6 +126,7 @@ namespace cppoptlib
 					POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 					energy = objFunc.value(x);
 				}
+				logger().debug("energy: {}", energy);
 				if (!std::isfinite(energy))
 				{
 					this->m_status = Status::UserDefined;
@@ -135,6 +142,7 @@ namespace cppoptlib
 				}
 
 				const double grad_norm = grad.norm();
+				logger().debug("grad norm: {}", grad_norm);
 				if (std::isnan(grad_norm))
 				{
 					this->m_status = Status::UserDefined;
@@ -167,6 +175,7 @@ namespace cppoptlib
 				}
 
 				const double delta_x_norm = delta_x.norm();
+				logger().debug("descent direction norm: {}", delta_x_norm);
 				if (std::isnan(delta_x_norm))
 				{
 					increase_descent_strategy();
@@ -211,8 +220,9 @@ namespace cppoptlib
 					else
 						break;
 				}
-
+				auto old_x = x;
 				x += rate * delta_x;
+				objFunc.smoothing(old_x, x);
 
 				// -----------
 				// Post update
@@ -220,7 +230,7 @@ namespace cppoptlib
 
 				descent_strategy = default_descent_strategy(); // Reset this for the next iterations
 
-				const double step = (rate * delta_x).norm();
+				const double step = (x - old_x).norm();
 
 				if (objFunc.stop(x))
 				{
@@ -236,6 +246,10 @@ namespace cppoptlib
 					name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
 					this->m_current.gradNorm, this->m_stop.gradNorm, rate, step);
 				++this->m_current.iterations;
+
+				if (objFunc.remesh(x))
+					remesh_reset(objFunc, x);
+
 			} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
 			timer.stop();
@@ -317,6 +331,12 @@ namespace cppoptlib
 		{
 			this->m_current.reset();
 			reset_times();
+			m_error_code = ErrorCode::Success;
+			descent_strategy = default_descent_strategy();
+		}
+
+		virtual void remesh_reset(const ProblemType &objFunc, const TVector &x)
+		{
 			m_error_code = ErrorCode::Success;
 			descent_strategy = default_descent_strategy();
 		}

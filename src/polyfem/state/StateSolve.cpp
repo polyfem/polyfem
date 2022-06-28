@@ -404,6 +404,12 @@ namespace polyfem
 				logger().debug("Solver error: {}", error);
 
 			save_timestep(time, t, t0, dt);
+
+			if (args["differentiable"].get<bool>())
+			{
+				cache_transient_adjoint_quantities(t);
+			}
+
 			logger().info("{}/{} t={}", t, time_steps, time);
 		}
 
@@ -425,9 +431,20 @@ namespace polyfem
 	{
 		solve_transient_tensor_non_linear_init(t0, dt, rhs_assembler);
 
+		if (args["differentiable"].get<bool>())
+		{
+			cache_transient_adjoint_quantities(0);
+		}
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
+
+			if (args["differentiable"].get<bool>())
+			{
+				cache_transient_adjoint_quantities(t);
+			}
+
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
 
@@ -531,6 +548,20 @@ namespace polyfem
 			import_matrix(a_path, args["import"], acceleration);
 		else
 			rhs_assembler.initial_acceleration(acceleration);
+
+		if (args["differentiable"].get<bool>())
+		{
+			if (initial_sol_update.size() > 0)
+				sol = initial_sol_update;
+			else
+				initial_sol_update = sol;
+			if (initial_vel_update.size() > 0)
+				velocity = initial_vel_update;
+			else
+				initial_vel_update = velocity;
+		}
+
+		initial_velocity_cache = velocity;
 
 		timer.stop();
 		logger().trace("done, took {}s", timer.getElapsedTime());
@@ -650,34 +681,37 @@ namespace polyfem
 		nl_problem.reduced_to_full(tmp_sol, sol);
 
 		// Lagging loop (start at 1 because we already did an iteration above)
-		int lag_i;
-		nl_problem.update_lagging(tmp_sol);
-		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
-		for (lag_i = 1; !lagging_converged && lag_i < args["solver"]["contact"]["friction_iterations"]; lag_i++)
+		if (!args["differentiable"].get<bool>())
 		{
-			logger().debug("Lagging iteration {:d}", lag_i + 1);
-			nl_problem.init(sol);
-			nlsolver->minimize(nl_problem, tmp_sol);
-
-			nlsolver->getInfo(nl_solver_info);
-			solver_info.push_back({{"type", "rc"},
-								   {"t", t},
-								   {"lag_i", lag_i},
-								   {"info", nl_solver_info}});
-
-			nl_problem.reduced_to_full(tmp_sol, sol);
+			int lag_i;
 			nl_problem.update_lagging(tmp_sol);
-			lagging_converged = nl_problem.lagging_converged(tmp_sol);
-		}
+			bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
+			for (lag_i = 1; !lagging_converged && lag_i < argsargs["solver"]["contact"]["friction_iterations"]; lag_i++)
+			{
+				logger().debug("Lagging iteration {:d}", lag_i + 1);
+				nl_problem.init(sol);
+				nlsolver->minimize(nl_problem, tmp_sol);
 
-		if (args["solver"]["contact"]["friction_iterations"] > 0)
-		{
-			logger().log(
-				lagging_converged ? spdlog::level::info : spdlog::level::warn,
-				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
-				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
-				lag_i, nl_problem.compute_lagging_error(tmp_sol),
-				args["solver"]["contact"]["friction_convergence_tol"].get<double>());
+				nlsolver->getInfo(nl_solver_info);
+				solver_info.push_back({{"type", "rc"},
+									   {"t", t},
+									   {"lag_i", lag_i},
+									   {"info", nl_solver_info}});
+
+				nl_problem.reduced_to_full(tmp_sol, sol);
+				nl_problem.update_lagging(tmp_sol);
+				lagging_converged = nl_problem.lagging_converged(tmp_sol);
+			}
+
+			if (args["solver"]["contact"]["friction_iterations"] > 0)
+			{
+				logger().log(
+					lagging_converged ? spdlog::level::info : spdlog::level::warn,
+					"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
+					lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
+					lag_i, nl_problem.compute_lagging_error(tmp_sol),
+					args["solver"]["contact"]["friction_convergence_tol"].get<double>());
+			}
 		}
 
 		{
