@@ -13,6 +13,9 @@ namespace polyfem
 		class Obstacle
 		{
 		public:
+			Obstacle();
+			virtual ~Obstacle() = default;
+
 			void append_mesh(
 				const Eigen::MatrixXd &vertices,
 				const Eigen::VectorXi &codim_vertices,
