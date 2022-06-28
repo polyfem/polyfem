@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/solver/forms/Form.hpp>
+
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/State.hpp>
@@ -147,7 +149,7 @@ namespace polyfem
 
 			inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
 
-			void set_project_to_psd(bool val) { project_to_psd = val; }
+			void set_project_to_psd(bool val);
 			bool is_project_to_psd() const { return project_to_psd; }
 
 			double &lagged_damping_weight() { return _lagged_damping_weight; }
@@ -171,6 +173,8 @@ namespace polyfem
 			Eigen::MatrixXd _current_rhs;
 			StiffnessMatrix cached_stiffness;
 			utils::SpareMatrixCache mat_cache;
+
+			std::vector<std::shared_ptr<Form>> forms_;
 
 			bool ignore_inertia;
 

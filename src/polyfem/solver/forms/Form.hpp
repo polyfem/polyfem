@@ -9,8 +9,6 @@ namespace polyfem
 		class Form
 		{
 		public:
-			Form();
-
 			virtual ~Form() {}
 
 			virtual void init(const Eigen::VectorXd &x) {}
@@ -30,7 +28,7 @@ namespace polyfem
 
 			virtual void solution_changed(const Eigen::VectorXd &newX) {}
 
-			virtual void update_quantities(const double t, const Eigen::VectorXd &x) = 0;
+			virtual void update_quantities(const double t, const Eigen::VectorXd &x) {}
 
 			//more than one step?
 			virtual void init_lagging(const Eigen::VectorXd &x){};

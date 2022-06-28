@@ -65,7 +65,8 @@ namespace polyfem
 			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
 			update_constraint_set(displaced_surface);
 
-			Eigen::MatrixXd grad_energy; //TODO
+			Eigen::MatrixXd grad_energy(x.size(), 1); //TODO
+			grad_energy.setZero();
 
 			Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 				state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
