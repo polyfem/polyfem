@@ -188,7 +188,7 @@ namespace polyfem
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
 		/// stiffness and mass matrix.
-		/// Stiffness is not compute for non linear problems
+		/// Stiffness is not compute for nonlinear problems
 		StiffnessMatrix stiffness;
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
@@ -267,9 +267,9 @@ namespace polyfem
 
 		/// timedependent stuff cached
 		StepData step_data;
-		/// initialize transient solver
+		/// initialize solver
 		/// @param[in] c_sol current solution
-		void init_transient(Eigen::VectorXd &c_sol);
+		void init_solve(Eigen::VectorXd &c_sol);
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
@@ -296,32 +296,27 @@ namespace polyfem
 		/// @param[in] rhs_assembler rhs assembler
 		/// @param[out] x solution
 		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		/// solves transient tensor non linear problem
+		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		/// initialized the non linear solver
+		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		/// initialize the nonlinear solver
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		/// steps trought time
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[in] t time
-		/// @param[out] solver_info output solver stats
-		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
+		void init_nonlinear_tensor_solve();
 		/// solves a linear problem
 		void solve_linear();
 		/// solves a navier stokes
 		void solve_navier_stokes();
 		/// solves nonlinear problems
-		void solve_non_linear();
+		/// @param[in] t (optional) time step id
+		void solve_tensor_nonlinear(const int t = 0);
 
 		/// factory to create the nl solver depdending on input
-		/// @return non linear solver (eg newton or LBFGS)
+		/// @return nonlinear solver (eg newton or LBFGS)
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
