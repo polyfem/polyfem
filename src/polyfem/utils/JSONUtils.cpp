@@ -116,13 +116,10 @@ namespace polyfem
 						&& new_path.back() != "authen_t1")
 					{
 						json::json_pointer parent = new_path.parent_pointer();
-						if (parent.empty() || (parent.back() != "solver_params" && parent.back() != "problem_params"))
-						{
-							logger().warn(
-								"Unknown key in json (path={}{})",
-								path_prefix, op["path"].get<std::string>());
-							found_unknown_arg = true;
-						}
+						logger().warn(
+							"Unknown key in json (path={}{})",
+							path_prefix, op["path"].get<std::string>());
+						found_unknown_arg = true;
 					}
 				}
 			}

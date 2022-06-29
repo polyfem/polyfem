@@ -1127,48 +1127,6 @@ namespace polyfem
 		logger().info(" took {}s", assigning_rhs_time);
 	}
 
-	void State::init_timesteps()
-	{
-		const double t0 = args["time"]["t0"];
-		double tend = args["time"]["tend"];          // default=1
-		int time_steps = args["time"]["time_steps"]; // default=10 set in State::State()
-		double dt = args["time"]["dt"];
-
-		if (tend > 0)
-		{
-			if (dt > 0) // Explicit timestep param. has priority
-			{
-				time_steps = int(ceil((tend - t0) / dt));
-			}
-			else
-			{
-				dt = (tend - t0) / time_steps;
-			}
-		}
-		else if (dt > 0) // Compute tend from dt and time_steps
-		{
-			tend = dt * time_steps + t0;
-		}
-		else // Use default tend
-		{
-			tend = 1;
-			dt = (tend - t0) / time_steps;
-		}
-		assert(tend > 0 && dt > 0 && time_steps > 0);
-
-		if (tend <= t0)
-		{
-			tend = t0 + time_steps * dt;
-		}
-
-		// Store these for possible use later
-		args["time"]["tend"] = tend;
-		args["time"]["dt"] = dt;
-		args["time"]["time_steps"] = time_steps;
-
-		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
-	}
-
 	void State::solve_problem()
 	{
 		if (!mesh)
@@ -1209,7 +1167,6 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			init_timesteps();
 			const double t0 = args["time"]["t0"];
 			const int time_steps = args["time"]["time_steps"];
 			const double dt = args["time"]["dt"];
@@ -1236,7 +1193,7 @@ namespace polyfem
 			else
 				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
 		}
-		else // if(!problem->is_time_dependent())
+		else
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
