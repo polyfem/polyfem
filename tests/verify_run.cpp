@@ -47,19 +47,26 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		if (args.contains("time"))
 		{
 			json t_args = args["time"];
-			if (t_args.contains("tend") || t_args.contains("dt"))
+			if (t_args.contains("tend") && t_args.contains("dt"))
 			{
-				if (!t_args.contains("dt"))
-				{
-					t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
-				}
-				if (!t_args.contains("time_steps"))
-				{
-					t_args["time_steps"] = t_args["tend"].get<double>() / t_args["dt"].get<double>();
-				}
-				t_args["tend"] = t_args["dt"].get<double>();
+				t_args.erase("tend");
+				t_args["time_steps"] = 1;
 			}
-			t_args["time_steps"] = 1;
+			else if (t_args.contains("tend") && t_args.contains("time_steps"))
+			{
+				t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+				t_args["time_steps"] = 1;
+				t_args.erase("tend");
+			}
+			else if (t_args.contains("dt") && t_args.contains("time_steps"))
+			{
+				t_args["time_steps"] = 1;
+			}
+			else
+			{
+				// Required to have at two of tend, dt, time_steps
+				REQUIRE(false);
+			}
 			args["time"] = t_args;
 		}
 		args["root_path"] = json_file;
