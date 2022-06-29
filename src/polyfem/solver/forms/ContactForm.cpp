@@ -14,7 +14,7 @@ namespace polyfem
 		ContactForm::ContactForm(const State &state,
 								 const double dhat,
 								 const bool use_adaptive_barrier_stiffness,
-								 double barrier_stiffness,
+								 const double &barrier_stiffness,
 								 const bool is_time_dependent,
 								 const ipc::BroadPhaseMethod broad_phase_method,
 								 const double ccd_tolerance,
@@ -72,11 +72,12 @@ namespace polyfem
 				state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
 			grad_barrier = state_.collision_mesh.to_full_dof(grad_barrier);
 
-			barrier_stiffness_ = ipc::initial_barrier_stiffness(
-				ipc::world_bbox_diagonal_length(displaced), dhat_, state_.avg_mass,
-				grad_energy, grad_barrier, max_barrier_stiffness_);
+			// TODO uncomment me
+			// barrier_stiffness_ = ipc::initial_barrier_stiffness(
+			// 	ipc::world_bbox_diagonal_length(displaced), dhat_, state_.avg_mass,
+			// 	grad_energy, grad_barrier, max_barrier_stiffness_);
 
-			utils::logger().debug("adaptive barrier stiffness {}", barrier_stiffness_);
+			utils::logger().debug("adaptive barrier form stiffness {}", barrier_stiffness_);
 		}
 
 		void ContactForm::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
@@ -221,9 +222,10 @@ namespace polyfem
 				if (is_time_dependent_)
 				{
 					double prev_barrier_stiffness = barrier_stiffness_;
-					ipc::update_barrier_stiffness(
-						prev_distance_, dist_sqr, max_barrier_stiffness_,
-						barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
+					// TODO uncomment me
+					// ipc::update_barrier_stiffness(
+					// 	prev_distance_, dist_sqr, max_barrier_stiffness_,
+					// 	barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
 					if (prev_barrier_stiffness != barrier_stiffness_)
 					{
 						polyfem::utils::logger().debug(

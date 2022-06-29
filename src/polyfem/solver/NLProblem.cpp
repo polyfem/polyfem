@@ -314,8 +314,8 @@ namespace polyfem
 
 				if (!ignore_inertia && is_time_dependent)
 				{
-					_current_rhs *= time_integrator()->acceleration_scaling();
-					_current_rhs += state.mass * time_integrator()->x_tilde();
+					// _current_rhs *= time_integrator()->acceleration_scaling();
+					_current_rhs += state.mass * time_integrator()->x_tilde() / time_integrator()->acceleration_scaling();
 				}
 
 				if (reduced_size != full_size)
@@ -523,14 +523,14 @@ namespace polyfem
 
 		bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 		{
-			// TVector full0, full1;
-			// reduced_to_full(x0, full0);
-			// reduced_to_full(x1, full1);
-			// for (auto &f : forms_)
-			// 	if (f->is_step_valid(full0, full1))
-			// 		return false;
+			TVector full0, full1;
+			reduced_to_full(x0, full0);
+			reduced_to_full(x1, full1);
+			for (auto &f : forms_)
+				if (!f->is_step_valid(full0, full1))
+					return false;
 
-			// return true;
+			return true;
 
 			//TODO: DELETE ME BELOW
 			TVector grad = TVector::Zero(reduced_size);
@@ -565,12 +565,11 @@ namespace polyfem
 			const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.n_boundary_samples(), t);
 
 			double intertia_energy = 0;
-			double scaling = 1;
 			if (!ignore_inertia && is_time_dependent)
 			{
-				scaling = time_integrator()->acceleration_scaling();
+				const double scaling = time_integrator()->acceleration_scaling();
 				const TVector tmp = full - time_integrator()->x_tilde();
-				intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
+				intertia_energy = (0.5 / scaling) * tmp.transpose() * state.mass * tmp;
 			}
 
 			// ½(x−(xᵗ+hvᵗ+h²M⁻¹fₑ))ᵀM(x−(xᵗ+hvᵗ+h²M⁻¹fₑ))
@@ -599,16 +598,36 @@ namespace polyfem
 
 			double lagged_damping = _lagged_damping_weight * (full - x_lagged).squaredNorm();
 
-			const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
+			const double non_contact_terms = elastic_energy + body_energy + intertia_energy + friction_energy + lagged_damping;
 
 			{
-				const double asd = elastic_energy + body_energy + friction_energy + lagged_damping + intertia_energy / scaling + _barrier_stiffness * collision_energy;
+				const double asd = elastic_energy + body_energy + friction_energy + lagged_damping + intertia_energy + _barrier_stiffness * collision_energy;
 				//TODO: KEEP ONLY fvalue
 				double fvalue = 0;
-				for (auto &f : forms_)
+				for (int i = 0; i < forms_.size(); ++i)
+				{
+					const auto &f = forms_[i];
+					if (only_elastic && i == 2)
+						continue;
 					fvalue += f->value(full);
+				}
 
-				assert(fabs(asd - fvalue) < 1e-10);
+				if (fabs(asd - fvalue) > 1e-9)
+				{
+					double xxx = 0;
+					for (int i = 0; i < forms_.size(); ++i)
+					{
+						const auto &f = forms_[i];
+						std::cout << i << "->" << f->value(full) << std::endl;
+						if (i == 2)
+							continue;
+						xxx += f->value(full);
+					}
+					const double asdasd = elastic_energy + body_energy + friction_energy + lagged_damping + intertia_energy;
+					std::cout << xxx - asdasd << std::endl;
+				}
+
+				assert(fabs(asd - fvalue) < 1e-9);
 			}
 
 			return non_contact_terms + _barrier_stiffness * collision_energy;
@@ -637,6 +656,21 @@ namespace polyfem
 			gradient_no_rhs(x, grad, only_elastic);
 
 			grad -= current_rhs();
+			//TODO delete above
+
+			TVector full, tmp;
+			reduced_to_full(x, full);
+			TVector fgrad(full.size());
+			for (int i = 0; i < forms_.size(); ++i)
+			{
+				const auto &f = forms_[i];
+				if (only_elastic && i == 2)
+					continue;
+				f->first_derivative(full, tmp);
+				fgrad += tmp;
+			}
+			const double asdasd = (grad - fgrad).norm();
+			assert(asdasd < 1e-10);
 
 			full_to_reduced(grad, gradv);
 		}
@@ -652,12 +686,13 @@ namespace polyfem
 			ElasticForm asd(state);
 			Eigen::VectorXd xxx;
 			asd.first_derivative(full, xxx);
-			assert((xxx - grad).norm() < 1e-15);
+			const double asdasd = (xxx - grad).norm();
+			assert(asdasd < 1e-10);
 
 			if (!ignore_inertia && is_time_dependent)
 			{
-				grad *= time_integrator()->acceleration_scaling();
-				grad += state.mass * full;
+				// grad *= time_integrator()->acceleration_scaling();
+				grad += state.mass * full / time_integrator()->acceleration_scaling();
 			}
 
 			Eigen::VectorXd grad_barrier;
@@ -720,7 +755,7 @@ namespace polyfem
 
 				if (!ignore_inertia && is_time_dependent)
 				{
-					energy_hessian *= time_integrator()->acceleration_scaling();
+					// energy_hessian *= time_integrator()->acceleration_scaling();
 				}
 			}
 

@@ -20,7 +20,7 @@ namespace polyfem
 		void BodyForm::first_derivative(const Eigen::VectorXd &, Eigen::VectorXd &gradv)
 		{
 			//REMEMBER -!!!!!
-			gradv = current_rhs();
+			gradv = -current_rhs();
 		}
 
 		void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)

@@ -18,7 +18,7 @@ namespace polyfem
 			ContactForm(const State &state,
 						const double dhat,
 						const bool use_adaptive_barrier_stiffness,
-						double barrier_stiffness,
+						const double &barrier_stiffness,
 						const bool is_time_dependent,
 						const ipc::BroadPhaseMethod broad_phase_method,
 						const double ccd_tolerance,
@@ -43,7 +43,7 @@ namespace polyfem
 		private:
 			const double dhat_;
 			const bool use_adaptive_barrier_stiffness_;
-			double barrier_stiffness_;
+			const double &barrier_stiffness_;
 
 			const bool is_time_dependent_;
 
