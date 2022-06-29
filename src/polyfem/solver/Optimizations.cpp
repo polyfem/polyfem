@@ -37,7 +37,8 @@ namespace polyfem
 			opt_params["fDelta"] = 0;
 		if (!opt_params.contains("gradNorm"))
 			opt_params["gradNorm"] = 0;
-		opt_params["use_grad_norm_tol"] = 0;
+		if (!opt_params.contains("use_grad_norm_tol"))
+			opt_params["use_grad_norm_tol"] = 0;
 		
 		opt_params["useGradNorm"] = true;
 		opt_params["relativeGradient"] = false;
@@ -87,7 +88,7 @@ namespace polyfem
 		for (int e = 0; e < state.bases.size(); e++)
 		{
 			const int body_id = state.mesh->get_body_id(e);
-			if (!body_id_map.count(body_id) && optimize_body_ids.count(body_id))
+			if (!body_id_map.count(body_id) && (optimize_body_ids.count(body_id) || optimize_body_ids.size() == 0))
 			{
 				body_id_map[body_id] = {{state.bases[e].bases[0].global()[0].index, n}}; 
 				n++;
@@ -317,7 +318,8 @@ namespace polyfem
 			opt_params["fDelta"] = 0;
 		if (!opt_params.contains("gradNorm"))
 			opt_params["gradNorm"] = 0;
-		opt_params["use_grad_norm_tol"] = 0;
+		if (!opt_params.contains("use_grad_norm_tol"))
+			opt_params["use_grad_norm_tol"] = 0;
 		
 		opt_params["useGradNorm"] = true;
 		opt_params["relativeGradient"] = false;
@@ -347,7 +349,7 @@ namespace polyfem
 		for (int e = 0; e < dof; e++)
 		{
 			const int body_id = state.mesh->get_body_id(e);
-			if (!body_id_map.count(body_id) && optimize_body_ids.count(body_id))
+			if (!body_id_map.count(body_id) && (optimize_body_ids.count(body_id) || optimize_body_ids.size() == 0))
 			{
 				body_id_map[body_id] = {{e, n}}; 
 				n++;
@@ -810,7 +812,8 @@ namespace polyfem
 			opt_params["fDelta"] = 0;
 		if (!opt_params.contains("gradNorm"))
 			opt_params["gradNorm"] = 0;
-		opt_params["use_grad_norm_tol"] = 0;
+		if (!opt_params.contains("use_grad_norm_tol"))
+			opt_params["use_grad_norm_tol"] = 0;
 		if (!opt_params.contains("nl_iterations"))
 			opt_params["nl_iterations"] = 500;
 		
