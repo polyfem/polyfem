@@ -1986,4 +1986,15 @@ namespace polyfem
 		pvd.SaveFile(name.c_str());
 	}
 
+	void State::save_subsolve(const int i, const int t)
+	{
+		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
+			return;
+
+		if (!solve_export_to_file)
+			solution_frames.emplace_back();
+
+		save_vtu(resolve_output_path(fmt::format("solve_{:d}.vtu", i)), t);
+	}
+
 } // namespace polyfem
