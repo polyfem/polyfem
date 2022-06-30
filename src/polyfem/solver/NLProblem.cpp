@@ -163,8 +163,8 @@ namespace polyfem
 
 			if (!ignore_inertia && is_time_dependent)
 			{
-				grad_energy *= time_integrator()->acceleration_scaling();
-				grad_energy += state.mass * full;
+				// grad_energy *= time_integrator()->acceleration_scaling();
+				grad_energy += state.mass * full / time_integrator()->acceleration_scaling();
 			}
 
 			grad_energy -= current_rhs();
@@ -600,10 +600,11 @@ namespace polyfem
 
 			const double non_contact_terms = elastic_energy + body_energy + intertia_energy + friction_energy + lagged_damping;
 
+			double fvalue = 0;
 			{
 				const double asd = elastic_energy + body_energy + friction_energy + lagged_damping + intertia_energy + _barrier_stiffness * collision_energy;
 				//TODO: KEEP ONLY fvalue
-				double fvalue = 0;
+
 				for (int i = 0; i < forms_.size(); ++i)
 				{
 					const auto &f = forms_[i];
@@ -630,7 +631,9 @@ namespace polyfem
 				assert(fabs(asd - fvalue) < 1e-9);
 			}
 
-			return non_contact_terms + _barrier_stiffness * collision_energy;
+			const double result = non_contact_terms + _barrier_stiffness * collision_energy;
+			assert(fabs(result - fvalue) < 1e-9);
+			return result;
 		}
 
 		void NLProblem::compute_cached_stiffness()
@@ -670,7 +673,7 @@ namespace polyfem
 				fgrad += tmp;
 			}
 			const double asdasd = (grad - fgrad).norm();
-			assert(asdasd < 1e-10);
+			assert(asdasd < 1e-9);
 
 			full_to_reduced(grad, gradv);
 		}
@@ -763,7 +766,7 @@ namespace polyfem
 			if (!ignore_inertia && is_time_dependent)
 			{
 				POLYFEM_SCOPED_TIMER("\tinertia hessian time");
-				inertia_hessian = state.mass;
+				inertia_hessian = state.mass / time_integrator()->acceleration_scaling();
 			}
 
 			THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
