@@ -887,6 +887,7 @@ namespace polyfem
 
 		// fix certain object
 		std::set<int> optimize_body_ids;
+		std::set<int> optimize_boundary_ids;
 		if (opt_params.contains("optimize_body_ids"))
 		{
 			for (int i : opt_params["optimize_body_ids"])
@@ -901,8 +902,31 @@ namespace polyfem
 							fixed_nodes.insert(g.index);
 			}
 		}
+		else if (opt_params.contains("optimize_boundary_ids"))
+		{
+			for (int i : opt_params["optimize_boundary_ids"])
+				optimize_boundary_ids.insert(i);
+
+			for (const auto &lb : state.total_local_boundary)
+			{
+				const int e = lb.element_id();
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const auto nodes = state.bases[e].local_nodes_for_primitive(primitive_global_id, *state.mesh);
+
+					if (!optimize_boundary_ids.count(state.mesh->get_boundary_id(primitive_global_id)))
+					{
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							fixed_nodes.insert(state.bases[e].bases[nodes(n)].global()[0].index);
+						}
+					}
+				}
+			}
+		}
 		else
-			logger().info("No optimization body specified, optimize shape of every mesh...");
+			logger().info("No optimization body or boundary specified, optimize shape of every mesh...");
 
 		// fix dirichlet bc
 		if (!opt_params.contains("fix_dirichlet") || opt_params["fix_dirichlet"].get<bool>() == true)
