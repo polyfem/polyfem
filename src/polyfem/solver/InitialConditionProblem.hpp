@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <polyfem/OptimizationProblem.hpp>
 
 namespace polyfem
@@ -8,7 +7,6 @@ namespace polyfem
 	class InitialConditionProblem : public OptimizationProblem
 	{
 	public:
-
 		InitialConditionProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args);
 
 		double value(const TVector &x) override;
@@ -27,7 +25,7 @@ namespace polyfem
 
 		void solution_changed(const TVector &newX) override;
 
-		std::function<void(const TVector& x, Eigen::MatrixXd& init_sol, Eigen::MatrixXd& init_vel)> x_to_param;
-		std::function<void(TVector& x, const Eigen::MatrixXd& init_sol, const Eigen::MatrixXd& init_vel)> param_to_x, dparam_to_dx;
+		std::function<void(const TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel)> x_to_param;
+		std::function<void(TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel)> param_to_x, dparam_to_dx;
 	};
 } // namespace polyfem

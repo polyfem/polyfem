@@ -71,7 +71,8 @@ void print_centers(const Eigen::MatrixXd &centers, const std::vector<bool> &acti
 	std::cout << "]\n";
 }
 
-void vector2matrix(const Eigen::VectorXd& vec, Eigen::MatrixXd& mat) {
+void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
+{
 	int size = sqrt(vec.size());
 	assert(size * size == vec.size());
 
@@ -199,7 +200,7 @@ int main(int argc, char **argv)
 		if (in_args["optimization"].contains("parameter"))
 			opt_type = in_args["optimization"]["parameter"];
 		assert(opt_types.count(opt_type));
-		
+
 		if (in_args["optimization"].contains("trajectory"))
 		{
 			auto trajectory_params = in_args["optimization"]["trajectory"];
@@ -207,7 +208,7 @@ int main(int argc, char **argv)
 			if (trajectory_params.contains("type"))
 				target_type = trajectory_params["type"];
 			assert(target_types.count(target_type));
-			
+
 			if (trajectory_params.contains("path"))
 				target_path = trajectory_params["path"];
 
@@ -223,7 +224,6 @@ int main(int argc, char **argv)
 					i++;
 				}
 			}
-				
 		}
 	}
 	else
@@ -252,7 +252,8 @@ int main(int argc, char **argv)
 				target_in_args.erase("default_params"); // Remove this so state does not redo the apply
 			}
 		}
-		else logger().error("Target json input missing!");
+		else
+			logger().error("Target json input missing!");
 	}
 
 	if (!solver.empty())
@@ -266,7 +267,8 @@ int main(int argc, char **argv)
 
 	// compute reference solution
 	State state_reference(max_threads);
-	if (target_type == "exact" || target_type == "exact-center") {
+	if (target_type == "exact" || target_type == "exact-center")
+	{
 		logger().info("Start reference solve...");
 		state_reference.init_logger(log_file, log_level, is_quiet);
 		state_reference.init(target_in_args, output_dir);
@@ -282,8 +284,8 @@ int main(int argc, char **argv)
 		state_reference.compute_mesh_stats();
 		state_reference.build_basis();
 
-        const int cur_log = state_reference.current_log_level;
-        state_reference.set_log_level(in_args["optimization"].contains("solve_log_level") ? in_args["optimization"]["solve_log_level"].get<int>() : cur_log);
+		const int cur_log = state_reference.current_log_level;
+		state_reference.set_log_level(in_args["optimization"].contains("solve_log_level") ? in_args["optimization"]["solve_log_level"].get<int>() : cur_log);
 		state_reference.args["save_time_sequence"] = false;
 		state_reference.assemble_rhs();
 		state_reference.assemble_stiffness_mat();
@@ -292,26 +294,27 @@ int main(int argc, char **argv)
 
 		if (!state_reference.problem->is_time_dependent())
 			state_reference.save_vtu(state_reference.resolve_output_path("target.vtu"), 0.);
-		
+
 		logger().info("Reference solve done!");
 	}
 
-    State state(max_threads);
-    state.init_logger(log_file, log_level, is_quiet);
-    state.init(in_args, output_dir);
-    state.load_mesh();
+	State state(max_threads);
+	state.init_logger(log_file, log_level, is_quiet);
+	state.init(in_args, output_dir);
+	state.load_mesh();
 
-	if (state.args["has_collision"] && !state.args.contains("barrier_stiffness")) {
+	if (state.args["has_collision"] && !state.args.contains("barrier_stiffness"))
+	{
 		logger().error("Not fixing the barrier stiffness!");
 		return EXIT_FAILURE;
 	}
 
-    // Mesh was not loaded successfully; load_mesh() logged the error.
-    if (state.mesh == nullptr)
-    {
-        // Cannot proceed without a mesh.
-        return EXIT_FAILURE;
-    }
+	// Mesh was not loaded successfully; load_mesh() logged the error.
+	if (state.mesh == nullptr)
+	{
+		// Cannot proceed without a mesh.
+		return EXIT_FAILURE;
+	}
 
 	std::set<int> interested_ids;
 	if (in_args.contains("meshes") && !in_args["meshes"].empty())
@@ -329,14 +332,14 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
-    state.compute_mesh_stats();
-    state.build_basis();
 
-    const int cur_log = state.current_log_level;
-    state.set_log_level(in_args["optimization"].contains("solve_log_level") ? in_args["optimization"]["solve_log_level"].get<int>() : cur_log);
-    state.assemble_rhs();
-    state.assemble_stiffness_mat();
+	state.compute_mesh_stats();
+	state.build_basis();
+
+	const int cur_log = state.current_log_level;
+	state.set_log_level(in_args["optimization"].contains("solve_log_level") ? in_args["optimization"]["solve_log_level"].get<int>() : cur_log);
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
 	state.set_log_level(cur_log);
 
 	assert(state.formulation() == "LinearElasticity" || state.formulation() == "NeoHookean");
@@ -355,7 +358,8 @@ int main(int argc, char **argv)
 		func = CompositeFunctional::create("CenterXYTrajectory");
 	else if (target_type == "marker-data")
 		func = CompositeFunctional::create("NodeTrajectory");
-	else logger().error("Invalid target type!");
+	else
+		logger().error("Invalid target type!");
 
 	func->set_interested_ids(interested_ids);
 
@@ -456,7 +460,7 @@ int main(int argc, char **argv)
 					marker_rest_position[y + 5 * z] = center;
 				}
 		}
-		
+
 		// markers to nodes
 		Eigen::MatrixXd targets;
 		targets.setZero(state.n_bases, state.mesh->dimension());
@@ -464,7 +468,7 @@ int main(int argc, char **argv)
 		Eigen::MatrixXd V;
 		Eigen::MatrixXi F;
 		state.get_vf(V, F, false);
-		assert (targets.rows() == V.rows());
+		assert(targets.rows() == V.rows());
 		for (int s = 0; s < marker_rest_position.size(); s++)
 		{
 			if (scene == "Unit-Cell")
@@ -501,7 +505,8 @@ int main(int argc, char **argv)
 		material_optimization(state, func, state.args["optimization"]);
 	else if (opt_type == "initial")
 		initial_condition_optimization(state, func, state.args["optimization"]);
-	else logger().error("Invalid optimization type!");
+	else
+		logger().error("Invalid optimization type!");
 
 	return EXIT_SUCCESS;
 }

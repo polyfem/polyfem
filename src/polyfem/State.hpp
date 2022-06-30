@@ -22,6 +22,9 @@
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <ipc/collisions/collision_constraint.hpp>
+#include <ipc/friction/friction_constraint.hpp>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -182,6 +185,10 @@ namespace polyfem
 		/// Mapping from input nodes to FE nodes
 		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
 
+		//list of dirichlet boundary geometry nodes
+		std::vector<int> boundary_gnodes;
+		std::vector<bool> boundary_gnodes_mask;
+
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
 		/// used to store assembly values for pressure for small problems
@@ -205,7 +212,7 @@ namespace polyfem
 		bool use_avg_pressure;
 
 		/// number of bases
-		int n_bases;
+		int n_bases, n_geom_bases;
 		/// number of pressure bases
 		int n_pressure_bases;
 
@@ -445,6 +452,588 @@ namespace polyfem
 		bool is_obstacle_vertex(const size_t vi) const
 		{
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
+		}
+
+		//---------------------------------------------------
+		//-----------------OUTPUT----------------------------
+		//---------------------------------------------------
+
+		/// boundary visualization mesh vertices
+		Eigen::MatrixXd boundary_vis_vertices;
+		/// boundary visualization mesh vertices pre image in ref element
+		Eigen::MatrixXd boundary_vis_local_vertices;
+		/// boundary visualization mesh connectivity
+		Eigen::MatrixXi boundary_vis_elements;
+		/// boundary visualization mesh elements ids
+		Eigen::MatrixXi boundary_vis_elements_ids;
+		/// boundary visualization mesh edge/face id
+		Eigen::MatrixXi boundary_vis_primitive_ids;
+		/// boundary visualization mesh normals
+		Eigen::MatrixXd boundary_vis_normals;
+
+		/// grid mesh points to export solution sampled on a grid
+		Eigen::MatrixXd grid_points;
+		/// grid mesh mapping to fe elements
+		Eigen::MatrixXi grid_points_to_elements;
+		/// grid mesh boundaries
+		Eigen::MatrixXd grid_points_bc;
+
+		/// spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
+		Eigen::Vector4d spectrum;
+
+		/// information of the solver, eg num iteration, time, errors, etc
+		/// the informations varies depending on the solver
+		json solver_info;
+
+		/// max edge lenght
+		double mesh_size;
+		/// min edge lenght
+		double min_edge_length;
+		/// avg edge lenght
+		double average_edge_length;
+
+		/// errors, lp_err is in fact an L8 error
+		double l2_err, linf_err, lp_err, h1_err, h1_semi_err, grad_max_err;
+
+		/// non zeros and sytem matrix size
+		/// num dof is the total dof in the system
+		long long nn_zero, mat_size, num_dofs;
+
+		/// time to construct the basis
+		double building_basis_time;
+		/// time to load the mesh
+		double loading_mesh_time;
+		/// time to build the polygonal/polyhedral bases
+		double computing_poly_basis_time;
+		/// time to assembly
+		double assembling_stiffness_mat_time;
+		/// time to computing the rhs
+		double assigning_rhs_time;
+		/// time to solve
+		double solving_time;
+		/// time to compute error
+		double computing_errors_time;
+
+		/// statiscs on angle, compute only when using p_ref (false by default)
+		double max_angle;
+		/// statiscs on tri/tet quality, compute only when using p_ref (false by default)
+		double sigma_max, sigma_min, sigma_avg;
+
+		/// number of flipped elements, compute only when using count_flipped_els (false by default)
+		int n_flipped;
+
+		/// statiscs on the mesh (simplices)
+		int simplex_count;
+		/// statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption
+		int regular_count;
+		/// statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption
+		int regular_boundary_count;
+		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
+		int simple_singular_count;
+		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
+		int multi_singular_count;
+		/// statiscs on the mesh (boundary quads/hexs), see Polyspline paper for desciption
+		int boundary_count;
+		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
+		int non_regular_boundary_count;
+		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
+		int non_regular_count;
+		/// statiscs on the mesh (not quad/hex simplex), see Polyspline paper for desciption
+		int undefined_count;
+		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
+		int multi_singular_boundary_count;
+
+		/// flag to decide if exporting the time dependent solution to files
+		/// or save it in the solution_frames array
+		bool solve_export_to_file = true;
+		/// saves the frames in a vector instead of VTU
+		std::vector<SolutionFrame> solution_frames;
+
+		/// extracts the boundary mesh for visualization, called in build_basis
+		void extract_vis_boundary_mesh();
+		//assemble matrices, step 4 of solve
+		void assemble_stiffness_mat();
+		//compute rhs, step 3 of solve
+		void assemble_rhs();
+		//solves the proble, step 5
+		void solve_problem();
+
+		//timedependent stuff cached
+		StepData step_data;
+		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
+		void init_transient(Eigen::VectorXd &c_sol);
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
+		void solve_linear();
+		void solve_navier_stokes();
+		void solve_non_linear();
+
+		// Differentiation functional, only used for transient problems
+		void cache_transient_adjoint_quantities(const int current_step);
+		struct DiffCachedParts
+		{
+			StiffnessMatrix gradu_h;
+			StiffnessMatrix gradu_h_next;
+			Eigen::MatrixXd u;
+			double kappa;
+			ipc::Constraints contact_set;
+			ipc::FrictionConstraints friction_constraint_set;
+		};
+		std::vector<DiffCachedParts> diff_cached;
+		Eigen::MatrixXd initial_velocity_cache;
+
+		// one_form, for export use
+		Eigen::VectorXd descent_direction;
+		// Aux functions for setting up adjoint equations
+		void compute_force_hessian_nonlinear(std::shared_ptr<NLProblem> nl, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order = 1);
+		void compute_force_hessian(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order = 1);
+		void compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface = false);
+		void compute_adjoint_rhs(const SummableFunctional &j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b);
+		// Sets up the adjoint problem for static PDE
+		void setup_adjoint(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params)> &grad_j, StiffnessMatrix &A, Eigen::VectorXd &b, bool only_surface = false);
+		// Solves the adjoint PDE for derivatives
+		void solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution);
+		void solve_adjoint(const SummableFunctional &j, Eigen::MatrixXd &adjoint_solution);
+		void solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
+		void solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution);
+		// Discretizes a vector field over the current mesh
+		void sample_field(std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1);
+		// Change geometric node positions
+		void set_v(const Eigen::MatrixXd &vertices);
+		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true);
+		// Computes the integral of a given functional J = \int j dx
+		double J(const IntegrableFunctional &j)
+		{
+			assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
+			return problem->is_time_dependent() ? J_transient(j) : J_static(j);
+		}
+		double J_static(const IntegrableFunctional &j);
+		double J_static(const SummableFunctional &j);
+		double J_transient(const IntegrableFunctional &j);
+		double J_transient_step(const IntegrableFunctional &j, const int step);
+		// Aux functions for computing derivatives of different forces wrt. different parameters
+		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
+		void compute_shape_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_shape_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
+		void compute_mass_derivative_term(const Eigen::MatrixXd &adjoint_sol, const Eigen::MatrixXd &velocity, Eigen::VectorXd &term);
+		// Derivatives wrt. an input functional J = \int j dx
+		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_material_static(const SummableFunctional &j, Eigen::VectorXd &one_form);
+		// For transient problems, Derivatives wrt. an input functional J = sum_i J_i, where J_i = \int j dx at time step i
+		void dJ_full_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form); // including material, friction, damping
+		void dJ_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_friction_transient(const IntegrableFunctional &j, double &one_form);
+		void dJ_damping_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_shape_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		// More generally, J_i is some function of a vector of \int j dx at time step i
+		double J_transient(const std::vector<IntegrableFunctional> &js, const std::function<double(const Eigen::VectorXd &, const json &)> &Ji);
+		void solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
+		void dJ_full_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form); // including material, friction, damping
+		void dJ_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
+		void dJ_friction_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, double &one_form);
+		void dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
+		void dJ_initial_condition(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
+		void dJ_shape_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
+		// unify transient and static
+		void dJ_shape(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
+		{
+			if (problem->is_time_dependent())
+				dJ_shape_transient(j, one_form);
+			else
+				dJ_shape_static(j, one_form);
+		}
+		void dJ_material(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
+		{
+			if (problem->is_time_dependent())
+				dJ_material_transient(j, one_form);
+			else
+				dJ_material_static(j, one_form);
+		}
+
+		// unify everything
+		Eigen::VectorXd sum_gradient(const SummableFunctional &j, const std::string &type)
+		{
+			assert((problem->is_time_dependent() && diff_cached.size() > 0));
+
+			Eigen::VectorXd grad;
+			if (type == "material")
+				dJ_material_static(j, grad);
+			else
+			{
+				logger().error("Only static problem and material derivative is supported in sum_gradient!");
+				exit(0);
+			}
+			return grad;
+		}
+		Eigen::VectorXd integral_gradient(const IntegrableFunctional &j, const std::string &type)
+		{
+			assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
+
+			Eigen::VectorXd grad;
+			if (type == "material")
+				dJ_material(j, grad);
+			else if (type == "shape")
+				dJ_shape(j, grad);
+			else
+			{
+				assert(problem->is_time_dependent());
+				if (type == "initial-velocity")
+				{
+					Eigen::VectorXd tmp;
+					dJ_initial_condition(j, tmp);
+					grad = tmp.tail(tmp.size() / 2);
+				}
+				else if (type == "initial-position")
+				{
+					Eigen::VectorXd tmp;
+					dJ_initial_condition(j, tmp);
+					grad = tmp.head(tmp.size() / 2);
+				}
+				else if (type == "initial-condition")
+					dJ_initial_condition(j, grad);
+				else if (type == "friction-coefficient")
+				{
+					grad.resize(1);
+					dJ_friction_transient(j, grad(0));
+				}
+				else if (type == "damping-parameter")
+					dJ_damping_transient(j, grad);
+				else if (type == "material-full")
+					dJ_full_material_transient(j, grad);
+				else
+					logger().error("Unknown derivative type!");
+			}
+			return grad;
+		}
+		Eigen::VectorXd integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type)
+		{
+			assert(problem->is_time_dependent() && diff_cached.size() > 0);
+
+			Eigen::VectorXd grad;
+			if (type == "material")
+				dJ_material_transient(js, dJi_dintegrals, grad);
+			else if (type == "shape")
+				dJ_shape_transient(js, dJi_dintegrals, grad);
+			else if (type == "initial-velocity")
+			{
+				Eigen::VectorXd tmp;
+				dJ_initial_condition(js, dJi_dintegrals, tmp);
+				grad = tmp.tail(tmp.size() / 2);
+			}
+			else if (type == "initial-position")
+			{
+				Eigen::VectorXd tmp;
+				dJ_initial_condition(js, dJi_dintegrals, tmp);
+				grad = tmp.head(tmp.size() / 2);
+			}
+			else if (type == "initial-condition")
+				dJ_initial_condition(js, dJi_dintegrals, grad);
+			else if (type == "friction-coefficient")
+			{
+				grad.resize(1);
+				dJ_friction_transient(js, dJi_dintegrals, grad(0));
+			}
+			else if (type == "damping-parameter")
+				dJ_damping_transient(js, dJi_dintegrals, grad);
+			else if (type == "material-full")
+				dJ_full_material_transient(js, dJi_dintegrals, grad);
+			else
+				logger().error("Unknown derivative type!");
+
+			return grad;
+		}
+		// Alters the mesh for a given discrete perturbation (vector) field over the vertices
+		void perturb_mesh(const Eigen::MatrixXd &perturbation);
+		void perturb_material(const Eigen::MatrixXd &perturbation);
+
+		// to replace the initial condition
+		Eigen::MatrixXd initial_sol_update, initial_vel_update;
+		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
+		StiffnessMatrix down_sampling_mat;
+
+		/// compute the errors, not part of solve
+		void compute_errors();
+		/// saves all data on the disk according to the input params
+		void export_data();
+
+		/// saves the output statistic to a stream
+		/// @param[in] out stream to write output
+		void save_json(std::ostream &out);
+		/// saves the output statistic to a json object
+		/// @param[in] j output json
+		void save_json(nlohmann::json &j);
+		/// saves the output statistic to disc accoding to params
+		void save_json();
+
+		/// evaluates the function fun at the vertices on the mesh
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] basis basis function
+		/// @param[in] fun function to interpolate
+		/// @param[out] result output
+		void compute_vertex_values(int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, Eigen::MatrixXd &result);
+		/// compute von mises stress at quadrature points for the function fun, also compute the interpolated function
+		/// @param[in] fun function to used
+		/// @param[out] result output displacement
+		/// @param[out] von_mises output von mises
+		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises);
+		/// interpolate the function fun.
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
+		///interpolate the function fun.
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] basis basis function
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
+
+		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] el_index element index
+		/// @param[in] local_pts points in the reference element
+		/// @param[out] result output
+		/// @param[out] result_grad output gradients
+		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
+		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] el_index element index
+		/// @param[in] local_pts points in the reference element
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[out] result_grad output gradients
+		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
+		/// interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
+		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] el_index element index
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] bases basis function
+		/// @param[in] local_pts points in the reference element
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[out] result_grad output gradients
+		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
+
+		/// checks if mises are not nan
+		/// @param[in] fun function to used
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		/// @return if mises are nan
+		bool check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only);
+		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result scalar value
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
+		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		/// the scalar value is averaged around every node to make it continuos
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result_scalar scalar value
+		/// @param[out] result_tensor tensor value
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		void average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool use_sampler, const bool boundary_only);
+		/// compute tensor quantity (ie stress tensor or velocy)
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] fun function to used
+		/// @param[out] result resulting tensor
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
+		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
+
+		/// computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[in] compute_avg if compute the average across elements
+		/// @param[out] result resulting value
+		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
+		/// computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[out] result resulting value
+		void interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
+		/// computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
+		/// disp is the displacement of the surface vertices
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[in] disp displacement to deform mesh
+		/// @param[in] compute_avg if compute the average across elements
+		/// @param[out] result resulting value
+		/// @param[out] stresses resulting stresses
+		/// @param[out] mises resulting mises
+		/// @param[in] skip_orientation skip reorientation of surface
+		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, const bool skip_orientation = false);
+		/// same as interpolate_boundary_tensor_function with disp=0
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[in] fun function to used
+		/// @param[in] compute_avg if compute the average across elements
+		/// @param[out] result resulting value
+		/// @param[out] stresses resulting stresses
+		/// @param[out] mises resulting mises
+		/// @param[in] skip_orientation skip reorientation of surface
+		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, const bool skip_orientation = false);
+
+		/// returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
+		/// @param[in] pts boundary points
+		/// @param[in] faces boundary faces
+		/// @param[out] sidesets resulting sidesets
+		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
+
+		//-----------PATH management
+		/// Get the root path for the state (e.g., args["root_path"] or ".")
+		/// @return root path
+		std::string root_path() const;
+		/// Resolve input path relative to root_path() if the path is not absolute.
+		/// @param[in] path path to resolve
+		/// @param[in] only_if_exists resolve only if relative path exists
+		/// @return path
+		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
+		/// Resolve output path relative to output_dir if the path is not absolute
+		/// @param[in] path path to resolve
+		/// @return resolvedpath
+		std::string resolve_output_path(const std::string &path) const;
+
+		/// compute stats (counts els type, mesh lenght, etc), step 1 of solve
+		void compute_mesh_stats();
+
+		/// builds visualzation mesh, upsampled mesh used for visualization
+		/// the visualization mesh is a dense mesh per element all disconnected
+		/// it also retuns the mapping to element id and discretization of every elment
+		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// @param[out] points mesh points
+		/// @param[out] tets mesh cells
+		/// @param[out] el_id mapping from points to elements id
+		/// @param[out] discr mapping from points to discretization order
+		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
+		/// builds high-der visualzation mesh per element all disconnected
+		/// it also retuns the mapping to element id and discretization of every elment
+		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// @param[out] points mesh points
+		/// @param[out] elements mesh high-order cells
+		/// @param[out] el_id mapping from points to elements id
+		/// @param[out] discr mapping from points to discretization order
+		void build_high_oder_vis_mesh(Eigen::MatrixXd &points, std::vector<std::vector<int>> &elements, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
+
+		/// saves the vtu file for time t
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_vtu(const std::string &name, const double t);
+		/// saves the volume vtu file
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_volume(const std::string &path, const double t);
+		/// saves the surface vtu file for for surface quantites, eg traction forces
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_surface(const std::string &name);
+		///saves the wireframe
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_wire(const std::string &name, const double t);
+		/// save a PVD of a time dependent simulation
+		/// @param[in] name filename
+		/// @param[in] vtu_names names of the vtu files
+		/// @param[in] time_steps total time stesp
+		/// @param[in] t0 initial time
+		/// @param[in] dt delta t
+		/// @param[in] skip_frame every which frame to skip
+		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
+		/// saves a timestep
+		/// @param[in] time time in secs
+		/// @param[in] t time index
+		/// @param[in] t0 initial time
+		/// @param[in] dt delta t
+		void save_timestep(const double time, const int t, const double t0, const double dt);
+		/// saves a subsolve when save_solve_sequence_debug is true
+		/// @param[in] i sub solve index
+		/// @param[in] t time index
+		void save_subsolve(const int i, const int t);
+
+		/// samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
+		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
+		{
+			// TODO: fix me TESEO
+			// Eigen::MatrixXd discr;
+			// Eigen::MatrixXi el_id;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
+
+			// build_vis_mesh(points, tets, el_id, discr);
+			// interpolate_function(points.rows(), sol, fun, false, boundary_only);
+
+			// args["export"]["vis_boundary_only"] = tmp;
+		}
+
+		/// samples to stess tensor on the visualization mesh and return them (fun)
+		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
+		{
+			// TODO: fix me TESEO
+			// Eigen::MatrixXd points;
+			// Eigen::MatrixXi tets;
+			// Eigen::MatrixXi el_id;
+			// Eigen::MatrixXd discr;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
+
+			// build_vis_mesh(points, tets, el_id, discr);
+			// compute_tensor_value(points.rows(), sol, fun, false, boundary_only);
+
+			// args["export"]["vis_boundary_only"] = tmp;
+		}
+
+		/// samples to von mises stesses on the visualization mesh and return them (fun)
+		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
+		{
+			// TODO: fix me TESEO
+			// Eigen::MatrixXd points;
+			// Eigen::MatrixXi tets;
+			// Eigen::MatrixXi el_id;
+			// Eigen::MatrixXd discr;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
+
+			// build_vis_mesh(points, tets, el_id, discr);
+			// compute_scalar_value(points.rows(), sol, fun, false, boundary_only);
+
+			// args["export"]["vis_boundary_only"] = tmp;
+		}
+
+		/// samples to averaged von mises stesses on the visualization mesh and return them (fun)
+		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
+		{
+			// TODO: fix me TESEO
+			// Eigen::MatrixXd points;
+			// Eigen::MatrixXi tets;
+			// Eigen::MatrixXi el_id;
+			// Eigen::MatrixXd discr;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
+
+			// build_vis_mesh(points, tets, el_id, discr);
+			// average_grad_based_function(points.rows(), sol, fun, tfun, false, boundary_only);
+
+			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
 		//---------------------------------------------------

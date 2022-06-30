@@ -13,22 +13,23 @@ namespace polyfem
 	{
 		boundary_smoothing() = default;
 
-		void build_laplacian(const int n_verts, const int dim_, const Eigen::MatrixXi &boundary_edges, const std::vector<int>& boundary_nodes_, const std::set<int> &fixed_nodes_)
+		void build_laplacian(const int n_verts, const int dim_, const Eigen::MatrixXi &boundary_edges, const std::vector<int> &boundary_nodes_, const std::set<int> &fixed_nodes_)
 		{
 			dim = dim_;
-			boundary_nodes = boundary_nodes_; 
+			boundary_nodes = boundary_nodes_;
 
 			fixed_nodes_mask.assign(n_verts, false);
 			for (int fn : fixed_nodes_)
 				fixed_nodes_mask[fn] = true;
-			
+
 			L.setZero();
 			L.resize(n_verts, n_verts);
 			// construct adjacency matrix, only boundary
 			adj.setZero();
-			adj.resize(n_verts, n_verts); 
-			std::vector<Eigen::Triplet<bool> > T_adj;
-			for (int e = 0; e < boundary_edges.rows(); e++) {
+			adj.resize(n_verts, n_verts);
+			std::vector<Eigen::Triplet<bool>> T_adj;
+			for (int e = 0; e < boundary_edges.rows(); e++)
+			{
 				T_adj.emplace_back(boundary_edges(e, 0), boundary_edges(e, 1), true);
 				T_adj.emplace_back(boundary_edges(e, 1), boundary_edges(e, 0), true);
 			}
@@ -40,12 +41,14 @@ namespace polyfem
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, k); it; ++it)
 					degrees[k]++;
 
-			std::vector<Eigen::Triplet<double> > T_L;
-			for (int k=0; k < adj.outerSize(); ++k) {
+			std::vector<Eigen::Triplet<double>> T_L;
+			for (int k = 0; k < adj.outerSize(); ++k)
+			{
 				if (degrees[k] == 0 || fixed_nodes_mask[k])
 					continue;
 				T_L.emplace_back(k, k, degrees[k]);
-				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj,k); it; ++it) {
+				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, k); it; ++it)
+				{
 					assert(it.row() == k);
 					T_L.emplace_back(it.row(), it.col(), -1);
 				}
@@ -55,23 +58,23 @@ namespace polyfem
 			L.prune([](int i, int j, double val) { return abs(val) > 1e-12; });
 		}
 
-		void smoothing_grad(const Eigen::MatrixXd& V, Eigen::VectorXd& grad)
+		void smoothing_grad(const Eigen::MatrixXd &V, Eigen::VectorXd &grad)
 		{
 			grad.setZero(V.rows() * dim);
 			// add smoothing energy grad to one form
 			Eigen::MatrixXd smoothing_grad = 2 * (L.transpose() * (L * V));
-			
+
 			for (int b : boundary_nodes)
 				grad.block(b * dim, 0, dim, 1) = smoothing_grad.block(b, 0, 1, dim).transpose();
 		}
 
-		double smoothing_energy(const Eigen::MatrixXd& V)
+		double smoothing_energy(const Eigen::MatrixXd &V)
 		{
 			Eigen::MatrixXd laplacian = L * V;
 			return laplacian.squaredNorm();
 		}
 
-		double weighted_smoothing_energy(const Eigen::MatrixXd& V)
+		double weighted_smoothing_energy(const Eigen::MatrixXd &V)
 		{
 			double energy = 0;
 			for (int b : boundary_nodes)
@@ -93,7 +96,7 @@ namespace polyfem
 			return energy;
 		}
 
-		void weighted_smoothing_grad(const Eigen::MatrixXd& V, Eigen::VectorXd& grad)
+		void weighted_smoothing_grad(const Eigen::MatrixXd &V, Eigen::VectorXd &grad)
 		{
 			grad.setZero(V.rows() * dim);
 			for (int b : boundary_nodes)
@@ -116,7 +119,7 @@ namespace polyfem
 				}
 				s = s / sum_norm;
 
-				for (int d = 0; d < dim; d++) 
+				for (int d = 0; d < dim; d++)
 				{
 					grad(b * dim + d) += (s(d) * valence - s.squaredNorm() * sum_normalized(d)) * p * pow(s.norm(), p - 2.) / sum_norm;
 				}
@@ -180,9 +183,9 @@ namespace polyfem
 		bool remesh(TVector &x);
 		void build_fixed_nodes();
 
-		std::function<void(const TVector& x, Eigen::MatrixXd& V)> x_to_param;
-		std::function<void(TVector& x, const Eigen::MatrixXd& V)> param_to_x;
-		std::function<void(TVector& grad_x, const TVector& grad_v)> dparam_to_dx;
+		std::function<void(const TVector &x, Eigen::MatrixXd &V)> x_to_param;
+		std::function<void(TVector &x, const Eigen::MatrixXd &V)> param_to_x;
+		std::function<void(TVector &grad_x, const TVector &grad_v)> dparam_to_dx;
 
 	private:
 		double smoothing_weight = 0.;
@@ -207,7 +210,7 @@ namespace polyfem
 		// only used for problems with contact
 
 		bool has_collision;
-		
+
 		double _dhat;
 		double _prev_distance;
 		double _barrier_stiffness;

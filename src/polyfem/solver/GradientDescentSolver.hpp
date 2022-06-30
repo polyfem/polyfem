@@ -49,7 +49,6 @@ namespace cppoptlib
 		}
 
 	protected:
-
 		void reset(const ProblemType &objFunc, const TVector &x) override
 		{
 			Superclass::reset(objFunc, x);

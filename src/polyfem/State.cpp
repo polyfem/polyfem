@@ -591,6 +591,8 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
+		boundary_gnodes.clear();
+		boundary_gnodes_mask.clear();
 		input_dirichelt.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
@@ -603,6 +605,7 @@ namespace polyfem
 		pressure.resize(0, 0);
 
 		n_bases = 0;
+		n_geom_bases = 0;
 		n_pressure_bases = 0;
 
 		sigma_avg = 0;
@@ -759,9 +762,90 @@ namespace polyfem
 		}
 		timer.stop();
 
-		build_polygonal_basis();
+		if (n_geom_bases == 0)
+			n_geom_bases = n_bases;
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
+
+		const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
+		const auto &cur_mus = assembler.lame_params().mu_mat_;
+		if (cur_lambdas.size() == 0 || cur_mus.size() == 0)
+		{
+			Eigen::MatrixXd lambdas(bases.size(), 1), mus(bases.size(), 1);
+			for (int e = 0; e < bases.size(); e++)
+			{
+				RowVectorNd barycenter;
+				if (!mesh->is_volume())
+				{
+					const auto &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+					barycenter = mesh2d.face_barycenter(e);
+				}
+				else
+				{
+					const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+					barycenter = mesh3d.cell_barycenter(e);
+				}
+				assembler.lame_params().lambda_mu(/*not used*/ 0, /*not used*/ 0, /*not used*/ 0, barycenter(0), barycenter(1), barycenter.size() < 3 ? 0.0 : barycenter(2), e, lambdas(e), mus(e));
+			}
+			assembler.update_lame_params(lambdas, mus);
+		}
+
+		build_polygonal_basis();
+
+		if (args["contact"]["enabled"])
+		{
+			Eigen::SparseMatrix<bool, 0> tmp1(n_geom_bases, n_bases);
+			Eigen::SparseMatrix<bool, 0> tmp2(n_geom_bases, n_bases);
+			std::vector<Eigen::Triplet<bool>> coeffs1, coeffs2;
+			for (int e = 0; e < gbases.size(); e++)
+			{
+				const auto &gbs = gbases[e].bases;
+				const auto &bs = bases[e].bases;
+
+				Eigen::MatrixXd local_pts;
+				const int order = bs.front().order();
+				assert(order <= 2);
+				if (mesh->is_volume())
+					autogen::p_nodes_3d(order, local_pts);
+				else
+					autogen::p_nodes_2d(order, local_pts);
+
+				ElementAssemblyValues vals;
+				vals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
+
+				for (int i = 0; i < bs.size(); i++)
+				{
+					for (int j = 0; j < gbs.size(); j++)
+					{
+						if (std::abs(vals.basis_values[j].val(i) - 1) < 1e-7)
+							coeffs1.emplace_back(gbs[j].global()[0].index, bs[i].global()[0].index, true);
+						else if (std::abs(vals.basis_values[j].val(i) - 0.5) < 1e-7)
+							coeffs2.emplace_back(gbs[j].global()[0].index, bs[i].global()[0].index, true);
+						else if (std::abs(vals.basis_values[j].val(i)) < 1e-7)
+						{
+						}
+						else
+							assert(false);
+					}
+				}
+			}
+			tmp1.setFromTriplets(coeffs1.begin(), coeffs1.end());
+			tmp2.setFromTriplets(coeffs2.begin(), coeffs2.end());
+
+			std::vector<Eigen::Triplet<double>> coeffs;
+			down_sampling_mat.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
+			for (int k = 0; k < tmp1.outerSize(); ++k)
+				for (Eigen::SparseMatrix<bool, 0>::InnerIterator it(tmp1, k); it; ++it)
+					if (it.value())
+						for (int d = 0; d < mesh->dimension(); d++)
+							coeffs.emplace_back(it.row() * mesh->dimension() + d, it.col() * mesh->dimension() + d, 1);
+			for (int k = 0; k < tmp2.outerSize(); ++k)
+				for (Eigen::SparseMatrix<bool, 0>::InnerIterator it(tmp2, k); it; ++it)
+					if (it.value())
+						for (int d = 0; d < mesh->dimension(); d++)
+							coeffs.emplace_back(it.row() * mesh->dimension() + d, it.col() * mesh->dimension() + d, 0.5);
+			down_sampling_mat.setFromTriplets(coeffs.begin(), coeffs.end());
+		}
 
 		for (const auto &lb : local_boundary)
 			total_local_boundary.emplace_back(lb);
@@ -853,6 +937,10 @@ namespace polyfem
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+		boundary_gnodes_mask.assign(n_geom_bases, false);
+		for (auto &bnode : boundary_gnodes)
+			boundary_gnodes_mask[bnode] = true;
 
 		for (int b = 0; b < args["boundary_conditions"]["dirichlet_boundary"].size(); ++b)
 		{
@@ -1389,6 +1477,8 @@ namespace polyfem
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
 		spectrum.setZero();
+
+		diff_cached = {};
 
 		igl::Timer timer;
 		timer.start();

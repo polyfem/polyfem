@@ -28,18 +28,17 @@ namespace polyfem
 
 		void line_search_end(bool failed);
 		bool remesh(TVector &x) { return false; };
-		
+
 		void solution_changed(const TVector &newX) override;
 
 		// map x (optimization variables) to parameters (lambda, mu, friction, damping)
- 		std::function<void(const TVector& x, State &state)> x_to_param;
- 		// map parameters to x
- 		std::function<void(TVector& x, State &state)> param_to_x;
- 		// compute gradient wrt. x given: gradient wrt. parameters, values of parameters
- 		std::function<void(TVector& dx, const Eigen::VectorXd& dparams, State& state)> dparam_to_dx;
+		std::function<void(const TVector &x, State &state)> x_to_param;
+		// map parameters to x
+		std::function<void(TVector &x, State &state)> param_to_x;
+		// compute gradient wrt. x given: gradient wrt. parameters, values of parameters
+		std::function<void(TVector &dx, const Eigen::VectorXd &dparams, State &state)> dparam_to_dx;
 
 	private:
-
 		double min_mu, min_lambda;
 		double max_mu, max_lambda;
 
