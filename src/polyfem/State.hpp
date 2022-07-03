@@ -80,7 +80,7 @@ namespace polyfem
 	{
 	public:
 		//---------------------------------------------------
-		//-----------------initializtion----------------------------------
+		//-----------------initializtion---------------------
 		//---------------------------------------------------
 
 		~State() = default;
@@ -100,7 +100,7 @@ namespace polyfem
 		json args;
 
 		//---------------------------------------------------
-		//-----------------logger----------------------------------
+		//-----------------logger----------------------------
 		//---------------------------------------------------
 
 		/// initalizing the logger
@@ -147,7 +147,7 @@ namespace polyfem
 		double avg_mass;
 
 		//---------------------------------------------------
-		//-----------------assembly----------------------------------
+		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
 		/// assembler, it dispatches call to the differnt assembers based on the formulation
@@ -221,7 +221,7 @@ namespace polyfem
 		{
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			//TODO verify me
+			// TODO: verify me
 			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
 
 			return n_b_samples;
@@ -235,7 +235,7 @@ namespace polyfem
 		void p_refinement(const mesh::Mesh3D &mesh3d);
 
 		//---------------------------------------------------
-		//-----------------solver----------------------------------
+		//-----------------solver----------------------------
 		//---------------------------------------------------
 
 		/// solves the proble, step 5
@@ -317,7 +317,7 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
 		//---------------------------------------------------
-		//-----------------nodes flags----------------------------------
+		//-----------------nodes flags-----------------------
 		//---------------------------------------------------
 
 		/// list of boundary nodes
@@ -337,7 +337,7 @@ namespace polyfem
 		bool has_dhat = false;
 
 		//---------------------------------------------------
-		//-----------------Geometry----------------------------------
+		//-----------------Geometry--------------------------
 		//---------------------------------------------------
 
 		/// current mesh, it can be a Mesh2D or Mesh3D
@@ -399,7 +399,7 @@ namespace polyfem
 		void reset_mesh();
 
 		//---------------------------------------------------
-		//-----------------IPC----------------------------------
+		//-----------------IPC-------------------------------
 		//---------------------------------------------------
 
 		/// boundary mesh used for collision
@@ -436,12 +436,8 @@ namespace polyfem
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
 		}
 
-		// Eigen::MatrixXd boundary_nodes_pos_pressure;
-		// Eigen::MatrixXi boundary_edges_pressure;
-		// Eigen::MatrixXi boundary_triangles_pressure;
-
 		//---------------------------------------------------
-		//-----------------OUTPUT----------------------------------
+		//-----------------OUTPUT----------------------------
 		//---------------------------------------------------
 
 		/// boundary visualization mesh vertices
@@ -749,7 +745,7 @@ namespace polyfem
 		/// samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd discr;
 			// Eigen::MatrixXi el_id;
 			// const bool tmp = args["export"]["vis_boundary_only"];
@@ -764,7 +760,7 @@ namespace polyfem
 		/// samples to stess tensor on the visualization mesh and return them (fun)
 		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd points;
 			// Eigen::MatrixXi tets;
 			// Eigen::MatrixXi el_id;
@@ -781,7 +777,7 @@ namespace polyfem
 		/// samples to von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd points;
 			// Eigen::MatrixXi tets;
 			// Eigen::MatrixXi el_id;
@@ -798,7 +794,7 @@ namespace polyfem
 		/// samples to averaged von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd points;
 			// Eigen::MatrixXi tets;
 			// Eigen::MatrixXi el_id;

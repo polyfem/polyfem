@@ -59,13 +59,38 @@
 # FetchContent Options
 ################################################################################
 
-# option(FETCHCONTENT_FULLY_DISCONNECTED   "Disables all attempts to download or update content and assumes source dirs already exist")
-# option(FETCHCONTENT_UPDATES_DISCONNECTED "Enables UPDATE_DISCONNECTED behavior for all content population")
+# option(FETCHCONTENT_FULLY_DISCONNECTED   "Disables all attempts to download or update content and assumes source dirs already exist" OFF)
+# option(FETCHCONTENT_UPDATES_DISCONNECTED "Enables UPDATE_DISCONNECTED behavior for all content population" OFF)
 # option(FETCHCONTENT_QUIET                "Enables QUIET option for all content population" ON)
 # set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps" CACHE PATH "Directory under which to collect all populated content")
 
-################################################################################
 # Development Locations for Third Party Libraries
-################################################################################
+# set(FETCHCONTENT_SOURCE_DIR_AMGCL "" CACHE PATH "When not empty, overrides where to find pre-populated content for amgcl" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_BOOST "" CACHE PATH "When not empty, overrides where to find pre-populated content for Boost" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_BOOST-CMAKE "" CACHE PATH "When not empty, overrides where to find pre-populated content for boost-cmake" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_BVH_LIB "" CACHE PATH "When not empty, overrides where to find pre-populated content for BVH_lib" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_CATCH2 "" CACHE PATH "When not empty, overrides where to find pre-populated content for catch2" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_CLI11 "" CACHE PATH "When not empty, overrides where to find pre-populated content for cli11" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_CPPOPTLIB "" CACHE PATH "When not empty, overrides where to find pre-populated content for cppoptlib" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_EIGEN "" CACHE PATH "When not empty, overrides where to find pre-populated content for eigen" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_HDF5 "" CACHE PATH "When not empty, overrides where to find pre-populated content for hdf5" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_HIGH_FIVE "" CACHE PATH "When not empty, overrides where to find pre-populated content for high_five" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_IPC_TOOLKIT "" CACHE PATH "When not empty, overrides where to find pre-populated content for ipc_toolkit" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_LBFGSPP "" CACHE PATH "When not empty, overrides where to find pre-populated content for lbfgspp" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_LIBIGL "" CACHE PATH "When not empty, overrides where to find pre-populated content for libigl" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_MKL-INCLUDE "" CACHE PATH "When not empty, overrides where to find pre-populated content for mkl-include" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_MKL-STATIC "" CACHE PATH "When not empty, overrides where to find pre-populated content for mkl-static" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_MSHIO "" CACHE PATH "When not empty, overrides where to find pre-populated content for mshio" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON "" CACHE PATH "When not empty, overrides where to find pre-populated content for nlohmann_json" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_POLYFEM_DATA "" CACHE PATH "When not empty, overrides where to find pre-populated content for polyfem_data" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_POLYFEM_GEOGRAM "" CACHE PATH "When not empty, overrides where to find pre-populated content for polyfem_geogram" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_POLYSOLVE "" CACHE PATH "When not empty, overrides where to find pre-populated content for polysolve" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_SANITIZER "" CACHE PATH "When not empty, overrides where to find pre-populated content for sanitizer" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_SPDLOG "" CACHE PATH "When not empty, overrides where to find pre-populated content for spdlog" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_SUITESPARSE "" CACHE PATH "When not empty, overrides where to find pre-populated content for suitesparse" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_SWEEP_AND_TINIEST_QUEUE "" CACHE PATH "When not empty, overrides where to find pre-populated content for sweep_and_tiniest_queue" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_TBB "" CACHE PATH "When not empty, overrides where to find pre-populated content for tbb" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_TIGHT_INCLUSION "" CACHE PATH "When not empty, overrides where to find pre-populated content for tight_inclusion" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_TINYEXPR "" CACHE PATH "When not empty, overrides where to find pre-populated content for tinyexpr" FORCE)
+# set(FETCHCONTENT_SOURCE_DIR_TINYXML "" CACHE PATH "When not empty, overrides where to find pre-populated content for tinyxml" FORCE)
 
-# set(POLYFEM_IPC_TOOLKIT_PATH "" CACHE STRING "path to ipc-toolkit")

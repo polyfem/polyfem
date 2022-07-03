@@ -390,7 +390,7 @@ namespace polyfem
 			problem->set_parameters(args["preset_problem"]);
 		}
 
-		//TODO
+		// TODO:
 		// if (args["use_spline"] && args["n_refs"] == 0)
 		// {
 		// 	logger().warn("n_refs > 0 with spline");
@@ -427,59 +427,75 @@ namespace polyfem
 		args["time"] = time_default;
 		args["time"].merge_patch(tmp);
 
+		const double t0 = args["time"]["t0"];
+		double tend, dt;
+		int time_steps;
+
 		// from "tend", "dt", "time_steps" only two can be used at a time
 		const int num_valid = is_param_valid(args["time"], "tend")
 							  + is_param_valid(args["time"], "dt")
 							  + is_param_valid(args["time"], "time_steps");
-		if (num_valid != 2)
+		if (num_valid < 2)
 		{
 			logger().error("Exactly two of (tend, dt, time_steps) must be specified");
 			throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
 		}
-
-		const double t0 = args["time"]["t0"];
-		double tend, dt;
-		int time_steps;
-		if (is_param_valid(args["time"], "tend"))
+		else if (num_valid == 2)
 		{
-			tend = args["time"]["tend"];
-			assert(tend > t0);
-			if (is_param_valid(args["time"], "dt"))
+			if (is_param_valid(args["time"], "tend"))
 			{
+				tend = args["time"]["tend"];
+				assert(tend > t0);
+				if (is_param_valid(args["time"], "dt"))
+				{
+					dt = args["time"]["dt"];
+					assert(dt > 0);
+					time_steps = int(ceil((tend - t0) / dt));
+					assert(time_steps > 0);
+				}
+				else if (is_param_valid(args["time"], "time_steps"))
+				{
+					time_steps = args["time"]["time_steps"];
+					assert(time_steps > 0);
+					dt = (tend - t0) / time_steps;
+					assert(dt > 0);
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+			else if (is_param_valid(args["time"], "dt"))
+			{
+				// tend is already confirmed to be invalid, so time_steps must be valid
+				assert(is_param_valid(args["time"], "time_steps"));
+
 				dt = args["time"]["dt"];
 				assert(dt > 0);
-				time_steps = int(ceil((tend - t0) / dt));
-				assert(time_steps > 0);
-			}
-			else if (is_param_valid(args["time"], "time_steps"))
-			{
+
 				time_steps = args["time"]["time_steps"];
 				assert(time_steps > 0);
-				dt = (tend - t0) / time_steps;
-				assert(dt > 0);
+
+				tend = t0 + time_steps * dt;
 			}
 			else
 			{
+				// tend and dt are already confirmed to be invalid
 				assert(false);
 			}
 		}
-		else if (is_param_valid(args["time"], "dt"))
+		else if (num_valid == 3)
 		{
-			// tend is already confirmed to be invalid, so time_steps must be valid
-			assert(is_param_valid(args["time"], "time_steps"));
-
+			tend = args["time"]["tend"];
 			dt = args["time"]["dt"];
-			assert(dt > 0);
-
 			time_steps = args["time"]["time_steps"];
-			assert(time_steps > 0);
 
-			tend = t0 + time_steps * dt;
-		}
-		else
-		{
-			// tend and dt are already confirmed to be invalid
-			assert(false);
+			// Check that all parameters agree
+			if (abs(t0 + dt * time_steps - tend) > 1e-12)
+			{
+				logger().error("Exactly two of (tend, dt, time_steps) must be specified");
+				throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
+			}
 		}
 
 		// Store these for use later
