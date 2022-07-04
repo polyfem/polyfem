@@ -243,7 +243,7 @@ namespace polyfem
 			const size_t start_element_id,
 			const size_t end_element_id,
 			const int id_offset)
-			: SpecifiedSelection(std::vector<int>(), start_element_id, end_element_id)
+			: SpecifiedSelection(std::vector<int>(end_element_id - start_element_id), start_element_id, end_element_id)
 		{
 			std::ifstream file(file_path);
 			if (!file.is_open())
@@ -258,6 +258,8 @@ namespace polyfem
 			int i = 0;
 			while (std::getline(file, line))
 			{
+				if (line.empty())
+					continue;
 				assert(i < this->ids_.size());
 				int id;
 				std::istringstream(line) >> id;

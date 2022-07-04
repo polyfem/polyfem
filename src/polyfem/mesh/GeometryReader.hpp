@@ -100,6 +100,7 @@ namespace polyfem::mesh
 	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices);
 
 	void append_selections(
+		const std::string &root_path,
 		const json &new_selections,
 		const polyfem::utils::Selection::BBox &bbox,
 		const size_t &start_element_id,

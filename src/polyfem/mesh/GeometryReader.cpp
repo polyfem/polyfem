@@ -384,9 +384,9 @@ namespace polyfem::mesh
 		///////////////////////////////////////////////////////////////////////////
 
 		const size_t num_local_faces = count_faces(dim, cells);
-		append_selections(
-			jmesh["surface_selection"], bbox, num_faces,
-			num_faces + num_local_faces, surface_selections);
+		append_selections(root_path,
+						  jmesh["surface_selection"], bbox, num_faces,
+						  num_faces + num_local_faces, surface_selections);
 		num_faces += num_local_faces;
 
 		////////////////////////////////////////////////////////////////////////////
@@ -397,9 +397,9 @@ namespace polyfem::mesh
 				id += jmesh["volume_selection"]["id_offset"].get<int>();
 		else
 			// Specified volume selection has priority over mesh's stored ids
-			append_selections(
-				jmesh["volume_selection"], bbox, num_in_cells,
-				num_in_cells + cells.rows(), volume_selections);
+			append_selections(root_path,
+							  jmesh["volume_selection"], bbox, num_in_cells,
+							  num_in_cells + cells.rows(), volume_selections);
 		volume_selections.push_back(std::make_shared<SpecifiedSelection>(
 			volume_ids, num_in_cells, num_in_cells + cells.rows()));
 
@@ -671,6 +671,7 @@ namespace polyfem::mesh
 	////////////////////////////////////////////////////////////////////////////////
 
 	void append_selections(
+		const std::string &root_path,
 		const json &new_selections,
 		const Selection::BBox &bbox,
 		const size_t &start_element_id,
@@ -685,7 +686,7 @@ namespace polyfem::mesh
 		else if (new_selections.is_string())
 		{
 			selections.push_back(std::make_shared<FileSelection>(
-				new_selections.get<std::string>(), start_element_id, end_element_id));
+				resolve_path(new_selections, root_path), start_element_id, end_element_id));
 		}
 		else if (new_selections.is_object())
 		{
