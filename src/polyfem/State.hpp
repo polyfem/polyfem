@@ -146,6 +146,12 @@ namespace polyfem
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 
+	private:
+		void build_node_mapping();
+
+	public:
+		Eigen::VectorXi in_node_to_node;
+
 		//---------------------------------------------------
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
