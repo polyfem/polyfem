@@ -100,7 +100,7 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_f_e_bio_reader.html",
 "classpolyfem_1_1utils_1_1_timer.html#a7a6a3cea8372e925aa4b3f9bf0465625",
 "index.html",
-"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb",
+"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65",
 "p__n__bases_8cpp.html#a832e81b4c3013ffb8938489be8a33814",
 "structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a5e5d4428b2739dcd05d90ac23e2e5f38",
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a3bac29c6d0bac828a498e6d37f9638d1"

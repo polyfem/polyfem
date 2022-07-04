@@ -78,8 +78,8 @@ var namespacepolyfem_1_1mesh =
       [ "Hyb", "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30", null ],
       [ "Hex", "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa77b3ac06c59fd2083e1ee4874c433832", null ]
     ] ],
-    [ "append_selections", "namespacepolyfem_1_1mesh.html#ae4d8c8698b7237d166b3f3e170853665", null ],
-    [ "append_selections", "namespacepolyfem_1_1mesh.html#afe09b77781c2876026bd613c6fe7bd14", null ],
+    [ "append_selections", "namespacepolyfem_1_1mesh.html#a5324c6736aa481ccdc0a1548392d52f8", null ],
+    [ "append_selections", "namespacepolyfem_1_1mesh.html#a3be598f94162495c4f6e7fd5c6bcec92", null ],
     [ "apply_default_geometry_parameters", "namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33", null ],
     [ "clip_polygon_by_half_plane", "namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc", null ],
     [ "compute_element_tags", "namespacepolyfem_1_1mesh.html#afe2f4a1a50f2841a6eb95650ff7b1f0e", null ],
