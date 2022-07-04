@@ -40,6 +40,7 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
+	SplineParam.hpp
 	StringUtils.cpp
 	StringUtils.hpp
 	ExpressionValue.cpp

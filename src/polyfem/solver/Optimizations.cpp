@@ -4,6 +4,7 @@
 #include <polyfem/InitialConditionProblem.hpp>
 #include <polyfem/LBFGSSolver.hpp>
 #include <polyfem/GradientDescentSolver.hpp>
+#include <polyfem/SplineParam.hpp>
 
 #include <map>
 
@@ -809,6 +810,62 @@ namespace polyfem
 		std::shared_ptr<ShapeProblem> shape_problem = std::make_shared<ShapeProblem>(state, j, opt_params);
 		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_params); //std::make_shared<cppoptlib::LBFGSSolver<ShapeProblem>>(opt_params);
 		nlsolver->setLineSearch(opt_params["line_search"]);
+
+		if (opt_params.contains("restriction"))
+		{
+			if (opt_params["restriction"].get<std::string>() == "cubic_hermite_spline" and opt_params.contains("spline_specification"))
+			{
+				// Assume there is one spline with id 10.
+				const int boundary_id = opt_params["spline_specification"][0]["id"].get<int>();
+				auto control_points = opt_params["spline_specification"][0]["control_point"];
+				auto tangents = opt_params["spline_specification"][0]["tangent"];
+				const int sampling = opt_params["spline_specification"][0]["sampling"].get<int>();
+				std::map<int, Eigen::MatrixXd> control_point, tangent;
+				control_point = {{boundary_id, Eigen::MatrixXd::Zero(2, 2)}};
+				tangent = {{boundary_id, Eigen::MatrixXd::Zero(2, 2)}};
+				SplineParam spline_param(control_point, tangent, shape_problem->optimization_boundary_to_node, V, sampling);
+				shape_problem->param_to_x = [&](ShapeProblem::TVector &x, const Eigen::MatrixXd &V) {
+					std::map<int, Eigen::MatrixXd> control_point, tangent;
+					spline_param.get_parameters(V, control_point, tangent);
+					x.setZero(2 * tangent.size() + 2);
+					int index = 0;
+					int last_id = -1;
+					for (const auto &kv : tangent)
+					{
+						x.segment(index, 2) = kv.second.row(0);
+						index += 2;
+						last_id = kv.first;
+					}
+					x.segment(index, 2) = tangent.at(last_id).row(1);
+				};
+				shape_problem->x_to_param = [&](const ShapeProblem::TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
+					std::map<int, Eigen::MatrixXd> new_tangent;
+					int index = 0;
+					for (const auto &kv : tangent)
+					{
+						Eigen::MatrixXd tangent_matrix(2, 2);
+						tangent_matrix.row(0) = x.segment(index, 2);
+						tangent_matrix.row(1) = x.segment(index + 2, 2);
+						new_tangent[kv.first] = tangent_matrix;
+						index += 2;
+					}
+					spline_param.reparametrize(control_point, new_tangent, V_prev, V);
+				};
+				shape_problem->dparam_to_dx = [&](ShapeProblem::TVector &grad_x, const ShapeProblem::TVector &grad_v) {
+					grad_x.setZero(2 * tangent.size() + 2);
+					int index = 0;
+					for (const auto &kv : tangent)
+					{
+						Eigen::VectorXd grad_control_point, grad_tangent;
+						spline_param.derivative_wrt_params(grad_v, kv.first, grad_control_point, grad_tangent);
+						grad_x.segment(index, 4) += 0.5 * grad_tangent;
+						index += 2;
+					}
+					grad_x.segment(0, 2) *= 2;
+					grad_x.segment(index, 2) *= 2;
+				};
+			}
+		}
 
 		Eigen::VectorXd x;
 		shape_problem->param_to_x(x, V);

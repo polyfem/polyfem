@@ -183,9 +183,11 @@ namespace polyfem
 		bool remesh(TVector &x);
 		void build_fixed_nodes();
 
-		std::function<void(const TVector &x, Eigen::MatrixXd &V)> x_to_param;
+		std::function<void(const TVector &x, const TVector &position, Eigen::MatrixXd &V)> x_to_param;
 		std::function<void(TVector &x, const Eigen::MatrixXd &V)> param_to_x;
 		std::function<void(TVector &grad_x, const TVector &grad_v)> dparam_to_dx;
+
+		std::map<int, std::vector<int>> optimization_boundary_to_node;
 
 	private:
 		double smoothing_weight = 0.;
