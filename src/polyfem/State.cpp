@@ -226,12 +226,12 @@ namespace polyfem
 
 		Eigen::VectorXi in_primitive_to_primitive;
 		//TODO added this:
-		// build_in_primitive_to_primitive(
-		//	*mesh, *mesh_nodes,
-		// 	const Eigen::VectorXi &in_ordered_vertices,
-		// 	const Eigen::MatrixXi &in_ordered_edges,
-		// 	const Eigen::MatrixXi &in_ordered_faces,
-		// 	in_primitive_to_primitive);
+		build_in_primitive_to_primitive(
+			*mesh, *mesh_nodes,
+			mesh->in_ordered_vertices(),
+			mesh->in_ordered_edges(),
+			mesh->in_ordered_faces(),
+			in_primitive_to_primitive);
 
 		in_node_to_node.resize(num_nodes);
 		for (int i = 0; i < num_nodes; i++)

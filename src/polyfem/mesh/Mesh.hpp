@@ -490,6 +490,19 @@ namespace polyfem
 			/// @return map
 			std::unordered_map<std::vector<int>, size_t, polyfem::utils::HashVector> faces_to_ids() const;
 
+			/// @brief Order of the input vertices
+			///
+			/// @return vector of indices, one per vertex
+			inline const Eigen::VectorXi &in_ordered_vertices() const { return in_ordered_vertices_; }
+			/// @brief Order of the input edges
+			///
+			/// @return matrix of indices ???
+			inline const Eigen::MatrixXi &in_ordered_edges() const { return in_ordered_edges_; }
+			/// @brief Order of the input edges
+			///
+			/// @return matrix of indices ???
+			inline const Eigen::MatrixXi &in_ordered_faces() const { return in_ordered_faces_; }
+
 		protected:
 			/// @brief loads a mesh from the path
 			///
@@ -521,6 +534,13 @@ namespace polyfem
 			std::vector<CellNodes> cell_nodes_;
 			/// weights associates to cells for rational polynomail meshes
 			std::vector<std::vector<double>> cell_weights_;
+
+			/// Order of the input vertices
+			Eigen::VectorXi in_ordered_vertices_;
+			/// Order of the input edges
+			Eigen::MatrixXi in_ordered_edges_;
+			/// Order of the input faces
+			Eigen::MatrixXi in_ordered_faces_;
 		};
 	} // namespace mesh
 } // namespace polyfem
