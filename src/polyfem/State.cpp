@@ -58,10 +58,10 @@ namespace polyfem
 
 	std::string State::formulation() const
 	{
-		assert(!args["materials"].is_null());
 		if (args["materials"].is_null())
 		{
 			logger().error("specify some 'materials'");
+			assert(!args["materials"].is_null());
 			throw "invalid input";
 		}
 
