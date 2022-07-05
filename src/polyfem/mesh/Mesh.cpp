@@ -273,14 +273,14 @@ namespace polyfem::mesh
 
 		if (dim == 2)
 		{
-			std::unordered_set<std::pair<int, int>> edges;
+			std::unordered_set<std::pair<int, int>, HashPair> edges;
 			for (int f = 0; f < cells.rows(); ++f)
 			{
 				for (int lv = 0; lv < cells.cols(); ++lv)
 				{
-					const auto v0 = cells(f, lv);
-					const auto v1 = cells(f, (lv + 1) % cells.cols());
-					edges.emplace(std::make_pair<int>(std::min(v0, v1), std::max(v0, v1)));
+					const int v0 = cells(f, lv);
+					const int v1 = cells(f, (lv + 1) % cells.cols());
+					edges.emplace(std::pair<int, int>(std::min(v0, v1), std::max(v0, v1)));
 				}
 			}
 			mesh->in_ordered_edges_.resize(edges.size(), 2);
