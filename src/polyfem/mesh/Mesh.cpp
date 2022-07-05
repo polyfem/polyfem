@@ -107,6 +107,8 @@ namespace polyfem::mesh
 			{
 				mesh->attach_higher_order_nodes(vertices, elements);
 				mesh->cell_weights_ = weights;
+
+				// TODO, not clear?
 			}
 
 			for (const auto &w : weights)
@@ -137,6 +139,9 @@ namespace polyfem::mesh
 	std::unique_ptr<Mesh> Mesh::create(
 		const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &cells, const bool non_conforming)
 	{
+		// in_ordered_vertices_ linspace 0 to vertices.rows()
+		// in_ordered_edges_ igl::edges
+		// if 3d in_ordered_faces_ = use cells?
 		const int dim = vertices.cols();
 
 		std::unique_ptr<Mesh> mesh;

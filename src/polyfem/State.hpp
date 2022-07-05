@@ -150,7 +150,10 @@ namespace polyfem
 		void build_node_mapping();
 
 	public:
+		/// Inpute nodes (including high-order) to polyfem nodes, only for isoparametric
 		Eigen::VectorXi in_node_to_node;
+		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
+		Eigen::VectorXi in_primitive_to_primitive;
 
 		//---------------------------------------------------
 		//-----------------assembly--------------------------

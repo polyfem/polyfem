@@ -67,7 +67,7 @@ namespace polyfem
 			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
 			const int num_face_nodes = mesh_nodes.num_face_nodes();
 			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
-			//TODO added this:
+
 			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
 
 			const long n_vertices = num_vertex_nodes;
@@ -183,17 +183,23 @@ namespace polyfem
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
 		const int num_face_nodes = mesh_nodes->num_face_nodes();
 		const int num_cell_nodes = mesh_nodes->num_cell_nodes();
-		//TODO added this:
+
 		const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
 
 		const long n_vertices = num_vertex_nodes;
 		const int num_in_primitives = n_vertices + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 		const int num_primitives = mesh->n_vertices() + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 
-		//TODO added this:
 		Eigen::VectorXi in_node_to_in_primitive;
 		Eigen::VectorXi in_node_offset;
 		build_in_node_to_in_primitive(*mesh, *mesh_nodes, in_node_to_in_primitive, in_node_offset);
+
+		build_in_primitive_to_primitive(
+			*mesh, *mesh_nodes,
+			mesh->in_ordered_vertices(),
+			mesh->in_ordered_edges(),
+			mesh->in_ordered_faces(),
+			in_primitive_to_primitive);
 
 		const auto primitive_offset = [&](int node) {
 			if (mesh_nodes->is_vertex_node(node))
@@ -223,15 +229,6 @@ namespace polyfem
 			}
 		}
 		assert(node_count == num_nodes);
-
-		Eigen::VectorXi in_primitive_to_primitive;
-		//TODO added this:
-		build_in_primitive_to_primitive(
-			*mesh, *mesh_nodes,
-			mesh->in_ordered_vertices(),
-			mesh->in_ordered_edges(),
-			mesh->in_ordered_faces(),
-			in_primitive_to_primitive);
 
 		in_node_to_node.resize(num_nodes);
 		for (int i = 0; i < num_nodes; i++)

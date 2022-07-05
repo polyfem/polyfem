@@ -84,11 +84,13 @@ namespace polyfem
 			/// @return pointer to the mesh
 			static std::unique_ptr<Mesh> create(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &cells, const bool non_conforming = false);
 
+		protected:
 			///
 			/// @brief Construct a new Mesh object
 			///
 			Mesh() = default;
-			///
+
+		public:
 			/// @brief Destroy the Mesh object
 			///
 			virtual ~Mesh() = default;
@@ -203,6 +205,7 @@ namespace polyfem
 			/// @return is cell boundary
 			virtual bool is_boundary_element(const int element_global_id) const = 0;
 
+		private:
 			/// @brief build a mesh from matrices
 			///
 			/// @param[in] V vertices
@@ -210,6 +213,7 @@ namespace polyfem
 			/// @return if success
 			virtual bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) = 0;
 
+		public:
 			/// @brief attach high order nodes
 			///
 			/// @param[in] V nodes
@@ -496,11 +500,11 @@ namespace polyfem
 			inline const Eigen::VectorXi &in_ordered_vertices() const { return in_ordered_vertices_; }
 			/// @brief Order of the input edges
 			///
-			/// @return matrix of indices ???
+			/// @return matrix of indices one per edge, pointing to the two vertices
 			inline const Eigen::MatrixXi &in_ordered_edges() const { return in_ordered_edges_; }
 			/// @brief Order of the input edges
 			///
-			/// @return matrix of indices ???
+			/// @return matrix of indices one per faces, pointing to the face vertices
 			inline const Eigen::MatrixXi &in_ordered_faces() const { return in_ordered_faces_; }
 
 		protected:
@@ -539,7 +543,7 @@ namespace polyfem
 			Eigen::VectorXi in_ordered_vertices_;
 			/// Order of the input edges
 			Eigen::MatrixXi in_ordered_edges_;
-			/// Order of the input faces
+			/// Order of the input faces, TODO: change to std::vector of Eigen::Vector
 			Eigen::MatrixXi in_ordered_faces_;
 		};
 	} // namespace mesh
