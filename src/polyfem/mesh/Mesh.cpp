@@ -273,8 +273,9 @@ namespace polyfem::mesh
 
 		if (dim == 2)
 		{
-			if (cells.rows() == 3)
-				igl::edges(cells, mesh->in_ordered_edges_);
+			// if (cells.cols() == 3)
+			igl::edges(cells, mesh->in_ordered_edges_);
+			assert(mesh->in_ordered_edges_.size() > 0);
 			//else TODO
 
 			mesh->in_ordered_faces_.resize(0, 0);
