@@ -273,10 +273,26 @@ namespace polyfem::mesh
 
 		if (dim == 2)
 		{
-			// if (cells.cols() == 3)
-			igl::edges(cells, mesh->in_ordered_edges_);
+			std::unordered_set<std::pair<int, int>> edges;
+			for (int f = 0; f < cells.rows(); ++f)
+			{
+				for (int lv = 0; lv < cells.cols(); ++lv)
+				{
+					const auto v0 = cells(f, lv);
+					const auto v1 = cells(f, (lv + 1) % cells.cols());
+					edges.emplace(std::make_pair<int>(std::min(v0, v1), std::max(v0, v1)));
+				}
+			}
+			mesh->in_ordered_edges_.resize(edges.size(), 2);
+			int index = 0;
+			for (auto it = edges.begin(); it != edges.end(); ++it)
+			{
+				mesh->in_ordered_edges_(index, 0) = it->first;
+				mesh->in_ordered_edges_(index, 1) = it->second;
+				++index;
+			}
+
 			assert(mesh->in_ordered_edges_.size() > 0);
-			//else TODO
 
 			mesh->in_ordered_faces_.resize(0, 0);
 		}
