@@ -155,23 +155,25 @@ namespace polyfem
 			// ---------
 			// Map faces
 			// ---------
-
-			const auto faces_to_ids = mesh.faces_to_ids();
-			assert(in_ordered_faces.rows() == faces_to_ids.size());
-
-			for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
+			if (mesh.is_volume())
 			{
-				std::vector<int> in_face(in_ordered_faces.cols());
-				for (int i = 0; i < in_face.size(); i++)
-					in_face[i] = in_ordered_faces(in_fi, i);
-				std::sort(in_face.begin(), in_face.end());
+				const auto faces_to_ids = mesh.faces_to_ids();
+				assert(in_ordered_faces.rows() == faces_to_ids.size());
 
-				in_primitive_to_primitive[in_offset + in_fi] =
-					offset + faces_to_ids.at(in_face); // offset face ids
+				for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
+				{
+					std::vector<int> in_face(in_ordered_faces.cols());
+					for (int i = 0; i < in_face.size(); i++)
+						in_face[i] = in_ordered_faces(in_fi, i);
+					std::sort(in_face.begin(), in_face.end());
+
+					in_primitive_to_primitive[in_offset + in_fi] =
+						offset + faces_to_ids.at(in_face); // offset face ids
+				}
+
+				in_offset += mesh.n_faces();
+				offset += mesh.n_faces();
 			}
-
-			in_offset += mesh.n_faces();
-			offset += mesh.n_faces();
 
 			// NOTE: Assume in_cells_to_cells is identity
 		}
