@@ -822,6 +822,10 @@ namespace polyfem
 				}
 			}
 
+			logger().debug("Building node mapping...");
+			build_node_mapping();
+			logger().debug(" done");
+
 			logger().info(" done");
 		}
 
