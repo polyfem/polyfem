@@ -181,6 +181,8 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
+		if (!mesh->is_conforming())
+			return;
 		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
 		const int num_face_nodes = mesh_nodes->num_face_nodes();
@@ -854,6 +856,8 @@ namespace polyfem
 
 		for (int b = 0; b < args["boundary_conditions"]["dirichlet_boundary"].size(); ++b)
 		{
+			if (!args["boundary_conditions"]["dirichlet_boundary"][b].is_string())
+				continue;
 			const std::string path = resolve_input_path(args["boundary_conditions"]["dirichlet_boundary"][b]);
 			if (std::filesystem::is_regular_file(path))
 			{
