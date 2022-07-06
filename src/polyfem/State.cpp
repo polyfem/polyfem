@@ -824,10 +824,6 @@ namespace polyfem
 				}
 			}
 
-			logger().debug("Building node mapping...");
-			build_node_mapping();
-			logger().debug(" done");
-
 			logger().info(" done");
 		}
 
@@ -845,11 +841,33 @@ namespace polyfem
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
+		logger().debug("Building node mapping...");
+		build_node_mapping();
+		logger().debug(" done");
+
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+		for (int b = 0; b < args["boundary_conditions"]["dirichlet_boundary"].size(); ++b)
+		{
+			const std::string path = resolve_input_path(args["boundary_conditions"]["dirichlet_boundary"][b]);
+			if (std::filesystem::is_regular_file(path))
+			{
+				Eigen::MatrixXd tmp;
+				read_matrix(path, tmp);
+
+				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
+				for (int n = 0; n < nodes.size(); ++n)
+				{
+					const int node_id = in_node_to_node[nodes[n]];
+					for (int d = 0; d < problem_dim; ++d)
+						boundary_nodes.push_back(node_id * problem_dim + d);
+				}
+			}
+		}
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
