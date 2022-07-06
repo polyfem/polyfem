@@ -183,7 +183,7 @@ namespace polyfem
 		bool remesh(TVector &x);
 		void build_fixed_nodes();
 
-		std::function<void(const TVector &x, const TVector &position, Eigen::MatrixXd &V)> x_to_param;
+		std::function<void(const TVector &x, const Eigen::MatrixXd &position, Eigen::MatrixXd &V)> x_to_param;
 		std::function<void(TVector &x, const Eigen::MatrixXd &V)> param_to_x;
 		std::function<void(TVector &grad_x, const TVector &grad_v)> dparam_to_dx;
 
@@ -208,6 +208,8 @@ namespace polyfem
 
 		std::shared_ptr<CompositeFunctional> j_volume;
 		boundary_smoothing boundary_smoother;
+
+		Eigen::MatrixXd V_initial;
 
 		// only used for problems with contact
 
