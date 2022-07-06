@@ -366,7 +366,7 @@ int main(int argc, char **argv)
 	if (target_type == "exact")
 	{
 		auto &f = *dynamic_cast<TrajectoryFunctional *>(func.get());
-		f.set_reference(&state_reference);
+		f.set_reference(&state_reference, state);
 	}
 	else if (target_type == "exact-center")
 	{

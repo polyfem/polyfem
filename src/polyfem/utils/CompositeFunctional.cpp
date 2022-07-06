@@ -125,14 +125,56 @@ namespace polyfem
 		return grad / 2 / energy(state);
 	}
 
-	void TrajectoryFunctional::set_reference(State *state)
+	void TrajectoryFunctional::set_reference(State *state_ref, const State &state)
 	{
-		state_ref = state;
+		state_ref_ = state_ref;
+
+		const int ref_n_bases = state_ref_->iso_parametric() ? state_ref_->bases.size() : state_ref_->geom_bases.size();
+		const int n_bases = state.iso_parametric() ? state.bases.size() : state.geom_bases.size();
+
+		std::map<int, std::vector<int>> ref_interested_body_id_to_node;
+		int ref_count = 0;
+		for (int e = 0; e < ref_n_bases; ++e)
+		{
+			int body_id = state_ref_->mesh->get_body_id(e);
+			if (interested_ids.size() > 0 && interested_ids.count(body_id) == 0)
+				continue;
+			if (ref_interested_body_id_to_node.find(body_id) != ref_interested_body_id_to_node.end())
+				ref_interested_body_id_to_node[body_id].push_back(e);
+			else
+				ref_interested_body_id_to_node[body_id] = {e};
+			ref_count++;
+		}
+
+		std::map<int, std::vector<int>> interested_body_id_to_node;
+		int count = 0;
+		for (int e = 0; e < n_bases; ++e)
+		{
+			int body_id = state.mesh->get_body_id(e);
+			if (interested_ids.size() > 0 && interested_ids.count(body_id) == 0)
+				continue;
+			if (interested_body_id_to_node.find(body_id) != interested_body_id_to_node.end())
+				interested_body_id_to_node[body_id].push_back(e);
+			else
+				interested_body_id_to_node[body_id] = {e};
+			count++;
+		}
+
+		if (count != ref_count)
+			logger().error("Number of interested vertices in the reference and optimization examples do not match!");
+
+		for (const auto &kv : interested_body_id_to_node)
+		{
+			for (int i = 0; i < kv.second.size(); ++i)
+			{
+				node_to_ref_node_[kv.second[i]] = ref_interested_body_id_to_node[kv.first][i];
+			}
+		}
 	}
 
 	IntegrableFunctional TrajectoryFunctional::get_trajectory_functional(const std::string &derivative_type)
 	{
-		assert(state_ref);
+		assert(state_ref_);
 		IntegrableFunctional j(surface_integral);
 		j.set_transient_integral_type(transient_integral_type);
 		{
@@ -141,14 +183,15 @@ namespace polyfem
 				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
 					return;
 				const int e = params["elem"];
-				const auto &gbase_ref = state_ref->iso_parametric() ? state_ref->bases[e] : state_ref->geom_bases[e];
+				const int e_ref = node_to_ref_node_.find(e) != node_to_ref_node_.end() ? node_to_ref_node_[e] : e;
+				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
 
 				Eigen::MatrixXd pts_ref;
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = state_ref->problem->is_time_dependent() ? state_ref->diff_cached[params["step"].get<int>()].u : state_ref->sol;
-				state_ref->interpolate_at_local_vals(e, local_pts, sol_ref, u_ref, grad_u_ref);
+				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
+				state_ref_->interpolate_at_local_vals(e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
 				{
@@ -161,14 +204,15 @@ namespace polyfem
 				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
 					return;
 				const int e = params["elem"];
-				const auto &gbase_ref = state_ref->iso_parametric() ? state_ref->bases[e] : state_ref->geom_bases[e];
+				const int e_ref = node_to_ref_node_.find(e) != node_to_ref_node_.end() ? node_to_ref_node_[e] : e;
+				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
 
 				Eigen::MatrixXd pts_ref;
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = state_ref->problem->is_time_dependent() ? state_ref->diff_cached[params["step"].get<int>()].u : state_ref->sol;
-				state_ref->interpolate_at_local_vals(e, local_pts, sol_ref, u_ref, grad_u_ref);
+				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
+				state_ref_->interpolate_at_local_vals(e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
 				{
@@ -182,14 +226,15 @@ namespace polyfem
 				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
 					return;
 				const int e = params["elem"];
-				const auto &gbase_ref = state_ref->iso_parametric() ? state_ref->bases[e] : state_ref->geom_bases[e];
+				const int e_ref = node_to_ref_node_.find(e) != node_to_ref_node_.end() ? node_to_ref_node_[e] : e;
+				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
 
 				Eigen::MatrixXd pts_ref;
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = state_ref->problem->is_time_dependent() ? state_ref->diff_cached[params["step"].get<int>()].u : state_ref->sol;
-				state_ref->interpolate_at_local_vals(e, local_pts, sol_ref, u_ref, grad_u_ref);
+				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
+				state_ref_->interpolate_at_local_vals(e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
 				{

@@ -63,17 +63,18 @@ namespace polyfem
 		{
 			functional_name = "Trajectory";
 			surface_integral = true;
-			state_ref = NULL;
+			state_ref_ = NULL;
 		}
 		~TrajectoryFunctional() = default;
 
 		double energy(State &state) override;
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;
 
-		void set_reference(State *state);
+		void set_reference(State *state_ref, const State &state);
 
 	private:
-		State *state_ref;
+		State *state_ref_;
+		std::map<int, int> node_to_ref_node_;
 
 		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
 	};

@@ -722,15 +722,16 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 		}
 	}
 
-	TrajectoryFunctional func;
-	func.set_reference(&state_reference);
-	func.set_surface_integral();
-
 	State state(8);
 	state.init_logger("", 2, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
+
+	TrajectoryFunctional func;
+	func.set_reference(&state_reference, state);
+	func.set_surface_integral();
+
 	double functional_val = func.energy(state);
 
 	Eigen::VectorXd velocity_discrete;
@@ -959,16 +960,17 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	TrajectoryFunctional func;
-	func.set_reference(&state_reference);
-	func.set_surface_integral();
-	func.set_transient_integral_type("uniform");
-
 	State state(8);
 	state.init_logger("", 2, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
+
+	TrajectoryFunctional func;
+	func.set_reference(&state_reference, state);
+	func.set_surface_integral();
+	func.set_transient_integral_type("uniform");
+
 	double functional_val = func.energy(state);
 
 	Eigen::MatrixXd velocity_discrete;
@@ -1075,16 +1077,16 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	TrajectoryFunctional func;
-	func.set_transient_integral_type("final");
-	func.set_reference(&state_reference);
-	func.set_volume_integral();
-
 	State state(8);
 	state.init_logger("", 1, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
+
+	TrajectoryFunctional func;
+	func.set_transient_integral_type("final");
+	func.set_reference(&state_reference, state);
+	func.set_volume_integral();
 
 	double functional_val = func.energy(state);
 
@@ -1189,15 +1191,15 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	TrajectoryFunctional func;
-	func.set_reference(&state_reference);
-	func.set_volume_integral();
-
 	State state(8);
 	state.init_logger("", 1, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
+
+	TrajectoryFunctional func;
+	func.set_reference(&state_reference, state);
+	func.set_volume_integral();
 
 	double functional_val = func.energy(state);
 
