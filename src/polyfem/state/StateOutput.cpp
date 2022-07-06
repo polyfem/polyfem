@@ -967,6 +967,8 @@ namespace polyfem
 		Eigen::MatrixXd mapped;
 		int pts_index = 0;
 
+		std::string error_msg = "";
+
 		for (size_t i = 0; i < bases.size(); ++i)
 		{
 			const auto &bs = bases[i];
@@ -1014,7 +1016,7 @@ namespace polyfem
 						std::swap(elements[i][18], elements[i][19]);
 					}
 					if (disc_orders(i) > 4)
-						logger().warn("not implementd!!!"); // TODO: higher than 3
+						error_msg = "not implementd!!!"; // TODO: higher than 3
 				}
 				else
 				{
@@ -1024,12 +1026,15 @@ namespace polyfem
 						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
 					}
 					if (disc_orders(i) > 4)
-						logger().warn("not implementd!!!"); // TODO: higher than 3
+						error_msg = "not implementd!!!"; // TODO: higher than 3
 				}
 			}
 			else
-				logger().warn("not implementd!!!"); // TODO: hexes
+				error_msg = "not implementd!!!"; // TODO: hexes
 		}
+
+		if (!error_msg.empty())
+			logger().warn(error_msg);
 
 		assert(pts_index == points.rows());
 	}

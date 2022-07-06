@@ -26,7 +26,7 @@ namespace polyfem
 			//size of the problem, bases
 			//formulation, problem
 			//and solver used internally
-			RhsAssembler(const AssemblerUtils &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
+			RhsAssembler(const AssemblerUtils &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichelt,
 						 const int n_basis, const int size,
 						 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 						 const std::string &formulation, const Problem &problem,
@@ -96,6 +96,7 @@ namespace polyfem
 			const std::string bc_method_;
 			const std::string solver_, preconditioner_;
 			const json solver_params_;
+			const std::vector<Eigen::MatrixXd> &input_dirichelt_;
 		};
 	} // namespace assembler
 } // namespace polyfem

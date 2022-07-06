@@ -589,6 +589,7 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
+		input_dirichelt.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -863,9 +864,12 @@ namespace polyfem
 				for (int n = 0; n < nodes.size(); ++n)
 				{
 					const int node_id = in_node_to_node[nodes[n]];
+					tmp(n, 0) = node_id;
 					for (int d = 0; d < problem_dim; ++d)
 						boundary_nodes.push_back(node_id * problem_dim + d);
 				}
+
+				input_dirichelt.emplace_back(tmp);
 			}
 		}
 
@@ -874,6 +878,10 @@ namespace polyfem
 			for (int d = 0; d < problem_dim; ++d)
 				boundary_nodes.push_back(i * problem_dim + d);
 		}
+
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
 		const auto &curret_bases = iso_parametric() ? bases : geom_bases;
 		const int n_samples = 10;
@@ -1301,7 +1309,7 @@ namespace polyfem
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle,
+			assembler, *mesh, obstacle, input_dirichelt,
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 			formulation(), *problem,
@@ -1333,7 +1341,7 @@ namespace polyfem
 				tmp.setZero();
 
 				RhsAssembler tmp_rhs_assembler(
-					assembler, *mesh, obstacle,
+					assembler, *mesh, obstacle, input_dirichelt,
 					n_pressure_bases, size,
 					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 					formulation(), *problem,
