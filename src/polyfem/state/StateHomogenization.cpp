@@ -407,37 +407,37 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
     for (int d = 0; d < min.size(); d++)
         volume *= (max(d) - min(d));
 
-    for (int e = 0; e < bases.size(); e++)
+    // for (int e = 0; e < bases.size(); e++)
+    // {
+    //     ElementAssemblyValues vals;
+    //     // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+    //     ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+    //     const Quadrature &quadrature = vals.quadrature;
+
+    //     std::vector<Eigen::MatrixXd> values(quadrature.weights.size(), Eigen::MatrixXd::Zero(dim, dim));
+    //     const int n_loc_bases = vals.basis_values.size();
+	// 	for (int l = 0; l < n_loc_bases; ++l)
+	// 	{
+	// 		const auto &val = vals.basis_values[l];
+    //         for (size_t ii = 0; ii < val.global.size(); ++ii)
+    //             for (int j = 0; j < dim; j++)
+    //                 for (int i = 0; i < dim; i++)
+    //                     for (int q = 0; q < values.size(); q++)
+    //                         values[q](j, i) += val.global[ii].val * w(val.global[ii].index * dim + j, i) * val.val(q);
+    //     }
+
+    //     for (int q = 0; q < values.size(); q++)
+    //         for (int j = 0; j < dim; j++)
+    //             for (int i = 0; i < dim; i++)
+    //                 K_H(i, j) += values[q](i, j) * vals.det(q) * quadrature.weights(q);
+    // }
+
+    for (int i = 0; i < dim; i++)
     {
-        ElementAssemblyValues vals;
-        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-        const Quadrature &quadrature = vals.quadrature;
-
-        std::vector<Eigen::MatrixXd> values(quadrature.weights.size(), Eigen::MatrixXd::Zero(dim, dim));
-        std::vector<Eigen::MatrixXd> grads(quadrature.weights.size(), Eigen::MatrixXd::Zero(dim*dim, dim));
-        const int n_loc_bases = vals.basis_values.size();
-		for (int l = 0; l < n_loc_bases; ++l)
-		{
-			const auto &val = vals.basis_values[l];
-            for (size_t ii = 0; ii < val.global.size(); ++ii)
-                for (int j = 0; j < dim; j++)
-                    for (int i = 0; i < dim; i++)
-                        for (int q = 0; q < values.size(); q++)
-                        {
-                            values[q](j, i) += val.global[ii].val * w(val.global[ii].index * dim + j, i) * val.val(q);
-                            grads[q].row(j * dim + i) += val.global[ii].val * w(val.global[ii].index * dim + j, i) * val.grad_t_m.row(q);
-                        }
-        }
-
-        for (int q = 0; q < values.size(); q++)
-            for (int j = 0; j < dim; j++)
-                for (int i = 0; i < dim; i++)
-                    for (int k = 0; k < dim; k++)
-                    {
-                        K_H(i, j) += (grads[q].row(k * dim + i).array() * grads[q].row(k * dim + j).array()).sum() * vals.det(q) * quadrature.weights(q);
-                    }
+        Eigen::VectorXd tmp = stiffness.topLeftCorner(n_bases * dim, n_bases * dim) * w.block(0, i, n_bases * dim, 1);
+        for (int j = 0; j < dim; j++)
+            K_H(i, j) = (tmp.array() * w.block(0, j, n_bases * dim, 1).array()).sum();
     }
 
     K_H /= volume;

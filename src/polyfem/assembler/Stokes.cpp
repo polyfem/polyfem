@@ -186,7 +186,7 @@ namespace polyfem
 		Eigen::Matrix<double, 1, 1>
 		StokesPressure::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 		{
-			// -delta * (gradphii : gradphij)
+			// delta * (gradphii : gradphij)
 
 			Eigen::Matrix<double, 1, 1> res;
 			res.setZero();
