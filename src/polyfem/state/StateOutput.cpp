@@ -713,13 +713,38 @@ namespace polyfem
 		const std::string solmat_path = resolve_output_path(args["output"]["data"]["solution_mat"]);
 		const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
 		const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
+		const bool reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
 		if (!solution_path.empty())
 		{
 			std::ofstream out(solution_path);
 			out.precision(100);
 			out << std::scientific;
-			out << sol << std::endl;
+			if (reorder_output)
+			{
+				int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
+				Eigen::VectorXi reordering(n_bases);
+				reordering.setConstant(-1);
+
+				for (int i = 0; i < in_node_to_node.size(); ++i)
+				{
+					reordering[in_node_to_node[i]] = i;
+				}
+				Eigen::MatrixXd tmp_sol = unflatten(sol, problem_dim);
+				Eigen::MatrixXd tmp(tmp_sol.rows(), tmp_sol.cols());
+
+				for (int i = 0; i < reordering.size(); ++i)
+				{
+					if (reordering[i] < 0)
+						continue;
+
+					tmp.row(reordering[i]) = tmp.row(i);
+				}
+
+				out << tmp << std::endl;
+			}
+			else
+				out << sol << std::endl;
 			out.close();
 		}
 

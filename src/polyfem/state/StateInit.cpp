@@ -247,7 +247,11 @@ namespace polyfem
 					"v_path" : "",
 					"a_path" : "",
 					"mises" : "",
-					"nodes" : ""
+					"nodes" : "",
+
+					"advanced": {
+						"reorder_nodes": false
+					}
 				},
 
 				"advanced": {
