@@ -848,6 +848,10 @@ namespace polyfem
 		state.get_vf(V_initial, elements);
 		param_to_x(x, V_initial);
 
+		Eigen::MatrixXd boundary_nodes_pos;
+		Eigen::MatrixXi boundary_edges, boundary_triangles;
+		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
+
 		build_fixed_nodes();
 
 		cur_grad.resize(0);
@@ -856,9 +860,6 @@ namespace polyfem
 		sol_at_ls_begin.resize(0, 0);
 		x_at_ls_begin.resize(0);
 
-		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		state.extract_boundary_mesh(state.n_geom_bases, gbases, boundary_nodes_pos, boundary_edges, boundary_triangles);
 		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
 
 		logger().info("Remeshing done!");
