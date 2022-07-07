@@ -432,8 +432,14 @@ namespace polyfem
 		/// ipc collision mesh into surface vertices
 		ipc::CollisionMesh collision_mesh;
 
-		/// extracts the boundary mesh for collision, called in build_basis
-		void build_collision_mesh();
+		Eigen::MatrixXd geom_boundary_nodes_pos;
+		Eigen::MatrixXi geom_boundary_edges;
+		Eigen::MatrixXi geom_boundary_triangles;
+		ipc::CollisionMesh geom_collision_mesh;
+
+		Eigen::MatrixXd boundary_nodes_pos_pressure;
+		Eigen::MatrixXi boundary_edges_pressure;
+		Eigen::MatrixXi boundary_triangles_pressure;
 
 		/// extracts the boundary mesh
 		/// @param[in] bases geom bases

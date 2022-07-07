@@ -222,6 +222,7 @@ namespace polyfem
 		int _ccd_max_iterations;
 
 		ipc::Constraints _constraint_set;
+		ipc::CollisionMesh collision_mesh;
 		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
 		bool _use_cached_candidates = false;

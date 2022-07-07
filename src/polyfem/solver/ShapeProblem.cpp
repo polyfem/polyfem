@@ -218,11 +218,14 @@ namespace polyfem
 		}
 
 		// for higher order bases, need to create a separate collision_mesh for gbases
-		if (has_collision && state.bases[0].bases[0].order() > 1)
-		{
-			logger().error("Contact barrier in shape optimization only supports linear bases!");
-			exit(0);
-		}
+		// if (has_collision && state.bases[0].bases[0].order() > 1)
+		// {
+		// 	logger().error("Contact barrier in shape optimization only supports linear bases!");
+		// 	exit(0);
+		// }
+		Eigen::MatrixXd boundary_nodes_pos;
+		Eigen::MatrixXi boundary_edges, boundary_triangles;
+		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
 
 		build_fixed_nodes();
 
@@ -234,9 +237,6 @@ namespace polyfem
 		if (opt_params.contains("use_weighted_smoothing") && opt_params["use_weighted_smoothing"].get<bool>() && opt_params.contains("weighted_smoothing_power"))
 			boundary_smoother.p = opt_params["weighted_smoothing_power"].get<int>();
 
-		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		state.extract_boundary_mesh(state.n_geom_bases, gbases, boundary_nodes_pos, boundary_edges, boundary_triangles);
 		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
 
 		// constraints on optimization
@@ -271,11 +271,11 @@ namespace polyfem
 
 		if (_use_cached_candidates)
 			ipc::construct_constraint_set(
-				_candidates, state.collision_mesh, displaced_surface, _dhat,
+				_candidates, collision_mesh, displaced_surface, _dhat,
 				_constraint_set);
 		else
 			ipc::construct_constraint_set(
-				state.collision_mesh, displaced_surface, _dhat,
+				collision_mesh, displaced_surface, _dhat,
 				_constraint_set, /*dmin=*/0, _broad_phase_method);
 		cached_displaced_surface = displaced_surface;
 	}
@@ -286,9 +286,9 @@ namespace polyfem
 			return true;
 
 		Eigen::MatrixXd V;
-		x_to_param(x, state.collision_mesh.vertices_at_rest(), V);
+		x_to_param(x, collision_mesh.vertices_at_rest(), V);
 
-		return !ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(V));
+		return !ipc::has_intersections(collision_mesh, collision_mesh.vertices(V));
 	}
 
 	bool ShapeProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
@@ -297,8 +297,8 @@ namespace polyfem
 			return true;
 
 		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, state.collision_mesh.vertices_at_rest(), V0);
-		x_to_param(x1, state.collision_mesh.vertices_at_rest(), V1);
+		x_to_param(x0, collision_mesh.vertices_at_rest(), V0);
+		x_to_param(x1, collision_mesh.vertices_at_rest(), V1);
 
 		// Skip CCD if the displacement is zero.
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
@@ -311,15 +311,15 @@ namespace polyfem
 		bool is_valid;
 		if (_use_cached_candidates)
 			is_valid = ipc::is_step_collision_free(
-				_candidates, state.collision_mesh,
-				state.collision_mesh.vertices(V0),
-				state.collision_mesh.vertices(V1),
+				_candidates, collision_mesh,
+				collision_mesh.vertices(V0),
+				collision_mesh.vertices(V1),
 				_ccd_tolerance, _ccd_max_iterations);
 		else
 			is_valid = ipc::is_step_collision_free(
-				state.collision_mesh,
-				state.collision_mesh.vertices(V0),
-				state.collision_mesh.vertices(V1),
+				collision_mesh,
+				collision_mesh.vertices(V0),
+				collision_mesh.vertices(V1),
 				ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
@@ -343,7 +343,7 @@ namespace polyfem
 	double ShapeProblem::smooth_value(const TVector &x)
 	{
 		Eigen::MatrixXd V;
-		x_to_param(x, state.collision_mesh.vertices_at_rest(), V);
+		x_to_param(x, collision_mesh.vertices_at_rest(), V);
 
 		if (opt_params.contains("use_weighted_smoothing") && opt_params["use_weighted_smoothing"].get<bool>())
 			return boundary_smoother.weighted_smoothing_energy(V) * smoothing_weight;
@@ -384,7 +384,7 @@ namespace polyfem
 			return;
 		}
 		Eigen::MatrixXd V;
-		x_to_param(x, state.collision_mesh.vertices_at_rest(), V);
+		x_to_param(x, collision_mesh.vertices_at_rest(), V);
 		TVector grad;
 		if (opt_params.contains("use_weighted_smoothing") && opt_params["use_weighted_smoothing"].get<bool>())
 			boundary_smoother.weighted_smoothing_grad(V, grad);
@@ -410,9 +410,9 @@ namespace polyfem
 			return 0;
 
 		Eigen::MatrixXd V;
-		x_to_param(x, state.collision_mesh.vertices_at_rest(), V);
+		x_to_param(x, collision_mesh.vertices_at_rest(), V);
 
-		return _barrier_stiffness * ipc::compute_barrier_potential(state.collision_mesh, state.collision_mesh.vertices(V), _constraint_set, _dhat);
+		return _barrier_stiffness * ipc::compute_barrier_potential(collision_mesh, collision_mesh.vertices(V), _constraint_set, _dhat);
 	}
 
 	void ShapeProblem::barrier_gradient(const TVector &x, TVector &gradv)
@@ -424,13 +424,13 @@ namespace polyfem
 		}
 
 		Eigen::MatrixXd V;
-		x_to_param(x, state.collision_mesh.vertices_at_rest(), V);
+		x_to_param(x, collision_mesh.vertices_at_rest(), V);
 
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(V);
+		Eigen::MatrixXd displaced_surface = collision_mesh.vertices(V);
 		TVector grad;
 		grad = ipc::compute_barrier_potential_gradient(
-			state.collision_mesh, displaced_surface, _constraint_set, _dhat);
-		grad = state.collision_mesh.to_full_dof(grad);
+			collision_mesh, displaced_surface, _constraint_set, _dhat);
+		grad = collision_mesh.to_full_dof(grad);
 
 		grad *= _barrier_stiffness;
 
@@ -459,7 +459,7 @@ namespace polyfem
 			return;
 
 		Eigen::MatrixXd V, new_V;
-		x_to_param(x, state.collision_mesh.vertices_at_rest(), V);
+		x_to_param(x, collision_mesh.vertices_at_rest(), V);
 
 		double rate = 2.;
 		bool good_enough = false;
@@ -485,14 +485,14 @@ namespace polyfem
 	bool ShapeProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		Eigen::MatrixXd V1;
-		x_to_param(x1, state.collision_mesh.vertices_at_rest(), V1);
+		x_to_param(x1, collision_mesh.vertices_at_rest(), V1);
 		if (is_flipped(V1, elements))
 			return false;
 
 		if (opt_params.contains("max_change"))
 		{
 			Eigen::MatrixXd V0;
-			x_to_param(x0, state.collision_mesh.vertices_at_rest(), V0);
+			x_to_param(x0, collision_mesh.vertices_at_rest(), V0);
 			double change = (V1 - V0).rowwise().norm().maxCoeff();
 			if (change > opt_params["max_change"].get<double>())
 				return false;
@@ -507,8 +507,8 @@ namespace polyfem
 			return 1;
 
 		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, state.collision_mesh.vertices_at_rest(), V0);
-		x_to_param(x1, state.collision_mesh.vertices_at_rest(), V1);
+		x_to_param(x0, collision_mesh.vertices_at_rest(), V0);
+		x_to_param(x1, collision_mesh.vertices_at_rest(), V1);
 
 		double max_step = 1;
 		assert(!is_flipped(V0, elements));
@@ -516,17 +516,17 @@ namespace polyfem
 			max_step /= 2.;
 
 		// Extract surface only
-		V0 = state.collision_mesh.vertices(V0);
-		V1 = state.collision_mesh.vertices(V1);
+		V0 = collision_mesh.vertices(V0);
+		V1 = collision_mesh.vertices(V1);
 
 		auto Vmid = V0 + max_step * (V1 - V0);
 		if (_use_cached_candidates)
 			max_step *= ipc::compute_collision_free_stepsize(
-				_candidates, state.collision_mesh, V0, Vmid,
+				_candidates, collision_mesh, V0, Vmid,
 				_ccd_tolerance, _ccd_max_iterations);
 		else
 			max_step *= ipc::compute_collision_free_stepsize(
-				state.collision_mesh, V0, Vmid,
+				collision_mesh, V0, Vmid,
 				_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
 		// polyfem::logger().trace("best step {}", max_step);
 
@@ -550,13 +550,13 @@ namespace polyfem
 			return;
 
 		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, state.collision_mesh.vertices_at_rest(), V0);
-		x_to_param(x1, state.collision_mesh.vertices_at_rest(), V1);
+		x_to_param(x0, collision_mesh.vertices_at_rest(), V0);
+		x_to_param(x1, collision_mesh.vertices_at_rest(), V1);
 
 		ipc::construct_collision_candidates(
-			state.collision_mesh,
-			state.collision_mesh.vertices(V0),
-			state.collision_mesh.vertices(V1),
+			collision_mesh,
+			collision_mesh.vertices(V0),
+			collision_mesh.vertices(V1),
 			_candidates,
 			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
 			_broad_phase_method);
@@ -611,10 +611,10 @@ namespace polyfem
 		if (has_collision)
 		{
 			Eigen::MatrixXd V;
-			x_to_param(x0, state.collision_mesh.vertices_at_rest(), V);
-			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(V);
+			x_to_param(x0, collision_mesh.vertices_at_rest(), V);
+			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(V);
 
-			const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);
+			const double dist_sqr = ipc::compute_minimum_distance(collision_mesh, displaced_surface, _constraint_set);
 			polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
 
 			_prev_distance = dist_sqr;
@@ -627,7 +627,8 @@ namespace polyfem
 			return;
 
 		Eigen::MatrixXd V;
-		x_to_param(newX, state.collision_mesh.vertices_at_rest(), V);
+		const auto &V_prev = collision_mesh.vertices_at_rest();
+		x_to_param(newX, V_prev, V);
 		auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		state.set_v(V);
 		mesh_flipped = is_flipped(V, elements);
@@ -643,7 +644,7 @@ namespace polyfem
 		if (!has_collision || mesh_flipped)
 			return;
 
-		update_constraint_set(state.collision_mesh.vertices(V));
+		update_constraint_set(collision_mesh.vertices(V));
 	}
 
 	bool ShapeProblem::remesh(TVector &x)
@@ -994,17 +995,17 @@ namespace polyfem
 			const double threshold = opt_params["fix_contact_area_threshold"].get<double>();
 
 			ipc::Constraints contact_set;
-			ipc::construct_constraint_set(state.collision_mesh, state.collision_mesh.vertices(V), threshold, contact_set);
+			ipc::construct_constraint_set(collision_mesh, collision_mesh.vertices(V), threshold, contact_set);
 
 			for (int c = 0; c < contact_set.ee_constraints.size(); c++)
 			{
 				const auto &constraint = contact_set.ee_constraints[c];
 
-				if (constraint.compute_distance(state.collision_mesh.vertices(V), state.collision_mesh.edges(), state.collision_mesh.faces()) >= threshold)
+				if (constraint.compute_distance(collision_mesh.vertices(V), collision_mesh.edges(), collision_mesh.faces()) >= threshold)
 					continue;
 
-				fixed_nodes.insert(state.collision_mesh.to_full_vertex_id(constraint.vertex_indices(state.collision_mesh.edges(), state.collision_mesh.faces())[0]));
-				fixed_nodes.insert(state.collision_mesh.to_full_vertex_id(constraint.vertex_indices(state.collision_mesh.edges(), state.collision_mesh.faces())[1]));
+				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0]));
+				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[1]));
 			}
 
 			contact_set.ee_constraints.clear();
@@ -1013,10 +1014,10 @@ namespace polyfem
 			{
 				const auto &constraint = contact_set[c];
 
-				if (constraint.compute_distance(state.collision_mesh.vertices(V), state.collision_mesh.edges(), state.collision_mesh.faces()) >= threshold)
+				if (constraint.compute_distance(collision_mesh.vertices(V), collision_mesh.edges(), collision_mesh.faces()) >= threshold)
 					continue;
 
-				fixed_nodes.insert(state.collision_mesh.to_full_vertex_id(constraint.vertex_indices(state.collision_mesh.edges(), state.collision_mesh.faces())[0]));
+				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0]));
 			}
 		}
 

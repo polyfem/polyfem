@@ -749,7 +749,7 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
@@ -1189,7 +1189,7 @@ namespace polyfem
 	void State::build_collision_mesh()
 	{
 		extract_boundary_mesh(
-			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+			n_bases, bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
