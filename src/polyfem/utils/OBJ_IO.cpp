@@ -369,7 +369,7 @@ namespace polyfem
 				obj << fmt::format("l {} {}\n", e(i, 0) + 1, e(i, 1) + 1);
 
 			for (int i = 0; i < f.rows(); ++i)
-				obj << fmt::format("f {} {} {}", f(i, 0) + 1, f(i, 1) + 1, f(i, 2) + 1);
+				obj << fmt::format("f {} {} {}\n", f(i, 0) + 1, f(i, 1) + 1, f(i, 2) + 1);
 
 			return true;
 		}
