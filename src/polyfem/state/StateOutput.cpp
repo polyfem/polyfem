@@ -738,10 +738,16 @@ namespace polyfem
 					if (reordering[i] < 0)
 						continue;
 
-					tmp.row(reordering[i]) = tmp.row(i);
+					tmp.row(reordering[i]) = tmp_sol.row(i);
 				}
 
-				out << tmp << std::endl;
+				for (int i = 0; i < tmp.rows(); ++i)
+				{
+					for (int j = 0; j < tmp.cols(); ++j)
+						out << tmp(i, j) << " ";
+
+					out << std::endl;
+				}
 			}
 			else
 				out << sol << std::endl;
