@@ -420,7 +420,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 				}]
 			},
 			"dhat": 1e-3,
-			"solver_type": "Pardiso",
+			
 			"barrier_stiffness": 20,
 			"meshes": [{
 				"mesh": "",
@@ -530,7 +530,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 				}]
 			},
 			"dhat": 1e-3,
-			"solver_type": "Pardiso",
+			
 			"barrier_stiffness": 20,
 			"meshes": [{
 				"mesh": "",
@@ -790,7 +790,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 				"is_time_dependent": true
 			},
 			"dhat": 1e-3,
-			"solver_type": "Pardiso",
+			
 
 			"t0": 0,
 			"tend": 0.25,

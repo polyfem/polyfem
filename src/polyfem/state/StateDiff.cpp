@@ -1380,9 +1380,37 @@ namespace polyfem
 		Eigen::MatrixXd U = collision_mesh.vertices(unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
-		StiffnessMatrix hessian = ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat);
+		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
+		term = -step_data.nl_problem->get_barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+		
+		// const double eps = 1e-6;
+		// Eigen::MatrixXd target = dq_h;
+		// Eigen::MatrixXd hessian_fd;
+		// hessian_fd.setZero(dq_h.rows(), dq_h.cols());
 
-		term = -step_data.nl_problem->get_barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * collision_mesh.to_full_dof(hessian)).transpose();
+		// Eigen::VectorXd theta(n_geom_bases * mesh->dimension());
+		// for (int i = 0; i < theta.size(); i++)
+		// 	theta(i) = (rand() % 10000) / 10000.0;
+
+		// Eigen::VectorXd deriv = dq_h * down_sampling_mat.transpose() * theta;
+		// Eigen::VectorXd deriv_FD = Eigen::VectorXd::Zero(deriv.size());
+
+		// for (int k = 0; k < 2; k++)
+		// {
+		// 	double sign = k ? 1 : -1;
+		// 	perturb_mesh(theta * eps * sign);
+		// 	auto X1 = collision_mesh.vertices(boundary_nodes_pos);
+
+		// 	ipc::Constraints constraint_set1;
+		// 	ipc::construct_constraint_set(collision_mesh, X1 + U, dhat, constraint_set1);
+
+		// 	Eigen::VectorXd H = collision_mesh.to_full_dof(ipc::compute_barrier_potential_gradient(collision_mesh, X1 + U, constraint_set1, dhat));
+		// 	deriv_FD += H * sign / (2 * eps);
+
+		// 	perturb_mesh(theta * eps * -sign);
+		// }
+
+		// logger().error("FD error: {}, norm: {}", (deriv_FD - deriv).norm(), deriv.norm());
 	}
 
 	void State::compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraint_set, Eigen::VectorXd &term)
