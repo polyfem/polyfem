@@ -1438,8 +1438,8 @@ namespace polyfem
 		{
 			compute_shape_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
 			compute_derivative_contact_term(step_data.nl_problem->get_constraint_set(), sol, adjoint_sol, contact_term);
-			compute_derivative_friction_term(sol, sol, adjoint_sol, step_data.nl_problem->get_friction_constraint_set(), friction_term);
-			one_form += elasticity_term + contact_term + friction_term;
+			// compute_derivative_friction_term(sol, sol, adjoint_sol, step_data.nl_problem->get_friction_constraint_set(), friction_term);
+			one_form += elasticity_term + contact_term; // + friction_term;
 		}
 	}
 
