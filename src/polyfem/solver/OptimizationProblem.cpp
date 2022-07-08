@@ -67,10 +67,13 @@ namespace polyfem
 		if (!state.problem->is_time_dependent())
 			if (optimization_name == "shape")
 			{
-				if (x_at_ls_begin.size() == x.size() && sol_at_ls_begin.size() == x.size())
+				if (x_at_ls_begin.size() == x.size())
 				{
 					logger().debug("Use better initial guess...");
-					state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
+					if (sol_at_ls_begin.size() == x.size())
+						state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
+					else if (sol_at_ls_begin.size() == state.n_bases)
+						state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
 				}
 			}
 			else if (sol_at_ls_begin.size() > 0)
