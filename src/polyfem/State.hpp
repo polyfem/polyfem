@@ -768,7 +768,9 @@ namespace polyfem
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
 		StiffnessMatrix down_sampling_mat;
 
-		/// compute the errors, not part of solve
+		void project_to_lower_order(Eigen::MatrixXd &y);
+
+		//compute the errors, not part of solve
 		void compute_errors();
 		/// saves all data on the disk according to the input params
 		void export_data();

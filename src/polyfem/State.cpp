@@ -34,6 +34,9 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
+#include <polysolve/LinearSolver.hpp>
+#include <polysolve/FEMSolver.hpp>
+
 #include <igl/Timer.h>
 
 #include <BVH.hpp>
@@ -733,13 +736,6 @@ namespace polyfem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if (args["space"]["advanced"]["use_spline"])
 			{
-				//TODO?
-				// if (!iso_parametric())
-				// {
-				// 	logger().error("Splines must be isoparametric, ignoring...");
-				// 	// FEBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
-				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases, local_boundary, poly_edge_to_data);
-				// }
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
 
@@ -1717,6 +1713,72 @@ namespace polyfem
 		// 	out<<err_per_el;
 		// 	out.close();
 		// }
+	}
+
+	void State::project_to_lower_order(Eigen::MatrixXd &y)
+	{
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		AssemblyValsCache cache;
+
+		StiffnessMatrix M;
+		assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_geom_bases, density, gbases, gbases, cache, M);
+
+		Eigen::VectorXd b;
+		b.setZero(n_geom_bases * actual_dim);
+		for (int e = 0; e < gbases.size(); e++)
+		{
+			ElementAssemblyValues vals;
+			vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
+
+			Eigen::MatrixXd result, result_grad;
+			interpolate_at_local_vals(e, vals.quadrature.points, y, result, result_grad);
+
+			const int n_loc_bases = int(vals.basis_values.size());
+			for (int d = 0; d < actual_dim; d++)
+			{
+				for (int i = 0; i < n_loc_bases; ++i)
+				{
+					double value = 0;
+					for (int q = 0; q < vals.quadrature.weights.size(); q++)
+					{
+						value += result(q, d) * vals.basis_values[i].val(q) * vals.quadrature.weights(q) * vals.det(q);
+					}
+
+					for (auto &g : vals.basis_values[i].global)
+						b(g.index * actual_dim + d) += value * g.val;
+				}
+			}
+		}
+
+		const json &params = solver_params();
+		auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
+		solver->setParameters(params);
+		Eigen::VectorXd x;
+		dirichlet_solve(*solver, M, b, std::vector<int>(), x, M.rows(), args["export"]["stiffness_mat"], args["export"]["spectrum"], false, false);
+
+		auto tmp = y;
+		y.setZero(n_bases * actual_dim, 1);
+		for (int e = 0; e < bases.size(); e++)
+		{
+			Eigen::MatrixXd local_pts;
+			if (!mesh->is_volume())
+				autogen::p_nodes_2d(bases[e].bases.front().order(), local_pts);
+			else
+				autogen::p_nodes_3d(bases[e].bases.front().order(), local_pts);
+
+			Eigen::MatrixXd result, result_grad;
+			interpolate_at_local_vals(e, actual_dim, gbases, local_pts, x, result, result_grad);
+
+			for (int i = 0; i < bases[e].bases.size(); i++)
+			{
+				for (auto &g : bases[e].bases[i].global())
+					for (int d = 0; d < actual_dim; d++)
+						y(g.index * actual_dim + d) = result(i, d);
+			}
+		}
+
+		logger().debug("Projection error: {}", (y - tmp).norm() / tmp.norm());
 	}
 
 	std::string State::root_path() const
