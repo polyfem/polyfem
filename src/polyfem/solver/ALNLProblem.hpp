@@ -29,6 +29,9 @@ namespace polyfem
 			void update_quantities(const double t, const TVector &x) override;
 			void update_target(const double t);
 
+			double target_value(const TVector &x) override { return value(x); }
+			void target_gradient(const TVector &x, TVector &gradv) override { gradient(x, gradv); }
+
 			bool stop(const TVector &x) override;
 
 #include <polyfem/utils/DisableWarnings.hpp>

@@ -53,10 +53,10 @@ namespace polyfem
 
 	double InitialConditionProblem::value(const TVector &x)
 	{
-		return j->energy(state);
+		return target_value(x);
 	}
 
-	void InitialConditionProblem::gradient(const TVector &x, TVector &gradv)
+	void InitialConditionProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
 		TVector tmp = j->gradient(state, "initial-condition");
 

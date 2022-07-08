@@ -164,7 +164,9 @@ namespace cppoptlib
 				objFunc.save_to_file(x);
 				if (outfile.is_open())
 				{
-					outfile << energy << "," << grad_norm << "\n";
+					TVector target_grad;
+					objFunc.target_gradient(x, target_grad);
+					outfile << objFunc.target_value(x) << "," << energy << "," << target_grad.norm() << "," << grad_norm << "\n";
 					outfile.flush();
 				}
 

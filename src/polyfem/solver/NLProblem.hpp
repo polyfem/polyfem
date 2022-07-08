@@ -29,20 +29,25 @@ namespace polyfem
 			TVector initial_guess();
 
 			virtual double value(const TVector &x) override;
+			virtual double target_value(const TVector &x) { return value(x); }
 			virtual void gradient(const TVector &x, TVector &gradv) override;
+			virtual void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 			virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false);
 
 			virtual double value(const TVector &x, const bool only_elastic);
 			void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
 
+			void smoothing(const TVector &x, TVector &new_x){};
 			bool is_step_valid(const TVector &x0, const TVector &x1);
 			bool is_step_collision_free(const TVector &x0, const TVector &x1);
 			double max_step_size(const TVector &x0, const TVector &x1);
 			bool is_intersection_free(const TVector &x);
 
 			void line_search_begin(const TVector &x0, const TVector &x1);
-			void line_search_end();
+			void line_search_end(bool failed);
 			void post_step(const int iter_num, const TVector &x);
+			void save_to_file(const TVector &x0){};
+			bool remesh(TVector &x) { return false; };
 
 #include <polyfem/utils/DisableWarnings.hpp>
 			virtual void hessian(const TVector &x, THessian &hessian);

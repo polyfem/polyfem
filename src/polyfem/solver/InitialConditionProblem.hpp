@@ -10,7 +10,9 @@ namespace polyfem
 		InitialConditionProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args);
 
 		double value(const TVector &x) override;
-		void gradient(const TVector &x, TVector &gradv) override;
+		double target_value(const TVector &x) { return j->energy(state); }
+		void gradient(const TVector &x, TVector &gradv) override { target_gradient(x, gradv); }
+		void target_gradient(const TVector &x, TVector &gradv);
 
 		double value(const TVector &x, const bool only_elastic) { return value(x); };
 		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
