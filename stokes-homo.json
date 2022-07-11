@@ -1,8 +1,11 @@
 {
     "geometry": [
         {
-            "mesh": "cube.mesh",
-            "n_refs": 0
+            "mesh": "five-cylinders.mesh",
+            "n_refs": 0,
+            "transformation": {
+                "scale": 1
+            }
         }
     ],
     "space": {
@@ -14,7 +17,7 @@
     },
     "solver": {
         "linear": {
-            "solver": "Eigen::PardisoLU"
+            "solver": "Eigen::PardisoLDLT"
         }
     },
     "boundary_conditions": {
@@ -34,10 +37,8 @@
         "use_avg_pressure": true
     },
     "output": {
-        "data": {
-            "stiffness_mat": "A.mat"
-        },
         "paraview": {
+            "surface": true,
             "file_name": "debug.vtu"
         }
     }
