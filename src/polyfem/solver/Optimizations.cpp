@@ -821,10 +821,20 @@ namespace polyfem
 				auto tangents = opt_params["spline_specification"][0]["tangent"];
 				const int sampling = opt_params["spline_specification"][0]["sampling"].get<int>();
 				std::map<int, Eigen::MatrixXd> control_point, tangent;
-				control_point = {{boundary_id, Eigen::MatrixXd::Zero(2, 2)}};
-				tangent = {{boundary_id, Eigen::MatrixXd::Zero(2, 2)}};
+				Eigen::MatrixXd c(2, 2), t(2, 2);
+				for (int i = 0; i < 2; ++i)
+				{
+					for (int j = 0; j < 2; ++j)
+					{
+						c(i, j) = control_points[i][j];
+						t(i, j) = tangents[i][j];
+					}
+				}
+				logger().trace("Given tangents are: {}", t);
+				control_point = {{boundary_id, c}};
+				tangent = {{boundary_id, t}};
 				SplineParam spline_param(control_point, tangent, shape_problem->optimization_boundary_to_node, V, sampling);
-				shape_problem->param_to_x = [&](ShapeProblem::TVector &x, const Eigen::MatrixXd &V) {
+				shape_problem->param_to_x = [spline_param](ShapeProblem::TVector &x, const Eigen::MatrixXd &V) {
 					std::map<int, Eigen::MatrixXd> control_point, tangent;
 					spline_param.get_parameters(V, control_point, tangent);
 					x.setZero(2 * tangent.size() + 2);
@@ -838,7 +848,7 @@ namespace polyfem
 					}
 					x.segment(index, 2) = tangent.at(last_id).row(1);
 				};
-				shape_problem->x_to_param = [&](const ShapeProblem::TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
+				shape_problem->x_to_param = [control_point, tangent, spline_param](const ShapeProblem::TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
 					std::map<int, Eigen::MatrixXd> new_tangent;
 					int index = 0;
 					for (const auto &kv : tangent)
@@ -851,7 +861,7 @@ namespace polyfem
 					}
 					spline_param.reparametrize(control_point, new_tangent, V_prev, V);
 				};
-				shape_problem->dparam_to_dx = [&](ShapeProblem::TVector &grad_x, const ShapeProblem::TVector &grad_v) {
+				shape_problem->dparam_to_dx = [tangent, spline_param](ShapeProblem::TVector &grad_x, const ShapeProblem::TVector &grad_v) {
 					grad_x.setZero(2 * tangent.size() + 2);
 					int index = 0;
 					for (const auto &kv : tangent)

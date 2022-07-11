@@ -209,7 +209,7 @@ namespace polyfem
 		std::shared_ptr<CompositeFunctional> j_volume;
 		boundary_smoothing boundary_smoother;
 
-		Eigen::MatrixXd V_initial;
+		Eigen::MatrixXd V_rest;
 
 		// only used for problems with contact
 
