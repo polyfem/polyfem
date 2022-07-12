@@ -44,6 +44,9 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "has_body_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a6714c8e53f6fdfae01933119d8ad152c", null ],
     [ "has_boundary_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1", null ],
     [ "has_poly", "classpolyfem_1_1mesh_1_1_mesh.html#aa9e6bd69e6a7dff10d11a335390c1062", null ],
+    [ "in_ordered_edges", "classpolyfem_1_1mesh_1_1_mesh.html#a0e08accc7bbd612362513562937d44d6", null ],
+    [ "in_ordered_faces", "classpolyfem_1_1mesh_1_1_mesh.html#aec6b2ba4a32c51cc8999ccd0c79d54e2", null ],
+    [ "in_ordered_vertices", "classpolyfem_1_1mesh_1_1_mesh.html#aab325165f9331ff2322344eca7bce6fe", null ],
     [ "is_boundary_edge", "classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb", null ],
     [ "is_boundary_element", "classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c", null ],
     [ "is_boundary_face", "classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4", null ],
@@ -89,6 +92,9 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "edge_nodes_", "classpolyfem_1_1mesh_1_1_mesh.html#accef56bf66e4b579ea80f55cccabed01", null ],
     [ "elements_tag_", "classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c", null ],
     [ "face_nodes_", "classpolyfem_1_1mesh_1_1_mesh.html#ab8936c0a3ad41cbd0758d95f0ea5653d", null ],
+    [ "in_ordered_edges_", "classpolyfem_1_1mesh_1_1_mesh.html#ad5c769eab1f038c36c6066c4d5a6a1d5", null ],
+    [ "in_ordered_faces_", "classpolyfem_1_1mesh_1_1_mesh.html#a5927c8f688b914c66609bfdd0d8cf004", null ],
+    [ "in_ordered_vertices_", "classpolyfem_1_1mesh_1_1_mesh.html#af4ebce607e7a1377500e307a9b695d48", null ],
     [ "is_rational_", "classpolyfem_1_1mesh_1_1_mesh.html#a263112318a0c41066f9bffa9be039fe8", null ],
     [ "orders_", "classpolyfem_1_1mesh_1_1_mesh.html#a126480d889cb05c7a5f87dce1cec6179", null ]
 ];

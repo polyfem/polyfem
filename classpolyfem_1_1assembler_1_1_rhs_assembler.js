@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_rhs_assembler =
 [
-    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a56bfb0b993d12832b321d5752be4beff", null ],
+    [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a303293338e3e9b81ebe064fb72d78d67", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad", null ],
     [ "compute_energy_grad", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a717039c1647c3261c8acc5ab68caac54", null ],
@@ -20,6 +20,7 @@ var classpolyfem_1_1assembler_1_1_rhs_assembler =
     [ "bc_method_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a8a4793092a68dca0733b43f7fce18f14", null ],
     [ "formulation_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0c0f9a3038e60592e5419b7a33c8620c", null ],
     [ "gbases_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481", null ],
+    [ "input_dirichelt_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab129ede5c4ef4f35b3a391437fadb775", null ],
     [ "mesh_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0b1f0da3ae1cbbbd95b57cba673f6e8e", null ],
     [ "n_basis_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a39a825e996487157c35b072370d06373", null ],
     [ "obstacle_", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#aadf285b97992411c93f3bf94fe0cb76b", null ],
