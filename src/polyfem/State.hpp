@@ -146,6 +146,15 @@ namespace polyfem
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 
+	private:
+		void build_node_mapping();
+
+	public:
+		/// Inpute nodes (including high-order) to polyfem nodes, only for isoparametric
+		Eigen::VectorXi in_node_to_node;
+		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
+		Eigen::VectorXi in_primitive_to_primitive;
+
 		//---------------------------------------------------
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
@@ -332,6 +341,8 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
+		/// Matrices containing the input per node dirichelt
+		std::vector<Eigen::MatrixXd> input_dirichelt;
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;

@@ -56,6 +56,219 @@ namespace polyfem
 	using namespace mesh;
 	using namespace utils;
 
+	namespace
+	{
+		/// Assumes in nodes are in order vertex, edge, face, then cell nodes.
+		void build_in_node_to_in_primitive(const Mesh &mesh, const MeshNodes &mesh_nodes,
+										   Eigen::VectorXi &in_node_to_in_primitive,
+										   Eigen::VectorXi &in_node_offset)
+		{
+			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
+			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
+			const int num_face_nodes = mesh_nodes.num_face_nodes();
+			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
+
+			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
+
+			const long n_vertices = num_vertex_nodes;
+			const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
+			const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
+
+			in_node_to_in_primitive.resize(num_nodes);
+			in_node_offset.resize(num_nodes);
+
+			// Only one node per vertex, so this is an identity map.
+			in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
+			in_node_offset.head(num_vertex_nodes).setZero();
+
+			int prim_offset = n_vertices;
+			int node_offset = num_vertex_nodes;
+			auto foo = [&](const int num_prims, const int num_prim_nodes) {
+				if (num_prims <= 0 || num_prim_nodes <= 0)
+					return;
+				const Eigen::VectorXi range = Eigen::VectorXi::LinSpaced(num_prim_nodes, 0, num_prim_nodes - 1);
+				// TODO: This assumes isotropic degree of element.
+				const int node_per_prim = num_prim_nodes / num_prims;
+
+				in_node_to_in_primitive.segment(node_offset, num_prim_nodes) =
+					range.array() / node_per_prim + prim_offset;
+
+				in_node_offset.segment(node_offset, num_prim_nodes) =
+					range.unaryExpr([&](const int x) { return x % node_per_prim; });
+
+				prim_offset += num_prims;
+				node_offset += num_prim_nodes;
+			};
+
+			foo(mesh.n_edges(), num_edge_nodes);
+			foo(mesh.n_faces(), num_face_nodes);
+			foo(mesh.n_cells(), num_cell_nodes);
+		}
+
+		void build_in_primitive_to_primitive(
+			const Mesh &mesh, const MeshNodes &mesh_nodes,
+			const Eigen::VectorXi &in_ordered_vertices,
+			const Eigen::MatrixXi &in_ordered_edges,
+			const Eigen::MatrixXi &in_ordered_faces,
+			Eigen::VectorXi &in_primitive_to_primitive)
+		{
+			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
+			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
+			const int num_face_nodes = mesh_nodes.num_face_nodes();
+			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
+			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
+
+			const long n_vertices = num_vertex_nodes;
+			const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
+			const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
+
+			in_primitive_to_primitive.setLinSpaced(num_in_primitives, 0, num_in_primitives - 1);
+
+			// ------------
+			// Map vertices
+			// ------------
+
+			in_primitive_to_primitive.head(n_vertices) = in_ordered_vertices;
+
+			int in_offset = n_vertices;
+			int offset = mesh.n_vertices();
+
+			// ---------
+			// Map edges
+			// ---------
+
+			const auto edges_to_ids = mesh.edges_to_ids();
+			assert(in_ordered_edges.rows() == edges_to_ids.size());
+
+			for (int in_ei = 0; in_ei < in_ordered_edges.rows(); in_ei++)
+			{
+				const std::pair<int, int> in_edge(
+					in_ordered_edges.row(in_ei).minCoeff(),
+					in_ordered_edges.row(in_ei).maxCoeff());
+				in_primitive_to_primitive[in_offset + in_ei] =
+					offset + edges_to_ids.at(in_edge); // offset edge ids
+			}
+
+			in_offset += mesh.n_edges();
+			offset += mesh.n_edges();
+
+			// ---------
+			// Map faces
+			// ---------
+			if (mesh.is_volume())
+			{
+				const auto faces_to_ids = mesh.faces_to_ids();
+				assert(in_ordered_faces.rows() == faces_to_ids.size());
+
+				for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
+				{
+					std::vector<int> in_face(in_ordered_faces.cols());
+					for (int i = 0; i < in_face.size(); i++)
+						in_face[i] = in_ordered_faces(in_fi, i);
+					std::sort(in_face.begin(), in_face.end());
+
+					in_primitive_to_primitive[in_offset + in_fi] =
+						offset + faces_to_ids.at(in_face); // offset face ids
+				}
+
+				in_offset += mesh.n_faces();
+				offset += mesh.n_faces();
+			}
+
+			// NOTE: Assume in_cells_to_cells is identity
+		}
+	} // namespace
+
+	void State::build_node_mapping()
+	{
+		if (!mesh->is_conforming())
+			return;
+		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
+		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
+		const int num_face_nodes = mesh_nodes->num_face_nodes();
+		const int num_cell_nodes = mesh_nodes->num_cell_nodes();
+
+		const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
+
+		const long n_vertices = num_vertex_nodes;
+		const int num_in_primitives = n_vertices + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
+		const int num_primitives = mesh->n_vertices() + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
+
+		Eigen::VectorXi in_node_to_in_primitive;
+		Eigen::VectorXi in_node_offset;
+		build_in_node_to_in_primitive(*mesh, *mesh_nodes, in_node_to_in_primitive, in_node_offset);
+
+		build_in_primitive_to_primitive(
+			*mesh, *mesh_nodes,
+			mesh->in_ordered_vertices(),
+			mesh->in_ordered_edges(),
+			mesh->in_ordered_faces(),
+			in_primitive_to_primitive);
+
+		const auto primitive_offset = [&](int node) {
+			if (mesh_nodes->is_vertex_node(node))
+				return 0;
+			else if (mesh_nodes->is_edge_node(node))
+				return mesh->n_vertices();
+			else if (mesh_nodes->is_face_node(node))
+				return mesh->n_vertices() + mesh->n_edges();
+			else if (mesh_nodes->is_cell_node(node))
+				return mesh->n_vertices() + mesh->n_edges() + mesh->n_faces();
+			throw std::runtime_error("Invalid node ID!");
+		};
+
+		std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
+		const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
+		int node_count = 0;
+		for (int i = 0; i < grouped_nodes.size(); i++)
+		{
+			int node = grouped_nodes[i];
+			assert(node < num_nodes);
+			if (node >= 0)
+			{
+				int primitive = mesh_nodes->node_to_primitive_gid().at(node) + primitive_offset(i);
+				assert(primitive < num_primitives);
+				primitive_to_nodes[primitive].push_back(node);
+				node_count++;
+			}
+		}
+		assert(node_count == num_nodes);
+
+		in_node_to_node.resize(num_nodes);
+		for (int i = 0; i < num_nodes; i++)
+		{
+			// input node id -> input primitive -> primitive -> node
+			const std::vector<int> &possible_nodes =
+				primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
+			assert(possible_nodes.size() > 0);
+			if (possible_nodes.size() > 1)
+			{
+#ifndef NDEBUG
+				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+				for (int possible_node : possible_nodes)
+					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
+#endif
+
+				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
+				assert(e_id < mesh->n_edges());
+				RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
+				RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
+				RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);
+				// Assume possible nodes are ordered, so only need to check order of two nodes
+
+				// Input edges are sorted, so if a is closer to v0 then the order is correct
+				// otherwise the nodes are flipped.
+				assert(mesh->edge_vertex(e_id, 0) < mesh->edge_vertex(e_id, 1));
+				int offset = (a - v0).squaredNorm() < (b - v0).squaredNorm()
+								 ? in_node_offset[i]
+								 : (possible_nodes.size() - in_node_offset[i] - 1);
+				in_node_to_node[i] = possible_nodes[offset];
+			}
+			else
+				in_node_to_node[i] = possible_nodes[0];
+		}
+	}
+
 	std::string State::formulation() const
 	{
 		if (args["materials"].is_null())
@@ -378,6 +591,7 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
+		input_dirichelt.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -630,17 +844,48 @@ namespace polyfem
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
+		logger().debug("Building node mapping...");
+		build_node_mapping();
+		logger().debug(" done");
+
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
+		for (int b = 0; b < args["boundary_conditions"]["dirichlet_boundary"].size(); ++b)
+		{
+			if (!args["boundary_conditions"]["dirichlet_boundary"][b].is_string())
+				continue;
+			const std::string path = resolve_input_path(args["boundary_conditions"]["dirichlet_boundary"][b]);
+			if (std::filesystem::is_regular_file(path))
+			{
+				Eigen::MatrixXd tmp;
+				read_matrix(path, tmp);
+
+				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
+				for (int n = 0; n < nodes.size(); ++n)
+				{
+					const int node_id = in_node_to_node[nodes[n]];
+					tmp(n, 0) = node_id;
+					for (int d = 0; d < problem_dim; ++d)
+						boundary_nodes.push_back(node_id * problem_dim + d);
+				}
+
+				input_dirichelt.emplace_back(tmp);
+			}
+		}
+
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
 			for (int d = 0; d < problem_dim; ++d)
 				boundary_nodes.push_back(i * problem_dim + d);
 		}
+
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
 		const auto &curret_bases = iso_parametric() ? bases : geom_bases;
 		const int n_samples = 10;
@@ -1068,7 +1313,7 @@ namespace polyfem
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle,
+			assembler, *mesh, obstacle, input_dirichelt,
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 			formulation(), *problem,
@@ -1100,7 +1345,7 @@ namespace polyfem
 				tmp.setZero();
 
 				RhsAssembler tmp_rhs_assembler(
-					assembler, *mesh, obstacle,
+					assembler, *mesh, obstacle, input_dirichelt,
 					n_pressure_bases, size,
 					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 					formulation(), *problem,

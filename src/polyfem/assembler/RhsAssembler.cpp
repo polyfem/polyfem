@@ -36,7 +36,7 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
+		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichelt,
 								   const int n_basis, const int size,
 								   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const std::string &formulation, const Problem &problem,
@@ -47,7 +47,8 @@ namespace polyfem
 			  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
 			  formulation_(formulation), problem_(problem),
 			  bc_method_(bc_method),
-			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params)
+			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
+			  input_dirichelt_(input_dirichelt)
 		{
 		}
 
@@ -563,6 +564,23 @@ namespace polyfem
 				integrate_bc(df, local_boundary, bounday_nodes, resolution, rhs);
 			else
 				lsq_bc(df, local_boundary, bounday_nodes, resolution, rhs);
+
+			if (bounday_nodes.size() > 0)
+			{
+				for (const auto &m : input_dirichelt_)
+				{
+					assert(m.cols() == size_ + 1);
+					for (int n = 0; n < m.rows(); ++n)
+					{
+						const int n_id = m(n, 0);
+						for (int d = 0; d < size_; ++d)
+						{
+							const int g_index = n_id * size_ + d;
+							rhs(g_index) = m(n, d + 1);
+						}
+					}
+				}
+			}
 
 			//Neumann
 			Eigen::MatrixXd uv, samples, gtmp, rhs_fun;

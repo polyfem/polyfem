@@ -17,12 +17,67 @@
 #include <Eigen/Geometry>
 
 #include <igl/boundary_facets.h>
+#include <igl/oriented_facets.h>
+#include <igl/edges.h>
 
 #include <filesystem>
+#include <unordered_set>
+
 ////////////////////////////////////////////////////////////////////////////////
 namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
+
+	namespace
+	{
+		std::vector<int> sort_face(const Eigen::RowVectorXi f)
+		{
+			std::vector<int> sorted_face(f.data(), f.data() + f.size());
+			std::sort(sorted_face.begin(), sorted_face.end());
+			return sorted_face;
+		}
+
+		// Constructs a list of unique faces represented in a given mesh (V,T)
+		//
+		// Inputs:
+		//   T: #T × 4 matrix of indices of tet corners
+		// Outputs:
+		//   F: #F × 3 list of faces in no particular order
+		template <typename DerivedT, typename DerivedF>
+		void get_faces(
+			const Eigen::MatrixBase<DerivedT> &T,
+			Eigen::PlainObjectBase<DerivedF> &F)
+		{
+			assert(T.rows() == 4);
+			assert(T.cols() >= 1);
+
+			Eigen::MatrixXi BF, OF;
+			igl::boundary_facets(T, BF);
+			igl::oriented_facets(T, OF); // boundary facets + duplicated interior faces
+			assert((OF.rows() + BF.rows()) % 2 == 0);
+			const int num_faces = (OF.rows() + BF.rows()) / 2;
+			F.resize(num_faces, 3);
+			F.topRows(BF.rows()) = BF;
+			std::unordered_set<std::vector<int>, HashVector> processed_faces;
+			for (int fi = 0; fi < BF.rows(); fi++)
+			{
+				processed_faces.insert(sort_face(BF.row(fi)));
+			}
+
+			for (int fi = 0; fi < OF.rows(); fi++)
+			{
+				std::vector<int> sorted_face = sort_face(OF.row(fi));
+				const auto iter = processed_faces.find(sorted_face);
+				if (iter == processed_faces.end())
+				{
+					F.row(processed_faces.size()) = OF.row(fi);
+					processed_faces.insert(sorted_face);
+				}
+			}
+
+			assert(F.rows() == processed_faces.size());
+		}
+	} // namespace
 
 	std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 	{
@@ -35,6 +90,25 @@ namespace polyfem::mesh
 				mesh = std::make_unique<CMesh2D>();
 			if (mesh->load(meshin))
 			{
+				mesh->in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(meshin.vertices.nb(), 0, meshin.vertices.nb() - 1);
+				assert(mesh->in_ordered_vertices_[0] == 0);
+				assert(mesh->in_ordered_vertices_[1] == 1);
+				assert(mesh->in_ordered_vertices_[2] == 2);
+				assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == meshin.vertices.nb() - 1);
+
+				mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
+
+				for (int e = 0; e < (int)meshin.edges.nb(); ++e)
+				{
+					for (int lv = 0; lv < 2; ++lv)
+					{
+						mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
+					}
+				}
+				assert(mesh->in_ordered_edges_.size() > 0);
+
+				mesh->in_ordered_faces_.resize(0, 0);
+
 				return mesh;
 			}
 		}
@@ -48,6 +122,36 @@ namespace polyfem::mesh
 			meshin.cells.connect();
 			if (mesh->load(meshin))
 			{
+				mesh->in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(meshin.vertices.nb(), 0, meshin.vertices.nb() - 1);
+				assert(mesh->in_ordered_vertices_[0] == 0);
+				assert(mesh->in_ordered_vertices_[1] == 1);
+				assert(mesh->in_ordered_vertices_[2] == 2);
+				assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == meshin.vertices.nb() - 1);
+
+				mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
+
+				for (int e = 0; e < (int)meshin.edges.nb(); ++e)
+				{
+					for (int lv = 0; lv < 2; ++lv)
+					{
+						mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
+					}
+				}
+				assert(mesh->in_ordered_edges_.size() > 0);
+
+				mesh->in_ordered_faces_.resize(meshin.facets.nb(), meshin.facets.nb_vertices(0));
+
+				for (int f = 0; f < (int)meshin.edges.nb(); ++f)
+				{
+					assert(mesh->in_ordered_faces_.cols() == meshin.facets.nb_vertices(f));
+
+					for (int lv = 0; lv < mesh->in_ordered_faces_.cols(); ++lv)
+					{
+						mesh->in_ordered_faces_(f, lv) = meshin.facets.vertex(f, lv);
+					}
+				}
+				assert(mesh->in_ordered_faces_.size() > 0);
+
 				return mesh;
 			}
 		}
@@ -76,6 +180,7 @@ namespace polyfem::mesh
 				mesh = std::make_unique<CMesh3D>();
 			if (mesh->load(path))
 			{
+				//TODO add in_ordered_vertices_, in_ordered_edges_, in_ordered_faces_
 				return mesh;
 			}
 		}
@@ -107,6 +212,8 @@ namespace polyfem::mesh
 			{
 				mesh->attach_higher_order_nodes(vertices, elements);
 				mesh->cell_weights_ = weights;
+
+				// TODO, not clear?
 			}
 
 			for (const auto &w : weights)
@@ -157,6 +264,47 @@ namespace polyfem::mesh
 		}
 
 		mesh->build_from_matrices(vertices, cells);
+
+		mesh->in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(vertices.rows(), 0, vertices.rows() - 1);
+		assert(mesh->in_ordered_vertices_[0] == 0);
+		assert(mesh->in_ordered_vertices_[1] == 1);
+		assert(mesh->in_ordered_vertices_[2] == 2);
+		assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == vertices.rows() - 1);
+
+		if (dim == 2)
+		{
+			std::unordered_set<std::pair<int, int>, HashPair> edges;
+			for (int f = 0; f < cells.rows(); ++f)
+			{
+				for (int lv = 0; lv < cells.cols(); ++lv)
+				{
+					const int v0 = cells(f, lv);
+					const int v1 = cells(f, (lv + 1) % cells.cols());
+					edges.emplace(std::pair<int, int>(std::min(v0, v1), std::max(v0, v1)));
+				}
+			}
+			mesh->in_ordered_edges_.resize(edges.size(), 2);
+			int index = 0;
+			for (auto it = edges.begin(); it != edges.end(); ++it)
+			{
+				mesh->in_ordered_edges_(index, 0) = it->first;
+				mesh->in_ordered_edges_(index, 1) = it->second;
+				++index;
+			}
+
+			assert(mesh->in_ordered_edges_.size() > 0);
+
+			mesh->in_ordered_faces_.resize(0, 0);
+		}
+		else
+		{
+			if (cells.rows() == 4)
+			{
+				get_faces(cells, mesh->in_ordered_faces_);
+				igl::edges(mesh->in_ordered_faces_, mesh->in_ordered_edges_);
+			}
+			// else TODO
+		}
 
 		return mesh;
 	}

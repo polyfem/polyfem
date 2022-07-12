@@ -93,6 +93,8 @@ bool polyfem::utils::read_matrix_ascii(const std::string &path, Eigen::Matrix<T,
 
 	while (getline(file, s))
 	{
+		if (s.empty())
+			continue;
 		std::stringstream input(s);
 		T temp;
 		matrix.emplace_back();
