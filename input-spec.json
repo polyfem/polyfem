@@ -1,0 +1,1593 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "geometry",
+            "materials"
+        ],
+        "optional": [
+            "common",
+            "root_path",
+            "space",
+            "time",
+            "contact",
+            "solver",
+            "boundary_conditions",
+            "initial_conditions",
+            "output",
+            "input",
+            "authen_t1"
+        ],
+        "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/common",
+        "default": "",
+        "type": "file",
+        "extensions": [
+            ".json"
+        ],
+        "doc": "Path to default settings"
+    },
+    {
+        "pointer": "/root_path",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/authen_t1",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "err_h1",
+            "err_h1_semi",
+            "err_l2",
+            "err_linf",
+            "err_linf_grad",
+            "err_lp",
+            "margin"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/authen_t1/err_h1",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/authen_t1/err_h1_semi",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/authen_t1/err_l2",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/authen_t1/err_linf",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/authen_t1/err_linf_grad",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/authen_t1/err_lp",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/authen_t1/margin",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry",
+        "type": "list",
+        "min": 1,
+        "doc": "List of /geometry objects."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh"
+        ],
+        "optional": [
+            "transformation",
+            "volume_selection",
+            "surface_selection",
+            "n_refs",
+            "advanced",
+            "enabled",
+            "is_obstacle"
+        ],
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object. {DZ: what is n_refs}"
+    },
+    {
+        "pointer": "/geometry/*/mesh",
+        "type": "file",
+        "extensions": [
+            ".obj",
+            ".msh",
+            ".stl"
+        ],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/*/transformation",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "translation",
+            "rotation",
+            "rotation_mode",
+            "scale",
+            "dimensions"
+        ],
+        "doc": "Geometric transformations applied to the geometry after loading it."
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation_mode",
+        "type": "string",
+        "default": "xyz",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/geometry/*/transformation/translation",
+        "type": "list",
+        "default": null,
+        "doc": "Translate, 2 entries for 2D problems, 3 entries for 3D problems."
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation",
+        "type": "list",
+        "default": [],
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion."
+    },
+    {
+        "pointer": "/geometry/*/transformation/scale",
+        "type": "list",
+        "default": [],
+        "doc": "Scale by specified factors along axes, 2 entries for 2D problems, 3 entries for 3D problems."
+    },
+    {
+        "pointer": "/geometry/*/transformation/dimensions",
+        "type": "list",
+        "default": [],
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
+    },
+    {
+        "pointer": "/geometry/*/transformation/dimensions/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/transformation/translation/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/transformation/scale/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "int",
+        "default": 0,
+        "doc": "Assign specified id to all volume elements of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Load ids from a file; the file is required to have one id per volume element of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "int",
+        "default": 0,
+        "doc": "Assign specified id to all surface elements of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "list",
+        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box,sphere, "
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one id for each; each triple must correspond to a surface element"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "box"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "box",
+        "doc": "Assign the id to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "radius",
+            "center"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "sphere",
+        "doc": "Assign the id to all surface elements with barycenters inside an sphere with specified center nad radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "relative",
+            "offset"
+        ],
+        "default": null,
+        "typename": "plane",
+        "doc": "{DZ TODO: change name to halfspace}. Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is  defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates coordinates with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "axis",
+            "position"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "axis",
+        "doc": "{DZ TODO: change name to axis_aligned_halfspace, rename position to offset} Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/id",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/center",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/axis",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/offset",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/position",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/relative",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/point",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/normal",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/normal/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/box",
+        "type": "list",
+        "min": 2,
+        "max": 2
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/box/*",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "default": []
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/box/*/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/n_refs",
+        "type": "int",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/advanced",
+        "type": "object",
+        "optional": [
+            "normalize_mesh"
+        ],
+        "default": null,
+        "doc": "Nonuniformly rescale the  mesh along each axis, so that the bounding box becomes [0,1]^3"
+    },
+    {
+        "pointer": "/geometry/*/advanced/normalize_mesh",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/*/is_obstacle",
+        "type": "bool",
+        "default": false,
+        "doc": "The geometry elements are not included in deforming geometry, only in collision computations"
+    },
+    {
+        "pointer": "/geometry/*/enabled",
+        "type": "bool",
+        "default": true
+    },
+    {
+        "pointer": "/space",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "discr_order",
+            "pressure_discr_order",
+            "use_p_ref",
+            "advanced"
+        ],
+        "doc": "{DZ TODO: rename space to FEspace?} Options related to the FE space."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "default": 1,
+        "type": "int",
+        "doc": "{DZ TODO: RENAME order->degree two more versions: load per element orders from file and list of ids to assign an order to} Lagrange element order for the space for the main unknown,for all elements."
+    },
+    {
+        "pointer": "/space/pressure_discr_order",
+        "default": 1,
+        "type": "int",
+        "doc": "{DZ TODO: two more versions: load per element orders from file and list of ids to assign an order to} Lagrange element order for the space for the pressure unknown,for all elements."
+    },
+    {
+        "pointer": "/space/use_p_ref",
+        "default": false,
+        "type": "bool",
+        "doc": "Perform a priori p-refinement based on element shape, as described in 'Decoupling..' paper."
+    },
+    {
+        "pointer": "/space/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "discr_order_max",
+            "serendipity",
+            "isoparametric",
+            "use_spline",
+            "bc_method",
+            "n_boundary_samples",
+            "quadrature_order",
+            "poly_bases",
+            "integral_constraints",
+            "n_harmonic_samples",
+            "force_no_ref_for_harmonic",
+            "B",
+            "h1_formula",
+            "count_flipped_els"
+        ],
+        "doc": "Advanced settings for the FE space."
+    },
+    {
+        "pointer": "/space/advanced/discr_order_max",
+        "default": 4,
+        "type": "int",
+        "doc": "Maximal discretization order in adaptive p-refinement and hp-refinement"
+    },
+    {
+        "pointer": "/space/advanced/serendipity",
+        "default": false,
+        "type": "bool",
+        "doc": "Use serendipity elements for quad/hex elements of degree 2."
+    },
+    {
+        "pointer": "/space/advanced/isoparametric",
+        "default": false,
+        "type": "bool",
+        "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
+    },
+    {
+        "pointer": "/space/advanced/use_spline",
+        "default": false,
+        "type": "bool",
+        "doc": "Use bi/triquadratic spline basis for quad/hex elements not adjacent to polyhedral elements, see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/advanced/bc_method",
+        "default": "lsq",
+        "type": "string",
+        "doc": "Method for imposing analytic Dirichet boundary conditions. If 'lsq' (least-squares fit), then the bc function is sampled at quadrature points, and the FEspace nodal values on the boundary are determined by minimizing L2 norm of the difference. If 'sample', then the analytic bc function is sampled at the boundary nodes."
+    },
+    {
+        "pointer": "/space/advanced/n_boundary_samples",
+        "default": -1,
+        "type": "int",
+        "doc": "Per-element number of boundary samples for analytic Dirichlet and Neumann boundary conditions."
+    },
+    {
+        "pointer": "/space/advanced/quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "{DZ TODO: rename min_quadrature_order} Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*p+1,quadrature_order."
+    },
+    {
+        "pointer": "/space/advanced/poly_bases",
+        "default": "MFSHarmonic",
+        "type": "string",
+        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/advanced/integral_constraints",
+        "default": 2,
+        "type": "int",
+        "doc": "Number of constraints for non-conforming polygonal basis;  0, 1, or 2; see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/advanced/n_harmonic_samples",
+        "default": 10,
+        "type": "int",
+        "doc": "If MFSHarmonics is used for a polygonal element, number of collocation samples used in the basis construction;see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/advanced/force_no_ref_for_harmonic",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, do not do uniform global refinement if the mesh contains polygonal elements."
+    },
+    {
+        "pointer": "/space/advanced/B",
+        "default": 3,
+        "type": "int",
+        "doc": "{DZ TODO more meaningful name} The target deviation of the error on elements from perfect element error, for a priori geometry-dependent p-refinement, see 'Decoupling .. ' paper."
+    },
+    {
+        "pointer": "/space/advanced/h1_formula",
+        "default": false,
+        "type": "bool",
+        "doc": "{DZ TODO: get rid of this and remove from the code}"
+    },
+    {
+        "pointer": "/space/advanced/count_flipped_els",
+        "default": true,
+        "type": "bool",
+        "doc": "{DZ TODO not sure if this is correct, e.g., what this does for higher order} Count the number of elements with Jacobian of the geometric map not positive everywhere."
+    },
+    {
+        "pointer": "/time",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "t0",
+            "tend",
+            "dt",
+            "time_steps"
+        ],
+        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
+    },
+    {
+        "pointer": "/time/t0",
+        "type": "float",
+        "min": 0,
+        "default": 0
+    },
+    {
+        "pointer": "/time/tend",
+        "type": "float",
+        "min": 0,
+        "default": 1
+    },
+    {
+        "pointer": "/time/dt",
+        "type": "float",
+        "min": 0,
+        "default": 0.1
+    },
+    {
+        "pointer": "/time/time_steps",
+        "type": "int",
+        "min": 0,
+        "default": 10
+    },
+    {
+        "pointer": "/contact",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "dhat",
+            "dhat_percentage",
+            "epsv",
+            "friction_coefficient"
+        ],
+        "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "True if contact handling is enabled"
+    },
+    {
+        "pointer": "/contact/dhat",
+        "default": 0.001,
+        "type": "float",
+        "doc": "IPC barrier function parameter (see IPC paper)"
+    },
+    {
+        "pointer": "/contact/dhat_percentage",
+        "default": 0.8,
+        "type": "float",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/contact/epsv",
+        "default": 0.001,
+        "type": "float",
+        "doc": "IPC friction smoothing parameter (see IPC paper) "
+    },
+    {
+        "pointer": "/contact/friction_coefficient",
+        "default": 0,
+        "type": "float",
+        "doc": "Friction Coefficient {DZ TODO: friction coefficient options need to be: constant (global default) and per pair of selection ids}"
+    },
+    {
+        "pointer": "/solver",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "linear",
+            "nonlinear",
+            "augmented_lagrangian",
+            "contact",
+            "ignore_inertia",
+            "advanced"
+        ],
+        "doc": "The settings for the solver including Linear solver, nonlinear solver, and some advanced options"
+    },
+    {
+        "pointer": "/solver/linear",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solver",
+            "precond"
+        ],
+        "doc": "Settings for linear solver"
+    },
+    {
+        "pointer": "/solver/linear/solver",
+        "default": "",
+        "type": "string",
+        "doc": "Linear solver type {DZ TODO: which types are supported?}"
+    },
+    {
+        "pointer": "/solver/linear/precond",
+        "default": "",
+        "type": "string",
+        "doc": "Preconditioner for iterative linear solver {DZ TODO: which preconditioners are supported?}"
+    },
+    {
+        "pointer": "/solver/nonlinear",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solver",
+            "f_delta",
+            "grad_norm",
+            "max_iterations",
+            "use_grad_norm",
+            "relative_gradient",
+            "line_search"
+        ],
+        "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+    },
+    {
+        "pointer": "/solver/nonlinear/solver",
+        "default": "newton",
+        "type": "string",
+        "doc": "Nonlinear solver type {DZ: TODO what types are supported in addition to Newton?  BFGS? Newton?}"
+    },
+    {
+        "pointer": "/solver/nonlinear/f_delta",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Stopping criterion:  minimal change of the energy for the iterations to continue (DZ: and if the energy not defined}  "
+    },
+    {
+        "pointer": "/solver/nonlinear/grad_norm",
+        "default": 1e-08,
+        "type": "float",
+        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_iterations",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations for a non-linear solve."
+    },
+    {
+        "pointer": "/solver/nonlinear/use_grad_norm",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
+    },
+    {
+        "pointer": "/solver/nonlinear/relative_gradient",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "method",
+            "use_grad_norm_tol"
+        ],
+        "doc": "Settings for line search in the nonlinear solver"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search/method",
+        "default": "backtracking",
+        "type": "string",
+        "doc": "line search type {DZ TODO: what types are there?}"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
+        "default": 0.0001,
+        "type": "float",
+        "doc": "{DZ TODO: unclear - should this be called grad_norm_tol and be a float, or use_grad_norm_tol and be a boolean?}"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "initial_weight",
+            "max_weight",
+            "force"
+        ],
+        "doc": "{DZ TODO: not 100% what these correspond to rename? e.g. is the weight a penalty weight? what about initial lagrange multipliers? is there control on how the weight is updated?, add an algorithm description reference, what does the force flag do?}"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/initial_weight",
+        "default": 1000000.0,
+        "type": "float",
+        "doc": "{DZ TODO: rename initial_penalty_weight? }"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/max_weight",
+        "default": 100000000000.0,
+        "type": "float",
+        "doc": "{DZ TODO: rename max_penalty_weight?}"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/force",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/solver/contact",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "CCD",
+            "friction_iterations",
+            "friction_convergence_tol",
+            "barrier_stiffness",
+            "lagged_damping_weight"
+        ],
+        "doc": "Settings for contact handling in the solver."
+    },
+    {
+        "pointer": "/solver/contact/CCD",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "broad_phase",
+            "tolerance",
+            "max_iterations"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/solver/contact/CCD/broad_phase",
+        "default": "hash_grid",
+        "type": "string",
+        "doc": "Broad phase collision-detection algorithm to use {DZ TODO: enumerate options}"
+    },
+    {
+        "pointer": "/solver/contact/CCD/tolerance",
+        "default": 1e-06,
+        "type": "float",
+        "doc": "CCD tolerance {DZ TODO add reference or explain what it does}"
+    },
+    {
+        "pointer": "/solver/contact/CCD/max_iterations",
+        "default": 1000000.0,
+        "type": "float",
+        "doc": "Maximum number of iterations for continuous collision detection"
+    },
+    {
+        "pointer": "/solver/contact/friction_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagged friction formulation (see IPC paper)."
+    },
+    {
+        "pointer": "/solver/contact/friction_convergence_tol",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Tolerence for friction convergence {DZ TODO elaborate what quantity the tolerance is applied to}"
+    },
+    {
+        "pointer": "/solver/contact/barrier_stiffness",
+        "default": "adaptive",
+        "type": "string",
+        "doc": "How coefficient of clamped log-barrier function for contact is updated {DZ TODO add options: is it adaptive| constant?} "
+    },
+    {
+        "pointer": "/solver/contact/barrier_stiffness",
+        "type": "float",
+        "doc": "The coefficient of clamped log-barrier function value. {DZ TODO: for adaptive initial value?}"
+    },
+    {
+        "pointer": "/solver/contact/lagged_damping_weight",
+        "default": 0,
+        "type": "int",
+        "doc": "{DZ TODO: : add description and/or paper ref}"
+    },
+    {
+        "pointer": "/solver/ignore_inertia",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/solver/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "cache_size",
+            "lump_mass_matrix"
+        ],
+        "doc": "Advanced settings for the solver"
+    },
+    {
+        "pointer": "/solver/advanced/cache_size",
+        "default": 900000,
+        "type": "int",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/solver/advanced/lump_mass_matrix",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
+    },
+    {
+        "pointer": "/materials",
+        "type": "list",
+        "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho),or Lame constants lambda/mu,  type() {DZ TODO: is id referring to id assigned by selection? what is type? How do E/nu and lambda/mu interact Add arbitrary elasticity tensor as an option}"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "E",
+            "nu",
+            "rho",
+            "mu",
+            "lambda",
+            "density"
+        ],
+        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*/id",
+        "type": "int",
+        "default": "all",
+        "doc": "id"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "Poisson ratio"
+    },
+    {
+        "pointer": "/materials/*/rho",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "Density"
+    },
+    {
+        "pointer": "/materials/*/density",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "Density"
+    },
+    {
+        "pointer": "/materials/*/type",
+        "type": "string",
+        "doc": "Type of material"
+    },
+    {
+        "pointer": "/materials/*/mu",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/materials/*/lambda",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/boundary_conditions",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "rhs",
+            "dirichlet_boundary",
+            "neumann_boundary",
+            "pressure_boundary",
+            "obstacle_displacements"
+        ],
+        "doc": "The settings for boundary conditions. {DZ TODO is rhs actually a volume force, so that e.g., non-homogeneous Neumann gets added to it to get a complete rhs, or is it a complete rhs?}"
+    },
+    {
+        "pointer": "/boundary_conditions/rhs",
+        "type": "float",
+        "doc": "Right-hand side of the system being solved {DZ TODO unclear what this single number means, or more }"
+    },
+    {
+        "pointer": "/boundary_conditions/rhs",
+        "type": "string",
+        "doc": "Right hand side of the system being solved {DZ TODO is this a formulat for computing rhs as function of x,y,z?}"
+    },
+    {
+        "pointer": "/boundary_conditions/rhs",
+        "default": "[]",
+        "type": "list",
+        "doc": "Right hand side of the system being solved {DZ TODO list of values per ... or list of strings per ... ?}"
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*",
+        "default": 0,
+        "type": "float",
+        "doc": "Right hand side of the system being solved"
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*",
+        "type": "string",
+        "doc": "Right hand side of the system being solved"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "dimension"
+        ],
+        "doc": "Dirichlet boundary condition. {DZ TODO: rename dimension to enabled_dimensions?}"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*",
+        "type": "string",
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
+        "type": "int",
+        "doc": "id of Dirichlet boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value",
+        "type": "list",
+        "doc": "Values of Dirichlet boundary condition  {DZ TODO these lists are of length 2 or 3?}"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "string",
+        "doc": "Values of Dirichlet boundary condition for each dimension {DZ TODO: strings = formulas?}"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
+        "type": "list",
+        "default": [
+            true,
+            true,
+            true
+        ],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "The list of Neumann boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection. "
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*",
+        "type": "object",
+        "default": "//TODO",
+        "optional": [
+            "id",
+            "value"
+        ],
+        "doc": "Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/id",
+        "type": "int",
+        "default": "//TODO",
+        "doc": "id of Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/value",
+        "type": "list",
+        "default": "//TODO",
+        "doc": "Values of Neumann boundary condition for each dimension  {DZ TODO: strings = formulas?}"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
+        "type": "string",
+        "default": "//TODO",
+        "doc": "Values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "Values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
+        "type": "float",
+        "default": "//TODO",
+        "doc": "Values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "Dirichlet boundary condition for the pressure variable (Stokes, incompressible elasticity). Defined by a list of (id, value)  pairs as for all other boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "dimension"
+        ],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/id",
+        "type": "int",
+        "doc": "id for th pressure Dirichlet boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
+        "type": "list",
+        "doc": "Values of pressure Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
+        "type": "string",
+        "doc": "Values of  pressure Dirichlet  boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
+        "type": "float",
+        "doc": "Values of pressure Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
+        "type": "list",
+        "default": [
+            true,
+            true,
+            true
+        ],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements",
+        "default": [],
+        "type": "list",
+        "doc": "The list of obstacle displacements. Each entry is an (id, value) pair, where ids are set by selection."
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "Obstacle displacements"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/id",
+        "type": "int",
+        "doc": "id of Obstacle displacements"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/value",
+        "type": "list",
+        "doc": "Values of Obstacle displacements for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
+        "type": "string",
+        "doc": "Values of Obstacle displacements for each dimension {DZ TODO: string is a formula?}"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
+        "type": "float",
+        "doc": "Values of Obstacle displacements for each dimension"
+    },
+    {
+        "pointer": "/initial_conditions",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solution",
+            "velocity",
+            "acceleration"
+        ],
+        "doc": "Initial conditions for time-dependent problem, imposed on the main variable, its derivative or second derivtive {DZ TODO: how does it apply to time-dependent Stokes or Navier-Stokes? What about pressure? If these are used for Navier-Stokes need to rename}"
+    },
+    {
+        "pointer": "/initial_conditions/solution",
+        "default": [],
+        "type": "list",
+        "doc": "A list of (id, value) pairs defininng the initial conditions for the main variable values. Ids are set by selection, and values can be floats or strings. {DZ TODO strings = formulas?}"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*",
+        "default": 0,
+        "type": "float",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity",
+        "default": [],
+        "type": "list",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*",
+        "default": null,
+        "type": "object",
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/id",
+        "type": "int",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value",
+        "type": "float",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value/*",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value/*",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration",
+        "default": [],
+        "type": "list",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*",
+        "default": null,
+        "type": "object",
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/id",
+        "type": "int",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value",
+        "type": "float",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value/*",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value/*",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "json",
+            "paraview",
+            "data",
+            "advanced"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/json",
+        "default": "",
+        "type": "string",
+        "doc": "File name for json output {DZ TODO: elaborate - does this write out everything defined in this file?}"
+    },
+    {
+        "pointer": "/output/paraview",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "file_name",
+            "vismesh_rel_area",
+            "skip_frame",
+            "high_order_mesh",
+            "volume",
+            "surface",
+            "wireframe",
+            "options",
+            "reference"
+        ],
+        "doc": "Output in paraview format {DZ TODO: not sure what exactly all of these are so need to add descriptions below}"
+    },
+    {
+        "pointer": "/output/paraview/file_name",
+        "default": "",
+        "type": "string",
+        "doc": "Paraview output file name"
+    },
+    {
+        "pointer": "/output/paraview/vismesh_rel_area",
+        "default": 1e-05,
+        "type": "float",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/paraview/skip_frame",
+        "default": 1,
+        "type": "int",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/paraview/high_order_mesh",
+        "default": true,
+        "type": "bool",
+        "doc": "{DZ TODO why is this bool, rather than eg mesh order?}"
+    },
+    {
+        "pointer": "/output/paraview/volume",
+        "default": true,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/paraview/surface",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/paraview/wireframe",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/paraview/options",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "material",
+            "body_ids",
+            "contact_forces",
+            "friction_forces",
+            "velocity",
+            "acceleration"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/paraview/options/material",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out material values {DZ: per mesh node?}"
+    },
+    {
+        "pointer": "/output/paraview/options/body_ids",
+        "default": false,
+        "type": "bool",
+        "doc": "{DZ TODO: are these selection-set ids? then rename to id}"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out contact forces"
+    },
+    {
+        "pointer": "/output/paraview/options/friction_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out friction forces"
+    },
+    {
+        "pointer": "/output/paraview/options/velocity",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out velocities {DZ TODO: for Navier-Stokes, what does this do?}"
+    },
+    {
+        "pointer": "/output/paraview/options/acceleration",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out accelerations {DZ TODO: for Navier-Sokes, what does this do?}"
+    },
+    {
+        "pointer": "/output/paraview/reference",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solution",
+            "gradient"
+        ],
+        "doc": "Write out the analytic/numerical ground-truth solution and or its gradient"
+    },
+    {
+        "pointer": "/output/paraview/reference/solution",
+        "default": null,
+        "type": "object",
+        "doc": "{DZ TODO: Should this be bool?}"
+    },
+    {
+        "pointer": "/output/paraview/reference/gradient",
+        "default": null,
+        "type": "object",
+        "doc": "{DZ TODO: Should this be bool?}"
+    },
+    {
+        "pointer": "/output/data",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solution",
+            "full_mat",
+            "stiffness_mat",
+            "solution_mat",
+            "stress_mat",
+            "u_path",
+            "v_path",
+            "a_path",
+            "mises",
+            "nodes"
+        ],
+        "doc": "File names to write output data to."
+    },
+    {
+        "pointer": "/output/data/solution",
+        "default": "",
+        "type": "string",
+        "doc": "Main variable solution {DZ TODO: what about pressure? Also included here? describe format e.g. 2/3 values per line}"
+    },
+    {
+        "pointer": "/output/data/full_mat",
+        "default": "",
+        "type": "string",
+        "doc": "System matrix {DZ TODO: for nonlinear problems which one}"
+    },
+    {
+        "pointer": "/output/data/stiffness_mat",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/data/solution_mat",
+        "default": "",
+        "type": "string",
+        "doc": "{DZ TODO: How is this different from solution?}"
+    },
+    {
+        "pointer": "/output/data/stress_mat",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/data/u_path",
+        "default": "",
+        "type": "string",
+        "doc": "{DZ TODO: is this directory to write out u (displacement) at every step for time depedent? As usual, what about Navier-Stokes?}"
+    },
+    {
+        "pointer": "/output/data/v_path",
+        "default": "",
+        "type": "string",
+        "doc": "{DZ TODO: See question for u_path}"
+    },
+    {
+        "pointer": "/output/data/a_path",
+        "default": "",
+        "type": "string",
+        "doc": "{DZ TODO: See question for u_path}"
+    },
+    {
+        "pointer": "/output/data/mises",
+        "default": "",
+        "type": "string",
+        "doc": "File name to write per-node Von Mises stress values to."
+    },
+    {
+        "pointer": "/output/data/nodes",
+        "default": "",
+        "type": "string",
+        "doc": "{DZ TODO: not sure what is written out here}"
+    },
+    {
+        "pointer": "/output/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "timestep_prefix",
+            "sol_on_grid",
+            "compute_error",
+            "sol_at_node",
+            "vis_boundary_only",
+            "curved_mesh_size",
+            "save_solve_sequence_debug",
+            "save_time_sequence",
+            "save_nl_solve_sequence",
+            "spectrum"
+        ],
+        "doc": "Additional output options"
+    },
+    {
+        "pointer": "/output/advanced/timestep_prefix",
+        "default": "step_",
+        "type": "string",
+        "doc": "Prefix for output file names  for each time step {DZ TODO: not sure what step_ means here - are files going to be step_N.txt?,  what format for N? } "
+    },
+    {
+        "pointer": "/output/advanced/sol_on_grid",
+        "default": -1,
+        "type": "int",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/advanced/compute_error",
+        "default": true,
+        "type": "bool",
+        "doc": "{DZ TODO: what determines which error is computed?}"
+    },
+    {
+        "pointer": "/output/advanced/sol_at_node",
+        "default": -1,
+        "type": "int",
+        "doc": "Write out solution values at a specific node {DZ TODO: is this correct?}"
+    },
+    {
+        "pointer": "/output/advanced/vis_boundary_only",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/advanced/curved_mesh_size",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/advanced/save_solve_sequence_debug",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/advanced/save_time_sequence",
+        "default": true,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/advanced/save_nl_solve_sequence",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/advanced/spectrum",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/input",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "data"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/input/data",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "u_path",
+            "v_path",
+            "a_path"
+        ],
+        "doc": "{DZ TODO: same questions as for output; additionally, how is this different from initial conditions}"
+    },
+    {
+        "pointer": "/input/data/u_path",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/input/data/v_path",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/input/data/a_path",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    }
+]

@@ -11,6 +11,8 @@
 
 #include <polysolve/LinearSolver.hpp>
 
+#include <jse/jse.h>
+
 bool has_arg(const CLI::App &command_line, const std::string &value)
 {
 	const auto *opt = command_line.get_option_no_throw(value.size() == 1 ? ("-" + value) : ("--" + value));
@@ -111,6 +113,29 @@ int main(int argc, char **argv)
 	if (!output_dir.empty())
 	{
 		std::filesystem::create_directories(output_dir);
+	}
+
+	const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
+	std::ifstream file(polyfem_input_spec);
+
+	json rules;
+	{
+		if (file.is_open())
+			file >> rules;
+		else
+		{
+			logger().error("unable to open {} rules", polyfem_input_spec);
+			throw std::runtime_error("Invald spec file");
+		}
+	}
+
+	jse::JSE jse;
+	const bool valid_input = jse.verify_json(in_args, rules);
+
+	if (!valid_input)
+	{
+		logger().error("invalid input json, error {}", jse.log2str());
+		throw std::runtime_error("Invald input json file");
 	}
 
 	State state(max_threads);
