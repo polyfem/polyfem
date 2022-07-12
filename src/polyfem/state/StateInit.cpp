@@ -14,6 +14,8 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 
+#include <jse/jse.h>
+
 #include <geogram/basic/logger.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -21,6 +23,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/ostream_sink.h>
+
 #include <ipc/utils/logger.hpp>
 
 namespace polyfem
@@ -332,9 +335,41 @@ namespace polyfem
 		if (args_in.contains("common"))
 			apply_default_params(args_in);
 
-		check_for_unknown_args(args, args_in);
+		// CHECK validity json
+		json rules;
+		jse::JSE jse;
+		{
+			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
+			std::ifstream file(polyfem_input_spec);
 
-		this->args.merge_patch(args_in);
+			if (file.is_open())
+				file >> rules;
+			else
+			{
+				logger().error("unable to open {} rules", polyfem_input_spec);
+				throw std::runtime_error("Invald spec file");
+			}
+		}
+
+		const bool valid_input = jse.verify_json(args_in, rules);
+
+		if (!valid_input)
+		{
+			logger().error("invalid input json, error {}", jse.log2str());
+			throw std::runtime_error("Invald input json file");
+		}
+		//end of check
+
+		// check_for_unknown_args(args, args_in);
+		// this->args.merge_patch(args_in);
+
+		//TODO: remove default from this file
+		this->args = jse.inject_defaults(args_in, rules);
+
+		//TODO fix me!
+		// this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+		this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+
 		has_dhat = args_in["contact"].contains("dhat");
 
 		init_time();
