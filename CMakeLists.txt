@@ -234,6 +234,9 @@ target_link_libraries(polyfem PUBLIC hdf5::hdf5)
 include(high_five)
 target_link_libraries(polyfem PUBLIC HighFive::HighFive)
 
+include(mmg)
+target_link_libraries(polyfem PUBLIC mmg::mmg)
+
 ################################################################################
 # Optional libraries
 ################################################################################

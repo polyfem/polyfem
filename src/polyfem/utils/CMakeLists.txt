@@ -24,6 +24,7 @@ set(SOURCES
 	InterpolatedFunction.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
+	L2Projection.cpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
 	MaybeParallelFor.hpp
@@ -44,6 +45,8 @@ set(SOURCES
 	StringUtils.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
+	SutherlandHodgmanClipping.cpp
+	SutherlandHodgmanClipping.hpp
 	Timer.hpp
 	Types.hpp
 )

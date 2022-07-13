@@ -10,6 +10,8 @@ set(SOURCES
 	MeshUtils.hpp
 	Obstacle.cpp
 	Obstacle.hpp
+	RemeshAdaptive.cpp
+	RemeshAdaptive.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
 )

@@ -19,6 +19,9 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
+#include <polyfem/mesh/RemeshAdaptive.hpp>
+#include <polyfem/utils/OBJ_IO.hpp>
+
 #include <ipc/ipc.hpp>
 
 #include <igl/write_triangle_mesh.h>
@@ -429,6 +432,68 @@ namespace polyfem
 		{
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+
+			// State new_state = *this;
+			// const State *old_this = this;
+			// *this = new_state;
+			// delete old_this;
+
+			if (t == 5)
+			{
+				Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
+				for (int i = 0; i < mesh->n_vertices(); ++i)
+					V.row(i) = mesh->point(i);
+				Eigen::MatrixXi F(mesh->n_faces(), mesh->dimension() + 1);
+				for (int i = 0; i < F.rows(); ++i)
+					for (int j = 0; j < F.cols(); ++j)
+						F(i, j) = mesh->face_vertex(i, j);
+				OBJWriter::save(resolve_output_path("rest.obj"), V, F);
+
+				// TODO: comute stress at the nodes
+				// Eigen::MatrixXd SF;
+				// compute_scalar_value(mesh->n_vertices(), sol, SF, false, false);
+				// Eigen::MatrixXd SV, TV;
+				// average_grad_based_function(mesh->n_vertices(), sol, SV, TV, false, false);
+
+				// TODO: What measure to use for remeshing?
+				// SV.normalize();
+				SV.setOnes(mesh->n_vertices(), 1);
+
+				Eigen::MatrixXd V_new;
+				Eigen::MatrixXi F_new;
+				if (!mesh->is_volume())
+				{
+					mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new);
+					OBJWriter::save(resolve_output_path("remeshed.obj"), V_new, F_new);
+					exit(0);
+				}
+				else
+				{
+					Eigen::MatrixXi _;
+					mesh::remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
+				}
+
+				// L2 Projection
+
+				this->load_mesh(V_new, F_new);
+				this->build_basis();
+				this->assemble_rhs();
+				this->assemble_stiffness_mat();
+
+				json rhs_solver_params = args["solver"]["linear"];
+				if (!rhs_solver_params.contains("Pardiso"))
+					rhs_solver_params["Pardiso"] = {};
+				rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+				const auto &gbases = iso_parametric() ? bases : geom_bases;
+				step_data.rhs_assembler = std::make_shared<RhsAssembler>(
+					assembler, *mesh, obstacle,
+					n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
+					bases, gbases, ass_vals_cache,
+					formulation(), *problem,
+					args["space"]["advanced"]["bc_method"],
+					args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"],
+					rhs_solver_params);
+			}
 		}
 
 		const NLProblem &nl_problem = *step_data.nl_problem;
