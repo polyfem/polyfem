@@ -11,44 +11,41 @@
 #include <memory>
 
 //mass matrix assembler
-namespace polyfem
+namespace polyfem::assembler
 {
-	namespace assembler
+	class MassMatrixAssembler
 	{
-		class MassMatrixAssembler
-		{
-		public:
-			//assembles the mass matrix
-			//mesh is volumetric
-			//size of the problem (eg, 1 for laplace)
-			//number of bases, bases and geom bases
-			//density, class that can evaluate per point density
-			void assemble(
-				const bool is_volume,
-				const int size,
-				const int n_basis,
-				const Density &density,
-				const std::vector<basis::ElementBases> &bases,
-				const std::vector<basis::ElementBases> &gbases,
-				const AssemblyValsCache &cache,
-				StiffnessMatrix &mass) const;
+	public:
+		//assembles the mass matrix
+		//mesh is volumetric
+		//size of the problem (eg, 1 for laplace)
+		//number of bases, bases and geom bases
+		//density, class that can evaluate per point density
+		void assemble(
+			const bool is_volume,
+			const int size,
+			const int n_basis,
+			const Density &density,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			StiffnessMatrix &mass) const;
 
-			//assembles the mass matrix
-			//mesh is volumetric
-			//size of the problem (eg, 1 for laplace)
-			//number of bases, bases and geom bases
-			//density, class that can evaluate per point density
-			void assemble_cross(
-				const bool is_volume,
-				const int size,
-				const int n_basis_a,
-				const std::vector<basis::ElementBases> &bases_a,
-				const std::vector<basis::ElementBases> &gbases_a,
-				const int n_basis_b,
-				const std::vector<basis::ElementBases> &bases_b,
-				const std::vector<basis::ElementBases> &gbases_b,
-				const AssemblyValsCache &cache,
-				StiffnessMatrix &mass) const;
-		};
-	} // namespace assembler
-} // namespace polyfem
+		//assembles the mass matrix
+		//mesh is volumetric
+		//size of the problem (eg, 1 for laplace)
+		//number of bases, bases and geom bases
+		//density, class that can evaluate per point density
+		void assemble_cross(
+			const bool is_volume,
+			const int size,
+			const int n_basis_a,
+			const std::vector<basis::ElementBases> &bases_a,
+			const std::vector<basis::ElementBases> &gbases_a,
+			const int n_basis_b,
+			const std::vector<basis::ElementBases> &bases_b,
+			const std::vector<basis::ElementBases> &gbases_b,
+			const AssemblyValsCache &cache,
+			StiffnessMatrix &mass) const;
+	};
+} // namespace polyfem::assembler

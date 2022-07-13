@@ -18,8 +18,8 @@ namespace polyfem::utils
 	/// the Sutherland-Hodgman algorithm finds the intersection of the two.
 	///
 	/// @warning Points must be in clockwise order or else this wont work.
-	std::vector<Eigen::Vector2d> sutherland_hodgman_clipping(
-		const std::vector<Eigen::Vector2d> &subject_polygon,
-		const std::vector<Eigen::Vector2d> &clipping_polygon);
+	Eigen::MatrixXd sutherland_hodgman_clipping(
+		const Eigen::MatrixXd &subject_polygon,
+		const Eigen::MatrixXd &clipping_polygon);
 
 }; // namespace polyfem::utils

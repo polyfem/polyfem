@@ -92,12 +92,16 @@ namespace polyfem::utils
 	//
 	// @warning Points must be in clockwise order or else this wont work.
 	std::vector<Eigen::Vector2d> sutherland_hodgman_clipping(
-		const std::vector<Eigen::Vector2d> &subject_polygon,
-		const std::vector<Eigen::Vector2d> &clipping_polygon)
+		const Eigen::MatrixXd &subject_polygon,
+		const Eigen::MatrixXd &clipping_polygon)
 	{
-		std::vector<Eigen::Vector2d> final_polygon = subject_polygon;
+		std::vector<Eigen::Vector2d> final_polygon(subject_polygon.rows());
+		for (int i = 0; i < subject_polygon.rows(); ++i)
+		{
+			final_polygon[i] = subject_polygon.row(i);
+		}
 
-		for (int i = 0; i < clipping_polygon.size(); ++i)
+		for (int i = 0; i < clipping_polygon.rows(); ++i)
 		{
 
 			// stores the vertices of the next iteration of the clipping procedure
@@ -109,8 +113,9 @@ namespace polyfem::utils
 			// these two vertices define a line segment (edge) in the clipping
 			// polygon. It is assumed that indices wrap around, such that if
 			// i = 1, then i - 1 = K.
-			const Eigen::Vector2d &c_edge_start = clipping_polygon[i > 0 ? (i - 1) : clipping_polygon.size() - 1];
-			const Eigen::Vector2d &c_edge_end = clipping_polygon[i];
+			const Eigen::Vector2d &c_edge_start =
+				clipping_polygon.row(i > 0 ? (i - 1) : clipping_polygon.rows() - 1);
+			const Eigen::Vector2d &c_edge_end = clipping_polygon.row(i);
 
 			for (int j = 0; j < next_polygon.size(); ++j)
 			{
@@ -136,7 +141,11 @@ namespace polyfem::utils
 			}
 		}
 
-		return final_polygon;
+		Eigen::MatrixXd result(final_polygon.size(), 2);
+		for (int i = 0; i < final_polygon.rows(); ++i)
+		{
+			result.row(i) = final_polygon[i];
+		}
 	}
 
 }; // namespace polyfem::utils

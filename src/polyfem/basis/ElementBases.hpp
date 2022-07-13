@@ -23,6 +23,9 @@ namespace polyfem
 			// one basis function per node in the element
 			std::vector<Basis> bases;
 
+			// Assemble the global nodal positions of the bases.
+			Eigen::MatrixXd nodes() const;
+
 			// quadrature points to evaluate the basis functions inside the element
 			void compute_quadrature(quadrature::Quadrature &quadrature) const { quadrature_builder_(quadrature); }
 			Eigen::VectorXi local_nodes_for_primitive(const int local_index, const mesh::Mesh &mesh) const { return local_node_from_primitive_(local_index, mesh); }
@@ -50,7 +53,8 @@ namespace polyfem
 			friend std::ostream &operator<<(std::ostream &os, const ElementBases &obj)
 			{
 				for (std::size_t i = 0; i < obj.bases.size(); ++i)
-					os << "local base " << i << ":\n" << obj.bases[i] << "\n";
+					os << "local base " << i << ":\n"
+					   << obj.bases[i] << "\n";
 
 				return os;
 			}

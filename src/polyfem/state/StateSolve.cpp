@@ -452,7 +452,7 @@ namespace polyfem
 				// TODO: comute stress at the nodes
 				// Eigen::MatrixXd SF;
 				// compute_scalar_value(mesh->n_vertices(), sol, SF, false, false);
-				// Eigen::MatrixXd SV, TV;
+				Eigen::MatrixXd SV, TV;
 				// average_grad_based_function(mesh->n_vertices(), sol, SV, TV, false, false);
 
 				// TODO: What measure to use for remeshing?
@@ -486,12 +486,13 @@ namespace polyfem
 				rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 				const auto &gbases = iso_parametric() ? bases : geom_bases;
 				step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-					assembler, *mesh, obstacle,
+					assembler, *mesh, obstacle, input_dirichelt,
 					n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
 					bases, gbases, ass_vals_cache,
 					formulation(), *problem,
 					args["space"]["advanced"]["bc_method"],
-					args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"],
+					args["solver"]["linear"]["solver"],
+					args["solver"]["linear"]["precond"],
 					rhs_solver_params);
 			}
 		}

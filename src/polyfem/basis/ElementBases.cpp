@@ -130,5 +130,17 @@ namespace polyfem
 				grads[k] = tmp;
 			}
 		}
+
+		Eigen::MatrixXd ElementBases::nodes() const
+		{
+			const int dim = 2; // TODO
+			Eigen::MatrixXd _nodes(bases.size(), dim);
+			for (int i = 0; i < bases.size(); ++i)
+			{
+				// TODO: why 0?
+				_nodes.row(i) = bases[i].global()[0].node;
+			}
+			return _nodes;
+		}
 	} // namespace basis
 } // namespace polyfem

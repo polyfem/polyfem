@@ -1,5 +1,7 @@
 #include "MassMatrixAssembler.hpp"
 
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/utils/SutherlandHodgmanClipping.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -159,7 +161,66 @@ namespace polyfem::assembler
 		mass.makeCompressed();
 	}
 
-	/*
+	namespace
+	{
+		/// Compute barycentric coordinates (u, v, w) for point p with respect to triangle (a, b, c).
+		Eigen::Vector3d barycentric_coordinates(
+			const Eigen::Vector2d &p,
+			const Eigen::Vector2d &a,
+			const Eigen::Vector2d &b,
+			const Eigen::Vector2d &c)
+		{
+			Eigen::Matrix3d A;
+			A << a[0], b[0], c[0],
+				a[1], b[1], c[1],
+				1.0, 1.0, 1.0;
+			const Eigen::Vector3d rhs(p[0], p[1], 1.0);
+			// TODO: Can we use better than LU?
+			const Eigen::Vector3d uvw = A.partialPivLu().solve(rhs);
+			assert((A * uvw - rhs).norm() < 1e-12);
+			return uvw;
+		}
+
+		std::vector<Eigen::MatrixXd> triangle_fan(const Eigen::MatrixXd &convex_polygon)
+		{
+			assert(convex_polygon.rows() >= 3);
+			std::vector<Eigen::MatrixXd> triangles;
+			for (int i = 1; i < convex_polygon.rows() - 1; ++i)
+			{
+				triangles.emplace_back(3, convex_polygon.cols());
+				triangles.back().row(0) = convex_polygon.row(0);
+				triangles.back().row(1) = convex_polygon.row(i);
+				triangles.back().row(2) = convex_polygon.row(i + 1);
+			}
+			return triangles;
+		}
+
+		double triangle_area(const Eigen::MatrixXd &triangle)
+		{
+			Eigen::Matrix3d A;
+			A.leftCols<2>() = triangle;
+			A.col(3).setOnes();
+			return 0.5 * A.determinant();
+		}
+
+		Eigen::Vector2d P1_2D_gmapping(
+			const Eigen::MatrixXd &nodes, const Eigen::Vector2d &uv)
+		{
+			assert(nodes.rows() == 3);
+			return (1 - uv[0] - uv[1]) * nodes.row(0) + uv[0] * nodes.row(1) + uv[1] * nodes.row(2);
+		}
+
+		void reverse_rows(Eigen::MatrixXd &A)
+		{
+			for (int i = 0; i < A.rows() / 2; ++i)
+			{
+				Eigen::RowVectorXd tmp = A.row(i);
+				A.row(i) = A.row(A.rows() - i - 1);
+				A.row(A.rows() - i - 1) = tmp;
+			}
+		}
+	}; // namespace
+
 	void MassMatrixAssembler::assemble_cross(
 		const bool is_volume,
 		const int size,
@@ -178,8 +239,9 @@ namespace polyfem::assembler
 		mass.resize(n_basis_b * size, n_basis_a * size);
 		mass.setZero();
 
-		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mass.rows()));
+		// auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mass.rows()));
 
+		// TODO: Why are we shadowing this variable?
 		const int n_bases_a = int(bases_a.size());
 		const int n_bases_b = int(bases_b.size());
 
@@ -190,84 +252,76 @@ namespace polyfem::assembler
 
 		std::vector<Eigen::Triplet<double>> triplets;
 
-		for (int eb = 0; eb < n_bases_b; ++eb)
+		Quadrature quadrature;
+		TriQuadrature().get_quadrature(2, quadrature);
+
+		for (int ebi = 0; ebi < n_bases_b; ++ebi)
 		{
-			for (int ea = 0; ea < n_bases_a; ++ea)
+			const ElementBases &eb = bases_b[ebi];
+			Eigen::MatrixXd eb_nodes = eb.nodes();
+			reverse_rows(eb_nodes); // clockwise order
+
+			for (int eai = 0; eai < n_bases_a; ++eai)
 			{
-				ElementAssemblyValues &vals = local_storage.vals;
-				// vals.compute(e, is_volume, bases[e], gbases[e]);
-				// TODO:
-				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+				const ElementBases &ea = bases_a[eai];
+				Eigen::MatrixXd ea_nodes = ea.nodes();
+				reverse_rows(ea_nodes); // clockwise order
 
-				const Quadrature &quadrature = vals.quadrature;
+				Eigen::MatrixXd overlap = sutherland_hodgman_clipping(eb_nodes, ea_nodes);
+				reverse_rows(overlap); // back to counter-clockwise order
+				if (overlap.size() < 3)
+					continue;
+				const std::vector<Eigen::MatrixXd> triangles = triangle_fan(overlap);
 
-				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				const int n_loc_bases = int(vals.basis_values.size());
-				for (int i = 0; i < n_loc_bases; ++i)
+				for (const Eigen::MatrixXd &triangle : triangles)
 				{
-					const auto &global_i = vals.basis_values[i].global;
+					const double area = triangle_area(triangle);
+					assert(area > 0);
 
-					for (int j = 0; j <= i; ++j)
+					for (int qi = 0; qi < quadrature.size(); qi++)
 					{
-						const auto &global_j = vals.basis_values[j].global;
+						const double w = quadrature.weights[qi];
+						const Eigen::VectorXd q = quadrature.points.row(qi);
 
-						double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
-						for (int q = 0; q < local_storage.da.size(); ++q)
-						{
-							// const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
-							const double rho = 1;
-							tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * local_storage.da(q);
-						}
-						if (std::abs(tmp) < 1e-30)
-						{
-							continue;
-						}
+						const Eigen::Vector2d p = P1_2D_gmapping(triangle, q);
 
-						for (int n = 0; n < size; ++n)
+						const Eigen::Vector3d x_i = barycentric_coordinates(
+							eb_nodes.row(0), eb_nodes.row(1), eb_nodes.row(2), p);
+#ifndef NDEBUG
+						// eb.eval_geom_mapping(x_i.transpose())
+						// assert((p - element_b.gmapping(x_i)).norm() < 1e-12);
+#endif
+
+						const Eigen::Vector3d x_j = barycentric_coordinates(
+							ea_nodes.row(0), ea_nodes.row(1), ea_nodes.row(2), p);
+						// assert((p - element_a.gmapping(x_i)).norm() < 1e-12)
+
+						std::vector<AssemblyValues> phi_is, phi_js;
+						eb.evaluate_bases(x_i.head<2>().transpose(), phi_is);
+						ea.evaluate_bases(x_j.head<2>().transpose(), phi_js);
+
+						assert(phi_is.size() == 1);
+						const AssemblyValues &phi_i = phi_is[0];
+						assert(phi_js.size() == 1);
+						const AssemblyValues &phi_j = phi_js[0];
+
+						for (int loc_i = 0; loc_i < phi_i.val.size(); ++loc_i)
 						{
-							//local matrix is diagonal
-							const int m = n;
-							// for(int m = 0; m < size; ++m)
+							for (int loc_j = 0; loc_j < phi_j.val.size(); ++loc_j)
 							{
-								const double local_value = tmp; //val(n*size+m);
-								for (size_t ii = 0; ii < global_i.size(); ++ii)
-								{
-									const auto gi = global_i[ii].index * size + m;
-									const auto wi = global_i[ii].val;
-
-									for (size_t jj = 0; jj < global_j.size(); ++jj)
-									{
-										const auto gj = global_j[jj].index * size + n;
-										const auto wj = global_j[jj].val;
-
-										local_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
-										if (j < i)
-										{
-											local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-										}
-
-										local_storage.condense();
-									}
-								}
+								triplets.emplace_back(
+									phi_i.global[loc_i].index,
+									phi_j.global[loc_j].index,
+									w * phi_i.val(loc_i) * phi_j.val(loc_j) * area);
 							}
 						}
 					}
 				}
 			}
 		}
-		// });
 
-		// Serially merge local storages
-		for (LocalThreadMatStorage &local_storage : storage)
-		{
-			mass += local_storage.mass_mat;
-			local_storage.tmp_mat.setFromTriplets(local_storage.entries.begin(), local_storage.entries.end());
-			mass += local_storage.tmp_mat;
-		}
+		mass.setFromTriplets(triplets.begin(), triplets.end());
 		mass.makeCompressed();
 	}
-	*/
 
 } // namespace polyfem::assembler
