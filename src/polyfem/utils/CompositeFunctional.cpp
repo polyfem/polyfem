@@ -132,42 +132,42 @@ namespace polyfem
 		const int ref_n_bases = state_ref_->iso_parametric() ? state_ref_->bases.size() : state_ref_->geom_bases.size();
 		const int n_bases = state.iso_parametric() ? state.bases.size() : state.geom_bases.size();
 
-		std::map<int, std::vector<int>> ref_interested_body_id_to_node;
+		std::map<int, std::vector<int>> ref_interested_body_id_to_e;
 		int ref_count = 0;
 		for (int e = 0; e < ref_n_bases; ++e)
 		{
 			int body_id = state_ref_->mesh->get_body_id(e);
 			if (interested_ids.size() > 0 && interested_ids.count(body_id) == 0)
 				continue;
-			if (ref_interested_body_id_to_node.find(body_id) != ref_interested_body_id_to_node.end())
-				ref_interested_body_id_to_node[body_id].push_back(e);
+			if (ref_interested_body_id_to_e.find(body_id) != ref_interested_body_id_to_e.end())
+				ref_interested_body_id_to_e[body_id].push_back(e);
 			else
-				ref_interested_body_id_to_node[body_id] = {e};
+				ref_interested_body_id_to_e[body_id] = {e};
 			ref_count++;
 		}
 
-		std::map<int, std::vector<int>> interested_body_id_to_node;
+		std::map<int, std::vector<int>> interested_body_id_to_e;
 		int count = 0;
 		for (int e = 0; e < n_bases; ++e)
 		{
 			int body_id = state.mesh->get_body_id(e);
 			if (interested_ids.size() > 0 && interested_ids.count(body_id) == 0)
 				continue;
-			if (interested_body_id_to_node.find(body_id) != interested_body_id_to_node.end())
-				interested_body_id_to_node[body_id].push_back(e);
+			if (interested_body_id_to_e.find(body_id) != interested_body_id_to_e.end())
+				interested_body_id_to_e[body_id].push_back(e);
 			else
-				interested_body_id_to_node[body_id] = {e};
+				interested_body_id_to_e[body_id] = {e};
 			count++;
 		}
 
 		if (count != ref_count)
 			logger().error("Number of interested vertices in the reference and optimization examples do not match!");
 
-		for (const auto &kv : interested_body_id_to_node)
+		for (const auto &kv : interested_body_id_to_e)
 		{
 			for (int i = 0; i < kv.second.size(); ++i)
 			{
-				node_to_ref_node_[kv.second[i]] = ref_interested_body_id_to_node[kv.first][i];
+				e_to_ref_e_[kv.second[i]] = ref_interested_body_id_to_e[kv.first][i];
 			}
 		}
 	}
@@ -183,7 +183,7 @@ namespace polyfem
 				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
 					return;
 				const int e = params["elem"];
-				const int e_ref = node_to_ref_node_.find(e) != node_to_ref_node_.end() ? node_to_ref_node_[e] : e;
+				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
 				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
 
 				Eigen::MatrixXd pts_ref;
@@ -204,7 +204,7 @@ namespace polyfem
 				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
 					return;
 				const int e = params["elem"];
-				const int e_ref = node_to_ref_node_.find(e) != node_to_ref_node_.end() ? node_to_ref_node_[e] : e;
+				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
 				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
 
 				Eigen::MatrixXd pts_ref;
@@ -226,7 +226,7 @@ namespace polyfem
 				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
 					return;
 				const int e = params["elem"];
-				const int e_ref = node_to_ref_node_.find(e) != node_to_ref_node_.end() ? node_to_ref_node_[e] : e;
+				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
 				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
 
 				Eigen::MatrixXd pts_ref;

@@ -74,7 +74,7 @@ namespace polyfem
 
 	private:
 		State *state_ref_;
-		std::map<int, int> node_to_ref_node_;
+		std::map<int, int> e_to_ref_e_;
 
 		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
 	};
