@@ -433,9 +433,10 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
     //                 K_H(i, j) += values[q](i, j) * vals.det(q) * quadrature.weights(q);
     // }
 
+    auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
     for (int i = 0; i < dim; i++)
     {
-        Eigen::VectorXd tmp = stiffness.topLeftCorner(n_bases * dim, n_bases * dim) * w.block(0, i, n_bases * dim, 1);
+        Eigen::VectorXd tmp = velocity_block * w.block(0, i, n_bases * dim, 1);
         for (int j = 0; j < dim; j++)
             K_H(i, j) = (tmp.array() * w.block(0, j, n_bases * dim, 1).array()).sum();
     }

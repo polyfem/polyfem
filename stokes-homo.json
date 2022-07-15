@@ -9,10 +9,10 @@
         }
     ],
     "space": {
-        "discr_order": 2,
+        "discr_order": 1,
         "pressure_discr_order": 1,
         "advanced": {
-            "quadrature_order": 5
+            "quadrature_order": 2
         }
     },
     "solver": {
@@ -32,9 +32,8 @@
     "materials": {
         "type": "Stokes",
         "viscosity": 1,
-        "delta2": 0,
-        "delta1": 0,
-        "use_avg_pressure": true
+        "delta2": 0.00005,
+        "use_avg_pressure": false
     },
     "output": {
         "paraview": {
