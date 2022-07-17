@@ -6,9 +6,9 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MshReader.hpp>
 
-#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Selection.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Core>
 
@@ -18,12 +18,6 @@
 namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
-
-	void log_and_throw_error(const std::string &msg)
-	{
-		logger().error(msg);
-		throw std::runtime_error(msg);
-	}
 
 	std::unique_ptr<Mesh> read_fem_geometry(
 		const json &geometry,
