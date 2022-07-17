@@ -26,6 +26,8 @@
 
 #include <ipc/utils/logger.hpp>
 
+#include <sstream>
+
 namespace polyfem
 {
 	using namespace problem;
@@ -366,9 +368,56 @@ namespace polyfem
 		//TODO: remove default from this file
 		this->args = jse.inject_defaults(args_in, rules);
 
-		//TODO fix me!
-		// this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-		this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+		if (p_args_in.contains("solver"))
+		{
+			if (p_args_in["solver"].contains("linear"))
+			{
+				if (!p_args_in["solver"]["linear"].contains("solver"))
+					this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+				if (!p_args_in["solver"]["linear"].contains("precond"))
+					this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+			}
+			else
+			{
+				this->args["solver"]["linear"] = {};
+				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+				this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+			}
+		}
+		else
+		{
+			this->args["solver"] = {};
+			this->args["solver"]["linear"] = {};
+			this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+		}
+
+		//this cannot be done in the spec as it is system dependent
+		{
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const std::string s_json = this->args["solver"]["linear"]["solver"];
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				std::stringstream sss;
+				for (const auto &s : ss)
+					sss << ", " << s;
+				log_and_throw_error(fmt::format("Solver {} is invalid, should be one of {}", s_json, sss.str()));
+			}
+
+			const auto pp = polysolve::LinearSolver::availablePrecond();
+			const std::string p_json = this->args["solver"]["linear"]["precond"];
+			const auto precond_found = std::find(pp.begin(), pp.end(), p_json);
+			if (precond_found == pp.end())
+			{
+				std::stringstream sss;
+				for (const auto &s : pp)
+					sss << ", " << s;
+				log_and_throw_error(fmt::format("Precond {} is invalid, should be one of {}", s_json, sss.str()));
+			}
+		}
+
+		std::cout << this->args.dump() << std::endl;
 
 		has_dhat = args_in["contact"].contains("dhat");
 
@@ -476,8 +525,7 @@ namespace polyfem
 							  + is_param_valid(args["time"], "time_steps");
 		if (num_valid < 2)
 		{
-			logger().error("Exactly two of (tend, dt, time_steps) must be specified");
-			throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
+			log_and_throw_error("Exactly two of (tend, dt, time_steps) must be specified");
 		}
 		else if (num_valid == 2)
 		{
