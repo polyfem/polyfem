@@ -421,10 +421,6 @@ namespace polyfem
 		std::map<int, json> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			//TODO fix and check me
-			// check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
-			// json mat = default_material;
-			// mat.merge_patch(body_params[i]);
 			json mat = body_params[i];
 			json id = mat["id"];
 			if (id.is_array())
