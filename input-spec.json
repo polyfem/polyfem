@@ -180,8 +180,13 @@
     },
     {
         "pointer": "/geometry/*/transformation/dimensions",
+        "type": "float",
+        "default": 1,
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
+    },
+    {
+        "pointer": "/geometry/*/transformation/dimensions",
         "type": "list",
-        "default": [],
         "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
     },
     {
