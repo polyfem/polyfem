@@ -489,7 +489,8 @@ namespace polyfem::mesh
 		}
 		else if (jmesh["extract"].get<std::string>() == "volume")
 		{
-			log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+			//Clashes with defaults for non obstacle, here assume volume is suface
+			// log_and_throw_error("Volumetric elements not supported for collision obstacles!");
 		}
 
 		if (jmesh["n_refs"].get<int>() != 0)

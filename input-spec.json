@@ -136,7 +136,10 @@
         "pointer": "/geometry/*/extract",
         "type": "string",
         "options": [
-            "volume"
+            "volume",
+            "edges",
+            "points",
+            "surface"
         ],
         "default": "volume",
         "doc": "TODO???"
