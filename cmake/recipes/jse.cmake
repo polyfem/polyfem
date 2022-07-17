@@ -11,7 +11,7 @@ include(FetchContent)
 FetchContent_Declare(
     jse
     GIT_REPOSITORY https://github.com/geometryprocessing/json-spec-engine.git
-    GIT_TAG c8856f1855148c38e93a63eb1f3db5a8bed5dfe1
+    GIT_TAG b50e0f0b9fbd57129c61786180cd0a89f58e0f87
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(jse)

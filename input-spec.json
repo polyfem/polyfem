@@ -141,7 +141,7 @@
     {
         "pointer": "/geometry/*/transformation/translation",
         "type": "list",
-        "default": null,
+        "default": [],
         "doc": "Translate, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
@@ -648,6 +648,10 @@
         "pointer": "/solver/nonlinear/solver",
         "default": "newton",
         "type": "string",
+        "options": [
+            "newton",
+            "lbfgs"
+        ],
         "doc": "Nonlinear solver type {DZ: TODO what types are supported in addition to Newton?  BFGS? Newton?}"
     },
     {
@@ -694,6 +698,13 @@
         "pointer": "/solver/nonlinear/line_search/method",
         "default": "backtracking",
         "type": "string",
+        "options": [
+            "armijo",
+            "armijo_alt",
+            "backtracking",
+            "more_thuente",
+            "none"
+        ],
         "doc": "line search type {DZ TODO: what types are there?}"
     },
     {
@@ -855,49 +866,62 @@
     {
         "pointer": "/materials/*/id",
         "type": "int",
-        "default": "all",
+        "default": "0",
         "doc": "id"
     },
     {
         "pointer": "/materials/*/E",
         "type": "float",
-        "default": "//TODO",
+        "default": -9999,
         "doc": "Young's modulus"
     },
     {
         "pointer": "/materials/*/nu",
         "type": "float",
-        "default": "//TODO",
+        "default": -9999,
         "doc": "Poisson ratio"
     },
     {
         "pointer": "/materials/*/rho",
         "type": "float",
-        "default": "//TODO",
+        "default": -9999,
         "doc": "Density"
     },
     {
         "pointer": "/materials/*/density",
         "type": "float",
-        "default": "//TODO",
+        "default": -9999,
         "doc": "Density"
     },
     {
         "pointer": "/materials/*/type",
         "type": "string",
+        "options": [
+            "LinearElasticity",
+            "HookeLinearElasticity",
+            "SaintVenant",
+            "NeoHookean",
+            "MultiModels",
+            "Stokes",
+            "NavierStokes",
+            "IncompressibleLinearElasticity",
+            "Laplacian",
+            "Helmholtz",
+            "Bilaplacian"
+        ],
         "doc": "Type of material"
     },
     {
         "pointer": "/materials/*/mu",
         "type": "float",
-        "default": "//TODO",
-        "doc": "//TODO"
+        "default": -9999,
+        "doc": "First lame parameters"
     },
     {
         "pointer": "/materials/*/lambda",
         "type": "float",
-        "default": "//TODO",
-        "doc": "//TODO"
+        "default": -9999,
+        "doc": "Second lame parameter"
     },
     {
         "pointer": "/boundary_conditions",
