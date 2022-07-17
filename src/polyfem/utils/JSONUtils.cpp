@@ -106,32 +106,6 @@ namespace polyfem
 			return R;
 		}
 
-		// check that incomming json doesn't have any unkown keys to avoid stupid bugs
-		bool check_for_unknown_args(const json &args, const json &args_in, const std::string &path_prefix)
-		{
-			bool found_unknown_arg = false;
-			json patch = json::diff(args, args_in);
-			for (const json &op : patch)
-			{
-				if (op["op"].get<std::string>() == "add")
-				{
-					json::json_pointer new_path(op["path"].get<std::string>());
-					if (!args_in[new_path.parent_pointer()].is_array()
-						&& new_path.back().size() != 0
-						&& new_path.back().front() != '#'
-						&& new_path.back() != "authen_t1")
-					{
-						json::json_pointer parent = new_path.parent_pointer();
-						logger().warn(
-							"Unknown key in json (path={}{})",
-							path_prefix, op["path"].get<std::string>());
-						found_unknown_arg = true;
-					}
-				}
-			}
-			return found_unknown_arg;
-		}
-
 		bool is_param_valid(const json &params, const std::string &key)
 		{
 			return params.contains(key) && !params[key].is_null();

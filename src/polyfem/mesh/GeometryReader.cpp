@@ -77,9 +77,7 @@ namespace polyfem::mesh
 
 		for (int i = 0; i < geometries.size(); i++)
 		{
-			json complete_geometry;
-			apply_default_geometry_parameters(
-				geometries[i], complete_geometry, fmt::format("/geometry[{}]", i));
+			json complete_geometry = geometries[i];
 
 			if (!complete_geometry["enabled"].get<bool>())
 				continue;
@@ -234,9 +232,7 @@ namespace polyfem::mesh
 
 		for (int i = 0; i < geometries.size(); i++)
 		{
-			json complete_geometry;
-			apply_default_geometry_parameters(
-				geometries[i], complete_geometry, fmt::format("/geometry[{}]", i));
+			json complete_geometry = geometries[i];
 
 			if (!complete_geometry["is_obstacle"].get<bool>())
 				continue;
@@ -502,83 +498,6 @@ namespace polyfem::mesh
 			if (jmesh["advanced"]["refinement_location"].get<double>() != 0.5)
 				log_and_throw_error("Option \"refinement_location\" in obstacles not implement yet!");
 		}
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-
-	void apply_default_geometry_parameters(
-		const json &geometry_in,
-		json &geometry_out,
-		const std::string &path_prefix)
-	{
-		static const json mesh_defaults = R"({
-			"type": "mesh",
-			"mesh": null,
-			"is_obstacle": false,
-			"enabled": true,
-
-			"transformation": {
-				"translation": [0.0, 0.0, 0.0],
-				"rotation": null,
-				"rotation_mode": "xyz",
-				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null
-			},
-
-			"extract": "volume",
-
-			"point_selection": null,
-			"curve_selection": null,
-			"surface_selection": null,
-			"volume_selection": null,
-
-			"n_refs": 0,
-
-			"advanced": {
-				"force_linear_geometry": false,
-				"refinement_location": 0.5,
-				"normalize_mesh": false,
-				"min_component": -1
-			}
-		})"_json;
-
-		static const json obstacle_defaults = R"({
-			"type": "mesh",
-			"mesh": null,
-			"is_obstacle": true,
-			"enabled": true,
-
-			"transformation": {
-				"translation": [0.0, 0.0, 0.0],
-				"rotation": null,
-				"rotation_mode": "xyz",
-				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null
-			},
-
-			"extract": "surface",
-
-			"surface_selection": null,
-
-			"n_refs": 0,
-
-			"advanced": {
-				"refinement_location": 0.5,
-				"normalize_mesh": false
-			}
-		})"_json;
-
-		if (geometry_in.contains("is_obstacle") && geometry_in["is_obstacle"].get<bool>())
-		{
-			check_for_unknown_args(obstacle_defaults, geometry_in, path_prefix);
-			geometry_out = obstacle_defaults;
-		}
-		else
-		{
-			check_for_unknown_args(mesh_defaults, geometry_in, path_prefix);
-			geometry_out = mesh_defaults;
-		}
-		geometry_out.merge_patch(geometry_in);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
