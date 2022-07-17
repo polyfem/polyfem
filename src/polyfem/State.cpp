@@ -764,7 +764,7 @@ namespace polyfem
 
 		n_flipped = 0;
 
-		if (args["space"]["advanced"]["count_flipped_els"])
+		if (!args["space"]["advanced"]["count_flipped_els"])
 		{
 			logger().info("Counting flipped elements...");
 			const auto &els_tag = mesh->elements_tag();

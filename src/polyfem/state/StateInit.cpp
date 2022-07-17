@@ -174,32 +174,17 @@ namespace polyfem
 		}
 		//end of check
 
-		// check_for_unknown_args(args, args_in);
-		// this->args.merge_patch(args_in);
-
-		//TODO: remove default from this file
 		this->args = jse.inject_defaults(args_in, rules);
 
-		if (p_args_in.contains("solver"))
+		if (p_args_in.contains("solver") && p_args_in["solver"].contains("linear"))
 		{
-			if (p_args_in["solver"].contains("linear"))
-			{
-				if (!p_args_in["solver"]["linear"].contains("solver"))
-					this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-				if (!p_args_in["solver"]["linear"].contains("precond"))
-					this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
-			}
-			else
-			{
-				this->args["solver"]["linear"] = {};
+			if (!p_args_in["solver"]["linear"].contains("solver"))
 				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			if (!p_args_in["solver"]["linear"].contains("precond"))
 				this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
-			}
 		}
 		else
 		{
-			this->args["solver"] = {};
-			this->args["solver"]["linear"] = {};
 			this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
 			this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
 		}
