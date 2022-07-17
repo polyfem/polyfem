@@ -45,6 +45,11 @@ namespace polyfem
 		{
 			std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);
 
+			if (jr.is_array() && jr.empty())
+			{
+				return Eigen::Matrix3d::Identity(3, 3);
+			}
+
 			Eigen::VectorXd r;
 			if (jr.is_number())
 			{

@@ -557,7 +557,7 @@ namespace polyfem::mesh
 				if (transform["rotation"].is_number())
 					R = Eigen::Rotation2Dd(deg2rad(transform["rotation"].get<double>()))
 							.toRotationMatrix();
-				else
+				else if (!transform["rotation"].is_array() || !transform["rotation"].empty())
 					log_and_throw_error("Invalid 2D rotation; 2D rotations can only be a angle in degrees.");
 			}
 			else if (dim == 3)

@@ -99,9 +99,13 @@
             "mesh"
         ],
         "optional": [
+            "type",
+            "extract",
             "transformation",
             "volume_selection",
             "surface_selection",
+            "curve_selection",
+            "point_selection",
             "n_refs",
             "advanced",
             "enabled",
@@ -118,6 +122,24 @@
             ".stl"
         ],
         "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/*/type",
+        "type": "string",
+        "options": [
+            "mesh"
+        ],
+        "default": "mesh",
+        "doc": "//TODO???"
+    },
+    {
+        "pointer": "/geometry/*/extract",
+        "type": "string",
+        "options": [
+            "volume"
+        ],
+        "default": "volume",
+        "doc": "TODO???"
     },
     {
         "pointer": "/geometry/*/transformation",
@@ -195,6 +217,18 @@
             ".txt"
         ],
         "doc": "Load ids from a file; the file is required to have one id per volume element of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/point_selection",
+        "type": "object",
+        "default": null,
+        "doc": "Selection of points"
+    },
+    {
+        "pointer": "/geometry/*/curve_selection",
+        "type": "object",
+        "default": null,
+        "doc": "Selection of curves"
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -357,15 +391,37 @@
         "pointer": "/geometry/*/advanced",
         "type": "object",
         "optional": [
-            "normalize_mesh"
+            "normalize_mesh",
+            "force_linear_geometry",
+            "refinement_location",
+            "min_component"
         ],
         "default": null,
-        "doc": "Nonuniformly rescale the  mesh along each axis, so that the bounding box becomes [0,1]^3"
+        "doc": "//TODO"
     },
     {
         "pointer": "/geometry/*/advanced/normalize_mesh",
         "type": "bool",
-        "default": false
+        "default": false,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/geometry/*/advanced/force_linear_geometry",
+        "type": "bool",
+        "default": false,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/geometry/*/advanced/refinement_location",
+        "type": "float",
+        "default": 0.5,
+        "doc": "parametric location of the refinement"
+    },
+    {
+        "pointer": "/geometry/*/advanced/min_component",
+        "type": "int",
+        "default": -1,
+        "doc": "Size of the minumum component for collision"
     },
     {
         "pointer": "/geometry/*/is_obstacle",
