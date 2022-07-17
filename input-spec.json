@@ -580,7 +580,10 @@
         "default": null,
         "type": "object",
         "optional": [
-            "t0"
+            "t0",
+            "integrator",
+            "newmark",
+            "BDF"
         ],
         "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
     },
@@ -604,6 +607,54 @@
         "pointer": "/time/time_steps",
         "type": "int",
         "min": 0
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "string",
+        "default": "ImplicitEuler",
+        "options": [
+            "ImplicitEuler",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "doc": "Time integrator"
+    },
+    {
+        "pointer": "/time/newmark",
+        "type": "object",
+        "default": null,
+        "options": [
+            "gamma",
+            "beta"
+        ],
+        "doc": "Options for Newmark"
+    },
+    {
+        "pointer": "/time/newmark/gamma",
+        "type": "float",
+        "default": 0.5,
+        "doc": "Newmark gamma"
+    },
+    {
+        "pointer": "/time/newmark/beta",
+        "type": "float",
+        "default": 0.25,
+        "doc": "Newmark beta"
+    },
+    {
+        "pointer": "/time/BDF",
+        "type": "object",
+        "default": null,
+        "options": [
+            "steps"
+        ],
+        "doc": "Options for BDF"
+    },
+    {
+        "pointer": "/time/BDF/steps",
+        "type": "int",
+        "default": 1,
+        "doc": "BDF order"
     },
     {
         "pointer": "/contact",
