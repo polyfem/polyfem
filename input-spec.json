@@ -519,10 +519,7 @@
         "default": null,
         "type": "object",
         "optional": [
-            "t0",
-            "tend",
-            "dt",
-            "time_steps"
+            "t0"
         ],
         "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
     },
@@ -535,20 +532,17 @@
     {
         "pointer": "/time/tend",
         "type": "float",
-        "min": 0,
-        "default": 1
+        "min": 0
     },
     {
         "pointer": "/time/dt",
         "type": "float",
-        "min": 0,
-        "default": 0.1
+        "min": 0
     },
     {
         "pointer": "/time/time_steps",
         "type": "int",
-        "min": 0,
-        "default": 10
+        "min": 0
     },
     {
         "pointer": "/contact",
