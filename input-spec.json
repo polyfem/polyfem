@@ -1102,6 +1102,14 @@
         "doc": "id of Dirichlet boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
+        "type": "string",
+        "options": [
+            "all"
+        ],
+        "doc": "id of Dirichlet boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value",
         "type": "list",
         "doc": "Values of Dirichlet boundary condition  {DZ TODO these lists are of length 2 or 3?}"
