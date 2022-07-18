@@ -540,6 +540,9 @@ namespace polyfem::mesh
 			scale.conservativeResize(dim);
 			if (scale_size < dim)
 				scale.tail(dim - scale_size).setZero();
+
+			if (scale_size == 0)
+				scale.setOnes();
 		}
 
 		vertices *= scale.asDiagonal();
