@@ -176,12 +176,13 @@ namespace polyfem
 		//end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		// std::cout << this->args.dump() << std::endl;
 
-		if (p_args_in.contains("solver") && p_args_in["solver"].contains("linear"))
+		if (args_in.contains("solver") && args_in["solver"].contains("linear"))
 		{
-			if (!p_args_in["solver"]["linear"].contains("solver"))
+			if (!args_in["solver"]["linear"].contains("solver"))
 				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-			if (!p_args_in["solver"]["linear"].contains("precond"))
+			if (!args_in["solver"]["linear"].contains("precond"))
 				this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
 		}
 		else
