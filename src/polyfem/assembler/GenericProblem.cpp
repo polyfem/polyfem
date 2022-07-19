@@ -595,8 +595,8 @@ namespace polyfem
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
-				has_exact_ = true;
 				auto ex = params["reference"]["solution"];
+				has_exact_ = !ex.empty();
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -610,8 +610,8 @@ namespace polyfem
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "gradient"))
 			{
-				has_exact_grad_ = true;
 				auto ex = params["reference"]["gradient"];
+				has_exact_grad_ = !ex.empty();
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -1062,14 +1062,14 @@ namespace polyfem
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
-				has_exact_ = true;
+				has_exact_ = !params["reference"]["solution"].empty();
 				exact_.init(params["reference"]["solution"]);
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "gradient"))
 			{
-				has_exact_grad_ = true;
 				auto ex = params["reference"]["gradient"];
+				has_exact_grad_ = !ex.empty();
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
