@@ -264,10 +264,10 @@ namespace polyfem
 		}
 		else
 		{
-			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["name"]);
+			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
 
 			problem->clear();
-			if (args["preset_problem"]["name"] == "Kernel")
+			if (args["preset_problem"]["type"] == "Kernel")
 			{
 				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
 				kprob.state = this;

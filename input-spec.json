@@ -1989,63 +1989,588 @@
     {
         "pointer": "/preset_problem",
         "default": "skip",
+        "type_name": "Linear",
         "type": "object",
         "required": [
-            "name"
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Quadratic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Cubic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Sine",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Franke",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "FrankeOld",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "GenericScalarExact",
+        "type": "object",
+        "required": [
+            "type"
         ],
         "optional": [
-            "TORSION",
+            "func"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/func",
+        "type": "int",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Zero_BC",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Elastic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Walk",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TorsionElastic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
             "axis_coordiante",
             "n_turns",
             "fixed_boundary",
             "turning_boundary",
-            "bbox_center",
-            "DOUBLETORSION",
+            "bbox_center"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/axis_coordiante",
+        "type": "int",
+        "default": 2,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_turns",
+        "type": "float",
+        "default": 0.5,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/fixed_boundary",
+        "type": "int",
+        "default": 5,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/turning_boundary",
+        "type": "int",
+        "default": 6,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/bbox_center",
+        "type": "list",
+        "default": [],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/bbox_center/*",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DoubleTorsionElastic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
             "axis_coordiante0",
             "axis_coordiante1",
             "angular_v0",
             "angular_v1",
             "turning_boundary0",
             "turning_boundary1",
-            "bbox_center",
-            "GRAVITY",
-            "force",
-            "ELASTICCANTERLIVER",
-            "displacement",
-            "E",
-            "nu",
-            "formulation",
-            "mesh_size",
-            "KERNEL",
-            "formulation",
-            "n_kernels",
-            "kernel_distance",
-            "kernel_weights",
-            "GENERICSCALAREXACT",
-            "func",
-            "NODE",
-            "rhs",
-            "values",
-            "dirichlet_boundary",
-            "neumann_boundary",
-            "POINTBASED",
-            "scaling",
-            "rhs",
-            "translation",
-            "boundary_ids",
-            "neumann_boundary_ids",
-            "FLOW",
-            "inflow",
-            "outflow",
-            "inflow_amout",
-            "outflow_amout",
-            "direction",
-            "obstacle"
+            "bbox_center"
         ],
         "doc": "//TODO"
     },
     {
-        "pointer": "/preset_problem/name",
+        "pointer": "/preset_problem/axis_coordiante0",
+        "type": "int",
+        "default": 2,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/axis_coordiante1",
+        "type": "int",
+        "default": 2,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/angular_v0",
+        "type": "float",
+        "default": 0.5,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/angular_v1",
+        "type": "float",
+        "default": -0.5,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/turning_boundary0",
+        "type": "int",
+        "default": 5,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/turning_boundary1",
+        "type": "int",
+        "default": 6,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ElasticZeroBC",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ElasticCantileverExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO, add displacement, E, nu, formulation, mesh_size"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "CompressionElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "QuadraticElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "LinearElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "PointBasedTensor",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO, add optionals"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Kernel",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "formulation",
+            "n_kernels",
+            "kernel_distance",
+            "kernel_weights"
+        ],
+        "doc": "//TODO, add optionals"
+    },
+    {
+        "pointer": "/preset_problem/formulation",
+        "type": "string",
+        "default": "",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels",
+        "type": "int",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/kernel_distance",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/kernel_weights",
+        "type": "string",
+        "default": "",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Node",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO, add optionals"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TimeDependentScalar",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "MinSurf",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Gravity",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "force"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/force",
+        "type": "list",
+        "default": [],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/force/*",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ConstantVelocity",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TwoSpheres",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DrivenCavity",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DrivenCavityC0",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DrivenCavitySmooth",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Flow",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO, add inflow, outflow, inflow_amout, outflow_amout, direction, obstacle"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "FlowWithObstacle",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/U",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/time_dependent",
+        "type": "bool",
+        "default": false,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "CornerFlow",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U",
+            "time_dependent"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "UnitFlowWithObstacle",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U"
+        ],
+        "doc": "//TODO, add inflow_id, direction, no_slip"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "StokesLaw",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "time_dependent",
+            "viscosity"
+        ],
+        "doc": "//TODO, add radius"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/viscosity",
+        "type": "float",
+        "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TaylorGreenVortex",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "viscosity"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "SimpleStokeProblemExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "func"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "SineStokeProblemExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TransientStokeProblemExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "func",
+            "viscosity"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Kovnaszy",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "time_dependent",
+            "viscosity"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Airfoil",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "time_dependent"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Lshape",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U",
+            "time_dependent"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TestProblem",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO, type, omega, is_scalar"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "BilaplacianProblemWithSolution",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "//TODO, type, omega, is_scalar"
+    },
+    {
+        "pointer": "/preset_problem/type",
         "type": "string",
         "doc": "//TODO",
         "options": [
