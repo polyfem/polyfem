@@ -1772,7 +1772,8 @@
             "v_path",
             "a_path",
             "mises",
-            "nodes"
+            "nodes",
+            "advanced"
         ],
         "doc": "File names to write output data to."
     },
@@ -1835,6 +1836,21 @@
         "default": "",
         "type": "string",
         "doc": "{DZ TODO: not sure what is written out here}"
+    },
+    {
+        "pointer": "/output/data/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "reorder_nodes"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/data/advanced/reorder_nodes",
+        "default": false,
+        "type": "bool",
+        "doc": "//TODO"
     },
     {
         "pointer": "/output/reference",
