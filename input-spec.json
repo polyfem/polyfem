@@ -1639,8 +1639,7 @@
             "volume",
             "surface",
             "wireframe",
-            "options",
-            "reference"
+            "options"
         ],
         "doc": "Output in paraview format {DZ TODO: not sure what exactly all of these are so need to add descriptions below}"
     },
@@ -1735,28 +1734,6 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out accelerations {DZ TODO: for Navier-Sokes, what does this do?}"
-    },
-    {
-        "pointer": "/output/paraview/reference",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "solution",
-            "gradient"
-        ],
-        "doc": "Write out the analytic/numerical ground-truth solution and or its gradient"
-    },
-    {
-        "pointer": "/output/paraview/reference/solution",
-        "default": null,
-        "type": "object",
-        "doc": "{DZ TODO: Should this be bool?}"
-    },
-    {
-        "pointer": "/output/paraview/reference/gradient",
-        "default": null,
-        "type": "object",
-        "doc": "{DZ TODO: Should this be bool?}"
     },
     {
         "pointer": "/output/data",
@@ -1860,7 +1837,7 @@
             "gradient"
         ],
         "type": "object",
-        "doc": "//TODO"
+        "doc": "Write out the analytic/numerical ground-truth solution and or its gradient"
     },
     {
         "pointer": "/output/reference/solution",
