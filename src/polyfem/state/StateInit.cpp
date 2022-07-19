@@ -153,6 +153,7 @@ namespace polyfem
 		json rules;
 		jse::JSE jse;
 		{
+			jse.strict = true;
 			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
 			std::ifstream file(polyfem_input_spec);
 
@@ -214,7 +215,7 @@ namespace polyfem
 			}
 		}
 
-		std::cout << this->args.dump() << std::endl;
+		// std::cout << this->args.dump() << std::endl;
 
 		has_dhat = args_in["contact"].contains("dhat");
 

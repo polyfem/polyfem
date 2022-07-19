@@ -7,6 +7,7 @@
             "materials"
         ],
         "optional": [
+            "preset_problem",
             "common",
             "root_path",
             "space",
@@ -580,8 +581,42 @@
     },
     {
         "pointer": "/time",
-        "default": null,
+        "default": "skip",
         "type": "object",
+        "required": [
+            "tend",
+            "dt"
+        ],
+        "optional": [
+            "t0",
+            "integrator",
+            "newmark",
+            "BDF"
+        ],
+        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
+    },
+    {
+        "pointer": "/time",
+        "type": "object",
+        "required": [
+            "time_steps",
+            "dt"
+        ],
+        "optional": [
+            "t0",
+            "integrator",
+            "newmark",
+            "BDF"
+        ],
+        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
+    },
+    {
+        "pointer": "/time",
+        "type": "object",
+        "required": [
+            "time_steps",
+            "tend"
+        ],
         "optional": [
             "t0",
             "integrator",
@@ -626,7 +661,7 @@
         "pointer": "/time/newmark",
         "type": "object",
         "default": null,
-        "options": [
+        "optional": [
             "gamma",
             "beta"
         ],
@@ -648,7 +683,7 @@
         "pointer": "/time/BDF",
         "type": "object",
         "default": null,
-        "options": [
+        "optional": [
             "steps"
         ],
         "doc": "Options for BDF"
@@ -958,49 +993,237 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "LinearElasticity",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "LinearElasticity",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "HookeLinearElasticity",
         "required": [
             "type"
         ],
         "optional": [
             "id",
-            "E",
-            "nu",
             "rho",
-            "mu",
-            "lambda",
-            "density"
+            "elasticity_tensor",
+            "E",
+            "nu"
+        ],
+        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "SaintVenant",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "elasticity_tensor",
+            "E",
+            "nu"
+        ],
+        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Stokes",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, viscosity, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "NavierStokes",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, viscosity, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleLinearElasticity",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho"
         ],
         "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleLinearElasticity",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Laplacian",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Helmholtz",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "k"
+        ],
+        "doc": "Material Parameters including id, k, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Bilaplacian",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including id, Density(rho), type()"
+    },
+    {
         "pointer": "/materials/*/id",
         "type": "int",
-        "default": "0",
+        "default": 0,
         "doc": "id"
     },
     {
         "pointer": "/materials/*/E",
         "type": "float",
-        "default": -9999,
         "doc": "Young's modulus"
     },
     {
         "pointer": "/materials/*/nu",
         "type": "float",
-        "default": -9999,
         "doc": "Poisson ratio"
+    },
+    {
+        "pointer": "/materials/*/viscosity",
+        "type": "float",
+        "doc": "Fuild's viscosity"
+    },
+    {
+        "pointer": "/materials/*/elasticity_tensor",
+        "type": "list",
+        "default": [],
+        "doc": "Simmetric elasticity tensor"
+    },
+    {
+        "pointer": "/materials/*/elasticity_tensor/*",
+        "type": "float",
+        "default": 0,
+        "doc": "Entries of elasticity tensor"
     },
     {
         "pointer": "/materials/*/rho",
         "type": "float",
-        "default": -9999,
-        "doc": "Density"
+        "doc": "Density",
+        "default": 1
     },
     {
-        "pointer": "/materials/*/density",
+        "pointer": "/materials/*/k",
         "type": "float",
-        "default": -9999,
-        "doc": "Density"
+        "doc": "Scaling for Helmholtz",
+        "default": 1
     },
     {
         "pointer": "/materials/*/type",
@@ -1010,7 +1233,6 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
-            "MultiModels",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -1023,13 +1245,11 @@
     {
         "pointer": "/materials/*/mu",
         "type": "float",
-        "default": -9999,
         "doc": "First lame parameters"
     },
     {
         "pointer": "/materials/*/lambda",
         "type": "float",
-        "default": -9999,
         "doc": "Second lame parameter"
     },
     {
@@ -1396,7 +1616,8 @@
             "json",
             "paraview",
             "data",
-            "advanced"
+            "advanced",
+            "reference"
         ],
         "doc": "//TODO"
     },
@@ -1616,6 +1837,40 @@
         "doc": "{DZ TODO: not sure what is written out here}"
     },
     {
+        "pointer": "/output/reference",
+        "default": null,
+        "optional": [
+            "solution",
+            "gradient"
+        ],
+        "type": "object",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/reference/solution",
+        "default": [],
+        "type": "list",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/reference/solution/*",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/reference/gradient",
+        "default": [],
+        "type": "list",
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/output/reference/gradient/*",
+        "default": "",
+        "type": "string",
+        "doc": "//TODO"
+    },
+    {
         "pointer": "/output/advanced",
         "default": null,
         "type": "object",
@@ -1730,5 +1985,113 @@
         "default": "",
         "type": "string",
         "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "default": "skip",
+        "type": "object",
+        "required": [
+            "name"
+        ],
+        "optional": [
+            "TORSION",
+            "axis_coordiante",
+            "n_turns",
+            "fixed_boundary",
+            "turning_boundary",
+            "bbox_center",
+            "DOUBLETORSION",
+            "axis_coordiante0",
+            "axis_coordiante1",
+            "angular_v0",
+            "angular_v1",
+            "turning_boundary0",
+            "turning_boundary1",
+            "bbox_center",
+            "GRAVITY",
+            "force",
+            "ELASTICCANTERLIVER",
+            "displacement",
+            "E",
+            "nu",
+            "formulation",
+            "mesh_size",
+            "KERNEL",
+            "formulation",
+            "n_kernels",
+            "kernel_distance",
+            "kernel_weights",
+            "GENERICSCALAREXACT",
+            "func",
+            "NODE",
+            "rhs",
+            "values",
+            "dirichlet_boundary",
+            "neumann_boundary",
+            "POINTBASED",
+            "scaling",
+            "rhs",
+            "translation",
+            "boundary_ids",
+            "neumann_boundary_ids",
+            "FLOW",
+            "inflow",
+            "outflow",
+            "inflow_amout",
+            "outflow_amout",
+            "direction",
+            "obstacle"
+        ],
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/preset_problem/name",
+        "type": "string",
+        "doc": "//TODO",
+        "options": [
+            "Linear",
+            "Quadratic",
+            "Cubic",
+            "Sine",
+            "Franke",
+            "FrankeOld",
+            "GenericScalarExact",
+            "Zero_BC",
+            "Elastic",
+            "Walk",
+            "TorsionElastic",
+            "DoubleTorsionElastic",
+            "ElasticZeroBC",
+            "ElasticExact",
+            "ElasticCantileverExact",
+            "CompressionElasticExact",
+            "QuadraticElasticExact",
+            "LinearElasticExact",
+            "PointBasedTensor",
+            "Kernel",
+            "Node",
+            "TimeDependentScalar",
+            "MinSurf",
+            "Gravity",
+            "ConstantVelocity",
+            "TwoSpheres",
+            "DrivenCavity",
+            "DrivenCavityC0",
+            "DrivenCavitySmooth",
+            "Flow",
+            "FlowWithObstacle",
+            "CornerFlow",
+            "UnitFlowWithObstacle",
+            "StokesLaw",
+            "TaylorGreenVortex",
+            "SimpleStokeProblemExact",
+            "SineStokeProblemExact",
+            "TransientStokeProblemExact",
+            "Kovnaszy",
+            "Airfoil",
+            "Lshape",
+            "TestProblem",
+            "BilaplacianProblemWithSolution"
+        ]
     }
 ]

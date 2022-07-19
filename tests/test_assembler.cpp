@@ -23,6 +23,8 @@ TEST_CASE("hessian_lin", "[assembler]")
 
 	in_args["materials"] = {};
 	in_args["materials"]["type"] = "LinearElasticity";
+	in_args["materials"]["E"] = 1e5;
+	in_args["materials"]["nu"] = 0.3;
 
 	State state;
 	state.init_logger("", spdlog::level::off, false);
