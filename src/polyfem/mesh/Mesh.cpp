@@ -48,8 +48,8 @@ namespace polyfem::mesh
 			const Eigen::MatrixBase<DerivedT> &T,
 			Eigen::PlainObjectBase<DerivedF> &F)
 		{
-			assert(T.rows() == 4);
-			assert(T.cols() >= 1);
+			assert(T.cols() == 4);
+			assert(T.rows() >= 1);
 
 			Eigen::MatrixXi BF, OF;
 			igl::boundary_facets(T, BF);
@@ -298,7 +298,7 @@ namespace polyfem::mesh
 		}
 		else
 		{
-			if (cells.rows() == 4)
+			if (cells.cols() == 4)
 			{
 				get_faces(cells, mesh->in_ordered_faces_);
 				igl::edges(mesh->in_ordered_faces_, mesh->in_ordered_edges_);
