@@ -21,6 +21,7 @@
 
 #include <polyfem/mesh/RemeshAdaptive.hpp>
 #include <polyfem/utils/OBJ_IO.hpp>
+#include <polyfem/utils/L2Projection.hpp>
 
 #include <ipc/ipc.hpp>
 
@@ -461,19 +462,40 @@ namespace polyfem
 
 				Eigen::MatrixXd V_new;
 				Eigen::MatrixXi F_new;
-				if (!mesh->is_volume())
-				{
-					mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new);
-					OBJWriter::save(resolve_output_path("remeshed.obj"), V_new, F_new);
-					exit(0);
-				}
-				else
-				{
-					Eigen::MatrixXi _;
-					mesh::remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
-				}
+				// if (!mesh->is_volume())
+				// {
+				// 	mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new);
+				// 	OBJWriter::save(resolve_output_path("remeshed.obj"), V_new, F_new);
+				// 	exit(0);
+				// }
+				// else
+				// {
+				// 	Eigen::MatrixXi _;
+				// 	mesh::remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
+				// }
+
+				write_sparse_matrix_csv("mass.csv", mass);
 
 				// L2 Projection
+				ass_vals_cache.clear();
+				Eigen::VectorXd sol_proj;
+				L2_projection(
+					mesh->is_volume(),
+					mesh->is_volume() ? 3 : 2,
+					n_bases,
+					bases,
+					iso_parametric() ? bases : geom_bases,
+					// TODO:
+					n_bases,
+					bases,
+					iso_parametric() ? bases : geom_bases,
+					// END
+					density,
+					ass_vals_cache,
+					sol,
+					sol_proj);
+
+				logger().critical("error: {}", (sol_proj - sol).norm());
 
 				this->load_mesh(V_new, F_new);
 				this->build_basis();

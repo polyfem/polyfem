@@ -14,8 +14,8 @@ namespace polyfem
 
 			int size() const
 			{
-				assert(points.size() == weights.size());
-				return points.size();
+				assert(points.rows() == weights.size());
+				return points.rows();
 			}
 		};
 	} // namespace quadrature

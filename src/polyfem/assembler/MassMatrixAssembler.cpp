@@ -199,7 +199,7 @@ namespace polyfem::assembler
 		{
 			Eigen::Matrix3d A;
 			A.leftCols<2>() = triangle;
-			A.col(3).setOnes();
+			A.col(2).setOnes();
 			return 0.5 * A.determinant();
 		}
 
@@ -259,12 +259,14 @@ namespace polyfem::assembler
 		{
 			const ElementBases &eb = bases_b[ebi];
 			Eigen::MatrixXd eb_nodes = eb.nodes();
+			assert(eb_nodes.rows() == 3);
 			reverse_rows(eb_nodes); // clockwise order
 
 			for (int eai = 0; eai < n_bases_a; ++eai)
 			{
 				const ElementBases &ea = bases_a[eai];
 				Eigen::MatrixXd ea_nodes = ea.nodes();
+				assert(ea_nodes.rows() == 3);
 				reverse_rows(ea_nodes); // clockwise order
 
 				Eigen::MatrixXd overlap = sutherland_hodgman_clipping(eb_nodes, ea_nodes);
@@ -276,6 +278,8 @@ namespace polyfem::assembler
 				for (const Eigen::MatrixXd &triangle : triangles)
 				{
 					const double area = triangle_area(triangle);
+					if (abs(area) < 1e-12)
+						continue;
 					assert(area > 0);
 
 					for (int qi = 0; qi < quadrature.size(); qi++)
@@ -296,23 +300,24 @@ namespace polyfem::assembler
 							ea_nodes.row(0), ea_nodes.row(1), ea_nodes.row(2), p);
 						// assert((p - element_a.gmapping(x_i)).norm() < 1e-12)
 
-						std::vector<AssemblyValues> phi_is, phi_js;
-						eb.evaluate_bases(x_i.head<2>().transpose(), phi_is);
-						ea.evaluate_bases(x_j.head<2>().transpose(), phi_js);
+						std::vector<AssemblyValues> phi_i, phi_j;
+						eb.evaluate_bases(x_i.head<2>().transpose(), phi_i);
+						ea.evaluate_bases(x_j.head<2>().transpose(), phi_j);
 
-						assert(phi_is.size() == 1);
-						const AssemblyValues &phi_i = phi_is[0];
-						assert(phi_js.size() == 1);
-						const AssemblyValues &phi_j = phi_js[0];
-
-						for (int loc_i = 0; loc_i < phi_i.val.size(); ++loc_i)
+						for (int n = 0; n < size; ++n)
 						{
-							for (int loc_j = 0; loc_j < phi_j.val.size(); ++loc_j)
+							for (int m = 0; m < size; ++m)
 							{
-								triplets.emplace_back(
-									phi_i.global[loc_i].index,
-									phi_j.global[loc_j].index,
-									w * phi_i.val(loc_i) * phi_j.val(loc_j) * area);
+								for (int loc_i = 0; loc_i < phi_i.size(); ++loc_i)
+								{
+									for (int loc_j = 0; loc_j < phi_j.size(); ++loc_j)
+									{
+										triplets.emplace_back(
+											eb.bases[loc_i].global()[0].index * size + n,
+											ea.bases[loc_j].global()[0].index * size + n,
+											w * phi_i[loc_i].val(0) * phi_j[loc_i].val(0) * area);
+									}
+								}
 							}
 						}
 					}
