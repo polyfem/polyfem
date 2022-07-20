@@ -1062,7 +1062,7 @@ namespace polyfem
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
-				has_exact_ = !params["reference"]["solution"].get<std::string>().empty();
+				has_exact_ = !params["reference"]["solution"].empty();
 				exact_.init(params["reference"]["solution"]);
 			}
 
