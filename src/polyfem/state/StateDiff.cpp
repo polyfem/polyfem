@@ -32,7 +32,7 @@ namespace polyfem
 	namespace
 	{
 		typedef std::vector<std::function<void(int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> VolumeIntegrandTerms;
-		typedef std::vector<std::function<void(int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> SurfaceIntegrandTerms;
+		typedef std::vector<std::function<void(int, const Eigen::VectorXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> SurfaceIntegrandTerms;
 
 		class LocalThreadMatStorage
 		{
@@ -191,7 +191,7 @@ namespace polyfem
 				for (const auto &integrand_function : integrand_functions)
 				{
 					Eigen::VectorXd vec_term;
-					integrand_function(e, points, vals.val, normals, vec_term);
+					integrand_function(e, global_primitive_ids, points, vals.val, normals, vec_term);
 					integrands.push_back(vec_term);
 				}
 
@@ -391,13 +391,17 @@ namespace polyfem
 		else
 		{
 			SurfaceIntegrandTerms integrand_functions = {
-				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
+				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
 					interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
-					Eigen::MatrixXd vec_term_mat;
+					std::vector<int> boundary_ids = {};
+					for (int i = 0; i < global_primitive_ids.size(); ++i)
+						boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
 					json params = {};
 					params["elem"] = e;
 					params["body_id"] = mesh->get_body_id(e);
+					params["boundary_ids"] = boundary_ids;
+					Eigen::MatrixXd vec_term_mat;
 					j.evaluate(assembler.lame_params(), reference_points, global_points, u, grad_u, params, vec_term_mat);
 					assert(vec_term.cols() == 1);
 					vec_term = vec_term_mat;
@@ -436,15 +440,19 @@ namespace polyfem
 		else
 		{
 			SurfaceIntegrandTerms integrand_functions = {
-				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
+				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
 					interpolate_at_local_vals(e, reference_points, diff_cached[step].u, u, grad_u);
-					Eigen::MatrixXd vec_term_mat;
+					std::vector<int> boundary_ids = {};
+					for (int i = 0; i < global_primitive_ids.size(); ++i)
+						boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
 					json params = {};
 					params["elem"] = e;
 					params["body_id"] = mesh->get_body_id(e);
+					params["boundary_ids"] = boundary_ids;
 					params["t"] = dt * step;
 					params["step"] = step;
+					Eigen::MatrixXd vec_term_mat;
 					j.evaluate(assembler.lame_params(), reference_points, global_points, u, grad_u, params, vec_term_mat);
 					assert(vec_term.cols() == 1);
 					vec_term = vec_term_mat;
@@ -1382,7 +1390,7 @@ namespace polyfem
 
 		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
 		term = -step_data.nl_problem->get_barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
-		
+
 		// const double eps = 1e-6;
 		// Eigen::MatrixXd target = dq_h;
 		// Eigen::MatrixXd hessian_fd;
