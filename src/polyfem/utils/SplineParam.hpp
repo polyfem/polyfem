@@ -123,8 +123,7 @@ namespace polyfem
 			}
 		}
 
-	private:
-		void eval(const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const double t, Eigen::MatrixXd &val) const
+		static void eval(const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const double t, Eigen::MatrixXd &val)
 		{
 			double t_2 = pow(t, 2);
 			double t_3 = pow(t, 3);
@@ -134,7 +133,7 @@ namespace polyfem
 			val += (t_3 - t_2) * tangent.row(1);
 		}
 
-		void deriv(const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const double t, Eigen::MatrixXd &val) const
+		static void deriv(const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const double t, Eigen::MatrixXd &val)
 		{
 			double t_2 = pow(t, 2);
 			val = (6 * t_2 - 6 * t) * control_point.row(0);
@@ -143,6 +142,7 @@ namespace polyfem
 			val += (3 * t_2 - 2 * t) * tangent.row(1);
 		}
 
+	private:
 		const std::map<int, std::vector<int>> boundary_id_to_node_id_;
 		std::map<int, double> node_id_to_t_;
 	};

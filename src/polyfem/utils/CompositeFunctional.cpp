@@ -1,6 +1,8 @@
 #pragma once
 #include <polyfem/CompositeFunctional.hpp>
 
+#include <polyfem/SplineParam.hpp>
+
 namespace polyfem
 {
 	namespace
@@ -22,6 +24,11 @@ namespace polyfem
 				return true;
 			else
 				return false;
+		}
+
+		bool is_not_interested(const std::set<int> &interested_ids, const json &params)
+		{
+			return interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0;
 		}
 	} // namespace
 
@@ -255,6 +262,169 @@ namespace polyfem
 			{
 				j.set_dj_du(djdu_func);
 				j.set_dj_dx(djdx_func);
+			}
+
+			return j;
+		}
+	}
+
+	double SDFTrajectoryFunctional::energy(State &state)
+	{
+		IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "");
+
+		return state.J(j);
+	}
+
+	Eigen::VectorXd SDFTrajectoryFunctional::gradient(State &state, const std::string &type)
+	{
+		IntegrableFunctional j = get_trajectory_functional(type);
+
+		Eigen::VectorXd grad = state.integral_gradient(j, type);
+
+		return grad;
+	}
+
+	void SDFTrajectoryFunctional::compute_distance(const Eigen::MatrixXd &point, double &distance)
+	{
+		auto g = [&](const Eigen::VectorXd &t) {
+			Eigen::MatrixXd fun(dim * (control_points_.rows() - 1), 1);
+			for (int i = 0; i < control_points_.rows() - 1; ++i)
+			{
+				Eigen::MatrixXd val;
+				SplineParam::eval(control_points_.block(i, 0, 2, dim), tangents_.block(i, 0, 2, dim), t(i, 0), val);
+				fun.block(dim * i, 0, dim, 1) = val - point;
+			}
+			return fun;
+		};
+		auto J = [&](const Eigen::VectorXd &t) {
+			Eigen::MatrixXd jac = Eigen::MatrixXd::Zero(dim * (control_points_.rows() - 1), control_points_.rows() - 1);
+			for (int i = 0; i < t.rows(); ++i)
+			{
+				Eigen::MatrixXd val;
+				SplineParam::deriv(control_points_.block(i, 0, 2, dim), tangents_.block(i, 0, 2, dim), t(i, 0), val);
+				jac.block(dim * i, i, dim, 1) = val;
+			}
+			return jac;
+		};
+
+		Eigen::MatrixXd t = Eigen::MatrixXd::Ones(control_points_.rows() - 1, 1) / 2.;
+		for (int i = 0; i < 100; ++i)
+		{
+			Eigen::MatrixXd jac_inv = J(t).completeOrthogonalDecomposition().pseudoInverse();
+			Eigen::MatrixXd func = g(t);
+			t -= jac_inv * func;
+		}
+
+		Eigen::MatrixXd distances = g(t);
+		double min_distance = DBL_MAX;
+		bool found = false;
+		for (int i = 0; i < t.rows(); ++i)
+		{
+			if ((t(i, 0) < 0) || (t(i, 0) > 1))
+				continue;
+			double curr_distance = distances.block(dim * i, 0, dim, 1).norm();
+			if (distance < min_distance)
+			{
+				min_distance = distance;
+				found = true;
+			}
+		}
+
+		if (!found)
+			min_distance = std::min(distances(0, 0), distances(t.rows() - 1, 0));
+
+		distance = min_distance;
+	}
+
+	void SDFTrajectoryFunctional::evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	{
+		grad.setZero(dim, 1);
+		int num_points = dim == 2 ? 4 : 8;
+		Eigen::MatrixXd A(num_points, num_points);
+		Eigen::VectorXd b(num_points);
+		for (int i = 0; i < dim; ++i)
+		{
+			for (int j = 0; j < 2; ++j)
+			{
+				Eigen::MatrixXd key;
+				std::string key_string = "";
+				Eigen::MatrixXd clamped_point = point;
+				for (int k = 0; k < dim; ++k)
+				{
+					key(k, 0) = std::floor(point(k, 0) / delta(k, 0)) + k == i ? j : 0;
+					key_string += std::to_string(key(k, 0)) + ",";
+				}
+				clamped_point = key.cwiseProduct(delta);
+				if (implicit_function.count(key_string) == 0)
+				{
+					double distance;
+					compute_distance(clamped_point, distance);
+					implicit_function[key_string] = distance;
+				}
+
+				if (dim == 2)
+					A.row(2 * i + j) << 1., clamped_point(0, 0), clamped_point(1, 0), clamped_point(0, 0) * clamped_point(1, 0);
+				else
+					A.row(2 * i + j) << 1., clamped_point(0, 0), clamped_point(1, 0), clamped_point(2, 0), clamped_point(0, 0) * clamped_point(1, 0), clamped_point(1, 0) * clamped_point(2, 0), clamped_point(0, 0) * clamped_point(2, 0), clamped_point(0, 0) * clamped_point(1, 0) * clamped_point(2, 0);
+				b(2 * i + j) = implicit_function[key_string];
+			}
+		}
+
+		Eigen::VectorXd weights = A.householderQr().solve(b);
+		if (dim == 2)
+		{
+			val = weights(0) + weights(1) * point(0, 0) + weights(2) * point(1, 0) + weights(3) * point(0, 0) * point(1, 0);
+			grad << weights(1) + weights(3) * point(1, 0), weights(2) + weights(3) * point(0, 0);
+		}
+		else
+		{
+			val = weights(0) + weights(1) * point(0, 0) + weights(2) * point(1, 0) + weights(3) * point(2, 0) + weights(4) * point(0, 0) * point(1, 0) + weights(5) * point(1, 0) * point(2, 0) + weights(6) * point(0, 0) * point(2, 0) + weights(7) * point(0, 0) * point(1, 0) * point(2, 0);
+			logger().error("Don't yet support trilinear interpolation.");
+		}
+	}
+
+	IntegrableFunctional SDFTrajectoryFunctional::get_trajectory_functional(const std::string &derivative_type)
+	{
+		IntegrableFunctional j(surface_integral);
+		j.set_transient_integral_type(transient_integral_type);
+		{
+			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+				val.setZero(u.rows(), 1);
+				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+					return;
+
+				for (int q = 0; q < u.rows(); q++)
+				{
+					double distance;
+					Eigen::MatrixXd unused_grad;
+					evaluate(u.row(q) + pts.row(q), distance, unused_grad);
+					val(q) = pow(distance, p);
+				}
+			};
+
+			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+				val.setZero(u.rows(), u.cols());
+				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+					return;
+
+				for (int q = 0; q < u.rows(); q++)
+				{
+					double distance;
+					Eigen::MatrixXd grad;
+					evaluate(u.row(q) + pts.row(q), distance, grad);
+					val.row(q) = p * pow(distance, p - 1) * grad;
+				}
+			};
+
+			j.set_j(j_func);
+			if (derivative_type == "shape")
+			{
+				j.set_dj_du(djdu_func);
+				j.set_dj_dx(djdu_func);
+			}
+			else
+			{
+				logger().error("Don't yet support optimization of this Functional on not shape.");
 			}
 
 			return j;

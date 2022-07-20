@@ -79,6 +79,43 @@ namespace polyfem
 		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
 	};
 
+	class SDFTrajectoryFunctional : public CompositeFunctional
+	{
+	public:
+		SDFTrajectoryFunctional()
+		{
+			functional_name = "SDFTrajectory";
+			surface_integral = true;
+			delta.setZero(2, 1);
+			delta << 0.01, 0.01;
+			dim = 2;
+		}
+		~SDFTrajectoryFunctional() = default;
+
+		double energy(State &state) override;
+		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+
+		void set_spline_target(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &tangents)
+		{
+			control_points_ = control_points;
+			tangents_ = tangents;
+		}
+
+	private:
+		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
+
+		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
+		void compute_distance(const Eigen::MatrixXd &point, double &distance);
+
+		int dim;
+		double t;
+		Eigen::MatrixXd delta;
+		std::unordered_map<std::string, double> implicit_function;
+
+		Eigen::MatrixXd control_points_;
+		Eigen::MatrixXd tangents_;
+	};
+
 	class NodeTrajectoryFunctional : public CompositeFunctional
 	{
 	public:
