@@ -7,7 +7,7 @@ include(FetchContent)
 FetchContent_Declare(
     polyfem_data
     GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-    GIT_TAG c2a28d16ef489db53e6772220b4f1660eea8d684
+    GIT_TAG 418a0eaed4bcf3b877194c184439319f3fa32a58
     GIT_SHALLOW TRUE
     SOURCE_DIR ${POLYFEM_DATA_ROOT}
 )
