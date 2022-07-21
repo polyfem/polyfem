@@ -183,6 +183,9 @@ namespace polyfem
 	{
 		if (!mesh->is_conforming())
 			return;
+		if (disc_orders.maxCoeff() >= 4)
+			return;
+
 		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
 		const int num_face_nodes = mesh_nodes->num_face_nodes();
@@ -243,11 +246,11 @@ namespace polyfem
 			assert(possible_nodes.size() > 0);
 			if (possible_nodes.size() > 1)
 			{
-#ifndef NDEBUG
-				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
-				for (int possible_node : possible_nodes)
-					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
-#endif
+// #ifndef NDEBUG
+// 				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+// 				for (int possible_node : possible_nodes)
+// 					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
+// #endif
 
 				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 				assert(e_id < mesh->n_edges());
