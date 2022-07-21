@@ -607,8 +607,10 @@ namespace polyfem::mesh
 		}
 		else if (new_selections.is_object())
 		{
-			selections.push_back(Selection::build(
-				new_selections, bbox, start_element_id, end_element_id));
+			//TODO clean me
+			if(!new_selections.contains("threshold"))
+				selections.push_back(Selection::build(
+					new_selections, bbox, start_element_id, end_element_id));
 		}
 		else if (new_selections.is_array())
 		{

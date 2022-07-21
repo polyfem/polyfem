@@ -241,8 +241,30 @@
     },
     {
         "pointer": "/geometry/*/surface_selection",
+        "type": "object",
+        "optional": [
+            "threshold",
+            "offset"
+        ],
+        "default": null,
+        "typename": "bbox",
+        "doc": "Assigns ids to sides touching the bbox of the model using threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/threshold",
+        "type": "float",
+        "default": -1,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/offset",
         "type": "int",
         "default": 0,
+        "doc": "//TODO"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "int",
         "doc": "Assign specified id to all surface elements of the geometry"
     },
     {
