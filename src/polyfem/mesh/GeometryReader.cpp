@@ -256,7 +256,7 @@ namespace polyfem::mesh
 				if (is_param_valid(complete_geometry, "surface_selection"))
 				{
 					if (!complete_geometry["surface_selection"].is_number())
-						log_and_throw_error("Invalid surface_selection for obstable, needs to be an integer!");
+						log_and_throw_error("Invalid surface_selection for obstacle, needs to be an integer!");
 
 					const int id = complete_geometry["surface_selection"];
 					for (const json &disp : displacements)
@@ -608,7 +608,7 @@ namespace polyfem::mesh
 		else if (new_selections.is_object())
 		{
 			//TODO clean me
-			if(!new_selections.contains("threshold"))
+			if (!new_selections.contains("threshold"))
 				selections.push_back(Selection::build(
 					new_selections, bbox, start_element_id, end_element_id));
 		}
