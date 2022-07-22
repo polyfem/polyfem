@@ -572,7 +572,7 @@
         "pointer": "/space/advanced/quadrature_order",
         "default": -1,
         "type": "int",
-        "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*p+1,quadrature_order)."
+        "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
     },
     {
         "pointer": "/space/advanced/poly_bases",
@@ -1547,6 +1547,12 @@
         "doc": "Initial conditions for the time-dependent problem, imposed on the main variable, its derivative or second derivative"
     },
     {
+        "pointer": "/initial_conditions/solution",
+        "default": [],
+        "type": "list",
+        "doc": "initial solution"
+    },
+    {
         "pointer": "/initial_conditions/solution/*",
         "default": null,
         "type": "object",
@@ -1575,6 +1581,12 @@
         "pointer": "/initial_conditions/solution/*/value/*",
         "type": "string",
         "doc": "as a function of x,y,z,t"
+    },
+    {
+        "pointer": "/initial_conditions/velocity",
+        "default": [],
+        "type": "list",
+        "doc": "initial velocity"
     },
     {
         "pointer": "/initial_conditions/velocity/*",
@@ -1782,7 +1794,6 @@
             "solution",
             "full_mat",
             "stiffness_mat",
-            "solution_mat",
             "stress_mat",
             "u_path",
             "v_path",
@@ -1923,7 +1934,7 @@
     {
         "pointer": "/output/advanced/sol_on_grid",
         "default": -1,
-        "type": "double",
+        "type": "float",
         "doc": "exports the solution sampled on a grid, specify the grid spacing"
     },
     {
