@@ -29,13 +29,13 @@
         "extensions": [
             ".json"
         ],
-        "doc": "Path to default settings"
+        "doc": "Path to common settings will patch the current file"
     },
     {
         "pointer": "/root_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "path for all relative paths, set automatically to the folder containing this json"
     },
     {
         "pointer": "/authen_t1",
@@ -50,42 +50,49 @@
             "err_lp",
             "margin"
         ],
-        "doc": "//TODO"
+        "doc": "use to test to compare different norms of solutions"
     },
     {
         "pointer": "/authen_t1/err_h1",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference h1 solution's norm"
     },
     {
         "pointer": "/authen_t1/err_h1_semi",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference h1 seminorm solution's norm"
     },
     {
         "pointer": "/authen_t1/err_l2",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference l2 solution's norm"
     },
     {
         "pointer": "/authen_t1/err_linf",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference linf solution's norm"
     },
     {
         "pointer": "/authen_t1/err_linf_grad",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference linf solution's gradient norm"
     },
     {
         "pointer": "/authen_t1/err_lp",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference l8 solution's gradient norm"
     },
     {
         "pointer": "/authen_t1/margin",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "reference tolerance used in tests"
     },
     {
         "pointer": "/geometry",
@@ -131,7 +138,7 @@
             "mesh"
         ],
         "default": "mesh",
-        "doc": "//TODO???"
+        "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc"
     },
     {
         "pointer": "/geometry/*/extract",
@@ -143,7 +150,7 @@
             "surface"
         ],
         "default": "volume",
-        "doc": "TODO???"
+        "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh"
     },
     {
         "pointer": "/geometry/*/transformation",
@@ -162,7 +169,7 @@
         "pointer": "/geometry/*/transformation/rotation_mode",
         "type": "string",
         "default": "xyz",
-        "doc": "//TODO"
+        "doc": "Type of rotation, supported are any permutation of (x[0-1]|y[0-1]|z[0-1), axis_angle, quaternion, or rotation_vector"
     },
     {
         "pointer": "/geometry/*/transformation/translation",
@@ -174,7 +181,7 @@
         "pointer": "/geometry/*/transformation/rotation",
         "type": "list",
         "default": [],
-        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion."
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode"
     },
     {
         "pointer": "/geometry/*/transformation/scale",
@@ -248,19 +255,17 @@
         ],
         "default": null,
         "typename": "bbox",
-        "doc": "Assigns ids to sides touching the bbox of the model using threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
+        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
     },
     {
         "pointer": "/geometry/*/surface_selection/threshold",
         "type": "float",
-        "default": -1,
-        "doc": "//TODO"
+        "default": -1
     },
     {
         "pointer": "/geometry/*/surface_selection/offset",
         "type": "int",
-        "default": 0,
-        "doc": "//TODO"
+        "default": 0
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -270,7 +275,7 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "list",
-        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box,sphere, "
+        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -307,7 +312,7 @@
         ],
         "default": null,
         "typename": "sphere",
-        "doc": "Assign the id to all surface elements with barycenters inside an sphere with specified center nad radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+        "doc": "Assign the id to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -323,7 +328,7 @@
         ],
         "default": null,
         "typename": "plane",
-        "doc": "{DZ TODO: change name to halfspace}. Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is  defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates coordinates with respect to the bounding box of the geometry."
+        "doc": "Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -338,7 +343,7 @@
         ],
         "default": null,
         "typename": "axis",
-        "doc": "{DZ TODO: change name to axis_aligned_halfspace, rename position to offset} Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+        "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
@@ -432,19 +437,19 @@
             "min_component"
         ],
         "default": null,
-        "doc": "//TODO"
+        "doc": "Advanced options for geometry"
     },
     {
         "pointer": "/geometry/*/advanced/normalize_mesh",
         "type": "bool",
         "default": false,
-        "doc": "//TODO"
+        "doc": "Rescale the mesh to it fits in the biunit cube"
     },
     {
         "pointer": "/geometry/*/advanced/force_linear_geometry",
         "type": "bool",
         "default": false,
-        "doc": "//TODO"
+        "doc": "Discard high-order nodes for curved geometries"
     },
     {
         "pointer": "/geometry/*/advanced/refinement_location",
@@ -467,7 +472,8 @@
     {
         "pointer": "/geometry/*/enabled",
         "type": "bool",
-        "default": true
+        "default": true,
+        "doc": "Skips the geometry if false"
     },
     {
         "pointer": "/space",
@@ -479,19 +485,19 @@
             "use_p_ref",
             "advanced"
         ],
-        "doc": "{DZ TODO: rename space to FEspace?} Options related to the FE space."
+        "doc": "Options related to the FE space."
     },
     {
         "pointer": "/space/discr_order",
         "default": 1,
         "type": "int",
-        "doc": "{DZ TODO: RENAME order->degree two more versions: load per element orders from file and list of ids to assign an order to} Lagrange element order for the space for the main unknown,for all elements."
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
     },
     {
         "pointer": "/space/pressure_discr_order",
         "default": 1,
         "type": "int",
-        "doc": "{DZ TODO: two more versions: load per element orders from file and list of ids to assign an order to} Lagrange element order for the space for the pressure unknown,for all elements."
+        "doc": " Lagrange element order for the space for the pressure unknown, for all elements."
     },
     {
         "pointer": "/space/use_p_ref",
@@ -548,6 +554,10 @@
     {
         "pointer": "/space/advanced/bc_method",
         "default": "lsq",
+        "options": [
+            "lsq",
+            "sample"
+        ],
         "type": "string",
         "doc": "Method for imposing analytic Dirichet boundary conditions. If 'lsq' (least-squares fit), then the bc function is sampled at quadrature points, and the FEspace nodal values on the boundary are determined by minimizing L2 norm of the difference. If 'sample', then the analytic bc function is sampled at the boundary nodes."
     },
@@ -561,11 +571,15 @@
         "pointer": "/space/advanced/quadrature_order",
         "default": -1,
         "type": "int",
-        "doc": "{DZ TODO: rename min_quadrature_order} Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*p+1,quadrature_order."
+        "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*p+1,quadrature_order)."
     },
     {
         "pointer": "/space/advanced/poly_bases",
         "default": "MFSHarmonic",
+        "options": [
+            "MFSHarmonic",
+            "MeanValue"
+        ],
         "type": "string",
         "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
     },
@@ -591,19 +605,19 @@
         "pointer": "/space/advanced/B",
         "default": 3,
         "type": "int",
-        "doc": "{DZ TODO more meaningful name} The target deviation of the error on elements from perfect element error, for a priori geometry-dependent p-refinement, see 'Decoupling .. ' paper."
+        "doc": "The target deviation of the error on elements from perfect element error, for a priori geometry-dependent p-refinement, see 'Decoupling .. ' paper."
     },
     {
         "pointer": "/space/advanced/h1_formula",
         "default": false,
         "type": "bool",
-        "doc": "{DZ TODO: get rid of this and remove from the code}"
+        "doc": ""
     },
     {
         "pointer": "/space/advanced/count_flipped_els",
         "default": true,
         "type": "bool",
-        "doc": "{DZ TODO not sure if this is correct, e.g., what this does for higher order} Count the number of elements with Jacobian of the geometric map not positive everywhere."
+        "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
     },
     {
         "pointer": "/time",
@@ -619,7 +633,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
+        "doc": "The time parameters: start time t0, end time tend, time step dt. "
     },
     {
         "pointer": "/time",
@@ -634,7 +648,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
+        "doc": "The time parameters: start time t0, time step dt, number of time steps. "
     },
     {
         "pointer": "/time",
@@ -649,28 +663,32 @@
             "newmark",
             "BDF"
         ],
-        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
+        "doc": "The time parameters: start time t0, end time tend, number of time steps. "
     },
     {
         "pointer": "/time/t0",
         "type": "float",
         "min": 0,
-        "default": 0
+        "default": 0,
+        "doc": "Startning time"
     },
     {
         "pointer": "/time/tend",
         "type": "float",
-        "min": 0
+        "min": 0,
+        "doc": "Ending time"
     },
     {
         "pointer": "/time/dt",
         "type": "float",
-        "min": 0
+        "min": 0,
+        "doc": "Delta t"
     },
     {
         "pointer": "/time/time_steps",
         "type": "int",
-        "min": 0
+        "min": 0,
+        "doc": "Number of time steps"
     },
     {
         "pointer": "/time/integrator",
@@ -749,7 +767,7 @@
         "pointer": "/contact/dhat_percentage",
         "default": 0.8,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "dhat as percentage of the diagonal of the bounding box"
     },
     {
         "pointer": "/contact/epsv",
@@ -761,7 +779,7 @@
         "pointer": "/contact/friction_coefficient",
         "default": 0,
         "type": "float",
-        "doc": "Friction Coefficient {DZ TODO: friction coefficient options need to be: constant (global default) and per pair of selection ids}"
+        "doc": "Friction Coefficient"
     },
     {
         "pointer": "/solver",
@@ -791,13 +809,13 @@
         "pointer": "/solver/linear/solver",
         "default": "",
         "type": "string",
-        "doc": "Linear solver type {DZ TODO: which types are supported?}"
+        "doc": "Linear solver type"
     },
     {
         "pointer": "/solver/linear/precond",
         "default": "",
         "type": "string",
-        "doc": "Preconditioner for iterative linear solver {DZ TODO: which preconditioners are supported?}"
+        "doc": "Preconditioner for iterative linear solver"
     },
     {
         "pointer": "/solver/nonlinear",
@@ -822,13 +840,13 @@
             "newton",
             "lbfgs"
         ],
-        "doc": "Nonlinear solver type {DZ: TODO what types are supported in addition to Newton?  BFGS? Newton?}"
+        "doc": "Nonlinear solver type"
     },
     {
         "pointer": "/solver/nonlinear/f_delta",
         "default": 1e-10,
         "type": "float",
-        "doc": "Stopping criterion:  minimal change of the energy for the iterations to continue (DZ: and if the energy not defined}  "
+        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
     },
     {
         "pointer": "/solver/nonlinear/grad_norm",
@@ -875,13 +893,13 @@
             "more_thuente",
             "none"
         ],
-        "doc": "line search type {DZ TODO: what types are there?}"
+        "doc": "line search type"
     },
     {
         "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
         "default": 0.0001,
         "type": "float",
-        "doc": "{DZ TODO: unclear - should this be called grad_norm_tol and be a float, or use_grad_norm_tol and be a boolean?}"
+        "doc": "When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy"
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -892,25 +910,25 @@
             "max_weight",
             "force"
         ],
-        "doc": "{DZ TODO: not 100% what these correspond to rename? e.g. is the weight a penalty weight? what about initial lagrange multipliers? is there control on how the weight is updated?, add an algorithm description reference, what does the force flag do?}"
+        "doc": "Parameters for the AL for imposing Dirichlet bc. If the bc are not imposable, we add w*||u - bc||^2 to the energy (u is the solution at the Dirichlet nodes and bc are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double w until max_weight."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
         "default": 1000000.0,
         "type": "float",
-        "doc": "{DZ TODO: rename initial_penalty_weight? }"
+        "doc": "Initial weight for AL"
     },
     {
         "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 100000000000.0,
         "type": "float",
-        "doc": "{DZ TODO: rename max_penalty_weight?}"
+        "doc": "Maximum AL weight"
     },
     {
         "pointer": "/solver/augmented_lagrangian/force",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Always enable AL, even when BC can be imposed"
     },
     {
         "pointer": "/solver/contact",
@@ -934,19 +952,31 @@
             "tolerance",
             "max_iterations"
         ],
-        "doc": "//TODO"
+        "doc": "CCD options"
     },
     {
         "pointer": "/solver/contact/CCD/broad_phase",
         "default": "hash_grid",
         "type": "string",
-        "doc": "Broad phase collision-detection algorithm to use {DZ TODO: enumerate options}"
+        "options": [
+            "hash_grid",
+            "HG",
+            "brute_force",
+            "BF",
+            "spatial_hash",
+            "SH",
+            "sweep_and_tiniest_queue",
+            "STQ",
+            "sweep_and_tiniest_queue_gpu",
+            "STQ_GPU"
+        ],
+        "doc": "Broad phase collision-detection algorithm to use"
     },
     {
         "pointer": "/solver/contact/CCD/tolerance",
         "default": 1e-06,
         "type": "float",
-        "doc": "CCD tolerance {DZ TODO add reference or explain what it does}"
+        "doc": "CCD tolerance"
     },
     {
         "pointer": "/solver/contact/CCD/max_iterations",
@@ -964,30 +994,33 @@
         "pointer": "/solver/contact/friction_convergence_tol",
         "default": 0.01,
         "type": "float",
-        "doc": "Tolerence for friction convergence {DZ TODO elaborate what quantity the tolerance is applied to}"
+        "doc": "Tolerence for friction convergence"
     },
     {
         "pointer": "/solver/contact/barrier_stiffness",
         "default": "adaptive",
+        "options": [
+            "adaptive"
+        ],
         "type": "string",
-        "doc": "How coefficient of clamped log-barrier function for contact is updated {DZ TODO add options: is it adaptive| constant?} "
+        "doc": "How coefficient of clamped log-barrier function for contact is updated"
     },
     {
         "pointer": "/solver/contact/barrier_stiffness",
         "type": "float",
-        "doc": "The coefficient of clamped log-barrier function value. {DZ TODO: for adaptive initial value?}"
+        "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
         "pointer": "/solver/contact/lagged_damping_weight",
         "default": 0,
         "type": "int",
-        "doc": "{DZ TODO: : add description and/or paper ref}"
+        "doc": "?"
     },
     {
         "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
     },
     {
         "pointer": "/solver/advanced",
@@ -1003,7 +1036,7 @@
         "pointer": "/solver/advanced/cache_size",
         "default": 900000,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Maximum number of elements when the assembly values are cached."
     },
     {
         "pointer": "/solver/advanced/lump_mass_matrix",
@@ -1014,7 +1047,7 @@
     {
         "pointer": "/materials",
         "type": "list",
-        "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho),or Lame constants lambda/mu,  type() {DZ TODO: is id referring to id assigned by selection? what is type? How do E/nu and lambda/mu interact Add arbitrary elasticity tensor as an option}"
+        "doc": "Material Parameters lists including id pointing to volume selection, Young's modulus(E), Poisson ratio(nu), Density(rho),or Lame constants lambda/mu,  type()"
     },
     {
         "pointer": "/materials/*",
