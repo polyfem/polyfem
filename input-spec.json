@@ -119,7 +119,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object. {DZ: what is n_refs}"
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
     },
     {
         "pointer": "/geometry/*/mesh",
@@ -425,7 +425,8 @@
     {
         "pointer": "/geometry/*/n_refs",
         "type": "int",
-        "default": 0
+        "default": 0,
+        "doc": "number of uniform refinements"
     },
     {
         "pointer": "/geometry/*/advanced",
@@ -1322,34 +1323,34 @@
             "pressure_boundary",
             "obstacle_displacements"
         ],
-        "doc": "The settings for boundary conditions. {DZ TODO is rhs actually a volume force, so that e.g., non-homogeneous Neumann gets added to it to get a complete rhs, or is it a complete rhs?}"
+        "doc": "The settings for boundary conditions. "
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "float",
-        "doc": "Right-hand side of the system being solved {DZ TODO unclear what this single number means, or more }"
+        "doc": "Right-hand side of the system being solved for scalar-valued pdes"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "string",
-        "doc": "Right hand side of the system being solved {DZ TODO is this a formulat for computing rhs as function of x,y,z?}"
+        "doc": "Right-hand side of the system being solved as a function of x,y,z,t"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "default": "[]",
         "type": "list",
-        "doc": "Right hand side of the system being solved {DZ TODO list of values per ... or list of strings per ... ?}"
+        "doc": "Right-hand side of the system being solved for vector-valued pdes"
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
         "default": 0,
         "type": "float",
-        "doc": "Right hand side of the system being solved"
+        "doc": "Right-hand side of the system being solved, value"
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
         "type": "string",
-        "doc": "Right hand side of the system being solved"
+        "doc": "Right-hand side of the system being solved as a function of x,y,z,t"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary",
@@ -1368,7 +1369,7 @@
         "optional": [
             "dimension"
         ],
-        "doc": "Dirichlet boundary condition. {DZ TODO: rename dimension to enabled_dimensions?}"
+        "doc": "Dirichlet boundary condition."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
@@ -1378,7 +1379,7 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
         "type": "int",
-        "doc": "id of Dirichlet boundary condition"
+        "doc": "id of Dirichlet boundary condition from surface selection"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
@@ -1386,17 +1387,17 @@
         "options": [
             "all"
         ],
-        "doc": "id of Dirichlet boundary condition"
+        "doc": "select all ids"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value",
         "type": "list",
-        "doc": "Values of Dirichlet boundary condition  {DZ TODO these lists are of length 2 or 3?}"
+        "doc": "Values of Dirichlet boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued pdes depending on the dimension"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "string",
-        "doc": "Values of Dirichlet boundary condition for each dimension {DZ TODO: strings = formulas?}"
+        "doc": "Values of Dirichlet boundary condition for each dimension as a function of x,y,z,t"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
@@ -1417,7 +1418,7 @@
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
         "type": "bool",
         "default": true,
-        "doc": ""
+        "doc": "value"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",
@@ -1428,7 +1429,7 @@
     {
         "pointer": "/boundary_conditions/neumann_boundary/*",
         "type": "object",
-        "default": "//TODO",
+        "default": null,
         "optional": [
             "id",
             "value"
@@ -1438,38 +1439,32 @@
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
-        "default": "//TODO",
+        "default": 1,
         "doc": "id of Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value",
         "type": "list",
-        "default": "//TODO",
-        "doc": "Values of Neumann boundary condition for each dimension  {DZ TODO: strings = formulas?}"
+        "default": [],
+        "doc": "Values of Neumann boundary condition for each dimension"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
         "type": "string",
-        "default": "//TODO",
-        "doc": "Values of Neumann boundary condition for each dimension"
+        "default": "",
+        "doc": "Values of Neumann boundary condition for each dimension as function of x,y,z,t"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
         "type": "float",
-        "default": "//TODO",
-        "doc": "Values of Neumann boundary condition for each dimension"
-    },
-    {
-        "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
-        "type": "float",
-        "default": "//TODO",
+        "default": 0,
         "doc": "Values of Neumann boundary condition for each dimension"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
-        "doc": "Dirichlet boundary condition for the pressure variable (Stokes, incompressible elasticity). Defined by a list of (id, value)  pairs as for all other boundary conditions."
+        "doc": "Dirichlet boundary condition for normal * value for vector-valued pdes."
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*",
@@ -1482,43 +1477,27 @@
         "optional": [
             "dimension"
         ],
-        "doc": ""
+        "doc": "pressure BC entry"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/id",
         "type": "int",
-        "doc": "id for th pressure Dirichlet boundary condition"
+        "doc": "id for the pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "list",
-        "doc": "Values of pressure Dirichlet boundary condition for each dimension"
+        "doc": "Values of pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "string",
-        "doc": "Values of  pressure Dirichlet  boundary condition for each dimension"
+        "doc": "Values of pressure Neumann boundary condition as a function of x,y,z,t"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "float",
-        "doc": "Values of pressure Dirichlet boundary condition for each dimension"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
-        "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": ""
+        "doc": "Values of pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",
@@ -1549,7 +1528,7 @@
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
         "type": "string",
-        "doc": "Values of Obstacle displacements for each dimension {DZ TODO: string is a formula?}"
+        "doc": "Values of Obstacle displacements for each dimension as a function of x,y,z,t"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
@@ -1565,25 +1544,37 @@
             "velocity",
             "acceleration"
         ],
-        "doc": "Initial conditions for time-dependent problem, imposed on the main variable, its derivative or second derivtive {DZ TODO: how does it apply to time-dependent Stokes or Navier-Stokes? What about pressure? If these are used for Navier-Stokes need to rename}"
-    },
-    {
-        "pointer": "/initial_conditions/solution",
-        "default": [],
-        "type": "list",
-        "doc": "A list of (id, value) pairs defininng the initial conditions for the main variable values. Ids are set by selection, and values can be floats or strings. {DZ TODO strings = formulas?}"
+        "doc": "Initial conditions for the time-dependent problem, imposed on the main variable, its derivative or second derivative"
     },
     {
         "pointer": "/initial_conditions/solution/*",
-        "default": 0,
-        "type": "float",
-        "doc": "//TODO"
+        "default": null,
+        "type": "object",
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "A list of (id, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
     },
     {
-        "pointer": "/initial_conditions/velocity",
-        "default": [],
+        "pointer": "/initial_conditions/solution/*/id",
+        "type": "int",
+        "doc": "id from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value",
         "type": "list",
-        "doc": "//TODO"
+        "doc": "value of the solution"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value/*",
+        "type": "float",
+        "doc": "value"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value/*",
+        "type": "string",
+        "doc": "as a function of x,y,z,t"
     },
     {
         "pointer": "/initial_conditions/velocity/*",
@@ -1593,41 +1584,35 @@
             "id",
             "value"
         ],
-        "doc": "//TODO"
+        "doc": "A list of (id, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
     },
     {
         "pointer": "/initial_conditions/velocity/*/id",
         "type": "int",
-        "doc": "//TODO"
+        "doc": "id from volume selections"
     },
     {
         "pointer": "/initial_conditions/velocity/*/value",
         "type": "list",
         "min": 2,
         "max": 3,
-        "doc": "//TODO"
-    },
-    {
-        "pointer": "/initial_conditions/velocity/*/value",
-        "type": "float",
-        "doc": "//TODO"
+        "doc": "value od the initial velocity"
     },
     {
         "pointer": "/initial_conditions/velocity/*/value/*",
         "type": "float",
-        "default": 0,
-        "doc": "//TODO"
+        "doc": "value"
     },
     {
         "pointer": "/initial_conditions/velocity/*/value/*",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "value as a function of x,y,z,t"
     },
     {
         "pointer": "/initial_conditions/acceleration",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "initial acceleration"
     },
     {
         "pointer": "/initial_conditions/acceleration/*",
@@ -1637,35 +1622,30 @@
             "id",
             "value"
         ],
-        "doc": "//TODO"
+        "doc": "entries"
     },
     {
         "pointer": "/initial_conditions/acceleration/*/id",
         "type": "int",
-        "doc": "//TODO"
+        "doc": "id from volume selections"
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value",
         "type": "list",
         "min": 2,
         "max": 3,
-        "doc": "//TODO"
-    },
-    {
-        "pointer": "/initial_conditions/acceleration/*/value",
-        "type": "float",
-        "doc": "//TODO"
+        "doc": "value"
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value/*",
         "type": "float",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "value"
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value/*",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "value as a function of x,y,z,t"
     },
     {
         "pointer": "/output",
@@ -1678,13 +1658,13 @@
             "advanced",
             "reference"
         ],
-        "doc": "//TODO"
+        "doc": "output settings"
     },
     {
         "pointer": "/output/json",
         "default": "",
         "type": "string",
-        "doc": "File name for json output {DZ TODO: elaborate - does this write out everything defined in this file?}"
+        "doc": "File name for json output statistics on time/error/etc."
     },
     {
         "pointer": "/output/paraview",
@@ -1700,7 +1680,7 @@
             "wireframe",
             "options"
         ],
-        "doc": "Output in paraview format {DZ TODO: not sure what exactly all of these are so need to add descriptions below}"
+        "doc": "Output in paraview format"
     },
     {
         "pointer": "/output/paraview/file_name",
@@ -1712,37 +1692,37 @@
         "pointer": "/output/paraview/vismesh_rel_area",
         "default": 1e-05,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "relative area for the upsampled visualisation mesh"
     },
     {
         "pointer": "/output/paraview/skip_frame",
         "default": 1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "export every skip_frame-th frames for time dependent simulations"
     },
     {
         "pointer": "/output/paraview/high_order_mesh",
         "default": true,
         "type": "bool",
-        "doc": "{DZ TODO why is this bool, rather than eg mesh order?}"
+        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-odrer solutions."
     },
     {
         "pointer": "/output/paraview/volume",
         "default": true,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Export volumetric mesh"
     },
     {
         "pointer": "/output/paraview/surface",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Export surface mesh (in 2d polygon)"
     },
     {
         "pointer": "/output/paraview/wireframe",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Export the wireframe of the mesh"
     },
     {
         "pointer": "/output/paraview/options",
@@ -1756,43 +1736,43 @@
             "velocity",
             "acceleration"
         ],
-        "doc": "//TODO"
+        "doc": "Optional fields in the output"
     },
     {
         "pointer": "/output/paraview/options/material",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out material values {DZ: per mesh node?}"
+        "doc": "If true, write out material values sampled on the vertices of the mesh"
     },
     {
         "pointer": "/output/paraview/options/body_ids",
         "default": false,
         "type": "bool",
-        "doc": "{DZ TODO: are these selection-set ids? then rename to id}"
+        "doc": "Export volumes ids"
     },
     {
         "pointer": "/output/paraview/options/contact_forces",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out contact forces"
+        "doc": "If true, write out contact forces for surface"
     },
     {
         "pointer": "/output/paraview/options/friction_forces",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out friction forces"
+        "doc": "If true, write out friction forces for surface"
     },
     {
         "pointer": "/output/paraview/options/velocity",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out velocities {DZ TODO: for Navier-Stokes, what does this do?}"
+        "doc": "If true, write out velocities"
     },
     {
         "pointer": "/output/paraview/options/acceleration",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out accelerations {DZ TODO: for Navier-Sokes, what does this do?}"
+        "doc": "If true, write out accelerations"
     },
     {
         "pointer": "/output/data",
@@ -1817,49 +1797,43 @@
         "pointer": "/output/data/solution",
         "default": "",
         "type": "string",
-        "doc": "Main variable solution {DZ TODO: what about pressure? Also included here? describe format e.g. 2/3 values per line}"
+        "doc": "Main variable solution. Unrolled [xyz, xyz, ...] using PolyFEM ordering. If reorder_nodes exports the solution with the same order the vertices of the input mesh as a #n x d file"
     },
     {
         "pointer": "/output/data/full_mat",
         "default": "",
         "type": "string",
-        "doc": "System matrix {DZ TODO: for nonlinear problems which one}"
+        "doc": "System matrix without boundary conditions. Doesn't work for non-linear problems"
     },
     {
         "pointer": "/output/data/stiffness_mat",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
-    },
-    {
-        "pointer": "/output/data/solution_mat",
-        "default": "",
-        "type": "string",
-        "doc": "{DZ TODO: How is this different from solution?}"
+        "doc": "System matrix with boundary conditions. Doesn't work for non-linear problems"
     },
     {
         "pointer": "/output/data/stress_mat",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Exports stress"
     },
     {
         "pointer": "/output/data/u_path",
         "default": "",
         "type": "string",
-        "doc": "{DZ TODO: is this directory to write out u (displacement) at every step for time depedent? As usual, what about Navier-Stokes?}"
+        "doc": "Writes the complete solution in PolyFEM format, used to restart the sim"
     },
     {
         "pointer": "/output/data/v_path",
         "default": "",
         "type": "string",
-        "doc": "{DZ TODO: See question for u_path}"
+        "doc": "Writes the complete velocity in PolyFEM format, used to restart the sim"
     },
     {
         "pointer": "/output/data/a_path",
         "default": "",
         "type": "string",
-        "doc": "{DZ TODO: See question for u_path}"
+        "doc": "Writes the complete acceleration in PolyFEM format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",
@@ -1871,7 +1845,7 @@
         "pointer": "/output/data/nodes",
         "default": "",
         "type": "string",
-        "doc": "{DZ TODO: not sure what is written out here}"
+        "doc": "Writes the FEM nodes"
     },
     {
         "pointer": "/output/data/advanced",
@@ -1880,13 +1854,13 @@
         "optional": [
             "reorder_nodes"
         ],
-        "doc": "//TODO"
+        "doc": "advanced options"
     },
     {
         "pointer": "/output/data/advanced/reorder_nodes",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Reorder nodes accodring to input"
     },
     {
         "pointer": "/output/reference",
@@ -1902,25 +1876,25 @@
         "pointer": "/output/reference/solution",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "reference solution used to compute errors"
     },
     {
         "pointer": "/output/reference/solution/*",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "value as a function of x,y,z,t"
     },
     {
         "pointer": "/output/reference/gradient",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "gradient of the reference solution to compute errors"
     },
     {
         "pointer": "/output/reference/gradient/*",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "value as a function of x,y,z,t"
     },
     {
         "pointer": "/output/advanced",
@@ -1944,61 +1918,61 @@
         "pointer": "/output/advanced/timestep_prefix",
         "default": "step_",
         "type": "string",
-        "doc": "Prefix for output file names  for each time step {DZ TODO: not sure what step_ means here - are files going to be step_N.txt?,  what format for N? } "
+        "doc": "Prefix for output file names for each time step, the final file is step_i.[vtu|vtm] where i is the time index."
     },
     {
         "pointer": "/output/advanced/sol_on_grid",
         "default": -1,
-        "type": "int",
-        "doc": "//TODO"
+        "type": "double",
+        "doc": "exports the solution sampled on a grid, specify the grid spacing"
     },
     {
         "pointer": "/output/advanced/compute_error",
         "default": true,
         "type": "bool",
-        "doc": "{DZ TODO: what determines which error is computed?}"
+        "doc": "Enables the computation of the error. If no reference solution is provided, return the norms of the solution"
     },
     {
         "pointer": "/output/advanced/sol_at_node",
         "default": -1,
         "type": "int",
-        "doc": "Write out solution values at a specific node {DZ TODO: is this correct?}"
+        "doc": "Write out solution values at a specific node. the values will be written in the output json file"
     },
     {
         "pointer": "/output/advanced/vis_boundary_only",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "saves only elements touching the boundaries"
     },
     {
         "pointer": "/output/advanced/curved_mesh_size",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "upsample curved edges to compute mesh size"
     },
     {
         "pointer": "/output/advanced/save_solve_sequence_debug",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "saves AL internal steps, for debugging"
     },
     {
         "pointer": "/output/advanced/save_time_sequence",
         "default": true,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "saves timesteps"
     },
     {
         "pointer": "/output/advanced/save_nl_solve_sequence",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "saves obj after every non-linear iteration, for debugging"
     },
     {
         "pointer": "/output/advanced/spectrum",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "exports the spectrum of the matrix in the output json. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
     },
     {
         "pointer": "/input",
@@ -2007,7 +1981,7 @@
         "optional": [
             "data"
         ],
-        "doc": "//TODO"
+        "doc": "input data"
     },
     {
         "pointer": "/input/data",
@@ -2018,25 +1992,25 @@
             "v_path",
             "a_path"
         ],
-        "doc": "{DZ TODO: same questions as for output; additionally, how is this different from initial conditions}"
+        "doc": "input to restart time dependent sim"
     },
     {
         "pointer": "/input/data/u_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "input solution"
     },
     {
         "pointer": "/input/data/v_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "input velocity"
     },
     {
         "pointer": "/input/data/a_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "input acceleration"
     },
     {
         "pointer": "/preset_problem",
