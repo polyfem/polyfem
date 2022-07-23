@@ -21,6 +21,7 @@ namespace polyfem
 			static int build_bases(
 				const mesh::Mesh2D &mesh,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data);
