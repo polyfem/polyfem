@@ -342,7 +342,7 @@ namespace polyfem
 		// -----------------------------------------------------------------------------
 
 		int PolygonalBasis2d::build_bases(const AssemblerUtils &assembler, const std::string &assembler_name, const int n_samples_per_edge, const Mesh2D &mesh, const int n_bases,
-										  const int quadrature_order, const int integral_constraints, std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
+										  const int quadrature_order, const int mass_quadrature_order, const int integral_constraints, std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
 										  const std::map<int, InterfaceData> &poly_edge_to_data, std::map<int, Eigen::MatrixXd> &mapped_boundary)
 		{
 			assert(!mesh.is_volume());
@@ -405,7 +405,11 @@ namespace polyfem
 				Quadrature tmp_quadrature;
 				poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_quadrature);
 
+				Quadrature tmp_mass_quadrature;
+				poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_mass_quadrature);
+
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
+				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });
 
 				// Compute the weights of the harmonic kernels
 				Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());

@@ -518,6 +518,7 @@
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
+            "mass_quadrature_order",
             "poly_bases",
             "integral_constraints",
             "n_harmonic_samples",
@@ -573,6 +574,12 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
+    },
+    {
+        "pointer": "/space/advanced/mass_quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
     },
     {
         "pointer": "/space/advanced/poly_bases",
