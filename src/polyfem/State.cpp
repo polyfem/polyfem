@@ -11,8 +11,6 @@
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
 
-#include <polyfem/basis/SpectralBasis2d.hpp>
-
 #include <polyfem/basis/SplineBasis2d.hpp>
 #include <polyfem/basis/SplineBasis3d.hpp>
 
@@ -246,11 +244,11 @@ namespace polyfem
 			assert(possible_nodes.size() > 0);
 			if (possible_nodes.size() > 1)
 			{
-// #ifndef NDEBUG
-// 				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
-// 				for (int possible_node : possible_nodes)
-// 					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
-// #endif
+				// #ifndef NDEBUG
+				// 				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+				// 				for (int possible_node : possible_nodes)
+				// 					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
+				// #endif
 
 				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 				assert(e_id < mesh->n_edges());
