@@ -857,26 +857,12 @@ namespace polyfem
 				}
 			}
 
-			if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+			for (int i = 0; i < coeffs.rows(); i++)
 			{
-				for (int i = 0; i < coeffs.rows(); i++)
+				for (int j = 0; j < coeffs.cols(); j++)
 				{
-					for (int j = 0; j < coeffs.cols(); j++)
-					{
-						entries.emplace_back(periodic_reduce_map(i), A.cols() + j, coeffs(i, j));
-						entries.emplace_back(A.rows() + j, periodic_reduce_map(i), coeffs(i, j));
-					}
-				}
-			}
-			else
-			{
-				for (int i = 0; i < coeffs.rows(); i++)
-				{
-					for (int j = 0; j < coeffs.cols(); j++)
-					{
-						entries.emplace_back(i, A.cols() + j, coeffs(i, j));
-						entries.emplace_back(A.rows() + j, i, coeffs(i, j));
-					}
+					entries.emplace_back(i, A.cols() + j, coeffs(i, j));
+					entries.emplace_back(A.rows() + j, i, coeffs(i, j));
 				}
 			}
 
@@ -927,24 +913,12 @@ namespace polyfem
 				}
 			}
 
-			if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
-			{
-				for (int d = 0; d < problem_dim; d++)
-					for (int k = 0; k < coeffs.rows(); k++)
-					{
-						entries.emplace_back(periodic_reduce_map(k), A.cols() + d, coeffs(k, d));
-						entries.emplace_back(A.rows() + d, periodic_reduce_map(k), coeffs(k, d));
-					}
-			}
-			else
-			{
-				for (int d = 0; d < problem_dim; d++)
-					for (int k = 0; k < coeffs.rows(); k++)
-					{
-						entries.emplace_back(k, A.cols() + d, coeffs(k, d));
-						entries.emplace_back(A.rows() + d, k, coeffs(k, d));
-					}
-			}
+			for (int d = 0; d < problem_dim; d++)
+				for (int k = 0; k < coeffs.rows(); k++)
+				{
+					entries.emplace_back(k, A.cols() + d, coeffs(k, d));
+					entries.emplace_back(A.rows() + d, k, coeffs(k, d));
+				}
 
 			StiffnessMatrix A_extended(A.rows() + problem_dim, A.cols() + problem_dim);
 			A_extended.setFromTriplets(entries.begin(), entries.end());
@@ -1091,26 +1065,12 @@ namespace polyfem
 				}
 			}
 
-			if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+			for (int i = 0; i < coeffs.rows(); i++)
 			{
-				for (int i = 0; i < coeffs.rows(); i++)
+				for (int j = 0; j < coeffs.cols(); j++)
 				{
-					for (int j = 0; j < coeffs.cols(); j++)
-					{
-						entries.emplace_back(periodic_reduce_map(i), A.cols() + j, coeffs(i, j));
-						entries.emplace_back(A.rows() + j, periodic_reduce_map(i), coeffs(i, j));
-					}
-				}
-			}
-			else
-			{
-				for (int i = 0; i < coeffs.rows(); i++)
-				{
-					for (int j = 0; j < coeffs.cols(); j++)
-					{
-						entries.emplace_back(i, A.cols() + j, coeffs(i, j));
-						entries.emplace_back(A.rows() + j, i, coeffs(i, j));
-					}
+					entries.emplace_back(i, A.cols() + j, coeffs(i, j));
+					entries.emplace_back(A.rows() + j, i, coeffs(i, j));
 				}
 			}
 
@@ -1156,63 +1116,9 @@ namespace polyfem
 		A = stiffness;
 		Eigen::VectorXd x;
 		b = rhs;
-		auto boundary_nodes_tmp = boundary_nodes;
-
-		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
-		{
-			// new index for boundary_nodes
-			std::vector<int> boundary_nodes_periodic = boundary_nodes;
-			{
-				for (int i = 0; i < boundary_nodes_periodic.size(); i++)
-				{
-					boundary_nodes_periodic[i] = periodic_reduce_map(boundary_nodes_periodic[i]);
-				}
-
-				std::sort(boundary_nodes_periodic.begin(), boundary_nodes_periodic.end());
-				auto it = std::unique(boundary_nodes_periodic.begin(), boundary_nodes_periodic.end());
-				boundary_nodes_periodic.resize(std::distance(boundary_nodes_periodic.begin(), it));
-			}
-
-			std::swap(boundary_nodes_periodic, boundary_nodes_tmp);
-
-			const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
-			
-			auto index_map = [&](int id){
-				if (id < periodic_reduce_map.size())
-					return periodic_reduce_map(id);
-				else
-					return (int)(id + independent_dof - n_bases * problem_dim);
-			};
-
-			StiffnessMatrix A_periodic(index_map(A.rows()), index_map(A.cols()));
-			precond_num = independent_dof;
-			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(A.nonZeros());
-			for (int k = 0; k < A.outerSize(); k++)
-			{
-				for (StiffnessMatrix::InnerIterator it(A,k); it; ++it)
-				{
-					entries.emplace_back(index_map(it.row()), index_map(it.col()), it.value());
-				}
-			}
-			A_periodic.setFromTriplets(entries.begin(),entries.end());
-
-			std::swap(A_periodic, A);
-
-			// rhs under periodic basis
-			Eigen::VectorXd b_periodic;
-			b_periodic.setZero(index_map(b.size()));
-			for (int k = 0; k < b.size(); k++)
-				b_periodic(index_map(k)) += b(k);
-
-			for (int k : boundary_nodes)
-				b_periodic(index_map(k)) = b(k); 
-
-			std::swap(b, b_periodic);
-		}
 		
 		int n_lagrange_multiplier = 0;
-		if (boundary_nodes_tmp.size() == 0)
+		if (boundary_nodes.size() == 0)
 		{
 			if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
 			{
@@ -1235,7 +1141,7 @@ namespace polyfem
 			}
 		}
 		
-		spectrum = dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+		spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 		solver->getInfo(solver_info);
 
 		const auto error = (A * x - b).norm();
@@ -1245,24 +1151,7 @@ namespace polyfem
 			logger().debug("Solver error: {}", error);
 
 		x.conservativeResize(x.size() - n_lagrange_multiplier);
-
-		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
-		{
-			const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
-			
-			auto index_map = [&](int id){
-				if (id < periodic_reduce_map.size())
-					return periodic_reduce_map(id);
-				else
-					return (int)(id + independent_dof - n_bases * problem_dim);
-			};
-
-			sol.setZero(stiffness.rows(), 1);
-			for (int i = 0; i < stiffness.rows(); i++)
-				sol(i) = x(index_map(i));
-		}
-		else
-			sol = x;
+		sol = x;
 
 		if (assembler.is_mixed(formulation()))
 		{

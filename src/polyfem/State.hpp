@@ -168,9 +168,6 @@ namespace polyfem
 		//nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
 
-		//index mapping into periodic dofs
-		Eigen::VectorXi periodic_reduce_map;
-
 		//current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<mesh::Mesh> mesh;
 		//Obstacles used in collisions
@@ -580,6 +577,9 @@ namespace polyfem
 			if (args["space"]["use_p_ref"])
 				return false;
 
+			if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+				return false;
+
 			if (mesh->orders().size() <= 0)
 			{
 				if (args["space"]["discr_order"] == 1)
@@ -610,7 +610,10 @@ namespace polyfem
 
 		//homogenization study of unit cell
 		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
 		void homogenize_stokes(Eigen::MatrixXd &K_H);
+		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_permeability = 1e-6);
+		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad, const double solid_permeability = 1e-6);
 
 		bool is_obstacle_vertex(const size_t vi) const
 		{

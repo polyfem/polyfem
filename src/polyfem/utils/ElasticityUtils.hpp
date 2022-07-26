@@ -119,6 +119,8 @@ namespace polyfem
 						   el_id);
 		}
 
+		bool is_mat() const { return rho_.is_mat(); }
+
 	private:
 		void set_rho(const json &rho);
 

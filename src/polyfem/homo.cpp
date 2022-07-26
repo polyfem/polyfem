@@ -37,6 +37,42 @@ bool has_arg(const CLI::App &command_line, const std::string &value)
 	return opt->count() > 0;
 }
 
+bool five_cylinders_fluid(double x, double y)
+{
+	if (x > 0.5)
+		x = 1 - x;
+	if (y > 0.5)
+		y = 1 - y;
+	if (x*x+y*y < 0.1*0.1)
+		return false;
+	x -= 0.5;
+	y -= 0.5;
+	if (x*x+y*y < 0.1*0.1)
+		return false;
+	
+	return true;
+}
+
+bool cross_solid(double x, double y, double z)
+{
+	x -= 0.5;
+	y -= 0.5;
+	z -= 0.5;
+	x = abs(x);
+	y = abs(y);
+	z = abs(z);
+	if (x > y)
+		std::swap(x, y);
+	if (y > z)
+		std::swap(y, z);
+	if (x > y)
+		std::swap(x, y);
+
+	if (y < 0.1)
+		return true;
+	return false;
+}
+
 int main(int argc, char **argv)
 {
 	using namespace std::filesystem;
@@ -78,6 +114,7 @@ int main(int argc, char **argv)
 	bool export_material_params = false;
 	bool save_solve_sequence_debug = false;
 	bool compute_errors = false;
+	bool weighted = false;
 
 	std::string log_file = "";
 	bool is_quiet = false;
@@ -130,6 +167,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--save_solve_sequence_debug", save_solve_sequence_debug, "Save incremental steps");
 	command_line.add_flag("--lump_mass_mat", lump_mass_mat, "Lump the mass matrix");
 	command_line.add_flag("--compute_errors", compute_errors, "Computes the errors");
+	command_line.add_flag("--weighted", weighted, "Weighted homogenization");
 
 	const std::vector<std::string> bc_methods = {"", "sample", "lsq"}; //, "integrate"};
 	command_line.add_option("--bc_method", bc_method, "Method used for boundary conditions")->check(CLI::IsMember(bc_methods));
@@ -468,13 +506,37 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
 
 	Eigen::MatrixXd homogenized_tensor;
-	if (state.formulation() == "LinearElasticity")
-		state.homogenize_linear_elasticity(homogenized_tensor);
-	else if (state.formulation() == "Stokes")
-		state.homogenize_stokes(homogenized_tensor);
+	if (weighted)
+	{
+		Eigen::MatrixXd density_mat(state.bases.size(), 1);
+		Eigen::MatrixXd barycenters;
+		if (state.mesh->is_volume())
+			state.mesh->cell_barycenters(barycenters);
+		else
+			state.mesh->face_barycenters(barycenters);
+		for (int e = 0; e < state.bases.size(); e++)
+		{
+			if (state.formulation() == "LinearElasticity")
+				density_mat(e) = cross_solid(barycenters(e, 0), barycenters(e, 1), barycenters(e, 2));
+			else
+				density_mat(e) = five_cylinders_fluid(barycenters(e, 0), barycenters(e, 1));
+		}
+		state.density.init_multimaterial(density_mat);
+
+		if (state.formulation() == "LinearElasticity")
+			state.homogenize_weighted_linear_elasticity(homogenized_tensor);
+		else if (state.formulation() == "Stokes")
+			state.homogenize_weighted_stokes(homogenized_tensor);
+	}
+	else
+	{
+		if (state.formulation() == "LinearElasticity")
+			state.homogenize_linear_elasticity(homogenized_tensor);
+		else if (state.formulation() == "Stokes")
+			state.homogenize_stokes(homogenized_tensor);
+	}
 
 	std::cout << homogenized_tensor << std::endl;
 	return EXIT_SUCCESS;

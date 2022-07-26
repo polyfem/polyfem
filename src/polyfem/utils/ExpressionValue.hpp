@@ -25,6 +25,7 @@ namespace polyfem
 			void clear();
 
 			bool is_zero() const { return expr_.empty() && fabs(value_) < 1e-10; }
+			bool is_mat() const { if (expr_.empty() && mat_.size() > 0) return true; return false; }
 
 		private:
 			std::function<double(double x, double y, double z, double t)> sfunc_;

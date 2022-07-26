@@ -511,7 +511,8 @@ namespace polyfem
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
 		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
 		{
-			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
+			Eigen::VectorXi periodic_reduce_map;
+			periodic_reduce_map.setConstant(n_bases, 1, -1);
 			bool no_dirichlet = boundary_nodes.size() == 0;
 
 			Eigen::VectorXi dependent_map(n_bases);
@@ -580,22 +581,30 @@ namespace polyfem
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) < 0)
 				{
-					for (int d = 0; d < problem_dim; d++)
-						periodic_reduce_map(i * problem_dim + d) = independent_dof * problem_dim + d;
+					periodic_reduce_map(i) = independent_dof;
 					independent_dof++;
 					dependent_map(i) = i;
 				}
 
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) >= 0)
-					for (int d = 0; d < problem_dim; d++)
-						periodic_reduce_map(i * problem_dim + d) = periodic_reduce_map(dependent_map(i) * problem_dim + d);
-		}
-		else
-		{
-			periodic_reduce_map.setZero(n_bases * problem_dim);
+					periodic_reduce_map(i) = periodic_reduce_map(dependent_map(i));
+
+			for (auto &bs : bases)
+				for (auto &b : bs.bases)
+					for (auto &g : b.global())
+						if (periodic_reduce_map(g.index) != g.index)
+						{
+							g.index = periodic_reduce_map(g.index);
+							g.node = nodes_position.row(g.index);
+						}
+
+			Eigen::MatrixXd new_nodes_position(independent_dof, dim);
 			for (int i = 0; i < periodic_reduce_map.size(); i++)
-				periodic_reduce_map(i) = i;
+				new_nodes_position.row(periodic_reduce_map(i)) = nodes_position.row(i);
+			std::swap(new_nodes_position, nodes_position);
+
+			n_bases = independent_dof;
 		}
 
 		n_flipped = 0;
@@ -675,15 +684,8 @@ namespace polyfem
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Extracting boundary mesh...");
-		build_collision_mesh();
-		if (n_pressure_bases > 0)
-		{
-			extract_boundary_mesh(
-				pressure_bases,
-				boundary_nodes_pos_pressure,
-				boundary_edges_pressure,
-				boundary_triangles_pressure);
-		}
+		if (args["contact"]["enabled"])
+			build_collision_mesh();
 		// const std::string export_surface = args["export"]["surface"];
 		// if (!export_surface.empty())
 		extract_vis_boundary_mesh();
