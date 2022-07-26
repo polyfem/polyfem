@@ -96,16 +96,18 @@ namespace polyfem::mesh
 				assert(mesh->in_ordered_vertices_[2] == 2);
 				assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == meshin.vertices.nb() - 1);
 
-				mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
+				mesh->in_ordered_edges_.resize(0, 0);
+				//TODO
+				// mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
 
-				for (int e = 0; e < (int)meshin.edges.nb(); ++e)
-				{
-					for (int lv = 0; lv < 2; ++lv)
-					{
-						mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
-					}
-				}
-				assert(mesh->in_ordered_edges_.size() > 0);
+				// for (int e = 0; e < (int)meshin.edges.nb(); ++e)
+				// {
+				// 	for (int lv = 0; lv < 2; ++lv)
+				// 	{
+				// 		mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
+				// 	}
+				// }
+				// assert(mesh->in_ordered_edges_.size() > 0);
 
 				mesh->in_ordered_faces_.resize(0, 0);
 
@@ -473,5 +475,35 @@ namespace polyfem::mesh
 		}
 
 		return res;
+	}
+
+	void Mesh::append(const Mesh &mesh)
+	{
+		elements_tag_.insert(elements_tag_.end(), mesh.elements_tag_.begin(), mesh.elements_tag_.end());
+		boundary_ids_.insert(boundary_ids_.end(), mesh.boundary_ids_.begin(), mesh.boundary_ids_.end());
+		body_ids_.insert(body_ids_.end(), mesh.body_ids_.begin(), mesh.body_ids_.end());
+
+		assert(orders_.cols() == mesh.orders_.cols());
+		orders_.resize(orders_.rows() + mesh.orders_.rows(), orders_.cols());
+		orders_.bottomRows(mesh.orders_.rows()) = mesh.orders_;
+
+		is_rational_ = is_rational_ || mesh.is_rational_;
+
+		edge_nodes_.insert(edge_nodes_.end(), mesh.edge_nodes_.begin(), mesh.edge_nodes_.end());
+		face_nodes_.insert(face_nodes_.end(), mesh.face_nodes_.begin(), mesh.face_nodes_.end());
+		cell_nodes_.insert(cell_nodes_.end(), mesh.cell_nodes_.begin(), mesh.cell_nodes_.end());
+		cell_weights_.insert(cell_weights_.end(), mesh.cell_weights_.begin(), mesh.cell_weights_.end());
+
+		assert(in_ordered_vertices_.cols() == mesh.in_ordered_vertices_.cols());
+		in_ordered_vertices_.resize(in_ordered_vertices_.rows() + mesh.in_ordered_vertices_.rows(), in_ordered_vertices_.cols());
+		in_ordered_vertices_.bottomRows(mesh.in_ordered_vertices_.rows()) = mesh.in_ordered_vertices_;
+
+		assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
+		in_ordered_edges_.resize(in_ordered_edges_.rows() + mesh.in_ordered_edges_.rows(), in_ordered_edges_.cols());
+		in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_;
+
+		assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
+		in_ordered_faces_.resize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
+		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_;
 	}
 } // namespace polyfem::mesh

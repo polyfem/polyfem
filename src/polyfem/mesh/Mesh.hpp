@@ -507,6 +507,16 @@ namespace polyfem
 			/// @return matrix of indices one per faces, pointing to the face vertices
 			inline const Eigen::MatrixXi &in_ordered_faces() const { return in_ordered_faces_; }
 
+			/// @brief appends a new mesh to the end of this
+			///
+			/// @param[in] mesh to append
+			virtual void append(const Mesh &mesh);
+
+			/// @brief appends a new mesh to the end of this, utility that takes pointer, calls other one
+			///
+			/// @param[in] mesh pointer to append
+			void append(const std::unique_ptr<Mesh> &mesh) { append(*mesh); }
+
 		protected:
 			/// @brief loads a mesh from the path
 			///

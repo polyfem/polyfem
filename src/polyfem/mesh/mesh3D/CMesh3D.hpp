@@ -118,6 +118,8 @@ namespace polyfem
 			}
 			static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 
+			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
+
 		protected:
 			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &M) override;

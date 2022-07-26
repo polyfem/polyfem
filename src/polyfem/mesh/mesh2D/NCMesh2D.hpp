@@ -294,6 +294,8 @@ namespace polyfem
 
 			void build_index_mapping();
 
+			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
+
 		private:
 			struct ArrayHasher2D
 			{

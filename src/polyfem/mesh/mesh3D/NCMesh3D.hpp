@@ -353,6 +353,8 @@ namespace polyfem
 
 			std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const override;
 
+			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
+
 		private:
 			struct ArrayHasher2D
 			{

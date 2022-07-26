@@ -7,6 +7,7 @@ set(test_sources
 	test_assembler.cpp
 	test_bases.cpp
 	test_matrix.cpp
+  test_cmesh.cpp
   test_ncmesh.cpp
 	test_normal.cpp
 	test_problem.cpp
