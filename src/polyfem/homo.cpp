@@ -37,23 +37,23 @@ bool has_arg(const CLI::App &command_line, const std::string &value)
 	return opt->count() > 0;
 }
 
-bool five_cylinders_fluid(double x, double y)
+double five_cylinders_fluid(double x, double y)
 {
 	if (x > 0.5)
 		x = 1 - x;
 	if (y > 0.5)
 		y = 1 - y;
 	if (x*x+y*y < 0.1*0.1)
-		return false;
+		return 0;
 	x -= 0.5;
 	y -= 0.5;
 	if (x*x+y*y < 0.1*0.1)
-		return false;
+		return 0;
 	
-	return true;
+	return 1;
 }
 
-bool cross_solid(double x, double y, double z)
+double cross_solid(double x, double y, double z)
 {
 	x -= 0.5;
 	y -= 0.5;
@@ -69,8 +69,8 @@ bool cross_solid(double x, double y, double z)
 		std::swap(x, y);
 
 	if (y < 0.1)
-		return true;
-	return false;
+		return 1;
+	return 1e-6;
 }
 
 int main(int argc, char **argv)

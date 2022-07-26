@@ -92,7 +92,7 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
                     Eigen::MatrixXd basis_strain, grad;
                     basis_strain.setZero(dim, dim);
                     grad.setZero(dim, dim);
-                    grad.row(d) = v.grad_t_m;
+                    grad.row(d) = v.grad_t_m.row(q);
                     basis_strain = (grad + grad.transpose()) / 2; 
 
                     for (int k = 0; k < unit_disp_ids.size(); k++)
@@ -257,8 +257,8 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     else
         unit_disp_ids = {{0, 0}, {1, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}};
 
-    Eigen::MatrixXd rhs, unit_disp;
-    unit_disp.setZero(stiffness.rows(), unit_disp_ids.size());
+    Eigen::MatrixXd rhs; //, unit_disp;
+    // unit_disp.setZero(stiffness.rows(), unit_disp_ids.size());
     rhs.setZero(stiffness.rows(), unit_disp_ids.size());
 
     const LameParameters &params = assembler.lame_params();
@@ -275,15 +275,52 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
         unit_strain = (grad + grad.transpose()) / 2;
     }
 
-    for (int p = 0; p < nodes_position.rows(); p++)
+    // for (int p = 0; p < nodes_position.rows(); p++)
+    // {
+    //     for (int k = 0; k < unit_disp_ids.size(); k++)
+    //     {
+    //         unit_disp(p * dim + unit_disp_ids[k].first, k) = nodes_position(p, unit_disp_ids[k].second);
+    //     }
+    // }
+
+    // rhs = stiffness * unit_disp;
+
+    for (int e = 0; e < bases.size(); e++)
     {
-        for (int k = 0; k < unit_disp_ids.size(); k++)
+        ElementAssemblyValues vals;
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+        const Quadrature &quadrature = vals.quadrature;
+
+        for (int q = 0; q < quadrature.weights.size(); q++)
         {
-            unit_disp(p * dim + unit_disp_ids[k].first, k) = nodes_position(p, unit_disp_ids[k].second);
+            double lambda, mu;
+            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+
+            for (const auto &v : vals.basis_values)
+            {
+                for (int d = 0; d < dim; d++)
+                {
+                    Eigen::MatrixXd basis_strain, grad;
+                    basis_strain.setZero(dim, dim);
+                    grad.setZero(dim, dim);
+                    grad.row(d) = v.grad_t_m.row(q);
+                    basis_strain = (grad + grad.transpose()) / 2; 
+
+                    for (int k = 0; k < unit_disp_ids.size(); k++)
+                    {
+                        const auto &unit_strain = unit_strains[k];
+
+                        const double value = quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
+
+                        for (auto g : v.global)
+                            rhs(g.index * dim + d, k) += value * g.val;
+                    }
+                }
+            }
         }
     }
-
-    rhs = stiffness * unit_disp;
 
     // solve elastic problem
     StiffnessMatrix A = stiffness;
@@ -339,69 +376,69 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     
     w.conservativeResize(n_bases * dim, w.cols());
 
-    auto diff = unit_disp - w;
-    for (int id = 0; id < unit_disp_ids.size(); id++)
-    {       
-        sol = diff.col(id);
-        save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", 1.);
-    }
+    // auto diff = unit_disp - w;
+    // for (int id = 0; id < unit_disp_ids.size(); id++)
+    // {       
+    //     sol = diff.col(id);
+    //     save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", 1.);
+    // }
 
     // compute homogenized stiffness
     C_H.setZero(unit_disp_ids.size(), unit_disp_ids.size());
-    for (int i = 0; i < C_H.rows(); i++)
-        for (int j = 0; j < C_H.cols(); j++)
-            C_H(i, j) = diff.col(i).transpose() * stiffness * diff.col(j);
+    // for (int i = 0; i < C_H.rows(); i++)
+    //     for (int j = 0; j < C_H.cols(); j++)
+    //         C_H(i, j) = diff.col(i).transpose() * stiffness * diff.col(j);
     
     RowVectorNd min, max;
     mesh->bounding_box(min, max);
     double volume = 1;
     for (int d = 0; d < min.size(); d++)
         volume *= (max(d) - min(d));
-    // for (int e = 0; e < bases.size(); e++)
-    // {
-    //     ElementAssemblyValues vals;
-    //     // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-    //     ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+    for (int e = 0; e < bases.size(); e++)
+    {
+        ElementAssemblyValues vals;
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
-    //     const Quadrature &quadrature = vals.quadrature;
+        const Quadrature &quadrature = vals.quadrature;
 
-    //     for (int q = 0; q < quadrature.weights.size(); q++)
-    //     {
-    //         double lambda, mu;
-    //         params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+        for (int q = 0; q < quadrature.weights.size(); q++)
+        {
+            double lambda, mu;
+            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
 
-    //         std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
+            std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
 
-    //         for (int id = 0; id < unit_disp_ids.size(); id++)
-    //         {
-    //             Eigen::MatrixXd grad(dim, dim);
-    //             grad.setZero();
-    //             for (const auto &v : vals.basis_values)
-    //                 for (int d = 0; d < dim; d++)
-    //                 {
-    //                     double coeff = 0;
-    //                     for (const auto &g : v.global)
-    //                         coeff += w(g.index * dim + d, id) * g.val;
-    //                     grad.row(d) += v.grad_t_m.row(q) * coeff;
-    //                 }
+            for (int id = 0; id < unit_disp_ids.size(); id++)
+            {
+                Eigen::MatrixXd grad(dim, dim);
+                grad.setZero();
+                for (const auto &v : vals.basis_values)
+                    for (int d = 0; d < dim; d++)
+                    {
+                        double coeff = 0;
+                        for (const auto &g : v.global)
+                            coeff += w(g.index * dim + d, id) * g.val;
+                        grad.row(d) += v.grad_t_m.row(q) * coeff;
+                    }
                 
-    //             react_strains[id] = (grad + grad.transpose()) / 2;
-    //         }
+                react_strains[id] = (grad + grad.transpose()) / 2;
+            }
 
-    //         for (int row_id = 0; row_id < unit_disp_ids.size(); row_id++)
-    //         {
-    //             Eigen::MatrixXd strain_diff_ij = unit_strains[row_id] - react_strains[row_id];
+            for (int row_id = 0; row_id < unit_disp_ids.size(); row_id++)
+            {
+                Eigen::MatrixXd strain_diff_ij = unit_strains[row_id] - react_strains[row_id];
 
-    //             for (int col_id = 0; col_id < unit_disp_ids.size(); col_id++)
-    //             {
-    //                 Eigen::MatrixXd strain_diff_kl = unit_strains[col_id] - react_strains[col_id];
+                for (int col_id = 0; col_id < unit_disp_ids.size(); col_id++)
+                {
+                    Eigen::MatrixXd strain_diff_kl = unit_strains[col_id] - react_strains[col_id];
 
-    //                 const double value = 2 * mu * (strain_diff_ij.array() * strain_diff_kl.array()).sum() + lambda * strain_diff_ij.trace() * strain_diff_kl.trace();
-    //                 C_H(row_id, col_id) += vals.quadrature.weights(q) * vals.det(q) * value;
-    //             }
-    //         }
-    //     }
-    // }
+                    const double value = 2 * mu * (strain_diff_ij.array() * strain_diff_kl.array()).sum() + lambda * strain_diff_ij.trace() * strain_diff_kl.trace();
+                    C_H(row_id, col_id) += vals.quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * value;
+                }
+            }
+        }
+    }
 
     C_H /= volume;
 }
