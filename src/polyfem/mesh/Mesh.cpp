@@ -489,19 +489,23 @@ namespace polyfem::mesh
 
 		is_rational_ = is_rational_ || mesh.is_rational_;
 
+		// Fix me with offset!
 		edge_nodes_.insert(edge_nodes_.end(), mesh.edge_nodes_.begin(), mesh.edge_nodes_.end());
 		face_nodes_.insert(face_nodes_.end(), mesh.face_nodes_.begin(), mesh.face_nodes_.end());
 		cell_nodes_.insert(cell_nodes_.end(), mesh.cell_nodes_.begin(), mesh.cell_nodes_.end());
 		cell_weights_.insert(cell_weights_.end(), mesh.cell_weights_.begin(), mesh.cell_weights_.end());
 
+		// Fix me with offset!
 		assert(in_ordered_vertices_.cols() == mesh.in_ordered_vertices_.cols());
 		in_ordered_vertices_.resize(in_ordered_vertices_.rows() + mesh.in_ordered_vertices_.rows(), in_ordered_vertices_.cols());
 		in_ordered_vertices_.bottomRows(mesh.in_ordered_vertices_.rows()) = mesh.in_ordered_vertices_;
 
+		// Fix me with offset!
 		assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
 		in_ordered_edges_.resize(in_ordered_edges_.rows() + mesh.in_ordered_edges_.rows(), in_ordered_edges_.cols());
 		in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_;
 
+		// Fix me with offset!
 		assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
 		in_ordered_faces_.resize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
 		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_;
