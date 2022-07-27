@@ -501,6 +501,10 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
 
 	auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
+    auto A_tmp = A;
+    {
+        prefactorize(*solver, A_tmp, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+    }
 
     Eigen::MatrixXd w;
     w.setZero(rhs.rows(), rhs.cols());
@@ -510,14 +514,14 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
         rhs.row(b).setZero();
 
     // solve for w: \sum_k w_{ji,kk} - p_{i,j} = -delta_{ji}
-    StiffnessMatrix A_tmp;
     for (int k = 0; k < dim; k++)
     {
         Eigen::VectorXd b = rhs.col(k);
         Eigen::VectorXd x = w.col(k);
-        A_tmp = A;
-        polysolve::dirichlet_solve(*solver, A_tmp, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
-        solver->getInfo(solver_info);
+        dirichlet_solve_prefactorized(*solver, A, b, boundary_nodes, x);
+        // A_tmp = A;
+        // polysolve::dirichlet_solve(*solver, A_tmp, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
+        // solver->getInfo(solver_info);
         w.col(k) = x;
     }
 
@@ -660,19 +664,24 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_
 
 	auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
+    auto A_tmp = A;
+    {
+        prefactorize(*solver, A_tmp, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+    }
 
     Eigen::MatrixXd w;
     w.setZero(rhs.rows(), rhs.cols());
 
     // solve for w: \sum_k w_{ji,kk} - p_{i,j} = -delta_{ji}
-    StiffnessMatrix A_tmp;
+    // StiffnessMatrix A_tmp;
     for (int k = 0; k < dim; k++)
     {
         Eigen::VectorXd b = rhs.col(k);
         Eigen::VectorXd x = w.col(k);
-        A_tmp = A;
-        polysolve::dirichlet_solve(*solver, A_tmp, b, std::vector<int>(), x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
-        solver->getInfo(solver_info);
+        dirichlet_solve_prefactorized(*solver, A, b, boundary_nodes, x);
+        // A_tmp = A;
+        // polysolve::dirichlet_solve(*solver, A_tmp, b, std::vector<int>(), x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
+        // solver->getInfo(solver_info);
         w.col(k) = x;
     }
 
@@ -688,7 +697,7 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_
 
     for (int id = 0; id < w.cols(); id++)
     {       
-        sol = w.block(0, id, n_bases * dim, 1);
+        sol = w.col(id);
         pressure.setZero(n_pressure_bases, 1);
         save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
     }
@@ -739,6 +748,8 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_
     K_H /= volume;
 }
 
+
+
 void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad, const double solid_permeability)
 {
     if (!mesh)
@@ -785,8 +796,8 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
         AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / solid_permeability, mixed_stiffness, pressure_stiffness, stiffness);
     }
     
-    Eigen::MatrixXd rhs(stiffness.rows(), dim);
-    rhs.setZero();
+    Eigen::MatrixXd rhs;
+    rhs.setZero(stiffness.rows(), dim);
     
     // assemble unit test force rhs
     for (int e = 0; e < bases.size(); e++)
@@ -809,29 +820,33 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
     }
     
     // solve fluid problem
-    StiffnessMatrix A = stiffness;
     const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
     int precond_num = problem_dim * n_bases;
 
 	auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
+    auto A = stiffness;
+    {
+        prefactorize(*solver, A, std::vector<int>(), precond_num, args["output"]["data"]["stiffness_mat"]);
+    }
 
     Eigen::MatrixXd w;
     w.setZero(rhs.rows(), rhs.cols());
 
     // solve for w: \sum_k w_{ji,kk} - p_{i,j} = -delta_{ji}
-    StiffnessMatrix A_tmp;
+    // StiffnessMatrix A_tmp;
     for (int k = 0; k < dim; k++)
     {
         Eigen::VectorXd b = rhs.col(k);
         Eigen::VectorXd x = w.col(k);
-        A_tmp = A;
-        polysolve::dirichlet_solve(*solver, A_tmp, b, std::vector<int>(), x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
-        solver->getInfo(solver_info);
+        dirichlet_solve_prefactorized(*solver, stiffness, b, std::vector<int>(), x);
+        // A_tmp = A;
+        // polysolve::dirichlet_solve(*solver, A_tmp, b, std::vector<int>(), x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
+        // solver->getInfo(solver_info);
         w.col(k) = x;
     }
 
-    auto res = A_tmp * w - rhs;
+    auto res = A * w - rhs;
 
     const auto error = res.norm() / rhs.norm();
     if (error > 1e-4)
@@ -843,7 +858,7 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
 
     for (int id = 0; id < w.cols(); id++)
     {       
-        sol = w.block(0, id, n_bases * dim, 1);
+        sol = w.col(id);
         pressure.setZero(n_pressure_bases, 1);
         save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
     }
@@ -860,15 +875,86 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
     auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
     for (int i = 0; i < dim; i++)
     {
-        Eigen::VectorXd tmp = velocity_block * w.block(0, i, n_bases * dim, 1);
+        Eigen::VectorXd tmp = velocity_block * w.col(i);
         for (int j = 0; j < dim; j++)
-            K_H(i, j) = (tmp.array() * w.block(0, j, n_bases * dim, 1).array()).sum();
+            K_H(i, j) = (tmp.array() * w.col(j).array()).sum();
     }
 
     K_H /= volume;
 
-    // J = sum(K_ii)
+    // J = avg(K_ii), assemble -grad_w J
+    rhs.setZero(stiffness.rows(), dim);
+    for (int d = 0; d < dim; d++)
+    {
+        rhs.block(0, d, w.rows(), 1) = -2 * velocity_block * w.col(d);
+    }
+
+    // adjoint solve
+    Eigen::MatrixXd adjoint;
+    adjoint.setZero(rhs.rows(), dim);
+
+    for (int k = 0; k < dim; k++)
+    {
+        Eigen::VectorXd b = rhs.col(k);
+        Eigen::VectorXd x = adjoint.col(k);
+        dirichlet_solve_prefactorized(*solver, stiffness, b, std::vector<int>(), x);
+        // A_tmp = velocity_block;
+        // polysolve::dirichlet_solve(*adjoint_solver, A_tmp, b, std::vector<int>(), x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, use_avg_pressure);
+        // solver->getInfo(solver_info);
+        adjoint.col(k) = x;
+    }
+
+    auto adjoint_res = A * adjoint - rhs;
+
+    const auto adjoint_error = res.norm() / rhs.norm();
+    if (error > 1e-4)
+        logger().error("Solver error: {}", error);
+    else
+        logger().debug("Solver error: {}", error);
+
+    adjoint.conservativeResize(n_bases * dim, dim);
     
+    // compute grad using adjoint
+    grad.setZero(bases.size(), 1);
+    for (int k = 0; k < dim; k++)
+    {
+        for (int e = 0; e < bases.size(); e++)
+        {
+            ElementAssemblyValues vals;
+            // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+            ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+            const Quadrature &quadrature = vals.quadrature;
+
+            Eigen::MatrixXd grad_adjoint, grad_sol;
+            Eigen::MatrixXd val_adjoint, val_sol;
+
+            for (int q = 0; q < quadrature.weights.size(); q++)
+            {
+                grad_adjoint.setZero(dim, dim);
+                grad_sol.setZero(dim, dim);
+                val_adjoint.setZero(dim, 1);
+                val_sol.setZero(dim, 1);
+
+                for (const auto &v : vals.basis_values)
+                    for (int ii = 0; ii < v.global.size(); ii++)
+                        for (int d = 0; d < dim; d++)
+                        {
+                            grad_sol.row(d) += v.grad_t_m.row(q) * v.global[ii].val * w(v.global[ii].index * dim + d, k);
+                            grad_adjoint.row(d) += v.grad_t_m.row(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k);
+
+                            val_sol(d) += v.val(q) * v.global[ii].val * w(v.global[ii].index * dim + d, k);
+                            val_adjoint(d) += v.val(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k);
+                        }
+                
+                const double value1 = (grad_sol.array() * grad_adjoint.array()).sum() - (val_sol.array() * val_adjoint.array()).sum() / solid_permeability;
+                const double value2 = (grad_sol.array() * grad_sol.array()).sum() - (val_sol.array() * val_sol.array()).sum() / solid_permeability;
+                grad(e) += (value1 + value2) * quadrature.weights(q) * vals.det(q);
+            }
+        }
+    }
+
+    grad /= volume * dim;
 }
 
 }

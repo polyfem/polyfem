@@ -521,14 +521,17 @@ int main(int argc, char **argv)
 			if (state.formulation() == "LinearElasticity")
 				density_mat(e) = cross_solid(barycenters(e, 0), barycenters(e, 1), barycenters(e, 2));
 			else
-				density_mat(e) = five_cylinders_fluid(barycenters(e, 0), barycenters(e, 1));
+				if (state.mesh->is_volume())
+					density_mat(e) = five_cylinders_fluid(barycenters(e, 0), barycenters(e, 1));
+				else
+					density_mat(e) = five_cylinders_fluid(barycenters(e, 0) + 0.5, barycenters(e, 1) + 0.5);
 		}
 		state.density.init_multimaterial(density_mat);
 
 		if (state.formulation() == "LinearElasticity")
 			state.homogenize_weighted_linear_elasticity(homogenized_tensor);
 		else if (state.formulation() == "Stokes")
-			state.homogenize_weighted_stokes(homogenized_tensor);
+			state.homogenize_weighted_stokes(homogenized_tensor, state.args["materials"]["solid_permeability"]);
 	}
 	else
 	{
