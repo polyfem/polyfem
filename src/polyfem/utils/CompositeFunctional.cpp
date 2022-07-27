@@ -26,9 +26,39 @@ namespace polyfem
 				return false;
 		}
 
-		bool is_not_interested(const std::set<int> &interested_ids, const json &params)
+		bool is_interested(const std::set<int> &interested_body_ids, const std::set<int> &interested_boundary_ids, const int body_id, const std::vector<int> &boundary_id, Eigen::MatrixXd &boundary_points)
 		{
-			return interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0;
+			boundary_points = Eigen::MatrixXd::Identity(boundary_id.size(), boundary_id.size());
+			if (interested_body_ids.size() != 0 && interested_boundary_ids.size() != 0)
+			{
+				logger().error("Cannot specify both interested body and boundaries!");
+				return false;
+			}
+			else if (interested_body_ids.size() != 0)
+			{
+				return interested_body_ids.count(body_id) != 0;
+			}
+			else if (interested_boundary_ids.size() != 0)
+			{
+				bool is_interested_boundary = false;
+				for (int i = 0; i < boundary_id.size(); ++i)
+				{
+					if (interested_boundary_ids.count(boundary_id[i]) == 0)
+						boundary_points(i, i) = 0.;
+					else
+						is_interested_boundary |= true;
+				}
+
+				return is_interested_boundary;
+			}
+			else
+				// If nothing is specified as interesting, optimize everything.
+				return true;
+		}
+
+		bool is_not_interested(const std::set<int> &interested_body_ids, const std::set<int> &interested_boundary_ids, const json &params, Eigen::MatrixXd &boundary_points)
+		{
+			return !is_interested(interested_body_ids, interested_boundary_ids, params["body_id"].get<int>(), params.contains("boundary_ids") ? params["boundary_ids"].get<std::vector<int>>() : std::vector<int>(), boundary_points);
 		}
 	} // namespace
 
@@ -39,6 +69,8 @@ namespace polyfem
 			func = std::make_shared<TargetYFunctional>();
 		else if (functional_name_ == "Trajectory")
 			func = std::make_shared<TrajectoryFunctional>();
+		else if (functional_name_ == "SDFTrajectory")
+			func = std::make_shared<SDFTrajectoryFunctional>();
 		else if (functional_name_ == "Volume")
 			func = std::make_shared<VolumeFunctional>();
 		else if (functional_name_ == "Height")
@@ -79,7 +111,7 @@ namespace polyfem
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			for (int q = 0; q < u.rows(); q++)
 			{
@@ -89,7 +121,7 @@ namespace polyfem
 
 		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			for (int q = 0; q < u.rows(); q++)
 			{
@@ -102,7 +134,7 @@ namespace polyfem
 
 		j.set_dj_dx([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			for (int q = 0; q < u.rows(); q++)
 			{
@@ -132,7 +164,7 @@ namespace polyfem
 		return grad / 2 / energy(state);
 	}
 
-	void TrajectoryFunctional::set_reference(State *state_ref, const State &state)
+	void TrajectoryFunctional::set_reference(State *state_ref, const State &state, const std::set<int> &reference_cached_body_ids)
 	{
 		state_ref_ = state_ref;
 
@@ -144,7 +176,7 @@ namespace polyfem
 		for (int e = 0; e < ref_n_bases; ++e)
 		{
 			int body_id = state_ref_->mesh->get_body_id(e);
-			if (interested_ids.size() > 0 && interested_ids.count(body_id) == 0)
+			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
 				continue;
 			if (ref_interested_body_id_to_e.find(body_id) != ref_interested_body_id_to_e.end())
 				ref_interested_body_id_to_e[body_id].push_back(e);
@@ -158,7 +190,7 @@ namespace polyfem
 		for (int e = 0; e < n_bases; ++e)
 		{
 			int body_id = state.mesh->get_body_id(e);
-			if (interested_ids.size() > 0 && interested_ids.count(body_id) == 0)
+			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
 				continue;
 			if (interested_body_id_to_e.find(body_id) != interested_body_id_to_e.end())
 				interested_body_id_to_e[body_id].push_back(e);
@@ -168,7 +200,9 @@ namespace polyfem
 		}
 
 		if (count != ref_count)
-			logger().error("Number of interested vertices in the reference and optimization examples do not match!");
+			logger().error("Number of interested elements in the reference and optimization examples do not match!");
+		else
+			logger().trace("Found {} matching elements.", count);
 
 		for (const auto &kv : interested_body_id_to_e)
 		{
@@ -187,7 +221,8 @@ namespace polyfem
 		{
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				Eigen::MatrixXd boundary_points;
+				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
@@ -204,11 +239,13 @@ namespace polyfem
 				{
 					val(q) = pow(((u_ref.row(q) + pts_ref.row(q)) - (u.row(q) + pts.row(q))).squaredNorm(), p / 2.);
 				}
+				val = boundary_points * val;
 			};
 
 			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				Eigen::MatrixXd boundary_points;
+				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
@@ -226,11 +263,13 @@ namespace polyfem
 					auto x = (u.row(q) + pts.row(q)) - (u_ref.row(q) + pts_ref.row(q));
 					val.row(q) = (p * pow(x.squaredNorm(), p / 2. - 1)) * x;
 				}
+				val = boundary_points * val;
 			};
 
 			auto djdx_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				Eigen::MatrixXd boundary_points;
+				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
@@ -250,6 +289,7 @@ namespace polyfem
 					vector2matrix(grad_u_ref.row(q), grad_u_ref_q);
 					val.row(q) = (p * pow(x.squaredNorm(), p / 2. - 1)) * x.transpose() * grad_u_ref_q;
 				}
+				val = boundary_points * val;
 			};
 
 			j.set_j(j_func);
@@ -270,7 +310,7 @@ namespace polyfem
 
 	double SDFTrajectoryFunctional::energy(State &state)
 	{
-		IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "");
+		IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "shape");
 
 		return state.J(j);
 	}
@@ -292,7 +332,7 @@ namespace polyfem
 			{
 				Eigen::MatrixXd val;
 				SplineParam::eval(control_points_.block(i, 0, 2, dim), tangents_.block(i, 0, 2, dim), t(i, 0), val);
-				fun.block(dim * i, 0, dim, 1) = val - point;
+				fun.block(dim * i, 0, dim, 1) = val.transpose() - point;
 			}
 			return fun;
 		};
@@ -302,7 +342,7 @@ namespace polyfem
 			{
 				Eigen::MatrixXd val;
 				SplineParam::deriv(control_points_.block(i, 0, 2, dim), tangents_.block(i, 0, 2, dim), t(i, 0), val);
-				jac.block(dim * i, i, dim, 1) = val;
+				jac.block(dim * i, i, dim, 1) = val.transpose();
 			}
 			return jac;
 		};
@@ -323,9 +363,9 @@ namespace polyfem
 			if ((t(i, 0) < 0) || (t(i, 0) > 1))
 				continue;
 			double curr_distance = distances.block(dim * i, 0, dim, 1).norm();
-			if (distance < min_distance)
+			if (curr_distance < min_distance)
 			{
-				min_distance = distance;
+				min_distance = curr_distance;
 				found = true;
 			}
 		}
@@ -342,55 +382,65 @@ namespace polyfem
 		int num_points = dim == 2 ? 4 : 8;
 		Eigen::MatrixXd A(num_points, num_points);
 		Eigen::VectorXd b(num_points);
-		for (int i = 0; i < dim; ++i)
+		if (dim == 2)
 		{
-			for (int j = 0; j < 2; ++j)
+			Eigen::MatrixXi bin(dim, 1);
+			for (int k = 0; k < dim; ++k)
+				bin(k, 0) = (int)std::floor(point(k) / delta_(k));
+			Eigen::MatrixXd keys(4, dim);
+			keys << bin(0), bin(1),
+				bin(0) + 1, bin(1),
+				bin(0), bin(1) + 1,
+				bin(0) + 1, bin(1) + 1;
+			std::vector<std::string> keys_string;
+			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1)));
+			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1)));
+			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1) + 1));
+			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1) + 1));
+			for (int i = 0; i < 4; ++i)
 			{
-				Eigen::MatrixXd key;
-				std::string key_string = "";
-				Eigen::MatrixXd clamped_point = point;
-				for (int k = 0; k < dim; ++k)
-				{
-					key(k, 0) = std::floor(point(k, 0) / delta(k, 0)) + k == i ? j : 0;
-					key_string += std::to_string(key(k, 0)) + ",";
-				}
-				clamped_point = key.cwiseProduct(delta);
-				if (implicit_function.count(key_string) == 0)
-				{
-					double distance;
-					compute_distance(clamped_point, distance);
-					implicit_function[key_string] = distance;
-				}
-
-				if (dim == 2)
-					A.row(2 * i + j) << 1., clamped_point(0, 0), clamped_point(1, 0), clamped_point(0, 0) * clamped_point(1, 0);
-				else
-					A.row(2 * i + j) << 1., clamped_point(0, 0), clamped_point(1, 0), clamped_point(2, 0), clamped_point(0, 0) * clamped_point(1, 0), clamped_point(1, 0) * clamped_point(2, 0), clamped_point(0, 0) * clamped_point(2, 0), clamped_point(0, 0) * clamped_point(1, 0) * clamped_point(2, 0);
-				b(2 * i + j) = implicit_function[key_string];
+				Eigen::MatrixXd clamped_point = keys.row(i).cwiseProduct(delta_).transpose();
+				if (implicit_function.count(keys_string[i]) == 0)
+					compute_distance(clamped_point, implicit_function[keys_string[i]]);
+				A.row(i) << 1., clamped_point(0), clamped_point(1), clamped_point(0) * clamped_point(1);
+				b(i) = implicit_function[keys_string[i]];
 			}
+		}
+		else
+		{
+			logger().error("Don't yet support 3D SDF.");
 		}
 
 		Eigen::VectorXd weights = A.householderQr().solve(b);
 		if (dim == 2)
 		{
-			val = weights(0) + weights(1) * point(0, 0) + weights(2) * point(1, 0) + weights(3) * point(0, 0) * point(1, 0);
-			grad << weights(1) + weights(3) * point(1, 0), weights(2) + weights(3) * point(0, 0);
+			val = weights(0) + weights(1) * point(0) + weights(2) * point(1) + weights(3) * point(0) * point(1);
+			grad << weights(1) + weights(3) * point(1), weights(2) + weights(3) * point(0);
 		}
 		else
 		{
-			val = weights(0) + weights(1) * point(0, 0) + weights(2) * point(1, 0) + weights(3) * point(2, 0) + weights(4) * point(0, 0) * point(1, 0) + weights(5) * point(1, 0) * point(2, 0) + weights(6) * point(0, 0) * point(2, 0) + weights(7) * point(0, 0) * point(1, 0) * point(2, 0);
+			val = weights(0) + weights(1) * point(0) + weights(2) * point(1) + weights(3) * point(2) + weights(4) * point(0) * point(1) + weights(5) * point(1) * point(2) + weights(6) * point(0) * point(2) + weights(7) * point(0) * point(1) * point(2);
 			logger().error("Don't yet support trilinear interpolation.");
 		}
+
+		for (int i = 0; i < dim; ++i)
+			if (std::isnan(grad(i)))
+			{
+				logger().error("Nan found in gradient computation.");
+				break;
+			}
 	}
 
 	IntegrableFunctional SDFTrajectoryFunctional::get_trajectory_functional(const std::string &derivative_type)
 	{
+		assert(transient_integral_type == "final");
 		IntegrableFunctional j(surface_integral);
 		j.set_transient_integral_type(transient_integral_type);
 		{
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				Eigen::MatrixXd boundary_points;
+				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
 					return;
 
 				for (int q = 0; q < u.rows(); q++)
@@ -400,11 +450,13 @@ namespace polyfem
 					evaluate(u.row(q) + pts.row(q), distance, unused_grad);
 					val(q) = pow(distance, p);
 				}
+				val = boundary_points * val;
 			};
 
 			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				Eigen::MatrixXd boundary_points;
+				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
 					return;
 
 				for (int q = 0; q < u.rows(); q++)
@@ -412,8 +464,9 @@ namespace polyfem
 					double distance;
 					Eigen::MatrixXd grad;
 					evaluate(u.row(q) + pts.row(q), distance, grad);
-					val.row(q) = p * pow(distance, p - 1) * grad;
+					val.row(q) = p * pow(distance, p - 1) * grad.transpose();
 				}
+				val = boundary_points * val;
 			};
 
 			j.set_j(j_func);
@@ -520,7 +573,7 @@ namespace polyfem
 		IntegrableFunctional j(surface_integral);
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				val.setZero(u.rows(), 1);
 			else
 				val.setOnes(u.rows(), 1);
@@ -548,7 +601,7 @@ namespace polyfem
 		IntegrableFunctional j(surface_integral);
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				val.setZero(u.rows(), 1);
 			else
 				val = -(u.col(1) + pts.col(1));
@@ -556,14 +609,14 @@ namespace polyfem
 
 		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			val.col(1).array() = -1;
 		});
 
 		j.set_dj_dx([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(pts.rows(), pts.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			val.col(1).array() = -1;
 		});
@@ -595,7 +648,7 @@ namespace polyfem
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([formulation, power, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
@@ -619,7 +672,7 @@ namespace polyfem
 
 		j.set_dj_dgradu([formulation, power, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			const int dim = sqrt(grad_u.cols());
 			for (int q = 0; q < grad_u.rows(); q++)
@@ -722,7 +775,7 @@ namespace polyfem
 		IntegrableFunctional j;
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				val.setZero(u.rows(), 1);
 			else
 				val = u.col(d) + pts.col(d);
@@ -730,14 +783,14 @@ namespace polyfem
 
 		j.set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			val.col(d).setOnes();
 		});
 
 		j.set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(pts.rows(), pts.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			val.col(d).setOnes();
 		});
@@ -749,7 +802,7 @@ namespace polyfem
 		IntegrableFunctional j;
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				val.setZero(u.rows(), 1);
 			else
 				val.setOnes(u.rows(), 1);
@@ -768,7 +821,7 @@ namespace polyfem
 		{
 			js[d].set_transient_integral_type("uniform");
 			js[d].set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 					val.setZero(u.rows(), 1);
 				else
 					val = u.col(d) + pts.col(d);
@@ -776,14 +829,14 @@ namespace polyfem
 
 			js[d].set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 					return;
 				val.col(d).setOnes();
 			});
 
 			js[d].set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(pts.rows(), pts.cols());
-				if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 					return;
 				val.col(d).setOnes();
 			});
@@ -801,7 +854,7 @@ namespace polyfem
 		IntegrableFunctional j_vol;
 		j_vol.set_transient_integral_type("final");
 		j_vol.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				val.setZero(u.rows(), 1);
 			else
 				val.setOnes(u.rows(), 1);
@@ -888,7 +941,7 @@ namespace polyfem
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			else
 				val = u.col(d) + pts.col(d);
@@ -896,14 +949,14 @@ namespace polyfem
 
 		j.set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			val.col(d).setOnes();
 		});
 
 		j.set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(pts.rows(), pts.cols());
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				return;
 			val.col(d).setOnes();
 		});
@@ -915,7 +968,7 @@ namespace polyfem
 		IntegrableFunctional j;
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_ids.size() > 0 && interested_ids.count(params["body_id"].get<int>()) == 0)
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 				val.setZero(u.rows(), 1);
 			else
 				val.setOnes(u.rows(), 1);

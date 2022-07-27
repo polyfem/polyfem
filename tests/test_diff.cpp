@@ -729,7 +729,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	state.solve();
 
 	TrajectoryFunctional func;
-	func.set_reference(&state_reference, state);
+	func.set_reference(&state_reference, state, {1});
 	func.set_surface_integral();
 
 	double functional_val = func.energy(state);
@@ -967,7 +967,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	state.solve();
 
 	TrajectoryFunctional func;
-	func.set_reference(&state_reference, state);
+	func.set_reference(&state_reference, state, {1});
 	func.set_surface_integral();
 	func.set_transient_integral_type("uniform");
 
@@ -1085,7 +1085,7 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 
 	TrajectoryFunctional func;
 	func.set_transient_integral_type("final");
-	func.set_reference(&state_reference, state);
+	func.set_reference(&state_reference, state, {1});
 	func.set_volume_integral();
 
 	double functional_val = func.energy(state);
@@ -1198,7 +1198,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 	state.solve();
 
 	TrajectoryFunctional func;
-	func.set_reference(&state_reference, state);
+	func.set_reference(&state_reference, state, {1});
 	func.set_volume_integral();
 
 	double functional_val = func.energy(state);
@@ -1435,7 +1435,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	}
 
 	CenterTrajectoryFunctional func;
-	func.set_interested_ids(interested_ids);
+	func.set_interested_ids(interested_ids, {});
 	std::vector<Eigen::VectorXd> barycenters;
 	func.get_barycenter_series(state_reference, barycenters);
 	func.set_center_series(barycenters);
@@ -1568,7 +1568,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	}
 
 	CenterTrajectoryFunctional func_aux;
-	func_aux.set_interested_ids(interested_ids);
+	func_aux.set_interested_ids(interested_ids, {});
 	std::vector<Eigen::VectorXd> barycenters;
 	func_aux.get_barycenter_series(state_reference, barycenters);
 

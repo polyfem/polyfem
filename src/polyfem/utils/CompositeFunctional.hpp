@@ -17,8 +17,13 @@ namespace polyfem
 		void set_surface_integral() { surface_integral = true; }
 		void set_volume_integral() { surface_integral = false; }
 		void set_transient_integral_type(const std::string &transient_integral_type_) { transient_integral_type = transient_integral_type_; }
-		void set_interested_ids(const std::set<int> &interested_ids_) { interested_ids = interested_ids_; }
-		const std::set<int> &get_interested_ids() { return interested_ids; }
+		void set_interested_ids(const std::set<int> &interested_body_ids, const std::set<int> &interested_boundary_ids)
+		{
+			interested_body_ids_ = interested_body_ids;
+			interested_boundary_ids_ = interested_boundary_ids;
+		}
+		const std::set<int> &get_interested_body_ids() { return interested_body_ids_; }
+		const std::set<int> &get_interested_boundary_ids() { return interested_boundary_ids_; }
 
 		virtual double energy(State &state) = 0;
 		virtual Eigen::VectorXd gradient(State &state, const std::string &type) = 0;
@@ -28,7 +33,8 @@ namespace polyfem
 		int p = 2;             // only used in stress functional
 		bool surface_integral; // only can be true for trajectory functional
 		std::string transient_integral_type = "simpson";
-		std::set<int> interested_ids;
+		std::set<int> interested_body_ids_;
+		std::set<int> interested_boundary_ids_;
 	};
 
 	class TargetYFunctional : public CompositeFunctional
@@ -70,7 +76,7 @@ namespace polyfem
 		double energy(State &state) override;
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;
 
-		void set_reference(State *state_ref, const State &state);
+		void set_reference(State *state_ref, const State &state, const std::set<int> &reference_cached_body_ids);
 
 	private:
 		State *state_ref_;
@@ -86,19 +92,18 @@ namespace polyfem
 		{
 			functional_name = "SDFTrajectory";
 			surface_integral = true;
-			delta.setZero(2, 1);
-			delta << 0.01, 0.01;
-			dim = 2;
 		}
 		~SDFTrajectoryFunctional() = default;
 
 		double energy(State &state) override;
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;
 
-		void set_spline_target(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &tangents)
+		void set_spline_target(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &tangents, const Eigen::MatrixXd &delta)
 		{
 			control_points_ = control_points;
 			tangents_ = tangents;
+			dim = control_points.cols();
+			delta_ = delta;
 		}
 
 	private:
@@ -108,8 +113,8 @@ namespace polyfem
 		void compute_distance(const Eigen::MatrixXd &point, double &distance);
 
 		int dim;
-		double t;
-		Eigen::MatrixXd delta;
+		double t_cached;
+		Eigen::MatrixXd delta_;
 		std::unordered_map<std::string, double> implicit_function;
 
 		Eigen::MatrixXd control_points_;

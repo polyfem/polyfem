@@ -805,9 +805,14 @@ namespace polyfem
 				Eigen::MatrixXd u, grad_u;
 				interpolate_at_local_vals(e, points, solution, u, grad_u);
 
+				std::vector<int> boundary_ids = {};
+				for (int i = 0; i < global_primitive_ids.size(); ++i)
+					boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
+
 				json params = {};
 				params["elem"] = e;
 				params["body_id"] = mesh->get_body_id(e);
+				params["boundary_ids"] = boundary_ids;
 				Eigen::MatrixXd result_ = grad_j(points, vals.val, u, grad_u, params);
 				assert(result_.size() > 0);
 
@@ -1005,10 +1010,15 @@ namespace polyfem
 				Eigen::MatrixXd u, grad_u;
 				interpolate_at_local_vals(e, points, solution, u, grad_u);
 
+				std::vector<int> boundary_ids = {};
+				for (int i = 0; i < global_primitive_ids.size(); ++i)
+					boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
+
 				Eigen::MatrixXd j_value;
 				json params = {};
 				params["elem"] = e;
 				params["body_id"] = mesh->get_body_id(e);
+				params["boundary_ids"] = boundary_ids;
 				params["step"] = cur_time_step;
 				j.evaluate(assembler.lame_params(), points, vals.val, u, grad_u, params, j_value);
 

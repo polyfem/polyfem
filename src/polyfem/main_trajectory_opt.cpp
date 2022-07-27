@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 	// const std::vector<std::string> opt_types = {"material", "shape", "initial"};
 	// command_line.add_option("--type", opt_type, "opt type")->check(CLI::IsMember(opt_types));
 
-	const std::set<std::string> target_types = {"exact", "exact-center", "sine", "max-height", "center-data", "last-center", "marker-data"};
+	const std::set<std::string> target_types = {"exact", "sdf", "exact-center", "sine", "max-height", "center-data", "last-center", "marker-data"};
 	// const std::vector<std::string> target_types = {"exact", "exact-center", "sine", "max-height", "center-data", "last-center", "marker-data"};
 	// command_line.add_option("--target", target_type, "functional type")->check(CLI::IsMember(target_types));
 
@@ -177,6 +177,7 @@ int main(int argc, char **argv)
 	json in_args = json({});
 	json target_in_args = json({});
 
+	Eigen::MatrixXd control_points, tangents, delta;
 	Eigen::Vector3d target_position;
 	target_position.setZero();
 	if (!json_file.empty())
@@ -316,8 +317,13 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	std::set<int> interested_ids;
-	if (in_args.contains("meshes") && !in_args["meshes"].empty())
+	std::set<int> interested_body_ids;
+	if (in_args["optimization"].contains("interested_body_ids"))
+	{
+		const auto &interested_bodies = in_args["optimization"]["interested_body_ids"].get<std::vector<int>>();
+		interested_body_ids = std::set(interested_bodies.begin(), interested_bodies.end());
+	}
+	else if (in_args.contains("meshes") && !in_args["meshes"].empty())
 	{
 		const auto &meshes = in_args["meshes"].get<std::vector<json>>();
 		for (const auto &m : meshes)
@@ -328,8 +334,32 @@ int main(int argc, char **argv)
 				{
 					logger().error("No body id in interested mesh!");
 				}
-				interested_ids.insert(m["body_id"].get<int>());
+				interested_body_ids.insert(m["body_id"].get<int>());
 			}
+		}
+	}
+	std::set<int> interested_boundary_ids;
+	if (in_args["optimization"].contains("interested_boundary_ids"))
+	{
+		const auto &interested_boundaries = in_args["optimization"]["interested_boundary_ids"].get<std::vector<int>>();
+		interested_boundary_ids = std::set(interested_boundaries.begin(), interested_boundaries.end());
+	}
+
+	std::set<int> reference_cached_body_ids;
+	if (target_type == "exact")
+	{
+		if (in_args["optimization"].contains("reference_cached_body_ids"))
+		{
+			const auto &ref_cached = in_args["optimization"]["reference_cached_body_ids"].get<std::vector<int>>();
+			reference_cached_body_ids = std::set(ref_cached.begin(), ref_cached.end());
+		}
+		else if (interested_body_ids.size() != 0)
+		{
+			reference_cached_body_ids = interested_body_ids;
+		}
+		else
+		{
+			logger().error("Need to specify either \"reference_cached_body_ids\" or \"interested_body_ids\" for caching of solution.");
 		}
 	}
 
@@ -346,6 +376,8 @@ int main(int argc, char **argv)
 	std::shared_ptr<CompositeFunctional> func;
 	if (target_type == "exact")
 		func = CompositeFunctional::create("Trajectory");
+	else if (target_type == "sdf")
+		func = CompositeFunctional::create("SDFTrajectory");
 	else if (target_type == "exact-center")
 		func = CompositeFunctional::create("CenterTrajectory");
 	else if (target_type == "last-center")
@@ -361,12 +393,27 @@ int main(int argc, char **argv)
 	else
 		logger().error("Invalid target type!");
 
-	func->set_interested_ids(interested_ids);
+	func->set_interested_ids(interested_body_ids, interested_boundary_ids);
 
 	if (target_type == "exact")
 	{
 		auto &f = *dynamic_cast<TrajectoryFunctional *>(func.get());
-		f.set_reference(&state_reference, state);
+		f.set_reference(&state_reference, state, reference_cached_body_ids);
+	}
+	else if (target_type == "sdf")
+	{
+		// TODO: Ingest this data from the json.
+		auto &f = *dynamic_cast<SDFTrajectoryFunctional *>(func.get());
+		control_points.setZero(2, 2);
+		control_points << 1.2, -1.7,
+			1.2, 1.7;
+		tangents.setZero(2, 2);
+		tangents << 0.5, 1,
+			-1.0, 1;
+		delta.setZero(1, 2);
+		delta << 0.01, 0.01;
+		f.set_spline_target(control_points, tangents, delta);
+		f.set_transient_integral_type("final");
 	}
 	else if (target_type == "exact-center")
 	{

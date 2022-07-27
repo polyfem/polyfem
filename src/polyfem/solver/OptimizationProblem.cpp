@@ -107,7 +107,7 @@ namespace polyfem
 		if (j->get_functional_name() == "CenterTrajectory")
 		{
 			CenterTrajectoryFunctional f;
-			f.set_interested_ids(j->get_interested_ids());
+			f.set_interested_ids(j->get_interested_body_ids(), j->get_interested_boundary_ids());
 			std::vector<Eigen::VectorXd> barycenters;
 			f.get_barycenter_series(state, barycenters);
 			print_centers(barycenters);
