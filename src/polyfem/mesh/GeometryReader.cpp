@@ -274,7 +274,7 @@ namespace polyfem::mesh
 			mesh_path, vertices, codim_vertices, codim_edges, faces);
 
 		if (!read_success)
-			// error already logged in read_fem_mesh()
+			// error already logged in read_surface_mesh()
 			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
 
 		// --------------------------------------------------------------------

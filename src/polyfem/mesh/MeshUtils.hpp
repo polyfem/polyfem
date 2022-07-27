@@ -200,17 +200,6 @@ namespace polyfem
 		void save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E);
 
 		///
-		/// @brief      read a mesh
-		///
-		/// @param[in]  mesh_path              path to mesh file
-		/// @param[out] V                      #V x 3/2 output vertices positions
-		/// @param[out] C                      #C cells (e.g., tri/tets/quad/hexes)
-		/// @param[out] elements               #C indices for high-order nodes
-		/// @param[out] w                      #C weights for rational polynomials
-		///
-		bool read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids);
-
-		///
 		/// @brief      read a surface mesh
 		///
 		/// @param[in]  mesh_path       path to mesh file

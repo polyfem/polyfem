@@ -177,8 +177,8 @@ namespace polyfem::mesh
 		}
 
 		std::string lowername = path;
-
 		std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+
 		if (StringUtils::endswith(lowername, ".hybrid"))
 		{
 			std::unique_ptr<Mesh> mesh = create(3, non_conforming);
@@ -197,14 +197,17 @@ namespace polyfem::mesh
 			std::vector<int> body_ids;
 
 			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
+			{
+				logger().error("Failed to load MSH mesh: {}", path);
 				return nullptr;
+			}
 
-			std::unique_ptr<Mesh> mesh = create(vertices.cols(), non_conforming);
+			const int dim = vertices.cols();
+			std::unique_ptr<Mesh> mesh = create(dim, non_conforming);
 
 			mesh->build_from_matrices(vertices, cells);
 			// Only tris and tets
-			if ((vertices.cols() == 2 && cells.cols() == 3)
-				|| (vertices.cols() == 3 && cells.cols() == 4))
+			if ((dim == 2 && cells.cols() == 3) || (dim == 3 && cells.cols() == 4))
 			{
 				mesh->attach_higher_order_nodes(vertices, elements);
 				mesh->set_cell_weights(weights);
