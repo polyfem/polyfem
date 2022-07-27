@@ -79,15 +79,25 @@ namespace polyfem::mesh
 		}
 	} // namespace
 
+	std::unique_ptr<Mesh> Mesh::create(const int dim, const bool non_conforming)
+	{
+		assert(dim == 2 || dim == 3);
+		if (dim == 2 && non_conforming)
+			return std::make_unique<NCMesh2D>();
+		else if (dim == 2 && !non_conforming)
+			return std::make_unique<CMesh2D>();
+		else if (dim == 3 && non_conforming)
+			return std::make_unique<NCMesh3D>();
+		else if (dim == 3 && !non_conforming)
+			return std::make_unique<CMesh3D>();
+		throw std::runtime_error("Invalid dimension");
+	}
+
 	std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 	{
 		if (is_planar(meshin))
 		{
-			std::unique_ptr<Mesh> mesh;
-			if (non_conforming)
-				mesh = std::make_unique<NCMesh2D>();
-			else
-				mesh = std::make_unique<CMesh2D>();
+			std::unique_ptr<Mesh> mesh = create(2, non_conforming);
 			if (mesh->load(meshin))
 			{
 				mesh->in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(meshin.vertices.nb(), 0, meshin.vertices.nb() - 1);
@@ -116,11 +126,7 @@ namespace polyfem::mesh
 		}
 		else
 		{
-			std::unique_ptr<Mesh> mesh;
-			if (non_conforming)
-				mesh = std::make_unique<NCMesh3D>();
-			else
-				mesh = std::make_unique<CMesh3D>();
+			std::unique_ptr<Mesh> mesh = create(3, non_conforming);
 			meshin.cells.connect();
 			if (mesh->load(meshin))
 			{
@@ -175,11 +181,7 @@ namespace polyfem::mesh
 		std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
 		if (StringUtils::endswith(lowername, ".hybrid"))
 		{
-			std::unique_ptr<Mesh> mesh;
-			if (non_conforming)
-				mesh = std::make_unique<NCMesh3D>();
-			else
-				mesh = std::make_unique<CMesh3D>();
+			std::unique_ptr<Mesh> mesh = create(3, non_conforming);
 			if (mesh->load(path))
 			{
 				//TODO add in_ordered_vertices_, in_ordered_edges_, in_ordered_faces_
@@ -197,32 +199,23 @@ namespace polyfem::mesh
 			if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
 				return nullptr;
 
-			std::unique_ptr<Mesh> mesh;
-			if (vertices.cols() == 2)
-				if (non_conforming)
-					mesh = std::make_unique<NCMesh2D>();
-				else
-					mesh = std::make_unique<CMesh2D>();
-			else if (non_conforming)
-				mesh = std::make_unique<NCMesh3D>();
-			else
-				mesh = std::make_unique<CMesh3D>();
+			std::unique_ptr<Mesh> mesh = create(vertices.cols(), non_conforming);
 
 			mesh->build_from_matrices(vertices, cells);
 			// Only tris and tets
-			if ((vertices.cols() == 2 && cells.cols() == 3) || (vertices.cols() == 3 && cells.cols() == 4))
+			if ((vertices.cols() == 2 && cells.cols() == 3)
+				|| (vertices.cols() == 3 && cells.cols() == 4))
 			{
 				mesh->attach_higher_order_nodes(vertices, elements);
-				mesh->cell_weights_ = weights;
-
-				// TODO, not clear?
+				mesh->set_cell_weights(weights);
+				// TODO: not clear?
 			}
 
 			for (const auto &w : weights)
 			{
 				if (!w.empty())
 				{
-					mesh->is_rational_ = true;
+					mesh->set_is_rational(true);
 					break;
 				}
 			}
@@ -248,22 +241,7 @@ namespace polyfem::mesh
 	{
 		const int dim = vertices.cols();
 
-		std::unique_ptr<Mesh> mesh;
-		if (dim == 2)
-		{
-			if (non_conforming)
-				mesh = std::make_unique<NCMesh2D>();
-			else
-				mesh = std::make_unique<CMesh2D>();
-		}
-		else
-		{
-			assert(dim == 3);
-			if (non_conforming)
-				mesh = std::make_unique<NCMesh3D>();
-			else
-				mesh = std::make_unique<CMesh3D>();
-		}
+		std::unique_ptr<Mesh> mesh = create(dim, non_conforming);
 
 		mesh->build_from_matrices(vertices, cells);
 
@@ -384,7 +362,7 @@ namespace polyfem::mesh
 
 	void Mesh::load_boundary_ids(const std::string &path)
 	{
-		boundary_ids_.resize(is_volume() ? n_faces() : n_edges());
+		boundary_ids_.resize(n_boundary_elements());
 
 		std::ifstream file(path);
 
@@ -480,8 +458,40 @@ namespace polyfem::mesh
 	void Mesh::append(const Mesh &mesh)
 	{
 		elements_tag_.insert(elements_tag_.end(), mesh.elements_tag_.begin(), mesh.elements_tag_.end());
-		boundary_ids_.insert(boundary_ids_.end(), mesh.boundary_ids_.begin(), mesh.boundary_ids_.end());
-		body_ids_.insert(body_ids_.end(), mesh.body_ids_.begin(), mesh.body_ids_.end());
+
+		// --------------------------------------------------------------------
+
+		// Initialize boundary_ids_ if it is not initialized yet.
+		if (!has_boundary_ids() && mesh.has_boundary_ids())
+		{
+			boundary_ids_.resize(n_boundary_elements());
+			for (int i = 0; i < boundary_ids_.size(); ++i)
+				boundary_ids_[i] = get_boundary_id(i); // results in default if boundary_ids_ is empty
+		}
+
+		if (mesh.has_boundary_ids())
+		{
+			boundary_ids_.insert(boundary_ids_.end(), mesh.boundary_ids_.begin(), mesh.boundary_ids_.end());
+		}
+		else if (has_boundary_ids()) // && !mesh.has_boundary_ids()
+		{
+			boundary_ids_.resize(n_boundary_elements() + mesh.n_boundary_elements());
+			for (int i = 0; i < mesh.n_boundary_elements(); ++i)
+				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if boundary_ids_ is empty
+		}
+
+		// --------------------------------------------------------------------
+
+		// Initialize body_ids_ if it is not initialized yet.
+		if (!has_body_ids() && mesh.has_body_ids())
+			body_ids_ = std::vector<int>(n_elements(), 0); // 0 is the default body_id
+
+		if (mesh.has_body_ids())
+			body_ids_.insert(body_ids_.end(), mesh.body_ids_.begin(), mesh.body_ids_.end());
+		else if (has_body_ids())                                   // && !mesh.has_body_ids()
+			body_ids_.resize(n_elements() + mesh.n_elements(), 0); // 0 is the default body_id
+
+		// --------------------------------------------------------------------
 
 		assert(orders_.cols() == mesh.orders_.cols());
 		orders_.resize(orders_.rows() + mesh.orders_.rows(), orders_.cols());
@@ -489,23 +499,23 @@ namespace polyfem::mesh
 
 		is_rational_ = is_rational_ || mesh.is_rational_;
 
-		// Fix me with offset!
+		// FIXME: with offset!
 		edge_nodes_.insert(edge_nodes_.end(), mesh.edge_nodes_.begin(), mesh.edge_nodes_.end());
 		face_nodes_.insert(face_nodes_.end(), mesh.face_nodes_.begin(), mesh.face_nodes_.end());
 		cell_nodes_.insert(cell_nodes_.end(), mesh.cell_nodes_.begin(), mesh.cell_nodes_.end());
 		cell_weights_.insert(cell_weights_.end(), mesh.cell_weights_.begin(), mesh.cell_weights_.end());
 
-		// Fix me with offset!
+		// FIXME: with offset!
 		assert(in_ordered_vertices_.cols() == mesh.in_ordered_vertices_.cols());
 		in_ordered_vertices_.resize(in_ordered_vertices_.rows() + mesh.in_ordered_vertices_.rows(), in_ordered_vertices_.cols());
 		in_ordered_vertices_.bottomRows(mesh.in_ordered_vertices_.rows()) = mesh.in_ordered_vertices_;
 
-		// Fix me with offset!
+		// FIXME: with offset!
 		assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
 		in_ordered_edges_.resize(in_ordered_edges_.rows() + mesh.in_ordered_edges_.rows(), in_ordered_edges_.cols());
 		in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_;
 
-		// Fix me with offset!
+		// FIXME: with offset!
 		assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
 		in_ordered_faces_.resize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
 		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_;

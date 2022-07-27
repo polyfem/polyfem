@@ -282,14 +282,6 @@ namespace polyfem
 				elements[valid_to_all_elem(i)].body_id = body_ids[i];
 			}
 		}
-		void NCMesh3D::set_body_ids(const Eigen::VectorXi &body_ids)
-		{
-			assert(body_ids.size() == n_cells());
-			for (int i = 0; i < body_ids.size(); i++)
-			{
-				elements[valid_to_all_elem(i)].body_id = body_ids[i];
-			}
-		}
 
 		void NCMesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 		{

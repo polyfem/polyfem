@@ -257,7 +257,6 @@ namespace polyfem
 			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
-			void set_body_ids(const Eigen::VectorXi &body_ids) override;
 
 			int get_boundary_id(const int primitive) const override { return faces[valid_to_all_face(primitive)].boundary_id; };
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
@@ -354,6 +353,8 @@ namespace polyfem
 			std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const override;
 
 			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
+
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override { throw std::runtime_error("Not implemented"); }
 
 		private:
 			struct ArrayHasher2D

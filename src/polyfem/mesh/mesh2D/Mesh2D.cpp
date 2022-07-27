@@ -121,5 +121,15 @@ namespace polyfem
 				}
 			}
 		}
+
+		void Mesh2D::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
+		{
+			for (int i = 0; i < n_vertices(); ++i)
+			{
+				VectorNd p = point(i).transpose();
+				p = A * p + b;
+				set_point(i, p.transpose());
+			}
+		}
 	} // namespace mesh
 } // namespace polyfem

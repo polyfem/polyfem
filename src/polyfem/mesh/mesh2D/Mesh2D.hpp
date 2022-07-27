@@ -61,6 +61,8 @@ namespace polyfem
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
+
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override;
 		};
 	} // namespace mesh
 } // namespace polyfem

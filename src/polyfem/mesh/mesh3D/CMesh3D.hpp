@@ -120,6 +120,8 @@ namespace polyfem
 
 			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
 
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override { throw std::runtime_error("Not implemented"); }
+
 		protected:
 			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &M) override;
