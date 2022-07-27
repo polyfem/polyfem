@@ -424,7 +424,7 @@ int main(int argc, char **argv)
 	}
 	else if (target_type == "marker-data")
 	{
-		const std::string scene = "Unit-Cell"; // "Cube"
+		const std::string scene = state.args["optimization"]["name"];
 		auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(func.get());
 		std::ifstream infile(target_path);
 		std::vector<Eigen::VectorXd> markers;
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
 		assert(targets.rows() == V.rows());
 		for (int s = 0; s < marker_rest_position.size(); s++)
 		{
-			if (scene == "Unit-Cell")
+			if (scene != "Unit-Cell")
 				if (s == 3) // wrong data
 					continue;
 			double min_dist = std::numeric_limits<double>::max();
