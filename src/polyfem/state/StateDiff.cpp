@@ -341,7 +341,6 @@ namespace polyfem
 			}
 		}
 
-		if (!mesh->is_volume())
 		{
 			const auto &primitive_to_node = iso_parametric() ? primitive_to_bases_node : primitive_to_geom_bases_node;
 			for (int v = 0; v < mesh->n_vertices(); v++)
