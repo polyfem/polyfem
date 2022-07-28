@@ -611,6 +611,7 @@ namespace polyfem
 		//homogenization study of unit cell
 		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
 		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::VectorXd &grad);
 		void homogenize_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_permeability = 1e-6);
 		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad, const double solid_permeability = 1e-6);

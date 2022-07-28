@@ -54,6 +54,178 @@ double five_cylinders_fluid2(double x, double y)
 	return 0.9;
 }
 
+double cross_elastic1(double x, double y)
+{
+	x = abs(x);
+	y = abs(y);
+	if (x > y)
+		std::swap(x, y);
+
+	if (x < 0.1)
+		return 1;
+	return 1e-6;
+}
+
+double cross_elastic2(double x, double y)
+{
+	x = abs(x);
+	y = abs(y);
+	if (x > y)
+		std::swap(x, y);
+
+	if (x < 0.1)
+		return 0.9;
+	return 0.1;
+}
+
+TEST_CASE("elastic_homo", "[homogenization]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"({
+        "geometry": [
+            {
+                "mesh": "square5.msh",
+                "n_refs": 0,
+                "transformation": {
+                    "scale": 1
+                }
+            }
+        ],
+        "space": {
+            "discr_order": 1
+        },
+        "solver": {
+            "linear": {
+                "solver": "Eigen::PardisoLDLT"
+            }
+        },
+        "boundary_conditions": {
+            "periodic_boundary": true
+        },
+        "materials": {
+            "type": "LinearElasticity",
+            "E": 10,
+            "nu": 0.2
+        }
+    })"_json;
+
+	State state(16);
+	state.init_logger("", 1, false);
+	state.init(in_args);
+
+	state.load_mesh();
+
+	state.compute_mesh_stats();
+	state.build_basis();
+
+    state.assemble_rhs();
+
+    Eigen::MatrixXd homogenized_tensor;
+    Eigen::MatrixXd density_mat(state.bases.size(), 1);
+    Eigen::MatrixXd barycenters;
+    if (state.mesh->is_volume())
+        state.mesh->cell_barycenters(barycenters);
+    else
+        state.mesh->face_barycenters(barycenters);
+    for (int e = 0; e < state.bases.size(); e++)
+    {
+        density_mat(e) = cross_elastic1(barycenters(e, 0), barycenters(e, 1));
+    }
+    state.density.init_multimaterial(density_mat);
+    state.homogenize_weighted_linear_elasticity(homogenized_tensor);
+
+    std::cout << homogenized_tensor << std::endl;
+
+    Eigen::Matrix3d reference_tensor;
+    reference_tensor <<
+        1.95453,    0.102267, -0.00212518,
+    0.102267,     1.95453, -0.00212518,
+    -0.00212518, -0.00212518,   0.0454168;
+
+    REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
+}
+
+TEST_CASE("elastic_homo_grad", "[homogenization]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"({
+        "geometry": [
+            {
+                "mesh": "square5.msh",
+                "n_refs": 0,
+                "transformation": {
+                    "scale": 1
+                }
+            }
+        ],
+        "space": {
+            "discr_order": 1
+        },
+        "solver": {
+            "linear": {
+                "solver": "Eigen::PardisoLDLT"
+            }
+        },
+        "boundary_conditions": {
+            "periodic_boundary": true
+        },
+        "materials": {
+            "type": "LinearElasticity",
+            "E": 10,
+            "nu": 0.2
+        }
+    })"_json;
+
+	State state(16);
+	state.init_logger("", 1, false);
+	state.init(in_args);
+
+	state.load_mesh();
+
+	state.compute_mesh_stats();
+	state.build_basis();
+
+    state.assemble_rhs();
+
+    Eigen::MatrixXd homogenized_tensor;
+    Eigen::MatrixXd density_mat(state.bases.size(), 1);
+    Eigen::MatrixXd barycenters;
+    if (state.mesh->is_volume())
+        state.mesh->cell_barycenters(barycenters);
+    else
+        state.mesh->face_barycenters(barycenters);
+    for (int e = 0; e < state.bases.size(); e++)
+    {
+        density_mat(e) = cross_elastic1(barycenters(e, 0), barycenters(e, 1));
+    }
+    state.density.init_multimaterial(density_mat);
+
+    Eigen::VectorXd grad;
+    state.homogenize_weighted_linear_elasticity_grad(homogenized_tensor, grad);
+
+    // finite difference
+    Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
+    Eigen::MatrixXd theta(state.bases.size(), 1);
+    for (int i = 0; i < theta.size(); i++)
+        theta(i) = (rand() % 1000 ) / 1000.0;
+    const double dt = 1e-8;
+
+    state.density.init_multimaterial(density_mat + theta * dt);
+    state.assemble_rhs();
+    state.homogenize_weighted_linear_elasticity(homogenized_tensor1);
+
+    state.density.init_multimaterial(density_mat - theta * dt);
+    state.assemble_rhs();
+    state.homogenize_weighted_linear_elasticity(homogenized_tensor2);
+
+    const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / dt / 2;
+    const double analytic = (grad.array() * theta.array()).sum();
+
+    std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
+    REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);
+}
+
+
 TEST_CASE("stokes_homo", "[homogenization]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
