@@ -234,9 +234,6 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 			"quadrature_order": 5,
 			"n_boundary_samples": 5,
 			"iso_parametric": false,
-			"export": {
-				"wire_mesh": "sol.obj"
-			},
 			"problem_params": {
 				"dirichlet_boundary": [{
 					"id": 11,
@@ -464,7 +461,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	StressFunctional func;
 
 	State state;
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -570,7 +567,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	in_args["meshes"][1]["mesh"] = path + "/../../cube_dense.msh";
 
 	State state;
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -639,10 +636,6 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
 		"quadrature_order": 5,
 		"problem_params": {
 			"dirichlet_boundary": [{
@@ -723,7 +716,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	}
 
 	State state(8);
-	state.init_logger("", 2, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -833,7 +826,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	StressFunctional func;
 
 	State state;
-	state.init_logger("", 2, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -896,10 +889,6 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
 		"quadrature_order": 5,
 		"problem_params": {
 			"dirichlet_boundary": [{
@@ -961,7 +950,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	state_reference.solve();
 
 	State state(8);
-	state.init_logger("", 2, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1007,11 +996,7 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
-		"barrier_stiffness": 1822920,
+		"barrier_stiffness": 1e5,
 		"quadrature_order": 5,
 		"problem_params": {
 			"dirichlet_boundary": [{
@@ -1049,14 +1034,12 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 			"mesh": "",
 			"position": [0, 0, 0],
 			"scale": [3, 0.02, 1],
-			"rotation": 0,
 			"body_id": 3,
 			"boundary_id": 3
 		}, {
 			"mesh": "",
 			"position": [0, 0.3, 0],
 			"scale": [0.5, 0.5, 0.5],
-			"rotation": 0,
 			"body_id": 1,
 			"boundary_id": 1,
 			"interested": true
@@ -1078,7 +1061,7 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 	state_reference.solve();
 
 	State state(8);
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1127,10 +1110,6 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
 		"barrier_stiffness": 5e4,
 		"problem_params": {
 			"dirichlet_boundary": [{
@@ -1192,7 +1171,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 	state_reference.solve();
 
 	State state(8);
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1244,10 +1223,6 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
 		"quadrature_order": 5,
 		"barrier_stiffness": 1822920,
 		"problem_params": {
@@ -1307,7 +1282,7 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 	StressFunctional func;
 
 	State state(8);
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1353,10 +1328,6 @@ TEST_CASE("barycenter", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
 		"quadrature_order": 5,
 		"problem_params": {
 			"dirichlet_boundary": [{
@@ -1441,7 +1412,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	func.set_center_series(barycenters);
 
 	State state(8);
-	state.init_logger("", 2, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1486,10 +1457,6 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 		"has_collision": true,
 		"differentiable": true,
 		"vismesh_rel_area": 1,
-		"export": {
-			"body_ids": true,
-			"high_order_mesh": false
-		},
 		"quadrature_order": 5,
 		"problem_params": {
 			"dirichlet_boundary": [{
@@ -1576,7 +1543,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	func.set_center_series(barycenters);
 
 	State state(8);
-	state.init_logger("", 2, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();

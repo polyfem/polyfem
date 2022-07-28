@@ -239,7 +239,8 @@ namespace polyfem
 				{
 					val(q) = pow(((u_ref.row(q) + pts_ref.row(q)) - (u.row(q) + pts.row(q))).squaredNorm(), p / 2.);
 				}
-				val = boundary_points * val;
+				if (boundary_points.cols() == val.size())
+					val = boundary_points * val;
 			};
 
 			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
@@ -263,7 +264,8 @@ namespace polyfem
 					auto x = (u.row(q) + pts.row(q)) - (u_ref.row(q) + pts_ref.row(q));
 					val.row(q) = (p * pow(x.squaredNorm(), p / 2. - 1)) * x;
 				}
-				val = boundary_points * val;
+				if (boundary_points.cols() == val.size())
+					val = boundary_points * val;
 			};
 
 			auto djdx_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
@@ -289,7 +291,8 @@ namespace polyfem
 					vector2matrix(grad_u_ref.row(q), grad_u_ref_q);
 					val.row(q) = (p * pow(x.squaredNorm(), p / 2. - 1)) * x.transpose() * grad_u_ref_q;
 				}
-				val = boundary_points * val;
+				if (boundary_points.cols() == val.size())
+					val = boundary_points * val;
 			};
 
 			j.set_j(j_func);
