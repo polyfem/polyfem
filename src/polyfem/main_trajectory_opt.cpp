@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include <CLI/CLI.hpp>
 #include <polyfem/Optimizations.hpp>
 
@@ -7,12 +9,11 @@
 
 #include <polyfem/ImplicitTimeIntegrator.hpp>
 #include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-#include <filesystem>
 #include <time.h>
 
 using namespace polyfem;

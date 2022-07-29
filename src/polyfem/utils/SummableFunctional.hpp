@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <Eigen/Dense>
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 namespace polyfem
 {
