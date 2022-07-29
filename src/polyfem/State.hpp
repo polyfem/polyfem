@@ -92,7 +92,7 @@ namespace polyfem
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
 		/// @param[in] output_dir output directory
-		void init(const json &args, const bool strict_validation, const std::string &output_dir = "");
+		void init(const json &args, const bool strict_validation, const std::string &output_dir = "", const bool fallback_solver = false);
 
 		/// initialize time settings if args contains "time"
 		void init_time();
