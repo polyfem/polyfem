@@ -605,6 +605,9 @@ namespace polyfem::mesh
 		// Convert output
 		Eigen::MatrixXi OT;
 		from_geogram_mesh(M_out, OV, OF, OT);
+
+		// Promised a 2D mesh, so drop z-coordinate
+		OV.conservativeResize(OV.rows(), 2);
 	}
 
 	void remesh_adaptive_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &T, const Eigen::VectorXd &S,

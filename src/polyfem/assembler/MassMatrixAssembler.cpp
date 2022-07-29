@@ -3,6 +3,7 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/utils/SutherlandHodgmanClipping.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::assembler
@@ -210,44 +211,52 @@ namespace polyfem::assembler
 			return (1 - uv[0] - uv[1]) * nodes.row(0) + uv[0] * nodes.row(1) + uv[1] * nodes.row(2);
 		}
 
-		void reverse_rows(Eigen::MatrixXd &A)
+		Eigen::MatrixXd triangle_to_clockwise_order(const Eigen::MatrixXd &T)
 		{
-			for (int i = 0; i < A.rows() / 2; ++i)
-			{
-				Eigen::RowVectorXd tmp = A.row(i);
-				A.row(i) = A.row(A.rows() - i - 1);
-				A.row(A.rows() - i - 1) = tmp;
-			}
+			assert(T.rows() == 3 && T.cols() == 2);
+			Eigen::Matrix3d A;
+			A << T(0, 0), T(0, 1), 1,
+				T(1, 0), T(1, 1), 1,
+				T(2, 0), T(2, 1), 1;
+			if (A.determinant() <= 0)
+				return T;
+
+			Eigen::MatrixXd T_clockwise(T.rows(), T.cols());
+			T_clockwise.row(0) = T.row(2);
+			T_clockwise.row(1) = T.row(1);
+			T_clockwise.row(2) = T.row(0);
+
+			return T_clockwise;
 		}
 	}; // namespace
 
 	void MassMatrixAssembler::assemble_cross(
 		const bool is_volume,
 		const int size,
-		const int n_basis_a,
-		const std::vector<ElementBases> &bases_a,
-		const std::vector<ElementBases> &gbases_a,
-		const int n_basis_b,
-		const std::vector<ElementBases> &bases_b,
-		const std::vector<ElementBases> &gbases_b,
+		const int n_from_basis,
+		const std::vector<basis::ElementBases> &from_bases,
+		const std::vector<basis::ElementBases> &from_gbases,
+		const int n_to_basis,
+		const std::vector<basis::ElementBases> &to_bases,
+		const std::vector<basis::ElementBases> &to_gbases,
 		const AssemblyValsCache &cache,
 		StiffnessMatrix &mass) const
 	{
-		const int buffer_size = std::min(long(1e8), long(std::max(n_basis_a, n_basis_b)) * size);
+		const int buffer_size = std::min(long(1e8), long(std::max(n_from_basis, n_to_basis)) * size);
 		logger().debug("buffer_size {}", buffer_size);
 
-		mass.resize(n_basis_b * size, n_basis_a * size);
+		mass.resize(n_to_basis * size, n_from_basis * size);
 		mass.setZero();
 
 		// auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mass.rows()));
 
 		// TODO: Why are we shadowing this variable?
-		const int n_bases_a = int(bases_a.size());
-		const int n_bases_b = int(bases_b.size());
+		// const int n_from_bases = int(from_bases.size());
+		// const int n_to_bases = int(to_bases.size());
 
 		// TODO: Use a AABB tree to find all intersecting elements then loop over only those pairs
 
-		// maybe_parallel_for(n_bases_b, [&](int start, int end, int thread_id) {
+		// maybe_parallel_for(n_to_basis, [&](int start, int end, int thread_id) {
 		// LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
 		std::vector<Eigen::Triplet<double>> triplets;
@@ -255,67 +264,81 @@ namespace polyfem::assembler
 		Quadrature quadrature;
 		TriQuadrature().get_quadrature(2, quadrature);
 
-		for (int ebi = 0; ebi < n_bases_b; ++ebi)
+		for (const ElementBases &to_element : to_bases)
 		{
-			const ElementBases &eb = bases_b[ebi];
-			Eigen::MatrixXd eb_nodes = eb.nodes();
-			assert(eb_nodes.rows() == 3);
-			reverse_rows(eb_nodes); // clockwise order
+			const Eigen::MatrixXd to_nodes = to_element.nodes();
+			assert(to_nodes.rows() == 3);
+			const Eigen::MatrixXd to_nodes_clockwise = triangle_to_clockwise_order(to_nodes);
 
-			for (int eai = 0; eai < n_bases_a; ++eai)
+			for (const ElementBases &from_element : from_bases)
 			{
-				const ElementBases &ea = bases_a[eai];
-				Eigen::MatrixXd ea_nodes = ea.nodes();
-				assert(ea_nodes.rows() == 3);
-				reverse_rows(ea_nodes); // clockwise order
+				const Eigen::MatrixXd from_nodes = from_element.nodes();
+				assert(from_nodes.rows() == 3);
+				const Eigen::MatrixXd from_nodes_clockwise = triangle_to_clockwise_order(from_nodes);
 
-				Eigen::MatrixXd overlap = sutherland_hodgman_clipping(eb_nodes, ea_nodes);
-				reverse_rows(overlap); // back to counter-clockwise order
+#ifdef POLYFEM_WITH_CLIPPER
+				std::vector<Eigen::MatrixXd> overlaps = Polygon::clip(to_nodes_clockwise, from_nodes_clockwise);
+				assert(overlaps.size() <= 1);
+				if (overlaps.empty())
+					continue;
+				const Eigen::MatrixXd &overlap = overlaps[0];
+#else
+				Eigen::MatrixXd overlap; // = sutherland_hodgman_clipping(to_nodes_clockwise, from_nodes_clockwise);
+				throw std::runtime_error("Clipper not enabled");
+#endif
+
 				if (overlap.size() < 3)
 					continue;
+
 				const std::vector<Eigen::MatrixXd> triangles = triangle_fan(overlap);
 
 				for (const Eigen::MatrixXd &triangle : triangles)
 				{
-					const double area = triangle_area(triangle);
+					const double area = abs(triangle_area(triangle));
 					if (abs(area) < 1e-12)
 						continue;
 					assert(area > 0);
 
 					for (int qi = 0; qi < quadrature.size(); qi++)
 					{
-						const double w = quadrature.weights[qi];
-						const Eigen::VectorXd q = quadrature.points.row(qi);
+						// NOTE: the 2 is neccesary here because the mass matrix assembly use the
+						//       determinant of the Jacobian (i.e., area of the parallelogram)
+						const double w = 2 * area * quadrature.weights[qi];
+						const Eigen::Vector2d q = quadrature.points.row(qi);
 
 						const Eigen::Vector2d p = P1_2D_gmapping(triangle, q);
 
-						const Eigen::Vector3d x_i = barycentric_coordinates(
-							eb_nodes.row(0), eb_nodes.row(1), eb_nodes.row(2), p);
+						const Eigen::RowVector2d from_uv =
+							barycentric_coordinates(p, from_nodes.row(0), from_nodes.row(1), from_nodes.row(2)).tail<2>().transpose();
+						const Eigen::RowVector2d to_uv =
+							barycentric_coordinates(p, to_nodes.row(0), to_nodes.row(1), to_nodes.row(2)).tail<2>().transpose();
+
+						std::vector<AssemblyValues> from_phi, to_phi;
+						from_element.evaluate_bases(from_uv, from_phi);
+						to_element.evaluate_bases(to_uv, to_phi);
+
 #ifndef NDEBUG
-						// eb.eval_geom_mapping(x_i.transpose())
-						// assert((p - element_b.gmapping(x_i)).norm() < 1e-12);
+						Eigen::MatrixXd debug;
+						from_element.eval_geom_mapping(from_uv, debug);
+						assert((debug.transpose() - p).norm() < 1e-12);
+						to_element.eval_geom_mapping(to_uv, debug);
+						assert((debug.transpose() - p).norm() < 1e-12);
 #endif
-
-						const Eigen::Vector3d x_j = barycentric_coordinates(
-							ea_nodes.row(0), ea_nodes.row(1), ea_nodes.row(2), p);
-						// assert((p - element_a.gmapping(x_i)).norm() < 1e-12)
-
-						std::vector<AssemblyValues> phi_i, phi_j;
-						eb.evaluate_bases(x_i.head<2>().transpose(), phi_i);
-						ea.evaluate_bases(x_j.head<2>().transpose(), phi_j);
 
 						for (int n = 0; n < size; ++n)
 						{
-							for (int m = 0; m < size; ++m)
+							// local matrix is diagonal
+							const int m = n;
 							{
-								for (int loc_i = 0; loc_i < phi_i.size(); ++loc_i)
+								for (int to_local_i = 0; to_local_i < to_phi.size(); ++to_local_i)
 								{
-									for (int loc_j = 0; loc_j < phi_j.size(); ++loc_j)
+									const int to_global_i = to_element.bases[to_local_i].global()[0].index * size + m;
+									for (int from_local_i = 0; from_local_i < from_phi.size(); ++from_local_i)
 									{
+										const auto from_global_i = from_element.bases[from_local_i].global()[0].index * size + n;
 										triplets.emplace_back(
-											eb.bases[loc_i].global()[0].index * size + n,
-											ea.bases[loc_j].global()[0].index * size + n,
-											w * phi_i[loc_i].val(0) * phi_j[loc_i].val(0) * area);
+											to_global_i, from_global_i,
+											w * from_phi[from_local_i].val(0) * to_phi[to_local_i].val(0));
 									}
 								}
 							}

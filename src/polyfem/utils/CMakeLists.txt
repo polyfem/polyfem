@@ -8,6 +8,8 @@ set(SOURCES
 	BoundarySampler.hpp
 	Selection.cpp
 	Selection.hpp
+	ClipperUtils.cpp
+	ClipperUtils.hpp
 	DisableWarnings.hpp
 	EdgeSampler.cpp
 	EdgeSampler.hpp

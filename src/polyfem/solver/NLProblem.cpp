@@ -19,10 +19,10 @@
 static bool disable_collision = false;
 
 /*
-m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
-u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
-= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\\
-M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \\
+m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
+u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
+= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\newline
+M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \newline
 %
 M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 */
@@ -426,7 +426,12 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			reduced_to_full_displaced_points(x, displaced);
 
-			return !ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(displaced));
+			bool intersecting = ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(displaced));
+
+			// if (intersecting)
+			// 	OBJWriter::save("intersection.obj", state.collision_mesh.vertices(displaced), state.collision_mesh.edges(), state.collision_mesh.faces());
+
+			return !intersecting;
 		}
 
 		bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)

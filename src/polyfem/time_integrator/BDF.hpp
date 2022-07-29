@@ -6,7 +6,7 @@ namespace polyfem::time_integrator
 {
 	/// @brief Backward Differential Formulas
 	/// \f[
-	/// 	x^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} x^{t-i}\right)+ \Delta t \beta v^{t+1}\\
+	/// 	x^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} x^{t-i}\right)+ \Delta t \beta v^{t+1}\newline
 	/// 	v^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} v^{t-i}\right)+ \Delta t \beta a^{t+1}
 	/// \f]
 	/// @see https://en.wikipedia.org/wiki/Backward_differentiation_formula

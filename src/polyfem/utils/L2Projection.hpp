@@ -15,9 +15,8 @@ namespace polyfem::utils
 		const int n_basis_b,
 		const std::vector<polyfem::basis::ElementBases> &bases_b,
 		const std::vector<polyfem::basis::ElementBases> &gbases_b,
-		const polyfem::Density &density,
 		const polyfem::assembler::AssemblyValsCache &cache,
-		const Eigen::VectorXd &u,
-		Eigen::VectorXd &u_proj);
+		const Eigen::MatrixXd &y,
+		Eigen::MatrixXd &x);
 
 } // namespace polyfem::utils

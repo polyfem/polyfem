@@ -40,20 +40,23 @@ namespace polyfem
 
 	void State::save_timestep(const double time, const int t, const double t0, const double dt)
 	{
-		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
+		if (args["output"]["advanced"]["save_time_sequence"]
+			&& !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
 		{
 			logger().trace("Saving VTU...");
 			POLYFEM_SCOPED_TIMER("Saving VTU");
-			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 
-			save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
+			const std::string filename_fmt = fmt::format(
+				"{}{{:d}}.vtu", args["output"]["advanced"]["timestep_prefix"].get<std::string>());
+
+			save_vtu(resolve_output_path(fmt::format(filename_fmt, t)), time);
 
 			save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
-				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
+				[&filename_fmt](int i) { return fmt::format(filename_fmt, i); },
 				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 		}
 	}

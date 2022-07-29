@@ -1,13 +1,12 @@
 #include "L2Projection.hpp"
 
-#include <polysolve/LinearSolver.hpp>
-
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+
+#include <Eigen/SparseLU>
 
 namespace polyfem::utils
 {
-
-	using namespace polysolve;
 	using namespace polyfem::basis;
 	using namespace polyfem::assembler;
 
@@ -15,45 +14,49 @@ namespace polyfem::utils
 	void L2_projection(
 		const bool is_volume,
 		const int size,
-		const int n_basis_a,
-		const std::vector<ElementBases> &bases_a,
-		const std::vector<ElementBases> &gbases_a,
-		const int n_basis_b,
-		const std::vector<ElementBases> &bases_b,
-		const std::vector<ElementBases> &gbases_b,
-		const Density &density,
+		const int n_from_basis,
+		const std::vector<ElementBases> &from_bases,
+		const std::vector<ElementBases> &from_gbases,
+		const int n_to_basis,
+		const std::vector<ElementBases> &to_bases,
+		const std::vector<ElementBases> &to_gbases,
 		const AssemblyValsCache &cache,
-		const Eigen::VectorXd &u,
-		Eigen::VectorXd &u_proj)
+		const Eigen::MatrixXd &y,
+		Eigen::MatrixXd &x)
 	{
-		MassMatrixAssembler assembler;
+		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
+		Eigen::SparseMatrix<double> M, A;
+		{
+			MassMatrixAssembler assembler;
+			Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler.assemble(
+				is_volume, size,
+				n_to_basis, no_density, to_bases, to_gbases,
+				cache, M);
 
-		Eigen::SparseMatrix<double> M;
-		assembler.assemble(
-			is_volume, size, n_basis_b, density, bases_b, gbases_b, cache, M);
+			assembler.assemble_cross(
+				is_volume, size,
+				n_from_basis, from_bases, from_gbases,
+				n_to_basis, to_bases, to_gbases,
+				cache, A);
 
-		write_sparse_matrix_csv("M.csv", M);
+			// write_sparse_matrix_csv("M.csv", M);
+			// write_sparse_matrix_csv("A.csv", A);
+		}
 
-		Eigen::SparseMatrix<double> A;
-		assembler.assemble_cross(
-			is_volume, size,
-			n_basis_a, bases_a, gbases_a,
-			n_basis_b, bases_b, gbases_b,
-			cache, A);
-
-		write_sparse_matrix_csv("A.csv", A);
-
-		std::unique_ptr<LinearSolver> linear_solver;
-		linear_solver = LinearSolver::create("Eigen::SparseLU", LinearSolver::defaultPrecond());
+		// Construct a linear solver for M
+		Eigen::SparseLU<decltype(M)> solver;
 		// linear_solver->setParameters(solver_params);
+		const Eigen::SparseMatrix<double> &LHS = M; // NOTE: remove & if you want to have a more complicated LHS
+		solver.analyzePattern(LHS);
+		solver.factorize(LHS);
 
-		Eigen::SparseMatrix<double> LHS = M.transpose() * M;
-		Eigen::VectorXd rhs = M * A * u;
-
-		linear_solver->analyzePattern(LHS, LHS.rows());
-		linear_solver->factorize(LHS);
-		linear_solver->solve(rhs, u_proj);
-		assert((LHS * u_proj - rhs).norm() < 1e-12);
+		const Eigen::MatrixXd rhs = A * y;
+		x.resize(rhs.rows(), rhs.cols());
+		x = solver.solve(rhs);
+		double residual_error = (LHS * x - rhs).norm();
+		logger().critical("residual error in L2 projection: {}", residual_error);
+		assert(residual_error < 1e-12);
 	}
 
 } // namespace polyfem::utils

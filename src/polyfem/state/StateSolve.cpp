@@ -26,6 +26,7 @@
 #include <ipc/ipc.hpp>
 
 #include <igl/write_triangle_mesh.h>
+#include <igl/PI.h>
 
 #include <fstream>
 
@@ -425,21 +426,17 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
+	void State::solve_transient_tensor_non_linear(
+		const int time_steps, const double t0, const double dt, const RhsAssembler &)
 	{
-		solve_transient_tensor_non_linear_init(t0, dt, rhs_assembler);
+		solve_transient_tensor_non_linear_init(t0, dt, *step_data.rhs_assembler);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
-			// State new_state = *this;
-			// const State *old_this = this;
-			// *this = new_state;
-			// delete old_this;
-
-			if (t == 5)
+			if (true)
 			{
 				Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
 				for (int i = 0; i < mesh->n_vertices(); ++i)
@@ -450,7 +447,7 @@ namespace polyfem
 						F(i, j) = mesh->face_vertex(i, j);
 				OBJWriter::save(resolve_output_path("rest.obj"), V, F);
 
-				// TODO: comute stress at the nodes
+				// TODO: compute stress at the nodes
 				// Eigen::MatrixXd SF;
 				// compute_scalar_value(mesh->n_vertices(), sol, SF, false, false);
 				Eigen::MatrixXd SV, TV;
@@ -459,48 +456,67 @@ namespace polyfem
 				// TODO: What measure to use for remeshing?
 				// SV.normalize();
 				SV.setOnes(mesh->n_vertices(), 1);
+				SV *= 0.1 / t;
 
 				Eigen::MatrixXd V_new;
 				Eigen::MatrixXi F_new;
-				// if (!mesh->is_volume())
-				// {
-				// 	mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new);
-				// 	OBJWriter::save(resolve_output_path("remeshed.obj"), V_new, F_new);
-				// 	exit(0);
-				// }
-				// else
-				// {
-				// 	Eigen::MatrixXi _;
-				// 	mesh::remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
-				// }
+				if (!mesh->is_volume())
+				{
+					mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new);
 
-				write_sparse_matrix_csv("mass.csv", mass);
+					// Rotate 90 degrees each step
+					// Matrix2d R;
+					// const double theta = 90 * (igl::PI / 180);
+					// R << cos(theta), sin(theta),
+					// 	-sin(theta), cos(theta);
+					// V_new = V * R.transpose();
+					// V_new = V;
+					// F_new = F;
 
-				// L2 Projection
-				ass_vals_cache.clear();
-				Eigen::VectorXd sol_proj;
-				L2_projection(
-					mesh->is_volume(),
-					mesh->is_volume() ? 3 : 2,
-					n_bases,
-					bases,
-					iso_parametric() ? bases : geom_bases,
-					// TODO:
-					n_bases,
-					bases,
-					iso_parametric() ? bases : geom_bases,
-					// END
-					density,
-					ass_vals_cache,
-					sol,
-					sol_proj);
+					OBJWriter::save(resolve_output_path("remeshed.obj"), V_new, F_new);
+				}
+				else
+				{
+					Eigen::MatrixXi _;
+					mesh::remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
+				}
 
-				logger().critical("error: {}", (sol_proj - sol).norm());
+				// Save old values
+				const int old_n_bases = n_bases;
+				const std::vector<ElementBases> old_bases = bases;
+				const std::vector<ElementBases> old_geom_bases = iso_parametric() ? bases : geom_bases;
+				Eigen::MatrixXd y(sol.size(), 3); // Old values of independent variables
+				y.col(0) = sol;
+				y.col(1) = step_data.nl_problem->time_integrator()->v_prev();
+				y.col(2) = step_data.nl_problem->time_integrator()->a_prev();
 
 				this->load_mesh(V_new, F_new);
+				// FIXME:
+				mesh->compute_boundary_ids(1e-6);
+				mesh->set_body_ids(Eigen::VectorXi::Ones(mesh->n_elements()));
+				this->set_materials(); // TODO: Explain why I need this?
 				this->build_basis();
 				this->assemble_rhs();
 				this->assemble_stiffness_mat();
+
+				// L2 Projection
+				ass_vals_cache.clear(); // Clear this because the mass matrix needs to be recomputed
+				Eigen::MatrixXd x;
+				L2_projection(
+					mesh->is_volume(), mesh->is_volume() ? 3 : 2,
+					old_n_bases, old_bases, old_geom_bases,
+					n_bases, bases, iso_parametric() ? bases : geom_bases,
+					ass_vals_cache, y, x);
+
+				sol = x.col(0);
+				Eigen::VectorXd vel = x.col(1);
+				Eigen::VectorXd acc = x.col(2);
+
+				if (x.rows() < 30)
+				{
+					logger().critical("yᵀ:\n{}", y.transpose());
+					logger().critical("xᵀ:\n{}", x.transpose());
+				}
 
 				json rhs_solver_params = args["solver"]["linear"];
 				if (!rhs_solver_params.contains("Pardiso"))
@@ -516,6 +532,25 @@ namespace polyfem
 					args["solver"]["linear"]["solver"],
 					args["solver"]["linear"]["precond"],
 					rhs_solver_params);
+
+				const int full_size = n_bases * mesh->dimension();
+				const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
+
+				step_data.nl_problem = std::make_shared<NLProblem>(*this, *step_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"]);
+				step_data.nl_problem->init_time_integrator(sol, vel, acc, dt);
+
+				double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+				step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, *step_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"], al_weight);
+				step_data.alnl_problem->init_time_integrator(sol, vel, acc, dt);
+
+				Eigen::MatrixXd displaced;
+				step_data.nl_problem->reduced_to_full_displaced_points(sol, displaced);
+				OBJWriter::save(resolve_output_path("projection_rest.obj"), collision_mesh.vertices_at_rest(), collision_mesh.edges(), Eigen::MatrixXi());
+				OBJWriter::save(resolve_output_path("projection.obj"), collision_mesh.vertices(displaced), collision_mesh.edges(), Eigen::MatrixXi());
+
+				// TODO: Check for inversions and intersections due to remeshing
+
+				save_timestep(t0 + dt * t, t, t0, dt);
 			}
 		}
 
