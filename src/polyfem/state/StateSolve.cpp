@@ -686,7 +686,7 @@ namespace polyfem
 			int lag_i;
 			nl_problem.update_lagging(tmp_sol);
 			bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
-			for (lag_i = 1; !lagging_converged && lag_i < argsargs["solver"]["contact"]["friction_iterations"]; lag_i++)
+			for (lag_i = 1; !lagging_converged && lag_i < args["solver"]["contact"]["friction_iterations"]; lag_i++)
 			{
 				logger().debug("Lagging iteration {:d}", lag_i + 1);
 				nl_problem.init(sol);

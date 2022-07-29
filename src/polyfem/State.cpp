@@ -1751,11 +1751,10 @@ namespace polyfem
 			}
 		}
 
-		const json &params = solver_params();
-		auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
-		solver->setParameters(params);
+		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+		solver->setParameters(args["solver"]["linear"]);
 		Eigen::VectorXd x;
-		dirichlet_solve(*solver, M, b, std::vector<int>(), x, M.rows(), args["export"]["stiffness_mat"], args["export"]["spectrum"], false, false);
+		dirichlet_solve(*solver, M, b, std::vector<int>(), x, M.rows(), args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, false);
 
 		auto tmp = y;
 		y.setZero(n_bases * actual_dim, 1);

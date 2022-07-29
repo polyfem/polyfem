@@ -139,6 +139,7 @@ namespace polyfem
 			void init_multimodels(const std::vector<std::string> &materials);
 			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 			void update_lame_params(const LameParameters &newParams);
+			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
 
 			//checks if assembler is linear
 			static bool is_linear(const std::string &assembler);

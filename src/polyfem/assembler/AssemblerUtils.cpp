@@ -474,6 +474,21 @@ namespace polyfem
 			incompressible_lin_elast_pressure_.local_assembler().set_params(newParams);
 		}
 
+		void AssemblerUtils::update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus)
+		{
+			linear_elasticity_.local_assembler().lame_params().lambda_mat_ = lambdas;
+			linear_elasticity_energy_.local_assembler().lame_params().lambda_mat_ = lambdas;
+			neo_hookean_elasticity_.local_assembler().lame_params().lambda_mat_ = lambdas;
+			multi_models_elasticity_.local_assembler().linear_elasticity_lame_params().lambda_mat_ = lambdas;
+			multi_models_elasticity_.local_assembler().neo_hookean_lame_params().lambda_mat_ = lambdas;
+
+			linear_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
+			linear_elasticity_energy_.local_assembler().lame_params().mu_mat_ = mus;
+			neo_hookean_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
+			multi_models_elasticity_.local_assembler().linear_elasticity_lame_params().mu_mat_ = mus;
+			multi_models_elasticity_.local_assembler().neo_hookean_lame_params().mu_mat_ = mus;
+		}
+
 		void AssemblerUtils::init_multimodels(const std::vector<std::string> &materials)
 		{
 			multi_models_elasticity_.local_assembler().init_multimodels(materials);
