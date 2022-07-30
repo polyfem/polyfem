@@ -504,9 +504,26 @@ namespace polyfem
 				Eigen::MatrixXd x;
 				L2_projection(
 					mesh->is_volume(), mesh->is_volume() ? 3 : 2,
-					old_n_bases, old_bases, old_geom_bases,
-					n_bases, bases, iso_parametric() ? bases : geom_bases,
+					old_n_bases, old_bases, old_geom_bases,                // from
+					n_bases, bases, iso_parametric() ? bases : geom_bases, // to
 					ass_vals_cache, y, x);
+
+				// Compute Projection error
+				{
+					Eigen::MatrixXd y2;
+					L2_projection(
+						mesh->is_volume(), mesh->is_volume() ? 3 : 2,
+						n_bases, bases, iso_parametric() ? bases : geom_bases, // from
+						old_n_bases, old_bases, old_geom_bases,                // to
+						ass_vals_cache, x, y2);
+
+					std::cout << fmt::format(
+						"L2_Projection_Error, {}, {}, {}",
+						(y.col(0) - y2.col(0)).lpNorm<Eigen::Infinity>(),
+						(y.col(1) - y2.col(1)).lpNorm<Eigen::Infinity>(),
+						(y.col(2) - y2.col(2)).lpNorm<Eigen::Infinity>())
+							  << std::endl;
+				}
 
 				sol = x.col(0);
 				Eigen::VectorXd vel = x.col(1);

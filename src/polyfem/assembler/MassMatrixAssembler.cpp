@@ -178,7 +178,7 @@ namespace polyfem::assembler
 			const Eigen::Vector3d rhs(p[0], p[1], 1.0);
 			// TODO: Can we use better than LU?
 			const Eigen::Vector3d uvw = A.partialPivLu().solve(rhs);
-			assert((A * uvw - rhs).norm() < 1e-12);
+			assert((A * uvw - rhs).norm() / rhs.norm() < 1e-12);
 			return uvw;
 		}
 
@@ -262,7 +262,7 @@ namespace polyfem::assembler
 		std::vector<Eigen::Triplet<double>> triplets;
 
 		Quadrature quadrature;
-		TriQuadrature().get_quadrature(2, quadrature);
+		TriQuadrature().get_quadrature(3, quadrature);
 
 		for (const ElementBases &to_element : to_bases)
 		{
