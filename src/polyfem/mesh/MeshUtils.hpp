@@ -191,15 +191,6 @@ namespace polyfem
 			Eigen::MatrixXi &tris);
 
 		///
-		/// @brief      Save edge-graph into a .obj
-		///
-		/// @param[in]  filename   Filename to write to
-		/// @param[in]  V          #V x 3 input vertices positions
-		/// @param[in]  E          #E x 2 input edge indices
-		///
-		void save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E);
-
-		///
 		/// @brief      read a surface mesh
 		///
 		/// @param[in]  mesh_path       path to mesh file

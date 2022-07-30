@@ -1176,19 +1176,6 @@ bool polyfem::mesh::read_surface_mesh(
 	return true;
 }
 
-void polyfem::mesh::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
-{
-	using namespace Eigen;
-	std::ofstream out(filename);
-	if (!out.is_open())
-	{
-		throw std::runtime_error("failed to open file " + filename);
-	}
-	out << "# Vertices: " << V.rows() << "\n# Edges: " << E.rows() << "\n"
-		<< V.cast<float>().format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "v ", "", "", "\n"))
-		<< (E.array() + 1).format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "l ", "", "", "\n"));
-}
-
 int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 {
 	std::unordered_set<std::vector<int>, HashVector> boundaries;
