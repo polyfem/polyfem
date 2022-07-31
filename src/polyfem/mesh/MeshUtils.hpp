@@ -206,5 +206,9 @@ namespace polyfem
 
 		/// Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)
 		int count_faces(const int dim, const Eigen::MatrixXi &cells);
+
+		/// @brief      assing edges to M
+		/// @param[in/out]  M       geogram mesh to appen edges to
+		void generate_edges(GEO::Mesh &M);
 	} // namespace mesh
 } // namespace polyfem

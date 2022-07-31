@@ -1225,3 +1225,46 @@ int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 
 	return boundaries.size();
 }
+
+void polyfem::mesh::generate_edges(GEO::Mesh &M)
+{
+	using namespace GEO;
+	typedef std::pair<index_t, index_t> Edge;
+
+	if (M.edges.nb() > 0)
+		return;
+
+	M.facets.connect();
+	M.cells.connect();
+	if (M.cells.nb() != 0 && M.facets.nb() == 0)
+	{
+		M.cells.compute_borders();
+	}
+
+	// Compute a list of all the edges, and store edge index as a corner attribute
+	std::vector<std::pair<Edge, index_t>> e2c; // edge to corner id
+	for (index_t f = 0; f < M.facets.nb(); ++f)
+	{
+		for (index_t c = M.facets.corners_begin(f); c < M.facets.corners_end(f); ++c)
+		{
+			index_t v = M.facet_corners.vertex(c);
+			index_t c2 = M.facets.next_corner_around_facet(f, c);
+			index_t v2 = M.facet_corners.vertex(c2);
+			e2c.emplace_back(std::make_pair(std::min(v, v2), std::max(v, v2)), c);
+		}
+	}
+	std::sort(e2c.begin(), e2c.end());
+
+	// Assign unique id to edges
+	M.edges.clear();
+	Edge prev_e(-1, -1);
+	for (const auto &kv : e2c)
+	{
+		Edge e = kv.first;
+		if (e != prev_e)
+		{
+			M.edges.create_edge(e.first, e.second);
+			prev_e = e;
+		}
+	}
+}

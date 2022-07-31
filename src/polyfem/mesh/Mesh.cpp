@@ -97,6 +97,7 @@ namespace polyfem::mesh
 	{
 		if (is_planar(meshin))
 		{
+			generate_edges(meshin);
 			std::unique_ptr<Mesh> mesh = create(2, non_conforming);
 			if (mesh->load(meshin))
 			{
@@ -107,17 +108,16 @@ namespace polyfem::mesh
 				assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == meshin.vertices.nb() - 1);
 
 				mesh->in_ordered_edges_.resize(0, 0);
-				//TODO
-				// mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
+				mesh->in_ordered_edges_.resize(meshin.edges.nb(), 2);
 
-				// for (int e = 0; e < (int)meshin.edges.nb(); ++e)
-				// {
-				// 	for (int lv = 0; lv < 2; ++lv)
-				// 	{
-				// 		mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
-				// 	}
-				// }
-				// assert(mesh->in_ordered_edges_.size() > 0);
+				for (int e = 0; e < (int)meshin.edges.nb(); ++e)
+				{
+					for (int lv = 0; lv < 2; ++lv)
+					{
+						mesh->in_ordered_edges_(e, lv) = meshin.edges.vertex(e, lv);
+					}
+				}
+				assert(mesh->in_ordered_edges_.size() > 0);
 
 				mesh->in_ordered_faces_.resize(0, 0);
 
