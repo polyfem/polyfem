@@ -934,9 +934,9 @@ namespace polyfem
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
-		logger().debug("Building node mapping...");
-		build_node_mapping();
-		logger().debug(" done");
+		// logger().debug("Building node mapping...");
+		// build_node_mapping();
+		// logger().debug(" done");
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);

@@ -813,7 +813,7 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh, obstacle, input_dirichelt,
+		auto rhs_assembler_ptr = std::make_shared<RhsAssembler>(assembler, *mesh, obstacle, input_dirichelt,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -890,9 +890,9 @@ namespace polyfem
 			// 	exit(0);
 		}
 
-		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"]);
+		step_data.nl_problem = std::make_shared<NLProblem>(*this, *rhs_assembler_ptr, 1, args["contact"]["dhat"]);
 		NLProblem &nl_problem = *(step_data.nl_problem);
-		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"], args["solver"]["augmented_lagrangian"]["initial_weight"]);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, *rhs_assembler_ptr, 1, args["contact"]["dhat"], args["solver"]["augmented_lagrangian"]["initial_weight"]);
 		ALNLProblem &alnl_problem = *(step_data.alnl_problem);
 
 		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];

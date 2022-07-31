@@ -406,7 +406,7 @@ namespace polyfem
 					vec_term = vec_term_mat;
 				}};
 
-			surface_integral(total_local_boundary, args["n_boundary_samples"], bases, gbases, integrand_functions, *mesh, result);
+			surface_integral(total_local_boundary, args["space"]["advanced"]["n_boundary_samples"], bases, gbases, integrand_functions, *mesh, result);
 		}
 		return result;
 	}
@@ -457,7 +457,7 @@ namespace polyfem
 					vec_term = vec_term_mat;
 				}};
 
-			surface_integral(total_local_boundary, args["n_boundary_samples"], bases, gbases, integrand_functions, *mesh, result);
+			surface_integral(total_local_boundary, args["space"]["advanced"]["n_boundary_samples"], bases, gbases, integrand_functions, *mesh, result);
 		}
 
 		return result;
@@ -533,7 +533,6 @@ namespace polyfem
 	void State::compute_force_hessian_nonlinear(std::shared_ptr<solver::NLProblem> nl, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
 	{
 		int full_size = nl->get_full_size();
-		auto params = args["solver"];
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		Eigen::VectorXd full;
@@ -559,7 +558,7 @@ namespace polyfem
 				assembler.assemble_energy_hessian(nl->rhs_assembler.formulation(), mesh->is_volume(), n_bases, false, bases, gbases, ass_vals_cache, full, nl->mat_cache, energy_hessian);
 			}
 
-			if (problem->is_time_dependent() && (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0) && diff_cached.size() > 0)
+			if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
 			{
 				StiffnessMatrix damping_hessian(full_size, full_size);
 				damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
@@ -574,7 +573,7 @@ namespace polyfem
 			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(full, mesh->dimension());
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
 
-			const double mu = args["mu"].get<double>();
+			const double mu = nl->mu();
 			const double kappa = nl->barrier_stiffness();
 			const double dhat = nl->dhat();
 			const double epsv = nl->epsv_dt();
@@ -626,7 +625,7 @@ namespace polyfem
 			}
 		}
 
-		if (problem->is_time_dependent() && (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0) && diff_cached.size() > 0)
+		if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
 		{
 			StiffnessMatrix damping_hessian_prev(full_size, full_size);
 			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
@@ -785,7 +784,7 @@ namespace polyfem
 			for (const auto &lb : total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["space"]["advanced"]["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -986,7 +985,7 @@ namespace polyfem
 			for (const auto &lb : total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["space"]["advanced"]["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -1432,7 +1431,7 @@ namespace polyfem
 	void State::compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraint_set, Eigen::VectorXd &term)
 	{
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!args["contact"]["enabled"] || args["mu"].get<double>() == 0)
+		if (!args["contact"]["enabled"] || args["contact"]["friction_coefficient"].get<double>() == 0)
 			return;
 
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
@@ -1722,13 +1721,13 @@ namespace polyfem
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
 		assert(args["contact"]["enabled"]);
-		assert(args["mu"] > 0);
+		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
 
 		const double dt = args["time"]["dt"];
-		const double mu = args["mu"];
+		const double mu = args["contact"]["friction_coefficient"].get<double>();
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
@@ -2009,13 +2008,13 @@ namespace polyfem
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
 		assert(args["contact"]["enabled"]);
-		assert(args["mu"] > 0);
+		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
 		const double dt = args["time"]["dt"];
-		const double mu = args["mu"];
+		const double mu = args["contact"]["friction_coefficient"].get<double>();
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
@@ -2102,13 +2101,13 @@ namespace polyfem
 	{
 		assert(problem->is_time_dependent());
 		assert(args["contact"]["enabled"]);
-		assert(args["mu"] > 0);
+		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
 		const double dt = args["time"]["dt"];
-		const double mu = args["mu"];
+		const double mu = args["contact"]["friction_coefficient"].get<double>();
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 

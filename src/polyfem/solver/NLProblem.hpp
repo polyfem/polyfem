@@ -163,6 +163,7 @@ namespace polyfem
 			inline double barrier_stiffness() const { return _barrier_stiffness; }
 			inline double dhat() const { return _dhat; }
 			inline double epsv_dt() const { return _epsv * dt(); }
+			inline double mu() const { return _mu; }
 			inline bool get_is_time_dependent() const { return is_time_dependent; }
 			inline double get_full_size() const { return full_size; }
 			inline double get_reduced_size() const { return reduced_size; }

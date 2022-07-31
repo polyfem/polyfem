@@ -336,14 +336,29 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-		{
-			"problem": "GenericTensor",
-			"tensor_formulation": "NeoHookean",
-			"n_refs": 0,
-			"discr_order": 1,
-			"iso_parametric": true,
-			"problem_params": {
-				"dirichlet_boundary": [
+	{
+		"geometry": [
+			{
+				"mesh": ""
+			}
+		],
+		"space": {
+			"discr_order": 1
+		},
+		"solver": {
+			"nonlinear": {
+				"grad_norm": 1e-14,
+				"use_grad_norm": true
+			}
+		},
+		"differentiable": true,
+		"boundary_conditions": {
+			"rhs": [
+				10,
+				100,
+				0
+			],
+			"dirichlet_boundary": [
 				{
 					"id": "all",
 					"value": [
@@ -351,24 +366,17 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 						0.0,
 						0.0
 					]
-				}],
-				"rhs": [10, 100, 0]
-			},
-
-			"params": {
-				"mu": 7.40741e6,
-				"lambda": 1.7284e7
-			},
-
-			"solver_params": {
-				"gradNorm": 1e-14,
-				"useGradNorm": true
-			},
-
-			"normalize_mesh": true
+				}
+			]
+		},
+		"materials": {
+			"type": "NeoHookean",
+			"lambda": 17284000.0,
+			"mu": 7407410.0
 		}
+	}
 	)"_json;
-	in_args["mesh"] = path + "/contact/meshes/3D/creatures/bunny.msh";
+	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/creatures/bunny.msh";
 
 	StressFunctional func;
 
@@ -398,11 +406,18 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
 	state.solve_problem();
-	double new_functional_val = func.energy(state);
+	double next_functional_val = func.energy(state);
 
-	double finite_difference = (new_functional_val - functional_val) / t;
+	state.perturb_mesh(velocity_discrete * (-2*t));
 
-	REQUIRE(derivative == Approx(finite_difference).epsilon(2e-4));
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	state.solve_problem();
+	double former_functional_val = func.energy(state);
+
+	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
+
+	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-3));
 }
 
 TEST_CASE("shape-contact", "[adjoint_method]")
