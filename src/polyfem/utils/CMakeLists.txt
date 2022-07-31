@@ -13,6 +13,8 @@ set(SOURCES
 	EdgeSampler.hpp
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
+	CompositeFunctional.cpp
+	CompositeFunctional.hpp
 	EnableWarnings.hpp
 	FEBioReader.cpp
 	FEBioReader.hpp

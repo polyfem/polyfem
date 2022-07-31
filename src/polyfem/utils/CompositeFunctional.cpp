@@ -1,7 +1,7 @@
 #pragma once
-#include <polyfem/CompositeFunctional.hpp>
+#include <polyfem/utils/CompositeFunctional.hpp>
 
-#include <polyfem/SplineParam.hpp>
+#include <polyfem/utils/SplineParam.hpp>
 
 namespace polyfem
 {

@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
-#include <polyfem/CompositeFunctional.hpp>
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/utils/CompositeFunctional.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -11,7 +11,7 @@
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
 
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <catch2/catch.hpp>
 #include <math.h>
@@ -55,7 +55,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 	in_args["mesh"] = path + "/circle2.msh";
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -147,7 +147,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	in_args["mesh"] = path + "/../../cube.msh";
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -253,7 +253,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	in_args["mesh"] = path + "/../../cube_dense.msh";
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -368,7 +368,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	StressFunctional func;
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -461,7 +461,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	StressFunctional func;
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -567,7 +567,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	in_args["meshes"][1]["mesh"] = path + "/../../cube_dense.msh";
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 
@@ -693,7 +693,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	in_args_ref["mu"] = 0.2;
 	in_args_ref["phi"] = 1;
 	in_args_ref["psi"] = 20;
-	state_reference.init_logger("", 2, false);
+	state_reference.init_logger("", spdlog::level::level_enum::info, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
@@ -716,7 +716,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	}
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -826,7 +826,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	StressFunctional func;
 
 	State state;
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -944,13 +944,13 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 4;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][1] = -1;
-	state_reference.init_logger("", 6, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1055,13 +1055,13 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 0;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][2] = 0;
-	state_reference.init_logger("", 6, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1164,14 +1164,14 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 
 	// compute reference solution
 	State state_reference(8);
-	state_reference.init_logger("", 1, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args);
 	state_reference.args["params"]["E"] = 1e4;
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1282,7 +1282,7 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 	StressFunctional func;
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1383,7 +1383,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 4;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][1] = -1;
-	state_reference.init_logger("", 2, false);
+	state_reference.init_logger("", spdlog::level::level_enum::info, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
@@ -1412,7 +1412,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	func.set_center_series(barycenters);
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
@@ -1512,7 +1512,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 4;
 	in_args_ref["problem_params"]["initial_velocity"][0]["value"][1] = -1;
-	state_reference.init_logger("", 2, false);
+	state_reference.init_logger("", spdlog::level::level_enum::info, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
@@ -1543,7 +1543,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	func.set_center_series(barycenters);
 
 	State state(8);
-	state.init_logger("", 6, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.solve();
