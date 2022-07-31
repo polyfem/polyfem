@@ -168,7 +168,7 @@ namespace polyfem
 		std::vector<ElementBases> bases;
 		/// FE pressure bases for mixed elements, the size is #elements
 		std::vector<ElementBases> pressure_bases;
-		///Geometric mapping bases, if the elements are isoparametric, this list is empty
+		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
 
 		/// polygons, used since poly have no geom mapping
@@ -268,40 +268,36 @@ namespace polyfem
 		/// timedependent stuff cached
 		SolveData solve_data;
 		/// initialize solver
-		/// @param[in] c_sol current solution
-		void init_solve(Eigen::VectorXd &c_sol);
+		void init_solve();
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt);
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		/// @param[out] c_sol solution
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt);
 		/// solves transient scalar problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		/// @param[out] x solution
-		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_scalar(const int time_steps, const double t0, const double dt);
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		/// @param[out] x solution
-		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt);
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt);
 		/// initialize the nonlinear solver
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
@@ -391,15 +387,24 @@ namespace polyfem
 			load_mesh(non_conforming);
 		}
 
-		///set the boundary sideset from a lambda that takes the face/edge barycenter
+		/// set the boundary sideset from a lambda that takes the face/edge barycenter
 		/// @param[in] boundary_marker function from face/edge barycenter that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		///set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker)
+		{
+			mesh->compute_boundary_ids(boundary_marker);
+		}
+		/// set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		/// @param[in] boundary_marker function from face/edge barycenter and a flag if the face/edge is boundary that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		///set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker)
+		{
+			mesh->compute_boundary_ids(boundary_marker);
+		}
+		/// set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		/// @param[in] boundary_marker function from face/edge vertices and a flag if the face/edge is boundary that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker)
+		{
+			mesh->compute_boundary_ids(boundary_marker);
+		}
 
 		/// Resets the mesh
 		void reset_mesh();
@@ -572,14 +577,14 @@ namespace polyfem
 		/// @param[in] use_sampler uses the sampler or not
 		/// @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
-		///interpolate the function fun.
-		/// @param[in] n_points is the size of the output.
-		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		/// @param[in] basis basis function
-		/// @param[in] fun function to used
-		/// @param[out] result output
-		/// @param[in] use_sampler uses the sampler or not
-		/// @param[in] boundary_only interpolates only at boundary elements
+		/// interpolate the function fun.
+		///  @param[in] n_points is the size of the output.
+		///  @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		///  @param[in] basis basis function
+		///  @param[in] fun function to used
+		///  @param[out] result output
+		///  @param[in] use_sampler uses the sampler or not
+		///  @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
@@ -725,7 +730,7 @@ namespace polyfem
 		/// @param[in] name filename
 		/// @param[in] t time
 		void save_surface(const std::string &name);
-		///saves the wireframe
+		/// saves the wireframe
 		/// @param[in] name filename
 		/// @param[in] t time
 		void save_wire(const std::string &name, const double t);

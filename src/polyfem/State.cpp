@@ -421,7 +421,7 @@ namespace polyfem
 		std::map<int, json> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			//TODO fix and check me
+			// TODO: fix and check me
 			// check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
 			// json mat = default_material;
 			// mat.merge_patch(body_params[i]);
@@ -572,7 +572,7 @@ namespace polyfem
 		if (args["space"]["discr_order"] == mesh->orders().minCoeff())
 			return true;
 
-		//TODO?
+		// TODO:
 		// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
 		// 	return true;
 
@@ -638,7 +638,7 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				//TODO b_discr_orders[i]["id"] can be an array
+				// TODO: b_discr_orders[i]["id"] can be an array
 				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
 				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
 			}
@@ -654,7 +654,7 @@ namespace polyfem
 			logger().error("space/discr_order must be either a number a path or an array");
 			throw "invalid json";
 		}
-		//TODO same for pressure!
+		// TODO: same for pressure!
 
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
@@ -730,7 +730,7 @@ namespace polyfem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if (args["space"]["advanced"]["use_spline"])
 			{
-				//TODO?
+				// TODO:
 				// if (!iso_parametric())
 				// {
 				// 	logger().error("Splines must be isoparametric, ignoring...");
@@ -1400,8 +1400,7 @@ namespace polyfem
 			Eigen::saveMarket(stiffness, full_mat_path);
 		}
 
-		Eigen::VectorXd c_sol;
-		init_solve(c_sol);
+		init_solve();
 
 		if (problem->is_time_dependent())
 		{
@@ -1416,18 +1415,16 @@ namespace polyfem
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
-			RhsAssembler &rhs_assembler = *(solve_data.rhs_assembler);
-
 			if (formulation() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
+				solve_transient_navier_stokes(time_steps, t0, dt);
 			else if (formulation() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
+				solve_transient_navier_stokes_split(time_steps, dt);
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
-				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
+				solve_transient_scalar(time_steps, t0, dt);
 			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"]) // Collisions add nonlinearity to the problem
-				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
+				solve_transient_tensor_linear(time_steps, t0, dt);
 			else
-				solve_transient_tensor_nonlinear(time_steps, t0, dt, rhs_assembler);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt);
 		}
 		else
 		{

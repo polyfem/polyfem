@@ -6,7 +6,7 @@ namespace polyfem::time_integrator
 {
 	/// @brief Backward Differential Formulas
 	/// \f[
-	/// 	x^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} x^{t-i}\right)+ \Delta t \beta v^{t+1}\\
+	/// 	x^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} x^{t-i}\right)+ \Delta t \beta v^{t+1}\newline
 	/// 	v^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} v^{t-i}\right)+ \Delta t \beta a^{t+1}
 	/// \f]
 	/// @see https://en.wikipedia.org/wiki/Backward_differentiation_formula
@@ -26,10 +26,11 @@ namespace polyfem::time_integrator
 		/// @param v_prevs vector of previous velocities
 		/// @param a_prevs vector of previous accelerations
 		/// @param dt time step
-		void init(const std::vector<Eigen::VectorXd> &x_prevs,
-				  const std::vector<Eigen::VectorXd> &v_prevs,
-				  const std::vector<Eigen::VectorXd> &a_prevs,
-				  double dt);
+		void init(
+			const std::vector<Eigen::VectorXd> &x_prevs,
+			const std::vector<Eigen::VectorXd> &v_prevs,
+			const std::vector<Eigen::VectorXd> &a_prevs,
+			double dt);
 
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
