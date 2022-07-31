@@ -67,7 +67,7 @@ namespace polyfem
 	} // namespace solver
 
 	/// class to store time stepping data
-	class StepData
+	class SolveData
 	{
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
@@ -266,7 +266,7 @@ namespace polyfem
 		}
 
 		/// timedependent stuff cached
-		StepData step_data;
+		SolveData solve_data;
 		/// initialize solver
 		/// @param[in] c_sol current solution
 		void init_solve(Eigen::VectorXd &c_sol);

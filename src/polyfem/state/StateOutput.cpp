@@ -1301,11 +1301,11 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			bool is_time_integrator_valid = step_data.nl_problem != nullptr && step_data.nl_problem->time_integrator() != nullptr;
+			bool is_time_integrator_valid = solve_data.nl_problem != nullptr && solve_data.nl_problem->time_integrator() != nullptr;
 			if (export_velocity)
 			{
 				Eigen::MatrixXd vel = is_time_integrator_valid
-										  ? step_data.nl_problem->time_integrator()->v_prev()
+										  ? solve_data.nl_problem->time_integrator()->v_prev()
 										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
 
 				Eigen::MatrixXd interp_vel;
@@ -1326,7 +1326,7 @@ namespace polyfem
 			if (export_acceleration)
 			{
 				Eigen::MatrixXd acc = is_time_integrator_valid
-										  ? step_data.nl_problem->time_integrator()->a_prev()
+										  ? solve_data.nl_problem->time_integrator()->a_prev()
 										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
 
 				Eigen::MatrixXd interp_acc;
@@ -1713,7 +1713,7 @@ namespace polyfem
 				collision_mesh, displaced_surface, args["contact"]["dhat"], constraint_set,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
 
-			const double barrier_stiffness = step_data.nl_problem != nullptr ? step_data.nl_problem->barrier_stiffness() : 1;
+			const double barrier_stiffness = solve_data.nl_problem != nullptr ? solve_data.nl_problem->barrier_stiffness() : 1;
 
 			if (export_contact_forces)
 			{
@@ -1731,8 +1731,8 @@ namespace polyfem
 			if (export_friction_forces)
 			{
 				Eigen::MatrixXd displaced_surface_prev =
-					(step_data.nl_problem != nullptr)
-						? collision_mesh.vertices(step_data.nl_problem->displaced_prev())
+					(solve_data.nl_problem != nullptr)
+						? collision_mesh.vertices(solve_data.nl_problem->displaced_prev())
 						: displaced_surface;
 
 				ipc::FrictionConstraints friction_constraint_set;

@@ -1312,7 +1312,7 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
+		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle, input_dirichelt,
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
@@ -1320,7 +1320,7 @@ namespace polyfem
 			args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		step_data.rhs_assembler->assemble(density, rhs);
+		solve_data.rhs_assembler->assemble(density, rhs);
 		rhs *= -1;
 
 		// if(problem->is_mixed())
@@ -1416,7 +1416,7 @@ namespace polyfem
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
-			RhsAssembler &rhs_assembler = *(step_data.rhs_assembler);
+			RhsAssembler &rhs_assembler = *(solve_data.rhs_assembler);
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);

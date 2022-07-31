@@ -90,12 +90,12 @@ namespace polyfem
 								   args["space"]["advanced"]["bc_method"],
 								   args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
+		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle, input_dirichelt, n_bases, size, bases, gbases, ass_vals_cache,
 			formulation(), *problem, args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"],
 			rhs_solver_params);
-		RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
+		RhsAssembler &rhs_assembler = *solve_data.rhs_assembler;
 
 		const std::string u_path = resolve_input_path(args["input"]["data"]["u_path"]);
 		if (!u_path.empty())
@@ -219,7 +219,7 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
 
-		step_data.nl_problem->save_raw(
+		solve_data.nl_problem->save_raw(
 			resolve_output_path(args["output"]["data"]["u_path"]),
 			resolve_output_path(args["output"]["data"]["v_path"]),
 			resolve_output_path(args["output"]["data"]["a_path"]));
@@ -249,12 +249,12 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
-		step_data.nl_problem = std::make_shared<NLProblem>(
-			*this, step_data.rhs_assembler, 1, args["contact"]["dhat"]);
+		solve_data.nl_problem = std::make_shared<NLProblem>(
+			*this, solve_data.rhs_assembler, 1, args["contact"]["dhat"]);
 
 		const double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		step_data.alnl_problem = std::make_shared<ALNLProblem>(
-			*this, step_data.rhs_assembler, 1, args["contact"]["dhat"], al_weight);
+		solve_data.alnl_problem = std::make_shared<ALNLProblem>(
+			*this, solve_data.rhs_assembler, 1, args["contact"]["dhat"], al_weight);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
@@ -279,8 +279,8 @@ namespace polyfem
 				rhs_assembler.initial_acceleration(acceleration);
 
 			const double dt = args["time"]["dt"];
-			step_data.nl_problem->init_time_integrator(sol, velocity, acceleration, dt);
-			step_data.alnl_problem->init_time_integrator(sol, velocity, acceleration, dt);
+			solve_data.nl_problem->init_time_integrator(sol, velocity, acceleration, dt);
+			solve_data.alnl_problem->init_time_integrator(sol, velocity, acceleration, dt);
 		}
 
 		///////////////////////////////////////////////////////////////////////
@@ -291,8 +291,8 @@ namespace polyfem
 	void State::solve_tensor_nonlinear(const int t)
 	{
 		Eigen::VectorXd tmp_sol;
-		NLProblem &nl_problem = *(step_data.nl_problem);
-		ALNLProblem &alnl_problem = *(step_data.alnl_problem);
+		NLProblem &nl_problem = *(solve_data.nl_problem);
+		ALNLProblem &alnl_problem = *(solve_data.alnl_problem);
 
 		assert(sol.size() == rhs.size());
 
