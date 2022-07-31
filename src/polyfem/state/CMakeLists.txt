@@ -5,6 +5,7 @@ set(SOURCES
 	StateOutput.cpp
 	StatePref.cpp
 	StateSolve.cpp
+	StateDiff.cpp
 )
 
 prepend_current_path(SOURCES)

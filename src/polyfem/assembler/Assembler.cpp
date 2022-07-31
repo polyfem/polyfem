@@ -11,6 +11,8 @@
 #include "MultiModel.hpp"
 // #include "OgdenElasticity.hpp"
 
+#include "ViscousDamping.hpp"
+
 #include "Stokes.hpp"
 #include "NavierStokes.hpp"
 #include "IncompressibleLinElast.hpp"
@@ -654,6 +656,383 @@ namespace polyfem
 			return res;
 		}
 
+		template <class LocalAssembler>
+		void TransientNLAssembler<LocalAssembler>::assemble_grad(
+			const bool is_volume,
+			const int n_basis,
+			const double dt,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &prev_displacement,
+			Eigen::MatrixXd &rhs) const
+		{
+			rhs.resize(n_basis * local_assembler_.size(), 1);
+			rhs.setZero();
+
+			auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
+
+			const int n_bases = int(bases.size());
+
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
+				{
+					// igl::Timer timer; timer.start();
+
+					ElementAssemblyValues &vals = local_storage.vals;
+					// vals.compute(e, is_volume, bases[e], gbases[e]);
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+					const Quadrature &quadrature = vals.quadrature;
+
+					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+					const int n_loc_bases = int(vals.basis_values.size());
+
+					const auto val = local_assembler_.assemble_grad(vals, displacement, prev_displacement, local_storage.da, dt);
+					assert(val.size() == n_loc_bases * local_assembler_.size());
+
+					for (int j = 0; j < n_loc_bases; ++j)
+					{
+						const auto &global_j = vals.basis_values[j].global;
+
+						// igl::Timer t1; t1.start();
+						for (int m = 0; m < local_assembler_.size(); ++m)
+						{
+							const double local_value = val(j * local_assembler_.size() + m);
+							if (std::abs(local_value) < 1e-30)
+							{
+								continue;
+							}
+
+							for (size_t jj = 0; jj < global_j.size(); ++jj)
+							{
+								const auto gj = global_j[jj].index * local_assembler_.size() + m;
+								const auto wj = global_j[jj].val;
+
+								local_storage.vec(gj) += local_value * wj;
+							}
+						}
+
+						// t1.stop();
+						// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+					}
+
+					// timer.stop();
+					// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
+				}
+			});
+
+			// Serially merge local storages
+			for (const LocalThreadVecStorage &local_storage : storage)
+				rhs += local_storage.vec;
+		}
+
+		template <class LocalAssembler>
+		void TransientNLAssembler<LocalAssembler>::assemble_hessian(
+			const bool is_volume,
+			const int n_basis,
+			const double dt,
+			const bool project_to_psd,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &prev_displacement,
+			SpareMatrixCache &mat_cache,
+			StiffnessMatrix &grad) const
+		{
+			const int max_triplets_size = int(1e7);
+			const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * local_assembler_.size());
+			// std::cout<<"buffer_size "<<buffer_size<<std::endl;
+
+			// grad.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
+			// grad.setZero();
+
+			mat_cache.init(n_basis * local_assembler_.size());
+			mat_cache.set_zero();
+
+			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
+
+			const int n_bases = int(bases.size());
+			igl::Timer timerg;
+			timerg.start();
+
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
+				{
+					ElementAssemblyValues &vals = local_storage.vals;
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+					const Quadrature &quadrature = vals.quadrature;
+
+					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+					const int n_loc_bases = int(vals.basis_values.size());
+
+					auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, prev_displacement, local_storage.da, dt);
+					assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
+					assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
+
+					if (project_to_psd)
+						stiffness_val = ipc::project_to_psd(stiffness_val);
+
+					// bool has_nan = false;
+					// for(int k = 0; k < stiffness_val.size(); ++k)
+					// {
+					// 	if(std::isnan(stiffness_val(k)))
+					// 	{
+					// 		has_nan = true;
+					// 		break;
+					// 	}
+					// }
+
+					// if(has_nan)
+					// {
+					// 	local_storage.entries.emplace_back(0, 0, std::nan(""));
+					// 	break;
+					// }
+
+					for (int i = 0; i < n_loc_bases; ++i)
+					{
+						const auto &global_i = vals.basis_values[i].global;
+
+						for (int j = 0; j < n_loc_bases; ++j)
+						// for(int j = 0; j <= i; ++j)
+						{
+							const auto &global_j = vals.basis_values[j].global;
+
+							for (int n = 0; n < local_assembler_.size(); ++n)
+							{
+								for (int m = 0; m < local_assembler_.size(); ++m)
+								{
+									const double local_value = stiffness_val(i * local_assembler_.size() + m, j * local_assembler_.size() + n);
+									//  if (std::abs(local_value) < 1e-30)
+									//  {
+									// 	 continue;
+									//  }
+
+									for (size_t ii = 0; ii < global_i.size(); ++ii)
+									{
+										const auto gi = global_i[ii].index * local_assembler_.size() + m;
+										const auto wi = global_i[ii].val;
+
+										for (size_t jj = 0; jj < global_j.size(); ++jj)
+										{
+											const auto gj = global_j[jj].index * local_assembler_.size() + n;
+											const auto wj = global_j[jj].val;
+
+											local_storage.cache.add_value(e, gi, gj, local_value * wi * wj);
+											// if (j < i) {
+											// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
+											// }
+
+											if (local_storage.cache.entries_size() >= max_triplets_size)
+											{
+												local_storage.cache.prune();
+												logger().debug("cleaning memory...");
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+
+			timerg.stop();
+			logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+
+			timerg.start();
+
+			// Serially merge local storages
+			for (LocalThreadMatStorage &local_storage : storage)
+			{
+				local_storage.cache.prune();
+				mat_cache += local_storage.cache;
+			}
+			grad = mat_cache.get_matrix();
+
+			timerg.stop();
+			logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
+		}
+
+		template <class LocalAssembler>
+		void TransientNLAssembler<LocalAssembler>::assemble_stress_prev_grad(
+			const bool is_volume,
+			const int n_basis,
+			const double dt,
+			const bool project_to_psd,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &prev_displacement,
+			SpareMatrixCache &mat_cache,
+			StiffnessMatrix &grad) const
+		{
+			const int max_triplets_size = int(1e7);
+			const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * local_assembler_.size());
+			// std::cout<<"buffer_size "<<buffer_size<<std::endl;
+
+			// grad.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
+			// grad.setZero();
+
+			mat_cache.init(n_basis * local_assembler_.size());
+			mat_cache.set_zero();
+
+			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
+
+			const int n_bases = int(bases.size());
+			igl::Timer timerg;
+			timerg.start();
+
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
+				{
+					ElementAssemblyValues &vals = local_storage.vals;
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+					const Quadrature &quadrature = vals.quadrature;
+
+					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+					const int n_loc_bases = int(vals.basis_values.size());
+
+					auto stiffness_val = local_assembler_.assemble_stress_prev_grad(vals, displacement, prev_displacement, local_storage.da, dt);
+					assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
+					assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
+
+					if (project_to_psd)
+						stiffness_val = ipc::project_to_psd(stiffness_val);
+
+					// bool has_nan = false;
+					// for(int k = 0; k < stiffness_val.size(); ++k)
+					// {
+					// 	if(std::isnan(stiffness_val(k)))
+					// 	{
+					// 		has_nan = true;
+					// 		break;
+					// 	}
+					// }
+
+					// if(has_nan)
+					// {
+					// 	local_storage.entries.emplace_back(0, 0, std::nan(""));
+					// 	break;
+					// }
+
+					for (int i = 0; i < n_loc_bases; ++i)
+					{
+						const auto &global_i = vals.basis_values[i].global;
+
+						for (int j = 0; j < n_loc_bases; ++j)
+						// for(int j = 0; j <= i; ++j)
+						{
+							const auto &global_j = vals.basis_values[j].global;
+
+							for (int n = 0; n < local_assembler_.size(); ++n)
+							{
+								for (int m = 0; m < local_assembler_.size(); ++m)
+								{
+									const double local_value = stiffness_val(i * local_assembler_.size() + m, j * local_assembler_.size() + n);
+									//  if (std::abs(local_value) < 1e-30)
+									//  {
+									// 	 continue;
+									//  }
+
+									for (size_t ii = 0; ii < global_i.size(); ++ii)
+									{
+										const auto gi = global_i[ii].index * local_assembler_.size() + m;
+										const auto wi = global_i[ii].val;
+
+										for (size_t jj = 0; jj < global_j.size(); ++jj)
+										{
+											const auto gj = global_j[jj].index * local_assembler_.size() + n;
+											const auto wj = global_j[jj].val;
+
+											local_storage.cache.add_value(e, gi, gj, local_value * wi * wj);
+											// if (j < i) {
+											// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
+											// }
+
+											if (local_storage.cache.entries_size() >= max_triplets_size)
+											{
+												local_storage.cache.prune();
+												logger().debug("cleaning memory...");
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+
+			timerg.stop();
+			logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+
+			timerg.start();
+
+			// Serially merge local storages
+			for (LocalThreadMatStorage &local_storage : storage)
+			{
+				local_storage.cache.prune();
+				mat_cache += local_storage.cache;
+			}
+			grad = mat_cache.get_matrix();
+
+			timerg.stop();
+			logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
+		}
+
+		template <class LocalAssembler>
+		double TransientNLAssembler<LocalAssembler>::assemble(
+			const bool is_volume,
+			const double dt,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &prev_displacement) const
+		{
+			auto storage = create_thread_storage(LocalThreadScalarStorage());
+			const int n_bases = int(bases.size());
+
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+				ElementAssemblyValues &vals = local_storage.vals;
+
+				for (int e = start; e < end; ++e)
+				{
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+					const Quadrature &quadrature = vals.quadrature;
+
+					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					const double val = local_assembler_.compute_energy(vals, displacement, prev_displacement, local_storage.da, dt);
+					local_storage.val += val;
+				}
+			});
+
+			double res = 0;
+			// Serially merge local storages
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				res += local_storage.val;
+			return res;
+		}
+
 		//template instantiation
 		template class Assembler<Laplacian>;
 		template class Assembler<Helmholtz>;
@@ -669,6 +1048,8 @@ namespace polyfem
 		template class NLAssembler<NeoHookeanElasticity>;
 		template class NLAssembler<MultiModel>;
 		// template class NLAssembler<OgdenElasticity>;
+
+		template class TransientNLAssembler<ViscousDamping>;
 
 		template class Assembler<StokesVelocity>;
 		template class MixedAssembler<StokesMixed>;

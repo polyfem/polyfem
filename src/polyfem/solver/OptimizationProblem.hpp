@@ -1,8 +1,8 @@
 #pragma once
 
 #include <polyfem/State.hpp>
-#include <polyfem/CompositeFunctional.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/CompositeFunctional.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <cppoptlib/problem.h>
 #include <filesystem>

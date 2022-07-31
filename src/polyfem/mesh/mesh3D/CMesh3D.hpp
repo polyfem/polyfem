@@ -62,6 +62,8 @@ namespace polyfem
 
 			void compute_elements_tag() override;
 
+			void set_point(const int global_index, const RowVectorNd &p) override;
+
 			RowVectorNd kernel(const int cell_id) const override;
 			RowVectorNd point(const int vertex_id) const override;
 			RowVectorNd edge_barycenter(const int e) const override;

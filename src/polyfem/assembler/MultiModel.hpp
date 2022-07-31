@@ -50,7 +50,7 @@ namespace polyfem
 			inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 
 			//class that stores and compute lame parameters per point
-			const LameParameters &lame_params() const { return linear_elasticity_.lame_params(); }
+			LameParameters &lame_params() { return linear_elasticity_.lame_params(); }
 			void set_params(const LameParameters &params)
 			{
 				neo_hookean_.set_params(params);

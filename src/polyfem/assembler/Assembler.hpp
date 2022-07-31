@@ -106,5 +106,66 @@ namespace polyfem
 		private:
 			LocalAssembler local_assembler_;
 		};
+
+		//non-linear assembler (eg neohookean elasticity)
+		template <class LocalAssembler>
+		class TransientNLAssembler
+		{
+		public:
+			//assemble gradient of energy (rhs)
+			void assemble_grad(
+				const bool is_volume,
+				const int n_basis,
+				const double dt,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &cache,
+				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &prev_displacement,
+				Eigen::MatrixXd &rhs) const;
+			//assemble hessian of energy (grad)
+			void assemble_hessian(
+				const bool is_volume,
+				const int n_basis,
+				const double dt,
+				const bool project_to_psd,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &cache,
+				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &prev_displacement,
+				utils::SpareMatrixCache &mat_cache,
+				StiffnessMatrix &grad) const;
+
+			//assemble grad prev_displacement of "grad displacement of energy"
+			void assemble_stress_prev_grad(
+				const bool is_volume,
+				const int n_basis,
+				const double dt,
+				const bool project_to_psd,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &cache,
+				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &prev_displacement,
+				utils::SpareMatrixCache &mat_cache,
+				StiffnessMatrix &grad) const;
+
+			//assemble energy
+			double assemble(
+				const bool is_volume,
+				const double dt,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &cache,
+				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &prev_displacement) const;
+
+			inline LocalAssembler &local_assembler() { return local_assembler_; }
+			inline const LocalAssembler &local_assembler() const { return local_assembler_; }
+
+		private:
+			LocalAssembler local_assembler_;
+		};
 	} // namespace assembler
 } // namespace polyfem

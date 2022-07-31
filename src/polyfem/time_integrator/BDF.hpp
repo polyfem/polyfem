@@ -63,9 +63,6 @@ namespace polyfem::time_integrator
 		/// \f]
 		Eigen::VectorXd weighted_sum_v_prevs() const;
 
-	protected:
-		int num_steps;
-
 		/// @brief Retrieve the alphas used for BDF with `i` steps.
 		/// @param i number of steps
 		/// @see https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula
@@ -75,5 +72,8 @@ namespace polyfem::time_integrator
 		/// @param i number of steps
 		/// @see https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula
 		static double betas(const int i);
+
+	protected:
+		int num_steps;
 	};
 } // namespace polyfem::time_integrator

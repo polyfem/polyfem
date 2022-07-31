@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/OptimizationProblem.hpp>
+#include <polyfem/solver/OptimizationProblem.hpp>
 #include <igl/slim.h>
 
 #include <ipc/collisions/collision_constraint.hpp>

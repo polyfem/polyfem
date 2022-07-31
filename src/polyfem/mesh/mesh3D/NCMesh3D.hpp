@@ -242,6 +242,8 @@ namespace polyfem
 
 			double edge_length(const int gid) const override;
 
+			void set_point(const int global_index, const RowVectorNd &p) override;
+
 			RowVectorNd point(const int global_index) const override;
 			RowVectorNd edge_barycenter(const int e) const override;
 			RowVectorNd face_barycenter(const int f) const override;

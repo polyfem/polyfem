@@ -5,7 +5,7 @@
 
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/StringUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/ImplicitTimeIntegrator.hpp>
 #include <polyfem/AssemblerUtils.hpp>

@@ -635,7 +635,7 @@ namespace polyfem
 		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			force_al = false;
-			nl_problem.line_search_end();
+			nl_problem.line_search_end(false);
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
@@ -666,7 +666,7 @@ namespace polyfem
 				break;
 			}
 		}
-		nl_problem.line_search_end();
+		nl_problem.line_search_end(false);
 		logger().debug("Solving Problem");
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
@@ -934,7 +934,7 @@ namespace polyfem
 		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			force_al = false;
-			nl_problem.line_search_end();
+			nl_problem.line_search_end(false);
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
@@ -970,7 +970,7 @@ namespace polyfem
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
 			}
 		}
-		nl_problem.line_search_end();
+		nl_problem.line_search_end(false);
 		logger().debug("Solving Problem");
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
 		nlsolver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);

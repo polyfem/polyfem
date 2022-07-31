@@ -1211,6 +1211,11 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::set_point(const int global_index, const RowVectorNd &p)
+		{
+			mesh_.points.col(global_index) = p.transpose();
+		}
+
 		RowVectorNd CMesh3D::point(const int global_index) const
 		{
 			RowVectorNd pt = mesh_.points.col(global_index).transpose();

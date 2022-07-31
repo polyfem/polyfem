@@ -269,6 +269,8 @@ namespace polyfem
 				return 0;
 			}
 
+			virtual void set_point(const int global_index, const RowVectorNd &p) = 0;
+
 			/// @brief point coordinates
 			///
 			/// @param[in] global_index *global* vertex index

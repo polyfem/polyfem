@@ -14,6 +14,7 @@
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "MultiModel.hpp"
+#include "ViscousDamping.hpp"
 // #include "OgdenElasticity.hpp"
 
 #include "Stokes.hpp"
@@ -137,9 +138,12 @@ namespace polyfem
 			void add_multimaterial(const int index, const json &params);
 			void set_size(const int dim);
 			void init_multimodels(const std::vector<std::string> &materials);
-			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
+			LameParameters &lame_params() { return linear_elasticity_.local_assembler().lame_params(); }
 			void update_lame_params(const LameParameters &newParams);
 			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
+
+			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_multiply_mat_function(const std::string& assembler) const;
+			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_dstress_dmu_dlambda_function(const std::string& assembler) const;
 
 			//checks if assembler is linear
 			static bool is_linear(const std::string &assembler);
@@ -199,5 +203,7 @@ namespace polyfem
 			MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
 			Assembler<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
 		};
+
+		typedef TransientNLAssembler<ViscousDamping> ViscousDampingAssembler;
 	} // namespace assembler
 } // namespace polyfem

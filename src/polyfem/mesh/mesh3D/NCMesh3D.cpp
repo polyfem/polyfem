@@ -112,6 +112,11 @@ namespace polyfem
 			return (point(v1) - point(v2)).norm();
 		}
 
+		void NCMesh3D::set_point(const int global_index, const RowVectorNd &p)
+		{
+			vertices[valid_to_all_vertex(global_index)].pos = p;
+		}
+
 		RowVectorNd NCMesh3D::point(const int global_index) const
 		{
 			return vertices[valid_to_all_vertex(global_index)].pos.transpose();

@@ -479,14 +479,52 @@ namespace polyfem
 			linear_elasticity_.local_assembler().lame_params().lambda_mat_ = lambdas;
 			linear_elasticity_energy_.local_assembler().lame_params().lambda_mat_ = lambdas;
 			neo_hookean_elasticity_.local_assembler().lame_params().lambda_mat_ = lambdas;
-			multi_models_elasticity_.local_assembler().linear_elasticity_lame_params().lambda_mat_ = lambdas;
-			multi_models_elasticity_.local_assembler().neo_hookean_lame_params().lambda_mat_ = lambdas;
 
 			linear_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
 			linear_elasticity_energy_.local_assembler().lame_params().mu_mat_ = mus;
 			neo_hookean_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
-			multi_models_elasticity_.local_assembler().linear_elasticity_lame_params().mu_mat_ = mus;
-			multi_models_elasticity_.local_assembler().neo_hookean_lame_params().mu_mat_ = mus;
+		}
+
+		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_grad_multiply_mat_function(const std::string& assembler) const
+		{
+			if (assembler == "Laplacian")
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
+					return laplacian_.local_assembler().compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, mat, stress, df_dgradu_mat);
+				};
+			else if (assembler == "LinearElasticity")
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
+					return linear_elasticity_.local_assembler().compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, mat, stress, df_dgradu_mat);
+				};
+			else if (assembler == "NeoHookean")
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
+					return neo_hookean_elasticity_.local_assembler().compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, mat, stress, df_dgradu_mat);
+				};
+			else 
+			{
+				assert(false);
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
+					return linear_elasticity_.local_assembler().compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, mat, stress, df_dgradu_mat);
+				};
+			}
+		}
+
+		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_dstress_dmu_dlambda_function(const std::string& assembler) const
+		{
+			if (assembler == "LinearElasticity")
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) {
+					return linear_elasticity_.local_assembler().compute_dstress_dmu_dlambda(el_id, local_pts, global_pts, grad_u_i, dstress_dmu, dstress_dlambda);
+				};
+			else if (assembler == "NeoHookean")
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) {
+					return neo_hookean_elasticity_.local_assembler().compute_dstress_dmu_dlambda(el_id, local_pts, global_pts, grad_u_i, dstress_dmu, dstress_dlambda);
+				};
+			else
+			{
+				assert(false);
+				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) {
+					return linear_elasticity_.local_assembler().compute_dstress_dmu_dlambda(el_id, local_pts, global_pts, grad_u_i, dstress_dmu, dstress_dlambda);
+				};
+			}
 		}
 
 		void AssemblerUtils::init_multimodels(const std::vector<std::string> &materials)

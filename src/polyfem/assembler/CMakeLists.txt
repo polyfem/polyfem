@@ -30,6 +30,8 @@ set(SOURCES
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp
 	SaintVenantElasticity.hpp
+	ViscousDamping.cpp
+	ViscousDamping.hpp
 	Stokes.cpp
 	Stokes.hpp
 	NavierStokes.cpp

@@ -160,22 +160,33 @@ namespace polyfem
 			void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 			void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 
-			double barrier_stiffness() const { return _barrier_stiffness; }
+			inline double barrier_stiffness() const { return _barrier_stiffness; }
+			inline double dhat() const { return _dhat; }
+			inline double epsv_dt() const { return _epsv * dt(); }
+			inline bool get_is_time_dependent() const { return is_time_dependent; }
+			inline double get_full_size() const { return full_size; }
+			inline double get_reduced_size() const { return reduced_size; }
+			const ipc::Constraints &get_constraint_set() const { return _constraint_set; }
+			const ipc::FrictionConstraints& get_friction_constraint_set() const { return _friction_constraint_set; }
 			const Eigen::MatrixXd &displaced_prev() const { return _displaced_prev; }
 			const std::shared_ptr<const time_integrator::ImplicitTimeIntegrator> time_integrator() const { return _time_integrator; }
 
+			void compute_cached_stiffness();
+
+			utils::SpareMatrixCache mat_cache;
+
+			StiffnessMatrix cached_stiffness;
+			const assembler::RhsAssembler &rhs_assembler;
+			
 		protected:
 			const State &state;
 			bool use_adaptive_barrier_stiffness;
 			double _barrier_stiffness;
-			const assembler::RhsAssembler &rhs_assembler;
 			bool is_time_dependent;
 
 		private:
 			const assembler::AssemblerUtils &assembler;
 			Eigen::MatrixXd _current_rhs;
-			StiffnessMatrix cached_stiffness;
-			utils::SpareMatrixCache mat_cache;
 
 			bool ignore_inertia;
 
@@ -217,7 +228,6 @@ namespace polyfem
 
 			std::shared_ptr<time_integrator::ImplicitTimeIntegrator> _time_integrator;
 
-			void compute_cached_stiffness();
 			void update_barrier_stiffness(const TVector &full);
 			void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 		};

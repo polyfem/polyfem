@@ -354,6 +354,7 @@ namespace polyfem
 	}
 
 	void State::extract_boundary_mesh(
+		const int n_current_bases,
 		const std::vector<ElementBases> &bases,
 		Eigen::MatrixXd &boundary_nodes_pos,
 		Eigen::MatrixXi &boundary_edges,
@@ -361,7 +362,7 @@ namespace polyfem
 	{
 		if (mesh->is_volume())
 		{
-			boundary_nodes_pos.resize(n_bases, 3);
+			boundary_nodes_pos.resize(n_current_bases, 3);
 			boundary_nodes_pos.setZero();
 			const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
@@ -478,7 +479,7 @@ namespace polyfem
 		}
 		else
 		{
-			boundary_nodes_pos.resize(n_bases, 2);
+			boundary_nodes_pos.resize(n_current_bases, 2);
 			boundary_nodes_pos.setZero();
 			const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
 
@@ -1738,7 +1739,7 @@ namespace polyfem
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
 					collision_mesh, displaced_surface, constraint_set,
-					args["contact"]["dhat"], barrier_stiffness, args["contact"]["friction_coefficient"],
+					args["contact"]["dhat"].get<double>(), barrier_stiffness, args["contact"]["friction_coefficient"].get<double>(),
 					friction_constraint_set);
 
 				double dt = 1;

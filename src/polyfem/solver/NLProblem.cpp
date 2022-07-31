@@ -320,7 +320,7 @@ namespace polyfem
 			_use_cached_candidates = true;
 		}
 
-		void NLProblem::line_search_end()
+		void NLProblem::line_search_end(bool failed)
 		{
 			_candidates.clear();
 			_use_cached_candidates = false;
@@ -461,6 +461,16 @@ namespace polyfem
 			const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, state.ass_vals_cache, full);
 			const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.n_boundary_samples(), t);
 
+			double damping_energy = 0;
+			if (is_time_dependent)
+			{
+				auto params = state.args["solver"];
+				if (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0)
+				{
+					damping_energy = state.damping_assembler.assemble(state.mesh->is_volume(), dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev());
+				}
+			}
+
 			double intertia_energy = 0;
 			double scaling = 1;
 			if (!ignore_inertia && is_time_dependent)
@@ -496,7 +506,7 @@ namespace polyfem
 
 			double lagged_damping = _lagged_damping_weight * (full - x_lagged).squaredNorm();
 
-			const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
+			const double non_contact_terms = scaling * (elastic_energy + damping_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
 
 			return non_contact_terms + _barrier_stiffness * collision_energy;
 		}
@@ -535,6 +545,17 @@ namespace polyfem
 
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 			assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
+
+			Eigen::MatrixXd damping_grad = Eigen::MatrixXd::Zero(grad.rows(), grad.cols());
+			if (is_time_dependent)
+			{
+				auto params = state.args["solver"];
+				if (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0)
+				{
+					state.damping_assembler.assemble_grad(state.mesh->is_volume(), state.n_bases, dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), damping_grad);
+				}
+			}
+			grad += damping_grad;
 
 			if (!ignore_inertia && is_time_dependent)
 			{
@@ -586,6 +607,7 @@ namespace polyfem
 			reduced_to_full(x, full);
 
 			THessian energy_hessian(full_size, full_size);
+			THessian damping_hessian(full_size, full_size);
 			{
 				POLYFEM_SCOPED_TIMER("\telastic hessian time");
 
@@ -600,9 +622,19 @@ namespace polyfem
 					assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, energy_hessian);
 				}
 
+				if (is_time_dependent)
+				{
+					auto params = state.args["solver"];
+					if (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0)
+					{
+						state.damping_assembler.assemble_hessian(state.mesh->is_volume(), state.n_bases, dt(), project_to_psd, state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), mat_cache, damping_hessian);
+					}
+				}
+
 				if (!ignore_inertia && is_time_dependent)
 				{
 					energy_hessian *= time_integrator()->acceleration_scaling();
+					damping_hessian *= time_integrator()->acceleration_scaling();
 				}
 			}
 
@@ -652,7 +684,7 @@ namespace polyfem
 
 			// Summing the hessian matrices like this might be less efficient than multiple `hessian += ...`, but
 			// it is much easier to read and export the individual matrices for inspection.
-			THessian non_contact_hessian = energy_hessian + inertia_hessian + friction_hessian + lagged_damping_hessian;
+			THessian non_contact_hessian = energy_hessian + inertia_hessian + damping_hessian + friction_hessian + lagged_damping_hessian;
 			hessian = non_contact_hessian + _barrier_stiffness * barrier_hessian;
 
 			assert(hessian.rows() == full_size);

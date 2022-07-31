@@ -1,19 +1,19 @@
 #include <polyfem/State.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/BDFTimeIntegrator.hpp>
-#include <polyfem/BoundarySampler.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/FEMSolver.hpp>
-#include <polyfem/MaybeParallelFor.hpp>
-#include <polyfem/StringUtils.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
 
-#include <polyfem/NLProblem.hpp>
-#include <polyfem/ShapeProblem.hpp>
-#include <polyfem/MaterialProblem.hpp>
-#include <polyfem/InitialConditionProblem.hpp>
-#include <polyfem/LBFGSSolver.hpp>
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/ShapeProblem.hpp>
+#include <polyfem/solver/MaterialProblem.hpp>
+#include <polyfem/solver/InitialConditionProblem.hpp>
+#include <polyfem/solver/LBFGSSolver.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
@@ -37,8 +37,8 @@ namespace polyfem
 		class LocalThreadMatStorage
 		{
 		public:
-			SpareMatrixCache cache;
-			ElementAssemblyValues vals;
+			utils::SpareMatrixCache cache;
+			assembler::ElementAssemblyValues vals;
 			QuadratureVector da;
 
 			LocalThreadMatStorage()
@@ -50,7 +50,7 @@ namespace polyfem
 				init(buffer_size, rows, cols);
 			}
 
-			LocalThreadMatStorage(const int buffer_size, const SpareMatrixCache &c)
+			LocalThreadMatStorage(const int buffer_size, const utils::SpareMatrixCache &c)
 			{
 				init(buffer_size, c);
 			}
@@ -62,7 +62,7 @@ namespace polyfem
 				cache.init(rows, cols);
 			}
 
-			void init(const int buffer_size, const SpareMatrixCache &c)
+			void init(const int buffer_size, const utils::SpareMatrixCache &c)
 			{
 				cache.reserve(buffer_size);
 				cache.init(c);
@@ -73,7 +73,7 @@ namespace polyfem
 		{
 		public:
 			Eigen::MatrixXd vec;
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			QuadratureVector da;
 
 			LocalThreadVecStorage(const int size)
@@ -87,7 +87,7 @@ namespace polyfem
 		{
 		public:
 			double val;
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			QuadratureVector da;
 
 			LocalThreadScalarStorage()
@@ -113,18 +113,18 @@ namespace polyfem
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
 			const VolumeIntegrandTerms &integrand_functions,
-			const polyfem::Mesh &mesh,
+			const mesh::Mesh &mesh,
 			double &integral)
 		{
 			integral = 0;
 
 			const int n_elements = int(bases.size());
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			for (int e = 0; e < n_elements; ++e)
 			{
 				vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
-				const Quadrature &quadrature = vals.quadrature;
+				const quadrature::Quadrature &quadrature = vals.quadrature;
 				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 				std::vector<Eigen::VectorXd> integrands;
@@ -148,12 +148,12 @@ namespace polyfem
 		}
 
 		void surface_integral(
-			const std::vector<polyfem::LocalBoundary> &local_boundary,
+			const std::vector<mesh::LocalBoundary> &local_boundary,
 			const int resolution,
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
 			const SurfaceIntegrandTerms &integrand_functions,
-			const polyfem::Mesh &mesh,
+			const mesh::Mesh &mesh,
 			double &integral)
 		{
 			integral = 0;
@@ -163,12 +163,12 @@ namespace polyfem
 			Eigen::MatrixXd points, normals;
 			Eigen::VectorXd weights;
 
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 
 			for (const auto &lb : local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -248,12 +248,12 @@ namespace polyfem
 			for (int j = 1; j <= num; ++j)
 			{
 				int order = std::min(bdf_order, index + j);
-				sum_adjoint_p += -BDFTimeIntegrator::alphas(order - 1)[j - 1] * adjoint_p[index + j];
-				sum_adjoint_nu += -BDFTimeIntegrator::alphas(order - 1)[j - 1] * adjoint_nu[index + j];
+				sum_adjoint_p += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_p[index + j];
+				sum_adjoint_nu += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_nu[index + j];
 			}
 			int order = std::min(bdf_order, index);
 			if (order >= 1)
-				beta = BDFTimeIntegrator::betas(order - 1);
+				beta = time_integrator::BDF::betas(order - 1);
 			else
 				beta = std::nan("");
 		}
@@ -267,7 +267,7 @@ namespace polyfem
 		get_vf(V, F);
 		V.conservativeResize(V.rows(), mesh->dimension());
 
-		V += unflatten(perturbation, V.cols());
+		V += utils::unflatten(perturbation, V.cols());
 
 		set_v(V);
 	}
@@ -292,7 +292,7 @@ namespace polyfem
 		const int n_elements = int(cur_bases.size());
 		vertices = Eigen::MatrixXd::Zero((iso_parametric() || !geometric) ? n_bases : n_geom_bases, 3);
 		faces = Eigen::MatrixXi::Zero(cur_bases.size(), cur_bases[0].bases.size());
-		ElementAssemblyValues vals;
+		assembler::ElementAssemblyValues vals;
 		for (int e = 0; e < n_elements; ++e)
 		{
 			const int n_loc_bases = cur_bases[e].bases.size();
@@ -530,10 +530,10 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_force_hessian_nonlinear(std::shared_ptr<NLProblem> nl, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
+	void State::compute_force_hessian_nonlinear(std::shared_ptr<solver::NLProblem> nl, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
 	{
 		int full_size = nl->get_full_size();
-		auto params = build_json_params();
+		auto params = args["solver"];
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		Eigen::VectorXd full;
@@ -571,13 +571,13 @@ namespace polyfem
 		StiffnessMatrix barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
 		if (args["has_collision"])
 		{
-			Eigen::MatrixXd displaced = boundary_nodes_pos + unflatten(full, mesh->dimension());
+			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(full, mesh->dimension());
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
 
 			const double mu = args["mu"].get<double>();
-			const double kappa = nl->get_barrier_stiffness();
-			const double dhat = nl->get_dhat();
-			const double epsv = nl->get_epsv_dt();
+			const double kappa = nl->barrier_stiffness();
+			const double dhat = nl->dhat();
+			const double epsv = nl->epsv_dt();
 
 			barrier_hessian = ipc::compute_barrier_potential_hessian(
 				collision_mesh, displaced_surface, nl->get_constraint_set(), dhat, false);
@@ -585,7 +585,7 @@ namespace polyfem
 
 			Eigen::MatrixXd displaced_prev;
 			if (diff_cached.size())
-				displaced_prev = boundary_nodes_pos + unflatten(diff_cached.back().u, mesh->dimension());
+				displaced_prev = boundary_nodes_pos + utils::unflatten(diff_cached.back().u, mesh->dimension());
 			else
 				displaced_prev = displaced;
 
@@ -617,7 +617,7 @@ namespace polyfem
 
 			if (nl->get_is_time_dependent())
 			{
-				double beta = bdf_order < 1 ? std::nan("") : BDFTimeIntegrator::betas(bdf_order - 1);
+				double beta = bdf_order < 1 ? std::nan("") : time_integrator::BDF::betas(bdf_order - 1);
 				double dt = args["dt"];
 				double acceleration_scaling = beta * beta * dt * dt;
 				barrier_hessian /= acceleration_scaling;
@@ -634,7 +634,7 @@ namespace polyfem
 			hessian_prev += damping_hessian_prev;
 		}
 
-		hessian = energy_hessian + nl->get_barrier_stiffness() * barrier_hessian + friction_hessian;
+		hessian = energy_hessian + nl->barrier_stiffness() * barrier_hessian + friction_hessian;
 	}
 
 	double State::J_static(const SummableFunctional &j)
@@ -643,7 +643,7 @@ namespace polyfem
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 		json param;
 		double energy = 0;
-		Eigen::MatrixXd solution = unflatten(sol, mesh->dimension());
+		Eigen::MatrixXd solution = utils::unflatten(sol, mesh->dimension());
 		for (int e = 0; e < bases.size(); e++)
 		{
 			const auto &bs = bases[e];
@@ -677,7 +677,7 @@ namespace polyfem
 		std::vector<bool> traversed(n_bases, false);
 
 		json param;
-		Eigen::MatrixXd solution_ = unflatten(solution, actual_dim);
+		Eigen::MatrixXd solution_ = utils::unflatten(solution, actual_dim);
 		for (int e = 0; e < bases.size(); e++)
 		{
 			const auto &bs = bases[e];
@@ -724,14 +724,14 @@ namespace polyfem
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		const int n_elements = int(bases.size());
-		ElementAssemblyValues vals;
+		assembler::ElementAssemblyValues vals;
 		if (!only_surface)
 		{
 			for (int e = 0; e < n_elements; ++e)
 			{
 				vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-				const Quadrature &quadrature = vals.quadrature;
+				const quadrature::Quadrature &quadrature = vals.quadrature;
 				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 				const int n_loc_bases_ = int(vals.basis_values.size());
@@ -746,7 +746,7 @@ namespace polyfem
 
 				for (int i = 0; i < n_loc_bases_; ++i)
 				{
-					const AssemblyValues &v = vals.basis_values[i];
+					const assembler::AssemblyValues &v = vals.basis_values[i];
 					assert(v.global.size() == 1);
 					for (int d = 0; d < actual_dim; d++)
 					{
@@ -785,7 +785,7 @@ namespace polyfem
 			for (const auto &lb : total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::boundary_quadrature(lb, args["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -822,7 +822,7 @@ namespace polyfem
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
-						const AssemblyValues &v = vals.basis_values[nodes(n)];
+						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 						assert(v.global.size() == 1);
 						for (int d = 0; d < actual_dim; d++)
 						{
@@ -884,9 +884,8 @@ namespace polyfem
 
 	void State::solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)
 	{
-		const json &params = solver_params();
-		auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
-		solver->setParameters(params);
+		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+		solver->setParameters(args["solver"]["linear"]);
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = A.rows();
 
@@ -895,7 +894,7 @@ namespace polyfem
 
 		Eigen::Vector4d adjoint_spectrum;
 		Eigen::VectorXd x;
-		adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"], false, use_avg_pressure);
+		adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, false);
 		adjoint_solution = x;
 	}
 
@@ -911,10 +910,10 @@ namespace polyfem
 		{
 			for (int e = 0; e < n_elements; ++e)
 			{
-				ElementAssemblyValues vals;
+				assembler::ElementAssemblyValues vals;
 				vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
 
-				const Quadrature &quadrature = vals.quadrature;
+				const quadrature::Quadrature &quadrature = vals.quadrature;
 				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u;
@@ -987,7 +986,7 @@ namespace polyfem
 			for (const auto &lb : total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::boundary_quadrature(lb, args["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -995,7 +994,7 @@ namespace polyfem
 				const ElementBases &gbs = gbases[e];
 				const ElementBases &bs = bases[e];
 
-				ElementAssemblyValues vals;
+				assembler::ElementAssemblyValues vals;
 				vals.compute(e, mesh->is_volume(), points, gbs, gbs);
 
 				const Eigen::VectorXd da = weights.array();
@@ -1039,7 +1038,7 @@ namespace polyfem
 					assert(nodes.size() == mesh->dimension());
 					for (long n = 0; n < nodes.size(); ++n)
 					{
-						const AssemblyValues &v = vals.basis_values[nodes(n)];
+						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 						// integrate j * div(gbases) over the whole boundary
 						for (int q = n_samples_per_surface * i; q < n_samples_per_surface * (i + 1); ++q)
 						{
@@ -1131,10 +1130,10 @@ namespace polyfem
 
 		for (int e = 0; e < n_elements; ++e)
 		{
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
 
-			const Quadrature &quadrature = vals.quadrature;
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 			Eigen::MatrixXd u, grad_u, p, grad_p;
@@ -1196,23 +1195,23 @@ namespace polyfem
 		if (problem->is_scalar())
 			return;
 
-		const auto params = build_json_params();
+		const auto params = args["solver"];
 		if (params["phi"].get<double>() == 0 && params["psi"].get<double>() == 0)
 			return;
 
 		const double dt = args["dt"];
 
-		auto storage = create_thread_storage(LocalThreadVecStorage(term.size()));
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-		maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 			for (int e = start; e < end; ++e)
 			{
-				ElementAssemblyValues &vals = local_storage.vals;
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
 				vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
 
-				const Quadrature &quadrature = vals.quadrature;
+				const quadrature::Quadrature &quadrature = vals.quadrature;
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
@@ -1282,10 +1281,10 @@ namespace polyfem
 
 		for (int e = 0; e < n_elements; ++e)
 		{
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-			const Quadrature &quadrature = vals.quadrature;
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 			Eigen::MatrixXd u, grad_u, p, grad_p;
@@ -1318,10 +1317,10 @@ namespace polyfem
 
 		for (int e = 0; e < n_elements; ++e)
 		{
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-			const Quadrature &quadrature = vals.quadrature;
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 			Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
@@ -1356,10 +1355,10 @@ namespace polyfem
 
 		for (int e = 0; e < n_elements; ++e)
 		{
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
 
-			const Quadrature &quadrature = vals.quadrature;
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 			Eigen::MatrixXd vel, grad_vel, p, grad_p;
@@ -1393,12 +1392,12 @@ namespace polyfem
 		if (!args["has_collision"])
 			return;
 
-		const double dhat = step_data.nl_problem->get_dhat();
-		Eigen::MatrixXd U = collision_mesh.vertices(unflatten(solution, mesh->dimension()));
+		const double dhat = step_data.nl_problem->dhat();
+		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
 		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
-		term = -step_data.nl_problem->get_barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+		term = -step_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
 
 		// const double eps = 1e-6;
 		// Eigen::MatrixXd target = dq_h;
@@ -1436,13 +1435,13 @@ namespace polyfem
 		if (!args["has_collision"] || args["mu"].get<double>() == 0)
 			return;
 
-		Eigen::MatrixXd U = collision_mesh.vertices(unflatten(solution, mesh->dimension()));
-		Eigen::MatrixXd U_prev = collision_mesh.vertices(unflatten(prev_solution, mesh->dimension()));
+		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
+		Eigen::MatrixXd U_prev = collision_mesh.vertices(utils::unflatten(prev_solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
-		const double kappa = step_data.nl_problem->get_barrier_stiffness();
-		const double dhat = step_data.nl_problem->get_dhat();
-		const double epsv = step_data.nl_problem->get_epsv_dt();
+		const double kappa = step_data.nl_problem->barrier_stiffness();
+		const double dhat = step_data.nl_problem->dhat();
+		const double epsv = step_data.nl_problem->epsv_dt();
 
 		StiffnessMatrix hess = ipc::compute_friction_force_jacobian(
 			collision_mesh,
@@ -1529,16 +1528,16 @@ namespace polyfem
 		for (int t = time_steps; t > 0; --t)
 		{
 			const int real_order = std::min(bdf_order, t);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
 			ipc::FrictionConstraints friction_constraint_set = diff_cached[t].friction_constraint_set;
 			const auto &solution = diff_cached[t].u;
 			const auto &prev_solution = diff_cached[t - 1].u;
 
-			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(unflatten(prev_solution, problem_dim));
-			Eigen::MatrixXd surface_solution = collision_mesh.vertices(unflatten(solution, problem_dim));
+			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(prev_solution, problem_dim));
+			Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(solution, problem_dim));
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->get_dhat(), step_data.nl_problem->get_barrier_stiffness(), step_data.nl_problem->get_epsv_dt(), 0, true);
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt(), 0, true);
 
 			one_form += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * dt);
 		}
@@ -1569,7 +1568,7 @@ namespace polyfem
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
 			compute_damping_derivative_damping_term(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 			one_form += beta * dt * damping_term;
@@ -1747,7 +1746,7 @@ namespace polyfem
 		for (int t = time_steps; t > 0; --t)
 		{
 			const int real_order = std::min(bdf_order, t);
-			const double beta = BDFTimeIntegrator::betas(real_order - 1);
+			const double beta = time_integrator::BDF::betas(real_order - 1);
 			const double beta_dt = beta * dt;
 
 			// lame paramters
@@ -1770,7 +1769,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->get_dhat(), step_data.nl_problem->get_barrier_stiffness(), step_data.nl_problem->get_epsv_dt());
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
 
 			one_form(2 * bases.size()) += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta_dt * mu);
 
@@ -1806,7 +1805,7 @@ namespace polyfem
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
 			compute_material_derivative_elasticity_term(diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			one_form += beta * dt * elasticity_term;
@@ -1840,12 +1839,12 @@ namespace polyfem
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 			double beta_dt = beta * dt;
 
 			Eigen::MatrixXd velocity = diff_cached[i].u;
 			for (int o = 1; o <= real_order; o++)
-				velocity -= BDFTimeIntegrator::alphas(real_order - 1)[o - 1] * diff_cached[i - o].u;
+				velocity -= time_integrator::BDF::alphas(real_order - 1)[o - 1] * diff_cached[i - o].u;
 			velocity /= beta_dt;
 
 			if (weights[i] == 0)
@@ -2034,7 +2033,7 @@ namespace polyfem
 		for (int t = time_steps; t > 0; --t)
 		{
 			const int real_order = std::min(bdf_order, t);
-			const double beta = BDFTimeIntegrator::betas(real_order - 1);
+			const double beta = time_integrator::BDF::betas(real_order - 1);
 			const double beta_dt = beta * dt;
 
 			// lame paramters
@@ -2057,7 +2056,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->get_dhat(), step_data.nl_problem->get_barrier_stiffness(), step_data.nl_problem->get_epsv_dt());
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
 
 			one_form(2 * bases.size()) += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta_dt * mu);
 
@@ -2093,7 +2092,7 @@ namespace polyfem
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
 			compute_material_derivative_elasticity_term(diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			one_form += beta * dt * elasticity_term;
@@ -2126,7 +2125,7 @@ namespace polyfem
 		for (int t = time_steps; t > 0; --t)
 		{
 			const int real_order = std::min(bdf_order, t);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
 			ipc::FrictionConstraints friction_constraint_set = diff_cached[t].friction_constraint_set;
 			const auto &solution = diff_cached[t].u;
@@ -2143,7 +2142,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->get_dhat(), step_data.nl_problem->get_barrier_stiffness(), step_data.nl_problem->get_epsv_dt());
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
 
 			one_form += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * mu * dt);
 		}
@@ -2173,7 +2172,7 @@ namespace polyfem
 		for (int t = time_steps; t > 0; --t)
 		{
 			const int real_order = std::min(bdf_order, t);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
 			compute_damping_derivative_damping_term(diff_cached[t].u, diff_cached[t - 1].u, -adjoint_p[t], damping_term);
 			one_form += beta * dt * damping_term;
@@ -2222,7 +2221,7 @@ namespace polyfem
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
-			double beta = BDFTimeIntegrator::betas(real_order - 1);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 			double beta_dt = beta * dt;
 
 			ipc::FrictionConstraints friction_constraint_set;
@@ -2230,7 +2229,7 @@ namespace polyfem
 
 			Eigen::MatrixXd velocity = diff_cached[i].u;
 			for (int o = 1; o <= real_order; o++)
-				velocity -= BDFTimeIntegrator::alphas(real_order - 1)[o - 1] * diff_cached[i - o].u;
+				velocity -= time_integrator::BDF::alphas(real_order - 1)[o - 1] * diff_cached[i - o].u;
 			velocity /= beta_dt;
 
 			Eigen::VectorXd integrals(js.size());

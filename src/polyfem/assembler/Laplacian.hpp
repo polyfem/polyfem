@@ -33,6 +33,12 @@ namespace polyfem
 			//laplacian has no parameters.
 			//in case these are passes trough params
 			void add_multimaterial(const int index, const json &params) {}
+
+			void compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const;
+
+			//laplacian has no parameters.
+			//in case these are passes trough params
+			void set_parameters(const json &params) {}
 		};
 	} // namespace assembler
 } // namespace polyfem

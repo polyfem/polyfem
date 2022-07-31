@@ -166,6 +166,8 @@ namespace polyfem
 
 		/// assembler, it dispatches call to the differnt assembers based on the formulation
 		assembler::AssemblerUtils assembler;
+		// viscous dissipation assembler
+		assembler::ViscousDampingAssembler damping_assembler;
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 
@@ -175,6 +177,9 @@ namespace polyfem
 		std::vector<ElementBases> pressure_bases;
 		///Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
+
+		// Mapping from input nodes to FE nodes
+		std::vector<int> primitive_to_bases_node, primitive_to_geom_bases_node, primitive_to_pressure_bases_node;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -449,6 +454,7 @@ namespace polyfem
 		/// @param[out] boundary_edges edges
 		/// @param[out] boundary_triangles triangles
 		void extract_boundary_mesh(
+			const int n_current_bases,
 			const std::vector<ElementBases> &bases,
 			Eigen::MatrixXd &boundary_nodes_pos,
 			Eigen::MatrixXi &boundary_edges,
@@ -751,7 +757,13 @@ namespace polyfem
 		/// extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();
 		/// extracts the boundary mesh for collision, called in build_basis
-		void build_collision_mesh();
+		void build_collision_mesh(
+			ipc::CollisionMesh &collision_mesh_, 
+			Eigen::MatrixXd &boundary_nodes_pos_,
+			Eigen::MatrixXi &boundary_edges_,
+			Eigen::MatrixXi &boundary_triangles_,
+			const int n_bases_, 
+			const std::vector<ElementBases> &bases_) const;
 
 		/// compute the errors, not part of solve
 		void compute_errors();

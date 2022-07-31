@@ -720,15 +720,20 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				{
+					n_geom_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					primitive_to_geom_bases_node = mesh_nodes->primitive_to_node();
+				}
 
 				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				primitive_to_bases_node = mesh_nodes->primitive_to_node();
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
 				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				primitive_to_pressure_bases_node = mesh_nodes->primitive_to_node();
 			}
 		}
 		else
@@ -745,15 +750,20 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
+				{
 					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					primitive_to_geom_bases_node = mesh_nodes->primitive_to_node();
+				}
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				primitive_to_bases_node = mesh_nodes->primitive_to_node();
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
 				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				primitive_to_pressure_bases_node = mesh_nodes->primitive_to_node();
 			}
 		}
 		timer.stop();
@@ -920,7 +930,7 @@ namespace polyfem
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Extracting boundary mesh...");
-		build_collision_mesh();
+		build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, n_bases, bases);
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
@@ -1182,19 +1192,25 @@ namespace polyfem
 		n_bases += new_bases;
 	}
 
-	void State::build_collision_mesh()
+void State::build_collision_mesh(
+		ipc::CollisionMesh &collision_mesh_, 
+		Eigen::MatrixXd &boundary_nodes_pos_,
+		Eigen::MatrixXi &boundary_edges_,
+		Eigen::MatrixXi &boundary_triangles_,
+		const int n_bases_, 
+		const std::vector<ElementBases> &bases_) const
 	{
 		extract_boundary_mesh(
-			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+			n_bases_, bases_, boundary_nodes_pos_, boundary_edges_, boundary_triangles_);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
 		{
-			// boundary_nodes_pos uses n_bases that already contains the obstacle
-			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+			// boundary_nodes_pos_ uses n_bases that already contains the obstacle
+			const int n_v = boundary_nodes_pos_.rows() - obstacle.n_vertices();
 
 			if (obstacle.v().size())
-				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+				boundary_nodes_pos_.bottomRows(obstacle.v().rows()) = obstacle.v();
 
 			if (obstacle.codim_v().size())
 			{
@@ -1204,29 +1220,29 @@ namespace polyfem
 
 			if (obstacle.e().size())
 			{
-				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
-				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+				boundary_edges_.conservativeResize(boundary_edges_.rows() + obstacle.e().rows(), 2);
+				boundary_edges_.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
 			}
 
 			if (obstacle.f().size())
 			{
-				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
-				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+				boundary_triangles_.conservativeResize(boundary_triangles_.rows() + obstacle.f().rows(), 3);
+				boundary_triangles_.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos_.rows(), boundary_edges_);
 		for (int i = 0; i < codimensional_nodes.size(); i++)
 		{
 			is_on_surface[codimensional_nodes[i]] = true;
 		}
 
-		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+		collision_mesh_ = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos_, boundary_edges_, boundary_triangles_);
 
-		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
+		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
-			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
-				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
+			return !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vi))
+				   || !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
 		};
 	}
 

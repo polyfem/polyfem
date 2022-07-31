@@ -1,4 +1,4 @@
-#include <polyfem/OptimizationProblem.hpp>
+#include <polyfem/solver/OptimizationProblem.hpp>
 #include <polyfem/ShapeProblem.hpp>
 #include <polyfem/MaterialProblem.hpp>
 #include <polyfem/InitialConditionProblem.hpp>
