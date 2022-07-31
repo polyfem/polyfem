@@ -414,7 +414,7 @@ namespace polyfem
 	double State::J_transient_step(const IntegrableFunctional &j, const int step)
 	{
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
-		const double dt = args["dt"];
+		const double dt = args["time"]["dt"];
 
 		double result = 0;
 		if (j.is_volume_integral())
@@ -465,8 +465,8 @@ namespace polyfem
 
 	double State::J_transient(const IntegrableFunctional &j)
 	{
-		const double dt = args["dt"];
-		const int n_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int n_steps = args["time"]["time_steps"];
 		double result = 0;
 
 		std::vector<double> weights;
@@ -486,9 +486,9 @@ namespace polyfem
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 		{
@@ -503,7 +503,7 @@ namespace polyfem
 
 		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());
 
-		if (args["has_collision"])
+		if (args["contact"]["enabled"])
 		{
 			if (diff_cached.size() > 0)
 				diff_cached.back().gradu_h_next = gradu_h_prev;
@@ -515,7 +515,7 @@ namespace polyfem
 
 	void State::compute_force_hessian(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
 	{
-		if (assembler.is_linear(formulation()) && !args["has_collision"])
+		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"])
 		{
 			hessian = stiffness;
 			hessian_prev = StiffnessMatrix(stiffness.rows(), stiffness.cols());
@@ -562,14 +562,14 @@ namespace polyfem
 			if (problem->is_time_dependent() && (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0) && diff_cached.size() > 0)
 			{
 				StiffnessMatrix damping_hessian(full_size, full_size);
-				damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, args["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
+				damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
 
 				energy_hessian += damping_hessian;
 			}
 		}
 
 		StiffnessMatrix barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-		if (args["has_collision"])
+		if (args["contact"]["enabled"])
 		{
 			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(full, mesh->dimension());
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
@@ -618,7 +618,7 @@ namespace polyfem
 			if (nl->get_is_time_dependent())
 			{
 				double beta = bdf_order < 1 ? std::nan("") : time_integrator::BDF::betas(bdf_order - 1);
-				double dt = args["dt"];
+				double dt = args["time"]["dt"];
 				double acceleration_scaling = beta * beta * dt * dt;
 				barrier_hessian /= acceleration_scaling;
 				friction_hessian /= acceleration_scaling;
@@ -629,7 +629,7 @@ namespace polyfem
 		if (problem->is_time_dependent() && (params["phi"].get<double>() > 0 || params["psi"].get<double>() > 0) && diff_cached.size() > 0)
 		{
 			StiffnessMatrix damping_hessian_prev(full_size, full_size);
-			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, args["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
+			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
 
 			hessian_prev += damping_hessian_prev;
 		}
@@ -1199,7 +1199,7 @@ namespace polyfem
 		if (params["phi"].get<double>() == 0 && params["psi"].get<double>() == 0)
 			return;
 
-		const double dt = args["dt"];
+		const double dt = args["time"]["dt"];
 
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
@@ -1336,7 +1336,7 @@ namespace polyfem
 				vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
 
 				Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
-				damping_assembler.local_assembler().compute_dstress_dpsi_dphi(e, args["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
+				damping_assembler.local_assembler().compute_dstress_dpsi_dphi(e, args["time"]["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
 
 				// This needs to be a sum over material parameter basis.
 				term(0) += -dot(f_prime_dpsi, grad_p_i) * da(q);
@@ -1389,7 +1389,7 @@ namespace polyfem
 	void State::compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!args["has_collision"])
+		if (!args["contact"]["enabled"])
 			return;
 
 		const double dhat = step_data.nl_problem->dhat();
@@ -1432,7 +1432,7 @@ namespace polyfem
 	void State::compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraint_set, Eigen::VectorXd &term)
 	{
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!args["has_collision"] || args["mu"].get<double>() == 0)
+		if (!args["contact"]["enabled"] || args["mu"].get<double>() == 0)
 			return;
 
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
@@ -1506,19 +1506,19 @@ namespace polyfem
 	void State::dJ_friction_transient(const IntegrableFunctional &j, double &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["has_collision"]);
+		assert(args["contact"]["enabled"]);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -1546,18 +1546,18 @@ namespace polyfem
 	void State::dJ_damping_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["has_collision"]);
+		assert(args["contact"]["enabled"]);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -1600,7 +1600,7 @@ namespace polyfem
 		if (order >= 1)
 		{
 			const bool use_bases = order > 1;
-			const int n_current_bases = use_bases ? n_bases : n_geom_bases;
+			const int n_current_bases = (iso_parametric() || use_bases) ? n_bases : n_geom_bases;
 			const auto &current_bases = (iso_parametric() || use_bases) ? bases : geom_bases;
 			discrete_field.setZero(n_current_bases * actual_dim, 1);
 
@@ -1643,15 +1643,15 @@ namespace polyfem
 		assert(!problem->is_scalar());
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
@@ -1681,7 +1681,7 @@ namespace polyfem
 			auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
 				json params_extended = params;
 				params_extended["step"] = i;
-				params_extended["t"] = i * args["dt"].get<double>();
+				params_extended["t"] = i * args["time"]["dt"].get<double>();
 				return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params_extended);
 			};
 			Eigen::VectorXd gradu_j;
@@ -1721,21 +1721,21 @@ namespace polyfem
 	{
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
-		assert(args["has_collision"]);
+		assert(args["contact"]["enabled"]);
 		assert(args["mu"] > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
+		const double dt = args["time"]["dt"];
 		const double mu = args["mu"];
-		const int time_steps = args["time_steps"];
+		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -1788,13 +1788,13 @@ namespace polyfem
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -1820,13 +1820,13 @@ namespace polyfem
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -1900,15 +1900,15 @@ namespace polyfem
 		assert(js.size() > 0);
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
@@ -1952,7 +1952,7 @@ namespace polyfem
 					compute_adjoint_rhs([&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
 						json params_extended = params;
 						params_extended["step"] = i;
-						params_extended["t"] = i * args["dt"].get<double>();
+						params_extended["t"] = i * args["time"]["dt"].get<double>();
 						return js[k].grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params_extended);
 					},
 										diff_cached[i].u, dJk_du, js[k].is_surface_integral());
@@ -1981,8 +1981,8 @@ namespace polyfem
 	{
 		assert(problem->is_time_dependent());
 		assert(js.size() > 0);
-		const double dt = args["dt"];
-		const int n_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int n_steps = args["time"]["time_steps"];
 		double result = 0;
 
 		std::vector<double> weights;
@@ -1991,7 +1991,7 @@ namespace polyfem
 		json param;
 		for (int i = 0; i <= n_steps; ++i)
 		{
-			param["t"] = i * args["dt"].get<double>();
+			param["t"] = i * args["time"]["dt"].get<double>();
 			param["step"] = i;
 
 			Eigen::VectorXd integrals(js.size());
@@ -2008,21 +2008,21 @@ namespace polyfem
 	{
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
-		assert(args["has_collision"]);
+		assert(args["contact"]["enabled"]);
 		assert(args["mu"] > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
+		const double dt = args["time"]["dt"];
 		const double mu = args["mu"];
-		const int time_steps = args["time_steps"];
+		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -2075,13 +2075,13 @@ namespace polyfem
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -2101,21 +2101,21 @@ namespace polyfem
 	void State::dJ_friction_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, double &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["has_collision"]);
+		assert(args["contact"]["enabled"]);
 		assert(args["mu"] > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
+		const double dt = args["time"]["dt"];
 		const double mu = args["mu"];
-		const int time_steps = args["time_steps"];
+		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -2150,18 +2150,18 @@ namespace polyfem
 	void State::dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["has_collision"]);
+		assert(args["contact"]["enabled"]);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
@@ -2201,13 +2201,13 @@ namespace polyfem
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
 
-		const double dt = args["dt"];
-		const int time_steps = args["time_steps"];
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = -1;
-		if (args["time_integrator"] == "ImplicitEuler")
+		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
-		else if (args["time_integrator"] == "BDF")
+		else if (args["time"]["integrator"] == "BDF")
 			bdf_order = args["time_integrator_params"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");

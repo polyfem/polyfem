@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 			in_args["problem"] = problem_name;
 
 		if (!time_integrator_name.empty())
-			in_args["time_integrator"] = time_integrator_name;
+			in_args["time"]["integrator"] = time_integrator_name;
 
 		if (has_arg(command_line, "not_norm"))
 			in_args["normalize_mesh"] = !skip_normalization;
@@ -290,7 +290,7 @@ int main(int argc, char **argv)
 	state.init_logger(log_file, log_level, is_quiet);
 	state.init(in_args, output_dir);
 
-	if (state.args["has_collision"] && !state.args.contains("barrier_stiffness"))
+	if (state.args["contact"]["enabled"] && !state.args.contains("barrier_stiffness"))
 	{
 		logger().error("Not fixing the barrier stiffness!");
 		return EXIT_FAILURE;

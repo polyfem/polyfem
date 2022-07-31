@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 	state.init(in_args, output_dir);
 	state.load_mesh();
 
-	if (state.args["has_collision"] && !state.args.contains("barrier_stiffness"))
+	if (state.args["contact"]["enabled"] && !state.args.contains("barrier_stiffness"))
 	{
 		logger().error("Not fixing the barrier stiffness!");
 		return EXIT_FAILURE;

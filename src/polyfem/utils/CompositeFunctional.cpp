@@ -715,8 +715,8 @@ namespace polyfem
 			js[d] = get_center_trajectory_functional(d);
 		js[dim] = get_volume_functional();
 
-		if (transient_integral_type != "final" && target_series.size() != state.args["time_steps"].get<int>() + 1)
-			logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time_steps"].get<int>() + 1);
+		if (transient_integral_type != "final" && target_series.size() != state.args["time"]["time_steps"].get<int>() + 1)
+			logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time"]["time_steps"].get<int>() + 1);
 
 		auto func = [&](const Eigen::VectorXd &x, const json &param) {
 			double t = param["t"];
@@ -728,7 +728,7 @@ namespace polyfem
 			else
 				target = target_series.back();
 
-			if (step == state.args["time_steps"].get<int>())
+			if (step == state.args["time"]["time_steps"].get<int>())
 				logger().trace("center: {}", x.head(dim).transpose() / x(dim));
 			return (x.head(dim) / x(dim) - target).squaredNorm();
 		};
@@ -744,8 +744,8 @@ namespace polyfem
 			js[d] = get_center_trajectory_functional(d);
 		js[dim] = get_volume_functional();
 
-		if (transient_integral_type != "final" && target_series.size() != state.args["time_steps"].get<int>() + 1)
-			logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time_steps"].get<int>() + 1);
+		if (transient_integral_type != "final" && target_series.size() != state.args["time"]["time_steps"].get<int>() + 1)
+			logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time"]["time_steps"].get<int>() + 1);
 
 		auto func = [dim, this](const Eigen::VectorXd &x, const json &param) {
 			double t = param["t"];
@@ -817,7 +817,7 @@ namespace polyfem
 	{
 		assert(state.problem->is_time_dependent());
 		const int dim = state.mesh->dimension();
-		const int n_steps = state.args["time_steps"].get<int>();
+		const int n_steps = state.args["time"]["time_steps"].get<int>();
 
 		std::vector<IntegrableFunctional> js(dim);
 		for (int d = 0; d < dim; d++)
@@ -870,7 +870,7 @@ namespace polyfem
 
 	double CenterXYTrajectoryFunctional::energy(State &state)
 	{
-		const int n_steps = state.args["time_steps"];
+		const int n_steps = state.args["time"]["time_steps"];
 		const int n_targets = target_series.size();
 		const int sample_rate = n_steps / (n_targets - 1);
 		if (sample_rate * (n_targets - 1) != n_steps)
@@ -898,7 +898,7 @@ namespace polyfem
 
 	Eigen::VectorXd CenterXYTrajectoryFunctional::gradient(State &state, const std::string &type)
 	{
-		const int n_steps = state.args["time_steps"];
+		const int n_steps = state.args["time"]["time_steps"];
 		const int n_targets = target_series.size();
 		const int sample_rate = n_steps / (n_targets - 1);
 		if (sample_rate * (n_targets - 1) != n_steps)

@@ -201,10 +201,10 @@ namespace polyfem
 
 		// contact
 		if (!opt_params.contains("has_collision"))
-			has_collision = state.args["has_collision"];
+			has_collision = state.args["contact"]["enabled"];
 		else
-			has_collision = opt_params["has_collision"];
-		if (state.args["has_collision"] && !has_collision)
+			has_collision = opt_params["contact"]["enabled"];
+		if (state.args["contact"]["enabled"] && !has_collision)
 			logger().warn("Problem has collision, but collision detection in shape optimization is disabled!");
 		if (has_collision)
 		{

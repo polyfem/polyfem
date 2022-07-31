@@ -721,7 +721,7 @@ namespace polyfem
 			{
 				if (!iso_parametric())
 				{
-					n_geom_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					n_geom_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 					primitive_to_geom_bases_node = mesh_nodes->primitive_to_node();
 				}
 
@@ -751,7 +751,7 @@ namespace polyfem
 			{
 				if (!iso_parametric())
 				{
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 					primitive_to_geom_bases_node = mesh_nodes->primitive_to_node();
 				}
 

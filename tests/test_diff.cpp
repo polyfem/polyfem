@@ -34,25 +34,30 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-		{
-			"problem": "GenericScalar",
-			"scalar_formulation": "Laplacian",
-			"n_refs": 0,
-			"discr_order": 1,
-			"iso_parametric": true,
-			"problem_params": {
-				"dirichlet_boundary": [{
-					"id": "all",
-					"value": 0
-				}],
-				"rhs": -20
-			},
-
-			"mesh": "3rdparty/data/circle2.msh",
-			"normalize_mesh": true
-		}
+{
+    "geometry": [
+        {
+            "mesh": "3rdparty/data/circle2.msh"
+        }
+    ],
+    "space": {
+        "discr_order": 1
+    },
+    "boundary_conditions": {
+        "rhs": -20,
+        "dirichlet_boundary": [
+            {
+                "id": "all",
+                "value": 0
+            }
+        ]
+    },
+	"materials": {
+		"type": "Laplacian"
+	}
+}
 	)"_json;
-	in_args["mesh"] = path + "/circle2.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../circle2.msh";
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
