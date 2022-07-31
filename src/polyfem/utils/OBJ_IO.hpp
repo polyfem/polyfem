@@ -98,7 +98,7 @@ namespace polyfem
 				if (e_or_f.cols() == 2)
 					return save(path, v, e_or_f, Eigen::MatrixXi());
 				else
-					return save(path, v, Eigen::MatrixXi(), f);
+					return save(path, v, Eigen::MatrixXi(), e_or_f);
 			}
 		};
 	} // namespace utils
