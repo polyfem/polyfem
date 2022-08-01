@@ -66,6 +66,8 @@ namespace polyfem::mesh
 		std::vector<std::shared_ptr<Selection>> surface_selections;
 		std::vector<std::shared_ptr<Selection>> volume_selections;
 
+		std::vector<int> elem_start_ids_, vert_start_ids_;
+
 		std::vector<json> geometries;
 		// Note you can add more types here, just add them to geometries
 		if (geometry.is_object())
@@ -108,7 +110,13 @@ namespace polyfem::mesh
 				refinement_location = j_ref_loc;
 			else if (refinement_location != j_ref_loc.get<double>())
 				log_and_throw_error("Multiple refinement locations are not supported yet!");
+
+			elem_start_ids_.push_back(cells.rows());
+			vert_start_ids_.push_back(vertices.rows());
 		}
+
+		vert_start_ids_.push_back(vertices.rows());
+		elem_start_ids_.push_back(cells.rows());
 
 		if (vertices.size() == 0)
 			log_and_throw_error("No valid FEM meshes provided!");
@@ -123,6 +131,9 @@ namespace polyfem::mesh
 			mesh->attach_higher_order_nodes(vertices, elements);
 			mesh->set_cell_weights(weights);
 		}
+
+		mesh->vert_start_ids = vert_start_ids_;
+		mesh->elem_start_ids = elem_start_ids_;
 
 		for (const auto &w : weights)
 		{

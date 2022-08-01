@@ -142,6 +142,14 @@ namespace polyfem
 			return true;
 		}
 
+		bool CMesh2D::save(const std::string &path) const
+		{
+			if (!mesh_save(mesh_, path))
+				return false;
+
+			return true;
+		}
+
 		bool CMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
 			edge_nodes_.clear();

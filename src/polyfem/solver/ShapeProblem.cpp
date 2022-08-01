@@ -1,8 +1,8 @@
-#include <polyfem/ShapeProblem.hpp>
+#include "ShapeProblem.hpp"
 
-#include <polyfem/Types.hpp>
-#include <polyfem/Timer.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/writeOBJ.h>
 #include <igl/writeMESH.h>
@@ -168,75 +168,86 @@ namespace polyfem
 		}
 	} // namespace
 
-	ShapeProblem::ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args) : OptimizationProblem(state_, j_, args)
+	ShapeProblem::ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
 	{
 		optimization_name = "shape";
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
-		if (args.contains("target_weight"))
-			target_weight = args["target_weight"];
-
 		// volume constraint
-		volume_weight = args.contains("volume_weight") ? args["volume_weight"].get<double>() : 0;
-		target_volume = args.contains("target_volume") ? args["target_volume"].get<double>() : 0;
-		if (volume_weight != 0 && !args.contains("target_volume"))
-			logger().error("Positive volume constraint weight, but no target volume specified!");
-		if (args.contains("penalize_large_volume"))
-			penalize_large_volume = args["penalize_large_volume"];
+		bool has_volume_constraint = false;
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "volume_constraint")
+			{
+				volume_params = param;
+				// volume_params["weight"] = volume_params["weight"];
+				// target_volume = volume_params["target_volume"];
+				has_volume_constraint = true;
+				break;
+			}
+		}
 
-		if (volume_weight > 0)
+		if (has_volume_constraint)
 		{
 			j_volume = CompositeFunctional::create("Volume");
 			auto &func_volume = *dynamic_cast<VolumeFunctional *>(j_volume.get());
-			if (penalize_large_volume)
-				func_volume.set_max_volume(target_volume);
-			else
-				func_volume.set_min_volume(target_volume);
+			func_volume.set_max_volume(volume_params["soft_bound"][1]);
+			func_volume.set_min_volume(volume_params["soft_bound"][0]);
 		}
-		else
-			j_volume = NULL;
 
 		// mesh topology
 		state.get_vf(V_rest, elements);
 
 		// contact
-		if (!opt_params.contains("has_collision"))
-			has_collision = state.args["contact"]["enabled"];
-		else
-			has_collision = opt_params["contact"]["enabled"];
+		const auto &opt_contact_params = state.args["solver"]["optimization_contact"];
+		has_collision = opt_contact_params["enabled"];
 		if (state.args["contact"]["enabled"] && !has_collision)
 			logger().warn("Problem has collision, but collision detection in shape optimization is disabled!");
 		if (has_collision)
 		{
-			_dhat = opt_params["dhat"];
+			_dhat = opt_contact_params["dhat"];
 			_prev_distance = -1;
-			_barrier_stiffness = opt_params["barrier_stiffness"];
-			_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
-			_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
-			_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
+			_barrier_stiffness = opt_contact_params["barrier_stiffness"];
+			_broad_phase_method = opt_contact_params["CCD"]["broad_phase"];
+			_ccd_tolerance = opt_contact_params["CCD"]["tolerance"];
+			_ccd_max_iterations = opt_contact_params["CCD"]["max_iterations"];
 		}
 
-		// for higher order bases, need to create a separate collision_mesh for gbases
-		// if (has_collision && state.bases[0].bases[0].order() > 1)
-		// {
-		// 	logger().error("Contact barrier in shape optimization only supports linear bases!");
-		// 	exit(0);
-		// }
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
 
 		build_fixed_nodes();
 
-		// smooth constraint
-		smoothing_weight = args.contains("smoothing_weight") ? args["smoothing_weight"].get<double>() : 1.;
-		adjust_smooth_period = args.contains("adjust_smooth_period") ? args["adjust_smooth_period"].get<int>() : (int)1e9;
-		smooth_ratio = args.contains("smooth_ratio") ? args["smooth_ratio"].get<double>() : 1.;
-		boundary_smoother.dim = dim;
-		if (opt_params.contains("use_weighted_smoothing") && opt_params["use_weighted_smoothing"].get<bool>() && opt_params.contains("weighted_smoothing_power"))
-			boundary_smoother.p = opt_params["weighted_smoothing_power"].get<int>();
+		// boundary smoothing
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "boundary_smoothing")
+			{
+				boundary_smoothing_params = param;
+				// const double boundary_smoothing_params["weight"] = param["weight"];
+				// const double adjustment_coeff = param["adjustment_coeff"];
+				// const int boundary_smoothing_params["adjust_weight_period"] = param["adjust_weight_period"];
+				// const bool scale_invariant = param["scale_invariant"];
 
-		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
+				if (param["scale_invariant"].get<bool>())
+					boundary_smoother.p = boundary_smoothing_params["power"];
+				boundary_smoother.dim = dim;
+				boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
+				has_boundary_smoothing = true;
+				break;
+			}
+		}
+
+		// SLIM
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "shape")
+			{
+				shape_params = param;
+				slim_params = shape_params["smoothing_paramters"];
+			}
+		}
 
 		// constraints on optimization
 		x_to_param = [this](const TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
@@ -328,26 +339,29 @@ namespace polyfem
 	{
 		if (mesh_flipped)
 			return std::nan("");
-		return target_weight * j->energy(state);
+		return shape_params["weight"].get<double>() * j->energy(state);
 	}
 
 	double ShapeProblem::volume_value(const TVector &x)
 	{
-		if (j_volume && !mesh_flipped)
-			return j_volume->energy(state) * volume_weight;
+		if (has_volume_constraint && !mesh_flipped)
+			return j_volume->energy(state) * volume_params["weight"].get<double>();
 		else
 			return 0.;
 	}
 
 	double ShapeProblem::smooth_value(const TVector &x)
 	{
+		if (!has_boundary_smoothing)
+			return 0.;
+		
 		Eigen::MatrixXd V;
 		x_to_param(x, V_rest, V);
 
-		if (opt_params.contains("use_weighted_smoothing") && opt_params["use_weighted_smoothing"].get<bool>())
-			return boundary_smoother.weighted_smoothing_energy(V) * smoothing_weight;
+		if (boundary_smoothing_params["scale_invariant"].get<bool>())
+			return boundary_smoother.weighted_smoothing_energy(V) * boundary_smoothing_params["weight"].get<double>();
 		else
-			return boundary_smoother.smoothing_energy(V) * smoothing_weight;
+			return boundary_smoother.smoothing_energy(V) * boundary_smoothing_params["weight"].get<double>();
 	}
 
 	double ShapeProblem::value(const TVector &x)
@@ -372,12 +386,12 @@ namespace polyfem
 			gradv.setZero(x.size());
 			return;
 		}
-		dparam_to_dx(gradv, j->gradient(state, "shape") * target_weight);
+		dparam_to_dx(gradv, j->gradient(state, "shape") * shape_params["weight"].get<double>());
 	}
 
 	void ShapeProblem::smooth_gradient(const TVector &x, TVector &gradv)
 	{
-		if (mesh_flipped)
+		if (!has_boundary_smoothing || mesh_flipped)
 		{
 			gradv.setZero(x.size());
 			return;
@@ -385,11 +399,11 @@ namespace polyfem
 		Eigen::MatrixXd V;
 		x_to_param(x, V_rest, V);
 		TVector grad;
-		if (opt_params.contains("use_weighted_smoothing") && opt_params["use_weighted_smoothing"].get<bool>())
+		if (boundary_smoothing_params["scale_invariant"].get<bool>())
 			boundary_smoother.weighted_smoothing_grad(V, grad);
 		else
 			boundary_smoother.smoothing_grad(V, grad);
-		grad *= smoothing_weight;
+		grad *= boundary_smoothing_params["weight"];
 
 		dparam_to_dx(gradv, grad);
 	}
@@ -397,10 +411,10 @@ namespace polyfem
 	void ShapeProblem::volume_gradient(const TVector &x, TVector &gradv)
 	{
 		gradv.setZero(x.size());
-		if (!j_volume || mesh_flipped)
+		if (!has_volume_constraint || mesh_flipped)
 			return;
 
-		dparam_to_dx(gradv, j_volume->gradient(state, "shape") * volume_weight);
+		dparam_to_dx(gradv, j_volume->gradient(state, "shape") * volume_params["weight"]);
 	}
 
 	double ShapeProblem::barrier_energy(const TVector &x)
@@ -454,7 +468,7 @@ namespace polyfem
 
 	void ShapeProblem::smoothing(const TVector &x, TVector &new_x)
 	{
-		if (opt_params.contains("skip_slim") && opt_params["skip_slim"])
+		if (slim_params.empty())
 			return;
 
 		Eigen::MatrixXd V, new_V;
@@ -474,7 +488,7 @@ namespace polyfem
 			for (int b = 0; b < state.boundary_gnodes.size(); ++b)
 				boundary_constraints.row(b) = tmp_V.block(state.boundary_gnodes[b], 0, 1, dim);
 
-			good_enough = internal_smoothing(V, elements, state.boundary_gnodes, boundary_constraints, opt_params["slim"], new_V);
+			good_enough = internal_smoothing(V, elements, state.boundary_gnodes, boundary_constraints, slim_params, new_V);
 		} while (!good_enough || is_flipped(new_V, elements));
 
 		logger().debug("SLIM succeeds with step size {}", rate);
@@ -491,14 +505,14 @@ namespace polyfem
 		if (is_flipped(V1, elements))
 			return false;
 
-		if (opt_params.contains("max_change"))
-		{
-			Eigen::MatrixXd V0;
-			x_to_param(x0, V_rest, V0);
-			double change = (V1 - V0).rowwise().norm().maxCoeff();
-			if (change > opt_params["max_change"].get<double>())
-				return false;
-		}
+		// if (opt_params.contains("max_change"))
+		// {
+		// 	Eigen::MatrixXd V0;
+		// 	x_to_param(x0, V_rest, V0);
+		// 	double change = (V1 - V0).rowwise().norm().maxCoeff();
+		// 	if (change > opt_params["max_change"].get<double>())
+		// 		return false;
+		// }
 
 		return true;
 	}
@@ -537,7 +551,7 @@ namespace polyfem
 
 	double ShapeProblem::heuristic_max_step(const TVector &dx)
 	{
-		return opt_params.contains("max_step") ? opt_params["max_step"].get<double>() : 1;
+		return opt_nonlinear_params.contains("max_step") ? opt_nonlinear_params["max_step"].get<double>() : 1;
 	}
 
 	void ShapeProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -545,7 +559,7 @@ namespace polyfem
 		descent_direction = x1 - x0;
 
 		// debug
-		if (opt_params.contains("debug_fd") && opt_params["debug_fd"].get<bool>())
+		if (opt_nonlinear_params.contains("debug_fd") && opt_nonlinear_params["debug_fd"].get<bool>())
 		{
 			double t = 1e-6;
 			TVector new_x = x0 + descent_direction * t;
@@ -588,10 +602,10 @@ namespace polyfem
 		_candidates.clear();
 		_use_cached_candidates = false;
 
-		if (opt_params.contains("export_energies"))
+		if (opt_output_params.contains("export_energies"))
 		{
 			std::ofstream outfile;
-			outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
+			outfile.open(opt_output_params["export_energies"], std::ofstream::out | std::ofstream::app);
 
 			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << ", " << volume_value(cur_x) << ", " << barrier_energy(cur_x) << "\n";
 			outfile.close();
@@ -614,15 +628,15 @@ namespace polyfem
 
 	void ShapeProblem::post_step(const int iter_num, const TVector &x0)
 	{
-		if (iter % adjust_smooth_period == 0 && iter > 0)
+		if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
 		{
 			double target_val, volume_val, barrier_val;
 			target_val = target_value(x0);
 			volume_val = volume_value(x0);
 			barrier_val = barrier_energy(x0);
-			smoothing_weight *= smooth_ratio * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
+			boundary_smoothing_params["weight"] = boundary_smoothing_params["weight"].get<double>() * boundary_smoothing_params["adjustment_coeff"].get<double>() * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
 
-			logger().info("update smoothing weight to {}", smoothing_weight);
+			logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
 		}
 
 		iter++;
@@ -677,7 +691,7 @@ namespace polyfem
 		double min_quality = quality.minCoeff();
 		double avg_quality = quality.sum() / quality.size();
 		logger().debug("Mesh worst quality: {}, avg quality: {}", min_quality, avg_quality);
-		if (!opt_params.contains("remesh_quality") || min_quality > opt_params["remesh_quality"].get<double>())
+		if (!shape_params.contains("remesh_quality") || min_quality > shape_params["remesh_quality"].get<double>())
 			return false;
 
 		logger().info("Remeshing ...");
@@ -730,15 +744,20 @@ namespace polyfem
 		}
 
 		std::set<int> optimize_body_ids;
-		if (opt_params.contains("optimize_body_ids"))
+		if (shape_params.contains("volume_selection"))
 		{
-			for (int i : opt_params["optimize_body_ids"])
+			for (int i : shape_params["volume_selection"])
 				optimize_body_ids.insert(i);
 		}
 		else
 		{
-			for (int m = 0; m < state.args["meshes"].get<std::vector<json>>().size(); m++)
-				optimize_body_ids.insert(state.args["meshes"][m]["body_id"].get<int>());
+			for (auto &geometry : state.args["geometry"])
+			{
+				if (geometry["volume_selection"].is_number_integer())
+					optimize_body_ids.insert(geometry["volume_selection"].get<int>());
+				else
+					logger().error("Remeshing doesn't support single geometry with multiply volume selections!");
+			}
 		}
 
 		{
@@ -807,7 +826,7 @@ namespace polyfem
 
 					igl::writeMESH(before_remesh_path, Vm, Fm, Eigen::MatrixXi());
 
-					auto tmp_before_remesh_path = StringUtils::replace_ext(before_remesh_path, "msh");
+					auto tmp_before_remesh_path = utils::StringUtils::replace_ext(before_remesh_path, "msh");
 
 					int return_val = system(("gmsh " + before_remesh_path + " -save -format msh22 -o " + tmp_before_remesh_path).c_str());
 					if (return_val != 0)
@@ -816,14 +835,14 @@ namespace polyfem
 						return false;
 					}
 
-					if (!opt_params.contains("remesh_exe"))
+					if (!shape_params.contains("remesh_exe"))
 					{
 						logger().error("No remeshing executable specified!");
 						return false;
 					}
 					else
 					{
-						std::string command = opt_params["remesh_exe"].template get<std::string>() + " " + tmp_before_remesh_path + " " + after_remesh_path + " -j 10";
+						std::string command = shape_params["remesh_exe"].template get<std::string>() + " " + tmp_before_remesh_path + " " + after_remesh_path + " -j 10";
 						return_val = system(command.c_str());
 						if (return_val == 0)
 							logger().info("remesh command \"{}\" returns {}", command, return_val);
@@ -886,7 +905,7 @@ namespace polyfem
 
 		state.get_vf(V, F);
 		scaled_jacobian(V, F, quality);
-		if (quality.minCoeff() <= opt_params["remesh_quality"].get<double>())
+		if (quality.minCoeff() <= shape_params["remesh_quality"].get<double>())
 		{
 			logger().error("Quality not good after remeshing!");
 			exit(0);
@@ -907,9 +926,9 @@ namespace polyfem
 		// fix certain object
 		std::set<int> optimize_body_ids;
 		std::set<int> optimize_boundary_ids;
-		if (opt_params.contains("optimize_body_ids"))
+		if (shape_params.contains("volume_selection"))
 		{
-			for (int i : opt_params["optimize_body_ids"])
+			for (int i : shape_params["volume_selection"])
 				optimize_body_ids.insert(i);
 
 			for (int e = 0; e < state.bases.size(); e++)
@@ -921,9 +940,9 @@ namespace polyfem
 							fixed_nodes.insert(g.index);
 			}
 		}
-		else if (opt_params.contains("optimize_boundary_ids"))
+		else if (shape_params.contains("boundary_selection"))
 		{
-			for (int i : opt_params["optimize_boundary_ids"])
+			for (int i : shape_params["boundary_selection"])
 				optimize_boundary_ids.insert(i);
 
 			for (const auto &lb : state.total_local_boundary)
@@ -965,8 +984,9 @@ namespace polyfem
 			logger().info("No optimization body or boundary specified, optimize shape of every mesh...");
 
 		// fix dirichlet bc
-		if (!opt_params.contains("fix_dirichlet") || opt_params["fix_dirichlet"].get<bool>() == true)
+		if (!shape_params.contains("fix_dirichlet") || shape_params["fix_dirichlet"].get<bool>())
 		{
+			logger().info("Fix position of Dirichlet boundary nodes.");
 			for (const auto &lb : state.local_boundary)
 			{
 				for (int i = 0; i < lb.size(); ++i)
@@ -991,6 +1011,7 @@ namespace polyfem
 		// fix neumann bc
 		for (const auto &lb : state.local_neumann_boundary)
 		{
+			logger().info("Fix position of nonzero Neumann boundary nodes.");
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int e = lb.element_id();
@@ -1010,10 +1031,11 @@ namespace polyfem
 		}
 
 		// fix contact area, need threshold
-		if (opt_params.contains("fix_contact_area_threshold"))
+		if (shape_params.contains("fix_contact_surface") && shape_params["fix_contact_surface"].get<bool>())
 		{
 			assert(state.n_geom_bases == state.n_bases && "Higer order basis not supported, need a separate collision mesh for gbases!");
-			const double threshold = opt_params["fix_contact_area_threshold"].get<double>();
+			const double threshold = shape_params["fix_contact_surface_tol"].get<double>();
+			logger().info("Fix position of boundary nodes in contact.");
 
 			ipc::Constraints contact_set;
 			ipc::construct_constraint_set(collision_mesh, collision_mesh.vertices(V), threshold, contact_set);

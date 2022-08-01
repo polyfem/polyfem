@@ -126,7 +126,10 @@ namespace polyfem
 			spdlog::set_level(log_level);
 			logger().set_level(log_level);
 			IPC_LOG(set_level(log_level));
+			current_log_level = log_level;
 		}
+
+		int current_log_level;
 
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
@@ -213,6 +216,8 @@ namespace polyfem
 		Eigen::MatrixXd sol;
 		/// pressure solution, if the problem is not mixed, pressure is empty
 		Eigen::MatrixXd pressure;
+
+		Eigen::MatrixXd pre_sol;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero

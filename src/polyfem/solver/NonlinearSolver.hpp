@@ -21,7 +21,8 @@ namespace cppoptlib
 		using Superclass = ISolver<ProblemType, /*Ord=*/-1>;
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
-
+		using json = nlohmann::json;
+		
 		enum class ErrorCode
 		{
 			NanEncountered = -10,

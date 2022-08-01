@@ -10,9 +10,6 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/ShapeProblem.hpp>
-#include <polyfem/solver/MaterialProblem.hpp>
-#include <polyfem/solver/InitialConditionProblem.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
 
 #include <ipc/ipc.hpp>

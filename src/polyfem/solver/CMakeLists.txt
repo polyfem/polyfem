@@ -13,6 +13,12 @@ set(SOURCES
 	TransientNavierStokesSolver.hpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
+	ShapeProblem.hpp
+	ShapeProblem.cpp
+	OptimizationProblem.hpp
+	OptimizationProblem.cpp
+	Optimizations.hpp
+	Optimizations.cpp
 )
 
 prepend_current_path(SOURCES)

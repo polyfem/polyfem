@@ -1,4 +1,4 @@
-#include <polyfem/solver/OptimizationProblem.hpp>
+#include "OptimizationProblem.hpp"
 
 namespace polyfem
 {
@@ -48,18 +48,20 @@ namespace polyfem
 		};
 	} // namespace
 
-	OptimizationProblem::OptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args) : state(state_)
+	OptimizationProblem::OptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : state(state_)
 	{
-		opt_params = args;
 		j = j_;
 		dim = state.mesh->dimension();
 		actual_dim = state.problem->is_scalar() ? 1 : dim;
-		opt_params = args;
-
-		save_freq = args.contains("save_frequency") ? args["save_frequency"].get<int>() : 1;
 
 		cur_grad.resize(0);
 		cur_val = std::nan("");
+
+		opt_nonlinear_params = state.args["solver"]["optimization_nonlinear"];
+		opt_output_params = state.args["output"]["optimization"];
+		opt_params = state.args["optimization"];
+
+		save_freq = opt_output_params.contains("save_frequency") ? opt_output_params["save_frequency"].get<int>() : 1;
 	}
 
 	void OptimizationProblem::solve_pde(const TVector &x)
@@ -84,7 +86,7 @@ namespace polyfem
 
 		// control forward solve log level
 		const int cur_log = state.current_log_level;
-		state.set_log_level(opt_params.contains("solve_log_level") ? opt_params["solve_log_level"].get<int>() : cur_log);
+		state.set_log_level(static_cast<spdlog::level::level_enum>(opt_output_params.contains("solve_log_level") ? opt_output_params["solve_log_level"].get<int>() : cur_log));
 
 		auto output_dir = state.output_dir;
 		if (state.problem->is_time_dependent() && save_iter < iter)
@@ -118,12 +120,12 @@ namespace polyfem
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
 			state.get_vf(V, F, false);
-			V += unflatten(state.sol, state.mesh->dimension());
+			V += utils::unflatten(state.sol, state.mesh->dimension());
 			print_markers(V, f.get_active_vertex_mask());
 		}
 
 		state.output_dir = output_dir;
-		state.set_log_level(cur_log);
+		state.set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 	}
 
 	void OptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -131,7 +133,7 @@ namespace polyfem
 		descent_direction = x1 - x0;
 
 		// debug
-		if (opt_params.contains("debug_fd") && opt_params["debug_fd"].get<bool>())
+		if (opt_nonlinear_params.contains("debug_fd") && opt_nonlinear_params["debug_fd"].get<bool>())
 		{
 			double t = 1e-6;
 			TVector new_x = x0 + descent_direction * t;

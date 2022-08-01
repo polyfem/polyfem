@@ -205,6 +205,8 @@ namespace polyfem
 			/// @return is cell boundary
 			virtual bool is_boundary_element(const int element_global_id) const = 0;
 
+			virtual bool save(const std::string &path) const = 0;
+
 		private:
 			/// @brief build a mesh from matrices
 			///
@@ -477,6 +479,13 @@ namespace polyfem
 			///
 			/// @return if the mesh is linear
 			inline bool is_linear() { return orders_.size() == 0 || orders_.maxCoeff() == 1; }
+
+			int n_meshes() const { return vert_start_ids.size() - 1; }
+			int vertex_start_index_of_mesh(const int mesh_id) const { return vert_start_ids[mesh_id]; }
+			int element_start_index_of_mesh(const int mesh_id) const { return elem_start_ids[mesh_id]; }
+
+			std::vector<int> vert_start_ids;
+			std::vector<int> elem_start_ids;
 
 			/// @brief list of *sorted* edges. Used to map to input vertices
 			///

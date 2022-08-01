@@ -15,7 +15,7 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::Scalar;
 		using typename cppoptlib::Problem<double>::TVector;
 
-		OptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args);
+		OptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
 		virtual ~OptimizationProblem() = default;
 
@@ -49,11 +49,13 @@ namespace polyfem
 
 		int save_freq = 1;
 
-		json opt_params;
-
 		std::shared_ptr<CompositeFunctional> j;
 
 		TVector descent_direction;
+
+		json opt_nonlinear_params;
+		json opt_output_params;
+		json opt_params;
 
 		// better initial guess for forward solves
 		Eigen::MatrixXd sol_at_ls_begin;

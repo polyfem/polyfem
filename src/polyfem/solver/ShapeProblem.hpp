@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/solver/OptimizationProblem.hpp>
+#include "OptimizationProblem.hpp"
 #include <igl/slim.h>
 
 #include <ipc/collisions/collision_constraint.hpp>
@@ -145,7 +145,7 @@ namespace polyfem
 	class ShapeProblem : public OptimizationProblem
 	{
 	public:
-		ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args);
+		ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
 		void initialize_mesh();
 
@@ -189,25 +189,24 @@ namespace polyfem
 
 		std::map<int, std::vector<int>> optimization_boundary_to_node;
 
+		const json &get_shape_params() { return shape_params; }
+
 	private:
-		double smoothing_weight = 0.;
-		double target_weight = 1.;
-
-		double target_volume = 0.;
-		double volume_weight = 0.;
-		bool penalize_large_volume = true;
-
-		int adjust_smooth_period = 1e9;
-		double smooth_ratio = 100;
-
 		Eigen::MatrixXi elements;
 
 		std::set<int> fixed_nodes;
 
 		bool mesh_flipped = false;
 
+		bool has_volume_constraint;
+		json volume_params;
 		std::shared_ptr<CompositeFunctional> j_volume;
+
+		bool has_boundary_smoothing;
+		json boundary_smoothing_params;
 		boundary_smoothing boundary_smoother;
+
+		json shape_params, slim_params;
 
 		Eigen::MatrixXd V_rest;
 

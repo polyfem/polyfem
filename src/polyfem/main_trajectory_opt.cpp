@@ -1,7 +1,7 @@
 #include <filesystem>
 
 #include <CLI/CLI.hpp>
-#include <polyfem/Optimizations.hpp>
+#include <polyfem/solver/Optimizations.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/StringUtils.hpp>
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
 	}
 	else if (target_type == "marker-data")
 	{
-		const std::string scene = state.args["optimization"]["name"];
+		const std::string scene = opt_params["name"];
 		auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(func.get());
 		std::ifstream infile(target_path);
 		std::vector<Eigen::VectorXd> markers;
@@ -548,11 +548,11 @@ int main(int argc, char **argv)
 
 	// shape optimization
 	if (opt_type == "shape")
-		shape_optimization(state, func, state.args["optimization"]);
+		shape_optimization(state, func, opt_params);
 	else if (opt_type == "material")
-		material_optimization(state, func, state.args["optimization"]);
+		material_optimization(state, func, opt_params);
 	else if (opt_type == "initial")
-		initial_condition_optimization(state, func, state.args["optimization"]);
+		initial_condition_optimization(state, func, opt_params);
 	else
 		logger().error("Invalid optimization type!");
 

@@ -323,6 +323,7 @@ namespace polyfem
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 		ipc::logger().set_level(log_level);
 #endif
+		current_log_level = log_level;
 	}
 
 	void State::init(const json &p_args_in, const std::string &output_dir)

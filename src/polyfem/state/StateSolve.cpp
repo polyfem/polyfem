@@ -833,6 +833,9 @@ namespace polyfem
 		if (!u_path.empty())
 			import_matrix(u_path, args["input"]["data"]["u_path"], sol);
 
+		if (pre_sol.size() == sol.size())
+			sol = pre_sol;
+
 		// if (args["use_al"] || args["contact"]["enabled"])
 		// {
 		// FD
