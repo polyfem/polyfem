@@ -178,21 +178,9 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 
-		{
-			const std::shared_ptr<const ImplicitTimeIntegrator> const_time_integrator =
-				std::static_pointer_cast<const ImplicitTimeIntegrator>(time_integrator);
-
-			const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
-			if (!u_path.empty())
-				write_matrix(u_path, sol);
-
-			const std::string v_path = resolve_output_path(args["output"]["data"]["v_path"]);
-			if (!v_path.empty())
-				write_matrix(v_path, const_time_integrator->v_prev());
-
-			const std::string a_path = resolve_output_path(args["output"]["data"]["a_path"]);
-			if (!a_path.empty())
-				write_matrix(a_path, const_time_integrator->a_prev());
-		}
+		time_integrator->save_raw(
+			resolve_output_path(args["output"]["data"]["u_path"]),
+			resolve_output_path(args["output"]["data"]["v_path"]),
+			resolve_output_path(args["output"]["data"]["a_path"]));
 	}
 } // namespace polyfem

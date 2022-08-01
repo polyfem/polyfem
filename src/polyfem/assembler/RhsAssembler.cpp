@@ -144,7 +144,7 @@ namespace polyfem
 					{
 						const auto &b = bs.bases[i];
 						const auto &glob = b.global();
-						assert(glob.size() == 1);
+						// assert(glob.size() == 1);
 						for (size_t ii = 0; ii < glob.size(); ++ii)
 						{
 							fun(mesh_, ids, glob[ii].node, loc_sol);

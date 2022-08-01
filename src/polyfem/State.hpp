@@ -290,9 +290,8 @@ namespace polyfem
 		/// @param[in] dt timestep size
 		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt);
 		/// initialize the nonlinear solver
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		void init_nonlinear_tensor_solve();
+		/// @param[in] t (optional) initial time
+		void init_nonlinear_tensor_solve(const double t = 1.0);
 		/// solves a linear problem
 		void solve_linear();
 		/// solves a navier stokes
@@ -307,10 +306,21 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
 	protected:
+		/// @brief Load or compute the initial solution.
+		/// @param[out] solution Output solution variable.
 		void initial_solution(Eigen::MatrixXd &solution) const;
+		/// @brief Load or compute the initial velocity.
+		/// @param[out] solution Output velocity variable.
 		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		/// @brief Load or compute the initial acceleration.
+		/// @param[out] solution Output acceleration variable.
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 
+		/// @brief Solve the linear problem with the given solver and system.
+		/// @param solver Linear solver.
+		/// @param A Linear system matrix.
+		/// @param b Right-hand side.
+		/// @param compute_spectrum If true, compute the spectrum.
 		void solve_linear(
 			const std::unique_ptr<polysolve::LinearSolver> &solver,
 			StiffnessMatrix &A,

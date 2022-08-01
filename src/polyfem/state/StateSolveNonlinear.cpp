@@ -19,7 +19,7 @@ namespace polyfem
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
 	{
-		std::string name = args["solver"]["nonlinear"]["solver"];
+		const std::string name = args["solver"]["nonlinear"]["solver"];
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
@@ -37,7 +37,7 @@ namespace polyfem
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt)
 	{
-		init_nonlinear_tensor_solve();
+		init_nonlinear_tensor_solve(t0 + dt);
 
 		save_timestep(t0, 0, t0, dt);
 
@@ -62,7 +62,7 @@ namespace polyfem
 			resolve_output_path(args["output"]["data"]["a_path"]));
 	}
 
-	void State::init_nonlinear_tensor_solve()
+	void State::init_nonlinear_tensor_solve(const double t)
 	{
 		assert(!assembler.is_linear(formulation()) || args["contact"]["enabled"]); // non-linear
 		assert(!problem->is_scalar());                                             // tensor
@@ -79,8 +79,8 @@ namespace polyfem
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
 				OBJWriter::save(
-					"intersection.obj", collision_mesh.vertices(displaced), collision_mesh.edges(),
-					collision_mesh.faces());
+					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
+					collision_mesh.edges(), collision_mesh.faces());
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw std::runtime_error("Unable to solve, initial solution has intersections!");
 			}
@@ -90,11 +90,11 @@ namespace polyfem
 		// Initialize nonlinear problems
 		assert(solve_data.rhs_assembler != nullptr);
 		solve_data.nl_problem =
-			std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, 1, args["contact"]["dhat"]);
+			std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t, args["contact"]["dhat"]);
 
 		const double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
 		solve_data.alnl_problem =
-			std::make_shared<ALNLProblem>(*this, *solve_data.rhs_assembler, 1, args["contact"]["dhat"], al_weight);
+			std::make_shared<ALNLProblem>(*this, *solve_data.rhs_assembler, t, args["contact"]["dhat"], al_weight);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
@@ -104,7 +104,9 @@ namespace polyfem
 
 			Eigen::MatrixXd velocity, acceleration;
 			initial_velocity(velocity);
+			assert(velocity.size() == sol.size());
 			initial_velocity(acceleration);
+			assert(acceleration.size() == sol.size());
 
 			const double dt = args["time"]["dt"];
 			solve_data.nl_problem->init_time_integrator(sol, velocity, acceleration, dt);
@@ -119,6 +121,7 @@ namespace polyfem
 	void State::solve_tensor_nonlinear(const int t)
 	{
 		Eigen::VectorXd tmp_sol;
+
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
 		assert(solve_data.alnl_problem != nullptr);
@@ -151,10 +154,6 @@ namespace polyfem
 			alnl_problem.lagged_damping_weight() = 0;
 		}
 
-		// TODO: maybe add linear solver here?
-
-		solver_info = json::array();
-
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
 		save_subsolve(subsolve_count, t);
@@ -171,13 +170,13 @@ namespace polyfem
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> solver = make_nl_solver<ALNLProblem>();
-			solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
+			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnl_solver = make_nl_solver<ALNLProblem>();
+			alnl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
-			solver->minimize(alnl_problem, tmp_sol);
+			alnl_solver->minimize(alnl_problem, tmp_sol);
 			json alnl_solver_info;
-			solver->getInfo(alnl_solver_info);
+			alnl_solver->getInfo(alnl_solver_info);
 
 			solver_info.push_back(
 				{{"type", "al"},
@@ -206,12 +205,12 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
-		nlsolver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
+		nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 		nl_problem.init(sol);
-		nlsolver->minimize(nl_problem, tmp_sol);
+		nl_solver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
-		nlsolver->getInfo(nl_solver_info);
+		nl_solver->getInfo(nl_solver_info);
 		solver_info.push_back(
 			{{"type", "rc"},
 			 {"t", t}, // TODO: null if static?
@@ -236,9 +235,9 @@ namespace polyfem
 			// Disable damping for the final lagged iteration
 			if (lag_i == friction_iterations - 1)
 				nl_problem.lagged_damping_weight() = 0;
-			nlsolver->minimize(nl_problem, tmp_sol);
+			nl_solver->minimize(nl_problem, tmp_sol);
 
-			nlsolver->getInfo(nl_solver_info);
+			nl_solver->getInfo(nl_solver_info);
 			solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?

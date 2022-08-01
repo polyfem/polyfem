@@ -4,6 +4,7 @@
 
 namespace polyfem
 {
+	using namespace assembler;
 	using namespace utils;
 
 	void State::init_solve()
@@ -18,7 +19,7 @@ namespace polyfem
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
-		solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, gbases, ass_vals_cache, formulation(),
 			*problem, args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"],
 			args["solver"]["linear"]["precond"], rhs_solver_params);
@@ -33,10 +34,9 @@ namespace polyfem
 			// Zero initial pressure
 			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
 			sol(sol.size() - 1) = 0;
-		}
 
-		if (assembler.is_mixed(formulation()))
 			sol_to_pressure();
+		}
 
 		if (problem->is_time_dependent())
 			save_timestep(0, 0, 0, 0);
