@@ -37,8 +37,8 @@ ContinuationIndentWidth: 4
 NamespaceIndentation: All
 AccessModifierOffset: -4
 BreakBeforeBinaryOperators: NonAssignment
-# ReflowComments: false
-# CommentPragmas:  '^@.+'
+# CommentPragmas: "\/*(.*)*\/"
+# ReflowComments: true
 # BinPackParameters: false
 # AllowAllParametersOfDeclarationOnNextLine: true
 # AlignAfterOpenBracket: AlwaysBreak
