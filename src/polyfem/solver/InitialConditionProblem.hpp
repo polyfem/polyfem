@@ -20,7 +20,6 @@ namespace polyfem
 		bool is_step_valid(const TVector &x0, const TVector &x1) { return true; };
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; };
 		double max_step_size(const TVector &x0, const TVector &x1) { return 1.; };
-		double heuristic_max_step(const TVector &dx) { return opt_params.contains("max_step") ? opt_params["max_step"].get<double>() : 1; };
 
 		void line_search_end(bool failed);
 		bool remesh(TVector &x) { return false; };

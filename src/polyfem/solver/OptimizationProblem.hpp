@@ -37,6 +37,8 @@ namespace polyfem
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1);
 
+		double heuristic_max_step(const TVector &dx) { assert (opt_params.contains("max_step_size")); return opt_params["max_step_size"]; };
+
 	protected:
 		State &state;
 		std::string optimization_name = "";

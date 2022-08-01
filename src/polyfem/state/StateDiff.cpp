@@ -495,7 +495,7 @@ namespace polyfem
 
 		StiffnessMatrix gradu_h;
 		StiffnessMatrix gradu_h_prev;
-		if (args["differentiable"].get<bool>())
+		if (args["differentiable"])
 			compute_force_hessian(gradu_h, gradu_h_prev, std::min(current_step, bdf_order));
 
 		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());
@@ -880,8 +880,11 @@ namespace polyfem
 
 	void State::solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)
 	{
-		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(args["solver"]["linear"]);
+		if (!args["solver"].contains("adjoint_linear"))
+			args["solver"]["adjoint_linear"] = args["solver"]["linear"];
+		
+		auto solver = polysolve::LinearSolver::create(args["solver"]["adjoint_linear"]["solver"], args["solver"]["adjoint_linear"]["precond"]);
+		solver->setParameters(args["solver"]["adjoint_linear"]);
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = A.rows();
 

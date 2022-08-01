@@ -154,13 +154,33 @@ namespace polyfem
 					"solver" : "newton",
 					"f_delta" : 1e-10,
 					"grad_norm" : 1e-8,
+					"min_step_size" : 0,
 					"max_iterations" : 1000,
 					"use_grad_norm" : true,
 					"relative_gradient" : false,
+					"solver_info_log" : false,
+					"save_energy_over_line_if_fail" : false,
 
 					"line_search": {
 						"method" : "backtracking",
 						"use_grad_norm_tol" : 1e-4
+					}
+				},
+
+				"optimization_nonlinear": {
+					"solver" : "lbfgs",
+					"f_delta" : 1e-9,
+					"grad_norm" : 1e-7,
+					"min_step_size" : 0,
+					"max_iterations" : 100,
+					"use_grad_norm" : true,
+					"relative_gradient" : false,
+					"solver_info_log" : false,
+					"save_energy_over_line_if_fail" : false,
+
+					"line_search": {
+						"method" : "backtracking",
+						"use_grad_norm_tol" : 0
 					}
 				},
 
@@ -237,6 +257,10 @@ namespace polyfem
 					}
 				},
 
+				"optimization": {
+					"save_frequency": 1
+				},
+
 				"data" : {
 					"solution" : "",
 					"full_mat" : "",
@@ -271,6 +295,12 @@ namespace polyfem
 
 					"spectrum" : false
 				}
+			},
+
+			"differentiable": false,
+			"optimization": {
+				"parameters": [],
+				"functionals": []
 			},
 
 			"input": {

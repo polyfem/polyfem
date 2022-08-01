@@ -130,11 +130,6 @@ namespace polyfem
 		return size;
 	}
 
-	double MaterialProblem::heuristic_max_step(const TVector &dx)
-	{
-		return opt_params.contains("max_step") ? opt_params["max_step"].get<double>() : 1;
-	}
-
 	double MaterialProblem::target_value(const TVector &x)
 	{
 		return target_weight * j->energy(state);

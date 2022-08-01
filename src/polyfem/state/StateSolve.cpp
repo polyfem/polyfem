@@ -405,7 +405,7 @@ namespace polyfem
 
 			save_timestep(time, t, t0, dt);
 
-			if (args["differentiable"].get<bool>())
+			if (args["differentiable"])
 			{
 				cache_transient_adjoint_quantities(t);
 			}
@@ -431,7 +431,7 @@ namespace polyfem
 	{
 		solve_transient_tensor_non_linear_init(t0, dt, rhs_assembler);
 
-		if (args["differentiable"].get<bool>())
+		if (args["differentiable"])
 		{
 			cache_transient_adjoint_quantities(0);
 		}
@@ -440,7 +440,7 @@ namespace polyfem
 		{
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 
-			if (args["differentiable"].get<bool>())
+			if (args["differentiable"])
 			{
 				cache_transient_adjoint_quantities(t);
 			}
@@ -549,7 +549,7 @@ namespace polyfem
 		else
 			rhs_assembler.initial_acceleration(acceleration);
 
-		if (args["differentiable"].get<bool>())
+		if (args["differentiable"])
 		{
 			if (initial_sol_update.size() > 0)
 				sol = initial_sol_update;
@@ -681,7 +681,7 @@ namespace polyfem
 		nl_problem.reduced_to_full(tmp_sol, sol);
 
 		// Lagging loop (start at 1 because we already did an iteration above)
-		if (!args["differentiable"].get<bool>())
+		if (!args["differentiable"])
 		{
 			int lag_i;
 			nl_problem.update_lagging(tmp_sol);

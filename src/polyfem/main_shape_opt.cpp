@@ -115,6 +115,7 @@ int main(int argc, char **argv)
 		{
 			func = CompositeFunctional::create("Stress");
 			func->set_power(param["power"]);
+			break;
 		}
 	}
 

@@ -41,7 +41,7 @@ namespace cppoptlib
 			use_gradient_norm = solver_params["use_grad_norm"];
 			normalize_gradient = solver_params["relative_gradient"];
 			use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
-			solver_info_log = solver_params.contains("solver_info_log") ? solver_params["solver_info_log"].get<bool>() : false;
+			solver_info_log = solver_params["solver_info_log"];
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -54,11 +54,8 @@ namespace cppoptlib
 			m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
 			solver_info["line_search"] = line_search_name;
 
-			if (solver_params.contains("min_step_size") && solver_params["min_step_size"] >= 0)
-				m_line_search->set_min_step_size(solver_params["min_step_size"]);
-
-			if (solver_params.contains("save_energy_over_line_if_fail"))
-				m_line_search->save_energy_over_line_if_fail = solver_params["save_energy_over_line_if_fail"];
+			m_line_search->set_min_step_size(solver_params["min_step_size"]);
+			m_line_search->save_energy_over_line_if_fail = solver_params["save_energy_over_line_if_fail"];
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x)

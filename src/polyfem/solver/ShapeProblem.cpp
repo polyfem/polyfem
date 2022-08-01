@@ -220,6 +220,7 @@ namespace polyfem
 		build_fixed_nodes();
 
 		// boundary smoothing
+		has_boundary_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
 		{
 			if (param["type"] == "boundary_smoothing")
@@ -238,6 +239,8 @@ namespace polyfem
 				break;
 			}
 		}
+		if (!has_boundary_smoothing)
+			logger().warn("Shape optimization without boundary smoothing!");
 
 		// SLIM
 		for (const auto &param : opt_params["functionals"])
@@ -245,8 +248,21 @@ namespace polyfem
 			if (param["type"] == "shape")
 			{
 				shape_params = param;
-				slim_params = shape_params["smoothing_paramters"];
+				if (shape_params.contains("smoothing_paramters"))
+					slim_params = shape_params["smoothing_paramters"];
+				break;
 			}
+		}
+		if (slim_params.empty())
+		{
+			slim_params = json::parse(R"(
+                "smoothing_paramters": {
+                    "min_iter": 2,
+                    "tol": 1e-8,
+                    "soft_p": 1e5,
+                    "exp_factor": 5
+                }
+			)");
 		}
 
 		// constraints on optimization
@@ -339,7 +355,7 @@ namespace polyfem
 	{
 		if (mesh_flipped)
 			return std::nan("");
-		return shape_params["weight"].get<double>() * j->energy(state);
+		return j->energy(state);
 	}
 
 	double ShapeProblem::volume_value(const TVector &x)
@@ -386,7 +402,7 @@ namespace polyfem
 			gradv.setZero(x.size());
 			return;
 		}
-		dparam_to_dx(gradv, j->gradient(state, "shape") * shape_params["weight"].get<double>());
+		dparam_to_dx(gradv, j->gradient(state, "shape"));
 	}
 
 	void ShapeProblem::smooth_gradient(const TVector &x, TVector &gradv)
@@ -468,9 +484,6 @@ namespace polyfem
 
 	void ShapeProblem::smoothing(const TVector &x, TVector &new_x)
 	{
-		if (slim_params.empty())
-			return;
-
 		Eigen::MatrixXd V, new_V;
 		x_to_param(x, V_rest, V);
 
@@ -547,11 +560,6 @@ namespace polyfem
 		// polyfem::logger().trace("best step {}", max_step);
 
 		return max_step;
-	}
-
-	double ShapeProblem::heuristic_max_step(const TVector &dx)
-	{
-		return opt_nonlinear_params.contains("max_step") ? opt_nonlinear_params["max_step"].get<double>() : 1;
 	}
 
 	void ShapeProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -691,45 +699,18 @@ namespace polyfem
 		double min_quality = quality.minCoeff();
 		double avg_quality = quality.sum() / quality.size();
 		logger().debug("Mesh worst quality: {}, avg quality: {}", min_quality, avg_quality);
-		if (!shape_params.contains("remesh_quality") || min_quality > shape_params["remesh_quality"].get<double>())
+		if (!shape_params.contains("remesh_tolerance") || min_quality > shape_params["remesh_tolerance"].get<double>())
 			return false;
 
 		logger().info("Remeshing ...");
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
-		// if (state.mesh->is_volume())
-		// {
-		// }
-		// else
-		// {
-		//     // extract V and F of the whole mesh
-		//     V.setZero(state.mesh->n_vertices(), state.mesh->dimension());
-		//     F.setZero(state.mesh->n_faces(), state.mesh->dimension() + 1);
-		//     for (int v = 0; v < V.rows(); v++)
-		//         V.row(v) = state.mesh->point(v);
-		// }
-
 		if (V.cols() < 3)
 		{
 			V.conservativeResize(V.rows(), 3);
 			V.col(2).setZero();
 		}
-
-		// if (state.mesh->is_volume())
-		// {
-		//     const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(state.mesh.get());
-		//     for (int f = 0; f < F.rows(); f++)
-		//         for (int v = 0; v < F.cols(); v++)
-		//             F(f, v) = tmp_mesh.cell_vertex(f, v);
-		// }
-		// else
-		// {
-		//     const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(state.mesh.get());
-		//     for (int f = 0; f < F.rows(); f++)
-		//         for (int v = 0; v < F.cols(); v++)
-		//             F(f, v) = tmp_mesh.face_vertex(f, v);
-		// }
 
 		if (is_flipped(V, F))
 		{
