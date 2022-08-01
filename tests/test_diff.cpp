@@ -424,59 +424,101 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-		{
-			"problem": "GenericTensor",
-			"tensor_formulation": "NeoHookean",
-			"problem_params": {
-				"dirichlet_boundary": [{
+	{
+		"geometry": [
+			{
+				"mesh": "",
+				"transformation": {
+					"translation": [
+						0,
+						1.5001
+					],
+					"scale": 1.0
+				},
+				"volume_selection": 1,
+				"surface_selection": [
+					{
+						"id": 1,
+						"axis": "y",
+						"position": 1.99
+					},
+					{
+						"id": 2,
+						"axis": "-y",
+						"position": 0.01
+					}
+				],
+				"advanced": {
+					"normalize_mesh": false
+				}
+			},
+			{
+				"mesh": "",
+				"transformation": {
+					"translation": [
+						0,
+						0.5
+					],
+					"scale": 1.0
+				},
+				"volume_selection": 2,
+				"surface_selection": [
+					{
+						"id": 1,
+						"axis": "y",
+						"position": 1.99
+					},
+					{
+						"id": 2,
+						"axis": "-y",
+						"position": 0.01
+					}
+				],
+				"advanced": {
+					"normalize_mesh": false
+				}
+			}
+		],
+		"differentiable": true,
+		"contact": {
+			"enabled": true,
+			"dhat": 0.001
+		},
+		"solver": {
+			"contact": {
+				"barrier_stiffness": 20
+			}
+		},
+		"boundary_conditions": {
+			"dirichlet_boundary": [
+				{
 					"id": 1,
-					"value": [-0.1, 0]
-				}, {
+					"value": [
+						-0.1,
+						0
+					]
+				},
+				{
 					"id": 2,
-					"value": [0, 0]
-				}]
-			},
-			"dhat": 1e-3,
-			
-			"barrier_stiffness": 20,
-			"meshes": [{
-				"mesh": "",
-				"position": [0, 1.5001],
-				"scale": 1.0,
-				"body_id": 1,
-				"boundary_id": 1
-			}, {
-				"mesh": "",
-				"position": [0, 0.5],
-				"scale": 1.0,
-				"body_id": 2,
-				"boundary_id": 2
-			}],
-
-			"params": {
-				"E": 200,
-				"nu": 0.3,
-				"rho": 1
-			},
-
-			"boundary_sidesets": [{
-				"id": 1,
-				"axis": "y",
-				"position": 1.99
-			}, {
-				"id": 2,
-				"axis": "-y",
-				"position": 0.01
-			}],
-
-			"has_collision": true,
-			"normalize_mesh": false
+					"value": [
+						0,
+						0
+					]
+				}
+			]
+		},
+		"materials": {
+			"type": "NeoHookean",
+			"E": 200,
+			"nu": 0.3,
+			"rho": 1
 		}
+	}
 	)"_json;
 	// in_args["meshes"][0]["mesh"] = "/home/arvigjoka/adjoint-polyfem/square.obj";
 	// in_args["meshes"][1]["mesh"] = "/home/arvigjoka/adjoint-polyfem/square.obj";
-	in_args["meshes"][0]["mesh"] = path + "/../../cube_dense.msh";
-	in_args["meshes"][1]["mesh"] = path + "/../../cube_dense.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
+	in_args["geometry"][1]["mesh"] = path + "/../cube_dense.msh";
 
 	StressFunctional func;
 
