@@ -1695,7 +1695,7 @@ namespace polyfem
 			}
 		}
 
-		if (args["contact"]["enabled"] && (export_contact_forces || export_friction_forces) && solve_export_to_file)
+		if (is_contact_enabled() && (export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
 			VTUWriter writer;
 

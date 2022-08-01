@@ -459,6 +459,8 @@ namespace polyfem
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
 		}
 
+		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
+
 		//---------------------------------------------------
 		//-----------------OUTPUT----------------------------
 		//---------------------------------------------------

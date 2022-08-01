@@ -64,13 +64,13 @@ namespace polyfem
 
 	void State::init_nonlinear_tensor_solve(const double t)
 	{
-		assert(!assembler.is_linear(formulation()) || args["contact"]["enabled"]); // non-linear
-		assert(!problem->is_scalar());                                             // tensor
+		assert(!assembler.is_linear(formulation()) || is_contact_enabled()); // non-linear
+		assert(!problem->is_scalar());                                       // tensor
 		assert(!assembler.is_mixed(formulation()));
 
 		///////////////////////////////////////////////////////////////////////
 		// Check for initial intersections
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			POLYFEM_SCOPED_TIMER("Check for initial intersections");
 

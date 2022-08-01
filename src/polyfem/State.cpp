@@ -891,7 +891,7 @@ namespace polyfem
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			if (!has_dhat && args["contact"]["dhat"] > min_edge_length)
 			{
@@ -1215,7 +1215,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (!args["contact"]["enabled"]) // collisions are non-linear
+			if (!is_contact_enabled()) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
@@ -1375,7 +1375,7 @@ namespace polyfem
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"] && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && !is_contact_enabled() && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
@@ -1420,7 +1420,7 @@ namespace polyfem
 			else if (formulation() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt);
 			else if (assembler.is_mixed(formulation())
-					 || (assembler.is_linear(formulation()) && !args["contact"]["enabled"])) // Collisions add nonlinearity to the problem
+					 || (assembler.is_linear(formulation()) && !is_contact_enabled())) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt);
 			else if (problem->is_scalar() && !assembler.is_linear(formulation()))
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
@@ -1431,7 +1431,7 @@ namespace polyfem
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
-			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"])
+			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
 				solve_linear();
 			else
 			{

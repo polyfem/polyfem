@@ -17,7 +17,7 @@ namespace polyfem
 		Eigen::VectorXd &b,
 		const bool compute_spectrum)
 	{
-		assert(assembler.is_linear(formulation()) && !args["contact"]["enabled"]);
+		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -44,7 +44,7 @@ namespace polyfem
 	void State::solve_linear()
 	{
 		assert(!problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !args["contact"]["enabled"]);
+		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
 
 		// --------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ namespace polyfem
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt)
 	{
 		assert(problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !args["contact"]["enabled"]);
+		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const bool is_scalar_or_mixed = problem->is_scalar() || assembler.is_mixed(formulation());
