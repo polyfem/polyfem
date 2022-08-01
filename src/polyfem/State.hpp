@@ -590,13 +590,13 @@ namespace polyfem
 		/// @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
 		/// interpolate the function fun.
-		///  @param[in] n_points is the size of the output.
-		///  @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		///  @param[in] basis basis function
-		///  @param[in] fun function to used
-		///  @param[out] result output
-		///  @param[in] use_sampler uses the sampler or not
-		///  @param[in] boundary_only interpolates only at boundary elements
+		/// @param[in] n_points is the size of the output.
+		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
+		/// @param[in] basis basis function
+		/// @param[in] fun function to used
+		/// @param[out] result output
+		/// @param[in] use_sampler uses the sampler or not
+		/// @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
