@@ -58,8 +58,8 @@ namespace polyfem
 			}
 			else
 			{
-				logger().error("Unknown time integrator ({}); using implicit Euler", name);
-				throw std::runtime_error(fmt::format("Unknown time integrator ({}); using implicit Euler", name));
+				logger().error("Unknown time integrator ({})", name);
+				throw std::runtime_error(fmt::format("Unknown time integrator ({})", name));
 			}
 		}
 
