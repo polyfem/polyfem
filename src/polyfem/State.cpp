@@ -320,9 +320,9 @@ namespace polyfem
 		Eigen::MatrixXd tmp = sol;
 
 		int fluid_offset = use_avg_pressure ? (AssemblerUtils::is_fluid(formulation()) ? 1 : 0) : 0;
-		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases - fluid_offset, tmp.cols());
+		sol = tmp.topRows(tmp.rows() - n_pressure_bases - fluid_offset);
 		assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
-		pressure = tmp.block(tmp.rows() - n_pressure_bases - fluid_offset, 0, n_pressure_bases, tmp.cols());
+		pressure = tmp.middleRows(tmp.rows() - n_pressure_bases - fluid_offset, n_pressure_bases);
 		assert(pressure.size() == n_pressure_bases);
 	}
 

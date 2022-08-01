@@ -32,7 +32,7 @@ namespace polyfem
 			const int prev_size = sol.size();
 			sol.conservativeResize(rhs.size(), sol.cols());
 			// Zero initial pressure
-			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+			sol.middleRows(prev_size, n_pressure_bases).setZero();
 			sol(sol.size() - 1) = 0;
 
 			sol_to_pressure();
