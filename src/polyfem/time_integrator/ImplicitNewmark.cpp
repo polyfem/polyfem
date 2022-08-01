@@ -4,8 +4,9 @@ namespace polyfem::time_integrator
 {
 	void ImplicitNewmark::set_parameters(const nlohmann::json &params)
 	{
-		m_gamma = params.value("gamma", 0.5);
-		m_beta = params.value("beta", 0.25);
+		assert(params.contains("newmark"));
+		m_gamma = params["newmark"].value("gamma", 0.5);
+		m_beta = params["newmark"].value("beta", 0.25);
 	}
 
 	void ImplicitNewmark::update_quantities(const Eigen::VectorXd &x)

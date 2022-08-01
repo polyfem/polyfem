@@ -157,7 +157,7 @@ namespace polyfem
 		Eigen::VectorXd prev_sol;
 
 		BDF time_integrator;
-		time_integrator.set_parameters(args["time"]["BDF"]);
+		time_integrator.set_parameters(args["time"]);
 		time_integrator.init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 
 		assembler.assemble_problem(

@@ -19,10 +19,10 @@
 static bool disable_collision = false;
 
 /*
-m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
-u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
-= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\\
-M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \\
+m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
+u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
+= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\newline
+M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \newline
 %
 M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 */
@@ -101,8 +101,7 @@ namespace polyfem
 			if (utils::is_param_valid(state.args, "time"))
 			{
 				_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-				_time_integrator->set_parameters(state.args["time"]["BDF"]);
-				_time_integrator->set_parameters(state.args["time"]["newmark"]);
+				_time_integrator->set_parameters(state.args["time"]);
 			}
 
 			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];

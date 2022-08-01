@@ -88,7 +88,7 @@ namespace polyfem
 		if (is_scalar_or_mixed)
 		{
 			time_integrator = std::make_shared<BDF>();
-			time_integrator->set_parameters(args["time"]["BDF"]);
+			time_integrator->set_parameters(args["time"]);
 			time_integrator->init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 		}
 		else
@@ -98,8 +98,7 @@ namespace polyfem
 			initial_acceleration(acceleration);
 
 			time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			time_integrator->set_parameters(args["time"]["BDF"]);
-			time_integrator->set_parameters(args["time"]["newmark"]);
+			time_integrator->set_parameters(args["time"]);
 			time_integrator->init(sol, velocity, acceleration, dt);
 		}
 
