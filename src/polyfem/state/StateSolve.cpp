@@ -4,6 +4,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	void State::init_solve()
 	{
 		POLYFEM_SCOPED_TIMER("Setup RHS");
@@ -17,15 +19,11 @@ namespace polyfem
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichelt, n_bases, size, bases, gbases, ass_vals_cache, formulation(),
+			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, gbases, ass_vals_cache, formulation(),
 			*problem, args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"],
 			args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		const std::string u_path = resolve_input_path(args["input"]["data"]["u_path"]);
-		if (!u_path.empty())
-			utils::read_matrix(u_path, sol);
-		else
-			solve_data.rhs_assembler->initial_solution(sol);
+		initial_solution(sol);
 
 		if (assembler.is_mixed(formulation()))
 		{
@@ -39,5 +37,38 @@ namespace polyfem
 
 		if (assembler.is_mixed(formulation()))
 			sol_to_pressure();
+
+		if (problem->is_time_dependent())
+			save_timestep(0, 0, 0, 0);
+	}
+
+	void State::initial_solution(Eigen::MatrixXd &solution) const
+	{
+		assert(solve_data.rhs_assembler != nullptr);
+		const std::string in_path = resolve_input_path(args["input"]["data"]["u_path"]);
+		if (!in_path.empty())
+			import_matrix(in_path, args["import"], solution);
+		else
+			solve_data.rhs_assembler->initial_solution(solution);
+	}
+
+	void State::initial_velocity(Eigen::MatrixXd &velocity) const
+	{
+		assert(solve_data.rhs_assembler != nullptr);
+		const std::string in_path = resolve_input_path(args["input"]["data"]["v_path"]);
+		if (!in_path.empty())
+			import_matrix(in_path, args["import"], velocity);
+		else
+			solve_data.rhs_assembler->initial_velocity(velocity);
+	}
+
+	void State::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	{
+		assert(solve_data.rhs_assembler != nullptr);
+		const std::string in_path = resolve_input_path(args["input"]["data"]["a_path"]);
+		if (!in_path.empty())
+			import_matrix(in_path, args["import"], acceleration);
+		else
+			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 } // namespace polyfem

@@ -22,6 +22,8 @@
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <polysolve/LinearSolver.hpp>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -33,7 +35,6 @@
 #include <string>
 
 #include <ipc/collision_mesh.hpp>
-
 #include <ipc/utils/logger.hpp>
 
 // Forward declaration
@@ -272,36 +273,25 @@ namespace polyfem
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
 		void solve_transient_navier_stokes_split(const int time_steps, const double dt);
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
 		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt);
-		/// solves transient scalar problem
-		/// @param[in] time_steps number of time steps
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_scalar(const int time_steps, const double t0, const double dt);
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt);
+		void solve_transient_linear(const int time_steps, const double t0, const double dt);
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
 		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt);
 		/// initialize the nonlinear solver
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
 		void init_nonlinear_tensor_solve();
 		/// solves a linear problem
 		void solve_linear();
@@ -316,10 +306,22 @@ namespace polyfem
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
+	protected:
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+
+		void solve_linear(
+			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			StiffnessMatrix &A,
+			Eigen::VectorXd &b,
+			const bool compute_spectrum);
+
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------
 		//---------------------------------------------------
 
+	public:
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -333,7 +335,7 @@ namespace polyfem
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
 		/// Matrices containing the input per node dirichelt
-		std::vector<Eigen::MatrixXd> input_dirichelt;
+		std::vector<Eigen::MatrixXd> input_dirichlet;
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;

@@ -102,21 +102,9 @@ namespace polyfem
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
-			// TODO import
-			Eigen::MatrixXd velocity;
-			const std::string v_path = resolve_input_path(args["input"]["data"]["v_path"]);
-			if (!v_path.empty())
-				import_matrix(v_path, args["import"], velocity);
-			else
-				solve_data.rhs_assembler->initial_velocity(velocity);
-
-			// TODO import
-			Eigen::MatrixXd acceleration;
-			const std::string a_path = resolve_input_path(args["input"]["data"]["a_path"]);
-			if (!a_path.empty())
-				import_matrix(a_path, args["import"], acceleration);
-			else
-				solve_data.rhs_assembler->initial_acceleration(acceleration);
+			Eigen::MatrixXd velocity, acceleration;
+			initial_velocity(velocity);
+			initial_velocity(acceleration);
 
 			const double dt = args["time"]["dt"];
 			solve_data.nl_problem->init_time_integrator(sol, velocity, acceleration, dt);

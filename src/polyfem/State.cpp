@@ -591,7 +591,7 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
-		input_dirichelt.clear();
+		input_dirichlet.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -873,7 +873,7 @@ namespace polyfem
 						boundary_nodes.push_back(node_id * problem_dim + d);
 				}
 
-				input_dirichelt.emplace_back(tmp);
+				input_dirichlet.emplace_back(tmp);
 			}
 		}
 
@@ -1313,7 +1313,7 @@ namespace polyfem
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichelt,
+			assembler, *mesh, obstacle, input_dirichlet,
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 			formulation(), *problem,
@@ -1345,7 +1345,7 @@ namespace polyfem
 				tmp.setZero();
 
 				RhsAssembler tmp_rhs_assembler(
-					assembler, *mesh, obstacle, input_dirichelt,
+					assembler, *mesh, obstacle, input_dirichlet,
 					n_pressure_bases, size,
 					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 					formulation(), *problem,
@@ -1419,10 +1419,11 @@ namespace polyfem
 				solve_transient_navier_stokes(time_steps, t0, dt);
 			else if (formulation() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt);
-			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
-				solve_transient_scalar(time_steps, t0, dt);
-			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"]) // Collisions add nonlinearity to the problem
-				solve_transient_tensor_linear(time_steps, t0, dt);
+			else if (assembler.is_mixed(formulation())
+					 || (assembler.is_linear(formulation()) && !args["contact"]["enabled"])) // Collisions add nonlinearity to the problem
+				solve_transient_linear(time_steps, t0, dt);
+			else if (problem->is_scalar() && !assembler.is_linear(formulation()))
+				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
 				solve_transient_tensor_nonlinear(time_steps, t0, dt);
 		}

@@ -226,7 +226,10 @@ bool polyfem::utils::import_matrix(
 		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> tmp;
 		success = read_matrix(path, tmp);
 		if (success)
+		{
+			assert(mat.rows() >= offset && mat.cols() >= 1);
 			mat.block(0, 0, offset, 1) = tmp.block(0, 0, offset, 1);
+		}
 	}
 	else
 	{
