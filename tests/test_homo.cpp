@@ -211,11 +211,9 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     const double dt = 1e-8;
 
     state.density.init_multimaterial(density_mat + theta * dt);
-    state.assemble_rhs();
     state.homogenize_weighted_linear_elasticity(homogenized_tensor1);
 
     state.density.init_multimaterial(density_mat - theta * dt);
-    state.assemble_rhs();
     state.homogenize_weighted_linear_elasticity(homogenized_tensor2);
 
     const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / dt / 2;
@@ -371,11 +369,9 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
     const double dt = 1e-6;
 
     state.density.init_multimaterial(density_mat + theta * dt);
-    state.assemble_rhs();
     state.homogenize_weighted_stokes(homogenized_tensor1);
 
     state.density.init_multimaterial(density_mat - theta * dt);
-    state.assemble_rhs();
     state.homogenize_weighted_stokes(homogenized_tensor2);
 
     const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / state.mesh->dimension() / dt / 2;
