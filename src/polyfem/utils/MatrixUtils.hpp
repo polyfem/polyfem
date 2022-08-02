@@ -1,5 +1,6 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
@@ -56,6 +57,9 @@ namespace polyfem
 		bool write_matrix_binary(const std::string &path, const Mat &mat);
 
 		bool write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat);
+
+		template <typename T>
+		bool import_matrix(const std::string &path, const json &import, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
 		class SpareMatrixCache
 		{

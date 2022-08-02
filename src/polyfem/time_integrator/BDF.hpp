@@ -16,7 +16,7 @@ namespace polyfem::time_integrator
 		BDF() {}
 
 		/// @brief Set the number of steps parameters from a json object.
-		/// @param params json containing `{"num_steps": 1}`
+		/// @param params json containing `{"BDF": {"num_steps": 1}}`
 		void set_parameters(const nlohmann::json &params) override;
 
 		using ImplicitTimeIntegrator::init;
@@ -26,10 +26,11 @@ namespace polyfem::time_integrator
 		/// @param v_prevs vector of previous velocities
 		/// @param a_prevs vector of previous accelerations
 		/// @param dt time step
-		void init(const std::vector<Eigen::VectorXd> &x_prevs,
-				  const std::vector<Eigen::VectorXd> &v_prevs,
-				  const std::vector<Eigen::VectorXd> &a_prevs,
-				  double dt);
+		void init(
+			const std::vector<Eigen::VectorXd> &x_prevs,
+			const std::vector<Eigen::VectorXd> &v_prevs,
+			const std::vector<Eigen::VectorXd> &a_prevs,
+			double dt);
 
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector

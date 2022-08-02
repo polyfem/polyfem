@@ -320,9 +320,9 @@ namespace polyfem
 		Eigen::MatrixXd tmp = sol;
 
 		int fluid_offset = use_avg_pressure ? (AssemblerUtils::is_fluid(formulation()) ? 1 : 0) : 0;
-		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases - fluid_offset, tmp.cols());
+		sol = tmp.topRows(tmp.rows() - n_pressure_bases - fluid_offset);
 		assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
-		pressure = tmp.block(tmp.rows() - n_pressure_bases - fluid_offset, 0, n_pressure_bases, tmp.cols());
+		pressure = tmp.middleRows(tmp.rows() - n_pressure_bases - fluid_offset, n_pressure_bases);
 		assert(pressure.size() == n_pressure_bases);
 	}
 
@@ -572,7 +572,7 @@ namespace polyfem
 		if (args["space"]["discr_order"] == mesh->orders().minCoeff())
 			return true;
 
-		//TODO?
+		// TODO:
 		// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
 		// 	return true;
 
@@ -591,7 +591,7 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
-		input_dirichelt.clear();
+		input_dirichlet.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -638,7 +638,7 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				//TODO b_discr_orders[i]["id"] can be an array
+				// TODO: b_discr_orders[i]["id"] can be an array
 				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
 				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
 			}
@@ -654,7 +654,7 @@ namespace polyfem
 			logger().error("space/discr_order must be either a number a path or an array");
 			throw "invalid json";
 		}
-		//TODO same for pressure!
+		// TODO: same for pressure!
 
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
@@ -730,7 +730,7 @@ namespace polyfem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if (args["space"]["advanced"]["use_spline"])
 			{
-				//TODO?
+				// TODO:
 				// if (!iso_parametric())
 				// {
 				// 	logger().error("Splines must be isoparametric, ignoring...");
@@ -873,7 +873,7 @@ namespace polyfem
 						boundary_nodes.push_back(node_id * problem_dim + d);
 				}
 
-				input_dirichelt.emplace_back(tmp);
+				input_dirichlet.emplace_back(tmp);
 			}
 		}
 
@@ -891,7 +891,7 @@ namespace polyfem
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			if (!has_dhat && args["contact"]["dhat"] > min_edge_length)
 			{
@@ -1215,7 +1215,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (!args["contact"]["enabled"]) // collisions are non-linear
+			if (!is_contact_enabled()) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
@@ -1312,15 +1312,15 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichelt,
+		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
+			assembler, *mesh, obstacle, input_dirichlet,
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 			formulation(), *problem,
 			args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		step_data.rhs_assembler->assemble(density, rhs);
+		solve_data.rhs_assembler->assemble(density, rhs);
 		rhs *= -1;
 
 		// if(problem->is_mixed())
@@ -1345,7 +1345,7 @@ namespace polyfem
 				tmp.setZero();
 
 				RhsAssembler tmp_rhs_assembler(
-					assembler, *mesh, obstacle, input_dirichelt,
+					assembler, *mesh, obstacle, input_dirichlet,
 					n_pressure_bases, size,
 					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 					formulation(), *problem,
@@ -1375,7 +1375,7 @@ namespace polyfem
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"] && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && !is_contact_enabled() && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
@@ -1400,6 +1400,8 @@ namespace polyfem
 			Eigen::saveMarket(stiffness, full_mat_path);
 		}
 
+		init_solve();
+
 		if (problem->is_time_dependent())
 		{
 			const double t0 = args["time"]["t0"];
@@ -1413,29 +1415,33 @@ namespace polyfem
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
-			Eigen::VectorXd c_sol;
-			init_transient(c_sol);
-			RhsAssembler &rhs_assembler = *(step_data.rhs_assembler);
-
 			if (formulation() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
+				solve_transient_navier_stokes(time_steps, t0, dt);
 			else if (formulation() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
-			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
-				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"]) // Collisions add nonlinearity to the problem
-				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
+				solve_transient_navier_stokes_split(time_steps, dt);
+			else if (assembler.is_linear(formulation()) && !is_contact_enabled()) // Collisions add nonlinearity to the problem
+				solve_transient_linear(time_steps, t0, dt);
+			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
+				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt);
 		}
 		else
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
-			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"])
+			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
 				solve_linear();
+			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
+				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_non_linear();
+			{
+				init_nonlinear_tensor_solve();
+				solve_tensor_nonlinear();
+				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
+				if (!u_path.empty())
+					write_matrix(u_path, sol);
+			}
 		}
 
 		timer.stop();

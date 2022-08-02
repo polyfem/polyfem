@@ -16,7 +16,7 @@ namespace polyfem::time_integrator
 		ImplicitNewmark() {}
 
 		/// @brief Set the `gamma` and `beta` parameters from a json object.
-		/// @param params json containing `{"gamma": 0.5, "beta": 0.25}`
+		/// @param params json containing `{"newmark": {"gamma": 0.5, "beta": 0.25}}`
 		void set_parameters(const nlohmann::json &params) override;
 
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
