@@ -16,11 +16,31 @@ namespace polyfem
 		{
 		}
 
-		void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &pressure_bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes)
+		void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &geom_bases, const std::vector<ElementBases> &pressure_bases, std::vector<int> &boundary_gnodes, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes)
 		{
 			std::vector<LocalBoundary> new_local_boundary;
 			std::vector<LocalBoundary> new_local_pressure_dirichlet_boundary;
 			local_neumann_boundary.clear();
+
+			boundary_gnodes.clear();
+			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+			{
+				const auto &lb = *it;
+				const auto &b = geom_bases[lb.element_id()];
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						auto &bs = b.bases[nodes(n)];
+						for (size_t g = 0; g < bs.global().size(); ++g)
+							boundary_gnodes.push_back(bs.global()[g].index);
+					}
+				}
+			}
+			
 			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;
@@ -109,6 +129,10 @@ namespace polyfem
 			std::sort(boundary_nodes.begin(), boundary_nodes.end());
 			auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 			boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+
+			std::sort(boundary_gnodes.begin(), boundary_gnodes.end());
+			auto it2 = std::unique(boundary_gnodes.begin(), boundary_gnodes.end());
+			boundary_gnodes.resize(std::distance(boundary_gnodes.begin(), it2));
 
 			std::sort(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
 			auto it_ = std::unique(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());

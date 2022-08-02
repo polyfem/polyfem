@@ -203,6 +203,16 @@ namespace polyfem
 					"lagged_damping_weight": 0
 				},
 
+				"optimization_contact": {
+					"enabled": false,
+					"CCD": {
+						"broad_phase": "hash_grid",
+						"tolerance": 1e-6,
+						"max_iterations": 1e6
+					},
+					"barrier_stiffness": 1
+				},
+
 				"ignore_inertia" : false,
 
 				"advanced": {

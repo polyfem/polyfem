@@ -226,10 +226,6 @@ namespace polyfem
 			if (param["type"] == "boundary_smoothing")
 			{
 				boundary_smoothing_params = param;
-				// const double boundary_smoothing_params["weight"] = param["weight"];
-				// const double adjustment_coeff = param["adjustment_coeff"];
-				// const int boundary_smoothing_params["adjust_weight_period"] = param["adjust_weight_period"];
-				// const bool scale_invariant = param["scale_invariant"];
 
 				if (param["scale_invariant"].get<bool>())
 					boundary_smoother.p = boundary_smoothing_params["power"];
@@ -243,7 +239,7 @@ namespace polyfem
 			logger().warn("Shape optimization without boundary smoothing!");
 
 		// SLIM
-		for (const auto &param : opt_params["functionals"])
+		for (const auto &param : opt_params["parameters"])
 		{
 			if (param["type"] == "shape")
 			{
@@ -256,12 +252,12 @@ namespace polyfem
 		if (slim_params.empty())
 		{
 			slim_params = json::parse(R"(
-                "smoothing_paramters": {
-                    "min_iter": 2,
-                    "tol": 1e-8,
-                    "soft_p": 1e5,
-                    "exp_factor": 5
-                }
+			{
+				"min_iter" : 2,
+				"tol" : 1e-8,
+				"soft_p" : 1e5,
+				"exp_factor" : 5
+			}
 			)");
 		}
 
@@ -990,9 +986,9 @@ namespace polyfem
 		}
 
 		// fix neumann bc
+		logger().info("Fix position of nonzero Neumann boundary nodes.");
 		for (const auto &lb : state.local_neumann_boundary)
 		{
-			logger().info("Fix position of nonzero Neumann boundary nodes.");
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int e = lb.element_id();

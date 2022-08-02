@@ -939,7 +939,7 @@ namespace polyfem
 		// logger().debug(" done");
 
 		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
+		problem->setup_bc(*mesh, bases, iso_parametric() ? bases : geom_bases, pressure_bases, boundary_gnodes, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();

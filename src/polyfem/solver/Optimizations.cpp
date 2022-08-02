@@ -795,7 +795,7 @@ namespace polyfem
 
 		std::shared_ptr<ShapeProblem> shape_problem = std::make_shared<ShapeProblem>(state, j);
 		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params); //std::make_shared<cppoptlib::LBFGSSolver<ShapeProblem>>(opt_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::MatrixXd V;
 		Eigen::MatrixXi F;
