@@ -83,14 +83,14 @@ namespace polyfem
 		void add_multimaterial(const int index, const json &params, const bool is_volume);
 		void init_density(const Eigen::MatrixXd &density) { density_mat_ = density; }
 
-		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const;
-		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu) const
+		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu, bool has_density = true) const;
+		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu, bool has_density = true) const
 		{
 			assert(param.size() == p.size());
 			lambda_mu(
 				param(0), param(1), param.size() == 2 ? 0. : param(2),
 				p(0), p(1), p.size() ? 0. : p(2),
-				el_id, lambda, mu);
+				el_id, lambda, mu, has_density);
 		}
 
 		Eigen::MatrixXd lambda_mat_, mu_mat_, density_mat_;

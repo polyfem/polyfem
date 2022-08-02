@@ -487,7 +487,7 @@ namespace polyfem
 		is_lambda_mu_ = true;
 	}
 
-	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
+	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu, bool has_density) const
 	{
 		assert(lambda_or_E_.size() == 1 || el_id < lambda_or_E_.size());
 		assert(mu_or_nu_.size() == 1 || el_id < mu_or_nu_.size());
@@ -516,7 +516,7 @@ namespace polyfem
 			mu = mu_mat_(el_id);
 		}
 
-		if (el_id < density_mat_.size())
+		if (has_density && el_id < density_mat_.size())
 		{
 			lambda *= density_mat_(el_id);
 			mu *= density_mat_(el_id);

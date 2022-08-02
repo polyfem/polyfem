@@ -1274,7 +1274,10 @@ namespace polyfem
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
-		term.setZero(n_elements * 2, 1);
+		term.setZero(n_elements, 1);
+
+		const LameParameters &params = assembler.lame_params();
+		Eigen::MatrixXd density_mat = params.density_mat_;
 
 		for (int e = 0; e < n_elements; ++e)
 		{
@@ -1290,9 +1293,21 @@ namespace polyfem
 
 			for (int q = 0; q < da.size(); ++q)
 			{
+				double lambda, mu;
+				params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+				lambda /= density_mat(e);
+				mu /= density_mat(e);
+
 				Eigen::MatrixXd grad_p_i, grad_u_i;
 				vector2matrix(grad_p.row(q), grad_p_i);
 				vector2matrix(grad_u.row(q), grad_u_i);
+
+				auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
+				auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
+
+				const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+
+				term(e) += value;
 			}
 		}
 	}
@@ -1630,7 +1645,7 @@ namespace polyfem
 		compute_topology_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
 
 		one_form = elasticity_term;
-		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());
+		logger().debug("topology derivative: elasticity: {}", elasticity_term.norm());
 	}
 
 	void State::sample_field(std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order)

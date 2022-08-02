@@ -1027,8 +1027,7 @@ namespace polyfem
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Extracting boundary mesh...");
-		if (args["contact"]["enabled"])
-			build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, n_bases, bases);
+		build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, n_bases, bases);
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 

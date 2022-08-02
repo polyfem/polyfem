@@ -463,8 +463,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
     rhs.setZero(stiffness.rows(), unit_disp_ids.size());
 
     const LameParameters &params = assembler.lame_params();
-    Eigen::MatrixXd density_mat;
-    density_mat = params.density_mat_;
+    Eigen::MatrixXd density_mat = params.density_mat_;
     
     std::vector<Eigen::MatrixXd> unit_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
     for (int id = 0; id < unit_disp_ids.size(); id++)
@@ -489,9 +488,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         for (int q = 0; q < quadrature.weights.size(); q++)
         {
             double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-            lambda /= density_mat(e);
-            mu /= density_mat(e);
+            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, true);
 
             for (const auto &v : vals.basis_values)
             {
@@ -507,7 +504,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
                     {
                         const auto &unit_strain = unit_strains[k];
 
-                        const double value = quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
+                        const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
 
                         for (auto g : v.global)
                             rhs(g.index * dim + d, k) += value * g.val;
@@ -583,9 +580,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         for (int q = 0; q < quadrature.weights.size(); q++)
         {
             double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-            lambda /= density_mat(e);
-            mu /= density_mat(e);
+            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, true);
 
             std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
 
@@ -614,7 +609,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
                     Eigen::MatrixXd strain_diff_kl = unit_strains[col_id] - react_strains[col_id];
 
                     const double value = 2 * mu * (strain_diff_ij.array() * strain_diff_kl.array()).sum() + lambda * strain_diff_ij.trace() * strain_diff_kl.trace();
-                    C_H(row_id, col_id) += vals.quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * value;
+                    C_H(row_id, col_id) += vals.quadrature.weights(q) * vals.det(q) * value;
                 }
             }
         }
@@ -635,9 +630,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         for (int q = 0; q < quadrature.weights.size(); q++)
         {
             double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-            lambda /= density_mat(e);
-            mu /= density_mat(e);
+            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, true);
 
             std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
 
@@ -671,7 +664,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
                     {
                         auto diff_strain = react_strains[id] - unit_strains[id];
                         
-                        const double value = quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * (2 * mu * (diff_strain.array() * basis_strain.array()).sum() + lambda * diff_strain.trace() * basis_strain.trace());
+                        const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain.array() * basis_strain.array()).sum() + lambda * diff_strain.trace() * basis_strain.trace());
 
                         for (auto g : v.global)
                             rhs(g.index * dim + d, id) -= value * g.val;
@@ -716,9 +709,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         for (int q = 0; q < quadrature.weights.size(); q++)
         {
             double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-            lambda /= density_mat(e);
-            mu /= density_mat(e);
+            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
             
             for (int id = 0; id < unit_disp_ids.size(); id++)
             {
