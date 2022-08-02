@@ -147,8 +147,6 @@ namespace polyfem
 	public:
 		ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
-		void initialize_mesh();
-
 		double target_value(const TVector &x);
 		double volume_value(const TVector &x);
 		double smooth_value(const TVector &x);
