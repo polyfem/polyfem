@@ -531,7 +531,7 @@ int main(int argc, char **argv)
 		if (state.formulation() == "LinearElasticity")
 			state.homogenize_weighted_linear_elasticity(homogenized_tensor);
 		else if (state.formulation() == "Stokes")
-			state.homogenize_weighted_stokes(homogenized_tensor, state.args["materials"]["solid_permeability"]);
+			state.homogenize_weighted_stokes(homogenized_tensor);
 	}
 	else
 	{

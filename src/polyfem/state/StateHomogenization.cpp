@@ -239,7 +239,7 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
         return;
     }
 
-    assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
+    assemble_stiffness_mat();
     
     const int dim = mesh->dimension();
     const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -447,7 +447,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         return;
     }
 
-    assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
+    assemble_stiffness_mat();
     
     const int dim = mesh->dimension();
     const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -463,6 +463,8 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
     rhs.setZero(stiffness.rows(), unit_disp_ids.size());
 
     const LameParameters &params = assembler.lame_params();
+    Eigen::MatrixXd density_mat;
+    density_mat = params.density_mat_;
     
     std::vector<Eigen::MatrixXd> unit_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
     for (int id = 0; id < unit_disp_ids.size(); id++)
@@ -488,6 +490,8 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         {
             double lambda, mu;
             params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+            lambda /= density_mat(e);
+            mu /= density_mat(e);
 
             for (const auto &v : vals.basis_values)
             {
@@ -580,6 +584,8 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         {
             double lambda, mu;
             params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+            lambda /= density_mat(e);
+            mu /= density_mat(e);
 
             std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
 
@@ -630,6 +636,8 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         {
             double lambda, mu;
             params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+            lambda /= density_mat(e);
+            mu /= density_mat(e);
 
             std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
 
@@ -709,7 +717,9 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         {
             double lambda, mu;
             params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-
+            lambda /= density_mat(e);
+            mu /= density_mat(e);
+            
             for (int id = 0; id < unit_disp_ids.size(); id++)
             {
                 Eigen::MatrixXd grad_sol(dim, dim), grad_adjoint(dim, dim);
@@ -892,7 +902,7 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
     K_H /= volume;
 }
 
-void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_permeability)
+void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
 {
     if (!mesh)
     {
@@ -926,16 +936,16 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_
         assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
         assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
 
-        Eigen::MatrixXd solid_density_mat(bases.size(), 1);
-        for (int e = 0; e < bases.size(); e++)
-            solid_density_mat(e) = 1 - density(0,0,0,0,0,0,e);
+        Eigen::MatrixXd solid_density_mat;
+        density.get_multimaterial(solid_density_mat);
+        solid_density_mat = 1 - solid_density_mat.array();
 
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
 
         assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
 
-        AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / solid_permeability, mixed_stiffness, pressure_stiffness, stiffness);
+        AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / args["materials"]["solid_permeability"].get<double>(), mixed_stiffness, pressure_stiffness, stiffness);
     }
     
     Eigen::MatrixXd rhs(stiffness.rows(), dim);
@@ -1052,7 +1062,7 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_
     K_H /= volume;
 }
 
-void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad, const double solid_permeability)
+void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad)
 {
     if (!mesh)
     {
@@ -1086,16 +1096,16 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
         assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
         assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
 
-        Eigen::MatrixXd solid_density_mat(bases.size(), 1);
-        for (int e = 0; e < bases.size(); e++)
-            solid_density_mat(e) = 1 - density(0,0,0,0,0,0,e);
+        Eigen::MatrixXd solid_density_mat;
+        density.get_multimaterial(solid_density_mat);
+        solid_density_mat = 1 - solid_density_mat.array();
 
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
 
         assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
 
-        AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / solid_permeability, mixed_stiffness, pressure_stiffness, stiffness);
+        AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / args["materials"]["solid_permeability"].get<double>(), mixed_stiffness, pressure_stiffness, stiffness);
     }
     
     Eigen::MatrixXd rhs;
@@ -1249,8 +1259,8 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
                             val_adjoint(d) += v.val(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k);
                         }
                 
-                const double value1 = (grad_sol.array() * grad_adjoint.array()).sum() - (val_sol.array() * val_adjoint.array()).sum() / solid_permeability;
-                const double value2 = (grad_sol.array() * grad_sol.array()).sum() - (val_sol.array() * val_sol.array()).sum() / solid_permeability;
+                const double value1 = (grad_sol.array() * grad_adjoint.array()).sum() - (val_sol.array() * val_adjoint.array()).sum() / args["materials"]["solid_permeability"].get<double>();
+                const double value2 = (grad_sol.array() * grad_sol.array()).sum() - (val_sol.array() * val_sol.array()).sum() / args["materials"]["solid_permeability"].get<double>();
                 grad(e) += (value1 + value2) * quadrature.weights(q) * vals.det(q);
             }
         }

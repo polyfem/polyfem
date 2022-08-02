@@ -131,7 +131,8 @@ TEST_CASE("elastic_homo", "[homogenization]")
     {
         density_mat(e) = cross_elastic1(barycenters(e, 0), barycenters(e, 1));
     }
-    state.density.init_multimaterial(density_mat);
+    // state.density.init_multimaterial(density_mat);
+    state.assembler.update_lame_params_density(density_mat);
     state.homogenize_weighted_linear_elasticity(homogenized_tensor);
 
     std::cout << homogenized_tensor << std::endl;
@@ -198,7 +199,8 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     {
         density_mat(e) = cross_elastic1(barycenters(e, 0), barycenters(e, 1));
     }
-    state.density.init_multimaterial(density_mat);
+    // state.density.init_multimaterial(density_mat);
+    state.assembler.update_lame_params_density(density_mat);
 
     Eigen::VectorXd grad;
     state.homogenize_weighted_linear_elasticity_grad(homogenized_tensor, grad);
@@ -210,11 +212,13 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
         theta(i) = (rand() % 1000 ) / 1000.0;
     const double dt = 1e-8;
 
-    state.density.init_multimaterial(density_mat + theta * dt);
+    // state.density.init_multimaterial(density_mat + theta * dt);
+    state.assembler.update_lame_params_density(density_mat + theta * dt);
     state.assemble_rhs();
     state.homogenize_weighted_linear_elasticity(homogenized_tensor1);
 
-    state.density.init_multimaterial(density_mat - theta * dt);
+    // state.density.init_multimaterial(density_mat - theta * dt);
+    state.assembler.update_lame_params_density(density_mat - theta * dt);
     state.assemble_rhs();
     state.homogenize_weighted_linear_elasticity(homogenized_tensor2);
 
@@ -224,7 +228,6 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
     REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);
 }
-
 
 TEST_CASE("stokes_homo", "[homogenization]")
 {
@@ -258,7 +261,8 @@ TEST_CASE("stokes_homo", "[homogenization]")
             "type": "Stokes",
             "viscosity": 1,
             "delta2": 0.00005,
-            "use_avg_pressure": false
+            "use_avg_pressure": false,
+            "solid_permeability": 1e-8
         }
     })"_json;
 
@@ -291,13 +295,12 @@ TEST_CASE("stokes_homo", "[homogenization]")
 
     Eigen::Matrix3d reference_tensor;
     reference_tensor <<
-    0.0279286,  -1.2016e-12,  4.53604e-15,
-    -1.20155e-12,    0.0279252, -2.97628e-16,
-    4.53604e-15, -2.97628e-16,    0.0559471;
+    0.0271293, 1.40512e-12, 9.04009e-15,
+    1.40508e-12,    0.027081, 1.56278e-13,
+    9.04009e-15, 1.56278e-13,   0.0535809;
 
     REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
 }
-
 
 TEST_CASE("stokes_homo_grad", "[homogenization]")
 {

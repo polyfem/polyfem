@@ -26,6 +26,7 @@ namespace polyfem
 
 			bool is_zero() const { return expr_.empty() && fabs(value_) < 1e-10; }
 			bool is_mat() const { if (expr_.empty() && mat_.size() > 0) return true; return false; }
+			const Eigen::MatrixXd& get_mat() const { assert(is_mat()); return mat_; }
 
 		private:
 			std::function<double(double x, double y, double z, double t)> sfunc_;
