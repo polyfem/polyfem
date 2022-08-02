@@ -1268,6 +1268,35 @@ namespace polyfem
 			term += local_storage.vec;
 	}
 
+	void State::compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
+	{
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+		const int n_elements = int(bases.size());
+		term.setZero(n_elements * 2, 1);
+
+		for (int e = 0; e < n_elements; ++e)
+		{
+			assembler::ElementAssemblyValues vals;
+			vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+			Eigen::MatrixXd u, grad_u, p, grad_p;
+			interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
+			interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
+
+			for (int q = 0; q < da.size(); ++q)
+			{
+				Eigen::MatrixXd grad_p_i, grad_u_i;
+				vector2matrix(grad_p.row(q), grad_p_i);
+				vector2matrix(grad_u.row(q), grad_u_i);
+			}
+		}
+	}
+
 	void State::compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -1584,6 +1613,21 @@ namespace polyfem
 
 		Eigen::VectorXd elasticity_term;
 		compute_material_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
+
+		one_form = elasticity_term;
+		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());
+	}
+
+	void State::dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
+	{
+		assert(!problem->is_time_dependent());
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+
+		Eigen::MatrixXd adjoint_sol;
+		solve_adjoint(j, adjoint_sol);
+
+		Eigen::VectorXd elasticity_term;
+		compute_topology_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
 
 		one_form = elasticity_term;
 		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());

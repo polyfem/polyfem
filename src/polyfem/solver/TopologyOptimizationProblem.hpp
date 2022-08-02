@@ -1,10 +1,6 @@
 #pragma once
 
 #include "OptimizationProblem.hpp"
-#include <igl/slim.h>
-
-#include <ipc/collisions/collision_constraint.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
 
 namespace polyfem
 {
@@ -40,5 +36,9 @@ namespace polyfem
 		void solution_changed(const TVector &newX) override;
 
 		void save_to_file(const TVector &x0) override;
+
+	private:
+		double min_density = 0;
+		double max_density = 1;
 	};
 } // namespace polyfem

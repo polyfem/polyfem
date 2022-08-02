@@ -203,6 +203,24 @@ namespace polyfem
 		IntegrableFunctional get_stress_functional(const std::string &formulation, const int power);
 	};
 
+	class ComplianceFunctional : public CompositeFunctional
+	{
+	public:
+		ComplianceFunctional()
+		{
+			functional_name = "Compliance";
+			surface_integral = false;
+			transient_integral_type = "simpson";
+		}
+		~ComplianceFunctional() = default;
+
+		double energy(State &state) override;
+		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+
+	private:
+		IntegrableFunctional get_compliance_functional(const std::string &formulation);
+	};
+
 	class CenterTrajectoryFunctional : public CompositeFunctional
 	{
 	public:

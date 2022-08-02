@@ -77,6 +77,8 @@ namespace polyfem
 			func = std::make_shared<HeightFunctional>();
 		else if (functional_name_ == "Stress")
 			func = std::make_shared<StressFunctional>();
+		else if (functional_name_ == "Compliance")
+			func = std::make_shared<ComplianceFunctional>();
 		else if (functional_name_ == "CenterTrajectory")
 			func = std::make_shared<CenterTrajectoryFunctional>();
 		else if (functional_name_ == "CenterXYTrajectory")
@@ -701,6 +703,71 @@ namespace polyfem
 				for (int i = 0; i < dim; i++)
 					for (int l = 0; l < dim; l++)
 						val(q, i * dim + l) = coef * stress_dstress(i, l);
+			}
+		});
+
+		return j;
+	}
+
+	double ComplianceFunctional::energy(State &state)
+	{
+		IntegrableFunctional j = get_compliance_functional(state.formulation());
+
+		return state.J(j);
+	}
+
+	Eigen::VectorXd ComplianceFunctional::gradient(State &state, const std::string &type)
+	{
+		IntegrableFunctional j = get_compliance_functional(state.formulation());
+
+		Eigen::VectorXd grad = state.integral_gradient(j, type);
+		double val = state.J(j);
+
+		return grad;
+	}
+
+	IntegrableFunctional ComplianceFunctional::get_compliance_functional(const std::string &formulation)
+	{
+		assert(!surface_integral);
+		IntegrableFunctional j(surface_integral);
+		j.set_transient_integral_type(transient_integral_type);
+		j.set_j([formulation, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), 1);
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				return;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				Eigen::MatrixXd grad_u_q, stress;
+				vector2matrix(grad_u.row(q), grad_u_q);
+				if (formulation == "LinearElasticity")
+				{
+					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+				}
+				else
+					logger().error("Unknown formulation!");
+				val(q) = (stress.array() * grad_u_q.array()).sum();
+			}
+		});
+
+		j.set_dj_dgradu([formulation, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				return;
+			const int dim = sqrt(grad_u.cols());
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				Eigen::MatrixXd grad_u_q, stress;
+				vector2matrix(grad_u.row(q), grad_u_q);
+				if (formulation == "LinearElasticity")
+				{
+					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+				}
+				else
+					logger().error("Unknown formulation!");
+
+				for (int i = 0; i < dim; i++)
+					for (int l = 0; l < dim; l++)
+						val(q, i * dim + l) = 2 * stress(i, l);
 			}
 		});
 
