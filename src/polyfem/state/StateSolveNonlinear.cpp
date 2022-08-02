@@ -17,6 +17,7 @@
 
 namespace polyfem
 {
+	using namespace assembler;
 	using namespace solver;
 	using namespace utils;
 
@@ -57,7 +58,7 @@ namespace polyfem
 
 			if (true)
 			{
-				remesh();
+				remesh(t0, dt, t);
 			}
 
 			save_timestep(t0 + dt * t, t, t0, dt);
@@ -273,7 +274,7 @@ namespace polyfem
 		}
 	}
 
-	void State::remesh()
+	void State::remesh(const double t0, const double dt, const int t)
 	{
 		Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
 		for (int i = 0; i < mesh->n_vertices(); ++i)
@@ -324,8 +325,8 @@ namespace polyfem
 		const std::vector<ElementBases> old_geom_bases = iso_parametric() ? bases : geom_bases;
 		Eigen::MatrixXd y(sol.size(), 3); // Old values of independent variables
 		y.col(0) = sol;
-		y.col(1) = step_data.nl_problem->time_integrator()->v_prev();
-		y.col(2) = step_data.nl_problem->time_integrator()->a_prev();
+		y.col(1) = solve_data.nl_problem->time_integrator()->v_prev();
+		y.col(2) = solve_data.nl_problem->time_integrator()->a_prev();
 
 		this->load_mesh(V_new, F_new);
 		// FIXME:
@@ -377,8 +378,8 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
-		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichelt,
+		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
+			assembler, *mesh, obstacle, input_dirichlet,
 			n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
 			bases, gbases, ass_vals_cache,
 			formulation(), *problem,
@@ -390,15 +391,15 @@ namespace polyfem
 		const int full_size = n_bases * mesh->dimension();
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 
-		step_data.nl_problem = std::make_shared<NLProblem>(*this, *step_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"]);
-		step_data.nl_problem->init_time_integrator(sol, vel, acc, dt);
+		solve_data.nl_problem = std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"]);
+		solve_data.nl_problem->init_time_integrator(sol, vel, acc, dt);
 
 		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, *step_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"], al_weight);
-		step_data.alnl_problem->init_time_integrator(sol, vel, acc, dt);
+		solve_data.alnl_problem = std::make_shared<ALNLProblem>(*this, *solve_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"], al_weight);
+		solve_data.alnl_problem->init_time_integrator(sol, vel, acc, dt);
 
 		Eigen::MatrixXd displaced;
-		step_data.nl_problem->reduced_to_full_displaced_points(sol, displaced);
+		solve_data.nl_problem->reduced_to_full_displaced_points(sol, displaced);
 		OBJWriter::save(resolve_output_path("projection_rest.obj"), collision_mesh.vertices_at_rest(), collision_mesh.edges(), Eigen::MatrixXi());
 		OBJWriter::save(resolve_output_path("projection.obj"), collision_mesh.vertices(displaced), collision_mesh.edges(), Eigen::MatrixXi());
 

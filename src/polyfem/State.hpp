@@ -421,6 +421,9 @@ namespace polyfem
 		/// Resets the mesh
 		void reset_mesh();
 
+		/// @brief Remesh and project the solution
+		void remesh(const double t0, const double dt, const int t);
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
