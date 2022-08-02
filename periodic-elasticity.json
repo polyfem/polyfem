@@ -1,0 +1,52 @@
+{
+    "geometry": [
+        {
+            "mesh": "square2.msh",
+            "n_refs": 0
+        }
+    ],
+    "space": {
+        "discr_order": 3
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [
+            "-(125*pi^2*sin(2*pi*x))/3",
+            "-(125*pi^2*cos(2*pi*y))/3"
+        ],
+        "periodic_boundary": true,
+        "dirichlet_boundary": [
+            {
+                "id": 7,
+                "value": [
+                    "sin(2*pi*x)",
+                    "cos(2*pi*y)"
+                ]
+            }
+        ]
+    },
+    "materials": {
+        "type": "LinearElasticity",
+        "lambda": 10,
+        "mu": 11
+    },
+    "output": {
+        "paraview": {
+            "file_name": "debug.vtu",
+            "surface": true,
+            "options": {
+                "material": true
+            }
+        },
+        "reference": {
+            "solution": [
+                "sin(2*pi*x)",
+                "cos(2*pi*y)"
+            ]
+        }
+    }
+}

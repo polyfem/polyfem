@@ -101,6 +101,49 @@ namespace polyfem
 			}
 		}
 
+		void AssemblerUtils::assemble_problem(const std::string &assembler,
+											  const bool is_volume,
+											  const int n_basis,
+											  const Density &density,
+											  const std::vector<ElementBases> &bases,
+											  const std::vector<ElementBases> &gbases,
+											  const AssemblyValsCache &cache,
+											  StiffnessMatrix &stiffness) const
+		{
+			if (assembler == "Helmholtz")
+				helmholtz_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			else if (assembler == "Laplacian")
+				laplacian_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			else if (assembler == "Bilaplacian")
+				bilaplacian_main_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+
+			else if (assembler == "LinearElasticity")
+				linear_elasticity_.assemble(is_volume, n_basis, density, bases, gbases, cache, stiffness);
+			else if (assembler == "HookeLinearElasticity")
+				hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+				stokes_velocity_.assemble(is_volume, n_basis, density, bases, gbases, cache, stiffness);
+			else if (assembler == "IncompressibleLinearElasticity")
+				incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+
+			else if (assembler == "SaintVenant")
+				return;
+			else if (assembler == "NeoHookean")
+				return;
+			else if (assembler == "MultiModels")
+				return;
+			// else if (assembler == "NavierStokes")
+			// return;
+			//else if(assembler == "Ogden")
+			//	return;
+			else
+			{
+				logger().warn("{} not found, fallback to default", assembler);
+				assert(false);
+				laplacian_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			}
+		}
+
 		void AssemblerUtils::assemble_mass_matrix(const std::string &assembler,
 												  const bool is_volume,
 												  const int n_basis,
@@ -145,6 +188,35 @@ namespace polyfem
 			}
 		}
 
+		void AssemblerUtils::assemble_mixed_problem(const std::string &assembler,
+													const bool is_volume,
+													const int n_psi_basis,
+													const int n_phi_basis,
+													const Density &density,
+													const std::vector<ElementBases> &psi_bases,
+													const std::vector<ElementBases> &phi_bases,
+													const std::vector<ElementBases> &gbases,
+													const AssemblyValsCache &psi_cache,
+													const AssemblyValsCache &phi_cache,
+													StiffnessMatrix &stiffness) const
+		{
+			//TODO add cache
+			if (assembler == "Bilaplacian")
+				bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+
+			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+				stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, density, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+			else if (assembler == "IncompressibleLinearElasticity")
+				incompressible_lin_elast_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+
+			else
+			{
+				logger().warn("{} not found, fallback to default", assembler);
+				assert(false);
+				stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, density, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+			}
+		}
+
 		void AssemblerUtils::assemble_pressure_problem(const std::string &assembler,
 													   const bool is_volume,
 													   const int n_basis,
@@ -166,6 +238,31 @@ namespace polyfem
 				logger().warn("{} not found, fallback to default", assembler);
 				assert(false);
 				stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			}
+		}
+
+		void AssemblerUtils::assemble_pressure_problem(const std::string &assembler,
+													   const bool is_volume,
+													   const int n_basis,
+													   const Density &density,
+													   const std::vector<ElementBases> &bases,
+													   const std::vector<ElementBases> &gbases,
+													   const AssemblyValsCache &cache,
+													   StiffnessMatrix &stiffness) const
+		{
+			if (assembler == "Bilaplacian")
+				bilaplacian_aux_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+
+			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+				stokes_pressure_.assemble(is_volume, n_basis, density, bases, gbases, cache, stiffness);
+			else if (assembler == "IncompressibleLinearElasticity")
+				incompressible_lin_elast_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+
+			else
+			{
+				logger().warn("{} not found, fallback to default", assembler);
+				assert(false);
+				stokes_pressure_.assemble(is_volume, n_basis, density, bases, gbases, cache, stiffness);
 			}
 		}
 

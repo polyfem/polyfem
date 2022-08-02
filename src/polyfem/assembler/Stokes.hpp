@@ -67,21 +67,19 @@ namespace polyfem
 		public:
 			// res is R^{dim²}
 			Eigen::Matrix<double, 1, 1>
-			assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
-			{
-				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-			}
+			assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
 
 			Eigen::Matrix<double, 1, 1>
-			compute_rhs(const AutodiffHessianPt &pt) const
-			{
-				assert(false);
-				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-			}
+			compute_rhs(const AutodiffHessianPt &pt) const;
 
 			inline int size() const { return 1; }
 
 			void add_multimaterial(const int index, const json &params) {}
+			void set_parameters(const json &params);
+
+		private:
+			double delta1_ = 0;
+			double delta2_ = 0;
 		};
 	} // namespace assembler
 } // namespace polyfem

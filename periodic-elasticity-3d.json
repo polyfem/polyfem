@@ -1,0 +1,47 @@
+{
+    "geometry": [
+        {
+            "mesh": "cross.mesh",
+            "n_refs": 0
+        }
+    ],
+    "space": {
+        "discr_order": 2,
+        "advanced": {
+            "bc_method": "sample"
+        }
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        }
+    },
+    "boundary_conditions": {
+        "rhs": ["-(400*pi^2*sin(2*pi*x))/9", "-(400*pi^2*cos(2*pi*y))/9", "-(400*pi^2*sin(2*pi*z))/9"],
+        "periodic_boundary": true,
+        "dirichlet_boundary": [
+            {
+                "id": 7,
+                "value": ["sin(2*pi*x)", "cos(2*pi*y)", "sin(2*pi*z)"]
+            }
+        ]
+    },
+    "materials": {
+        "type": "LinearElasticity",
+        "E": 10,
+        "nu": 0.2
+    },
+    "output": {
+        "paraview": {
+            "vismesh_rel_area": 100,
+            "file_name": "debug.vtu",
+            "options": {
+                "material": true
+            }
+        },
+        "reference": {
+            "solution": ["sin(2*pi*x)", "cos(2*pi*y)", "sin(2*pi*z)"],
+            "gradient": ["2*pi*cos(2*pi*x)", 0, 0, 0, "-2*pi*sin(2*pi*y)", 0, 0, 0, "2*pi*cos(2*pi*z)"]
+        }
+    }
+}

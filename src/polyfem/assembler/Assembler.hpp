@@ -4,6 +4,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -33,6 +34,15 @@ namespace polyfem
 				const AssemblyValsCache &cache,
 				StiffnessMatrix &stiffness) const;
 
+			void assemble(
+				const bool is_volume,
+				const int n_basis,
+				const Density &density,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &cache,
+				StiffnessMatrix &stiffness) const;
+
 			//references to local assemblers
 			inline LocalAssembler &local_assembler() { return local_assembler_; }
 			inline const LocalAssembler &local_assembler() const { return local_assembler_; }
@@ -52,6 +62,18 @@ namespace polyfem
 				const bool is_volume,
 				const int n_psi_basis,
 				const int n_phi_basis,
+				const std::vector<basis::ElementBases> &psi_bases,
+				const std::vector<basis::ElementBases> &phi_bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &psi_cache,
+				const AssemblyValsCache &phi_cache,
+				StiffnessMatrix &stiffness) const;
+
+			void assemble(
+				const bool is_volume,
+				const int n_psi_basis,
+				const int n_phi_basis,
+				const Density &density,
 				const std::vector<basis::ElementBases> &psi_bases,
 				const std::vector<basis::ElementBases> &phi_bases,
 				const std::vector<basis::ElementBases> &gbases,

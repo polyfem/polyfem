@@ -193,7 +193,7 @@ namespace polyfem
 		Eigen::VectorXi disc_orders;
 
 		/// Mapping from input nodes to FE nodes
-		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
+		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
 
 		//list of dirichlet boundary geometry nodes
 		std::vector<int> boundary_gnodes;
@@ -770,6 +770,10 @@ namespace polyfem
 			const int n_bases_, 
 			const std::vector<ElementBases> &bases_) const;
 
+		//add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
+		int remove_pure_neumann_singularity(StiffnessMatrix &A);
+		int remove_pure_periodic_singularity(StiffnessMatrix &A);
+
 		/// compute the errors, not part of solve
 		void compute_errors();
 		/// saves all data on the disk according to the input params
@@ -1043,6 +1047,14 @@ namespace polyfem
 
 			// args["export"]["vis_boundary_only"] = tmp;
 		}
+
+		//homogenization study of unit cell
+		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::VectorXd &grad);
+		void homogenize_stokes(Eigen::MatrixXd &K_H);
+		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H, const double solid_permeability = 1e-6);
+		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad, const double solid_permeability = 1e-6);
 
 	private:
 		/// splits the solution in solution and pressure for mixed problems

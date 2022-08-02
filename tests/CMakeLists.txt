@@ -14,8 +14,10 @@ set(test_sources
 	test_rbf.cpp
 	test_solver.cpp
   test_diff.cpp
+  test_homo.cpp
 	test_tbb.cpp
 	test_utils.cpp
+  test_diff.cpp
   verify_run.cpp
 )
 

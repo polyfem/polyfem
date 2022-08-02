@@ -226,6 +226,7 @@ namespace polyfem
 			"boundary_conditions": {
 				"rhs": null,
 				"dirichlet_boundary": [],
+				"periodic_boundary": false,
 				"neumann_boundary": [],
 				"pressure_boundary": [],
 				"obstacle_displacements": []

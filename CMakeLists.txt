@@ -283,6 +283,7 @@ add_library(polyfem::polyfem ALIAS polyfem)
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
     add_executable(shape_optimization src/polyfem/main_shape_opt.cpp)
+    add_executable(${PROJECT_NAME}_homo src/polyfem/homo.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
     include(cli11)
@@ -292,8 +293,17 @@ if(POLYFEM_TOPLEVEL_PROJECT)
             warnings::all
             CLI11::CLI11
     )
+
     target_compile_features(shape_optimization PUBLIC ${CXX14_FEATURES})
     target_link_libraries(shape_optimization
+        PUBLIC
+            polyfem::polyfem
+            warnings::all
+            CLI11::CLI11
+    )
+
+    target_compile_features(${PROJECT_NAME}_homo PUBLIC ${CXX14_FEATURES})
+    target_link_libraries(${PROJECT_NAME}_homo
         PUBLIC
             polyfem::polyfem
             warnings::all

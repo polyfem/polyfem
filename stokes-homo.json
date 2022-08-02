@@ -1,0 +1,44 @@
+{
+    "geometry": [
+        {
+            "mesh": "five-cylinders.mesh",
+            "n_refs": 0,
+            "transformation": {
+                "scale": 1
+            }
+        }
+    ],
+    "space": {
+        "discr_order": 1,
+        "pressure_discr_order": 1,
+        "advanced": {
+            "quadrature_order": 2
+        }
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        }
+    },
+    "boundary_conditions": {
+        "periodic_boundary": true,
+        "dirichlet_boundary": [
+            {
+                "id": 7,
+                "value": [0, 0, 0]
+            }
+        ]
+    },
+    "materials": {
+        "type": "Stokes",
+        "viscosity": 1,
+        "delta2": 0.00005,
+        "use_avg_pressure": false
+    },
+    "output": {
+        "paraview": {
+            "surface": true,
+            "file_name": "debug.vtu"
+        }
+    }
+}

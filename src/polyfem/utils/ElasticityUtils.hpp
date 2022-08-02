@@ -108,6 +108,7 @@ namespace polyfem
 		Density();
 
 		void add_multimaterial(const int index, const json &params);
+		void init_multimaterial(const Eigen::MatrixXd &mat) { rho_[0].init(mat); }
 
 		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
@@ -117,6 +118,8 @@ namespace polyfem
 						   p(0), p(1), p.size() ? 0. : p(2),
 						   el_id);
 		}
+
+		bool is_mat() const { return (rho_.size() == 1) && rho_[0].is_mat(); }
 
 	private:
 		void set_rho(const json &rho);
