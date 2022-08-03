@@ -115,11 +115,11 @@ namespace polyfem::assembler
 
 						for (int n = 0; n < size; ++n)
 						{
-							//local matrix is diagonal
+							// local matrix is diagonal
 							const int m = n;
 							// for(int m = 0; m < size; ++m)
 							{
-								const double local_value = tmp; //val(n*size+m);
+								const double local_value = tmp; // val(n*size+m);
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
 									const auto gi = global_i[ii].index * size + m;
@@ -198,10 +198,10 @@ namespace polyfem::assembler
 
 		double triangle_area(const Eigen::MatrixXd &triangle)
 		{
-			Eigen::Matrix3d A;
-			A.leftCols<2>() = triangle;
-			A.col(2).setOnes();
-			return 0.5 * A.determinant();
+			const auto &a = triangle.row(0);
+			const auto &b = triangle.row(1);
+			const auto &c = triangle.row(2);
+			return 0.5 * ((b.x() - a.x()) * (c.y() - a.y()) - (c.x() - a.x()) * (b.y() - a.y()));
 		}
 
 		Eigen::Vector2d P1_2D_gmapping(
@@ -262,7 +262,10 @@ namespace polyfem::assembler
 		std::vector<Eigen::Triplet<double>> triplets;
 
 		Quadrature quadrature;
-		TriQuadrature().get_quadrature(3, quadrature);
+		TriQuadrature().get_quadrature(2, quadrature);
+
+		// static int i = 0;
+		// std::vector<Eigen::Vector2d> vertices;
 
 		for (const ElementBases &to_element : to_bases)
 		{
@@ -295,9 +298,12 @@ namespace polyfem::assembler
 				for (const Eigen::MatrixXd &triangle : triangles)
 				{
 					const double area = abs(triangle_area(triangle));
-					if (abs(area) < 1e-12)
+					if (abs(area) == 0.0)
 						continue;
 					assert(area > 0);
+					// vertices.emplace_back(triangle.row(0));
+					// vertices.emplace_back(triangle.row(1));
+					// vertices.emplace_back(triangle.row(2));
 
 					for (int qi = 0; qi < quadrature.size(); qi++)
 					{
@@ -320,9 +326,9 @@ namespace polyfem::assembler
 #ifndef NDEBUG
 						Eigen::MatrixXd debug;
 						from_element.eval_geom_mapping(from_uv, debug);
-						assert((debug.transpose() - p).norm() < 1e-12);
+						assert((debug.transpose() - p).norm() < 1e-15);
 						to_element.eval_geom_mapping(to_uv, debug);
-						assert((debug.transpose() - p).norm() < 1e-12);
+						assert((debug.transpose() - p).norm() < 1e-15);
 #endif
 
 						for (int n = 0; n < size; ++n)
@@ -347,6 +353,19 @@ namespace polyfem::assembler
 				}
 			}
 		}
+
+		// open file for writing obj
+		// std::ofstream obj_file;
+		// obj_file.open(fmt::format("debug_{:03}.obj", i++));
+		// for (const auto &vertex : vertices)
+		// {
+		// 	obj_file << fmt::format("v {:g} {:g} 0\n", vertex(0), vertex(1));
+		// }
+		// for (int i = 0; i < vertices.size(); i += 3)
+		// {
+		// 	obj_file << fmt::format("f {} {} {}\n", i + 1, i + 2, i + 3);
+		// }
+		// obj_file.close();
 
 		mass.setFromTriplets(triplets.begin(), triplets.end());
 		mass.makeCompressed();

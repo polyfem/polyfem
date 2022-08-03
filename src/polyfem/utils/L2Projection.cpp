@@ -42,6 +42,8 @@ namespace polyfem::utils
 
 			// write_sparse_matrix_csv("M.csv", M);
 			// write_sparse_matrix_csv("A.csv", A);
+			// logger().critical("M =\n{}", Eigen::MatrixXd(M));
+			// logger().critical("A =\n{}", Eigen::MatrixXd(A));
 		}
 
 		// Construct a linear solver for M

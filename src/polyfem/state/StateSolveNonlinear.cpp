@@ -18,6 +18,7 @@
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace mesh;
 	using namespace solver;
 	using namespace utils;
 
@@ -296,11 +297,14 @@ namespace polyfem
 		SV.setOnes(mesh->n_vertices(), 1);
 		SV *= 0.1 / t;
 
+		MmgOptions mmg_options;
+		mmg_options.hmin = 1e-4;
+
 		Eigen::MatrixXd V_new;
 		Eigen::MatrixXi F_new;
 		if (!mesh->is_volume())
 		{
-			mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new);
+			mesh::remesh_adaptive_2d(V, F, SV, V_new, F_new, mmg_options);
 
 			// Rotate 90 degrees each step
 			// Matrix2d R;
@@ -308,6 +312,7 @@ namespace polyfem
 			// R << cos(theta), sin(theta),
 			// 	-sin(theta), cos(theta);
 			// V_new = V * R.transpose();
+
 			// V_new = V;
 			// F_new = F;
 
@@ -323,6 +328,7 @@ namespace polyfem
 		const int old_n_bases = n_bases;
 		const std::vector<ElementBases> old_bases = bases;
 		const std::vector<ElementBases> old_geom_bases = iso_parametric() ? bases : geom_bases;
+		const StiffnessMatrix old_mass = mass;
 		Eigen::MatrixXd y(sol.size(), 3); // Old values of independent variables
 		y.col(0) = sol;
 		y.col(1) = solve_data.nl_problem->time_integrator()->v_prev();
@@ -346,6 +352,16 @@ namespace polyfem
 			n_bases, bases, iso_parametric() ? bases : geom_bases, // to
 			ass_vals_cache, y, x);
 
+		sol = x.col(0);
+		Eigen::VectorXd vel = x.col(1);
+		Eigen::VectorXd acc = x.col(2);
+
+		if (x.rows() < 30)
+		{
+			logger().critical("yᵀ:\n{}", y.transpose());
+			logger().critical("xᵀ:\n{}", x.transpose());
+		}
+
 		// Compute Projection error
 		{
 			Eigen::MatrixXd y2;
@@ -355,22 +371,19 @@ namespace polyfem
 				old_n_bases, old_bases, old_geom_bases,                // to
 				ass_vals_cache, x, y2);
 
+			auto error = [&old_mass](const Eigen::VectorXd &old_y, const Eigen::VectorXd &new_y) -> double {
+				const auto diff = new_y - old_y;
+				return diff.transpose() * old_mass * diff;
+				// return diff.norm() / diff.rows();
+			};
+
 			std::cout << fmt::format(
-				"L2_Projection_Error, {}, {}, {}",
-				(y.col(0) - y2.col(0)).lpNorm<Eigen::Infinity>(),
-				(y.col(1) - y2.col(1)).lpNorm<Eigen::Infinity>(),
-				(y.col(2) - y2.col(2)).lpNorm<Eigen::Infinity>())
+				"L2_Projection_Error, {}, {}, {}, {}",
+				error(y.col(0), y2.col(0)),
+				error(y.col(1), y2.col(1)),
+				error(y.col(2), y2.col(2)),
+				V_new.rows())
 					  << std::endl;
-		}
-
-		sol = x.col(0);
-		Eigen::VectorXd vel = x.col(1);
-		Eigen::VectorXd acc = x.col(2);
-
-		if (x.rows() < 30)
-		{
-			logger().critical("yᵀ:\n{}", y.transpose());
-			logger().critical("xᵀ:\n{}", x.transpose());
 		}
 
 		json rhs_solver_params = args["solver"]["linear"];
@@ -398,14 +411,7 @@ namespace polyfem
 		solve_data.alnl_problem = std::make_shared<ALNLProblem>(*this, *solve_data.rhs_assembler, t0 + t * dt, args["contact"]["dhat"], al_weight);
 		solve_data.alnl_problem->init_time_integrator(sol, vel, acc, dt);
 
-		Eigen::MatrixXd displaced;
-		solve_data.nl_problem->reduced_to_full_displaced_points(sol, displaced);
-		OBJWriter::save(resolve_output_path("projection_rest.obj"), collision_mesh.vertices_at_rest(), collision_mesh.edges(), Eigen::MatrixXi());
-		OBJWriter::save(resolve_output_path("projection.obj"), collision_mesh.vertices(displaced), collision_mesh.edges(), Eigen::MatrixXi());
-
 		// TODO: Check for inversions and intersections due to remeshing
-
-		save_timestep(t0 + dt * t, t, t0, dt);
 	}
 
 	////////////////////////////////////////////////////////////////////////
