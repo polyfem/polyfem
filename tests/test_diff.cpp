@@ -408,7 +408,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	state.solve_problem();
 	double next_functional_val = func.energy(state);
 
-	state.perturb_mesh(velocity_discrete * (-2*t));
+	state.perturb_mesh(velocity_discrete * (-2 * t));
 
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
@@ -515,8 +515,6 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 		}
 	}
 	)"_json;
-	// in_args["meshes"][0]["mesh"] = "/home/arvigjoka/adjoint-polyfem/square.obj";
-	// in_args["meshes"][1]["mesh"] = "/home/arvigjoka/adjoint-polyfem/square.obj";
 	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
 	in_args["geometry"][1]["mesh"] = path + "/../cube_dense.msh";
 
