@@ -582,11 +582,15 @@ namespace polyfem
 			neo_hookean_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
 		}
 
-		void AssemblerUtils::update_lame_params_density(const Eigen::MatrixXd& density)
+		void AssemblerUtils::update_lame_params_density(const Eigen::MatrixXd& density, const int power)
 		{
 			linear_elasticity_.local_assembler().lame_params().density_mat_ = density;
 			linear_elasticity_energy_.local_assembler().lame_params().density_mat_ = density;
 			neo_hookean_elasticity_.local_assembler().lame_params().density_mat_ = density;
+
+			linear_elasticity_.local_assembler().lame_params().density_power_ = power;
+			linear_elasticity_energy_.local_assembler().lame_params().density_power_ = power;
+			neo_hookean_elasticity_.local_assembler().lame_params().density_power_ = power;
 		}
 
 		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_grad_multiply_mat_function(const std::string& assembler) const

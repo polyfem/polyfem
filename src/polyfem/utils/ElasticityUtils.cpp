@@ -518,8 +518,8 @@ namespace polyfem
 
 		if (has_density && el_id < density_mat_.size())
 		{
-			lambda *= density_mat_(el_id);
-			mu *= density_mat_(el_id);
+			lambda *= pow(density(el_id), density_power_);
+			mu *= pow(density(el_id), density_power_);
 		}
 
 		assert(!std::isnan(lambda));

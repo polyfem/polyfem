@@ -391,7 +391,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	state.build_basis();
 	Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
 	density_mat.setConstant(0.5);
-	state.assembler.update_lame_params_density(density_mat);
+	state.assembler.update_lame_params_density(density_mat, 5);
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
 	state.solve_export_to_file = false;
@@ -402,19 +402,19 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 
 	Eigen::MatrixXd theta(state.bases.size(), 1);
 	for (int e = 0; e < state.bases.size(); e++)
-		theta(e) = 1;
+		theta(e) = (rand() % 1000) / 1000.0;
 	
 	Eigen::VectorXd one_form = func->gradient(state, "topology");
 	double derivative = (one_form.array() * theta.array()).sum();
 
 	const double t = 1e-6;
 
-	state.assembler.update_lame_params_density(density_mat + theta * t);
+	state.assembler.update_lame_params_density(density_mat + theta * t, 5);
 	state.assemble_stiffness_mat();
 	state.solve_problem();
 	double next_functional_val = func->energy(state);
 
-	state.assembler.update_lame_params_density(density_mat - theta * t);
+	state.assembler.update_lame_params_density(density_mat - theta * t, 5);
 	state.assemble_stiffness_mat();
 	state.solve_problem();
 	double former_functional_val = func->energy(state);

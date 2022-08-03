@@ -18,25 +18,39 @@ namespace polyfem
         if (opt_params.contains("max_density"))
             max_density = opt_params["max_density"];
 
-            // mass constraint
-            bool has_mass_constraint = false;
-            for (const auto &param : opt_params["functionals"])
-            {
-                if (param["type"] == "mass_constraint")
-                {
-                    mass_params = param;
-                    has_mass_constraint = true;
-                    break;
-                }
-            }
+		// volume constraint
+		for (const auto &param : opt_params["parameters"])
+		{
+			if (param["type"] == "topology")
+			{
+				if (param.contains("bound"))
+				{
+					min_density = param["bound"][0];
+					max_density = param["bound"][1];
+				}
+				break;
+			}
+		}
 
-            if (has_mass_constraint)
-            {
-                j_mass = CompositeFunctional::create("Mass");
-                auto &func_mass = *dynamic_cast<MassFunctional *>(j_mass.get());
-                func_mass.set_max_mass(mass_params["soft_bound"][1]);
-                func_mass.set_min_mass(mass_params["soft_bound"][0]);
-            }
+		// mass constraint
+		bool has_mass_constraint = false;
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "mass_constraint")
+			{
+				mass_params = param;
+				has_mass_constraint = true;
+				break;
+			}
+		}
+
+		if (has_mass_constraint)
+		{
+			j_mass = CompositeFunctional::create("Mass");
+			auto &func_mass = *dynamic_cast<MassFunctional *>(j_mass.get());
+			func_mass.set_max_mass(mass_params["soft_bound"][1]);
+			func_mass.set_min_mass(mass_params["soft_bound"][0]);
+		}
     }
 
 	double TopologyOptimizationProblem::mass_value(const TVector &x)

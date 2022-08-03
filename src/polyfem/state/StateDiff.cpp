@@ -917,6 +917,9 @@ namespace polyfem
 		}
 		else if (j.get_name() == "Compliance")
 		{
+			const LameParameters &params = assembler.lame_params();
+			const auto &density_mat = params.density_mat_;
+			const double density_power = params.density_power_;
 			for (int e = 0; e < bases.size(); e++)
 			{
 				assembler::ElementAssemblyValues vals;
@@ -946,7 +949,7 @@ namespace polyfem
 					else
 						logger().error("Unknown formulation!");
 
-					term(e) += (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
+					term(e) += density_power * pow(density_mat(e), density_power-1) * (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
 				}
 			}
 		}
@@ -1335,6 +1338,7 @@ namespace polyfem
 
 		const LameParameters &params = assembler.lame_params();
 		const auto &density_mat = params.density_mat_;
+		const double density_power = params.density_power_;
 
 		for (int e = 0; e < n_elements; ++e)
 		{
@@ -1360,7 +1364,7 @@ namespace polyfem
 				auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
 				auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
 
-				const double value = da(q) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+				const double value = da(q) * density_power * pow(density_mat(e), density_power-1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
 
 				term(e) -= value;
 			}

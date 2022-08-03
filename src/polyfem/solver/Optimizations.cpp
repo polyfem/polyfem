@@ -884,13 +884,23 @@ namespace polyfem
 		const auto &opt_params = state.args["optimization"];
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
+		for (const auto &param : opt_params["parameters"])
+		{
+			if (param["type"] == "topology")
+			{
+				if (param.contains("initial"))
+				{
+					Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
+					density_mat.setConstant(param["initial"]);
+					state.assembler.update_lame_params_density(density_mat);
+				}
+				break;
+			}
+		}
+
 		std::shared_ptr<TopologyOptimizationProblem> top_opt = std::make_shared<TopologyOptimizationProblem>(state, j);
 		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params); //std::make_shared<cppoptlib::LBFGSSolver<TopologyOptimizationProblem>>(opt_params);
 		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
-
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		state.get_vf(V, F);
 
 		Eigen::VectorXd x = state.assembler.lame_params().density_mat_;
 		nlsolver->minimize(*top_opt, x);

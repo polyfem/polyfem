@@ -98,6 +98,7 @@ namespace polyfem
 		}
 
 		Eigen::MatrixXd lambda_mat_, mu_mat_, density_mat_;
+		double density_power_ = 1;
 
 	private:
 		void set_e_nu(const int index, const json &E, const json &nu);
