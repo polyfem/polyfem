@@ -3,7 +3,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <Eigen/SparseLU>
+#include <Eigen/PardisoSupport>
 
 namespace polyfem::utils
 {
@@ -22,7 +22,8 @@ namespace polyfem::utils
 		const std::vector<ElementBases> &to_gbases,
 		const AssemblyValsCache &cache,
 		const Eigen::MatrixXd &y,
-		Eigen::MatrixXd &x)
+		Eigen::MatrixXd &x,
+		const bool lump_mass_matrix)
 	{
 		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
 		Eigen::SparseMatrix<double> M, A;
@@ -46,8 +47,13 @@ namespace polyfem::utils
 			// logger().critical("A =\n{}", Eigen::MatrixXd(A));
 		}
 
+		if (lump_mass_matrix)
+		{
+			M = lump_matrix(M);
+		}
+
 		// Construct a linear solver for M
-		Eigen::SparseLU<decltype(M)> solver;
+		Eigen::PardisoLU<decltype(M)> solver;
 		// linear_solver->setParameters(solver_params);
 		const Eigen::SparseMatrix<double> &LHS = M; // NOTE: remove & if you want to have a more complicated LHS
 		solver.analyzePattern(LHS);

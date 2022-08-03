@@ -17,6 +17,7 @@ namespace polyfem::utils
 		const std::vector<polyfem::basis::ElementBases> &gbases_b,
 		const polyfem::assembler::AssemblyValsCache &cache,
 		const Eigen::MatrixXd &y,
-		Eigen::MatrixXd &x);
+		Eigen::MatrixXd &x,
+		const bool lump_mass_matrix = false);
 
 } // namespace polyfem::utils

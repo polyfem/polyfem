@@ -350,7 +350,7 @@ namespace polyfem
 			mesh->is_volume(), mesh->is_volume() ? 3 : 2,
 			old_n_bases, old_bases, old_geom_bases,                // from
 			n_bases, bases, iso_parametric() ? bases : geom_bases, // to
-			ass_vals_cache, y, x);
+			ass_vals_cache, y, x, /*lump_mass_matrix=*/false);
 
 		sol = x.col(0);
 		Eigen::VectorXd vel = x.col(1);

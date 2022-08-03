@@ -1240,20 +1240,7 @@ namespace polyfem
 
 			if (args["solver"]["advanced"]["lump_mass_matrix"])
 			{
-
-				std::vector<Eigen::Triplet<double>> lumped;
-
-				for (int k = 0; k < mass.outerSize(); ++k)
-				{
-					for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-					{
-						lumped.emplace_back(it.row(), it.row(), it.value());
-					}
-				}
-
-				mass.resize(mass.rows(), mass.cols());
-				mass.setFromTriplets(lumped.begin(), lumped.end());
-				mass.makeCompressed();
+				mass = lump_matrix(mass);
 			}
 		}
 

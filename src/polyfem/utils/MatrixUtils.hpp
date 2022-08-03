@@ -117,11 +117,16 @@ namespace polyfem
 			}
 		};
 
-		// Flatten rowwises
+		/// Flatten rowwises
 		Eigen::VectorXd flatten(const Eigen::MatrixXd &X);
 
-		// Unflatten rowwises, so every dim elements in x become a row.
+		/// Unflatten rowwises, so every dim elements in x become a row.
 		Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim);
+
+		/// @brief Lump each row of a matrix into the diagonal.
+		/// @param M Matrix to lump.
+		/// @return Lumped matrix.
+		Eigen::SparseMatrix<double> lump_matrix(const Eigen::SparseMatrix<double> &M);
 	} // namespace utils
 } // namespace polyfem
 
