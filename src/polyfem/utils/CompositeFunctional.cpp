@@ -73,6 +73,8 @@ namespace polyfem
 			func = std::make_shared<SDFTrajectoryFunctional>();
 		else if (functional_name_ == "Volume")
 			func = std::make_shared<VolumeFunctional>();
+		else if (functional_name_ == "Mass")
+			func = std::make_shared<MassFunctional>();
 		else if (functional_name_ == "Height")
 			func = std::make_shared<HeightFunctional>();
 		else if (functional_name_ == "Stress")
@@ -586,6 +588,57 @@ namespace polyfem
 		return j;
 	}
 
+	double MassFunctional::energy(State &state)
+	{
+		IntegrableFunctional j = get_mass_functional();
+
+		double current_mass = state.J(j);
+		logger().trace("Current mass: {}", current_mass);
+
+		if (current_mass > max_mass)
+			return pow(current_mass - max_mass, 2);
+		else if (current_mass < min_mass)
+			return pow(current_mass - min_mass, 2);
+		else
+			return 0.;
+	}
+
+	Eigen::VectorXd MassFunctional::gradient(State &state, const std::string &type)
+	{
+		IntegrableFunctional j = get_mass_functional();
+
+		Eigen::VectorXd grad = state.integral_gradient(j, type);
+		double current_mass = state.J(j);
+
+		double derivative = 0;
+		if (current_mass > max_mass)
+			derivative = 2 * (current_mass - max_mass);
+		else if (current_mass < min_mass)
+			derivative = 2 * (current_mass - min_mass);
+
+		return derivative * grad;
+	}
+
+	IntegrableFunctional MassFunctional::get_mass_functional()
+	{
+		assert(max_mass >= min_mass);
+		assert(!surface_integral);
+		assert(transient_integral_type == "final");
+		IntegrableFunctional j(surface_integral);
+		j.set_name("Mass");
+		j.set_transient_integral_type(transient_integral_type);
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				val.setZero(u.rows(), 1);
+			else
+			{
+				val.setOnes(u.rows(), 1);
+				val *= params["density"].get<double>();
+			}
+		});
+		return j;
+	}
+
 	double HeightFunctional::energy(State &state)
 	{
 		IntegrableFunctional j = get_height_functional();
@@ -604,6 +657,7 @@ namespace polyfem
 	{
 		assert(!surface_integral);
 		IntegrableFunctional j(surface_integral);
+		j.set_name("Center");
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
@@ -650,6 +704,7 @@ namespace polyfem
 	{
 		assert(!surface_integral);
 		IntegrableFunctional j(surface_integral);
+		j.set_name("Stress");
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([formulation, power, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
@@ -730,6 +785,7 @@ namespace polyfem
 	{
 		assert(!surface_integral);
 		IntegrableFunctional j(surface_integral);
+		j.set_name("Compliance");
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([formulation, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);

@@ -332,6 +332,98 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
+TEST_CASE("topology-compliance", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"(
+	{
+		"geometry": [
+			{
+				"mesh": ""
+			}
+		],
+		"space": {
+			"discr_order": 1
+		},
+		"solver": {
+			"linear": {
+				"solver": "Eigen::SparseLU"
+			}
+		},
+		"differentiable": true,
+		"boundary_conditions": {
+			"rhs": [
+				10,
+				100,
+				0
+			],
+			"dirichlet_boundary": [
+				{
+					"id": "all",
+					"value": [
+						0.0,
+						0.0,
+						0.0
+					]
+				}
+			]
+		},
+		"materials": {
+			"type": "LinearElasticity",
+			"lambda": 17284.0,
+			"mu": 7407.0
+		}
+	}
+	)"_json;
+	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/bar/bar792.obj";
+
+	auto func = CompositeFunctional::create("Compliance");
+	// auto func = CompositeFunctional::create("Mass");
+	// auto &func_mass = *dynamic_cast<MassFunctional *>(func.get());
+	// func_mass.set_max_mass(100);
+	// func_mass.set_min_mass(20);
+
+	State state;
+	state.init_logger("", spdlog::level::level_enum::debug, false);
+	state.init(in_args);
+	state.load_mesh();
+	state.compute_mesh_stats();
+	state.build_basis();
+	Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
+	density_mat.setConstant(0.5);
+	state.assembler.update_lame_params_density(density_mat);
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	state.solve_export_to_file = false;
+	state.solution_frames.clear();
+	state.solve_problem();
+	state.solve_export_to_file = true;
+	double functional_val = func->energy(state);
+
+	Eigen::MatrixXd theta(state.bases.size(), 1);
+	for (int e = 0; e < state.bases.size(); e++)
+		theta(e) = 1;
+	
+	Eigen::VectorXd one_form = func->gradient(state, "topology");
+	double derivative = (one_form.array() * theta.array()).sum();
+
+	const double t = 1e-6;
+
+	state.assembler.update_lame_params_density(density_mat + theta * t);
+	state.assemble_stiffness_mat();
+	state.solve_problem();
+	double next_functional_val = func->energy(state);
+
+	state.assembler.update_lame_params_density(density_mat - theta * t);
+	state.assemble_stiffness_mat();
+	state.solve_problem();
+	double former_functional_val = func->energy(state);
+
+	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
+
+	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-3));
+}
+
 TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;

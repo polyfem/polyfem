@@ -9,4 +9,6 @@ namespace polyfem
 	// void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
 
 	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
+	
+	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
 } // namespace polyfem

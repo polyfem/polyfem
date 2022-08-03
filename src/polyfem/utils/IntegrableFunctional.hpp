@@ -20,6 +20,9 @@ namespace polyfem
 			has_gradu = depend_on_gradu;
 		}
 
+		void set_name(const std::string &name_) { name = name_; }
+		std::string get_name() const { return name; }
+
 		void set_surface_integral() { is_surface_integral_ = true; }
 		void set_volume_integral() { is_surface_integral_ = false; }
 		void set_transient_integral_type(const std::string &integral_type) { transient_integral_type = integral_type; }
@@ -41,19 +44,21 @@ namespace polyfem
 			has_gradu = true;
 		}
 
-		void evaluate(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params, Eigen::MatrixXd &val) const
+		void evaluate(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(j_func);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
+			params["density"] = lame_params.density(params["elem"]);
 			j_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
 		}
 
-		void dj_dx(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params, Eigen::MatrixXd &val) const
+		void dj_dx(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_x);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
+			params["density"] = lame_params.density(params["elem"]);
 			if (dj_dx_func)
 			{
 				dj_dx_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
@@ -64,11 +69,12 @@ namespace polyfem
 			}
 		}
 
-		void dj_du(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params, Eigen::MatrixXd &val) const
+		void dj_du(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_u);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
+			params["density"] = lame_params.density(params["elem"]);
 			if (dj_du_func)
 			{
 				dj_du_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
@@ -79,11 +85,12 @@ namespace polyfem
 			}
 		}
 
-		void dj_dgradu(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params, Eigen::MatrixXd &val) const
+		void dj_dgradu(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_gradu);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
+			params["density"] = lame_params.density(params["elem"]);
 			if (dj_dgradu_func)
 			{
 				dj_dgradu_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
@@ -94,7 +101,7 @@ namespace polyfem
 			}
 		}
 
-		Eigen::MatrixXd grad_j(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) const
+		Eigen::MatrixXd grad_j(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) const
 		{
 			Eigen::MatrixXd val;
 			if (depend_on_gradu())
@@ -155,6 +162,7 @@ namespace polyfem
 		}
 
 	private:
+		std::string name = "";
 		bool is_surface_integral_;
 		std::string transient_integral_type = "simpson";
 		bool has_x = false, has_u = false, has_gradu = false;

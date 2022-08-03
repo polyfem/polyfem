@@ -799,6 +799,9 @@ namespace polyfem
 			assembler.update_lame_params(lambdas, mus);
 		}
 
+		if (assembler.lame_params().density_mat_.size() == 0)
+			assembler.update_lame_params_density(Eigen::MatrixXd::Ones(bases.size(), 1));
+		
 		build_polygonal_basis();
 
 		if (args["contact"]["enabled"])

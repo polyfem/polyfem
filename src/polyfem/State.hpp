@@ -492,10 +492,10 @@ namespace polyfem
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian_nonlinear(std::shared_ptr<solver::NLProblem> nl, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order = 1);
 		void compute_force_hessian(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order = 1);
-		void compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface = false);
+		void compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface = false);
 		void compute_adjoint_rhs(const SummableFunctional &j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b);
 		// Sets up the adjoint problem for static PDE
-		void setup_adjoint(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params)> &grad_j, StiffnessMatrix &A, Eigen::VectorXd &b, bool only_surface = false);
+		void setup_adjoint(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, StiffnessMatrix &A, Eigen::VectorXd &b, bool only_surface = false);
 		// Solves the adjoint PDE for derivatives
 		void solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution);
 		void solve_adjoint(const SummableFunctional &j, Eigen::MatrixXd &adjoint_solution);
@@ -520,6 +520,7 @@ namespace polyfem
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
 		void compute_shape_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_shape_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
 		void compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
@@ -587,6 +588,8 @@ namespace polyfem
 				dJ_material(j, grad);
 			else if (type == "shape")
 				dJ_shape(j, grad);
+			else if (type == "topology")
+				dJ_topology_static(j, grad);
 			else
 			{
 				assert(problem->is_time_dependent());

@@ -1,6 +1,7 @@
 #include "OptimizationProblem.hpp"
 #include "Optimizations.hpp"
 #include "ShapeProblem.hpp"
+#include "TopologyOptimizationProblem.hpp"
 // #include "MaterialProblem.hpp"
 // #include "InitialConditionProblem.hpp"
 #include "LBFGSSolver.hpp"
@@ -872,6 +873,27 @@ namespace polyfem
 		Eigen::VectorXd x;
 		shape_problem->param_to_x(x, V);
 		nlsolver->minimize(*shape_problem, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
+
+	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_params = state.args["optimization"];
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+
+		std::shared_ptr<TopologyOptimizationProblem> top_opt = std::make_shared<TopologyOptimizationProblem>(state, j);
+		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params); //std::make_shared<cppoptlib::LBFGSSolver<TopologyOptimizationProblem>>(opt_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F);
+
+		Eigen::VectorXd x = state.assembler.lame_params().density_mat_;
+		nlsolver->minimize(*top_opt, x);
 
 		json solver_info;
 		nlsolver->getInfo(solver_info);

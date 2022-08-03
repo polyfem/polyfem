@@ -180,8 +180,6 @@ namespace polyfem
 			if (param["type"] == "volume_constraint")
 			{
 				volume_params = param;
-				// volume_params["weight"] = volume_params["weight"];
-				// target_volume = volume_params["target_volume"];
 				has_volume_constraint = true;
 				break;
 			}

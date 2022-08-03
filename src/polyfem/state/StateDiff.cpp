@@ -712,7 +712,7 @@ namespace polyfem
 		solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
 	}
 
-	void State::compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface)
+	void State::compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface)
 	{
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		b = Eigen::MatrixXd::Zero(n_bases * actual_dim, 1);
@@ -850,7 +850,7 @@ namespace polyfem
 		}
 	}
 
-	void State::setup_adjoint(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params)> &grad_j, StiffnessMatrix &A, Eigen::VectorXd &b, bool only_surface)
+	void State::setup_adjoint(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, StiffnessMatrix &A, Eigen::VectorXd &b, bool only_surface)
 	{
 		StiffnessMatrix unused;
 		compute_force_hessian(A, unused);
@@ -872,7 +872,7 @@ namespace polyfem
 			return;
 		}
 
-		auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) { return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params); };
+		auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) { return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params); };
 		setup_adjoint(grad_j_func, A, b, j.is_surface_integral());
 
 		solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
@@ -895,6 +895,63 @@ namespace polyfem
 		Eigen::VectorXd x;
 		adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, false);
 		adjoint_solution = x;
+	}
+
+	void State::compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term)
+	{
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const int dim = mesh->dimension();
+
+		term.setZero(bases.size());
+		if (j.get_name() == "Mass")
+		{
+			for (int e = 0; e < bases.size(); e++)
+			{
+				assembler::ElementAssemblyValues vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+
+				term(e) += (quadrature.weights.array() * vals.det.array()).sum();
+			}
+		}
+		else if (j.get_name() == "Compliance")
+		{
+			for (int e = 0; e < bases.size(); e++)
+			{
+				assembler::ElementAssemblyValues vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+
+				for (int q = 0; q < quadrature.weights.size(); q++)
+				{
+					double lambda, mu;
+					assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
+
+					Eigen::MatrixXd grad_u_q(dim, dim);
+					grad_u_q.setZero();
+					for (const auto &v : vals.basis_values)
+						for (int d = 0; d < dim; d++)
+						{
+							double coeff = 0;
+							for (const auto &g : v.global)
+								coeff += sol(g.index * dim + d) * g.val;
+							grad_u_q.row(d) += v.grad_t_m.row(q) * coeff;
+						}
+					
+					Eigen::MatrixXd stress;
+					if (formulation() == "LinearElasticity")
+						stress = mu * (grad_u_q + grad_u_q.transpose()) + lambda * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+					else
+						logger().error("Unknown formulation!");
+
+					term(e) += (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
+				}
+			}
+		}
+		else
+			logger().error("Not supported functional type in topology optimization!");
 	}
 
 	void State::compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step)
@@ -1277,7 +1334,7 @@ namespace polyfem
 		term.setZero(n_elements, 1);
 
 		const LameParameters &params = assembler.lame_params();
-		Eigen::MatrixXd density_mat = params.density_mat_;
+		const auto &density_mat = params.density_mat_;
 
 		for (int e = 0; e < n_elements; ++e)
 		{
@@ -1294,9 +1351,7 @@ namespace polyfem
 			for (int q = 0; q < da.size(); ++q)
 			{
 				double lambda, mu;
-				params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-				lambda /= density_mat(e);
-				mu /= density_mat(e);
+				params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
 
 				Eigen::MatrixXd grad_p_i, grad_u_i;
 				vector2matrix(grad_p.row(q), grad_p_i);
@@ -1305,9 +1360,9 @@ namespace polyfem
 				auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
 				auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
 
-				const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+				const double value = da(q) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
 
-				term(e) += value;
+				term(e) -= value;
 			}
 		}
 	}
@@ -1641,11 +1696,12 @@ namespace polyfem
 		Eigen::MatrixXd adjoint_sol;
 		solve_adjoint(j, adjoint_sol);
 
-		Eigen::VectorXd elasticity_term;
+		Eigen::VectorXd elasticity_term, functional_term;
 		compute_topology_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
+		compute_topology_derivative_functional_term(sol, j, functional_term);
 
-		one_form = elasticity_term;
-		logger().debug("topology derivative: elasticity: {}", elasticity_term.norm());
+		one_form = elasticity_term + functional_term;
+		logger().debug("topology derivative: elasticity: {}, functional: {}", elasticity_term.norm(), functional_term.norm());
 	}
 
 	void State::sample_field(std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order)
@@ -2007,7 +2063,7 @@ namespace polyfem
 				if (js[k].depend_on_u() || js[k].depend_on_gradu())
 				{
 					Eigen::VectorXd dJk_du;
-					compute_adjoint_rhs([&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
+					compute_adjoint_rhs([&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) {
 						json params_extended = params;
 						params_extended["step"] = i;
 						params_extended["t"] = i * args["time"]["dt"].get<double>();

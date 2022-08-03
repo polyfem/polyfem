@@ -305,7 +305,7 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
                     {
                         const auto &unit_strain = unit_strains[k];
 
-                        const double value = quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
+                        const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
 
                         for (auto g : v.global)
                             rhs(g.index * dim + d, k) += value * g.val;
@@ -420,7 +420,7 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
                     Eigen::MatrixXd strain_diff_kl = unit_strains[col_id] - react_strains[col_id];
 
                     const double value = 2 * mu * (strain_diff_ij.array() * strain_diff_kl.array()).sum() + lambda * strain_diff_ij.trace() * strain_diff_kl.trace();
-                    C_H(row_id, col_id) += vals.quadrature.weights(q) * vals.det(q) * density(quadrature.points.row(q), vals.val.row(q), vals.element_id) * value;
+                    C_H(row_id, col_id) += vals.quadrature.weights(q) * vals.det(q) * value;
                 }
             }
         }
