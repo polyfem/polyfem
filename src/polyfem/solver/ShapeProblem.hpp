@@ -163,8 +163,23 @@ namespace polyfem
 		double value(const TVector &x, const bool only_elastic) { return value(x); };
 		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
 
+		TVector get_lower_bound(const TVector& x) 
+		{
+			TVector min(x.size());
+			min.setConstant(std::numeric_limits<double>::min());
+			return min; 
+		}
+		TVector get_upper_bound(const TVector& x) 
+		{
+			TVector max(x.size());
+			max.setConstant(std::numeric_limits<double>::max());
+			return max; 
+		}
+
 		void smoothing(const TVector &x, TVector &new_x) override;
+		void direction_filtering(const TVector &x0, TVector &direc) { };
 		bool is_step_valid(const TVector &x0, const TVector &x1);
+		TVector take_step(const TVector &x0, const TVector &dx) { return x0 + dx; }
 		bool is_intersection_free(const TVector &x);
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);

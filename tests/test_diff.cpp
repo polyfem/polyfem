@@ -409,12 +409,12 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 
 	const double t = 1e-6;
 
-	state.assembler.update_lame_params_density(density_mat + theta * t, 5);
+	state.assembler.update_lame_params_density(density_mat + theta * t);
 	state.assemble_stiffness_mat();
 	state.solve_problem();
 	double next_functional_val = func->energy(state);
 
-	state.assembler.update_lame_params_density(density_mat - theta * t, 5);
+	state.assembler.update_lame_params_density(density_mat - theta * t);
 	state.assemble_stiffness_mat();
 	state.solve_problem();
 	double former_functional_val = func->energy(state);

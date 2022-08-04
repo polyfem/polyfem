@@ -93,7 +93,7 @@ namespace polyfem
 				const double rate)
 			{
 				double step_size = starting_step_size;
-				TVector new_x = x + step_size * delta_x;
+				TVector new_x = objFunc.take_step(x, step_size * delta_x);
 
 				// Find step that does not result in nan or infinite energy
 				while (step_size > min_step_size && cur_iter < max_step_size_iter)
@@ -105,7 +105,7 @@ namespace polyfem
 					if (!std::isfinite(energy) || !is_step_valid)
 					{
 						step_size *= rate;
-						new_x = x + step_size * delta_x;
+						new_x = objFunc.take_step(x, step_size * delta_x);
 					}
 					else
 					{
@@ -133,7 +133,7 @@ namespace polyfem
 				const double starting_step_size)
 			{
 				double step_size = starting_step_size;
-				TVector new_x = x + step_size * delta_x;
+				TVector new_x = objFunc.take_step(x, step_size * delta_x);
 
 				// Find step that is collision free
 				double max_step_size = objFunc.max_step_size(x, new_x);
@@ -180,7 +180,7 @@ namespace polyfem
 			{
 				double step_size = starting_step_size;
 
-				TVector new_x = x + step_size * delta_x;
+				TVector new_x = objFunc.take_step(x, step_size * delta_x);
 				{
 					POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
 					objFunc.solution_changed(new_x);
@@ -191,7 +191,7 @@ namespace polyfem
 				{
 					logger().error("step is not collision free!!");
 					step_size *= rate;
-					new_x = x + step_size * delta_x;
+					new_x = objFunc.take_step(x, step_size * delta_x);
 					{
 						POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
 						objFunc.solution_changed(new_x);

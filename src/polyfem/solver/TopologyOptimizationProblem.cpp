@@ -13,16 +13,12 @@ namespace polyfem
         optimization_name = "topology";
         state.args["output"]["paraview"]["options"]["material"] = true;
 
-        if (opt_params.contains("min_density"))
-            min_density = opt_params["min_density"];
-        if (opt_params.contains("max_density"))
-            max_density = opt_params["max_density"];
-
 		// volume constraint
 		for (const auto &param : opt_params["parameters"])
 		{
 			if (param["type"] == "topology")
 			{
+				top_params = param;
 				if (param.contains("bound"))
 				{
 					min_density = param["bound"][0];
@@ -33,7 +29,7 @@ namespace polyfem
 		}
 
 		// mass constraint
-		bool has_mass_constraint = false;
+		has_mass_constraint = false;
 		for (const auto &param : opt_params["functionals"])
 		{
 			if (param["type"] == "mass_constraint")
@@ -51,6 +47,81 @@ namespace polyfem
 			func_mass.set_max_mass(mass_params["soft_bound"][1]);
 			func_mass.set_min_mass(mass_params["soft_bound"][0]);
 		}
+
+		// density filter
+		has_filter = false;
+		if (top_params.contains("filter"))
+		{
+			has_filter = true;
+			const double radius = top_params["filter"]["radius"];
+			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
+			std::vector<Eigen::Triplet<double>> tt_adjacency_list;
+			for (int i = 0; i < state.mesh->n_faces(); i++)
+			{
+				auto center_i = state.mesh->face_barycenter(i);
+				for (int j = 0; j <= i; j++)
+				{
+					auto center_j = state.mesh->face_barycenter(j);
+					const double dist = (center_i - center_j).norm();
+					if (dist < radius)
+					{
+						tt_adjacency_list.emplace_back(i, j, radius - dist);
+						if (i != j)
+							tt_adjacency_list.emplace_back(j, i, radius - dist);
+					}
+				}
+			}
+			tt_radius_adjacency.resize(state.mesh->n_faces(), state.mesh->n_faces());
+			tt_radius_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
+
+			tt_radius_adjacency_row_sum.setZero(tt_radius_adjacency.rows());
+			for (int i = 0; i < tt_radius_adjacency.rows(); i++)
+				tt_radius_adjacency_row_sum(i) = tt_radius_adjacency.row(i).sum();
+		}
+
+		// smooth constraint
+		has_smooth_constraint = false;
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "smooth_constraint")
+			{
+				smooth_params = param;
+				has_smooth_constraint = true;
+				break;
+			}
+		}
+		
+		if (has_smooth_constraint)
+		{
+			std::vector<Eigen::Triplet<bool>> tt_adjacency_list;
+			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
+			for (int i = 0; i < state.mesh->n_faces(); ++i)
+			{
+				auto idx = mesh2d.get_index_from_face(i);
+				assert(idx.face == i);
+				{
+					auto adjacent_idx = mesh2d.switch_face(idx);
+					if (adjacent_idx.face != -1)
+						tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
+				}
+				idx = mesh2d.next_around_face(idx);
+				assert(idx.face == i);
+				{
+					auto adjacent_idx = mesh2d.switch_face(idx);
+					if (adjacent_idx.face != -1)
+						tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
+				}
+				idx = mesh2d.next_around_face(idx);
+				assert(idx.face == i);
+				{
+					auto adjacent_idx = mesh2d.switch_face(idx);
+					if (adjacent_idx.face != -1)
+						tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
+				}
+			}
+			tt_adjacency.resize(state.mesh->n_faces(), state.mesh->n_faces());
+			tt_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
+		}
     }
 
 	double TopologyOptimizationProblem::mass_value(const TVector &x)
@@ -63,8 +134,19 @@ namespace polyfem
 
 	double TopologyOptimizationProblem::smooth_value(const TVector &x)
 	{
-        // TODO
-		return 0.;
+        if (!has_smooth_constraint)
+			return 0.;
+
+		const auto &density = state.assembler.lame_params().density_mat_;
+
+		double value = 0;
+		for (int k = 0; k < tt_adjacency.outerSize(); ++k)
+			for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
+			{
+				value += pow((1 - density(it.row()) / density(it.col())), 2);
+			}
+		value /= 3 * tt_adjacency.rows();
+		return smooth_params["weight"].get<double>() * value;
 	}
 
 	double TopologyOptimizationProblem::value(const TVector &x)
@@ -83,7 +165,7 @@ namespace polyfem
 
 	void TopologyOptimizationProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		gradv = j->gradient(state, "topology");
+		gradv = apply_filter_to_grad(x, j->gradient(state, "topology"));
 	}
 
 	void TopologyOptimizationProblem::mass_gradient(const TVector &x, TVector &gradv)
@@ -92,13 +174,26 @@ namespace polyfem
 		if (!has_mass_constraint)
 			return;
 
-		gradv = j_mass->gradient(state, "topology") * mass_params["weight"];
+		gradv = apply_filter_to_grad(x, j_mass->gradient(state, "topology") * mass_params["weight"]);
 	}
 
 	void TopologyOptimizationProblem::smooth_gradient(const TVector &x, TVector &gradv)
 	{
-        // TODO
 		gradv.setZero(x.size());
+		if (!has_smooth_constraint)
+			return;
+
+		const auto &density = state.assembler.lame_params().density_mat_;
+		for (int k = 0; k < tt_adjacency.outerSize(); ++k)
+			for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
+			{
+				gradv(it.row()) += 2 * (density(it.row()) / density(it.col()) - 1) / density(it.col());
+				gradv(it.col()) += 2 * (1 - density(it.row()) / density(it.col())) * density(it.row()) / density(it.col()) / density(it.col());
+			}
+
+		gradv /= 3 * tt_adjacency.rows();
+
+		gradv *= smooth_params["weight"].get<double>();
 	}
 
 	void TopologyOptimizationProblem::gradient(const TVector &x, TVector &gradv)
@@ -126,35 +221,65 @@ namespace polyfem
         return true;
     }
 
+	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::take_step(const TVector &x0, const TVector &dx)
+	{
+		TVector x_new = x0 + dx;
+
+		for (int i = 0; i < x_new.size(); i++)
+		{
+			if (x_new(i) < min_density)
+				x_new(i) = min_density;
+			else if (x_new(i) > max_density)
+				x_new(i) = max_density;
+		}
+
+		return x_new;
+	}
+
 	void TopologyOptimizationProblem::solution_changed(const TVector &newX)
 	{
 		if (cur_x.size() == newX.size() && cur_x == newX)
 			return;
 
-		state.assembler.update_lame_params_density(newX);
+		state.assembler.update_lame_params_density(apply_filter(newX));
 		solve_pde(newX);
 
 		cur_x = newX;
+		cur_val = std::nan("");
+		cur_grad.resize(0);
 	}
 
 	double TopologyOptimizationProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
 		double size = 1;
-		const auto lambda0 = state.assembler.lame_params().lambda_mat_;
-		const auto mu0 = state.assembler.lame_params().mu_mat_;
 		while (size > 0)
 		{
-			auto newX = x0 + (x1 - x0) * size;
-			state.assembler.update_lame_params_density(newX);
+			auto newX = take_step(x0, (x1 - x0) * size);
+			state.assembler.update_lame_params_density(apply_filter(newX));
 
 			if (!is_step_valid(x0, newX))
 				size /= 2.;
 			else
 				break;
 		}
-		state.assembler.update_lame_params_density(x0);
+		state.assembler.update_lame_params_density(apply_filter(x0));
 
 		return size;
+	}
+
+	void TopologyOptimizationProblem::direction_filtering(const TVector &x0, TVector &direc)
+	{
+		double erase_tol = 1e-8;
+		if (top_params.contains("erase_tol"))
+			erase_tol = top_params["erase_tol"];
+		
+		for (int i = 0; i < x0.size(); i++)
+		{
+			if (x0(i) < min_density + erase_tol && direc(i) < 0)
+				direc(i) = 0;
+			if (x0(i) > max_density - erase_tol && direc(i) > 0)
+				direc(i) = 0;
+		}
 	}
 
 	void TopologyOptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -168,12 +293,12 @@ namespace polyfem
 			TVector new_x = x0 + descent_direction * t;
 
 			solution_changed(new_x);
-			double J2 = target_value(new_x);
+			double J2 = value(new_x);
 
 			solution_changed(x0);
-			double J1 = target_value(x0);
+			double J1 = value(x0);
 			TVector gradv;
-			target_gradient(x0, gradv);
+			gradient(x0, gradv);
 
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
 		}
@@ -192,5 +317,25 @@ namespace polyfem
 			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << ", " << mass_value(cur_x) << "\n";
 			outfile.close();
 		}
+	}
+
+	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::apply_filter(const TVector &x)
+	{
+		if (has_filter)
+		{
+			TVector y = (tt_radius_adjacency * x).array() / tt_radius_adjacency_row_sum.array();
+			return y;
+		}
+		return x;
+	}
+
+	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::apply_filter_to_grad(const TVector &x, const TVector &grad)
+	{
+		if (has_filter)
+		{
+			TVector grad_ = (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
+			return grad_;
+		}
+		return grad;
 	}
 }

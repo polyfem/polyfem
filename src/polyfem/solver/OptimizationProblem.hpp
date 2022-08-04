@@ -25,8 +25,11 @@ namespace polyfem
 
 		virtual void save_to_file(const TVector &x0)
 		{
-			logger().debug("Save to file {} ...", state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)));
-			state.save_vtu(state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)), 0.);
+			if (iter % save_freq == 0)
+			{
+				logger().debug("Save to file {} ...", state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)));
+				state.save_vtu(state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)), 0.);
+			}
 		}
 
 		virtual void solution_changed(const TVector &newX) = 0;

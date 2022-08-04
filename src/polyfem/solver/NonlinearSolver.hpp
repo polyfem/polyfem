@@ -227,6 +227,8 @@ namespace cppoptlib
 				// Variable update
 				// ---------------
 
+				objFunc.direction_filtering(x, delta_x);
+
 				// Perform a line_search to compute step scale
 				double rate = line_search(x, delta_x, objFunc);
 				if (std::isnan(rate))
@@ -238,7 +240,7 @@ namespace cppoptlib
 						break;
 				}
 				auto old_x = x;
-				x += rate * delta_x;
+				x = objFunc.take_step(old_x, rate * delta_x);
 				objFunc.smoothing(old_x, x);
 
 				// -----------
