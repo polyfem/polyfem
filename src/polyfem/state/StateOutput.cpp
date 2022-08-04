@@ -366,6 +366,9 @@ namespace polyfem
 			boundary_nodes_pos.setZero();
 			const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
+			if (args["boundary_conditions"]["periodic_boundary"])
+				return;
+
 			std::vector<std::tuple<int, int, int>> tris;
 
 			for (const LocalBoundary &lb : total_local_boundary)
@@ -482,6 +485,9 @@ namespace polyfem
 			boundary_nodes_pos.resize(n_current_bases, 2);
 			boundary_nodes_pos.setZero();
 			const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+
+			if (args["boundary_conditions"]["periodic_boundary"])
+				return;
 
 			std::vector<std::pair<int, int>> edges;
 

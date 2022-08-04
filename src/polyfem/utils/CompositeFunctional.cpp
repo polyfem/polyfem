@@ -83,6 +83,8 @@ namespace polyfem
 			func = std::make_shared<ComplianceFunctional>();
 		else if (functional_name_ == "HomogenizedStiffness")
 			func = std::make_shared<HomogenizedStiffnessFunctional>();
+		else if (functional_name_ == "HomogenizedPermeability")
+			func = std::make_shared<HomogenizedPermeabilityFunctional>();
 		else if (functional_name_ == "CenterTrajectory")
 			func = std::make_shared<CenterTrajectoryFunctional>();
 		else if (functional_name_ == "CenterXYTrajectory")
@@ -781,6 +783,23 @@ namespace polyfem
 		state.homogenize_weighted_linear_elasticity_grad(C_H, grad);
 
 		return -grad.col(2);
+	}
+
+	double HomogenizedPermeabilityFunctional::energy(State &state)
+	{
+		Eigen::MatrixXd C_H;
+		state.homogenize_weighted_stokes(C_H);
+
+		return -C_H(0, 0);
+	}
+
+	Eigen::VectorXd HomogenizedPermeabilityFunctional::gradient(State &state, const std::string &type)
+	{
+		Eigen::MatrixXd C_H;
+		Eigen::MatrixXd grad;
+		state.homogenize_weighted_stokes_grad(C_H, grad);
+
+		return -grad.col(0);
 	}
 
 	double ComplianceFunctional::energy(State &state)

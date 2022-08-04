@@ -1059,7 +1059,7 @@ namespace polyfem
 		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
 		void homogenize_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
-		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad);
+		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 
 	private:
 		/// splits the solution in solution and pressure for mixed problems

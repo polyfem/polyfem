@@ -262,6 +262,21 @@ namespace polyfem
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;
 	};
 
+	class HomogenizedPermeabilityFunctional : public CompositeFunctional
+	{
+	public:
+		HomogenizedPermeabilityFunctional()
+		{
+			functional_name = "HomogenizedPermeability";
+			surface_integral = false;
+			transient_integral_type = "simpson";
+		}
+		~HomogenizedPermeabilityFunctional() = default;
+
+		double energy(State &state) override;
+		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+	};
+
 	class CenterTrajectoryFunctional : public CompositeFunctional
 	{
 	public:

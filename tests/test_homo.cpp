@@ -285,9 +285,10 @@ TEST_CASE("stokes_homo", "[homogenization]")
         state.mesh->face_barycenters(barycenters);
     for (int e = 0; e < state.bases.size(); e++)
     {
-        density_mat(e) = five_cylinders_fluid1(barycenters(e, 0), barycenters(e, 1));
+        density_mat(e) = 1 - five_cylinders_fluid1(barycenters(e, 0), barycenters(e, 1));
     }
-    state.density.init_multimaterial(density_mat);
+    // state.density.init_multimaterial(density_mat);
+    state.assembler.update_lame_params_density(density_mat);
     state.homogenize_weighted_stokes(homogenized_tensor);
 
     std::cout << homogenized_tensor << std::endl;
@@ -358,12 +359,14 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
         state.mesh->face_barycenters(barycenters);
     for (int e = 0; e < state.bases.size(); e++)
     {
-        density_mat(e) = five_cylinders_fluid2(barycenters(e, 0) + 0.5, barycenters(e, 1) + 0.5);
+        density_mat(e) = 1 - five_cylinders_fluid2(barycenters(e, 0) + 0.5, barycenters(e, 1) + 0.5);
     }
-    state.density.init_multimaterial(density_mat);
+    // state.density.init_multimaterial(density_mat);
+    state.assembler.update_lame_params_density(density_mat);
 
-    Eigen::VectorXd grad;
+    Eigen::MatrixXd grad;
     state.homogenize_weighted_stokes_grad(homogenized_tensor, grad);
+    Eigen::VectorXd trace_grad = grad.rowwise().sum();
 
     // finite difference
     Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
@@ -372,14 +375,16 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
         theta(i) = (rand() % 1000 ) / 1000.0;
     const double dt = 1e-6;
 
-    state.density.init_multimaterial(density_mat + theta * dt);
+    // state.density.init_multimaterial(density_mat + theta * dt);
+    state.assembler.update_lame_params_density(density_mat + theta * dt);
     state.homogenize_weighted_stokes(homogenized_tensor1);
 
-    state.density.init_multimaterial(density_mat - theta * dt);
+    // state.density.init_multimaterial(density_mat - theta * dt);
+    state.assembler.update_lame_params_density(density_mat - theta * dt);
     state.homogenize_weighted_stokes(homogenized_tensor2);
 
-    const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / state.mesh->dimension() / dt / 2;
-    const double analytic = (grad.array() * theta.array()).sum();
+    const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / dt / 2;
+    const double analytic = (trace_grad.array() * theta.array()).sum();
 
     std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
     REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);

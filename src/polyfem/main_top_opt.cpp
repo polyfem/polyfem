@@ -121,6 +121,11 @@ int main(int argc, char **argv)
 			func = CompositeFunctional::create("HomogenizedStiffness");
 			break;
 		}
+		else if (param["type"] == "homogenized_permeability")
+		{
+			func = CompositeFunctional::create("HomogenizedPermeability");
+			break;
+		}
 	}
 
 	state.compute_mesh_stats();

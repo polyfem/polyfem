@@ -910,29 +910,26 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
         logger().error("Wrong formulation!");
         return;
     }
-    if (!density.is_mat())
-    {
-        logger().error("Only per element density is supported in homogenization!");
-        return;
-    }
     
     const int dim = mesh->dimension();
     const auto &gbases = iso_parametric() ? bases : geom_bases;
 
     // assemble stiffness
-    Density solid_density;
     {
-        StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
-        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
-
-        Eigen::MatrixXd solid_density_mat;
-        density.get_multimaterial(solid_density_mat);
-        solid_density_mat = 1 - solid_density_mat.array();
-
+        Density solid_density;
+        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_;
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
+
+        Density fluid_density;
+        Eigen::MatrixXd fluid_density_mat = 1 - solid_density_mat.array();
+        assert(fluid_density_mat.minCoeff() >= 0);
+        fluid_density.init_multimaterial(fluid_density_mat);
+
+        StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
+        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, fluid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
+        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
 
         assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
 
@@ -1053,7 +1050,7 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     K_H /= volume;
 }
 
-void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad)
+void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad)
 {
     if (!mesh)
     {
@@ -1070,29 +1067,26 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
         logger().error("Wrong formulation!");
         return;
     }
-    if (!density.is_mat())
-    {
-        logger().error("Only per element density is supported in homogenization!");
-        return;
-    }
     
     const int dim = mesh->dimension();
     const auto &gbases = iso_parametric() ? bases : geom_bases;
 
     // assemble stiffness
-    Density solid_density;
     {
-        StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
-        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
-
-        Eigen::MatrixXd solid_density_mat;
-        density.get_multimaterial(solid_density_mat);
-        solid_density_mat = 1 - solid_density_mat.array();
-
+        Density solid_density;
+        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_;
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
+
+        Density fluid_density;
+        Eigen::MatrixXd fluid_density_mat = 1 - solid_density_mat.array();
+        assert(fluid_density_mat.minCoeff() >= 0);
+        fluid_density.init_multimaterial(fluid_density_mat);
+
+        StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
+        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, fluid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
+        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
 
         assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
 
@@ -1218,7 +1212,7 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
     adjoint.conservativeResize(n_bases * dim, dim);
     
     // compute grad using adjoint
-    grad.setZero(bases.size(), 1);
+    grad.setZero(bases.size(), dim);
     for (int k = 0; k < dim; k++)
     {
         for (int e = 0; e < bases.size(); e++)
@@ -1252,12 +1246,12 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
                 
                 const double value1 = (grad_sol.array() * grad_adjoint.array()).sum() - (val_sol.array() * val_adjoint.array()).sum() / args["materials"]["solid_permeability"].get<double>();
                 const double value2 = (grad_sol.array() * grad_sol.array()).sum() - (val_sol.array() * val_sol.array()).sum() / args["materials"]["solid_permeability"].get<double>();
-                grad(e) += (value1 + value2) * quadrature.weights(q) * vals.det(q);
+                grad(e, k) += (value1 + value2) * quadrature.weights(q) * vals.det(q);
             }
         }
     }
 
-    grad /= volume * dim;
+    grad /= -volume;
 }
 
 }
