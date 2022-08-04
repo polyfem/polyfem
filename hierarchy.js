@@ -232,7 +232,6 @@ var hierarchy =
     ] ],
     [ "polyfem::SolutionFrame", "classpolyfem_1_1_solution_frame.html", null ],
     [ "polyfem::utils::SpareMatrixCache", "classpolyfem_1_1utils_1_1_spare_matrix_cache.html", null ],
-    [ "polyfem::basis::SpectralBasis2d", "classpolyfem_1_1basis_1_1_spectral_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
     [ "polyfem::State", "classpolyfem_1_1_state.html", null ],

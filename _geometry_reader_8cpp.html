@@ -123,9 +123,9 @@ $(document).ready(function(){initNavTree('_geometry_reader_8cpp.html',''); initR
 <code>#include &lt;<a class="el" href="_mesh_utils_8hpp_source.html">polyfem/mesh/MeshUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_string_utils_8hpp_source.html">polyfem/utils/StringUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_msh_reader_8hpp_source.html">polyfem/utils/MshReader.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_j_s_o_n_utils_8hpp_source.html">polyfem/utils/JSONUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_selection_8hpp_source.html">polyfem/utils/Selection.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
 <code>#include &lt;igl/edges.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -146,8 +146,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a23c11289ee171d378f95b975412b00d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a23c11289ee171d378f95b975412b00d2">polyfem::mesh::log_and_throw_error</a> (const std::string &amp;msg)</td></tr>
-<tr class="separator:a23c11289ee171d378f95b975412b00d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe913b5ef00d49c9ce25b6c414e39129"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; Mesh &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#afe913b5ef00d49c9ce25b6c414e39129">polyfem::mesh::read_fem_geometry</a> (const json &amp;geometry, const std::string &amp;root_path, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
 <tr class="memdesc:afe913b5ef00d49c9ce25b6c414e39129"><td class="mdescLeft">&#160;</td><td class="mdescRight">read FEM meshes from a geometry JSON array (or single)  <a href="namespacepolyfem_1_1mesh.html#afe913b5ef00d49c9ce25b6c414e39129">More...</a><br /></td></tr>
 <tr class="separator:afe913b5ef00d49c9ce25b6c414e39129"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -159,9 +157,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ad2b062ad34fe687b7f1fb23a07e0696d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad2b062ad34fe687b7f1fb23a07e0696d">polyfem::mesh::read_obstacle_mesh</a> (const json &amp;jmesh, const std::string &amp;root_path, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</td></tr>
 <tr class="memdesc:ad2b062ad34fe687b7f1fb23a07e0696d"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a obstacle mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#ad2b062ad34fe687b7f1fb23a07e0696d">More...</a><br /></td></tr>
 <tr class="separator:ad2b062ad34fe687b7f1fb23a07e0696d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6d084b6f52a0af47a0f7b9d1e11fc33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33">polyfem::mesh::apply_default_geometry_parameters</a> (const json &amp;geometry_in, json &amp;geometry_out, const std::string &amp;path_prefix=&quot;&quot;)</td></tr>
-<tr class="memdesc:aa6d084b6f52a0af47a0f7b9d1e11fc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill in missing json geometry parameters with the default values.  <a href="namespacepolyfem_1_1mesh.html#aa6d084b6f52a0af47a0f7b9d1e11fc33">More...</a><br /></td></tr>
-<tr class="separator:aa6d084b6f52a0af47a0f7b9d1e11fc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6039e86ea6e80037d8fe94e72181ada2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2">polyfem::mesh::transform_mesh_from_json</a> (const json &amp;transform, Eigen::MatrixXd &amp;vertices)</td></tr>
 <tr class="memdesc:a6039e86ea6e80037d8fe94e72181ada2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a mesh inplace using json parameters including scaling, rotation, and translation.  <a href="namespacepolyfem_1_1mesh.html#a6039e86ea6e80037d8fe94e72181ada2">More...</a><br /></td></tr>
 <tr class="separator:a6039e86ea6e80037d8fe94e72181ada2"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -29,7 +29,7 @@ var classpolyfem_1_1_state =
     [ "get_sampled_solution", "classpolyfem_1_1_state.html#ab413537dbe7a90c1cc41bc30e53b6e8e", null ],
     [ "get_sidesets", "classpolyfem_1_1_state.html#a75b702eb832ecfd6e8e26738867d265b", null ],
     [ "get_stresses", "classpolyfem_1_1_state.html#a1e49a9d7cc8c4e156a93cb8a172b689b", null ],
-    [ "init", "classpolyfem_1_1_state.html#a1649c010ebecb92f2b8089619f3dbacb", null ],
+    [ "init", "classpolyfem_1_1_state.html#a50858ecb7f228183e018fb12200d9f65", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#a3fcaafabef9ac580a3af1ca8228fdf8c", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#a4a235688d76d5d47e6af9b3ef9aff0f0", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#acaa1229f1ede8d832e273e685588432b", null ],

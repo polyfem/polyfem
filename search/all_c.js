@@ -74,7 +74,7 @@ var searchData=
   ['localboundary_2ehpp_71',['LocalBoundary.hpp',['../_local_boundary_8hpp.html',1,'']]],
   ['localnodefromprimitivefunc_72',['LocalNodeFromPrimitiveFunc',['../classpolyfem_1_1basis_1_1_element_bases.html#a7941ab977bae52e122b7c528f856d474',1,'polyfem::basis::ElementBases']]],
   ['log_73',['log',['../struct_d_scalar1.html#adaa855acf7d526bd89b52c51b45e93a8',1,'DScalar1::log()'],['../struct_d_scalar2.html#a8f48d90e88ad1f0a2e1b2a0913f1c778',1,'DScalar2::log()']]],
-  ['log_5fand_5fthrow_5ferror_74',['log_and_throw_error',['../namespacepolyfem_1_1mesh.html#a23c11289ee171d378f95b975412b00d2',1,'polyfem::mesh']]],
+  ['log_5fand_5fthrow_5ferror_74',['log_and_throw_error',['../namespacepolyfem_1_1utils.html#a4aa6a223372c11fff7378d34cd38d72d',1,'polyfem::utils']]],
   ['log_5fmsg_75',['log_msg',['../classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492',1,'polyfem::utils::Timer']]],
   ['log_5ftimes_76',['log_times',['../classcppoptlib_1_1_nonlinear_solver.html#ab17c6e91d53cd79ebc45e2bb9a840b0d',1,'cppoptlib::NonlinearSolver']]],
   ['logger_77',['logger',['../namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd',1,'polyfem']]],

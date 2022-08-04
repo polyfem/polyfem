@@ -16,8 +16,6 @@ var dir_13510bfc8d6c882cc83f48e81fc78b9e =
     [ "PolygonalBasis2d.hpp", "_polygonal_basis2d_8hpp.html", "_polygonal_basis2d_8hpp" ],
     [ "PolygonalBasis3d.cpp", "_polygonal_basis3d_8cpp.html", "_polygonal_basis3d_8cpp" ],
     [ "PolygonalBasis3d.hpp", "_polygonal_basis3d_8hpp.html", "_polygonal_basis3d_8hpp" ],
-    [ "SpectralBasis2d.cpp", "_spectral_basis2d_8cpp.html", null ],
-    [ "SpectralBasis2d.hpp", "_spectral_basis2d_8hpp.html", "_spectral_basis2d_8hpp" ],
     [ "SplineBasis2d.cpp", "_spline_basis2d_8cpp.html", null ],
     [ "SplineBasis2d.hpp", "_spline_basis2d_8hpp.html", "_spline_basis2d_8hpp" ],
     [ "SplineBasis3d.cpp", "_spline_basis3d_8cpp.html", "_spline_basis3d_8cpp" ],

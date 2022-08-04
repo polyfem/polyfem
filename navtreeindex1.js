@@ -1,7 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"_mass_matrix_assembler_8cpp.html#ac5aceb98894ff82070f5ec3698f7b827":[5,0,1,0,0,23,2],
-"_mass_matrix_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e":[5,0,1,0,0,23,4],
 "_mass_matrix_assembler_8cpp_source.html":[5,0,1,0,0,23],
 "_mass_matrix_assembler_8hpp.html":[5,0,1,0,0,24],
 "_mass_matrix_assembler_8hpp_source.html":[5,0,1,0,0,24],
@@ -249,5 +247,7 @@ var NAVTREEINDEX1 =
 "_polygonal_basis3d_8cpp.html":[5,0,1,0,2,14],
 "_polygonal_basis3d_8cpp.html#a05c9a37e7bf673cecb9e7961ec47f656":[5,0,1,0,2,14,0],
 "_polygonal_basis3d_8cpp_source.html":[5,0,1,0,2,14],
-"_polygonal_basis3d_8hpp.html":[5,0,1,0,2,15]
+"_polygonal_basis3d_8hpp.html":[5,0,1,0,2,15],
+"_polygonal_basis3d_8hpp_source.html":[5,0,1,0,2,15],
+"_polyhedron_quadrature_8cpp.html":[5,0,1,0,5,6]
 };

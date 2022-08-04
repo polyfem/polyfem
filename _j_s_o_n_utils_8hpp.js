@@ -5,8 +5,8 @@ var _j_s_o_n_utils_8hpp =
     [ "RowVector", "_j_s_o_n_utils_8hpp.html#acf63a157949686c4a9dd40c56e7e70c2", null ],
     [ "Vector", "_j_s_o_n_utils_8hpp.html#ac6d5d984326c96a62a1b14db054e31bc", null ],
     [ "apply_default_params", "_j_s_o_n_utils_8hpp.html#a3018867117b00d4899d44a7d14bed2d4", null ],
-    [ "check_for_unknown_args", "_j_s_o_n_utils_8hpp.html#a3e38f1639608dfcaf2d6940d8d0680aa", null ],
     [ "deg2rad", "_j_s_o_n_utils_8hpp.html#a9f16cddaaf4c88645ca864f4e99beb19", null ],
     [ "is_param_valid", "_j_s_o_n_utils_8hpp.html#aa57e548cd0726262758fcc6b16fe0b0a", null ],
+    [ "log_and_throw_error", "_j_s_o_n_utils_8hpp.html#a4aa6a223372c11fff7378d34cd38d72d", null ],
     [ "to_rotation_matrix", "_j_s_o_n_utils_8hpp.html#a839770ed1facd0a5f30ef708ddf03b15", null ]
 ];

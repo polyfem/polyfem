@@ -161,7 +161,7 @@ $(document).ready(function(){initNavTree('_hooke_linear_elasticity_8cpp_source.h
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        {</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            assert(<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#aa952cc8a8700ec854851de67b6995764">size_</a> == 2 || <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#aa952cc8a8700ec854851de67b6995764">size_</a> == 3);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">if</span> (!params.contains(<span class="stringliteral">&quot;elasticity_tensor&quot;</span>))</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">if</span> (!params.contains(<span class="stringliteral">&quot;elasticity_tensor&quot;</span>) || params[<span class="stringliteral">&quot;elasticity_tensor&quot;</span>].empty())</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            {</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keywordflow">if</span> (params.count(<span class="stringliteral">&quot;young&quot;</span>))</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                {</div>

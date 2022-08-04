@@ -9,14 +9,13 @@ var searchData=
   ['sparematrixcache_6',['SpareMatrixCache',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html',1,'polyfem::utils']]],
   ['sparsenewtondescentsolver_7',['SparseNewtonDescentSolver',['../classcppoptlib_1_1_sparse_newton_descent_solver.html',1,'cppoptlib']]],
   ['specifiedselection_8',['SpecifiedSelection',['../classpolyfem_1_1utils_1_1_specified_selection.html',1,'polyfem::utils']]],
-  ['spectralbasis2d_9',['SpectralBasis2d',['../classpolyfem_1_1basis_1_1_spectral_basis2d.html',1,'polyfem::basis']]],
-  ['sphereselection_10',['SphereSelection',['../classpolyfem_1_1utils_1_1_sphere_selection.html',1,'polyfem::utils']]],
-  ['splinebasis2d_11',['SplineBasis2d',['../classpolyfem_1_1basis_1_1_spline_basis2d.html',1,'polyfem::basis']]],
-  ['splinebasis3d_12',['SplineBasis3d',['../classpolyfem_1_1basis_1_1_spline_basis3d.html',1,'polyfem::basis']]],
-  ['state_13',['State',['../classpolyfem_1_1_state.html',1,'polyfem']]],
-  ['stepdata_14',['StepData',['../classpolyfem_1_1_step_data.html',1,'polyfem']]],
-  ['stokeslawproblem_15',['StokesLawProblem',['../classpolyfem_1_1problem_1_1_stokes_law_problem.html',1,'polyfem::problem']]],
-  ['stokesmixed_16',['StokesMixed',['../classpolyfem_1_1assembler_1_1_stokes_mixed.html',1,'polyfem::assembler']]],
-  ['stokespressure_17',['StokesPressure',['../classpolyfem_1_1assembler_1_1_stokes_pressure.html',1,'polyfem::assembler']]],
-  ['stokesvelocity_18',['StokesVelocity',['../classpolyfem_1_1assembler_1_1_stokes_velocity.html',1,'polyfem::assembler']]]
+  ['sphereselection_9',['SphereSelection',['../classpolyfem_1_1utils_1_1_sphere_selection.html',1,'polyfem::utils']]],
+  ['splinebasis2d_10',['SplineBasis2d',['../classpolyfem_1_1basis_1_1_spline_basis2d.html',1,'polyfem::basis']]],
+  ['splinebasis3d_11',['SplineBasis3d',['../classpolyfem_1_1basis_1_1_spline_basis3d.html',1,'polyfem::basis']]],
+  ['state_12',['State',['../classpolyfem_1_1_state.html',1,'polyfem']]],
+  ['stepdata_13',['StepData',['../classpolyfem_1_1_step_data.html',1,'polyfem']]],
+  ['stokeslawproblem_14',['StokesLawProblem',['../classpolyfem_1_1problem_1_1_stokes_law_problem.html',1,'polyfem::problem']]],
+  ['stokesmixed_15',['StokesMixed',['../classpolyfem_1_1assembler_1_1_stokes_mixed.html',1,'polyfem::assembler']]],
+  ['stokespressure_16',['StokesPressure',['../classpolyfem_1_1assembler_1_1_stokes_pressure.html',1,'polyfem::assembler']]],
+  ['stokesvelocity_17',['StokesVelocity',['../classpolyfem_1_1assembler_1_1_stokes_velocity.html',1,'polyfem::assembler']]]
 ];

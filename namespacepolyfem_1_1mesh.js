@@ -98,7 +98,6 @@ var namespacepolyfem_1_1mesh =
     [ "is_planar", "namespacepolyfem_1_1mesh.html#a0eb020dda8244f82ea9450b2d655cadd", null ],
     [ "is_star_shaped", "namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18", null ],
     [ "line_weight", "namespacepolyfem_1_1mesh.html#add37eb917dcfad1ce25e9f2aca7ca9db", null ],
-    [ "log_and_throw_error", "namespacepolyfem_1_1mesh.html#a23c11289ee171d378f95b975412b00d2", null ],
     [ "mesh_create_vertex", "namespacepolyfem_1_1mesh.html#a7463d5f1886f0b3b79d678e7a6535801", null ],
     [ "mesh_vertex", "namespacepolyfem_1_1mesh.html#a73cc0f7013b784e8a488a1840e62d034", null ],
     [ "offset_polygon", "namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7", null ],

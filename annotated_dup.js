@@ -66,7 +66,6 @@ var annotated_dup =
         [ "RBFWithLinear", "classpolyfem_1_1basis_1_1_r_b_f_with_linear.html", "classpolyfem_1_1basis_1_1_r_b_f_with_linear" ],
         [ "RBFWithQuadratic", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic" ],
         [ "RBFWithQuadraticLagrange", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange" ],
-        [ "SpectralBasis2d", "classpolyfem_1_1basis_1_1_spectral_basis2d.html", null ],
         [ "SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
         [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ]
       ] ],
