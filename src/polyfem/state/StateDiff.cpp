@@ -882,7 +882,7 @@ namespace polyfem
 	{
 		if (!args["solver"].contains("adjoint_linear"))
 			args["solver"]["adjoint_linear"] = args["solver"]["linear"];
-		
+
 		auto solver = polysolve::LinearSolver::create(args["solver"]["adjoint_linear"]["solver"], args["solver"]["adjoint_linear"]["precond"]);
 		solver->setParameters(args["solver"]["adjoint_linear"]);
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -1194,7 +1194,7 @@ namespace polyfem
 		if (problem->is_scalar())
 			return;
 
-		const auto params = args["solver"];
+		const auto params = args["materials"];
 		if (params["phi"].get<double>() == 0 && params["psi"].get<double>() == 0)
 			return;
 

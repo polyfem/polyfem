@@ -126,30 +126,55 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
 		{
-			"problem": "GenericTensor",
-			"scalar_formulation": "LinearElasticity",
-			"n_refs": 0,
-			"discr_order": 1,
-			"quadrature_order": 5,
-			"n_boundary_samples": 5,
-			"iso_parametric": false,
-			"problem_params": {
-				"dirichlet_boundary": [{
-					"id": 11,
-					"value": [0, 0, 0]
-				}],
-				"rhs": [0, 10, 20]
+			"geometry": [
+				{
+					"mesh": "",
+					"volume_selection": 1,
+					"surface_selection": [
+						{
+							"id": 11,
+							"axis": "-x",
+							"position": 0.001
+						}
+					],
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": true
+					}
+				}
+			],
+			"space": {
+				"discr_order": 1,
+				"advanced": {
+					"n_boundary_samples": 5,
+					"quadrature_order": 5
+				}
 			},
-			"normalize_mesh": true,
-
-			"boundary_sidesets": [{
-				"id": 11,
-				"axis": "-x",
-				"position": 1e-3
-			}]
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					10,
+					20
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 11,
+						"value": [
+							0,
+							0,
+							0
+						]
+					}
+				]
+			},
+			"materials": {
+				"type": "LinearElasticity",
+				"lambda": 17284000.0,
+				"mu": 7407410.0
+			}
 		}
 	)"_json;
-	in_args["mesh"] = path + "/../../cube.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../cube.msh";
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
@@ -232,30 +257,48 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
 		{
-			"problem": "GenericTensor",
-			"scalar_formulation": "LinearElasticity",
-			"n_refs": 0,
-			"discr_order": 1,
-			"quadrature_order": 5,
-			"n_boundary_samples": 5,
-			"iso_parametric": false,
-			"problem_params": {
-				"dirichlet_boundary": [{
-					"id": 11,
-					"value": [0, 0]
-				}],
-				"rhs": [0, 10]
+			"geometry": [
+				{
+					"mesh": "",
+					"surface_selection": [
+						{
+							"id": 11,
+							"axis": "-x",
+							"position": 0.001
+						}
+					]
+				}
+			],
+			"space": {
+				"discr_order": 1,
+				"advanced": {
+					"n_boundary_samples": 5,
+					"quadrature_order": 5
+				}
 			},
-			"normalize_mesh": true,
-
-			"boundary_sidesets": [{
-				"id": 11,
-				"axis": "-x",
-				"position": 1e-3
-			}]
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					10
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 11,
+						"value": [
+							0,
+							0
+						]
+					}
+				]
+			},
+			"materials": {
+				"type": "LinearElasticity",
+				"lambda": 17284000.0,
+				"mu": 7407410.0
+			}
 		}
 	)"_json;
-	in_args["mesh"] = path + "/../../cube_dense.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
@@ -575,56 +618,87 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
 		{
-			"problem": "GenericTensor",
-			"tensor_formulation": "NeoHookean",
-			"problem_params": {
-				"dirichlet_boundary": [{
-					"id": 1,
-					"value": [0, 0]
-				}, {
-					"id": 2,
-					"value": [0, 0]
-				}]
+			"geometry": [
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							1.5001
+						],
+						"scale": 1.0
+					},
+					"volume_selection": 1,
+					"surface_selection": [
+						{
+							"id": 1,
+							"axis": "y",
+							"position": 1.99
+						}
+					],
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0.5
+						],
+						"scale": 1.0
+					},
+					"volume_selection": 2,
+					"surface_selection": [
+						{
+							"id": 2,
+							"axis": "-y",
+							"position": 0.01
+						}
+					],
+					"advanced": {
+						"normalize_mesh": false
+					}
+				}
+			],
+			"contact": {
+				"enabled": true,
+				"dhat": 0.001
 			},
-			"dhat": 1e-3,
-			
-			"barrier_stiffness": 20,
-			"meshes": [{
-				"mesh": "",
-				"position": [0, 1.5001],
-				"scale": 1.0,
-				"body_id": 1,
-				"boundary_id": 1
-			}, {
-				"mesh": "",
-				"position": [0, 0.5],
-				"scale": 1.0,
-				"body_id": 2,
-				"boundary_id": 2
-			}],
-
-			"params": {
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 20
+				}
+			},
+			"boundary_conditions": {
+				"dirichlet_boundary": [
+					{
+						"id": 1,
+						"value": [
+							0,
+							0
+						]
+					},
+					{
+						"id": 2,
+						"value": [
+							0,
+							0
+						]
+					}
+				]
+			},
+			"materials": {
+				"type": "NeoHookean",
 				"E": 200,
 				"nu": 0.3,
 				"rho": 1
-			},
-
-			"boundary_sidesets": [{
-				"id": 1,
-				"axis": "y",
-				"position": 1.99
-			}, {
-				"id": 2,
-				"axis": "-y",
-				"position": 0.01
-			}],
-
-			"has_collision": true,
-			"normalize_mesh": false
+			}
 		}
 	)"_json;
-	in_args["meshes"][0]["mesh"] = path + "/../../cube_dense.msh";
-	in_args["meshes"][1]["mesh"] = path + "/../../cube_dense.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
+	in_args["geometry"][1]["mesh"] = path + "/../cube_dense.msh";
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
@@ -828,60 +902,94 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
 		{
-			"problem": "GenericTensor",
-			"tensor_formulation": "NeoHookean",
-			"n_refs": 0,
-			"discr_order": 2,
-			"iso_parametric": false,
-			"quadrature_order": 5,
-			"problem_params": {
-				"dirichlet_boundary": [{
-					"id": 1,
-					"value": [0, 0]
-				}],
-				"rhs": [0, 9.810],
-				"is_time_dependent": true
+			"geometry": [
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0
+						],
+						"rotation": -30,
+						"scale": [
+							5,
+							0.02
+						]
+					},
+					"volume_selection": 1,
+					"surface_selection": 1,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0.26,
+							0.5
+						],
+						"rotation": -30,
+						"scale": 1.0
+					},
+					"volume_selection": 2,
+					"surface_selection": 2,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				}
+			],
+			"space": {
+				"discr_order": 2,
+				"advanced": {
+					"quadrature_order": 5
+				}
 			},
-			"dhat": 1e-3,
-			
-
-			"t0": 0,
-			"tend": 0.25,
-			"time_steps": 10,
-
-			"meshes": [{
-				"mesh": "",
-				"position": [0, 0],
-				"scale": [5, 0.02],
-				"rotation": -30,
-				"body_id": 1,
-				"boundary_id": 1
-			}, {
-				"mesh": "",
-				"position": [0.2600, 0.5],
-				"scale": 1.0,
-				"rotation": -30,
-				"body_id": 2,
-				"boundary_id": 2
-			}],
-
-			"params": {
-				"E": 1e6,
+			"time": {
+				"t0": 0,
+				"tend": 0.25,
+				"time_steps": 10
+			},
+			"contact": {
+				"enabled": true,
+				"dhat": 0.001,
+				"friction_coefficient": 0.2
+			},
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 100000.0
+				}
+			},
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					9.81
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 1,
+						"value": [
+							0,
+							0
+						]
+					}
+				]
+			},
+			"differentiable": true,
+			"materials": {
+				"type": "NeoHookean",
+				"E": 1000000.0,
 				"nu": 0.48,
 				"rho": 1000,
 				"phi": 10,
 				"psi": 10
-			},
-
-			"barrier_stiffness": 1e5,
-			"has_collision": true,
-			"differentiable": true,
-			"mu": 0.2,
-			"normalize_mesh": false
+			}
 		}
 	)"_json;
-	in_args["meshes"][0]["mesh"] = path + "/../../square.obj";
-	in_args["meshes"][1]["mesh"] = path + "/../../circle.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../square.obj";
+	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	StressFunctional func;
 
