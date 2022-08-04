@@ -6,9 +6,9 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MshReader.hpp>
 
-#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Selection.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Core>
 
@@ -18,12 +18,6 @@
 namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
-
-	void log_and_throw_error(const std::string &msg)
-	{
-		logger().error(msg);
-		throw std::runtime_error(msg);
-	}
 
 	std::unique_ptr<Mesh> read_fem_geometry(
 		const json &geometry,
@@ -83,9 +77,7 @@ namespace polyfem::mesh
 
 		for (int i = 0; i < geometries.size(); i++)
 		{
-			json complete_geometry;
-			apply_default_geometry_parameters(
-				geometries[i], complete_geometry, fmt::format("/geometry[{}]", i));
+			json complete_geometry = geometries[i];
 
 			if (!complete_geometry["enabled"].get<bool>())
 				continue;
@@ -240,9 +232,7 @@ namespace polyfem::mesh
 
 		for (int i = 0; i < geometries.size(); i++)
 		{
-			json complete_geometry;
-			apply_default_geometry_parameters(
-				geometries[i], complete_geometry, fmt::format("/geometry[{}]", i));
+			json complete_geometry = geometries[i];
 
 			if (!complete_geometry["is_obstacle"].get<bool>())
 				continue;
@@ -266,7 +256,7 @@ namespace polyfem::mesh
 				if (is_param_valid(complete_geometry, "surface_selection"))
 				{
 					if (!complete_geometry["surface_selection"].is_number())
-						log_and_throw_error("Invalid surface_selection for obstable, needs to be an integer!");
+						log_and_throw_error("Invalid surface_selection for obstacle, needs to be an integer!");
 
 					const int id = complete_geometry["surface_selection"];
 					for (const json &disp : displacements)
@@ -499,7 +489,8 @@ namespace polyfem::mesh
 		}
 		else if (jmesh["extract"].get<std::string>() == "volume")
 		{
-			log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+			//Clashes with defaults for non obstacle, here assume volume is suface
+			// log_and_throw_error("Volumetric elements not supported for collision obstacles!");
 		}
 
 		if (jmesh["n_refs"].get<int>() != 0)
@@ -508,83 +499,6 @@ namespace polyfem::mesh
 			if (jmesh["advanced"]["refinement_location"].get<double>() != 0.5)
 				log_and_throw_error("Option \"refinement_location\" in obstacles not implement yet!");
 		}
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-
-	void apply_default_geometry_parameters(
-		const json &geometry_in,
-		json &geometry_out,
-		const std::string &path_prefix)
-	{
-		static const json mesh_defaults = R"({
-			"type": "mesh",
-			"mesh": null,
-			"is_obstacle": false,
-			"enabled": true,
-
-			"transformation": {
-				"translation": [0.0, 0.0, 0.0],
-				"rotation": null,
-				"rotation_mode": "xyz",
-				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null
-			},
-
-			"extract": "volume",
-
-			"point_selection": null,
-			"curve_selection": null,
-			"surface_selection": null,
-			"volume_selection": null,
-
-			"n_refs": 0,
-
-			"advanced": {
-				"force_linear_geometry": false,
-				"refinement_location": 0.5,
-				"normalize_mesh": false,
-				"min_component": -1
-			}
-		})"_json;
-
-		static const json obstacle_defaults = R"({
-			"type": "mesh",
-			"mesh": null,
-			"is_obstacle": true,
-			"enabled": true,
-
-			"transformation": {
-				"translation": [0.0, 0.0, 0.0],
-				"rotation": null,
-				"rotation_mode": "xyz",
-				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null
-			},
-
-			"extract": "surface",
-
-			"surface_selection": null,
-
-			"n_refs": 0,
-
-			"advanced": {
-				"refinement_location": 0.5,
-				"normalize_mesh": false
-			}
-		})"_json;
-
-		if (geometry_in.contains("is_obstacle") && geometry_in["is_obstacle"].get<bool>())
-		{
-			check_for_unknown_args(obstacle_defaults, geometry_in, path_prefix);
-			geometry_out = obstacle_defaults;
-		}
-		else
-		{
-			check_for_unknown_args(mesh_defaults, geometry_in, path_prefix);
-			geometry_out = mesh_defaults;
-		}
-		geometry_out.merge_patch(geometry_in);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -626,6 +540,9 @@ namespace polyfem::mesh
 			scale.conservativeResize(dim);
 			if (scale_size < dim)
 				scale.tail(dim - scale_size).setZero();
+
+			if (scale_size == 0)
+				scale.setOnes();
 		}
 
 		vertices *= scale.asDiagonal();
@@ -644,7 +561,7 @@ namespace polyfem::mesh
 				if (transform["rotation"].is_number())
 					R = Eigen::Rotation2Dd(deg2rad(transform["rotation"].get<double>()))
 							.toRotationMatrix();
-				else
+				else if (!transform["rotation"].is_array() || !transform["rotation"].empty())
 					log_and_throw_error("Invalid 2D rotation; 2D rotations can only be a angle in degrees.");
 			}
 			else if (dim == 3)
@@ -690,8 +607,10 @@ namespace polyfem::mesh
 		}
 		else if (new_selections.is_object())
 		{
-			selections.push_back(Selection::build(
-				new_selections, bbox, start_element_id, end_element_id));
+			//TODO clean me
+			if (!new_selections.contains("threshold"))
+				selections.push_back(Selection::build(
+					new_selections, bbox, start_element_id, end_element_id));
 		}
 		else if (new_selections.is_array())
 		{

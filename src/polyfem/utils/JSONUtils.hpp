@@ -8,6 +8,8 @@ namespace polyfem
 {
 	namespace utils
 	{
+		void log_and_throw_error(const std::string &msg);
+
 		void apply_default_params(json &args);
 
 		// Templated degree to radians so a scalar or vector can be given
@@ -20,8 +22,6 @@ namespace polyfem
 		// Converts a JSON rotation expressed in the given rotation mode to a 3D rotation matrix.
 		// NOTE: mode is a copy because the mode will be transformed to be case insensitive
 		Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode = "xyz");
-
-		bool check_for_unknown_args(const json &args, const json &args_in, const std::string &path_prefix = "");
 
 		bool is_param_valid(const json &params, const std::string &key);
 	} // namespace utils

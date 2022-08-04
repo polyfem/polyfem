@@ -11,8 +11,6 @@
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
 
-#include <polyfem/basis/SpectralBasis2d.hpp>
-
 #include <polyfem/basis/SplineBasis2d.hpp>
 #include <polyfem/basis/SplineBasis3d.hpp>
 
@@ -183,6 +181,9 @@ namespace polyfem
 	{
 		if (!mesh->is_conforming())
 			return;
+		if (disc_orders.maxCoeff() >= 4)
+			return;
+
 		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
 		const int num_face_nodes = mesh_nodes->num_face_nodes();
@@ -243,11 +244,11 @@ namespace polyfem
 			assert(possible_nodes.size() > 0);
 			if (possible_nodes.size() > 1)
 			{
-#ifndef NDEBUG
-				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
-				for (int possible_node : possible_nodes)
-					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
-#endif
+				// #ifndef NDEBUG
+				// 				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+				// 				for (int possible_node : possible_nodes)
+				// 					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
+				// #endif
 
 				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 				assert(e_id < mesh->n_edges());
@@ -421,10 +422,6 @@ namespace polyfem
 		std::map<int, json> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			//TODO fix and check me
-			// check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
-			// json mat = default_material;
-			// mat.merge_patch(body_params[i]);
 			json mat = body_params[i];
 			json id = mat["id"];
 			if (id.is_array())

@@ -14,6 +14,8 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 
+#include <jse/jse.h>
+
 #include <geogram/basic/logger.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -21,7 +23,10 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/ostream_sink.h>
+
 #include <ipc/utils/logger.hpp>
+
+#include <sstream>
 
 namespace polyfem
 {
@@ -96,194 +101,6 @@ namespace polyfem
 		GEO::CmdLine::import_arg_group("algo");
 
 		problem = ProblemFactory::factory().get_problem("Linear");
-
-		this->args = R"({
-			"common": "",
-			"root_path": "",
-
-			"geometry": null,
-
-			"space": {
-				"discr_order": 1,
-				"pressure_discr_order": 1,
-
-				"use_p_ref": false,
-
-				"advanced": {
-					"discr_order_max": 4,
-
-					"serendipity": false,
-					"isoparametric": false,
-					"use_spline": false,
-
-					"bc_method": "lsq",
-
-					"n_boundary_samples": -1,
-					"quadrature_order": -1,
-
-					"poly_bases": "MFSHarmonic",
-					"integral_constraints": 2,
-					"n_harmonic_samples": 10,
-					"force_no_ref_for_harmonic": false,
-
-					"B": 3,
-					"h1_formula": false,
-
-					"count_flipped_els": true
-				}
-			},
-
-			"time": null,
-
-			"contact": {
-				"enabled": false,
-				"dhat": 1e-3,
-				"dhat_percentage": 0.8,
-				"epsv": 1e-3,
-
-				"friction_coefficient": 0
-			},
-
-			"solver": {
-				"linear": {
-					"solver": "",
-					"precond": ""
-				},
-
-				"nonlinear": {
-					"solver" : "newton",
-					"f_delta" : 1e-10,
-					"grad_norm" : 1e-8,
-					"max_iterations" : 1000,
-					"use_grad_norm" : true,
-					"relative_gradient" : false,
-
-					"line_search": {
-						"method" : "backtracking",
-						"use_grad_norm_tol" : 1e-4
-					}
-				},
-
-				"augmented_lagrangian" : {
-					"initial_weight" : 1e6,
-					"max_weight" : 1e11,
-
-					"force" : false
-				},
-
-				"contact": {
-					"CCD" : {
-						"broad_phase" : "hash_grid",
-						"tolerance" : 1e-6,
-						"max_iterations" : 1e6
-					},
-					"friction_iterations" : 1,
-					"friction_convergence_tol": 1e-2,
-					"barrier_stiffness": "adaptive",
-					"lagged_damping_weight": 0
-				},
-
-				"ignore_inertia" : false,
-
-				"advanced": {
-					"cache_size" : 900000,
-					"lump_mass_matrix" : false
-				}
-			},
-
-			"materials" : null,
-
-			"boundary_conditions": {
-				"rhs": null,
-				"dirichlet_boundary": [],
-				"neumann_boundary": [],
-				"pressure_boundary": [],
-				"obstacle_displacements": []
-			},
-
-			"initial_conditions": {
-				"solution": null,
-				"velocity": null,
-				"acceleration": null
-			},
-
-			"output": {
-				"json" : "",
-
-				"paraview" : {
-					"file_name" : "",
-					"vismesh_rel_area" : 0.00001,
-
-					"skip_frame" : 1,
-
-					"high_order_mesh" : true,
-
-					"volume" : true,
-					"surface" : false,
-					"wireframe" : false,
-
-					"options" : {
-						"material" : false,
-						"body_ids" : false,
-						"contact_forces" : false,
-						"friction_forces" : false,
-						"velocity" : false,
-						"acceleration" : false
-					},
-
-					"reference": {
-						"solution": null,
-						"gradient": null
-					}
-				},
-
-				"data" : {
-					"solution" : "",
-					"full_mat" : "",
-					"stiffness_mat" : "",
-					"solution_mat" : "",
-					"stress_mat" : "",
-					"u_path" : "",
-					"v_path" : "",
-					"a_path" : "",
-					"mises" : "",
-					"nodes" : "",
-
-					"advanced": {
-						"reorder_nodes": false
-					}
-				},
-
-				"advanced": {
-					"timestep_prefix" : "step_",
-					"sol_on_grid" : -1,
-
-					"compute_error" : true,
-
-					"sol_at_node" : -1,
-
-					"vis_boundary_only" : false,
-
-					"curved_mesh_size" : false,
-					"save_solve_sequence_debug" : false,
-					"save_time_sequence" : true,
-					"save_nl_solve_sequence" : false,
-
-					"spectrum" : false
-				}
-			},
-
-			"input": {
-				"data" : {
-					"u_path" : "",
-					"v_path" : "",
-					"a_path" : ""
-				}
-			}
-		})"_json;
-
-		this->args["solver"]["linear"]["solver"] = LinearSolver::defaultSolver();
-		this->args["solver"]["linear"]["precond"] = LinearSolver::defaultPrecond();
 	}
 
 	void State::init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet)
@@ -325,16 +142,82 @@ namespace polyfem
 #endif
 	}
 
-	void State::init(const json &p_args_in, const std::string &output_dir)
+	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir)
 	{
 		json args_in = p_args_in; // mutable copy
 
 		if (args_in.contains("common"))
 			apply_default_params(args_in);
 
-		check_for_unknown_args(args, args_in);
+		// CHECK validity json
+		json rules;
+		jse::JSE jse;
+		{
+			jse.strict = strict_validation;
+			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
+			std::ifstream file(polyfem_input_spec);
 
-		this->args.merge_patch(args_in);
+			if (file.is_open())
+				file >> rules;
+			else
+			{
+				logger().error("unable to open {} rules", polyfem_input_spec);
+				throw std::runtime_error("Invald spec file");
+			}
+		}
+
+		const bool valid_input = jse.verify_json(args_in, rules);
+
+		if (!valid_input)
+		{
+			logger().error("invalid input json, error {}", jse.log2str());
+			throw std::runtime_error("Invald input json file");
+		}
+		//end of check
+
+		this->args = jse.inject_defaults(args_in, rules);
+		// std::cout << this->args.dump() << std::endl;
+
+		if (args_in.contains("solver") && args_in["solver"].contains("linear"))
+		{
+			if (!args_in["solver"]["linear"].contains("solver"))
+				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			if (!args_in["solver"]["linear"].contains("precond"))
+				this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+		}
+		else
+		{
+			this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
+		}
+
+		//this cannot be done in the spec as it is system dependent
+		{
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const std::string s_json = this->args["solver"]["linear"]["solver"];
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				std::stringstream sss;
+				for (const auto &s : ss)
+					sss << ", " << s;
+				log_and_throw_error(fmt::format("Solver {} is invalid, should be one of {}", s_json, sss.str()));
+			}
+
+			const auto pp = polysolve::LinearSolver::availablePrecond();
+			const std::string p_json = this->args["solver"]["linear"]["precond"];
+			const auto precond_found = std::find(pp.begin(), pp.end(), p_json);
+			if (precond_found == pp.end())
+			{
+				std::stringstream sss;
+				for (const auto &s : pp)
+					sss << ", " << s;
+				log_and_throw_error(fmt::format("Precond {} is invalid, should be one of {}", s_json, sss.str()));
+			}
+		}
+
+		// std::cout << this->args.dump() << std::endl;
+
 		has_dhat = args_in["contact"].contains("dhat");
 
 		init_time();
@@ -382,10 +265,10 @@ namespace polyfem
 		}
 		else
 		{
-			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["name"]);
+			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
 
 			problem->clear();
-			if (args["preset_problem"]["name"] == "Kernel")
+			if (args["preset_problem"]["type"] == "Kernel")
 			{
 				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
 				kprob.state = this;
@@ -409,28 +292,6 @@ namespace polyfem
 		if (!is_param_valid(args, "time"))
 			return;
 
-		const json time_default = R"({
-			"t0": 0,
-			"tend": null,
-			"dt": null,
-			"time_steps": null,
-
-			"integrator": "ImplicitEuler",
-			"newmark": {
-				"gamma": 0.5,
-				"beta": 0.25
-			},
-			"BDF": {
-				"steps": 1
-			}
-		})"_json;
-
-		check_for_unknown_args(time_default, args["time"], "/time");
-
-		const auto tmp = args["time"];
-		args["time"] = time_default;
-		args["time"].merge_patch(tmp);
-
 		const double t0 = args["time"]["t0"];
 		double tend, dt;
 		int time_steps;
@@ -441,8 +302,7 @@ namespace polyfem
 							  + is_param_valid(args["time"], "time_steps");
 		if (num_valid < 2)
 		{
-			logger().error("Exactly two of (tend, dt, time_steps) must be specified");
-			throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
+			log_and_throw_error("Exactly two of (tend, dt, time_steps) must be specified");
 		}
 		else if (num_valid == 2)
 		{
