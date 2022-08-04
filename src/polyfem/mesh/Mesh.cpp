@@ -460,6 +460,8 @@ namespace polyfem::mesh
 
 	void Mesh::append(const Mesh &mesh)
 	{
+		const int n_vertices = this->n_vertices();
+
 		elements_tag_.insert(elements_tag_.end(), mesh.elements_tag_.begin(), mesh.elements_tag_.end());
 
 		// --------------------------------------------------------------------
@@ -502,25 +504,44 @@ namespace polyfem::mesh
 
 		is_rational_ = is_rational_ || mesh.is_rational_;
 
-		// FIXME: with offset!
-		edge_nodes_.insert(edge_nodes_.end(), mesh.edge_nodes_.begin(), mesh.edge_nodes_.end());
-		face_nodes_.insert(face_nodes_.end(), mesh.face_nodes_.begin(), mesh.face_nodes_.end());
-		cell_nodes_.insert(cell_nodes_.end(), mesh.cell_nodes_.begin(), mesh.cell_nodes_.end());
+		// --------------------------------------------------------------------
+		for (const auto &n : mesh.edge_nodes_)
+		{
+			auto tmp = n;
+			tmp.v1 += n_vertices;
+			tmp.v2 += n_vertices;
+			edge_nodes_.push_back(tmp);
+		}
+		for (const auto &n : mesh.face_nodes_)
+		{
+			auto tmp = n;
+			tmp.v1 += n_vertices;
+			tmp.v2 += n_vertices;
+			tmp.v3 += n_vertices;
+			face_nodes_.push_back(tmp);
+		}
+		for (const auto &n : mesh.cell_nodes_)
+		{
+			auto tmp = n;
+			tmp.v1 += n_vertices;
+			tmp.v2 += n_vertices;
+			tmp.v3 += n_vertices;
+			tmp.v4 += n_vertices;
+			cell_nodes_.push_back(tmp);
+		}
 		cell_weights_.insert(cell_weights_.end(), mesh.cell_weights_.begin(), mesh.cell_weights_.end());
+		// --------------------------------------------------------------------
 
-		// FIXME: with offset!
 		assert(in_ordered_vertices_.cols() == mesh.in_ordered_vertices_.cols());
 		in_ordered_vertices_.resize(in_ordered_vertices_.rows() + mesh.in_ordered_vertices_.rows(), in_ordered_vertices_.cols());
-		in_ordered_vertices_.bottomRows(mesh.in_ordered_vertices_.rows()) = mesh.in_ordered_vertices_;
+		in_ordered_vertices_.bottomRows(mesh.in_ordered_vertices_.rows()) = mesh.in_ordered_vertices_.array() + n_vertices;
 
-		// FIXME: with offset!
 		assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
 		in_ordered_edges_.resize(in_ordered_edges_.rows() + mesh.in_ordered_edges_.rows(), in_ordered_edges_.cols());
-		in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_;
+		in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_.array() + n_vertices;
 
-		// FIXME: with offset!
 		assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
 		in_ordered_faces_.resize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
-		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_;
+		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_.array() + n_vertices;
 	}
 } // namespace polyfem::mesh
