@@ -710,7 +710,6 @@ namespace polyfem
 		const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
 		const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
 		const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
-		const std::string solmat_path = resolve_output_path(args["output"]["data"]["solution_mat"]);
 		const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
 		const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
 		const bool reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
@@ -781,15 +780,6 @@ namespace polyfem
 			out.precision(100);
 			out << nodes;
 			out.close();
-		}
-		if (!solmat_path.empty())
-		{
-			Eigen::MatrixXd result;
-			int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
-			compute_vertex_values(problem_dim, bases, sol, result);
-			std::ofstream out(solmat_path);
-			out.precision(20);
-			out << result;
 		}
 		if (!stress_path.empty())
 		{

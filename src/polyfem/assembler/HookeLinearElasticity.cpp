@@ -44,7 +44,7 @@ namespace polyfem
 		{
 			assert(size_ == 2 || size_ == 3);
 
-			if (!params.contains("elasticity_tensor"))
+			if (!params.contains("elasticity_tensor") || params["elasticity_tensor"].empty())
 			{
 				if (params.count("young"))
 				{
