@@ -54,14 +54,19 @@ namespace polyfem
 		{
 			has_filter = true;
 			const double radius = top_params["filter"]["radius"];
-			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
 			std::vector<Eigen::Triplet<double>> tt_adjacency_list;
+			Eigen::MatrixXd barycenters;
+			if (state.mesh->is_volume())
+				state.mesh->cell_barycenters(barycenters);
+			else
+				state.mesh->face_barycenters(barycenters);
+			// TODO: too slow
 			for (int i = 0; i < state.mesh->n_faces(); i++)
 			{
-				auto center_i = state.mesh->face_barycenter(i);
+				auto center_i = barycenters.row(i);
 				for (int j = 0; j <= i; j++)
 				{
-					auto center_j = state.mesh->face_barycenter(j);
+					auto center_j = barycenters.row(j);
 					const double dist = (center_i - center_j).norm();
 					if (dist < radius)
 					{
@@ -93,6 +98,7 @@ namespace polyfem
 		
 		if (has_smooth_constraint)
 		{
+			assert(!state.mesh->is_volume());
 			std::vector<Eigen::Triplet<bool>> tt_adjacency_list;
 			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
 			for (int i = 0; i < state.mesh->n_faces(); ++i)
@@ -221,7 +227,7 @@ namespace polyfem
         return true;
     }
 
-	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::take_step(const TVector &x0, const TVector &dx)
+	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::force_inequality_constraint(const TVector &x0, const TVector &dx)
 	{
 		TVector x_new = x0 + dx;
 
@@ -252,34 +258,19 @@ namespace polyfem
 	double TopologyOptimizationProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
 		double size = 1;
-		while (size > 0)
-		{
-			auto newX = take_step(x0, (x1 - x0) * size);
-			state.assembler.update_lame_params_density(apply_filter(newX));
+		// while (size > 0)
+		// {
+		// 	auto newX = force_inequality_constraint(x0, (x1 - x0) * size);
+		// 	state.assembler.update_lame_params_density(apply_filter(newX));
 
-			if (!is_step_valid(x0, newX))
-				size /= 2.;
-			else
-				break;
-		}
-		state.assembler.update_lame_params_density(apply_filter(x0));
+		// 	if (!is_step_valid(x0, newX))
+		// 		size /= 2.;
+		// 	else
+		// 		break;
+		// }
+		// state.assembler.update_lame_params_density(apply_filter(x0));
 
 		return size;
-	}
-
-	void TopologyOptimizationProblem::direction_filtering(const TVector &x0, TVector &direc)
-	{
-		double erase_tol = 1e-8;
-		if (top_params.contains("erase_tol"))
-			erase_tol = top_params["erase_tol"];
-		
-		for (int i = 0; i < x0.size(); i++)
-		{
-			if (x0(i) < min_density + erase_tol && direc(i) < 0)
-				direc(i) = 0;
-			if (x0(i) > max_density - erase_tol && direc(i) > 0)
-				direc(i) = 0;
-		}
 	}
 
 	void TopologyOptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)

@@ -24,11 +24,10 @@ namespace polyfem
 		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
-		TVector take_step(const TVector &x0, const TVector &dx);
+		TVector force_inequality_constraint(const TVector &x0, const TVector &dx);
 		bool is_intersection_free(const TVector &x) { return true; }
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 		double max_step_size(const TVector &x0, const TVector &x1);
-		void direction_filtering(const TVector &x0, TVector &direc);
 		bool remesh(TVector &x) { return false; };
 
 		TVector get_lower_bound(const TVector& x) 

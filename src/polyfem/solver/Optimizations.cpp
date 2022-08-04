@@ -12,6 +12,15 @@
 
 namespace polyfem
 {
+	double cross_elastic(double x, double y)
+	{
+		x = abs(x);
+
+		if (x < 0.1)
+			return 0.8;
+		return 0.2;
+	}
+
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(const json &solver_params)
 	{
@@ -896,7 +905,18 @@ namespace polyfem
 				if (param.contains("initial"))
 					density_mat.setConstant(param["initial"]);
 				else
-					density_mat.setOnes();
+				{
+					Eigen::MatrixXd barycenters;
+					if (state.mesh->is_volume())
+						state.mesh->cell_barycenters(barycenters);
+					else
+						state.mesh->face_barycenters(barycenters);
+					for (int e = 0; e < state.bases.size(); e++)
+					{
+						density_mat(e) = cross_elastic(barycenters(e,0), barycenters(e,1));
+					}
+					// density_mat.setOnes();
+				}
 				
 				if (param.contains("power"))
 					state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat), param["power"]);

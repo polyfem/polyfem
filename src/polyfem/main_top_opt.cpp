@@ -116,6 +116,11 @@ int main(int argc, char **argv)
 			func = CompositeFunctional::create("Compliance");
 			break;
 		}
+		else if (param["type"] == "homogenized_stiffness")
+		{
+			func = CompositeFunctional::create("HomogenizedStiffness");
+			break;
+		}
 	}
 
 	state.compute_mesh_stats();

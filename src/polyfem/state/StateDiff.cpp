@@ -365,6 +365,7 @@ namespace polyfem
 	double State::J_static(const IntegrableFunctional &j)
 	{
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		double result = 0;
 		if (j.is_volume_integral())
@@ -372,7 +373,13 @@ namespace polyfem
 			VolumeIntegrandTerms integrand_functions = {
 				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
+					if (j.depend_on_u() || j.depend_on_gradu())
+						interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
+					else
+					{
+						u.setZero(reference_points.rows(), actual_dim);
+						grad_u.setZero(reference_points.rows(), actual_dim * reference_points.cols());
+					}
 					Eigen::MatrixXd vec_term_mat;
 					json params = {};
 					params["elem"] = e;
@@ -389,7 +396,13 @@ namespace polyfem
 			SurfaceIntegrandTerms integrand_functions = {
 				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
+					if (j.depend_on_u() || j.depend_on_gradu())
+						interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
+					else
+					{
+						u.setZero(reference_points.rows(), actual_dim);
+						grad_u.setZero(reference_points.rows(), actual_dim * reference_points.cols());
+					}
 					std::vector<int> boundary_ids = {};
 					for (int i = 0; i < global_primitive_ids.size(); ++i)
 						boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
@@ -1701,7 +1714,10 @@ namespace polyfem
 		solve_adjoint(j, adjoint_sol);
 
 		Eigen::VectorXd elasticity_term, functional_term;
-		compute_topology_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
+		if (j.depend_on_u() || j.depend_on_gradu())
+			compute_topology_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
+		else
+			elasticity_term.setZero(bases.size());
 		compute_topology_derivative_functional_term(sol, j, functional_term);
 
 		one_form = elasticity_term + functional_term;

@@ -123,7 +123,8 @@ namespace cppoptlib
 				// Update s and y
 				// s_{i+1} = x_{i+1} - x_i
 				// y_{i+1} = g_{i+1} - g_i
-				m_bfgs.add_correction(x - m_prev_x, grad - m_prev_grad);
+				if ((x - m_prev_x).dot(grad - m_prev_grad) > 1e-9 * (grad - m_prev_grad).squaredNorm())
+					m_bfgs.add_correction(x - m_prev_x, grad - m_prev_grad);
 
 				// Recursive formula to compute d = -H * g
 				// m_bfgs.apply_Hv(grad, -Scalar(1), direction);
@@ -133,9 +134,6 @@ namespace cppoptlib
 				LBFGSpp::SubspaceMin<Scalar>::subspace_minimize(m_bfgs, x, cauchy_point, grad, lower_bound, upper_bound,
                 vecc, newact_set, fv_set, /*Maximum number of iterations*/ max_submin, direction);
 			}
-
-			m_prev_x = x;
-			m_prev_grad = grad;
 
 			if (std::isnan(direction.squaredNorm()))
 			{
@@ -147,7 +145,7 @@ namespace cppoptlib
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}
-			else if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
+			else if (grad.squaredNorm() != 0 && direction.dot(grad) > 0)
 			{
 				reset_history(objFunc, x);
 				increase_descent_strategy();
@@ -157,6 +155,9 @@ namespace cppoptlib
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}
+
+			m_prev_x = x;
+			m_prev_grad = grad;
 
 			return true;
 		}

@@ -61,7 +61,7 @@ namespace polyfem
 
 					{
 						POLYFEM_SCOPED_TIMER("CCD broad-phase", this->broad_phase_ccd_time);
-						const TVector x1 = objFunc.take_step(x, alpha_init * searchDir);
+						const TVector x1 = objFunc.force_inequality_constraint(x, alpha_init * searchDir);
 						objFunc.line_search_begin(x, x1);
 					}
 
@@ -79,7 +79,7 @@ namespace polyfem
 					{
 						POLYFEM_SCOPED_TIMER("energy min in LS", this->classical_line_search_time);
 
-						TVector x1 = objFunc.take_step(x, alpha * searchDir);
+						TVector x1 = objFunc.force_inequality_constraint(x, alpha * searchDir);
 						{
 							POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
 							objFunc.solution_changed(x1);
@@ -100,7 +100,7 @@ namespace polyfem
 						while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !valid) && alpha > this->min_step_size && this->cur_iter <= this->max_step_size_iter)
 						{
 							alpha *= tau;
-							x1 = objFunc.take_step(x, alpha * searchDir);
+							x1 = objFunc.force_inequality_constraint(x, alpha * searchDir);
 
 							{
 								POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);

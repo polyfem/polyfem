@@ -509,7 +509,7 @@ namespace polyfem
 		// Computes the integral of a given functional J = \int j dx
 		double J(const IntegrableFunctional &j)
 		{
-			assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
+			// assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
 			return problem->is_time_dependent() ? J_transient(j) : J_static(j);
 		}
 		double J_static(const IntegrableFunctional &j);
@@ -581,7 +581,7 @@ namespace polyfem
 		}
 		Eigen::VectorXd integral_gradient(const IntegrableFunctional &j, const std::string &type)
 		{
-			assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
+			// assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
 
 			Eigen::VectorXd grad;
 			if (type == "material")
@@ -1056,7 +1056,7 @@ namespace polyfem
 		//homogenization study of unit cell
 		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
 		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
-		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::VectorXd &grad);
+		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
 		void homogenize_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorXd &grad);

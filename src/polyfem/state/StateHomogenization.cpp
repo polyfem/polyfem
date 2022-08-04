@@ -148,8 +148,8 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
         w.col(k) = x;
     }
 
-    const auto error = (A_tmp * w - rhs).norm() / rhs.norm();
-    if (error > 1e-4)
+    const auto error = (A_tmp * w - rhs).norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
@@ -354,8 +354,8 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
         w.col(k) = x;
     }
 
-    const auto error = (A_tmp * w - rhs).norm() / rhs.norm();
-    if (error > 1e-4)
+    const auto error = (A_tmp * w - rhs).norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
@@ -363,11 +363,11 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     w.conservativeResize(n_bases * dim, w.cols());
 
     // auto diff = unit_disp - w;
-    // for (int id = 0; id < unit_disp_ids.size(); id++)
-    // {       
-    //     sol = diff.col(id);
-    //     save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", 1.);
-    // }
+    for (int id = 0; id < unit_disp_ids.size(); id++)
+    {       
+        sol = w.col(id);
+        save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", 1.);
+    }
 
     // compute homogenized stiffness
     C_H.setZero(unit_disp_ids.size(), unit_disp_ids.size());
@@ -429,7 +429,7 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     C_H /= volume;
 }
 
-void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::VectorXd &grad)
+void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad)
 {
     if (!mesh)
     {
@@ -553,8 +553,8 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         w.col(k) = x;
     }
 
-    auto error = (A_tmp * w - rhs).norm() / rhs.norm();
-    if (error > 1e-4)
+    auto error = (A_tmp * w - rhs).norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
@@ -689,15 +689,15 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         adjoint.col(k) = x;
     }
 
-    error = (A_tmp * adjoint - rhs).norm() / rhs.norm();
-    if (error > 1e-4)
+    error = (A_tmp * adjoint - rhs).norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
     
     adjoint.conservativeResize(n_bases * dim, adjoint.cols());
 
-    grad.setZero(bases.size(), 1);
+    grad.setZero(bases.size(), unit_disp_ids.size());
     for (int e = 0; e < bases.size(); e++)
     {
         ElementAssemblyValues vals;
@@ -741,7 +741,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
 
                 const double value2 = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain.array() * diff_strain.array()).sum() + lambda * diff_strain.trace() * diff_strain.trace());
 
-                grad(e) += value1 + value2;
+                grad(e, id) += (value1 + value2) * pow(params.density(e), params.density_power_ - 1) * params.density_power_;
             }
         }
     }
@@ -832,8 +832,8 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
 
     auto res = A_tmp * w - rhs;
 
-    const auto error = res.norm() / rhs.norm();
-    if (error > 1e-4)
+    const auto error = res.norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
@@ -992,8 +992,8 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
 
     auto res = A_tmp * w - rhs;
 
-    const auto error = res.norm() / rhs.norm();
-    if (error > 1e-4)
+    const auto error = res.norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
@@ -1151,8 +1151,8 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
 
     auto res = A * w - rhs;
 
-    const auto error = res.norm() / rhs.norm();
-    if (error > 1e-4)
+    const auto error = res.norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);
@@ -1209,8 +1209,8 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::VectorX
 
     auto adjoint_res = A * adjoint - rhs;
 
-    const auto adjoint_error = res.norm() / rhs.norm();
-    if (error > 1e-4)
+    const auto adjoint_error = res.norm();
+    if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else
         logger().debug("Solver error: {}", error);

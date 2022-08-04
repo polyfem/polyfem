@@ -247,6 +247,21 @@ namespace polyfem
 		IntegrableFunctional get_compliance_functional(const std::string &formulation);
 	};
 
+	class HomogenizedStiffnessFunctional : public CompositeFunctional
+	{
+	public:
+		HomogenizedStiffnessFunctional()
+		{
+			functional_name = "HomogenizedStiffness";
+			surface_integral = false;
+			transient_integral_type = "simpson";
+		}
+		~HomogenizedStiffnessFunctional() = default;
+
+		double energy(State &state) override;
+		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+	};
+
 	class CenterTrajectoryFunctional : public CompositeFunctional
 	{
 	public:

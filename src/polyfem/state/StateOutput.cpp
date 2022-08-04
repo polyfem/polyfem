@@ -1092,7 +1092,9 @@ namespace polyfem
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
-			return;
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			sol.setZero(n_bases * actual_dim, 1);
+			// return;
 		}
 
 		const bool export_volume = args["output"]["paraview"]["volume"];

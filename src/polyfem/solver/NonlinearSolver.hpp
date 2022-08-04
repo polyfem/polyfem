@@ -91,7 +91,8 @@ namespace cppoptlib
 				POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
 				objFunc.gradient(x, grad);
 			}
-			double first_grad_norm = grad.norm();
+			// double first_grad_norm = grad.norm();
+			const double first_grad_norm = (objFunc.force_inequality_constraint(x, -grad) - x).norm();
 			if (std::isnan(first_grad_norm))
 			{
 				this->m_status = Status::UserDefined;
@@ -149,7 +150,8 @@ namespace cppoptlib
 					objFunc.gradient(x, grad);
 				}
 
-				const double grad_norm = grad.norm();
+				// const double grad_norm = grad.norm();
+				const double grad_norm = (objFunc.force_inequality_constraint(x, -grad) - x).norm();
 				logger().debug("grad norm: {}", grad_norm);
 				if (std::isnan(grad_norm))
 				{
@@ -180,7 +182,7 @@ namespace cppoptlib
 					continue;
 				}
 
-				if (grad_norm != 0 && delta_x.dot(grad) >= 0)
+				if (grad_norm != 0 && delta_x.dot(grad) > 0)
 				{
 					increase_descent_strategy();
 					polyfem::logger().log(
@@ -227,8 +229,6 @@ namespace cppoptlib
 				// Variable update
 				// ---------------
 
-				objFunc.direction_filtering(x, delta_x);
-
 				// Perform a line_search to compute step scale
 				double rate = line_search(x, delta_x, objFunc);
 				if (std::isnan(rate))
@@ -240,7 +240,7 @@ namespace cppoptlib
 						break;
 				}
 				auto old_x = x;
-				x = objFunc.take_step(old_x, rate * delta_x);
+				x = objFunc.force_inequality_constraint(old_x, rate * delta_x);
 				objFunc.smoothing(old_x, x);
 
 				// -----------

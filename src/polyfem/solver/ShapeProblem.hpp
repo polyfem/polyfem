@@ -177,9 +177,8 @@ namespace polyfem
 		}
 
 		void smoothing(const TVector &x, TVector &new_x) override;
-		void direction_filtering(const TVector &x0, TVector &direc) { };
 		bool is_step_valid(const TVector &x0, const TVector &x1);
-		TVector take_step(const TVector &x0, const TVector &dx) { return x0 + dx; }
+		TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 		bool is_intersection_free(const TVector &x);
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
