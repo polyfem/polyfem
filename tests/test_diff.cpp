@@ -1413,71 +1413,138 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-	{
-		"problem": "GenericTensor",
-		"tensor_formulation": "NeoHookean",
-		"n_refs": 0,
-		"discr_order": 1,
-		"has_collision": true,
-		"differentiable": true,
-		"vismesh_rel_area": 1,
-		"barrier_stiffness": 5e4,
-		"problem_params": {
-			"dirichlet_boundary": [{
-				"id": 3,
-				"value": [0, 0, 0]
+		{
+			"geometry": [
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0,
+							0
+						],
+						"scale": [
+							1,
+							0.02,
+							1
+						]
+					},
+					"volume_selection": 3,
+					"surface_selection": 3,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0.56,
+							0
+						],
+						"scale": [
+							1,
+							0.02,
+							1
+						]
+					},
+					"volume_selection": 2,
+					"surface_selection": 2,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0.27,
+							0
+						],
+						"scale": [
+							0.5,
+							0.5,
+							0.5
+						]
+					},
+					"volume_selection": 1,
+					"surface_selection": 1,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				}
+			],
+			"space": {
+				"discr_order": 1
 			},
-			{
-				"id": 2,
-				"value": [0, "-0.5*t", 0]
-			}],
-			"rhs": [0, 9.8, 0],
-			"is_time_dependent": true
-		},
-		"mu": 0.3,
-		"tend": 0.08,
-		"dt": 0.01,
-		"params": {
-			"E": 1e6,
-			"nu": 0.3,
-			"rho": 100
-		},
-		"skip_frame": 1,
-		"meshes": [{
-			"mesh": "",
-			"position": [0, 0, 0],
-			"scale": [1, 0.02, 1],
-			"rotation": 0,
-			"body_id": 3,
-			"boundary_id": 3
-		}, {
-			"mesh": "",
-			"position": [0, 0.56, 0],
-			"scale": [1, 0.02, 1],
-			"rotation": 0,
-			"body_id": 3,
-			"boundary_id": 2
-		}, {
-			"mesh": "",
-			"position": [0, 0.27, 0],
-			"scale": [0.5, 0.5, 0.5],
-			"rotation": 0,
-			"body_id": 1,
-			"boundary_id": 1,
-			"interested": true
-		}],
-		"normalize_mesh": false
-	}
+			"time": {
+				"tend": 0.08,
+				"dt": 0.01
+			},
+			"contact": {
+				"enabled": true,
+				"friction_coefficient": 0.3
+			},
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 50000.0
+				}
+			},
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					9.8,
+					0
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 3,
+						"value": [
+							0,
+							0,
+							0
+						]
+					},
+					{
+						"id": 2,
+						"value": [
+							0,
+							"-0.5*t",
+							0
+						]
+					}
+				]
+			},
+			"differentiable": true,
+			"materials": {
+				"type": "NeoHookean",
+				"E": 1000000.0,
+				"nu": 0.3,
+				"rho": 100,
+				"psi": 0,
+				"phi": 0
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1
+				}
+			}
+		}
 	)"_json;
-	in_args["meshes"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["meshes"][1]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["meshes"][2]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
+	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+	in_args["geometry"][2]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
 	// compute reference solution
 	State state_reference(8);
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args);
-	state_reference.args["params"]["E"] = 1e4;
+	state_reference.args["materials"]["E"] = 1e4;
 	state_reference.load_mesh();
 	state_reference.solve();
 
@@ -1489,6 +1556,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 
 	TrajectoryFunctional func;
 	func.set_reference(&state_reference, state, {1});
+	func.set_interested_ids({1}, {});
 	func.set_volume_integral();
 
 	double functional_val = func.energy(state);
@@ -1501,7 +1569,8 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 			vel(i, 0) = 1;
 			vel(i, 1) = 1;
 		}
-		return vel * 1e3;
+		vel *= 1e3;
+		return vel;
 	};
 	state.sample_field(velocity, velocity_discrete, 0);
 
@@ -1525,72 +1594,131 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-	{
-		"problem": "GenericTensor",
-		"tensor_formulation": "NeoHookean",
-		"n_refs": 0,
-		"discr_order": 1,
-		"iso_parametric": false,
-		"has_collision": true,
-		"differentiable": true,
-		"vismesh_rel_area": 1,
-		"quadrature_order": 5,
-		"barrier_stiffness": 1822920,
-		"problem_params": {
-			"dirichlet_boundary": [{
-				"id": 3,
-				"value": [0, 0, 0]
-			}],
-			"initial_velocity": [
+		{
+			"geometry": [
 				{
-					"id": 1,
-					"value": [2, -2, -2]
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0,
+							0
+						],
+						"scale": [
+							3,
+							0.02,
+							1
+						]
+					},
+					"volume_selection": 3,
+					"surface_selection": 3,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0.3,
+							0
+						],
+						"scale": [
+							0.5,
+							0.5,
+							0.5
+						]
+					},
+					"volume_selection": 1,
+					"surface_selection": 1,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
 				}
 			],
-			"rhs": [0, 9.8, 0],
-			"is_time_dependent": true
-		},
-		"mu": 0.3,
-		"tend": 0.2,
-		"dt": 0.02,
-		"body_params": [{
-			"name": "bunny",
-			"id": 1,
-			"E": 1e6,
-			"nu": 0.3,
-			"rho": 1000
-		}, {
-			"name": "plane",
-			"id": 3,
-			"E": 1e6,
-			"nu": 0.3,
-			"rho": 1000
-		}],
-		"save_time_sequence": false,
-		"skip_frame": 1,
-		"meshes": [{
-			"mesh": "",
-			"position": [0, 0, 0],
-			"scale": [3, 0.02, 1],
-			"rotation": 0,
-			"body_id": 3,
-			"boundary_id": 3
-		}, {
-			"mesh": "",
-			"position": [0, 0.3, 0],
-			"scale": [0.5, 0.5, 0.5],
-			"rotation": 0,
-			"body_id": 1,
-			"boundary_id": 1,
-			"interested": true
-		}],
-		"normalize_mesh": false
-	}
+			"space": {
+				"discr_order": 1,
+				"advanced": {
+					"quadrature_order": 5
+				}
+			},
+			"time": {
+				"tend": 0.2,
+				"dt": 0.02
+			},
+			"contact": {
+				"enabled": true,
+				"friction_coefficient": 0.3
+			},
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 1822920
+				}
+			},
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					9.8,
+					0
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 3,
+						"value": [
+							0,
+							0,
+							0
+						]
+					}
+				]
+			},
+			"initial_conditions": {
+				"velocity": [
+					{
+						"id": 1,
+						"value": [
+							2,
+							-2,
+							-2
+						]
+					}
+				]
+			},
+			"differentiable": true,
+			"materials": [
+				{
+					"id": 1,
+					"E": 1000000.0,
+					"nu": 0.3,
+					"rho": 1000,
+					"type": "NeoHookean"
+				},
+				{
+					"id": 3,
+					"E": 1000000.0,
+					"nu": 0.3,
+					"rho": 1000,
+					"type": "NeoHookean"
+				}
+			],
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
+			}
+		}
 	)"_json;
-	in_args["meshes"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["meshes"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
+	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
 	StressFunctional func;
+	func.set_interested_ids({1}, {});
 
 	State state(8);
 	state.init_logger("", spdlog::level::level_enum::err, false);
@@ -1626,68 +1754,116 @@ TEST_CASE("barycenter", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-	{
-		"problem": "GenericTensor",
-		"tensor_formulation": "NeoHookean",
-		"n_refs": 0,
-		"discr_order": 1,
-		"time_integrator": "BDF",
-		"time_integrator_params": {
-			"num_steps": 2
-		},
-		"iso_parametric": false,
-		"has_collision": true,
-		"differentiable": true,
-		"vismesh_rel_area": 1,
-		"quadrature_order": 5,
-		"problem_params": {
-			"dirichlet_boundary": [{
-				"id": 3,
-				"value": [0, 0]
-			}],
-			"initial_velocity": [
+		{
+			"geometry": [
 				{
-					"id": 1,
-					"value": [5, 0]
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0
+						],
+						"rotation": 0,
+						"scale": [
+							3,
+							0.02
+						]
+					},
+					"volume_selection": 3,
+					"surface_selection": 3,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							-1.5,
+							0.3
+						],
+						"rotation": 0,
+						"scale": 0.5
+					},
+					"volume_selection": 1,
+					"surface_selection": 1,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
 				}
 			],
-			"rhs": [0, 9.8],
-			"is_time_dependent": true
-		},
-		"mu": 0.5,
-		"tend": 0.2,
-		"dt": 0.01,
-		"barrier_stiffness": 23216604,
-		"params": {
-			"E": 1e6,
-			"nu": 0.3,
-			"rho": 1000,
-			"phi": 10,
-			"psi": 10
-		},
-		"save_time_sequence": false,
-		"skip_frame": 1,
-		"meshes": [{
-			"mesh": "",
-			"position": [0, 0],
-			"scale": [3, 0.02],
-			"rotation": 0,
-			"body_id": 3,
-			"boundary_id": 3
-		}, {
-			"mesh": "",
-			"position": [-1.5, 0.3],
-			"scale": 0.5,
-			"rotation": 0,
-			"body_id": 1,
-			"boundary_id": 1,
-			"interested": true
-		}],
-		"normalize_mesh": false
-	}
+			"space": {
+				"discr_order": 1,
+				"advanced": {
+					"quadrature_order": 5
+				}
+			},
+			"time": {
+				"tend": 0.2,
+				"dt": 0.01,
+				"integrator": "BDF",
+				"BDF": {
+					"steps": 2
+				}
+			},
+			"contact": {
+				"enabled": true,
+				"friction_coefficient": 0.5
+			},
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 23216604
+				}
+			},
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					9.8
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 3,
+						"value": [
+							0,
+							0
+						]
+					}
+				]
+			},
+			"initial_conditions": {
+				"velocity": [
+					{
+						"id": 1,
+						"value": [
+							5,
+							0
+						]
+					}
+				]
+			},
+			"differentiable": true,
+			"materials": {
+				"type": "NeoHookean",
+				"E": 1000000.0,
+				"nu": 0.3,
+				"rho": 1000,
+				"phi": 10,
+				"psi": 10
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
+			}
+		}
 	)"_json;
-	in_args["meshes"][0]["mesh"] = path + "/../../square.obj";
-	in_args["meshes"][1]["mesh"] = path + "/../../circle.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../square.obj";
+	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
 	State state_reference(8);
@@ -1699,25 +1875,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	std::set<int> interested_ids;
-	if (in_args.contains("meshes") && !in_args["meshes"].empty())
-	{
-		const auto &meshes = in_args["meshes"].get<std::vector<json>>();
-		for (const auto &m : meshes)
-		{
-			if (m.contains("interested") && m["interested"].get<bool>())
-			{
-				if (!m.contains("body_id"))
-				{
-					logger().error("No body id in interested mesh!");
-				}
-				interested_ids.insert(m["body_id"].get<int>());
-			}
-		}
-	}
-
 	CenterTrajectoryFunctional func;
-	func.set_interested_ids(interested_ids, {});
+	func.set_interested_ids({1}, {});
 	std::vector<Eigen::VectorXd> barycenters;
 	func.get_barycenter_series(state_reference, barycenters);
 	func.set_center_series(barycenters);
@@ -1755,68 +1914,116 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
-	{
-		"problem": "GenericTensor",
-		"tensor_formulation": "NeoHookean",
-		"n_refs": 0,
-		"discr_order": 1,
-		"time_integrator": "BDF",
-		"time_integrator_params": {
-			"num_steps": 2
-		},
-		"iso_parametric": false,
-		"has_collision": true,
-		"differentiable": true,
-		"vismesh_rel_area": 1,
-		"quadrature_order": 5,
-		"problem_params": {
-			"dirichlet_boundary": [{
-				"id": 3,
-				"value": [0, 0]
-			}],
-			"initial_velocity": [
+		{
+			"geometry": [
 				{
-					"id": 1,
-					"value": [5, 0]
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0
+						],
+						"rotation": 0,
+						"scale": [
+							3,
+							0.02
+						]
+					},
+					"volume_selection": 3,
+					"surface_selection": 3,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							-1.5,
+							0.3
+						],
+						"rotation": 0,
+						"scale": 0.5
+					},
+					"volume_selection": 1,
+					"surface_selection": 1,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
 				}
 			],
-			"rhs": [0, 9.8],
-			"is_time_dependent": true
-		},
-		"mu": 0.5,
-		"tend": 0.2,
-		"dt": 0.01,
-		"barrier_stiffness": 23216604,
-		"params": {
-			"E": 1e6,
-			"nu": 0.3,
-			"rho": 1000,
-			"phi": 10,
-			"psi": 10
-		},
-		"save_time_sequence": false,
-		"skip_frame": 1,
-		"meshes": [{
-			"mesh": "",
-			"position": [0, 0],
-			"scale": [3, 0.02],
-			"rotation": 0,
-			"body_id": 3,
-			"boundary_id": 3
-		}, {
-			"mesh": "",
-			"position": [-1.5, 0.3],
-			"scale": 0.5,
-			"rotation": 0,
-			"body_id": 1,
-			"boundary_id": 1,
-			"interested": true
-		}],
-		"normalize_mesh": false
-	}
+			"space": {
+				"discr_order": 1,
+				"advanced": {
+					"quadrature_order": 5
+				}
+			},
+			"time": {
+				"tend": 0.2,
+				"dt": 0.01,
+				"integrator": "BDF",
+				"BDF": {
+					"steps": 2
+				}
+			},
+			"contact": {
+				"enabled": true,
+				"friction_coefficient": 0.5
+			},
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 23216604
+				}
+			},
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					9.8
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 3,
+						"value": [
+							0,
+							0
+						]
+					}
+				]
+			},
+			"initial_conditions": {
+				"velocity": [
+					{
+						"id": 1,
+						"value": [
+							5,
+							0
+						]
+					}
+				]
+			},
+			"differentiable": true,
+			"materials": {
+				"type": "NeoHookean",
+				"E": 1000000.0,
+				"nu": 0.3,
+				"rho": 1000,
+				"phi": 10,
+				"psi": 10
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
+			}
+		}
 	)"_json;
-	in_args["meshes"][0]["mesh"] = path + "/../../square.obj";
-	in_args["meshes"][1]["mesh"] = path + "/../../circle.msh";
+	in_args["geometry"][0]["mesh"] = path + "/../square.obj";
+	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
 	State state_reference(8);
@@ -1828,25 +2035,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	std::set<int> interested_ids;
-	if (in_args.contains("meshes") && !in_args["meshes"].empty())
-	{
-		const auto &meshes = in_args["meshes"].get<std::vector<json>>();
-		for (const auto &m : meshes)
-		{
-			if (m.contains("interested") && m["interested"].get<bool>())
-			{
-				if (!m.contains("body_id"))
-				{
-					logger().error("No body id in interested mesh!");
-				}
-				interested_ids.insert(m["body_id"].get<int>());
-			}
-		}
-	}
-
 	CenterTrajectoryFunctional func_aux;
-	func_aux.set_interested_ids(interested_ids, {});
+	func_aux.set_interested_ids({1}, {});
 	std::vector<Eigen::VectorXd> barycenters;
 	func_aux.get_barycenter_series(state_reference, barycenters);
 
