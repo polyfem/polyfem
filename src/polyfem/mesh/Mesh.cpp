@@ -204,9 +204,8 @@ namespace polyfem::mesh
 			}
 
 			const int dim = vertices.cols();
-			std::unique_ptr<Mesh> mesh = create(dim, non_conforming);
+			std::unique_ptr<Mesh> mesh = create(vertices, cells, non_conforming);
 
-			mesh->build_from_matrices(vertices, cells);
 			// Only tris and tets
 			if ((dim == 2 && cells.cols() == 3) || (dim == 3 && cells.cols() == 4))
 			{
@@ -544,5 +543,15 @@ namespace polyfem::mesh
 		assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
 		in_ordered_faces_.conservativeResize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
 		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_.array() + n_vertices;
+	}
+
+	void Mesh::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
+	{
+		for (int i = 0; i < n_vertices(); ++i)
+		{
+			VectorNd p = point(i).transpose();
+			p = A * p + b;
+			set_point(i, p.transpose());
+		}
 	}
 } // namespace polyfem::mesh

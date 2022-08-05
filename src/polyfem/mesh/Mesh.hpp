@@ -291,6 +291,12 @@ namespace polyfem
 			/// @param[in] global_index *global* vertex index
 			/// @return RowVectorNd
 			virtual RowVectorNd point(const int global_index) const = 0;
+			/// @brief Set the point
+			///
+			/// @param[in] global_index *global* vertex index
+			/// @param[in] p value
+			virtual void set_point(const int global_index, const RowVectorNd &p) = 0;
+
 			/// @brief edge barycenter
 			///
 			/// @param[in] e *global* edge index
@@ -542,7 +548,7 @@ namespace polyfem
 			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$.
 			/// @param[in] A Multiplicative matrix component of transformation
 			/// @param[in] b Additive translation component of transformation
-			virtual void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) = 0;
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
 			/// @brief loads a mesh from the path

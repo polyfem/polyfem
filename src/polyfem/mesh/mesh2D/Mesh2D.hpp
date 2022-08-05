@@ -35,7 +35,6 @@ namespace polyfem
 			virtual RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const = 0;
 			virtual RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const = 0;
 
-			virtual void set_point(const int global_index, const RowVectorNd &p) = 0;
 			RowVectorNd cell_barycenter(const int index) const override
 			{
 				assert(false);
@@ -61,8 +60,6 @@ namespace polyfem
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
-
-			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override;
 		};
 	} // namespace mesh
 } // namespace polyfem

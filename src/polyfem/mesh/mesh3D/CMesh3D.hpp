@@ -64,6 +64,7 @@ namespace polyfem
 
 			RowVectorNd kernel(const int cell_id) const override;
 			RowVectorNd point(const int vertex_id) const override;
+			void set_point(const int global_index, const RowVectorNd &p) override;
 			RowVectorNd edge_barycenter(const int e) const override;
 			RowVectorNd face_barycenter(const int f) const override;
 			RowVectorNd cell_barycenter(const int c) const override;
@@ -118,9 +119,7 @@ namespace polyfem
 			}
 			static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 
-			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
-
-			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b) override { throw std::runtime_error("Not implemented"); }
+			void append(const Mesh &mesh) override;
 
 		protected:
 			bool load(const std::string &path) override;
