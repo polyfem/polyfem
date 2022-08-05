@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
 
 	bool fallback_solver = false;
-	command_line.add_flag("--enable_overwire_solver", fallback_solver, "If solver in json is not present, fallsback to default");
+	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
 
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
