@@ -121,7 +121,7 @@ namespace polyfem
 		{
 			spdlog::set_level(log_level);
 			logger().set_level(log_level);
-			IPC_LOG(set_level(log_level));
+			ipc::logger().set_level(log_level);
 		}
 
 		/// gets the output log as json
