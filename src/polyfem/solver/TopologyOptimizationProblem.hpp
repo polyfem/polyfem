@@ -9,7 +9,7 @@ namespace polyfem
 	public:
 		TopologyOptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
-		double target_value(const TVector &x) { return j->energy(state); }
+		double target_value(const TVector &x) { return j->energy(state) * target_weight; }
 		double mass_value(const TVector &x);
 		double smooth_value(const TVector &x);
 
@@ -34,12 +34,22 @@ namespace polyfem
 		{
 			TVector min(x.size());
 			min.setConstant(min_density);
+			for (int i = 0; i < min.size(); i++)
+			{
+				if (x(i) - min(i) > max_change)
+					min(i) = x(i) - max_change;
+			}
 			return min; 
 		}
 		TVector get_upper_bound(const TVector& x) 
 		{
 			TVector max(x.size());
 			max.setConstant(max_density);
+			for (int i = 0; i < max.size(); i++)
+			{
+				if (max(i) - x(i) > max_change)
+					max(i) = x(i) + max_change;
+			}
 			return max; 
 		}
 
@@ -50,10 +60,16 @@ namespace polyfem
 
 		TVector apply_filter(const TVector &x);
 		TVector apply_filter_to_grad(const TVector &x, const TVector &grad);
+
+		int n_inequality_constraints() override;
+		double inequality_constraint_val(const TVector &x, const int index) override;
+		TVector inequality_constraint_grad(const TVector &x, const int index) override;
 		
 	private:
 		double min_density = 0;
 		double max_density = 1;
+
+		double target_weight = 1;
 
 		bool has_mass_constraint;
 		json mass_params;

@@ -5,6 +5,7 @@
 // #include "MaterialProblem.hpp"
 // #include "InitialConditionProblem.hpp"
 #include "LBFGSSolver.hpp"
+#include "mmaSolver.hpp"
 #include "GradientDescentSolver.hpp"
 #include <polyfem/utils/SplineParam.hpp>
 
@@ -15,10 +16,11 @@ namespace polyfem
 	double cross_elastic(double x, double y)
 	{
 		x = abs(x);
+		y = abs(y);
 
-		if (x < 0.1)
-			return 0.8;
-		return 0.2;
+		if (y < 0.1)
+			return 0.2;
+		return 0.8;
 	}
 
 	template <typename ProblemType>
@@ -33,6 +35,11 @@ namespace polyfem
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
 			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
+				solver_params);
+		}
+		else if (name == "mma" || name == "MMA")
+		{
+			return std::make_shared<cppoptlib::mmaSolver<ProblemType>>(
 				solver_params);
 		}
 		else

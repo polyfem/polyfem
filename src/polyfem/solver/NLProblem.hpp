@@ -44,6 +44,10 @@ namespace polyfem
 			double max_step_size(const TVector &x0, const TVector &x1);
 			bool is_intersection_free(const TVector &x);
 
+			int n_inequality_constraints() { return 0; }
+			double inequality_constraint_val(const TVector &x, const int index) { assert(false); return std::nan(""); }
+			TVector inequality_constraint_grad(const TVector &x, const int index) { assert(false); return TVector(); }
+
 			TVector get_lower_bound(const TVector& x) 
 			{
 				TVector min(x.size());

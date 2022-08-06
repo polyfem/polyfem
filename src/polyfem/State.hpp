@@ -1061,6 +1061,8 @@ namespace polyfem
 		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 
+		double min_solid_density = 0;
+
 	private:
 		/// splits the solution in solution and pressure for mixed problems
 		void sol_to_pressure();

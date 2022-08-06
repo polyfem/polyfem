@@ -917,7 +917,7 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     // assemble stiffness
     {
         Density solid_density;
-        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_;
+        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_.array() - min_solid_density;
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
 
@@ -1074,7 +1074,7 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     // assemble stiffness
     {
         Density solid_density;
-        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_;
+        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_.array() - min_solid_density;
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
 
@@ -1151,14 +1151,14 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     else
         logger().debug("Solver error: {}", error);
 
-    w.conservativeResize(n_bases * dim, w.cols());
-
     for (int id = 0; id < w.cols(); id++)
     {       
-        sol = w.col(id);
-        pressure.setZero(n_pressure_bases, 1);
+        sol = w.block(0, id, n_bases * dim, 1);
+        pressure = w.block(n_bases * dim, id, n_pressure_bases, 1);
         save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
     }
+
+    w.conservativeResize(n_bases * dim, w.cols());
 
     // compute homogenized permeability
     K_H.setZero(dim, dim);
@@ -1203,7 +1203,7 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
 
     auto adjoint_res = A * adjoint - rhs;
 
-    const auto adjoint_error = res.norm();
+    const auto adjoint_error = adjoint_res.norm();
     if (std::isnan(error) || error > 1e-4)
         logger().error("Solver error: {}", error);
     else

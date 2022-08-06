@@ -35,6 +35,7 @@ namespace cppoptlib
 		{
 			auto criteria = this->criteria();
 			criteria.fDelta = solver_params["f_delta"];
+			criteria.xDelta = solver_params["x_delta"];
 			criteria.gradNorm = solver_params["grad_norm"];
 			criteria.iterations = solver_params["max_iterations"];
 
@@ -43,6 +44,8 @@ namespace cppoptlib
 			use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
 			solver_info_log = solver_params["solver_info_log"];
 			this->setStopCriteria(criteria);
+
+			solver_info = json({});
 
 			setLineSearch("armijo");
 		}
@@ -103,6 +106,7 @@ namespace cppoptlib
 			}
 			this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 			this->m_current.fDelta = old_energy;
+			this->m_current.xDelta = 1;
 
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 			if (this->m_status != Status::Continue)
@@ -182,16 +186,16 @@ namespace cppoptlib
 					continue;
 				}
 
-				if (grad_norm != 0 && delta_x.dot(grad) > 0)
-				{
-					increase_descent_strategy();
-					polyfem::logger().log(
-						spdlog::level::debug,
-						"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-						name(), delta_x.dot(grad), descent_strategy_name());
-					this->m_status = Status::Continue;
-					continue;
-				}
+				// if (grad_norm != 0 && delta_x.dot(grad) > 0)
+				// {
+				// 	increase_descent_strategy();
+				// 	polyfem::logger().log(
+				// 		spdlog::level::debug,
+				// 		"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+				// 		name(), delta_x.dot(grad), descent_strategy_name());
+				// 	this->m_status = Status::Continue;
+				// 	continue;
+				// }
 
 				const double delta_x_norm = delta_x.norm();
 				logger().debug("descent direction norm: {}", delta_x_norm);
@@ -230,7 +234,8 @@ namespace cppoptlib
 				// ---------------
 
 				// Perform a line_search to compute step scale
-				double rate = line_search(x, delta_x, objFunc);
+				// double rate = line_search(x, delta_x, objFunc);
+				double rate = 1;
 				if (std::isnan(rate))
 				{
 					// descent_strategy set by line_search upon failure
@@ -242,6 +247,9 @@ namespace cppoptlib
 				auto old_x = x;
 				x = objFunc.force_inequality_constraint(old_x, rate * delta_x);
 				objFunc.smoothing(old_x, x);
+
+				this->m_current.xDelta = (x - old_x).norm();
+				objFunc.solution_changed(x);
 
 				// -----------
 				// Post update

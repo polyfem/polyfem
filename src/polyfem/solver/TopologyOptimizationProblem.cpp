@@ -11,7 +11,7 @@ namespace polyfem
     TopologyOptimizationProblem::TopologyOptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
     {
         optimization_name = "topology";
-        state.args["output"]["paraview"]["options"]["material"] = true;
+        state.args["output"]["optimization"]["topology"] = true;
 
 		// volume constraint
 		for (const auto &param : opt_params["parameters"])
@@ -23,7 +23,19 @@ namespace polyfem
 				{
 					min_density = param["bound"][0];
 					max_density = param["bound"][1];
+					state.min_solid_density = min_density;
 				}
+				break;
+			}
+		}
+
+		// target functional
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "homogenized_permeability" || param["type"] == "homogenized_stiffness")
+			{
+				if (param.contains("weight"))
+					target_weight = param["weight"];
 				break;
 			}
 		}
@@ -171,7 +183,7 @@ namespace polyfem
 
 	void TopologyOptimizationProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		gradv = apply_filter_to_grad(x, j->gradient(state, "topology"));
+		gradv = apply_filter_to_grad(x, j->gradient(state, "topology")) * target_weight;
 	}
 
 	void TopologyOptimizationProblem::mass_gradient(const TVector &x, TVector &gradv)
@@ -248,7 +260,7 @@ namespace polyfem
 			return;
 
 		state.assembler.update_lame_params_density(apply_filter(newX));
-		solve_pde(newX);
+		// solve_pde(newX);
 
 		cur_x = newX;
 		cur_val = std::nan("");
@@ -327,6 +339,57 @@ namespace polyfem
 			TVector grad_ = (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
 			return grad_;
 		}
+		return grad;
+	}
+
+	int TopologyOptimizationProblem::n_inequality_constraints()
+	{
+		return 2; // mass constraints
+	}
+	double TopologyOptimizationProblem::inequality_constraint_val(const cppoptlib::Problem<double>::TVector &x, const int index)
+	{
+		double val = 0;
+		IntegrableFunctional j;
+		j.set_name("Mass");
+		j.set_transient_integral_type("final");
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setOnes(u.rows(), 1);
+			val *= params["density"].get<double>();
+		});
+		val = state.J(j);
+
+		logger().debug("Current mass: {}", val);
+
+		if (index == 0)
+			val = val - mass_params["hard_bound"][1].get<double>();
+		else if (index == 1)
+			val = mass_params["hard_bound"][0].get<double>() - val;
+		else
+			assert(false);
+
+		return val;
+	}
+	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::inequality_constraint_grad(const cppoptlib::Problem<double>::TVector &x, const int index)
+	{
+		IntegrableFunctional j;
+		j.set_name("Mass");
+		j.set_transient_integral_type("final");
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setOnes(u.rows(), 1);
+			val *= params["density"].get<double>();
+		});
+		TVector grad = state.integral_gradient(j, "topology");
+		if (index == 0)
+		{
+
+		}
+		else if (index == 1)
+		{
+			grad *= -1;
+		}
+		else
+			assert(false);
+
 		return grad;
 	}
 }

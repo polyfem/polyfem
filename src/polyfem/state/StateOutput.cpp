@@ -1093,7 +1093,9 @@ namespace polyfem
 		if (rhs.size() <= 0)
 		{
 			logger().error("Assemble the rhs first!");
-			return;
+			// return;
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			rhs.setZero(n_bases * actual_dim, 1);
 		}
 		if (sol.size() <= 0)
 		{
@@ -1204,6 +1206,7 @@ namespace polyfem
 		Eigen::MatrixXd fun, exact_fun, err;
 		const bool boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		const bool material_params = args["output"]["paraview"]["options"]["material"];
+		const bool topology_params = args["output"]["optimization"]["topology"];
 		const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		const bool sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
 		const bool export_velocity = args["output"]["paraview"]["options"]["velocity"];
@@ -1410,7 +1413,7 @@ namespace polyfem
 			else
 				solution_frames.back().scalar_value = vals;
 
-			if (solve_export_to_file)
+			if (solve_export_to_file && !assembler.is_fluid(formulation()))
 			{
 				compute_tensor_value(points.rows(), sol, tvals, use_sampler, boundary_only);
 				for (int i = 0; i < tvals.cols(); ++i)
@@ -1428,7 +1431,7 @@ namespace polyfem
 				}
 			}
 
-			if (!args["space"]["advanced"]["use_spline"])
+			if (!args["space"]["advanced"]["use_spline"] && !assembler.is_fluid(formulation()))
 			{
 				average_grad_based_function(points.rows(), sol, vals, tvals, use_sampler, boundary_only);
 				if (obstacle.n_vertices() > 0)
@@ -1449,7 +1452,7 @@ namespace polyfem
 			}
 		}
 
-		if (material_params)
+		if (material_params && !assembler.is_fluid(formulation()))
 		{
 			const LameParameters &params = assembler.lame_params();
 
@@ -1560,6 +1563,82 @@ namespace polyfem
 			writer.add_field("E", Es);
 			writer.add_field("nu", nus);
 			writer.add_field("rho", rhos);
+		}
+
+		if (topology_params)
+		{
+			const LameParameters &params = assembler.lame_params();
+
+			Eigen::MatrixXd rhos(points.rows(), 1);
+
+			Eigen::MatrixXd local_pts;
+			Eigen::MatrixXi vis_faces_poly;
+
+			const auto &gbases = iso_parametric() ? bases : geom_bases;
+
+			int index = 0;
+			const auto &sampler = ref_element_sampler;
+			for (int e = 0; e < int(bases.size()); ++e)
+			{
+				const ElementBases &gbs = gbases[e];
+				const ElementBases &bs = bases[e];
+
+				if (use_sampler)
+				{
+					if (mesh->is_simplex(e))
+						local_pts = sampler.simplex_points();
+					else if (mesh->is_cube(e))
+						local_pts = sampler.cube_points();
+					else
+					{
+						if (mesh->is_volume())
+							sampler.sample_polyhedron(polys_3d[e].first, polys_3d[e].second, local_pts, vis_faces_poly);
+						else
+							sampler.sample_polygon(polys[e], local_pts, vis_faces_poly);
+					}
+				}
+				else
+				{
+					if (mesh->is_volume())
+					{
+						if (mesh->is_simplex(e))
+							autogen::p_nodes_3d(disc_orders(e), local_pts);
+						else if (mesh->is_cube(e))
+							autogen::q_nodes_3d(disc_orders(e), local_pts);
+						else
+							continue;
+					}
+					else
+					{
+						if (mesh->is_simplex(e))
+							autogen::p_nodes_2d(disc_orders(e), local_pts);
+						else if (mesh->is_cube(e))
+							autogen::q_nodes_2d(disc_orders(e), local_pts);
+						else
+							continue;
+					}
+				}
+
+				ElementAssemblyValues vals;
+				vals.compute(e, mesh->is_volume(), local_pts, bs, gbs);
+
+				for (int j = 0; j < vals.val.rows(); ++j)
+				{
+					rhos(index) = params.density(e);
+
+					++index;
+				}
+			}
+
+			assert(index == points.rows());
+
+			if (obstacle.n_vertices() > 0)
+			{
+				rhos.conservativeResize(rhos.size() + obstacle.n_vertices(), 1);
+				rhos.bottomRows(obstacle.n_vertices()).setZero();
+			}
+
+			writer.add_field("topology", rhos);
 		}
 
 		if (body_ids)

@@ -42,6 +42,10 @@ namespace polyfem
 
 		double heuristic_max_step(const TVector &dx) { assert (opt_nonlinear_params.contains("max_step_size")); return opt_nonlinear_params["max_step_size"]; };
 
+		virtual int n_inequality_constraints() { return 0; }
+		virtual double inequality_constraint_val(const TVector &x, const int index) { assert(false); return std::nan(""); }
+		virtual TVector inequality_constraint_grad(const TVector &x, const int index) { assert(false); return TVector(); }
+
 	protected:
 		State &state;
 		std::string optimization_name = "";
@@ -69,5 +73,7 @@ namespace polyfem
 		// store value and grad of current solution
 		double cur_val;
 		TVector cur_x, cur_grad;
+
+		double max_change;
 	};
 } // namespace polyfem
