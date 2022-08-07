@@ -1306,6 +1306,12 @@ namespace polyfem
 					obstacle.set_zero(interp_vel); // TODO
 				}
 
+				if (solve_export_to_file && interp_vel.cols() == 2)
+				{
+					interp_vel.conservativeResize(interp_vel.rows(), 3);
+					interp_vel.col(2).setZero();
+				}
+
 				if (solve_export_to_file)
 				{
 					writer.add_field("velocity", interp_vel);
@@ -1325,6 +1331,12 @@ namespace polyfem
 				{
 					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
 					obstacle.set_zero(interp_acc); // TODO
+				}
+
+				if (solve_export_to_file && interp_acc.cols() == 2)
+				{
+					interp_acc.conservativeResize(interp_acc.rows(), 3);
+					interp_acc.col(2).setZero();
 				}
 
 				if (solve_export_to_file)
