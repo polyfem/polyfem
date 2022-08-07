@@ -773,7 +773,7 @@ namespace polyfem
 		Eigen::MatrixXd C_H;
 		state.homogenize_weighted_linear_elasticity(C_H);
 
-		return -C_H(2, 2);
+		return -C_H(1, 1);
 	}
 
 	Eigen::VectorXd HomogenizedStiffnessFunctional::gradient(State &state, const std::string &type)
@@ -782,7 +782,7 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		state.homogenize_weighted_linear_elasticity_grad(C_H, grad);
 
-		return -grad.col(2);
+		return -grad.col(1);
 	}
 
 	double HomogenizedPermeabilityFunctional::energy(State &state)
@@ -790,7 +790,7 @@ namespace polyfem
 		Eigen::MatrixXd C_H;
 		state.homogenize_weighted_stokes(C_H);
 
-		return -C_H(0, 0);
+		return -C_H(0, 1);
 	}
 
 	Eigen::VectorXd HomogenizedPermeabilityFunctional::gradient(State &state, const std::string &type)
@@ -799,7 +799,7 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		state.homogenize_weighted_stokes_grad(C_H, grad);
 
-		return -grad.col(0);
+		return -grad.col(1);
 	}
 
 	double ComplianceFunctional::energy(State &state)

@@ -83,7 +83,9 @@ namespace cppoptlib
 			for (int i = 0; i < m; i++)
 			{
 				g(i) = objFunc.inequality_constraint_val(x, i);
-				dg.block(i * x.size(), 0, x.size(), 1) = objFunc.inequality_constraint_grad(x, i);
+				auto gradg = objFunc.inequality_constraint_grad(x, i);
+				for (int j = 0; j < gradg.size(); j++)
+					dg(j * m + i) = gradg(j);
 			}
 			auto y = x;
 			mma->Update(y.data(), grad.data(), g.data(), dg.data(), lower_bound.data(), upper_bound.data());

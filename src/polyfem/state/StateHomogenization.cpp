@@ -1013,39 +1013,39 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     for (int d = 0; d < min.size(); d++)
         volume *= (max(d) - min(d));
 
-    // for (int e = 0; e < bases.size(); e++)
-    // {
-    //     ElementAssemblyValues vals;
-    //     // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-    //     ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-    //     const Quadrature &quadrature = vals.quadrature;
-
-    //     std::vector<Eigen::MatrixXd> values(quadrature.weights.size(), Eigen::MatrixXd::Zero(dim, dim));
-    //     const int n_loc_bases = vals.basis_values.size();
-	// 	for (int l = 0; l < n_loc_bases; ++l)
-	// 	{
-	// 		const auto &val = vals.basis_values[l];
-    //         for (size_t ii = 0; ii < val.global.size(); ++ii)
-    //             for (int j = 0; j < dim; j++)
-    //                 for (int i = 0; i < dim; i++)
-    //                     for (int q = 0; q < values.size(); q++)
-    //                         values[q](j, i) += val.global[ii].val * w(val.global[ii].index * dim + j, i) * val.val(q);
-    //     }
-
-    //     for (int q = 0; q < values.size(); q++)
-    //         for (int j = 0; j < dim; j++)
-    //             for (int i = 0; i < dim; i++)
-    //                 K_H(i, j) += values[q](i, j) * vals.det(q) * quadrature.weights(q);
-    // }
-
-    auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
-    for (int i = 0; i < dim; i++)
+    for (int e = 0; e < bases.size(); e++)
     {
-        Eigen::VectorXd tmp = velocity_block * w.block(0, i, n_bases * dim, 1);
-        for (int j = 0; j < dim; j++)
-            K_H(i, j) = (tmp.array() * w.block(0, j, n_bases * dim, 1).array()).sum();
+        ElementAssemblyValues vals;
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+        const Quadrature &quadrature = vals.quadrature;
+
+        std::vector<Eigen::MatrixXd> values(quadrature.weights.size(), Eigen::MatrixXd::Zero(dim, dim));
+        const int n_loc_bases = vals.basis_values.size();
+		for (int l = 0; l < n_loc_bases; ++l)
+		{
+			const auto &val = vals.basis_values[l];
+            for (size_t ii = 0; ii < val.global.size(); ++ii)
+                for (int j = 0; j < dim; j++)
+                    for (int i = 0; i < dim; i++)
+                        for (int q = 0; q < values.size(); q++)
+                            values[q](j, i) += val.global[ii].val * w(val.global[ii].index * dim + j, i) * val.val(q);
+        }
+
+        for (int q = 0; q < values.size(); q++)
+            for (int j = 0; j < dim; j++)
+                for (int i = 0; i < dim; i++)
+                    K_H(i, j) += values[q](i, j) * vals.det(q) * quadrature.weights(q);
     }
+
+    // auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
+    // for (int i = 0; i < dim; i++)
+    // {
+    //     Eigen::VectorXd tmp = velocity_block * w.block(0, i, n_bases * dim, 1);
+    //     for (int j = 0; j < dim; j++)
+    //         K_H(i, j) = (tmp.array() * w.block(0, j, n_bases * dim, 1).array()).sum();
+    // }
 
     K_H /= volume;
 }
@@ -1169,21 +1169,59 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     for (int d = 0; d < min.size(); d++)
         volume *= (max(d) - min(d));
 
-    auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
-    for (int i = 0; i < dim; i++)
+    // auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
+    for (int e = 0; e < bases.size(); e++)
     {
-        Eigen::VectorXd tmp = velocity_block * w.col(i);
-        for (int j = 0; j < dim; j++)
-            K_H(i, j) = (tmp.array() * w.col(j).array()).sum();
+        ElementAssemblyValues vals;
+        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+        const Quadrature &quadrature = vals.quadrature;
+
+        std::vector<Eigen::MatrixXd> values(quadrature.weights.size(), Eigen::MatrixXd::Zero(dim, dim));
+        const int n_loc_bases = vals.basis_values.size();
+		for (int l = 0; l < n_loc_bases; ++l)
+		{
+			const auto &val = vals.basis_values[l];
+            for (size_t ii = 0; ii < val.global.size(); ++ii)
+                for (int j = 0; j < dim; j++)
+                    for (int i = 0; i < dim; i++)
+                        for (int q = 0; q < values.size(); q++)
+                            values[q](j, i) += val.global[ii].val * w(val.global[ii].index * dim + j, i) * val.val(q);
+        }
+
+        for (int q = 0; q < values.size(); q++)
+            for (int j = 0; j < dim; j++)
+                for (int i = 0; i < dim; i++)
+                    K_H(i, j) += values[q](i, j) * vals.det(q) * quadrature.weights(q);
     }
 
     K_H /= volume;
 
     // J = avg(K_ii), assemble -grad_w J
     rhs.setZero(stiffness.rows(), dim);
-    for (int d = 0; d < dim; d++)
+    // for (int d = 0; d < dim; d++)
+    // {
+    //     rhs.block(0, d, w.rows(), 1) = -2 * velocity_block * w.col(d);
+    // }
     {
-        rhs.block(0, d, w.rows(), 1) = -2 * velocity_block * w.col(d);
+        for (int e = 0; e < bases.size(); e++)
+        {
+            ElementAssemblyValues vals;
+            // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+            ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+            const Quadrature &quadrature = vals.quadrature;
+
+            for (const auto &v : vals.basis_values)
+            {
+                for (const auto &g : v.global)
+                {
+                    for (int d1 = 0; d1 < dim; d1++)
+                        rhs(g.index * dim + d1, d1) -= g.val * (quadrature.weights.array() * vals.det.array() * v.val.array()).sum();
+                }
+            }
+        }
     }
 
     // adjoint solve
@@ -1212,8 +1250,9 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     adjoint.conservativeResize(n_bases * dim, dim);
     
     // compute grad using adjoint
-    grad.setZero(bases.size(), dim);
-    for (int k = 0; k < dim; k++)
+    grad.setZero(bases.size(), dim * dim);
+    for (int k1 = 0; k1 < dim; k1++)
+    for (int k2 = 0; k2 < dim; k2++)
     {
         for (int e = 0; e < bases.size(); e++)
         {
@@ -1237,16 +1276,16 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
                     for (int ii = 0; ii < v.global.size(); ii++)
                         for (int d = 0; d < dim; d++)
                         {
-                            grad_sol.row(d) += v.grad_t_m.row(q) * v.global[ii].val * w(v.global[ii].index * dim + d, k);
-                            grad_adjoint.row(d) += v.grad_t_m.row(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k);
+                            grad_sol.row(d) += v.grad_t_m.row(q) * v.global[ii].val * w(v.global[ii].index * dim + d, k1);
+                            grad_adjoint.row(d) += v.grad_t_m.row(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k2);
 
-                            val_sol(d) += v.val(q) * v.global[ii].val * w(v.global[ii].index * dim + d, k);
-                            val_adjoint(d) += v.val(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k);
+                            val_sol(d) += v.val(q) * v.global[ii].val * w(v.global[ii].index * dim + d, k1);
+                            val_adjoint(d) += v.val(q) * v.global[ii].val * adjoint(v.global[ii].index * dim + d, k2);
                         }
                 
                 const double value1 = (grad_sol.array() * grad_adjoint.array()).sum() - (val_sol.array() * val_adjoint.array()).sum() / args["materials"]["solid_permeability"].get<double>();
-                const double value2 = (grad_sol.array() * grad_sol.array()).sum() - (val_sol.array() * val_sol.array()).sum() / args["materials"]["solid_permeability"].get<double>();
-                grad(e, k) += (value1 + value2) * quadrature.weights(q) * vals.det(q);
+                const double value2 = 0; // (grad_sol.array() * grad_sol.array()).sum() - (val_sol.array() * val_sol.array()).sum() / args["materials"]["solid_permeability"].get<double>();
+                grad(e, k1 * dim + k2) += (value1 + value2) * quadrature.weights(q) * vals.det(q);
             }
         }
     }

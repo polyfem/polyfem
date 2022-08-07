@@ -271,7 +271,8 @@ namespace polyfem
 				},
 
 				"optimization": {
-					"save_frequency": 1
+					"save_frequency": 1,
+					"topology": false
 				},
 
 				"data" : {

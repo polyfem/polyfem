@@ -72,14 +72,26 @@ namespace polyfem
 				state.mesh->cell_barycenters(barycenters);
 			else
 				state.mesh->face_barycenters(barycenters);
-			// TODO: too slow
+
+			RowVectorNd min, max;
+			state.mesh->bounding_box(min, max);
 			for (int i = 0; i < state.mesh->n_faces(); i++)
 			{
 				auto center_i = barycenters.row(i);
 				for (int j = 0; j <= i; j++)
 				{
 					auto center_j = barycenters.row(j);
-					const double dist = (center_i - center_j).norm();
+					double dist = 0;
+					// only for periodic homogenization
+					// {
+					// 	for (int d = 0; d < state.mesh->dimension(); d++)
+					// 	{
+					// 		double diff = std::abs(center_j(d) - center_i(d));
+					// 		dist += pow(std::min(diff, std::abs(diff - (max(d) - min(d)))), 2);
+					// 	}
+					// 	dist = sqrt(dist);
+					// }
+					dist = (center_i - center_j).norm();
 					if (dist < radius)
 					{
 						tt_adjacency_list.emplace_back(i, j, radius - dist);
@@ -358,7 +370,7 @@ namespace polyfem
 		});
 		val = state.J(j);
 
-		logger().debug("Current mass: {}", val);
+		logger().debug("Current mass: {}, min {}, max {}", val, mass_params["hard_bound"][0].get<double>(), mass_params["hard_bound"][1].get<double>());
 
 		if (index == 0)
 			val = val - mass_params["hard_bound"][1].get<double>();

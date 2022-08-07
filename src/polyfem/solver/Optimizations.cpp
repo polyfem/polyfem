@@ -13,14 +13,16 @@
 
 namespace polyfem
 {
-	double cross_elastic(double x, double y)
+	double cross(double x, double y)
 	{
 		x = abs(x);
 		y = abs(y);
+		if (x > y)
+			std::swap(x, y);
 
-		if (y < 0.1)
-			return 0.2;
-		return 0.8;
+		if (x < 0.1)
+			return 0.9;
+		return 0.1;
 	}
 
 	template <typename ProblemType>
@@ -920,7 +922,7 @@ namespace polyfem
 						state.mesh->face_barycenters(barycenters);
 					for (int e = 0; e < state.bases.size(); e++)
 					{
-						density_mat(e) = cross_elastic(barycenters(e,0), barycenters(e,1));
+						density_mat(e) = cross(barycenters(e,0), barycenters(e,1));
 					}
 					// density_mat.setOnes();
 				}

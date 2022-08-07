@@ -366,7 +366,6 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
 
     Eigen::MatrixXd grad;
     state.homogenize_weighted_stokes_grad(homogenized_tensor, grad);
-    Eigen::VectorXd trace_grad = grad.rowwise().sum();
 
     // finite difference
     Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
@@ -383,9 +382,12 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
     state.assembler.update_lame_params_density(density_mat - theta * dt);
     state.homogenize_weighted_stokes(homogenized_tensor2);
 
-    const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / dt / 2;
-    const double analytic = (trace_grad.array() * theta.array()).sum();
+    const auto finite_diff = (homogenized_tensor1 - homogenized_tensor2) / dt / 2;
+    Eigen::MatrixXd analytic(2, 2);
+    for (int d1 = 0; d1 < state.mesh->dimension(); d1++)
+        for (int d2 = 0; d2 < state.mesh->dimension(); d2++)
+            analytic(d1, d2) = grad.col(d1 * state.mesh->dimension() + d2).dot(Eigen::VectorXd(theta));
 
     std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
-    REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);
+    REQUIRE(fabs((analytic - finite_diff).norm() / std::max(finite_diff.norm(), analytic.norm())) < 1e-3);
 }
