@@ -42,22 +42,14 @@ namespace polyfem
 
 		// mass constraint
 		has_mass_constraint = false;
-		for (const auto &param : opt_params["functionals"])
+		for (const auto &param : opt_params["constraints"])
 		{
-			if (param["type"] == "mass_constraint")
+			if (param["type"] == "mass")
 			{
-				mass_params = param;
 				has_mass_constraint = true;
-				break;
+				min_mass = param["bound"][0];
+				max_mass = param["bound"][1];
 			}
-		}
-
-		if (has_mass_constraint)
-		{
-			j_mass = CompositeFunctional::create("Mass");
-			auto &func_mass = *dynamic_cast<MassFunctional *>(j_mass.get());
-			func_mass.set_max_mass(mass_params["soft_bound"][1]);
-			func_mass.set_min_mass(mass_params["soft_bound"][0]);
 		}
 
 		// density filter
@@ -109,86 +101,84 @@ namespace polyfem
 		}
 
 		// smooth constraint
-		has_smooth_constraint = false;
-		for (const auto &param : opt_params["functionals"])
-		{
-			if (param["type"] == "smooth_constraint")
-			{
-				smooth_params = param;
-				has_smooth_constraint = true;
-				break;
-			}
-		}
+		// has_smooth_constraint = false;
+		// for (const auto &param : opt_params["functionals"])
+		// {
+		// 	if (param["type"] == "smooth_constraint")
+		// 	{
+		// 		smooth_params = param;
+		// 		has_smooth_constraint = true;
+		// 		break;
+		// 	}
+		// }
 		
-		if (has_smooth_constraint)
-		{
-			assert(!state.mesh->is_volume());
-			std::vector<Eigen::Triplet<bool>> tt_adjacency_list;
-			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
-			for (int i = 0; i < state.mesh->n_faces(); ++i)
-			{
-				auto idx = mesh2d.get_index_from_face(i);
-				assert(idx.face == i);
-				{
-					auto adjacent_idx = mesh2d.switch_face(idx);
-					if (adjacent_idx.face != -1)
-						tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
-				}
-				idx = mesh2d.next_around_face(idx);
-				assert(idx.face == i);
-				{
-					auto adjacent_idx = mesh2d.switch_face(idx);
-					if (adjacent_idx.face != -1)
-						tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
-				}
-				idx = mesh2d.next_around_face(idx);
-				assert(idx.face == i);
-				{
-					auto adjacent_idx = mesh2d.switch_face(idx);
-					if (adjacent_idx.face != -1)
-						tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
-				}
-			}
-			tt_adjacency.resize(state.mesh->n_faces(), state.mesh->n_faces());
-			tt_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
-		}
+		// if (has_smooth_constraint)
+		// {
+		// 	assert(!state.mesh->is_volume());
+		// 	std::vector<Eigen::Triplet<bool>> tt_adjacency_list;
+		// 	const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
+		// 	for (int i = 0; i < state.mesh->n_faces(); ++i)
+		// 	{
+		// 		auto idx = mesh2d.get_index_from_face(i);
+		// 		assert(idx.face == i);
+		// 		{
+		// 			auto adjacent_idx = mesh2d.switch_face(idx);
+		// 			if (adjacent_idx.face != -1)
+		// 				tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
+		// 		}
+		// 		idx = mesh2d.next_around_face(idx);
+		// 		assert(idx.face == i);
+		// 		{
+		// 			auto adjacent_idx = mesh2d.switch_face(idx);
+		// 			if (adjacent_idx.face != -1)
+		// 				tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
+		// 		}
+		// 		idx = mesh2d.next_around_face(idx);
+		// 		assert(idx.face == i);
+		// 		{
+		// 			auto adjacent_idx = mesh2d.switch_face(idx);
+		// 			if (adjacent_idx.face != -1)
+		// 				tt_adjacency_list.emplace_back(idx.face, adjacent_idx.face, true);
+		// 		}
+		// 	}
+		// 	tt_adjacency.resize(state.mesh->n_faces(), state.mesh->n_faces());
+		// 	tt_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
+		// }
     }
 
-	double TopologyOptimizationProblem::mass_value(const TVector &x)
-	{
-		if (has_mass_constraint)
-			return j_mass->energy(state) * mass_params["weight"].get<double>();
-		else
-			return 0.;
-	}
+	// double TopologyOptimizationProblem::mass_value(const TVector &x)
+	// {
+	// 	if (has_mass_constraint)
+	// 		return j_mass->energy(state) * mass_params["weight"].get<double>();
+	// 	else
+	// 		return 0.;
+	// }
 
-	double TopologyOptimizationProblem::smooth_value(const TVector &x)
-	{
-        if (!has_smooth_constraint)
-			return 0.;
+	// double TopologyOptimizationProblem::smooth_value(const TVector &x)
+	// {
+    //     if (!has_smooth_constraint)
+	// 		return 0.;
 
-		const auto &density = state.assembler.lame_params().density_mat_;
+	// 	const auto &density = state.assembler.lame_params().density_mat_;
 
-		double value = 0;
-		for (int k = 0; k < tt_adjacency.outerSize(); ++k)
-			for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
-			{
-				value += pow((1 - density(it.row()) / density(it.col())), 2);
-			}
-		value /= 3 * tt_adjacency.rows();
-		return smooth_params["weight"].get<double>() * value;
-	}
+	// 	double value = 0;
+	// 	for (int k = 0; k < tt_adjacency.outerSize(); ++k)
+	// 		for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
+	// 		{
+	// 			value += pow((1 - density(it.row()) / density(it.col())), 2);
+	// 		}
+	// 	value /= 3 * tt_adjacency.rows();
+	// 	return smooth_params["weight"].get<double>() * value;
+	// }
 
 	double TopologyOptimizationProblem::value(const TVector &x)
 	{
 		if (std::isnan(cur_val))
 		{
-			double target_val, mass_val, smooth_val;
+			double target_val;
 			target_val = target_value(x);
-			mass_val = mass_value(x);
-			smooth_val = smooth_value(x);
-			logger().debug("target = {}, vol = {}, smooth = {}", target_val, mass_val, smooth_val);
-			cur_val = target_val + mass_val + smooth_val;
+			logger().debug("target = {}", target_val);
+			cur_val = target_val;
 		}
 		return cur_val;
 	}
@@ -198,44 +188,42 @@ namespace polyfem
 		gradv = apply_filter_to_grad(x, j->gradient(state, "topology")) * target_weight;
 	}
 
-	void TopologyOptimizationProblem::mass_gradient(const TVector &x, TVector &gradv)
-	{
-		gradv.setZero(x.size());
-		if (!has_mass_constraint)
-			return;
+	// void TopologyOptimizationProblem::mass_gradient(const TVector &x, TVector &gradv)
+	// {
+	// 	gradv.setZero(x.size());
+	// 	if (!has_mass_constraint)
+	// 		return;
 
-		gradv = apply_filter_to_grad(x, j_mass->gradient(state, "topology") * mass_params["weight"]);
-	}
+	// 	gradv = apply_filter_to_grad(x, j_mass->gradient(state, "topology") * mass_params["weight"]);
+	// }
 
-	void TopologyOptimizationProblem::smooth_gradient(const TVector &x, TVector &gradv)
-	{
-		gradv.setZero(x.size());
-		if (!has_smooth_constraint)
-			return;
+	// void TopologyOptimizationProblem::smooth_gradient(const TVector &x, TVector &gradv)
+	// {
+	// 	gradv.setZero(x.size());
+	// 	if (!has_smooth_constraint)
+	// 		return;
 
-		const auto &density = state.assembler.lame_params().density_mat_;
-		for (int k = 0; k < tt_adjacency.outerSize(); ++k)
-			for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
-			{
-				gradv(it.row()) += 2 * (density(it.row()) / density(it.col()) - 1) / density(it.col());
-				gradv(it.col()) += 2 * (1 - density(it.row()) / density(it.col())) * density(it.row()) / density(it.col()) / density(it.col());
-			}
+	// 	const auto &density = state.assembler.lame_params().density_mat_;
+	// 	for (int k = 0; k < tt_adjacency.outerSize(); ++k)
+	// 		for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
+	// 		{
+	// 			gradv(it.row()) += 2 * (density(it.row()) / density(it.col()) - 1) / density(it.col());
+	// 			gradv(it.col()) += 2 * (1 - density(it.row()) / density(it.col())) * density(it.row()) / density(it.col()) / density(it.col());
+	// 		}
 
-		gradv /= 3 * tt_adjacency.rows();
+	// 	gradv /= 3 * tt_adjacency.rows();
 
-		gradv *= smooth_params["weight"].get<double>();
-	}
+	// 	gradv *= smooth_params["weight"].get<double>();
+	// }
 
 	void TopologyOptimizationProblem::gradient(const TVector &x, TVector &gradv)
 	{
 		if (cur_grad.size() == 0)
 		{
-			Eigen::VectorXd grad_target, grad_smoothing, grad_mass;
+			Eigen::VectorXd grad_target;
 			target_gradient(x, grad_target);
-			smooth_gradient(x, grad_smoothing);
-			mass_gradient(x, grad_mass);
-			logger().debug("‖∇ target‖ = {}, ‖∇ vol‖ = {}, ‖∇ smooth‖ = {}", grad_target.norm(), grad_mass.norm(), grad_smoothing.norm());
-			cur_grad = grad_target + grad_mass + grad_smoothing;
+			logger().debug("‖∇ target‖ = {}", grad_target.norm());
+			cur_grad = grad_target;
 		}
 
 		gradv = cur_grad;
@@ -329,7 +317,7 @@ namespace polyfem
 			std::ofstream outfile;
 			outfile.open(opt_output_params["export_energies"].get<std::string>(), std::ofstream::out | std::ofstream::app);
 
-			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << ", " << mass_value(cur_x) << "\n";
+			outfile << value(cur_x) << "\n";
 			outfile.close();
 		}
 	}
@@ -356,7 +344,13 @@ namespace polyfem
 
 	int TopologyOptimizationProblem::n_inequality_constraints()
 	{
-		return 2; // mass constraints
+		if (!has_mass_constraint)
+			return 0;
+		
+		int n_constraints = 1;
+		if (min_mass > 0)
+			n_constraints++;
+		return n_constraints; // mass constraints
 	}
 	double TopologyOptimizationProblem::inequality_constraint_val(const cppoptlib::Problem<double>::TVector &x, const int index)
 	{
@@ -370,12 +364,12 @@ namespace polyfem
 		});
 		val = state.J(j);
 
-		logger().debug("Current mass: {}, min {}, max {}", val, mass_params["hard_bound"][0].get<double>(), mass_params["hard_bound"][1].get<double>());
+		logger().debug("Current mass: {}, min {}, max {}", val, min_mass, max_mass);
 
 		if (index == 0)
-			val = val - mass_params["hard_bound"][1].get<double>();
+			val = val / max_mass - 1;
 		else if (index == 1)
-			val = mass_params["hard_bound"][0].get<double>() - val;
+			val = 1 - val / min_mass;
 		else
 			assert(false);
 
@@ -391,13 +385,14 @@ namespace polyfem
 			val *= params["density"].get<double>();
 		});
 		TVector grad = state.integral_gradient(j, "topology");
+		grad = apply_filter_to_grad(x, grad);
 		if (index == 0)
 		{
-
+			grad /= max_mass;
 		}
 		else if (index == 1)
 		{
-			grad *= -1;
+			grad *= -1 / min_mass;
 		}
 		else
 			assert(false);
