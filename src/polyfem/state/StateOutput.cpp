@@ -1206,7 +1206,7 @@ namespace polyfem
 		Eigen::MatrixXd fun, exact_fun, err;
 		const bool boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		const bool material_params = args["output"]["paraview"]["options"]["material"];
-		const bool topology_params = args["output"]["optimization"]["topology"];
+		const bool topology_params = args["output"]["paraview"]["options"]["topology"];
 		const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		const bool sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
 		const bool export_velocity = args["output"]["paraview"]["options"]["velocity"];

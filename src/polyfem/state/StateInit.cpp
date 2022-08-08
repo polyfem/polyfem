@@ -257,6 +257,7 @@ namespace polyfem
 
 					"options" : {
 						"material" : false,
+						"topology" : false,
 						"body_ids" : false,
 						"contact_forces" : false,
 						"friction_forces" : false,
@@ -271,8 +272,7 @@ namespace polyfem
 				},
 
 				"optimization": {
-					"save_frequency": 1,
-					"topology": false
+					"save_frequency": 1
 				},
 
 				"data" : {

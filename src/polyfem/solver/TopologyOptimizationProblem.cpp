@@ -11,7 +11,7 @@ namespace polyfem
     TopologyOptimizationProblem::TopologyOptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
     {
         optimization_name = "topology";
-        state.args["output"]["optimization"]["topology"] = true;
+        state.args["output"]["paraview"]["options"]["topology"] = true;
 
 		// volume constraint
 		for (const auto &param : opt_params["parameters"])
