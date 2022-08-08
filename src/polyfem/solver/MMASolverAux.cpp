@@ -20,7 +20,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "MMASolver.hpp"
+#include "MMASolverAux.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -30,7 +30,7 @@
 // PUBLIC
 ////////////////////////////////////////////////////////////////////////////////
 
-MMASolver::MMASolver(int nn, int mm, double ai, double ci, double di)
+MMASolverAux::MMASolverAux(int nn, int mm, double ai, double ci, double di)
 	: n(nn)
 	, m(mm)
 	, iter(0)
@@ -63,7 +63,7 @@ MMASolver::MMASolver(int nn, int mm, double ai, double ci, double di)
 	, xold2(n)
 { }
 
-void MMASolver::SetAsymptotes(double init, double decrease, double increase) {
+void MMASolverAux::SetAsymptotes(double init, double decrease, double increase) {
 
 	// asymptotes initialization and increase/decrease
 	asyminit = init;
@@ -71,7 +71,7 @@ void MMASolver::SetAsymptotes(double init, double decrease, double increase) {
 	asyminc = increase;
 }
 
-void MMASolver::Update(double *xval, const double *dfdx, const double *gx, const double *dgdx,
+void MMASolverAux::Update(double *xval, const double *dfdx, const double *gx, const double *dgdx,
 	const double *xmin, const double *xmax)
 {
 	// Generate the subproblem
@@ -92,7 +92,7 @@ void MMASolver::Update(double *xval, const double *dfdx, const double *gx, const
 // PRIVATE
 ////////////////////////////////////////////////////////////////////////////////
 
-void MMASolver::SolveDIP(double *x) {
+void MMASolverAux::SolveDIP(double *x) {
 
 	for (int j = 0; j < m; j++) {
 		lam[j] = c[j] / 2.0;
@@ -146,7 +146,7 @@ void MMASolver::SolveDIP(double *x) {
 	}
 }
 
-void MMASolver::SolveDSA(double *x) {
+void MMASolverAux::SolveDSA(double *x) {
 
 	for (int j = 0; j < m; j++) {
 		lam[j] = 1.0;
@@ -170,7 +170,7 @@ void MMASolver::SolveDSA(double *x) {
 	}
 }
 
-double MMASolver::DualResidual(double *x, double epsi) {
+double MMASolverAux::DualResidual(double *x, double epsi) {
 
 	double *res = new double[2 * m];
 
@@ -194,7 +194,7 @@ double MMASolver::DualResidual(double *x, double epsi) {
 	return nrI;
 }
 
-void MMASolver::DualLineSearch() {
+void MMASolverAux::DualLineSearch() {
 
 	double theta = 1.005;
 	for (int i = 0; i < m; i++) {
@@ -213,7 +213,7 @@ void MMASolver::DualLineSearch() {
 	}
 }
 
-void MMASolver::DualHess(double *x) {
+void MMASolverAux::DualHess(double *x) {
 
 	double *df2 = new double[n];
 	double *PQ = new double[n * m];
@@ -299,7 +299,7 @@ void MMASolver::DualHess(double *x) {
 	delete[] tmp;
 }
 
-void MMASolver::DualGrad(double *x) {
+void MMASolverAux::DualGrad(double *x) {
 	for (int j = 0; j < m; j++) {
 		grad[j] = -b[j] - a[j] * z - y[j];
 		for (int i = 0; i < n; i++) {
@@ -308,7 +308,7 @@ void MMASolver::DualGrad(double *x) {
 	}
 }
 
-void MMASolver::XYZofLAMBDA(double *x) {
+void MMASolverAux::XYZofLAMBDA(double *x) {
 
 	double lamai = 0.0;
 	for (int i = 0; i < m; i++) {
@@ -340,7 +340,7 @@ void MMASolver::XYZofLAMBDA(double *x) {
 	}
 }
 
-void MMASolver::GenSub(const double *xval, const double *dfdx, const double *gx, const double *dgdx, const double *xmin,
+void MMASolverAux::GenSub(const double *xval, const double *dfdx, const double *gx, const double *dgdx, const double *xmin,
                        const double *xmax)
 {
 	// Forward the iterator
@@ -436,7 +436,7 @@ void MMASolver::GenSub(const double *xval, const double *dfdx, const double *gx,
 	}
 }
 
-void MMASolver::Factorize(double *K, int n) {
+void MMASolverAux::Factorize(double *K, int n) {
 
 	for (int s = 0; s < n - 1; s++) {
 		for (int i = s + 1; i < n; i++) {
@@ -448,7 +448,7 @@ void MMASolver::Factorize(double *K, int n) {
 	}
 }
 
-void MMASolver::Solve(double *K, double *x, int n) {
+void MMASolverAux::Solve(double *K, double *x, int n) {
 
 	for (int i = 1; i < n; i++) {
 		double a = 0.0;

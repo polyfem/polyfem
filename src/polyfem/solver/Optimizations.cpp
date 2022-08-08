@@ -5,7 +5,7 @@
 // #include "MaterialProblem.hpp"
 // #include "InitialConditionProblem.hpp"
 #include "LBFGSSolver.hpp"
-#include "mmaSolver.hpp"
+#include "MMASolver.hpp"
 #include "GradientDescentSolver.hpp"
 #include <polyfem/utils/SplineParam.hpp>
 
@@ -41,7 +41,7 @@ namespace polyfem
 		}
 		else if (name == "mma" || name == "MMA")
 		{
-			return std::make_shared<cppoptlib::mmaSolver<ProblemType>>(
+			return std::make_shared<cppoptlib::MMASolver<ProblemType>>(
 				solver_params);
 		}
 		else

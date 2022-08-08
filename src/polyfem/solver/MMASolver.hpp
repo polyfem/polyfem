@@ -1,106 +1,109 @@
-////////////////////////////////////////////////////////////////////////////////
-// Copyright © 2018 Jérémie Dumas
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-////////////////////////////////////////////////////////////////////////////////
-//
-// BETA VERSION  0.99
-//
-// MMA solver using a dual interior point method
-//
-// Original code by Niels Aage, February 2013
-// Modified to use OpenMP by Jun Wu, April 2017
-// Various modifications by Jérémie Dumas, June 2017
-//
-// The class solves a general non-linear programming problem
-// on standard from, i.e. non-linear objective f, m non-linear
-// inequality constraints g and box constraints on the n
-// design variables xmin, xmax.
-//
-//        min_x^n f(x)
-//        s.t. g_j(x) < 0,   j = 1,m
-//        xmin < x_i < xmax, i = 1,n
-//
-// Each call to Update() sets up and solve the following
-// convex subproblem:
-//
-//   min_x     sum(p0j./(U-x)+q0j./(x-L)) + a0*z + sum(c.*y + 0.5*d.*y.^2)
-//
-//   s.t.      sum(pij./(U-x)+qij./(x-L)) - ai*z - yi <= bi, i = 1,m
-//             Lj < alphaj <=  xj <= betaj < Uj,  j = 1,n
-//             yi >= 0, i = 1,m
-//             z >= 0.
-//
-// NOTE: a0 == 1 in this implementation !!!!
-//
-////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include <vector>
+#include <polyfem/Common.hpp>
+#include "NonlinearSolver.hpp"
+#include <polysolve/LinearSolver.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
-class MMASolver {
+#include <polyfem/utils/Logger.hpp>
 
-  public:
-	MMASolver(int n, int m, double a = 0.0, double c = 1000.0, double d = 0.0);
+#include <igl/Timer.h>
 
-	void SetAsymptotes(double init, double decrease, double increase);
+#include "MMASolverAux.hpp"
 
-	void ConstraintModification(bool conMod) {}
+namespace cppoptlib
+{
+	template <typename ProblemType>
+	class MMASolver : public NonlinearSolver<ProblemType>
+    {
+	public:
+		using Superclass = NonlinearSolver<ProblemType>;
+		using typename Superclass::Scalar;
+		using typename Superclass::TVector;
 
-	void Update(double *xval, const double *dfdx, const double *gx, const double *dgdx, const double *xmin,
-	            const double *xmax);
+		MMASolver(const json &solver_params)
+			: Superclass(solver_params)
+		{
+		}
 
-	void Reset() { iter = 0; };
+		std::string name() const override { return "MMA"; }
 
-  private:
-	int n, m, iter;
+	protected:
+		virtual int default_descent_strategy() override { return 1; }
 
-	const double xmamieps;
-	const double epsimin;
+		using Superclass::descent_strategy_name;
+		std::string descent_strategy_name(int descent_strategy) const override
+		{
+			switch (descent_strategy)
+			{
+			case 1:
+				return "MMA";
+			default:
+				throw std::invalid_argument("invalid descent strategy");
+			}
+		}
 
-	const double raa0;
-	const double move, albefa;
-	double asyminit, asymdec, asyminc;
+		void increase_descent_strategy() override
+		{
+			assert(this->descent_strategy <= 1);
+		}
 
-	std::vector<double> a, c, d;
-	std::vector<double> y;
-	double z;
+	protected:
+		std::shared_ptr<MMASolverAux> mma;
 
-	std::vector<double> lam, mu, s;
-	std::vector<double> low, upp, alpha, beta, p0, q0, pij, qij, b, grad, hess;
+		void reset(const ProblemType &objFunc, const TVector &x) override
+		{
+			Superclass::reset(objFunc, x);
+            mma.reset();
+		}
 
-	std::vector<double> xold1, xold2;
+		void remesh_reset(const ProblemType &objFunc, const TVector &x) override
+		{
+			Superclass::remesh_reset(objFunc, x);
+            mma.reset();
+		}
 
-	void GenSub(const double *xval, const double *dfdx, const double *gx, const double *dgdx, const double *xmin,
-	            const double *xmax);
+		virtual bool compute_update_direction(
+			ProblemType &objFunc,
+			const TVector &x,
+			const TVector &grad,
+			TVector &direction) override
+		{
+			TVector lower_bound = objFunc.get_lower_bound(x);
+			TVector upper_bound = objFunc.get_upper_bound(x);
 
-	void SolveDSA(double *x);
-	void SolveDIP(double *x);
+			const int m = objFunc.n_inequality_constraints();
 
-	void XYZofLAMBDA(double *x);
+            if (!mma)
+                mma = std::make_shared<MMASolverAux>(x.size(), m);
 
-	void DualGrad(double *x);
-	void DualHess(double *x);
-	void DualLineSearch();
-	double DualResidual(double *x, double epsi);
+            Eigen::VectorXd g, dg;
+            g.setZero(m);
+            dg.setZero(m * x.size());
+			for (int i = 0; i < m; i++)
+			{
+				g(i) = objFunc.inequality_constraint_val(x, i);
+				auto gradg = objFunc.inequality_constraint_grad(x, i);
+				for (int j = 0; j < gradg.size(); j++)
+					dg(j * m + i) = gradg(j);
+			}
+			auto y = x;
+			mma->Update(y.data(), grad.data(), g.data(), dg.data(), lower_bound.data(), upper_bound.data());
+            direction = y - x;
 
-	static void Factorize(double *K, int n);
-	static void Solve(double *K, double *x, int n);
-};
+			if (std::isnan(direction.squaredNorm()))
+			{
+                polyfem::logger().error("nan in direction.");
+                throw std::runtime_error("nan in direction.");
+			}
+			// else if (grad.squaredNorm() != 0 && direction.dot(grad) > 0)
+			// {
+            //     polyfem::logger().error("Direction is not a descent direction, stop.");
+            //     throw std::runtime_error("Direction is not a descent direction, stop.");
+			// }
+
+			return true;
+		}
+	};
+
+}
