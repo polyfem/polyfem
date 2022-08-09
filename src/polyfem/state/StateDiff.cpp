@@ -555,13 +555,13 @@ namespace polyfem
 				assembler.assemble_energy_hessian(nl->rhs_assembler.formulation(), mesh->is_volume(), n_bases, false, bases, gbases, ass_vals_cache, full, nl->mat_cache, energy_hessian);
 			}
 
-			if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
-			{
-				StiffnessMatrix damping_hessian(full_size, full_size);
-				damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
+			// if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
+			// {
+			// 	StiffnessMatrix damping_hessian(full_size, full_size);
+			// 	damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
 
-				energy_hessian += damping_hessian;
-			}
+			// 	energy_hessian += damping_hessian;
+			// }
 		}
 
 		StiffnessMatrix barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
@@ -622,13 +622,13 @@ namespace polyfem
 			}
 		}
 
-		if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
-		{
-			StiffnessMatrix damping_hessian_prev(full_size, full_size);
-			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
+		// if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
+		// {
+		// 	StiffnessMatrix damping_hessian_prev(full_size, full_size);
+		// 	damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
 
-			hessian_prev += damping_hessian_prev;
-		}
+		// 	hessian_prev += damping_hessian_prev;
+		// }
 
 		hessian = energy_hessian + nl->barrier_stiffness() * barrier_hessian + friction_hessian;
 	}
@@ -1195,7 +1195,7 @@ namespace polyfem
 			return;
 
 		const auto params = args["materials"];
-		if (params["phi"].get<double>() == 0 && params["psi"].get<double>() == 0)
+		// if (params["phi"].get<double>() == 0 && params["psi"].get<double>() == 0)
 			return;
 
 		const double dt = args["time"]["dt"];

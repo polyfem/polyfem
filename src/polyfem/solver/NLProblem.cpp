@@ -462,13 +462,13 @@ namespace polyfem
 			const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.n_boundary_samples(), t);
 
 			double damping_energy = 0;
-			if (is_time_dependent)
-			{
-				if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
-				{
-					damping_energy = state.damping_assembler.assemble(state.mesh->is_volume(), dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev());
-				}
-			}
+			// if (is_time_dependent)
+			// {
+			// 	if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
+			// 	{
+			// 		damping_energy = state.damping_assembler.assemble(state.mesh->is_volume(), dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev());
+			// 	}
+			// }
 
 			double intertia_energy = 0;
 			double scaling = 1;
@@ -546,13 +546,13 @@ namespace polyfem
 			assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
 
 			Eigen::MatrixXd damping_grad = Eigen::MatrixXd::Zero(grad.rows(), grad.cols());
-			if (is_time_dependent)
-			{
-				if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
-				{
-					state.damping_assembler.assemble_grad(state.mesh->is_volume(), state.n_bases, dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), damping_grad);
-				}
-			}
+			// if (is_time_dependent)
+			// {
+			// 	if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
+			// 	{
+			// 		state.damping_assembler.assemble_grad(state.mesh->is_volume(), state.n_bases, dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), damping_grad);
+			// 	}
+			// }
 			grad += damping_grad;
 
 			if (!ignore_inertia && is_time_dependent)
@@ -620,13 +620,13 @@ namespace polyfem
 					assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, energy_hessian);
 				}
 
-				if (is_time_dependent)
-				{
-					if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
-					{
-						state.damping_assembler.assemble_hessian(state.mesh->is_volume(), state.n_bases, dt(), project_to_psd, state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), mat_cache, damping_hessian);
-					}
-				}
+				// if (is_time_dependent)
+				// {
+				// 	if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
+				// 	{
+				// 		state.damping_assembler.assemble_hessian(state.mesh->is_volume(), state.n_bases, dt(), project_to_psd, state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), mat_cache, damping_hessian);
+				// 	}
+				// }
 
 				if (!ignore_inertia && is_time_dependent)
 				{
