@@ -366,7 +366,7 @@ namespace polyfem
 	{
 		if (!has_boundary_smoothing)
 			return 0.;
-		
+
 		Eigen::MatrixXd V;
 		x_to_param(x, V_rest, V);
 
@@ -658,28 +658,32 @@ namespace polyfem
 		}
 	}
 
-	void ShapeProblem::solution_changed(const TVector &newX)
+	bool ShapeProblem::solution_changed_pre(const TVector &newX)
 	{
-		if (cur_x.size() == newX.size() && cur_x == newX)
-			return;
-
 		Eigen::MatrixXd V;
 		x_to_param(newX, V_rest, V);
 		auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		state.set_v(V);
 		mesh_flipped = is_flipped(V, elements);
 		if (mesh_flipped)
+		{
 			logger().debug("Mesh Flipped!");
+			return false;
+		}
 		else
-			solve_pde(newX);
+			return true;
+	}
 
-		cur_x = newX;
+	void ShapeProblem::solution_changed_post(const TVector &newX)
+	{
 		cur_grad.resize(0);
 		cur_val = std::nan("");
 
 		if (!has_collision || mesh_flipped)
 			return;
 
+		Eigen::MatrixXd V;
+		x_to_param(newX, V_rest, V);
 		update_constraint_set(collision_mesh.vertices(V));
 	}
 

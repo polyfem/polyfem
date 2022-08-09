@@ -248,15 +248,11 @@ namespace polyfem
 		return true;
 	}
 
-	void MaterialProblem::solution_changed(const TVector &newX)
+	bool MaterialProblem::solution_changed_pre(const TVector &newX)
 	{
-		if (cur_x.size() == newX.size() && cur_x == newX)
-			return;
-
 		x_to_param(newX, state);
 		state.build_basis();
-		solve_pde(newX);
-
-		cur_x = newX;
+		return true;
 	}
+
 } // namespace polyfem

@@ -29,15 +29,25 @@ namespace polyfem
 			state.save_vtu(state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)), 0.);
 		}
 
-		virtual void solution_changed(const TVector &newX) = 0;
-
 		bool stop(const TVector &x) { return false; }
+
+		virtual int optimization_dim() { return 0; }
+
+		virtual bool solution_changed_pre(const TVector &newX) { return true; };
+
+		void solution_changed_post(const TVector &newX) { return; }
+
+		void solution_changed(const TVector &newX);
 
 		virtual void post_step(const int iter_num, const TVector &x0) { iter++; }
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1);
 
-		double heuristic_max_step(const TVector &dx) { assert (opt_nonlinear_params.contains("max_step_size")); return opt_nonlinear_params["max_step_size"]; };
+		double heuristic_max_step(const TVector &dx)
+		{
+			assert(opt_nonlinear_params.contains("max_step_size"));
+			return opt_nonlinear_params["max_step_size"];
+		};
 
 	protected:
 		State &state;

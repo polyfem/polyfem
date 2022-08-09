@@ -18,17 +18,19 @@ namespace polyfem
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		double value(const TVector &x, const bool only_elastic) { return value(x); };
-		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
+		double value(const TVector &x, const bool only_elastic) { return value(x); }
+		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); }
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; };
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 		double max_step_size(const TVector &x0, const TVector &x1);
 
-		void line_search_end(bool failed);
-		bool remesh(TVector &x) { return false; };
+		int optimization_dim() override { return 0; }
 
-		void solution_changed(const TVector &newX) override;
+		void line_search_end(bool failed);
+		bool remesh(TVector &x) { return false; }
+
+		bool solution_changed_pre(const TVector &newX) override;
 
 		// map x (optimization variables) to parameters (lambda, mu, friction, damping)
 		std::function<void(const TVector &x, State &state)> x_to_param;

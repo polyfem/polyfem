@@ -175,7 +175,10 @@ namespace polyfem
 		void line_search_end(bool failed);
 		void post_step(const int iter_num, const TVector &x0) override;
 
-		void solution_changed(const TVector &newX) override;
+		int optimization_dim() override { return 0; }
+
+		bool solution_changed_pre(const TVector &newX) override;
+		void solution_changed_post(const TVector &newX);
 
 		void save_to_file(const TVector &x0) override;
 

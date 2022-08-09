@@ -66,23 +66,24 @@ namespace polyfem
 
 	void OptimizationProblem::solve_pde(const TVector &x)
 	{
-		if (!state.problem->is_time_dependent())
-			if (optimization_name == "shape")
-			{
-				if (x_at_ls_begin.size() == x.size())
-				{
-					logger().debug("Use better initial guess...");
-					if (sol_at_ls_begin.size() == x.size())
-						state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
-					else if (sol_at_ls_begin.size() == state.n_bases)
-						state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
-				}
-			}
-			else if (sol_at_ls_begin.size() > 0)
-			{
-				logger().debug("Use better initial guess...");
-				state.pre_sol = sol_at_ls_begin;
-			}
+		// TODO: Add in initial guess.
+		// if (!state.problem->is_time_dependent())
+		// 	if (optimization_name == "shape")
+		// 	{
+		// 		if (x_at_ls_begin.size() == x.size())
+		// 		{
+		// 			logger().debug("Use better initial guess...");
+		// 			if (sol_at_ls_begin.size() == x.size())
+		// 				state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
+		// 			else if (sol_at_ls_begin.size() == state.n_bases)
+		// 				state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
+		// 		}
+		// 	}
+		// 	else if (sol_at_ls_begin.size() > 0)
+		// 	{
+		// 		logger().debug("Use better initial guess...");
+		// 		state.pre_sol = sol_at_ls_begin;
+		// 	}
 
 		// control forward solve log level
 		const int cur_log = state.current_log_level;
@@ -103,8 +104,8 @@ namespace polyfem
 		state.assemble_stiffness_mat();
 		state.solve_problem();
 
-		if (optimization_name != "shape")
-			sol_at_ls_begin = state.sol;
+		// if (optimization_name != "shape")
+		// 	sol_at_ls_begin = state.sol;
 
 		if (j->get_functional_name() == "CenterTrajectory")
 		{
@@ -126,6 +127,19 @@ namespace polyfem
 
 		state.output_dir = output_dir;
 		state.set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+	}
+
+	void OptimizationProblem::solution_changed(const TVector &newX)
+	{
+		if (cur_x.size() == newX.size() && cur_x == newX)
+			return;
+
+		if (solution_changed_pre(newX))
+			solve_pde(newX);
+
+		cur_x = newX;
+
+		solution_changed_post(newX);
 	}
 
 	void OptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)

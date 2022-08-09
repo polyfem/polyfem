@@ -70,17 +70,14 @@ namespace polyfem
 		dparam_to_dx(gradv, init_sol, init_vel);
 	}
 
-	void InitialConditionProblem::solution_changed(const TVector &newX)
+	bool InitialConditionProblem::solution_changed_pre(const TVector &newX)
 	{
-		if (cur_x.size() == newX.size() && cur_x == newX)
-			return;
-
 		Eigen::MatrixXd init_sol, init_vel;
 		x_to_param(newX, init_sol, init_vel);
 		state.initial_sol_update = init_sol;
 		state.initial_vel_update = init_vel;
 
-		solve_pde(newX);
-		cur_x = newX;
+		return true;
 	}
+
 } // namespace polyfem
