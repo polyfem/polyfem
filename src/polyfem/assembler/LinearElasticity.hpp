@@ -58,6 +58,7 @@ namespace polyfem
 
 			//class that stores and compute lame parameters per point
 			LameParameters &lame_params() { return params_; }
+			const LameParameters &lame_params() const { return params_; }
 			void set_params(const LameParameters &params) { params_ = params; }
 
 		private:

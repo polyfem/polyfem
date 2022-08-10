@@ -13,6 +13,116 @@ using namespace solver;
 using namespace utils;
 using namespace quadrature;
 
+void State::compute_homogenized_tensor(Eigen::MatrixXd &C_H)
+{
+    if (rhs.size() <= 0)
+    {
+        logger().error("Assemble the rhs first!");
+        return;
+    }
+    if (stiffness.size() <= 0)
+    {
+        logger().error("Assemble the matrix first!");
+        return;
+    }
+    if (sol.size() <= 0)
+    {
+        logger().error("Solve the problem first!");
+        return;
+    }
+
+    const int dim = mesh->dimension();
+    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    RowVectorNd min, max;
+    mesh->bounding_box(min, max);
+    double volume = 1;
+    for (int d = 0; d < min.size(); d++)
+        volume *= (max(d) - min(d));
+    if (formulation() == "LinearElasticity")
+    {
+        std::vector<std::pair<int, int>> unit_disp_ids;
+        if (dim == 2)
+            unit_disp_ids = {{0, 0}, {1, 1}, {0, 1}};
+        else
+            unit_disp_ids = {{0, 0}, {1, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}};
+
+        std::vector<Eigen::MatrixXd> unit_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
+        for (int id = 0; id < unit_disp_ids.size(); id++)
+        {
+            const auto &pair = unit_disp_ids[id];
+            auto &unit_strain = unit_strains[id];
+
+            Eigen::MatrixXd unit_grad(dim, dim);
+            unit_grad.setZero();
+            unit_grad(pair.first, pair.second) = 1;
+            unit_strain = (unit_grad + unit_grad.transpose()) / 2;
+        }
+
+        C_H.setZero(unit_disp_ids.size(), unit_disp_ids.size());
+
+        const LameParameters &params = assembler.lame_params();
+
+        for (int e = 0; e < bases.size(); e++)
+        {
+            ElementAssemblyValues vals;
+            // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+            ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+            const Quadrature &quadrature = vals.quadrature;
+
+            for (int q = 0; q < quadrature.weights.size(); q++)
+            {
+                double lambda, mu;
+                params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+
+                std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
+
+                for (int id = 0; id < unit_disp_ids.size(); id++)
+                {
+                    Eigen::MatrixXd grad(dim, dim);
+                    grad.setZero();
+                    for (const auto &v : vals.basis_values)
+                        for (int d = 0; d < dim; d++)
+                        {
+                            double coeff = 0;
+                            for (const auto &g : v.global)
+                                coeff += sol(g.index * dim + d, id) * g.val;
+                            grad.row(d) += v.grad_t_m.row(q) * coeff;
+                        }
+                    
+                    react_strains[id] = (grad + grad.transpose()) / 2;
+                }
+
+                for (int row_id = 0; row_id < unit_disp_ids.size(); row_id++)
+                {
+                    Eigen::MatrixXd strain_diff_ij = unit_strains[row_id] - react_strains[row_id];
+
+                    for (int col_id = 0; col_id < unit_disp_ids.size(); col_id++)
+                    {
+                        Eigen::MatrixXd strain_diff_kl = unit_strains[col_id] - react_strains[col_id];
+
+                        const double value = 2 * mu * (strain_diff_ij.array() * strain_diff_kl.array()).sum() + lambda * strain_diff_ij.trace() * strain_diff_kl.trace();
+                        C_H(row_id, col_id) += quadrature.weights(q) * vals.det(q) * value;
+                    }
+                }
+            }
+        }
+    }
+    else if (formulation() == "Stokes")
+    {
+        C_H.setZero(dim, dim);
+
+        auto velocity_block = stiffness.topLeftCorner(n_bases * dim, n_bases * dim);
+        for (int i = 0; i < dim; i++)
+        {
+            Eigen::VectorXd tmp = velocity_block * sol.block(0, i, n_bases * dim, 1);
+            for (int j = 0; j < dim; j++)
+                C_H(i, j) = (tmp.array() * sol.block(0, j, n_bases * dim, 1).array()).sum();
+        }
+    }
+    C_H /= volume;
+}
+
 void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
 {
     if (!mesh)
@@ -44,9 +154,9 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     else
         unit_disp_ids = {{0, 0}, {1, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}};
 
-    Eigen::MatrixXd rhs; //, unit_disp;
+    // Eigen::MatrixXd rhs; //, unit_disp;
     // unit_disp.setZero(stiffness.rows(), unit_disp_ids.size());
-    rhs.setZero(stiffness.rows(), unit_disp_ids.size());
+    // rhs.setZero(stiffness.rows(), unit_disp_ids.size());
 
     const LameParameters &params = assembler.lame_params();
     
@@ -71,43 +181,43 @@ void State::homogenize_linear_elasticity(Eigen::MatrixXd &C_H)
     // }
 
     // rhs = stiffness * unit_disp;
-    
-    for (int e = 0; e < bases.size(); e++)
-    {
-        ElementAssemblyValues vals;
-        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+    assemble_rhs();
+    // for (int e = 0; e < bases.size(); e++)
+    // {
+    //     ElementAssemblyValues vals;
+    //     // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+    //     ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
-        const Quadrature &quadrature = vals.quadrature;
+    //     const Quadrature &quadrature = vals.quadrature;
 
-        for (int q = 0; q < quadrature.weights.size(); q++)
-        {
-            double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+    //     for (int q = 0; q < quadrature.weights.size(); q++)
+    //     {
+    //         double lambda, mu;
+    //         params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
 
-            for (const auto &v : vals.basis_values)
-            {
-                for (int d = 0; d < dim; d++)
-                {
-                    Eigen::MatrixXd basis_strain, grad;
-                    basis_strain.setZero(dim, dim);
-                    grad.setZero(dim, dim);
-                    grad.row(d) = v.grad_t_m.row(q);
-                    basis_strain = (grad + grad.transpose()) / 2; 
+    //         for (const auto &v : vals.basis_values)
+    //         {
+    //             for (int d = 0; d < dim; d++)
+    //             {
+    //                 Eigen::MatrixXd basis_strain, grad;
+    //                 basis_strain.setZero(dim, dim);
+    //                 grad.setZero(dim, dim);
+    //                 grad.row(d) = v.grad_t_m.row(q);
+    //                 basis_strain = (grad + grad.transpose()) / 2; 
 
-                    for (int k = 0; k < unit_disp_ids.size(); k++)
-                    {
-                        const auto &unit_strain = unit_strains[k];
+    //                 for (int k = 0; k < unit_disp_ids.size(); k++)
+    //                 {
+    //                     const auto &unit_strain = unit_strains[k];
 
-                        const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
+    //                     const double value = quadrature.weights(q) * vals.det(q) * (2 * mu * (unit_strain.array() * basis_strain.array()).sum() + lambda * unit_strain.trace() * basis_strain.trace());
 
-                        for (auto g : v.global)
-                            rhs(g.index * dim + d, k) += value * g.val;
-                    }
-                }
-            }
-        }
-    }
+    //                     for (auto g : v.global)
+    //                         rhs(g.index * dim + d, k) += value * g.val;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     // solve elastic problem
     StiffnessMatrix A = stiffness;
@@ -777,6 +887,7 @@ void State::homogenize_stokes(Eigen::MatrixXd &K_H)
     rhs.setZero();
     
     // assemble unit test force rhs
+    // assemble_rhs();
     for (int e = 0; e < bases.size(); e++)
     {
         ElementAssemblyValues vals;

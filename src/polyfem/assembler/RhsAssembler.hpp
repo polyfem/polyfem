@@ -36,6 +36,9 @@ namespace polyfem
 			//computes the rhs of a problem by \int \phi rho rhs
 			void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
 
+			//computes the rhs of homogenization
+			void assemble_homogenization(Eigen::MatrixXd &rhs) const;
+
 			//computes the inital soltion for time dependent, calls time_bc
 			void initial_solution(Eigen::MatrixXd &sol) const;
 			//computes the inital velocity for time dependent, calls time_bc

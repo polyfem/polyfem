@@ -45,6 +45,7 @@ namespace polyfem
 			void add_multimaterial(const int index, const json &params);
 			void set_params(const LameParameters &params) { params_ = params; }
 			LameParameters &lame_params() { return params_; }
+			const LameParameters &lame_params() const { return params_; }
 
 		private:
 			int size_ = -1;

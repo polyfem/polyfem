@@ -323,10 +323,10 @@ namespace polyfem
 		Eigen::MatrixXd tmp = sol;
 
 		int fluid_offset = use_avg_pressure ? (AssemblerUtils::is_fluid(formulation()) ? 1 : 0) : 0;
-		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases - fluid_offset, tmp.cols());
-		assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
-		pressure = tmp.block(tmp.rows() - n_pressure_bases - fluid_offset, 0, n_pressure_bases, tmp.cols());
-		assert(pressure.size() == n_pressure_bases);
+		sol = tmp.block(0, 0, mesh->dimension() * n_bases, tmp.cols());
+		// assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
+		pressure = tmp.block(mesh->dimension() * n_bases, 0, n_pressure_bases, tmp.cols());
+		// assert(pressure.size() == n_pressure_bases);
 	}
 
 	void State::compute_mesh_size(const Mesh &mesh_in, const std::vector<ElementBases> &bases_in, const int n_samples)
@@ -1522,13 +1522,20 @@ void State::build_collision_mesh(
 			args["space"]["advanced"]["bc_method"],
 			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		step_data.rhs_assembler->assemble(density, rhs);
-		rhs *= -1;
+		if (args["materials"].contains("homogenization") && args["materials"]["homogenization"].get<bool>())
+		{
+			step_data.rhs_assembler->assemble_homogenization(rhs);
+		}
+		else
+		{
+			step_data.rhs_assembler->assemble(density, rhs);
+			rhs *= -1;
+		}
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
 		{
-			const int prev_size = rhs.size();
+			const int prev_size = rhs.rows();
 			const int n_larger = n_pressure_bases + (use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0);
 			rhs.conservativeResize(prev_size + n_larger, rhs.cols());
 			if (formulation() == "OperatorSplitting")
@@ -1562,6 +1569,101 @@ void State::build_collision_mesh(
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
 		logger().info(" took {}s", assigning_rhs_time);
+	}
+
+	void State::solve_homogenization()
+	{
+		if (!mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (n_bases <= 0)
+		{
+			logger().error("Build the bases first!");
+			return;
+		}
+
+		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"] && stiffness.rows() <= 0)
+		{
+			logger().error("Assemble the stiffness matrix first!");
+			return;
+		}
+		if (rhs.size() <= 0)
+		{
+			logger().error("Assemble the rhs first!");
+			return;
+		}
+		if (!args["boundary_conditions"]["periodic_boundary"].get<bool>())
+		{
+			logger().error("No periodicity!");
+			return;
+		}
+
+		sol.resize(0, 0);
+		pressure.resize(0, 0);
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Solving {} homogenization", formulation());
+
+		const std::string full_mat_path = args["output"]["data"]["full_mat"];
+		if (!full_mat_path.empty())
+		{
+			Eigen::saveMarket(stiffness, full_mat_path);
+		}
+
+		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+		solver->setParameters(args["solver"]["linear"]);
+		StiffnessMatrix A = stiffness;
+		Eigen::VectorXd b;
+		logger().info("{}...", solver->name());
+		for (int b : boundary_nodes)
+		{
+			rhs.row(b).setZero();
+		}
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		int precond_num = problem_dim * n_bases;
+
+		Eigen::VectorXd x;
+		
+		int n_lagrange_multiplier = 0;
+		if (boundary_nodes.size() == 0)
+		{
+			logger().debug("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
+			
+			n_lagrange_multiplier = remove_pure_periodic_singularity(A);
+			rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
+		}
+		sol.setZero(rhs.rows(), rhs.cols());
+
+		prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+		for (int k = 0; k < rhs.cols(); k++)
+		{
+			b = rhs.col(k);
+			dirichlet_solve_prefactorized(*solver, A, b, boundary_nodes, x);
+			sol.col(k) = x;
+		}
+		// spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+		solver->getInfo(solver_info);
+		std::cout << A.rows() << " " << sol.rows() << " " << sol.cols() << " " << rhs.rows() << " " << rhs.cols() << "\n";
+		const auto error = (A * sol - rhs).norm();
+		if (error > 1e-4)
+			logger().error("Solver error: {}", error);
+		else
+			logger().debug("Solver error: {}", error);
+
+		sol.conservativeResize(sol.rows() - n_lagrange_multiplier, sol.cols());
+		rhs.conservativeResize(rhs.rows() - n_lagrange_multiplier, rhs.cols());
+
+		if (assembler.is_mixed(formulation()))
+		{
+			sol_to_pressure();
+		}
+
+		timer.stop();
+		solving_time = timer.getElapsedTime();
+		logger().info(" took {}s", solving_time);
 	}
 
 	void State::solve_problem()
@@ -1668,6 +1770,11 @@ void State::build_collision_mesh(
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
+			return;
+		}
+		if (args["materials"].contains("homogenization") && args["materials"]["homogenization"].get<bool>())
+		{
+			logger().error("No error computation in homogenization!");
 			return;
 		}
 

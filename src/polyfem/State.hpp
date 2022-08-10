@@ -268,6 +268,7 @@ namespace polyfem
 
 		/// solves the proble, step 5
 		void solve_problem();
+		void solve_homogenization();
 		/// solves the problem, call other methods
 		void solve()
 		{
@@ -283,6 +284,8 @@ namespace polyfem
 			solve_problem();
 			solve_export_to_file = true;
 		}
+
+		void compute_homogenized_tensor(Eigen::MatrixXd &C);
 
 		/// timedependent stuff cached
 		StepData step_data;
@@ -1055,6 +1058,21 @@ namespace polyfem
 
 		//homogenization study of unit cell
 		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_new(Eigen::MatrixXd &C_H)
+		{
+			compute_mesh_stats();
+			build_basis();
+			assemble_stiffness_mat();
+			assemble_rhs();
+			solve_homogenization();
+			compute_homogenized_tensor(C_H);
+		}
+		void homogenize_topology_new(Eigen::MatrixXd &C_H)
+		{
+			compute_mesh_stats();
+			build_basis();
+			assemble_stiffness_mat();
+		}
 		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
 		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
 		void homogenize_stokes(Eigen::MatrixXd &K_H);

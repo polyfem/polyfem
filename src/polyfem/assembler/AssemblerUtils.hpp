@@ -166,6 +166,7 @@ namespace polyfem
 			void set_size(const int dim);
 			void init_multimodels(const std::vector<std::string> &materials);
 			LameParameters &lame_params() { return linear_elasticity_.local_assembler().lame_params(); }
+			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 			void update_lame_params(const LameParameters &newParams);
 			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
 			void update_lame_params_density(const Eigen::MatrixXd& density, const double power = -1);
