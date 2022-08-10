@@ -889,7 +889,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 
 	TrajectoryFunctional func;
 	func.set_interested_ids({1}, {});
-	func.set_reference(&state_reference, state, {1});
+	func.set_reference(&state_reference, state, {1, 3});
 	func.set_surface_integral();
 
 	double functional_val = func.energy(state);
@@ -1205,7 +1205,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	state.solve();
 
 	TrajectoryFunctional func;
-	func.set_reference(&state_reference, state, {1});
+	func.set_reference(&state_reference, state, {1, 3});
 	func.set_interested_ids({1}, {});
 	func.set_surface_integral();
 	func.set_transient_integral_type("uniform");
@@ -1222,7 +1222,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 
 	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
 
-	const double step_size = 1e-5;
+	const double step_size = 1e-7;
 	state.initial_vel_update += velocity_discrete * step_size;
 
 	state.solve_problem();
@@ -1363,8 +1363,8 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 	// compute reference solution
 	State state_reference(8);
 	auto in_args_ref = in_args;
-	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 0;
-	in_args_ref["problem_params"]["initial_velocity"][0]["value"][2] = 0;
+	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 0;
+	in_args_ref["initial_conditions"]["velocity"][0]["value"][2] = 0;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
@@ -1378,7 +1378,7 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 
 	TrajectoryFunctional func;
 	func.set_transient_integral_type("final");
-	func.set_reference(&state_reference, state, {1});
+	func.set_reference(&state_reference, state, {1, 3});
 	func.set_interested_ids({1}, {});
 	func.set_volume_integral();
 
@@ -1405,6 +1405,8 @@ TEST_CASE("initial-contact-3d", "[adjoint_method]")
 	double former_functional_val = func.energy(state);
 
 	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2.;
+
+	std::cout << finite_difference << std::endl;
 
 	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(2e-4));
 }
@@ -1555,7 +1557,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 	state.solve();
 
 	TrajectoryFunctional func;
-	func.set_reference(&state_reference, state, {1});
+	func.set_reference(&state_reference, state, {1, 2, 3});
 	func.set_interested_ids({1}, {});
 	func.set_volume_integral();
 
@@ -1848,9 +1850,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 				"type": "NeoHookean",
 				"E": 1000000.0,
 				"nu": 0.3,
-				"rho": 1000,
-				"phi": 10,
-				"psi": 10
+				"rho": 1000
 			},
 			"output": {
 				"paraview": {
@@ -1868,15 +1868,15 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	// compute reference solution
 	State state_reference(8);
 	auto in_args_ref = in_args;
-	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 4;
-	in_args_ref["problem_params"]["initial_velocity"][0]["value"][1] = -1;
+	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
+	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 	state_reference.init_logger("", spdlog::level::level_enum::info, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	CenterTrajectoryFunctional func;
-	func.set_interested_ids({1}, {});
+	func.set_interested_ids({1, 3}, {});
 	std::vector<Eigen::VectorXd> barycenters;
 	func.get_barycenter_series(state_reference, barycenters);
 	func.set_center_series(barycenters);
@@ -2028,8 +2028,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	// compute reference solution
 	State state_reference(8);
 	auto in_args_ref = in_args;
-	in_args_ref["problem_params"]["initial_velocity"][0]["value"][0] = 4;
-	in_args_ref["problem_params"]["initial_velocity"][0]["value"][1] = -1;
+	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
+	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 	state_reference.init_logger("", spdlog::level::level_enum::info, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
@@ -2041,6 +2041,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	func_aux.get_barycenter_series(state_reference, barycenters);
 
 	CenterXYTrajectoryFunctional func;
+	func.set_interested_ids({1}, {});
 	func.set_center_series(barycenters);
 
 	State state(8);
