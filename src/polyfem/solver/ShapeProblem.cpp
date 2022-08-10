@@ -174,7 +174,7 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		// volume constraint
-		bool has_volume_constraint = false;
+		has_volume_constraint = false;
 		for (const auto &param : opt_params["functionals"])
 		{
 			if (param["type"] == "volume_constraint")
@@ -217,8 +217,6 @@ namespace polyfem
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
 
-		build_fixed_nodes();
-
 		// boundary smoothing
 		has_boundary_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
@@ -260,6 +258,8 @@ namespace polyfem
 			}
 			)");
 		}
+
+		build_fixed_nodes();
 
 		// constraints on optimization
 		x_to_param = [this](const TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
@@ -632,16 +632,17 @@ namespace polyfem
 
 	void ShapeProblem::post_step(const int iter_num, const TVector &x0)
 	{
-		if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
-		{
-			double target_val, volume_val, barrier_val;
-			target_val = target_value(x0);
-			volume_val = volume_value(x0);
-			barrier_val = barrier_energy(x0);
-			boundary_smoothing_params["weight"] = boundary_smoothing_params["weight"].get<double>() * boundary_smoothing_params["adjustment_coeff"].get<double>() * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
+		if (boundary_smoothing_params.contains("adjust_weight_period"))
+			if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
+			{
+				double target_val, volume_val, barrier_val;
+				target_val = target_value(x0);
+				volume_val = volume_value(x0);
+				barrier_val = barrier_energy(x0);
+				boundary_smoothing_params["weight"] = boundary_smoothing_params["weight"].get<double>() * boundary_smoothing_params["adjustment_coeff"].get<double>() * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
 
-			logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
-		}
+				logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
+			}
 
 		iter++;
 

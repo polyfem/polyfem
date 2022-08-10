@@ -19,6 +19,7 @@ set(SOURCES
 	OptimizationProblem.cpp
 	Optimizations.hpp
 	Optimizations.cpp
+	GeneralOptimizationProblem.hpp
 )
 
 prepend_current_path(SOURCES)
