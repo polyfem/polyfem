@@ -877,4 +877,8 @@ namespace polyfem
 		nlsolver->getInfo(solver_info);
 		std::cout << solver_info << std::endl;
 	}
+
+	void general_optimization(State &state, const std::vector<std::shared_ptr<OptimizationProblem>> params, const std::shared_ptr<CompositeFunctional> j)
+	{
+	}
 } // namespace polyfem
