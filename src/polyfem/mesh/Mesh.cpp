@@ -118,7 +118,6 @@ namespace polyfem::mesh
 					assert(mesh->in_ordered_edges_(e, 0) != mesh->in_ordered_edges_(e, 1));
 				}
 				assert(mesh->in_ordered_edges_.size() > 0);
-				std::cout << mesh->in_ordered_edges_ << std::endl;
 
 				mesh->in_ordered_faces_.resize(0, 0);
 
