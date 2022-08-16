@@ -24,7 +24,8 @@ namespace polyfem
 			*problem, args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"],
 			args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		initial_solution(sol);
+		if (problem->is_time_dependent())
+			initial_solution(sol);
 
 		if (assembler.is_mixed(formulation()))
 		{
