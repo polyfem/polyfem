@@ -19,10 +19,10 @@
 static bool disable_collision = false;
 
 /*
-m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
-u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
-= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\\
-M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \\
+m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
+u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
+= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\newline
+M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \newline
 %
 M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 */
@@ -101,8 +101,7 @@ namespace polyfem
 			if (utils::is_param_valid(state.args, "time"))
 			{
 				_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-				_time_integrator->set_parameters(state.args["time"]["BDF"]);
-				_time_integrator->set_parameters(state.args["time"]["newmark"]);
+				_time_integrator->set_parameters(state.args["time"]);
 			}
 
 			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
@@ -112,7 +111,7 @@ namespace polyfem
 
 		void NLProblem::init(const TVector &full)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			assert(full.size() == full_size);
@@ -127,7 +126,7 @@ namespace polyfem
 		{
 			assert(full.size() == full_size);
 			_barrier_stiffness = 1;
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd grad_energy;
@@ -302,7 +301,7 @@ namespace polyfem
 
 		void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -328,7 +327,7 @@ namespace polyfem
 
 		double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return 1;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -380,7 +379,7 @@ namespace polyfem
 
 		bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return true;
 
 			// if (!state.problem->is_time_dependent())
@@ -420,7 +419,7 @@ namespace polyfem
 
 		bool NLProblem::is_intersection_free(const TVector &x)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return true;
 
 			Eigen::MatrixXd displaced;
@@ -479,7 +478,7 @@ namespace polyfem
 
 			double collision_energy = 0;
 			double friction_energy = 0;
-			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
+			if (!only_elastic && !disable_collision && state.is_contact_enabled())
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -543,7 +542,7 @@ namespace polyfem
 			}
 
 			Eigen::VectorXd grad_barrier;
-			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
+			if (!only_elastic && !disable_collision && state.is_contact_enabled())
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -614,7 +613,7 @@ namespace polyfem
 			}
 
 			THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-			if (!disable_collision && state.args["contact"]["enabled"])
+			if (!disable_collision && state.is_contact_enabled())
 			{
 				POLYFEM_SCOPED_TIMER("\tipc hessian(s) time");
 
@@ -714,7 +713,7 @@ namespace polyfem
 
 		void NLProblem::solution_changed(const TVector &newX)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd displaced;
@@ -725,7 +724,7 @@ namespace polyfem
 
 		double NLProblem::heuristic_max_step(const TVector &dx)
 		{
-			// if (disable_collision || !state.args["contact"]["enabled"])
+			// if (disable_collision || !state.is_contact_enabled())
 			// 	return 1;
 
 			// //pSize = average(searchDir)
@@ -744,7 +743,7 @@ namespace polyfem
 
 		void NLProblem::post_step(const int iter_num, const TVector &x)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			TVector full;

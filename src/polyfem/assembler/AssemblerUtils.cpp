@@ -10,53 +10,88 @@ namespace polyfem
 
 	namespace assembler
 	{
+		struct FormulationProperties
+		{
+			bool is_scalar;
+			bool is_fluid;
+			bool is_mixed;
+			bool is_solution_displacement;
+			bool is_linear;
+			bool is_tensor() const { return !is_scalar; }
+			bool is_nonlinear() const { return !is_linear; }
+		};
+
+		// clang-format off
+		static const std::unordered_map<std::string, FormulationProperties> formulation_properties = {
+			{"Laplacian",                      {/*is_scalar=*/true,  /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/false, /*is_linear=*/true}},
+			{"Helmholtz",                      {/*is_scalar=*/true,  /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/false, /*is_linear=*/true}},
+			{"Bilaplacian",                    {/*is_scalar=*/true,  /*is_fluid=*/false, /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/true}},
+			{"LinearElasticity",               {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/true}},
+			{"HookeLinearElasticity",          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/true}},
+			{"IncompressibleLinearElasticity", {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/true,  /*is_solution_displacement=*/true,  /*is_linear=*/true}},
+			{"SaintVenant",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
+			{"NeoHookean",                     {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
+			{"MultiModels",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
+			// {"Ogden",                          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true, /*is_linear=*/false}},
+			{"Stokes",                         {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/true}},
+			{"NavierStokes",                   {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/false}},
+			{"OperatorSplitting",              {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/false}},
+		};
+		// clang-format on
+
 		AssemblerUtils::AssemblerUtils()
 		{
 		}
 
-		std::vector<std::string> AssemblerUtils::scalar_assemblers() { return {"Laplacian", "Helmholtz", "Bilaplacian"}; }
+		std::vector<std::string> AssemblerUtils::scalar_assemblers()
+		{
+			std::vector<std::string> names;
+			for (const auto &[name, props] : formulation_properties)
+			{
+				if (props.is_scalar)
+					names.push_back(name);
+			}
+			return names;
+		}
+
 		std::vector<std::string> AssemblerUtils::tensor_assemblers()
 		{
-			return {
-				"LinearElasticity",
-				"HookeLinearElasticity",
-				"SaintVenant",
-				"NeoHookean",
-				"MultiModels",
-				// "Ogden",
-				"Stokes",
-				"NavierStokes",
-				"IncompressibleLinearElasticity"};
+			std::vector<std::string> names;
+			for (const auto &[name, props] : formulation_properties)
+			{
+				if (props.is_tensor())
+					names.push_back(name);
+			}
+			return names;
 		}
 
 		bool AssemblerUtils::is_scalar(const std::string &assembler)
 		{
-			return assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian";
+			return formulation_properties.at(assembler).is_scalar;
 		}
 
 		bool AssemblerUtils::is_fluid(const std::string &assembler)
 		{
-			return assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting";
+			return formulation_properties.at(assembler).is_fluid;
 		}
 
 		bool AssemblerUtils::is_tensor(const std::string &assembler)
 		{
-			return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" /*|| assembler == "Ogden"*/ || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "NavierStokes" || assembler == "OperatorSplitting";
+			return formulation_properties.at(assembler).is_tensor();
 		}
 		bool AssemblerUtils::is_mixed(const std::string &assembler)
 		{
-			return assembler == "OperatorSplitting" || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "Bilaplacian" || assembler == "NavierStokes";
+			return formulation_properties.at(assembler).is_mixed;
 		}
 
 		bool AssemblerUtils::is_solution_displacement(const std::string &assembler)
 		{
-			return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" || /*assembler == "Ogden" ||*/
-				   assembler == "IncompressibleLinearElasticity";
+			return formulation_properties.at(assembler).is_solution_displacement;
 		}
 
 		bool AssemblerUtils::is_linear(const std::string &assembler)
 		{
-			return assembler != "SaintVenant" && assembler != "NeoHookean" && assembler != "NavierStokes" && assembler != "MultiModels" /*&& assembler != "Ogden"*/;
+			return formulation_properties.at(assembler).is_linear;
 		}
 
 		void AssemblerUtils::assemble_problem(const std::string &assembler,
@@ -91,7 +126,7 @@ namespace polyfem
 				return;
 			// else if (assembler == "NavierStokes")
 			// return;
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	return;
 			else
 			{
@@ -110,7 +145,7 @@ namespace polyfem
 												  const AssemblyValsCache &cache,
 												  StiffnessMatrix &mass) const
 		{
-			//TODO use cache
+			// TODO use cache
 			if (assembler == "Helmholtz" || assembler == "Laplacian")
 				mass_mat_assembler_.assemble(is_volume, 1, n_basis, density, bases, gbases, cache, mass);
 			else
@@ -128,7 +163,7 @@ namespace polyfem
 													const AssemblyValsCache &phi_cache,
 													StiffnessMatrix &stiffness) const
 		{
-			//TODO add cache
+			// TODO add cache
 			if (assembler == "Bilaplacian")
 				bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
 
@@ -183,7 +218,7 @@ namespace polyfem
 			else if (assembler == "MultiModels")
 				return multi_models_elasticity_.assemble(is_volume, bases, gbases, cache, displacement);
 
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, displacement);
 			else if (assembler == "LinearElasticity")
 				return linear_elasticity_energy_.assemble(is_volume, bases, gbases, cache, displacement);
@@ -211,7 +246,7 @@ namespace polyfem
 				navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 			else
 				return;
@@ -242,7 +277,7 @@ namespace polyfem
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 			else
 				return;
@@ -270,7 +305,7 @@ namespace polyfem
 				neo_hookean_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
@@ -311,10 +346,10 @@ namespace polyfem
 				neo_hookean_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
-			else if (assembler == "Stokes" || assembler == "OperatorSplitting") //WARNING stokes and NS dont have el_id
+			else if (assembler == "Stokes" || assembler == "OperatorSplitting") // WARNING stokes and NS dont have el_id
 				stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 			else if (assembler == "NavierStokes")
 				navier_stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
@@ -349,7 +384,7 @@ namespace polyfem
 				return neo_hookean_elasticity_.local_assembler().compute_rhs(pt);
 			else if (assembler == "MultiModels")
 				return multi_models_elasticity_.local_assembler().compute_rhs(pt);
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	return ogden_elasticity_.local_assembler().compute_rhs(pt);
 
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting")

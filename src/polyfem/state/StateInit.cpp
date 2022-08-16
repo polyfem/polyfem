@@ -230,7 +230,7 @@ namespace polyfem
 
 		init_time();
 
-		if (this->args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			if (args["solver"]["contact"]["friction_iterations"] == 0)
 			{
