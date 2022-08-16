@@ -81,6 +81,8 @@ namespace polyfem
 			func = std::make_shared<CenterTrajectoryFunctional>();
 		else if (functional_name_ == "CenterXYTrajectory")
 			func = std::make_shared<CenterXYTrajectoryFunctional>();
+		else if (functional_name_ == "CenterXZTrajectory")
+			func = std::make_shared<CenterXZTrajectoryFunctional>();
 		else if (functional_name_ == "NodeTrajectory")
 			func = std::make_shared<NodeTrajectoryFunctional>();
 		else
@@ -304,7 +306,6 @@ namespace polyfem
 			else
 			{
 				j.set_dj_du(djdu_func);
-				j.set_dj_dx(djdx_func);
 			}
 
 			return j;
@@ -872,8 +873,8 @@ namespace polyfem
 	{
 		const int n_steps = state.args["time"]["time_steps"];
 		const int n_targets = target_series.size();
-		const int sample_rate = n_steps / (n_targets - 1);
-		if (sample_rate * (n_targets - 1) != n_steps)
+		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
+		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
 		else
 			logger().debug("Downsample frame rate: {}", sample_rate);
@@ -890,7 +891,13 @@ namespace polyfem
 			if (step % sample_rate != 0)
 				return 0.0;
 
-			return (x.head(2) / x(2) - target_series[step / sample_rate].head(2)).squaredNorm();
+			Eigen::VectorXd target;
+			if (transient_integral_type != "final")
+				target = target_series[step / sample_rate];
+			else
+				target = target_series.back();
+
+			return (x.head(2) / x(2) - target.head(2)).squaredNorm();
 		};
 
 		return sqrt(state.J_transient(js, func));
@@ -900,8 +907,8 @@ namespace polyfem
 	{
 		const int n_steps = state.args["time"]["time_steps"];
 		const int n_targets = target_series.size();
-		const int sample_rate = n_steps / (n_targets - 1);
-		if (sample_rate * (n_targets - 1) != n_steps)
+		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
+		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
 		else
 			logger().debug("Downsample frame rate: {}", sample_rate);
@@ -916,7 +923,10 @@ namespace polyfem
 			int step = param["step"];
 
 			Eigen::VectorXd target;
-			target = target_series[step / sample_rate];
+			if (transient_integral_type != "final")
+				target = target_series[step / sample_rate];
+			else
+				target = target_series.back();
 
 			double val = (x.head(2) / x(2) - target.head(2)).squaredNorm();
 
@@ -967,6 +977,128 @@ namespace polyfem
 	}
 
 	IntegrableFunctional CenterXYTrajectoryFunctional::get_volume_functional()
+	{
+		IntegrableFunctional j;
+		j.set_transient_integral_type(transient_integral_type);
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				val.setZero(u.rows(), 1);
+			else
+				val.setOnes(u.rows(), 1);
+		});
+		return j;
+	}
+
+	double CenterXZTrajectoryFunctional::energy(State &state)
+	{
+		const int n_steps = state.args["time_steps"];
+		const int n_targets = target_series.size();
+		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
+		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
+			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
+		else
+			logger().debug("Downsample frame rate: {}", sample_rate);
+
+		std::vector<IntegrableFunctional> js(3);
+		js[0] = get_center_trajectory_functional(0);
+		js[1] = get_center_trajectory_functional(2);
+		js[2] = get_volume_functional();
+
+		auto func = [this, sample_rate](const Eigen::VectorXd &x, const json &param) {
+			double t = param["t"];
+			int step = param["step"];
+
+			if (step % sample_rate != 0)
+				return 0.0;
+
+			Eigen::VectorXd target;
+			if (transient_integral_type != "final")
+				target = target_series[step / sample_rate];
+			else
+				target = target_series.back();
+
+			// return (x.head(2) / x(2) - target_series[step / sample_rate].head(2)).squaredNorm();
+			return pow(x(0) / x(2) - target(0), 2) + pow(x(1) / x(2) - target(2), 2);
+		};
+
+		return sqrt(state.J_transient(js, func));
+	}
+
+	Eigen::VectorXd CenterXZTrajectoryFunctional::gradient(State &state, const std::string &type)
+	{
+		const int n_steps = state.args["time_steps"];
+		const int n_targets = target_series.size();
+		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
+		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
+			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
+		else
+			logger().debug("Downsample frame rate: {}", sample_rate);
+
+		std::vector<IntegrableFunctional> js(3);
+		js[0] = get_center_trajectory_functional(0);
+		js[1] = get_center_trajectory_functional(2);
+		js[2] = get_volume_functional();
+
+		auto func = [sample_rate, this](const Eigen::VectorXd &x, const json &param) {
+			double t = param["t"];
+			int step = param["step"];
+
+			Eigen::VectorXd target;
+			if (transient_integral_type != "final")
+				target = target_series[step / sample_rate];
+			else
+				target = target_series.back();
+			
+			// double val = (x.head(2) / x(2) - target.head(2)).squaredNorm();
+			double val = pow(x(0) / x(2) - target(0), 2) + pow(x(1) / x(2) - target(2), 2);
+
+			Eigen::VectorXd grad;
+			grad.setZero(3);
+
+			if (step % sample_rate != 0)
+				return grad;
+
+			for (int d = 0; d < 2; d++)
+			{
+				grad(d) = 2 / x(2) * (x(d) / x(2) - target(2*d));
+
+				grad(2) += -x(d) * grad(d) / x(2);
+			}
+			return grad;
+		};
+
+		return state.integral_gradient(js, func, type) / 2 / energy(state);
+	}
+
+	IntegrableFunctional CenterXZTrajectoryFunctional::get_center_trajectory_functional(const int d)
+	{
+		IntegrableFunctional j;
+		j.set_transient_integral_type(transient_integral_type);
+		j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), 1);
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				return;
+			else
+				val = u.col(d) + pts.col(d);
+		});
+
+		j.set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				return;
+			val.col(d).setOnes();
+		});
+
+		j.set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(pts.rows(), pts.cols());
+			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
+				return;
+			val.col(d).setOnes();
+		});
+		return j;
+	}
+
+	IntegrableFunctional CenterXZTrajectoryFunctional::get_volume_functional()
 	{
 		IntegrableFunctional j;
 		j.set_transient_integral_type(transient_integral_type);

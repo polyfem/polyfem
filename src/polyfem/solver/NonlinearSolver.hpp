@@ -35,6 +35,7 @@ namespace cppoptlib
 		{
 			auto criteria = this->criteria();
 			criteria.fDelta = solver_params["f_delta"];
+			criteria.xDelta = solver_params["x_delta"];
 			criteria.gradNorm = solver_params["grad_norm"];
 			criteria.iterations = solver_params["max_iterations"];
 
@@ -83,7 +84,7 @@ namespace cppoptlib
 			timer_cumulative.start();
 
 			{
-				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
+				POLYFEM_SCOPED_TIMER("solution changed - constraint set update in LS", constraint_set_update_time);
 				objFunc.solution_changed(x);
 			}
 
@@ -102,12 +103,14 @@ namespace cppoptlib
 			}
 			this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 			this->m_current.fDelta = old_energy;
+			this->m_current.xDelta = 1;
 
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 			if (this->m_status != Status::Continue)
 			{
 				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 				this->m_current.fDelta = objFunc.value(x);
+				this->m_current.xDelta = x.norm();
 				polyfem::logger().log(
 					spdlog::level::info, "[{}] {} (f={} ||∇f||={} g={} tol={})",
 					name(), "Not even starting, grad is small enough", this->m_current.fDelta, first_grad_norm,
@@ -125,7 +128,7 @@ namespace cppoptlib
 			do
 			{
 				{
-					POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
+					POLYFEM_SCOPED_TIMER("solution changed - constraint set update in LS", constraint_set_update_time);
 					objFunc.solution_changed(x);
 				}
 
@@ -134,7 +137,7 @@ namespace cppoptlib
 					POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 					energy = objFunc.value(x);
 				}
-				logger().debug("energy: {}", energy);
+				// logger().debug("energy: {}", energy);
 				if (!std::isfinite(energy))
 				{
 					this->m_status = Status::UserDefined;
@@ -150,7 +153,7 @@ namespace cppoptlib
 				}
 
 				const double grad_norm = grad.norm();
-				logger().debug("grad norm: {}", grad_norm);
+				// logger().debug("grad norm: {}", grad_norm);
 				if (std::isnan(grad_norm))
 				{
 					this->m_status = Status::UserDefined;
@@ -192,7 +195,7 @@ namespace cppoptlib
 				}
 
 				const double delta_x_norm = delta_x.norm();
-				logger().debug("descent direction norm: {}", delta_x_norm);
+				// logger().debug("descent direction norm: {}", delta_x_norm);
 				if (std::isnan(delta_x_norm))
 				{
 					increase_descent_strategy();
@@ -218,6 +221,7 @@ namespace cppoptlib
 					this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 				}
 				this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
+				this->m_current.xDelta = delta_x_norm;
 
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 

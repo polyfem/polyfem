@@ -314,7 +314,7 @@ int main(int argc, char **argv)
 	// else if (matching_type == "exact-center")
 	// 	func = CompositeFunctional::create("CenterTrajectory");
 	// else if (matching_type == "last-center")
-	// 	func = CompositeFunctional::create("CenterTrajectory");
+	// 	func = CompositeFunctional::create("CenterXZTrajectory");
 	// else if (matching_type == "sine")
 	// 	func = CompositeFunctional::create("TargetY");
 	// else if (matching_type == "max-height")

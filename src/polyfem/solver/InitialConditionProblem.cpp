@@ -53,7 +53,9 @@ namespace polyfem
 
 	double InitialConditionProblem::value(const TVector &x)
 	{
-		return target_value(x);
+		if (std::isnan(cur_val))
+			cur_val = target_value(x);
+		return cur_val;
 	}
 
 	void InitialConditionProblem::target_gradient(const TVector &x, TVector &gradv)
