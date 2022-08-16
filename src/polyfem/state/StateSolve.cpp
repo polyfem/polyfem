@@ -26,6 +26,11 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 			initial_solution(sol);
+		else
+		{
+			sol.conservativeResize(rhs.size(), 1);
+			sol.setZero();
+		}
 
 		if (assembler.is_mixed(formulation()))
 		{
