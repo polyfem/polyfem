@@ -26,10 +26,10 @@
 static bool disable_collision = false;
 
 /*
-m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
-u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
-= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\\
-M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \\
+m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
+u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
+= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\newline
+M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \newline
 %
 M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 */
@@ -108,8 +108,7 @@ namespace polyfem
 			if (utils::is_param_valid(state.args, "time"))
 			{
 				_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-				_time_integrator->set_parameters(state.args["time"]["BDF"]);
-				_time_integrator->set_parameters(state.args["time"]["newmark"]);
+				_time_integrator->set_parameters(state.args["time"]);
 			}
 
 			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
@@ -136,8 +135,8 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->init(full);
 
-			//TODO: DELETE ME BELOW
-			if (disable_collision || !state.args["contact"]["enabled"])
+			// TODO: DELETE ME BELOW
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			assert(full.size() == full_size);
@@ -150,11 +149,11 @@ namespace polyfem
 
 		void NLProblem::update_barrier_stiffness(const TVector &full)
 		{
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 
 			assert(full.size() == full_size);
 			_barrier_stiffness = 1;
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd grad_energy;
@@ -169,8 +168,8 @@ namespace polyfem
 
 			grad_energy -= current_rhs();
 
-			//TODO: HACK:
-			// grad_energy.setZero();
+			// TODO: HACK:
+			//  grad_energy.setZero();
 
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
@@ -189,7 +188,7 @@ namespace polyfem
 
 		void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 		{
-			//TODO: MOVE ME OUT
+			// TODO: MOVE ME OUT
 			assert(dt > 0);
 			if (_time_integrator)
 				_time_integrator->init(x_prev, v_prev, a_prev, dt);
@@ -208,7 +207,7 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->init_lagging(full);
 
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			reduced_to_full_displaced_points(x, _displaced_prev);
 			update_lagging(x);
 		}
@@ -220,7 +219,7 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->init_lagging(full);
 
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			Eigen::MatrixXd displaced;
 			reduced_to_full_displaced_points(x, displaced);
 
@@ -240,9 +239,9 @@ namespace polyfem
 
 		double NLProblem::compute_lagging_error(const TVector &x)
 		{
-			//TODO: REFACTOR ME
-			// Check || ∇B(xᵗ⁺¹) - h² Σ F(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≦ ϵ_d
-			//     ≡ || ∇B(xᵗ⁺¹) + ∇D(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≤ ϵ_d
+			// TODO: REFACTOR ME
+			//  Check || ∇B(xᵗ⁺¹) - h² Σ F(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≦ ϵ_d
+			//      ≡ || ∇B(xᵗ⁺¹) + ∇D(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≤ ϵ_d
 			TVector grad;
 			gradient(x, grad);
 			return grad.norm();
@@ -250,7 +249,7 @@ namespace polyfem
 
 		bool NLProblem::lagging_converged(const TVector &x)
 		{
-			//TODO: REFACTOR ME
+			// TODO: REFACTOR ME
 			double tol = state.args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
 			double grad_norm = compute_lagging_error(x);
 			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad_norm, tol);
@@ -265,7 +264,7 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->update_quantities(t, full);
 
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 
 			if (is_time_dependent)
 			{
@@ -284,7 +283,7 @@ namespace polyfem
 
 		void NLProblem::substepping(const double t)
 		{
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			if (is_time_dependent)
 			{
 				rhs_computed = false;
@@ -294,7 +293,7 @@ namespace polyfem
 
 		const Eigen::MatrixXd &NLProblem::current_rhs()
 		{
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			if (!rhs_computed)
 			{
 				rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.density, state.n_boundary_samples(), state.local_neumann_boundary, state.rhs, t, _current_rhs);
@@ -330,14 +329,14 @@ namespace polyfem
 
 		void NLProblem::compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced)
 		{
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			assert(full.size() == full_size);
 			displaced = state.boundary_nodes_pos + unflatten(full, state.mesh->dimension());
 		}
 
 		void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
 		{
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			TVector full;
 			reduced_to_full(reduced, full);
 			compute_displaced_points(full, displaced);
@@ -345,9 +344,9 @@ namespace polyfem
 
 		void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
 		{
-			//TODO: DELETE ME BELOW
-			// Store the previous value used to compute the constraint set to avoid
-			// duplicate computation.
+			// TODO: DELETE ME BELOW
+			//  Store the previous value used to compute the constraint set to avoid
+			//  duplicate computation.
 			static Eigen::MatrixXd cached_displaced_surface;
 			if (cached_displaced_surface.size() == displaced_surface.size()
 				&& cached_displaced_surface == displaced_surface)
@@ -373,9 +372,9 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->line_search_begin(full0, full1);
 
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -398,7 +397,7 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->line_search_end();
 
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			_candidates.clear();
 			_use_cached_candidates = false;
 		}
@@ -413,8 +412,8 @@ namespace polyfem
 			for (auto &f : forms_)
 				step = std::min(step, f->max_step_size(full0, full1));
 
-			//TODO: DELETE ME BELOW and return step
-			if (disable_collision || !state.args["contact"]["enabled"])
+			// TODO: DELETE ME BELOW and return step
+			if (disable_collision || !state.is_contact_enabled())
 			{
 				assert(step == 1);
 				return 1;
@@ -470,8 +469,8 @@ namespace polyfem
 
 		bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 		{
-			//TODO: DELETE ME BELOW
-			if (disable_collision || !state.args["contact"]["enabled"])
+			// TODO: DELETE ME BELOW
+			if (disable_collision || !state.is_contact_enabled())
 				return true;
 
 			// if (!state.problem->is_time_dependent())
@@ -511,8 +510,8 @@ namespace polyfem
 
 		bool NLProblem::is_intersection_free(const TVector &x)
 		{
-			//TODO: DELETE ME BELOW
-			if (disable_collision || !state.args["contact"]["enabled"])
+			// TODO: DELETE ME BELOW
+			if (disable_collision || !state.is_contact_enabled())
 				return true;
 
 			Eigen::MatrixXd displaced;
@@ -532,7 +531,7 @@ namespace polyfem
 
 			return true;
 
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			TVector grad = TVector::Zero(reduced_size);
 			gradient(x1, grad, true);
 
@@ -550,7 +549,7 @@ namespace polyfem
 
 		double NLProblem::value(const TVector &x)
 		{
-			//TODO: DELETE ME BELOW
+			// TODO: DELETE ME BELOW
 			return value(x, false);
 		}
 
@@ -581,7 +580,7 @@ namespace polyfem
 
 			double collision_energy = 0;
 			double friction_energy = 0;
-			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
+			if (!only_elastic && !disable_collision && state.is_contact_enabled())
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -603,7 +602,7 @@ namespace polyfem
 			double fvalue = 0;
 			{
 				const double asd = elastic_energy + body_energy + friction_energy + lagged_damping + intertia_energy + _barrier_stiffness * collision_energy;
-				//TODO: KEEP ONLY fvalue
+				// TODO: KEEP ONLY fvalue
 
 				for (int i = 0; i < forms_.size(); ++i)
 				{
@@ -659,7 +658,7 @@ namespace polyfem
 			gradient_no_rhs(x, grad, only_elastic);
 
 			grad -= current_rhs();
-			//TODO delete above
+			// TODO delete above
 
 			TVector full, tmp;
 			reduced_to_full(x, full);
@@ -699,7 +698,7 @@ namespace polyfem
 			}
 
 			Eigen::VectorXd grad_barrier;
-			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
+			if (!only_elastic && !disable_collision && state.is_contact_enabled())
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -770,7 +769,7 @@ namespace polyfem
 			}
 
 			THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-			if (!disable_collision && state.args["contact"]["enabled"])
+			if (!disable_collision && state.is_contact_enabled())
 			{
 				POLYFEM_SCOPED_TIMER("\tipc hessian(s) time");
 
@@ -876,7 +875,7 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->solution_changed(newFull);
 
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd displaced;
@@ -887,7 +886,7 @@ namespace polyfem
 
 		double NLProblem::heuristic_max_step(const TVector &dx)
 		{
-			// if (disable_collision || !state.args["contact"]["enabled"])
+			// if (disable_collision || !state.is_contact_enabled())
 			// 	return 1;
 
 			// //pSize = average(searchDir)
@@ -912,8 +911,10 @@ namespace polyfem
 			for (auto &f : forms_)
 				f->post_step(iter_num, full);
 
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
+
+			reduced_to_full(x, full);
 
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);

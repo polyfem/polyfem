@@ -2,7 +2,7 @@
 # https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 Language: Cpp
 BasedOnStyle: LLVM
-# ColumnLimit: 80
+# ColumnLimit: 120
 ColumnLimit: 0
 UseTab: ForContinuationAndIndentation
 IndentWidth: 4
@@ -37,9 +37,11 @@ ContinuationIndentWidth: 4
 NamespaceIndentation: All
 AccessModifierOffset: -4
 BreakBeforeBinaryOperators: NonAssignment
-CommentPragmas:  '^[^ ]'
+# CommentPragmas: "\/*(.*)*\/"
 # ReflowComments: true
 # BinPackParameters: false
 # AllowAllParametersOfDeclarationOnNextLine: true
 # AlignAfterOpenBracket: AlwaysBreak
+# AlwaysBreakTemplateDeclarations: true
+# BreakConstructorInitializers: BeforeComma
 ...
