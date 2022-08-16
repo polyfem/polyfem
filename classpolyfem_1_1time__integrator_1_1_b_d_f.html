@@ -256,7 +256,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p >Backward Differential Formulas. </p>
 <p class="formulaDsp">
 \[
-    x^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} x^{t-i}\right)+ \Delta t \beta v^{t+1}\\
+    x^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} x^{t-i}\right)+ \Delta t \beta v^{t+1}\newline
     v^{t+1} = \left(\sum_{i=0}^{n-1} \alpha_{i} v^{t-i}\right)+ \Delta t \beta a^{t+1}
 \]
 </p>
@@ -324,11 +324,11 @@ Additional Inherited Members</h2></td></tr>
  
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00120">120</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00121">121</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00053">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
+<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00054">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 
 </div>
 </div>
@@ -365,9 +365,9 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula">https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00039">39</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00040">40</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00080">weighted_sum_v_prevs()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00067">weighted_sum_x_prevs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00081">weighted_sum_v_prevs()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00068">weighted_sum_x_prevs()</a>.</p>
 
 </div>
 </div>
@@ -388,11 +388,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Compute \(\beta\Delta t\). </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00126">126</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00127">127</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00053">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>.</p>
+<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00054">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
 
 </div>
 </div>
@@ -429,9 +427,9 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula">https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00053">53</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00054">54</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00120">acceleration_scaling()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00126">beta_dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00093">update_quantities()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00114">x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00121">acceleration_scaling()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00127">beta_dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00094">update_quantities()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00115">x_tilde()</a>.</p>
 
 </div>
 </div>
@@ -547,11 +545,11 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00017">17</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00018">18</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00079">polyfem::time_integrator::ImplicitTimeIntegrator::a_prevs</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prevs</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 
 </div>
 </div>
@@ -582,7 +580,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Set the number of steps parameters from a json object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">params</td><td>json containing <code>{"num_steps": 1}</code> </td></tr>
+    <tr><td class="paramname">params</td><td>json containing <code>{"BDF": {"num_steps": 1}}</code> </td></tr>
   </table>
   </dd>
 </dl>
@@ -591,9 +589,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00007">7</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_b_d_f_8hpp_source.html#l00067">num_steps</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_b_d_f_8hpp_source.html#l00068">num_steps</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 
 </div>
 </div>
@@ -631,11 +629,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00093">93</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00094">94</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00079">polyfem::time_integrator::ImplicitTimeIntegrator::a_prevs</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00053">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_b_d_f_8hpp_source.html#l00067">num_steps</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prevs</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00080">weighted_sum_v_prevs()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00067">weighted_sum_x_prevs()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00079">polyfem::time_integrator::ImplicitTimeIntegrator::a_prevs</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00054">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_b_d_f_8hpp_source.html#l00068">num_steps</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prevs</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00081">weighted_sum_v_prevs()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">weighted_sum_x_prevs()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 
 </div>
 </div>
@@ -661,11 +659,11 @@ Additional Inherited Members</h2></td></tr>
 \]
 </p>
  
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00080">80</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00081">81</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00039">alphas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prevs</a>.</p>
+<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00040">alphas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prevs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00093">update_quantities()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00114">x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00094">update_quantities()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00115">x_tilde()</a>.</p>
 
 </div>
 </div>
@@ -691,11 +689,11 @@ Additional Inherited Members</h2></td></tr>
 \]
 </p>
  
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00067">67</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00068">68</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00039">alphas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
+<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00040">alphas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00221">polyfem::State::solve_transient_navier_stokes()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00277">polyfem::State::solve_transient_scalar()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00093">update_quantities()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00114">x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00094">update_quantities()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00115">x_tilde()</a>.</p>
 
 </div>
 </div>
@@ -732,9 +730,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00114">114</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8cpp_source.html#l00115">115</a> of file <a class="el" href="_b_d_f_8cpp_source.html">BDF.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00053">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00080">weighted_sum_v_prevs()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00067">weighted_sum_x_prevs()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
+<p class="reference">References <a class="el" href="_b_d_f_8cpp_source.html#l00054">betas()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00081">weighted_sum_v_prevs()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">weighted_sum_x_prevs()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00075">polyfem::time_integrator::ImplicitTimeIntegrator::x_prevs</a>.</p>
 
 </div>
 </div>
@@ -759,9 +757,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_d_f_8hpp_source.html#l00067">67</a> of file <a class="el" href="_b_d_f_8hpp_source.html">BDF.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_d_f_8hpp_source.html#l00068">68</a> of file <a class="el" href="_b_d_f_8hpp_source.html">BDF.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00007">set_parameters()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00093">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00007">set_parameters()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00094">update_quantities()</a>.</p>
 
 </div>
 </div>

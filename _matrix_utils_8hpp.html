@@ -119,19 +119,20 @@ $(document).ready(function(){initNavTree('_matrix_utils_8hpp.html',''); initResi
   <div class="headertitle"><div class="title">MatrixUtils.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
 <code>#include &lt;Eigen/Sparse&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for MatrixUtils.hpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_matrix_utils_8hpp__incl.svg" width="276" height="202"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_matrix_utils_8hpp__incl.svg" width="471" height="202"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_matrix_utils_8hpp__dep__incl.svg" width="5054" height="752"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_matrix_utils_8hpp__dep__incl.svg" width="5622" height="767"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -184,6 +185,9 @@ Functions</h2></td></tr>
 <tr class="separator:a6de54301fc2704b7c7a5e8f03feef78e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d363fb23688cef0abe9e15953c7fde2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a1d363fb23688cef0abe9e15953c7fde2">polyfem::utils::write_sparse_matrix_csv</a> (const std::string &amp;path, const Eigen::SparseMatrix&lt; double &gt; &amp;mat)</td></tr>
 <tr class="separator:a1d363fb23688cef0abe9e15953c7fde2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2105d1e3c8062e4d90f65820a3b72ea"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab2105d1e3c8062e4d90f65820a3b72ea"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ab2105d1e3c8062e4d90f65820a3b72ea">polyfem::utils::import_matrix</a> (const std::string &amp;path, const json &amp;import, Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic &gt; &amp;mat)</td></tr>
+<tr class="separator:ab2105d1e3c8062e4d90f65820a3b72ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adac090350174847f46edfd397abd4ab4"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">polyfem::utils::flatten</a> (const Eigen::MatrixXd &amp;X)</td></tr>
 <tr class="separator:adac090350174847f46edfd397abd4ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafdbbff4a81a4fcba11129097b1109e5"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">polyfem::utils::unflatten</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int dim)</td></tr>

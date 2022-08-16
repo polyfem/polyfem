@@ -4,6 +4,7 @@ var _matrix_utils_8hpp =
     [ "std::hash< Eigen::Matrix< Scalar, Rows, Cols > >", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4" ],
     [ "determinant", "_matrix_utils_8hpp.html#abe6b8c4990a1c67602ca66d6d522d557", null ],
     [ "flatten", "_matrix_utils_8hpp.html#adac090350174847f46edfd397abd4ab4", null ],
+    [ "import_matrix", "_matrix_utils_8hpp.html#ab2105d1e3c8062e4d90f65820a3b72ea", null ],
     [ "read_matrix", "_matrix_utils_8hpp.html#a0255219cb34dae6d1d3f72c21e3f794a", null ],
     [ "read_matrix_ascii", "_matrix_utils_8hpp.html#aed345a137ad110f66d7b6776e42dfd31", null ],
     [ "read_matrix_binary", "_matrix_utils_8hpp.html#a3a7013cffc9caeecf20cdd711ddb309d", null ],

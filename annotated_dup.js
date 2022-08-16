@@ -23,6 +23,7 @@ var annotated_dup =
         [ "BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", "classpolyfem_1_1assembler_1_1_bilaplacian_main" ],
         [ "BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed" ],
         [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ],
+        [ "FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", "structpolyfem_1_1assembler_1_1_formulation_properties" ],
         [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ],
         [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
         [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
@@ -213,8 +214,8 @@ var annotated_dup =
       [ "ElasticityTensor", "classpolyfem_1_1_elasticity_tensor.html", "classpolyfem_1_1_elasticity_tensor" ],
       [ "LameParameters", "classpolyfem_1_1_lame_parameters.html", "classpolyfem_1_1_lame_parameters" ],
       [ "SolutionFrame", "classpolyfem_1_1_solution_frame.html", "classpolyfem_1_1_solution_frame" ],
-      [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
-      [ "StepData", "classpolyfem_1_1_step_data.html", "classpolyfem_1_1_step_data" ]
+      [ "SolveData", "classpolyfem_1_1_solve_data.html", "classpolyfem_1_1_solve_data" ],
+      [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ]
     ] ],
     [ "q_bases", "namespaceq__bases.html", [
       [ "Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],

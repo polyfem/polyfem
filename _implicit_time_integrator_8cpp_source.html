@@ -175,8 +175,8 @@ $(document).ready(function(){initNavTree('_implicit_time_integrator_8cpp_source.
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            }</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().warn(<span class="stringliteral">&quot;Unknown time integrator ({}); using implicit Euler&quot;</span>, name);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keywordflow">return</span> std::make_shared&lt;ImplicitEuler&gt;();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Unknown time integrator ({})&quot;</span>, name);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keywordflow">throw</span> std::runtime_error(fmt::format(<span class="stringliteral">&quot;Unknown time integrator ({})&quot;</span>, name));</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>

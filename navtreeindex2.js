@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"_polyhedron_quadrature_8hpp.html":[5,0,1,0,5,7],
 "_polyhedron_quadrature_8hpp_source.html":[5,0,1,0,5,7],
 "_problem_8cpp.html":[5,0,1,0,0,33],
 "_problem_8cpp_source.html":[5,0,1,0,0,33],
@@ -134,6 +135,12 @@ var NAVTREEINDEX2 =
 "_state_pref_8cpp_source.html":[5,0,1,0,7,5],
 "_state_solve_8cpp.html":[5,0,1,0,7,6],
 "_state_solve_8cpp_source.html":[5,0,1,0,7,6],
+"_state_solve_linear_8cpp.html":[5,0,1,0,7,7],
+"_state_solve_linear_8cpp_source.html":[5,0,1,0,7,7],
+"_state_solve_navier_stokes_8cpp.html":[5,0,1,0,7,8],
+"_state_solve_navier_stokes_8cpp_source.html":[5,0,1,0,7,8],
+"_state_solve_nonlinear_8cpp.html":[5,0,1,0,7,9],
+"_state_solve_nonlinear_8cpp_source.html":[5,0,1,0,7,9],
 "_stokes_8cpp.html":[5,0,1,0,0,39],
 "_stokes_8cpp_source.html":[5,0,1,0,0,39],
 "_stokes_8hpp.html":[5,0,1,0,0,40],
@@ -242,12 +249,5 @@ var NAVTREEINDEX2 =
 "auto__p__bases_8hpp.html#a9c2688a6744801097c2f8baa081ab3a7":[5,0,1,0,1,6,5],
 "auto__p__bases_8hpp.html#ab382930872a9372e2e2b81ef165471af":[5,0,1,0,1,6,3],
 "auto__p__bases_8hpp.html#ac26a7d8619bbd1be4b8133a921df2751":[5,0,1,0,1,6,1],
-"auto__p__bases_8hpp.html#acb852da43087916bb4919c07218b4540":[5,0,1,0,1,6,0],
-"auto__p__bases_8hpp_source.html":[5,0,1,0,1,6],
-"auto__q__bases_8cpp.html":[5,0,1,0,1,7],
-"auto__q__bases_8cpp.html#a18ee2912d770a6bc9cfe2a485a9ecb25":[5,0,1,0,1,7,4],
-"auto__q__bases_8cpp.html#a267b3426fd266f23e433bd1b63eff38c":[5,0,1,0,1,7,3],
-"auto__q__bases_8cpp.html#a7aa835e572d97cf6952c3fa9a85b4851":[5,0,1,0,1,7,2],
-"auto__q__bases_8cpp.html#aa6ad44f706a07997c6e7661ffcd5dea9":[5,0,1,0,1,7,0],
-"auto__q__bases_8cpp.html#ae625b6539e6dfcbb11dee43af4a58bc0":[5,0,1,0,1,7,5]
+"auto__p__bases_8hpp.html#acb852da43087916bb4919c07218b4540":[5,0,1,0,1,6,0]
 };

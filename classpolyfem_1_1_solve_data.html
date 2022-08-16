@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: polyfem::StepData Class Reference</title>
+<title>PolyFEM: polyfem::SolveData Class Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -93,7 +93,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('classpolyfem_1_1_step_data.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('classpolyfem_1_1_solve_data.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -114,81 +114,81 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_step_data.html',''); 
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="classpolyfem_1_1_step_data-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">polyfem::StepData Class Reference</div></div>
+<a href="classpolyfem_1_1_solve_data-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">polyfem::SolveData Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>class to store time stepping data  
- <a href="classpolyfem_1_1_step_data.html#details">More...</a></p>
+ <a href="classpolyfem_1_1_solve_data.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_state_8hpp_source.html">State.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ace4b57579d376c737880668e6cfa19e5"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_step_data.html#ace4b57579d376c737880668e6cfa19e5">rhs_assembler</a></td></tr>
-<tr class="separator:ace4b57579d376c737880668e6cfa19e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cb746b608404a9e1f66d6e19b2f86d1"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">solver::NLProblem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_step_data.html#a3cb746b608404a9e1f66d6e19b2f86d1">nl_problem</a></td></tr>
-<tr class="separator:a3cb746b608404a9e1f66d6e19b2f86d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa92f65ee11622b332bb96620f01cc9b6"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html">solver::ALNLProblem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_step_data.html#aa92f65ee11622b332bb96620f01cc9b6">alnl_problem</a></td></tr>
-<tr class="separator:aa92f65ee11622b332bb96620f01cc9b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95006eab404840d788c35dabc7b9978c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a95006eab404840d788c35dabc7b9978c">rhs_assembler</a></td></tr>
+<tr class="separator:a95006eab404840d788c35dabc7b9978c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a594976bdaa43cb6cafcbf49ee1de0a99"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">solver::NLProblem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a594976bdaa43cb6cafcbf49ee1de0a99">nl_problem</a></td></tr>
+<tr class="separator:a594976bdaa43cb6cafcbf49ee1de0a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2cef02268de7524b6648b9eddd3219e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html">solver::ALNLProblem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#ab2cef02268de7524b6648b9eddd3219e">alnl_problem</a></td></tr>
+<tr class="separator:ab2cef02268de7524b6648b9eddd3219e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >class to store time stepping data </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00070">70</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00071">71</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="aa92f65ee11622b332bb96620f01cc9b6" name="aa92f65ee11622b332bb96620f01cc9b6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa92f65ee11622b332bb96620f01cc9b6">&#9670;&nbsp;</a></span>alnl_problem</h2>
+<a id="ab2cef02268de7524b6648b9eddd3219e" name="ab2cef02268de7524b6648b9eddd3219e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2cef02268de7524b6648b9eddd3219e">&#9670;&nbsp;</a></span>alnl_problem</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html">solver::ALNLProblem</a>&gt; polyfem::StepData::alnl_problem</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html">solver::ALNLProblem</a>&gt; polyfem::SolveData::alnl_problem</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00076">76</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00065">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00121">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00038">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
+
+</div>
+</div>
+<a id="a594976bdaa43cb6cafcbf49ee1de0a99" name="a594976bdaa43cb6cafcbf49ee1de0a99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a594976bdaa43cb6cafcbf49ee1de0a99">&#9670;&nbsp;</a></span>nl_problem</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">solver::NLProblem</a>&gt; polyfem::SolveData::nl_problem</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00075">75</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00065">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_output_8cpp_source.html#l01631">polyfem::State::save_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l01170">polyfem::State::save_volume()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00121">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00038">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
 
 </div>
 </div>
-<a id="a3cb746b608404a9e1f66d6e19b2f86d1" name="a3cb746b608404a9e1f66d6e19b2f86d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cb746b608404a9e1f66d6e19b2f86d1">&#9670;&nbsp;</a></span>nl_problem</h2>
+<a id="a95006eab404840d788c35dabc7b9978c" name="a95006eab404840d788c35dabc7b9978c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95006eab404840d788c35dabc7b9978c">&#9670;&nbsp;</a></span>rhs_assembler</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">solver::NLProblem</a>&gt; polyfem::StepData::nl_problem</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a>&gt; polyfem::SolveData::rhs_assembler</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00074">74</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l01619">polyfem::State::save_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l01170">polyfem::State::save_volume()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00764">polyfem::State::solve_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00424">polyfem::State::solve_transient_tensor_non_linear()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00442">polyfem::State::solve_transient_tensor_non_linear_init()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00578">polyfem::State::solve_transient_tensor_non_linear_step()</a>.</p>
-
-</div>
-</div>
-<a id="ace4b57579d376c737880668e6cfa19e5" name="ace4b57579d376c737880668e6cfa19e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace4b57579d376c737880668e6cfa19e5">&#9670;&nbsp;</a></span>rhs_assembler</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a>&gt; polyfem::StepData::rhs_assembler</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00073">73</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00075">polyfem::State::init_transient()</a>, and <a class="el" href="_state_8cpp_source.html#l01362">polyfem::State::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00065">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00010">polyfem::State::init_solve()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00073">polyfem::State::initial_acceleration()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00045">polyfem::State::initial_solution()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00063">polyfem::State::initial_velocity()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00014">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00015">polyfem::State::solve_navier_stokes()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00070">polyfem::State::solve_transient_linear()</a>, <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00032">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 
 </div>
 </div>
@@ -201,7 +201,7 @@ Public Attributes</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1_step_data.html">StepData</a></li>
+    <li class="navelem"><a class="el" href="namespacepolyfem.html">polyfem</a></li><li class="navelem"><a class="el" href="classpolyfem_1_1_solve_data.html">SolveData</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>

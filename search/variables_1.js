@@ -7,7 +7,7 @@ var searchData=
   ['all_5fto_5fvalid_5felemmap_4',['all_to_valid_elemMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a441a2867a465b75ad7d1150b5cf02662',1,'polyfem::mesh::NCMesh2D::all_to_valid_elemMap()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a160f6751fce5547c47f88fa7601de576',1,'polyfem::mesh::NCMesh3D::all_to_valid_elemMap()']]],
   ['all_5fto_5fvalid_5ffacemap_5',['all_to_valid_faceMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a98872d39f21398cf8c98a1d5c7c10d37',1,'polyfem::mesh::NCMesh3D']]],
   ['all_5fto_5fvalid_5fvertexmap_6',['all_to_valid_vertexMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ab79d944ce28ecf37c6ab902faf0537b5',1,'polyfem::mesh::NCMesh2D::all_to_valid_vertexMap()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a71702aab18449a3091b582bc82c892d2',1,'polyfem::mesh::NCMesh3D::all_to_valid_vertexMap()']]],
-  ['alnl_5fproblem_7',['alnl_problem',['../classpolyfem_1_1_step_data.html#aa92f65ee11622b332bb96620f01cc9b6',1,'polyfem::StepData']]],
+  ['alnl_5fproblem_7',['alnl_problem',['../classpolyfem_1_1_solve_data.html#ab2cef02268de7524b6648b9eddd3219e',1,'polyfem::SolveData']]],
   ['alphas_5f_8',['alphas_',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#ae45a94a6a17e1535a4d6d97195c3c6f0',1,'polyfem::assembler::OgdenElasticity']]],
   ['angular_5fv0_5f_9',['angular_v0_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a3e4075a5d4aba86b9c3811c6021c442f',1,'polyfem::problem::DoubleTorsionElasticProblem']]],
   ['angular_5fv1_5f_10',['angular_v1_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a58ce4d96db7534496b56e38c4a465f60',1,'polyfem::problem::DoubleTorsionElasticProblem']]],

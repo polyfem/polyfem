@@ -37,7 +37,7 @@ var searchData=
   ['all_5fto_5fvalid_5ffacemap_34',['all_to_valid_faceMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a98872d39f21398cf8c98a1d5c7c10d37',1,'polyfem::mesh::NCMesh3D']]],
   ['all_5fto_5fvalid_5fvertex_35',['all_to_valid_vertex',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a5a425c8ffcb5bd8f061725153af63396',1,'polyfem::mesh::NCMesh2D::all_to_valid_vertex()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a095ce65007b1fc4c1e312ee5dab56608',1,'polyfem::mesh::NCMesh3D::all_to_valid_vertex(const int id) const']]],
   ['all_5fto_5fvalid_5fvertexmap_36',['all_to_valid_vertexMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a71702aab18449a3091b582bc82c892d2',1,'polyfem::mesh::NCMesh3D::all_to_valid_vertexMap()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ab79d944ce28ecf37c6ab902faf0537b5',1,'polyfem::mesh::NCMesh2D::all_to_valid_vertexMap()']]],
-  ['alnl_5fproblem_37',['alnl_problem',['../classpolyfem_1_1_step_data.html#aa92f65ee11622b332bb96620f01cc9b6',1,'polyfem::StepData']]],
+  ['alnl_5fproblem_37',['alnl_problem',['../classpolyfem_1_1_solve_data.html#ab2cef02268de7524b6648b9eddd3219e',1,'polyfem::SolveData']]],
   ['alnlproblem_38',['ALNLProblem',['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#a9de1f344620c402bd62e20175b2ae2bd',1,'polyfem::solver::ALNLProblem::ALNLProblem()'],['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html',1,'polyfem::solver::ALNLProblem']]],
   ['alnlproblem_2ecpp_39',['ALNLProblem.cpp',['../_a_l_n_l_problem_8cpp.html',1,'']]],
   ['alnlproblem_2ehpp_40',['ALNLProblem.hpp',['../_a_l_n_l_problem_8hpp.html',1,'']]],

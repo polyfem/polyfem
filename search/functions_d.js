@@ -57,7 +57,7 @@ var searchData=
   ['nodeproblem_54',['NodeProblem',['../classpolyfem_1_1problem_1_1_node_problem.html#a0c96b9f95639dfba3fbeab2ebf30f3f5',1,'polyfem::problem::NodeProblem']]],
   ['nodevalues_55',['NodeValues',['../classpolyfem_1_1problem_1_1_node_values.html#a78378941c6a46acea1516d32cc1d49cf',1,'polyfem::problem::NodeValues']]],
   ['non_5fzeros_56',['non_zeros',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a31318ec89e17071e60af93d25530df33',1,'polyfem::utils::SpareMatrixCache']]],
-  ['nonlinearsolver_57',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html#a674d52b06a2d7e482bdf31b5bc8ee2a5',1,'cppoptlib::NonlinearSolver']]],
+  ['nonlinearsolver_57',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html#ae36f0065ba544a95cfc1faf5e3eaad06',1,'cppoptlib::NonlinearSolver']]],
   ['normal_58',['normal',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#ac7477d65d1416630ff8b40369854474f',1,'polyfem::mesh::Obstacle::Plane']]],
   ['normal_5ffor_5fpolygon_5fedge_59',['normal_for_polygon_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5',1,'polyfem::utils::BoundarySampler']]],
   ['normal_5ffor_5fquad_5fedge_60',['normal_for_quad_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a2fe4e23eb3764fe8f7b25db3e4209fad',1,'polyfem::utils::BoundarySampler']]],

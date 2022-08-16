@@ -8,6 +8,7 @@ var namespacepolyfem_1_1assembler =
     [ "BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", "classpolyfem_1_1assembler_1_1_bilaplacian_main" ],
     [ "BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed" ],
     [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ],
+    [ "FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", "structpolyfem_1_1assembler_1_1_formulation_properties" ],
     [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ],
     [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
     [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
