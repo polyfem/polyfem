@@ -191,26 +191,6 @@ namespace polyfem
 			Eigen::MatrixXi &tris);
 
 		///
-		/// @brief      Save edge-graph into a .obj
-		///
-		/// @param[in]  filename   Filename to write to
-		/// @param[in]  V          #V x 3 input vertices positions
-		/// @param[in]  E          #E x 2 input edge indices
-		///
-		void save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E);
-
-		///
-		/// @brief      read a mesh
-		///
-		/// @param[in]  mesh_path              path to mesh file
-		/// @param[out] V                      #V x 3/2 output vertices positions
-		/// @param[out] C                      #C cells (e.g., tri/tets/quad/hexes)
-		/// @param[out] elements               #C indices for high-order nodes
-		/// @param[out] w                      #C weights for rational polynomials
-		///
-		bool read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids);
-
-		///
 		/// @brief      read a surface mesh
 		///
 		/// @param[in]  mesh_path       path to mesh file
@@ -226,5 +206,9 @@ namespace polyfem
 
 		/// Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)
 		int count_faces(const int dim, const Eigen::MatrixXi &cells);
+
+		/// @brief      assing edges to M
+		/// @param[in/out]  M       geogram mesh to appen edges to
+		void generate_edges(GEO::Mesh &M);
 	} // namespace mesh
 } // namespace polyfem

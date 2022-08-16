@@ -1122,14 +1122,27 @@
         "type": "object",
         "type_name": "HookeLinearElasticity",
         "required": [
-            "type"
+            "type",
+            "E",
+            "nu"
         ],
         "optional": [
             "id",
-            "rho",
-            "elasticity_tensor",
-            "E",
-            "nu"
+            "rho"
+        ],
+        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "HookeLinearElasticity",
+        "required": [
+            "type",
+            "elasticity_tensor"
+        ],
+        "optional": [
+            "id",
+            "rho"
         ],
         "doc": "Material Parameters including id, E, nu, Density(rho), type()"
     },
@@ -1138,14 +1151,27 @@
         "type": "object",
         "type_name": "SaintVenant",
         "required": [
-            "type"
+            "type",
+            "E",
+            "nu"
         ],
         "optional": [
             "id",
-            "rho",
-            "elasticity_tensor",
-            "E",
-            "nu"
+            "rho"
+        ],
+        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "SaintVenant",
+        "required": [
+            "type",
+            "elasticity_tensor"
+        ],
+        "optional": [
+            "id",
+            "rho"
         ],
         "doc": "Material Parameters including id, E, nu, Density(rho), type()"
     },

@@ -45,6 +45,9 @@ int main(int argc, char **argv)
 	bool is_strict = true;
 	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
 
+	bool fallback_solver = false;
+	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
+
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
 
@@ -118,7 +121,7 @@ int main(int argc, char **argv)
 
 	State state(max_threads);
 	state.init_logger(log_file, log_level, is_quiet);
-	state.init(in_args, is_strict, output_dir);
+	state.init(in_args, is_strict, output_dir, fallback_solver);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
