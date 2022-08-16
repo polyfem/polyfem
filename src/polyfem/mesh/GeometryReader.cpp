@@ -50,6 +50,7 @@ namespace polyfem::mesh
 				A, b);
 			mesh->apply_affine_transformation(A, b);
 		}
+		mesh->bounding_box(bbox[0], bbox[1]);
 
 		// --------------------------------------------------------------------
 

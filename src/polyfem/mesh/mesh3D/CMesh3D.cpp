@@ -44,6 +44,37 @@ namespace polyfem
 
 			Navigation3D::prepare_mesh(mesh_);
 			compute_elements_tag();
+
+			in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(n_vertices(), 0, n_vertices() - 1);
+			assert(in_ordered_vertices_[0] == 0);
+			assert(in_ordered_vertices_[1] == 1);
+			assert(in_ordered_vertices_[2] == 2);
+			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == n_vertices() - 1);
+
+			in_ordered_edges_.resize(mesh_.edges.size(), 2);
+
+			for (int e = 0; e < (int)mesh_.edges.size(); ++e)
+			{
+				assert(mesh_.edges[e].vs.size() == 2);
+				for (int lv = 0; lv < 2; ++lv)
+				{
+					in_ordered_edges_(e, lv) = mesh_.edges[e].vs[lv];
+				}
+			}
+			assert(in_ordered_edges_.size() > 0);
+
+			in_ordered_faces_.resize(mesh_.faces.size(), mesh_.faces[0].vs.size());
+
+			for (int f = 0; f < (int)mesh_.faces.size(); ++f)
+			{
+				assert(in_ordered_faces_.cols() == mesh_.faces[f].vs.size());
+
+				for (int lv = 0; lv < in_ordered_faces_.cols(); ++lv)
+				{
+					in_ordered_faces_(f, lv) = mesh_.faces[f].vs[lv];
+				}
+			}
+			assert(in_ordered_faces_.size() > 0);
 		}
 
 		bool CMesh3D::load(const std::string &path)

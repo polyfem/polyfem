@@ -38,6 +38,7 @@ target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
 
 include(polyfem_data)
 target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")
+target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_TEST_DIR=\"${CMAKE_SOURCE_DIR}/tests\")
 
 target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 

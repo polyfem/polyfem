@@ -71,6 +71,27 @@ namespace polyfem
 			}
 
 			compute_elements_tag();
+			generate_edges(mesh_);
+
+			in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(mesh_.vertices.nb(), 0, mesh_.vertices.nb() - 1);
+			assert(in_ordered_vertices_[0] == 0);
+			assert(in_ordered_vertices_[1] == 1);
+			assert(in_ordered_vertices_[2] == 2);
+			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == mesh_.vertices.nb() - 1);
+
+			in_ordered_edges_.resize(mesh_.edges.nb(), 2);
+
+			for (int e = 0; e < (int)mesh_.edges.nb(); ++e)
+			{
+				for (int lv = 0; lv < 2; ++lv)
+				{
+					in_ordered_edges_(e, lv) = mesh_.edges.vertex(e, lv);
+				}
+				assert(in_ordered_edges_(e, 0) != in_ordered_edges_(e, 1));
+			}
+			assert(in_ordered_edges_.size() > 0);
+
+			in_ordered_faces_.resize(0, 0);
 		}
 
 		bool CMesh2D::load(const std::string &path)
