@@ -56,7 +56,8 @@ template <typename Form>
 void test_form(Form &form, const State &state)
 {
 	static const int n_rand = 10;
-	static const double eps = 1e-6;
+	static const double eps = 1e-7;
+	static const double margin = 1e-2;
 
 	Eigen::MatrixXd x(state.n_bases * 2, 1);
 	x.setZero();
@@ -75,10 +76,10 @@ void test_form(Form &form, const State &state)
 
 			const double d_energy = form.value(d_x);
 			const double fd = (d_energy - energy) / eps;
-			if (rand == 0) //zero displacement is a minimum, grad should be zero
+			if (rand == 0) // zero displacement is a minimum, grad should be zero
 				REQUIRE(grad(d) == Approx(0).margin(1e-10));
 			else
-				REQUIRE(grad(d) == Approx(fd).margin(eps * 100));
+				REQUIRE(grad(d) == Approx(fd).margin(margin));
 		}
 
 		x.setRandom();
