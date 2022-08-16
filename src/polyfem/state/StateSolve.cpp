@@ -24,13 +24,7 @@ namespace polyfem
 			*problem, args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"],
 			args["solver"]["linear"]["precond"], rhs_solver_params);
 
-		if (problem->is_time_dependent())
-			initial_solution(sol);
-		else
-		{
-			sol.conservativeResize(rhs.size(), 1);
-			sol.setZero();
-		}
+		initial_solution(sol);
 
 		if (assembler.is_mixed(formulation()))
 		{
@@ -55,7 +49,15 @@ namespace polyfem
 		if (!in_path.empty())
 			import_matrix(in_path, args["import"], solution);
 		else
-			solve_data.rhs_assembler->initial_solution(solution);
+		{
+			if (problem->is_time_dependent())
+				solve_data.rhs_assembler->initial_solution(solution);
+			else
+			{
+				solution.resize(rhs.size(), 1);
+				solution.setZero();
+			}
+		}
 	}
 
 	void State::initial_velocity(Eigen::MatrixXd &velocity) const
