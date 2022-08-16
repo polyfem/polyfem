@@ -39,13 +39,13 @@ namespace polyfem
 			// if (use_adaptive_barrier_stiffness)
 			// {
 			// 	barrier_stiffness_ = 1;
-			// 	utils::logger().debug("Using adaptive barrier stiffness");
+			// 	logger().debug("Using adaptive barrier stiffness");
 			// }
 			// else
 			// {
 			// 	assert(state.args["solver"]["contact"]["barrier_stiffness"].is_number());
 			// 	_barrier_stiffness = state.args["solver"]["contact"]["barrier_stiffness"];
-			// 	utils::logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
+			// 	logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 			// }
 
 			prev_distance_ = -1;
@@ -77,7 +77,7 @@ namespace polyfem
 			// 	ipc::world_bbox_diagonal_length(displaced), dhat_, state_.avg_mass,
 			// 	grad_energy, grad_barrier, max_barrier_stiffness_);
 
-			utils::logger().debug("adaptive barrier form stiffness {}", barrier_stiffness_);
+			logger().debug("adaptive barrier form stiffness {}", barrier_stiffness_);
 		}
 
 		void ContactForm::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
@@ -157,7 +157,7 @@ namespace polyfem
 				max_step = ipc::compute_collision_free_stepsize(
 					state_.collision_mesh, V0, V1,
 					broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
-				// utils::logger().trace("best step {}", max_step);
+				// logger().trace("best step {}", max_step);
 
 #ifndef NDEBUG
 			// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
@@ -166,13 +166,13 @@ namespace polyfem
 			while (ipc::has_intersections(state_.collision_mesh, V_toi))
 			{
 				const double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
-				utils::logger().error("taking max_step results in intersections (max_step={:g})", max_step);
+				logger().error("taking max_step results in intersections (max_step={:g})", max_step);
 				max_step /= 2.0;
 
 				if (max_step <= 0 || Linf == 0)
 				{
 					const std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
-					utils::logger().error(msg);
+					logger().error(msg);
 					throw std::runtime_error(msg);
 				}
 				V_toi = (V1 - V0) * max_step + V0;
@@ -228,7 +228,7 @@ namespace polyfem
 					// 	barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
 					if (prev_barrier_stiffness != barrier_stiffness_)
 					{
-						polyfem::utils::logger().debug(
+						polyfem::logger().debug(
 							"updated barrier stiffness from {:g} to {:g}",
 							prev_barrier_stiffness, barrier_stiffness_);
 					}
