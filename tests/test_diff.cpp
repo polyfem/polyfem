@@ -693,6 +693,15 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 				"E": 200,
 				"nu": 0.3,
 				"rho": 1
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1,
+					"skip_frame": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
 			}
 		}
 	)"_json;
@@ -873,7 +882,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["materials"]["phi"] = 1;
 	in_args_ref["materials"]["psi"] = 20;
-	state_reference.init_logger("", spdlog::level::level_enum::info, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
@@ -1043,7 +1052,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	in_args_ref["materials"]["phi"] = 1;
 	in_args_ref["materials"]["psi"] = 20;
 	in_args_ref["contact"]["friction_coefficient"] = 0.2;
-	state_reference.init_logger("", spdlog::level::level_enum::info, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
@@ -1185,6 +1194,15 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 				"rho": 1000,
 				"phi": 10,
 				"psi": 10
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1,
+					"skip_frame": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
 			}
 		}
 	)"_json;
@@ -1325,6 +1343,15 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 				"E": 1e5,
 				"nu": 0.3,
 				"rho": 1000
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1,
+					"skip_frame": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
 			}
 		}
 	)"_json;
@@ -1381,502 +1408,502 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(1e-5));
 }
 
-TEST_CASE("initial-contact-3d", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"(
-		{
-			"geometry": [
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0,
-							0
-						],
-						"scale": [
-							3,
-							0.02,
-							1
-						]
-					},
-					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
-				},
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0.3,
-							0
-						],
-						"scale": [
-							0.5,
-							0.5,
-							0.5
-						]
-					},
-					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
-				}
-			],
-			"space": {
-				"discr_order": 1,
-				"advanced": {
-					"quadrature_order": 5
-				}
-			},
-			"time": {
-				"tend": 0.2,
-				"dt": 0.02
-			},
-			"contact": {
-				"enabled": true,
-				"friction_coefficient": 0.5
-			},
-			"solver": {
-				"contact": {
-					"barrier_stiffness": 100000.0
-				}
-			},
-			"boundary_conditions": {
-				"rhs": [
-					0,
-					9.8,
-					0
-				],
-				"dirichlet_boundary": [
-					{
-						"id": 3,
-						"value": [
-							0,
-							0,
-							0
-						]
-					}
-				]
-			},
-			"initial_conditions": {
-				"velocity": [
-					{
-						"id": 1,
-						"value": [
-							2,
-							-2,
-							-2
-						]
-					}
-				]
-			},
-			"differentiable": true,
-			"materials": [
-				{
-					"id": 1,
-					"E": 1000000.0,
-					"nu": 0.3,
-					"rho": 1000,
-					"type": "NeoHookean"
-				},
-				{
-					"id": 3,
-					"E": 1000000.0,
-					"nu": 0.3,
-					"rho": 1000,
-					"type": "NeoHookean"
-				}
-			],
-			"output": {
-				"paraview": {
-					"vismesh_rel_area": 1
-				},
-				"advanced": {
-					"save_time_sequence": false
-				}
-			}
-		}
-	)"_json;
-	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
+// TEST_CASE("initial-contact-3d", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR;
+// 	json in_args = R"(
+// 		{
+// 			"geometry": [
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0,
+// 							0
+// 						],
+// 						"scale": [
+// 							3,
+// 							0.02,
+// 							1
+// 						]
+// 					},
+// 					"volume_selection": 3,
+// 					"surface_selection": 3,
+// 					"n_refs": 0,
+// 					"advanced": {
+// 						"normalize_mesh": false
+// 					}
+// 				},
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0.3,
+// 							0
+// 						],
+// 						"scale": [
+// 							0.5,
+// 							0.5,
+// 							0.5
+// 						]
+// 					},
+// 					"volume_selection": 1,
+// 					"surface_selection": 1,
+// 					"n_refs": 0,
+// 					"advanced": {
+// 						"normalize_mesh": false
+// 					}
+// 				}
+// 			],
+// 			"space": {
+// 				"discr_order": 1,
+// 				"advanced": {
+// 					"quadrature_order": 5
+// 				}
+// 			},
+// 			"time": {
+// 				"tend": 0.2,
+// 				"dt": 0.02
+// 			},
+// 			"contact": {
+// 				"enabled": true,
+// 				"friction_coefficient": 0.5
+// 			},
+// 			"solver": {
+// 				"contact": {
+// 					"barrier_stiffness": 100000.0
+// 				}
+// 			},
+// 			"boundary_conditions": {
+// 				"rhs": [
+// 					0,
+// 					9.8,
+// 					0
+// 				],
+// 				"dirichlet_boundary": [
+// 					{
+// 						"id": 3,
+// 						"value": [
+// 							0,
+// 							0,
+// 							0
+// 						]
+// 					}
+// 				]
+// 			},
+// 			"initial_conditions": {
+// 				"velocity": [
+// 					{
+// 						"id": 1,
+// 						"value": [
+// 							2,
+// 							-2,
+// 							-2
+// 						]
+// 					}
+// 				]
+// 			},
+// 			"differentiable": true,
+// 			"materials": [
+// 				{
+// 					"id": 1,
+// 					"E": 1000000.0,
+// 					"nu": 0.3,
+// 					"rho": 1000,
+// 					"type": "NeoHookean"
+// 				},
+// 				{
+// 					"id": 3,
+// 					"E": 1000000.0,
+// 					"nu": 0.3,
+// 					"rho": 1000,
+// 					"type": "NeoHookean"
+// 				}
+// 			],
+// 			"output": {
+// 				"paraview": {
+// 					"vismesh_rel_area": 1
+// 				},
+// 				"advanced": {
+// 					"save_time_sequence": false
+// 				}
+// 			}
+// 		}
+// 	)"_json;
+// 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+// 	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
-	// compute reference solution
-	State state_reference(8);
-	auto in_args_ref = in_args;
-	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 0;
-	in_args_ref["initial_conditions"]["velocity"][0]["value"][2] = 0;
-	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args_ref);
-	state_reference.load_mesh();
-	state_reference.solve();
+// 	// compute reference solution
+// 	State state_reference(8);
+// 	auto in_args_ref = in_args;
+// 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 0;
+// 	in_args_ref["initial_conditions"]["velocity"][0]["value"][2] = 0;
+// 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
+// 	state_reference.init(in_args_ref);
+// 	state_reference.load_mesh();
+// 	state_reference.solve();
 
-	State state(8);
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
-	state.load_mesh();
-	state.solve();
+// 	State state(8);
+// 	state.init_logger("", spdlog::level::level_enum::err, false);
+// 	state.init(in_args);
+// 	state.load_mesh();
+// 	state.solve();
 
-	TrajectoryFunctional func;
-	func.set_transient_integral_type("final");
-	func.set_reference(&state_reference, state, {1, 3});
-	func.set_interested_ids({1}, {});
-	func.set_volume_integral();
+// 	TrajectoryFunctional func;
+// 	func.set_transient_integral_type("final");
+// 	func.set_reference(&state_reference, state, {1, 3});
+// 	func.set_interested_ids({1}, {});
+// 	func.set_volume_integral();
 
-	double functional_val = func.energy(state);
+// 	double functional_val = func.energy(state);
 
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_bases * 3, 1);
-	for (int i = 0; i < state.n_bases; i++)
-	{
-		velocity_discrete(i * 3 + 0) = -2.;
-		velocity_discrete(i * 3 + 1) = -1.;
-		velocity_discrete(i * 3 + 2) = 2.;
-	}
+// 	Eigen::MatrixXd velocity_discrete;
+// 	velocity_discrete.setZero(state.n_bases * 3, 1);
+// 	for (int i = 0; i < state.n_bases; i++)
+// 	{
+// 		velocity_discrete(i * 3 + 0) = -2.;
+// 		velocity_discrete(i * 3 + 1) = -1.;
+// 		velocity_discrete(i * 3 + 2) = 2.;
+// 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+// 	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
 
-	const double step_size = 1e-7;
-	state.initial_vel_update += velocity_discrete * step_size;
-	state.solve_problem();
-	double next_functional_val = func.energy(state);
+// 	const double step_size = 1e-7;
+// 	state.initial_vel_update += velocity_discrete * step_size;
+// 	state.solve_problem();
+// 	double next_functional_val = func.energy(state);
 
-	state.initial_vel_update -= 2 * velocity_discrete * step_size;
-	state.solve_problem();
-	double former_functional_val = func.energy(state);
+// 	state.initial_vel_update -= 2 * velocity_discrete * step_size;
+// 	state.solve_problem();
+// 	double former_functional_val = func.energy(state);
 
-	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2.;
+// 	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2.;
 
-	std::cout << finite_difference << std::endl;
+// 	std::cout << finite_difference << std::endl;
 
-	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(2e-4));
-}
+// 	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(2e-4));
+// }
 
-TEST_CASE("material-contact-3d", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"(
-		{
-			"geometry": [
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0,
-							0
-						],
-						"scale": [
-							1,
-							0.02,
-							1
-						]
-					},
-					"volume_selection": 3,
-					"surface_selection": 3
-				},
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0.56,
-							0
-						],
-						"scale": [
-							1,
-							0.02,
-							1
-						]
-					},
-					"volume_selection": 2,
-					"surface_selection": 2
-				},
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0.27,
-							0
-						],
-						"scale": [
-							0.5,
-							0.5,
-							0.5
-						]
-					},
-					"volume_selection": 1,
-					"surface_selection": 1
-				}
-			],
-			"space": {
-				"discr_order": 1
-			},
-			"time": {
-				"tend": 0.08,
-				"dt": 0.01
-			},
-			"contact": {
-				"enabled": true,
-				"friction_coefficient": 0.3
-			},
-			"solver": {
-				"contact": {
-					"barrier_stiffness": 50000.0
-				}
-			},
-			"boundary_conditions": {
-				"rhs": [
-					0,
-					9.8,
-					0
-				],
-				"dirichlet_boundary": [
-					{
-						"id": 3,
-						"value": [
-							0,
-							0,
-							0
-						]
-					},
-					{
-						"id": 2,
-						"value": [
-							0,
-							"-0.5*t",
-							0
-						]
-					}
-				]
-			},
-			"differentiable": true,
-			"materials": {
-				"type": "NeoHookean",
-				"E": 1000000.0,
-				"nu": 0.3,
-				"rho": 100,
-				"psi": 0,
-				"phi": 0
-			},
-			"output": {
-				"paraview": {
-					"vismesh_rel_area": 1
-				}
-			}
-		}
-	)"_json;
-	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["geometry"][2]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
+// TEST_CASE("material-contact-3d", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR;
+// 	json in_args = R"(
+// 		{
+// 			"geometry": [
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0,
+// 							0
+// 						],
+// 						"scale": [
+// 							1,
+// 							0.02,
+// 							1
+// 						]
+// 					},
+// 					"volume_selection": 3,
+// 					"surface_selection": 3
+// 				},
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0.56,
+// 							0
+// 						],
+// 						"scale": [
+// 							1,
+// 							0.02,
+// 							1
+// 						]
+// 					},
+// 					"volume_selection": 2,
+// 					"surface_selection": 2
+// 				},
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0.27,
+// 							0
+// 						],
+// 						"scale": [
+// 							0.5,
+// 							0.5,
+// 							0.5
+// 						]
+// 					},
+// 					"volume_selection": 1,
+// 					"surface_selection": 1
+// 				}
+// 			],
+// 			"space": {
+// 				"discr_order": 1
+// 			},
+// 			"time": {
+// 				"tend": 0.08,
+// 				"dt": 0.01
+// 			},
+// 			"contact": {
+// 				"enabled": true,
+// 				"friction_coefficient": 0.3
+// 			},
+// 			"solver": {
+// 				"contact": {
+// 					"barrier_stiffness": 50000.0
+// 				}
+// 			},
+// 			"boundary_conditions": {
+// 				"rhs": [
+// 					0,
+// 					9.8,
+// 					0
+// 				],
+// 				"dirichlet_boundary": [
+// 					{
+// 						"id": 3,
+// 						"value": [
+// 							0,
+// 							0,
+// 							0
+// 						]
+// 					},
+// 					{
+// 						"id": 2,
+// 						"value": [
+// 							0,
+// 							"-0.5*t",
+// 							0
+// 						]
+// 					}
+// 				]
+// 			},
+// 			"differentiable": true,
+// 			"materials": {
+// 				"type": "NeoHookean",
+// 				"E": 1000000.0,
+// 				"nu": 0.3,
+// 				"rho": 100,
+// 				"psi": 0,
+// 				"phi": 0
+// 			},
+// 			"output": {
+// 				"paraview": {
+// 					"vismesh_rel_area": 1
+// 				}
+// 			}
+// 		}
+// 	)"_json;
+// 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+// 	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+// 	in_args["geometry"][2]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
-	// compute reference solution
-	State state_reference(8);
-	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args);
-	state_reference.args["materials"]["E"] = 1e4;
-	state_reference.load_mesh();
-	state_reference.solve();
+// 	// compute reference solution
+// 	State state_reference(8);
+// 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
+// 	state_reference.init(in_args);
+// 	state_reference.args["materials"]["E"] = 1e4;
+// 	state_reference.load_mesh();
+// 	state_reference.solve();
 
-	State state(8);
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
-	state.load_mesh();
-	state.solve();
+// 	State state(8);
+// 	state.init_logger("", spdlog::level::level_enum::err, false);
+// 	state.init(in_args);
+// 	state.load_mesh();
+// 	state.solve();
 
-	TrajectoryFunctional func;
-	func.set_reference(&state_reference, state, {1, 2, 3});
-	func.set_interested_ids({1}, {});
-	func.set_volume_integral();
+// 	TrajectoryFunctional func;
+// 	func.set_reference(&state_reference, state, {1, 2, 3});
+// 	func.set_interested_ids({1}, {});
+// 	func.set_volume_integral();
 
-	double functional_val = func.energy(state);
+// 	double functional_val = func.energy(state);
 
-	Eigen::MatrixXd velocity_discrete;
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		Eigen::MatrixXd vel(position.rows(), 2);
-		for (int i = 0; i < vel.rows(); i++)
-		{
-			vel(i, 0) = 1;
-			vel(i, 1) = 1;
-		}
-		vel *= 1e3;
-		return vel;
-	};
-	state.sample_field(velocity, velocity_discrete, 0);
+// 	Eigen::MatrixXd velocity_discrete;
+// 	auto velocity = [](const Eigen::MatrixXd &position) {
+// 		Eigen::MatrixXd vel(position.rows(), 2);
+// 		for (int i = 0; i < vel.rows(); i++)
+// 		{
+// 			vel(i, 0) = 1;
+// 			vel(i, 1) = 1;
+// 		}
+// 		vel *= 1e3;
+// 		return vel;
+// 	};
+// 	state.sample_field(velocity, velocity_discrete, 0);
 
-	Eigen::VectorXd one_form = func.gradient(state, "material");
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
+// 	Eigen::VectorXd one_form = func.gradient(state, "material");
+// 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
-	const double step_size = 1e-7;
-	state.perturb_material(velocity_discrete * step_size);
+// 	const double step_size = 1e-7;
+// 	state.perturb_material(velocity_discrete * step_size);
 
-	state.assemble_stiffness_mat();
-	state.assemble_rhs();
-	state.solve_problem();
-	double next_functional_val = func.energy(state);
+// 	state.assemble_stiffness_mat();
+// 	state.assemble_rhs();
+// 	state.solve_problem();
+// 	double next_functional_val = func.energy(state);
 
-	double finite_difference = (next_functional_val - functional_val) / step_size;
+// 	double finite_difference = (next_functional_val - functional_val) / step_size;
 
-	REQUIRE(derivative == Approx(finite_difference).epsilon(2e-4));
-}
+// 	REQUIRE(derivative == Approx(finite_difference).epsilon(2e-4));
+// }
 
-TEST_CASE("shape-contact-3d", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"(
-		{
-			"geometry": [
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0,
-							0
-						],
-						"scale": [
-							3,
-							0.02,
-							1
-						]
-					},
-					"volume_selection": 3,
-					"surface_selection": 3
-				},
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0.3,
-							0
-						],
-						"scale": [
-							0.5,
-							0.5,
-							0.5
-						]
-					},
-					"volume_selection": 1,
-					"surface_selection": 1
-				}
-			],
-			"space": {
-				"discr_order": 1,
-				"advanced": {
-					"quadrature_order": 5
-				}
-			},
-			"time": {
-				"tend": 0.1,
-				"dt": 0.02
-			},
-			"contact": {
-				"enabled": true,
-				"friction_coefficient": 0.3
-			},
-			"solver": {
-				"contact": {
-					"barrier_stiffness": 1822920
-				}
-			},
-			"boundary_conditions": {
-				"rhs": [
-					0,
-					9.8,
-					0
-				],
-				"dirichlet_boundary": [
-					{
-						"id": 3,
-						"value": [
-							0,
-							0,
-							0
-						]
-					}
-				]
-			},
-			"initial_conditions": {
-				"velocity": [
-					{
-						"id": 1,
-						"value": [
-							2,
-							-2,
-							-2
-						]
-					}
-				]
-			},
-			"differentiable": true,
-			"materials": 
-			{
-				"E": 1000000.0,
-				"nu": 0.3,
-				"rho": 1000,
-				"type": "NeoHookean"
-			},
-			"output": {
-				"paraview": {
-					"vismesh_rel_area": 1
-				},
-				"advanced": {
-					"save_time_sequence": false
-				}
-			}
-		}
-	)"_json;
-	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
-	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
+// TEST_CASE("shape-contact-3d", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR;
+// 	json in_args = R"(
+// 		{
+// 			"geometry": [
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0,
+// 							0
+// 						],
+// 						"scale": [
+// 							3,
+// 							0.02,
+// 							1
+// 						]
+// 					},
+// 					"volume_selection": 3,
+// 					"surface_selection": 3
+// 				},
+// 				{
+// 					"mesh": "",
+// 					"transformation": {
+// 						"translation": [
+// 							0,
+// 							0.3,
+// 							0
+// 						],
+// 						"scale": [
+// 							0.5,
+// 							0.5,
+// 							0.5
+// 						]
+// 					},
+// 					"volume_selection": 1,
+// 					"surface_selection": 1
+// 				}
+// 			],
+// 			"space": {
+// 				"discr_order": 1,
+// 				"advanced": {
+// 					"quadrature_order": 5
+// 				}
+// 			},
+// 			"time": {
+// 				"tend": 0.1,
+// 				"dt": 0.02
+// 			},
+// 			"contact": {
+// 				"enabled": true,
+// 				"friction_coefficient": 0.3
+// 			},
+// 			"solver": {
+// 				"contact": {
+// 					"barrier_stiffness": 1822920
+// 				}
+// 			},
+// 			"boundary_conditions": {
+// 				"rhs": [
+// 					0,
+// 					9.8,
+// 					0
+// 				],
+// 				"dirichlet_boundary": [
+// 					{
+// 						"id": 3,
+// 						"value": [
+// 							0,
+// 							0,
+// 							0
+// 						]
+// 					}
+// 				]
+// 			},
+// 			"initial_conditions": {
+// 				"velocity": [
+// 					{
+// 						"id": 1,
+// 						"value": [
+// 							2,
+// 							-2,
+// 							-2
+// 						]
+// 					}
+// 				]
+// 			},
+// 			"differentiable": true,
+// 			"materials": 
+// 			{
+// 				"E": 1000000.0,
+// 				"nu": 0.3,
+// 				"rho": 1000,
+// 				"type": "NeoHookean"
+// 			},
+// 			"output": {
+// 				"paraview": {
+// 					"vismesh_rel_area": 1
+// 				},
+// 				"advanced": {
+// 					"save_time_sequence": false
+// 				}
+// 			}
+// 		}
+// 	)"_json;
+// 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/cube.msh";
+// 	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
-	StressFunctional func;
-	func.set_interested_ids({1}, {});
+// 	StressFunctional func;
+// 	func.set_interested_ids({1}, {});
 
-	State state(8);
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
-	state.load_mesh();
-	state.solve();
-	double functional_val = func.energy(state);
+// 	State state(8);
+// 	state.init_logger("", spdlog::level::level_enum::err, false);
+// 	state.init(in_args);
+// 	state.load_mesh();
+// 	state.solve();
+// 	double functional_val = func.energy(state);
 
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_bases * 3, 1);
-	for (int i = 0; i < velocity_discrete.size(); i++)
-	{
-		velocity_discrete(i) = (rand() % 1000) / 1000.0;
-	}
+// 	Eigen::MatrixXd velocity_discrete;
+// 	velocity_discrete.setZero(state.n_bases * 3, 1);
+// 	for (int i = 0; i < velocity_discrete.size(); i++)
+// 	{
+// 		velocity_discrete(i) = (rand() % 1000) / 1000.0;
+// 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "shape");
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
+// 	Eigen::VectorXd one_form = func.gradient(state, "shape");
+// 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
-	const double t = 1e-6;
-	state.perturb_mesh(velocity_discrete * t);
+// 	const double t = 1e-6;
+// 	state.perturb_mesh(velocity_discrete * t);
 
-	state.assemble_rhs();
-	state.assemble_stiffness_mat();
-	state.solve_problem();
-	double next_functional_val = func.energy(state);
+// 	state.assemble_rhs();
+// 	state.assemble_stiffness_mat();
+// 	state.solve_problem();
+// 	double next_functional_val = func.energy(state);
 
-	state.perturb_mesh(velocity_discrete * (-2*t));
+// 	state.perturb_mesh(velocity_discrete * (-2*t));
 
-	state.assemble_rhs();
-	state.assemble_stiffness_mat();
-	state.solve_problem();
-	double former_functional_val = func.energy(state);
+// 	state.assemble_rhs();
+// 	state.assemble_stiffness_mat();
+// 	state.solve_problem();
+// 	double former_functional_val = func.energy(state);
 
-	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
+// 	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
 
-	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(1e-4));
-}
+// 	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(1e-4));
+// }
 
 TEST_CASE("barycenter", "[adjoint_method]")
 {
@@ -1982,7 +2009,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
-	state_reference.init_logger("", spdlog::level::level_enum::info, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
@@ -2147,7 +2174,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
-	state_reference.init_logger("", spdlog::level::level_enum::info, false);
+	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
 	state_reference.solve();
