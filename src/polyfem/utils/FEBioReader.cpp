@@ -449,7 +449,7 @@ namespace polyfem
 
 				for (auto it = allbc.begin(); it != allbc.end(); ++it)
 				{
-					logger().trace("adding Dirichlet id={} value=({},{},{}) fixed=({}, {}, {})", it->first, it->second.val(0), it->second.val(1), it->second.val(2), it->second.isx, it->second.isy, it->second.isz);
+					logger().trace("adding Dirichlet id={} value=({}) fixed=({}, {}, {})", it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz);
 					gproblem.add_dirichlet_boundary(it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz, get_interpolation(gproblem.is_time_dependent()));
 				}
 
@@ -511,7 +511,7 @@ namespace polyfem
 						atof(centrec[2].c_str()));
 
 					const double scaling = atof(factors.c_str());
-					logger().trace("adding scaling Dirichlet id={} center=({},{},{}) scaling={}", id, center(0), center(1), center(2), scaling);
+					logger().trace("adding scaling Dirichlet id={} center=({}) scaling={}", id, center.transpose(), scaling);
 					gproblem.add_dirichlet_boundary(
 						id, [center, scaling, is_time_dept](double x, double y, double z, double t) {
 							Eigen::Matrix<double, 3, 1> v;
@@ -564,7 +564,7 @@ namespace polyfem
 
 						if (gproblem.is_time_dependent())
 							force *= dt;
-						logger().trace("adding Neumann id={} force=({},{},{})", names.at(name), force(0), force(1), force(2));
+						logger().trace("adding Neumann id={} force=({})", names.at(name), force);
 						gproblem.add_neumann_boundary(names.at(name), force, get_interpolation(gproblem.is_time_dependent()));
 					}
 					else if (type == "pressure")

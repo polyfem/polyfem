@@ -160,6 +160,8 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
+target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
+
 ################################################################################
 # Required libraries
 ################################################################################
@@ -218,6 +220,11 @@ target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 # TinyXML library
 include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
+
+
+# jse library
+include(jse)
+target_link_libraries(polyfem PUBLIC jse::jse)
 
 
 if(POLYFEM_WITH_REMESHING)

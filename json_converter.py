@@ -251,7 +251,7 @@ def PolyFEM_convert(old):
 
         else:
             rename_entry("problem_params", old, "preset_problem", j)
-            j["preset_problem"]["name"] = old["problem"]
+            j["preset_problem"]["type"] = old["problem"]
     else:
         print("Missing problem assuming generic")
         if "problem_params" in old:

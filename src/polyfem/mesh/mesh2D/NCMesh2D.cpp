@@ -20,7 +20,7 @@ namespace polyfem
 			return false;
 		}
 
-		void NCMesh2D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)
+		void NCMesh2D::refine(const int n_refinement, const double t)
 		{
 			if (n_refinement <= 0)
 				return;
@@ -33,7 +33,7 @@ namespace polyfem
 				if (refine_mask[i])
 					refine_element(i);
 
-			refine(n_refinement - 1, t, parent_nodes);
+			refine(n_refinement - 1, t);
 		}
 
 		bool NCMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
@@ -749,15 +749,6 @@ namespace polyfem
 			}
 		}
 		void NCMesh2D::set_body_ids(const std::vector<int> &body_ids)
-		{
-			assert(body_ids.size() == n_faces());
-			for (int i = 0; i < body_ids.size(); i++)
-			{
-				elements[valid_to_all_elem(i)].body_id = body_ids[i];
-			}
-		}
-
-		void NCMesh2D::set_body_ids(const Eigen::VectorXi &body_ids)
 		{
 			assert(body_ids.size() == n_faces());
 			for (int i = 0; i < body_ids.size(); i++)

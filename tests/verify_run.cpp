@@ -47,19 +47,26 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		if (args.contains("time"))
 		{
 			json t_args = args["time"];
-			if (t_args.contains("tend") || t_args.contains("dt"))
+			if (t_args.contains("tend") && t_args.contains("dt"))
 			{
-				if (!t_args.contains("dt"))
-				{
-					t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
-				}
-				if (!t_args.contains("time_steps"))
-				{
-					t_args["time_steps"] = t_args["tend"].get<double>() / t_args["dt"].get<double>();
-				}
-				t_args["tend"] = t_args["dt"].get<double>();
+				t_args.erase("tend");
+				t_args["time_steps"] = 1;
 			}
-			t_args["time_steps"] = 1;
+			else if (t_args.contains("tend") && t_args.contains("time_steps"))
+			{
+				t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+				t_args["time_steps"] = 1;
+				t_args.erase("tend");
+			}
+			else if (t_args.contains("dt") && t_args.contains("time_steps"))
+			{
+				t_args["time_steps"] = 1;
+			}
+			else
+			{
+				// Required to have at two of tend, dt, time_steps
+				REQUIRE(false);
+			}
 			args["time"] = t_args;
 		}
 		args["root_path"] = json_file;
@@ -87,7 +94,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	State state(1);
-	state.init_logger("", 2, false);
+	state.init_logger("", spdlog::level::info, false);
 	state.init(args, "");
 	state.load_mesh();
 
@@ -155,7 +162,7 @@ std::string tags = "[.]";
 TEST_CASE("runners", tags)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
-	std::ifstream file(POLYFEM_DATA_DIR "/system_test_list.txt");
+	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
 	std::string line;
 	spdlog::set_level(spdlog::level::info);
 	while (std::getline(file, line))

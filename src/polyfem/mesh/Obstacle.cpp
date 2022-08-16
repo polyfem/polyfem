@@ -15,6 +15,11 @@ namespace polyfem
 
 	namespace mesh
 	{
+		Obstacle::Obstacle()
+		{
+			clear();
+		}
+
 		void Obstacle::clear()
 		{
 			dim_ = 0;

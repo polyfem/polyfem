@@ -26,7 +26,7 @@ namespace polyfem
 			CMesh2D(const CMesh2D &) = delete;
 			CMesh2D &operator=(const CMesh2D &) = delete;
 
-			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
+			void refine(const int n_refinement, const double t) override;
 
 			bool is_conforming() const override { return true; }
 
@@ -90,6 +90,8 @@ namespace polyfem
 			inline Navigation::Index switch_face(Navigation::Index idx) const override { return Navigation::switch_face(mesh_, *c2e_, idx); }
 
 			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
+
+			void append(const Mesh &mesh) override;
 
 		protected:
 			bool load(const std::string &path) override;

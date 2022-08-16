@@ -51,7 +51,7 @@ namespace polyfem
 
 			///
 			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1,
-			///             Q2 over hes). Polygonal facets with > 4 vertices are dealt later on by the
+			///             Q2 over hex). Polygonal facets with > 4 vertices are dealt later on by the
 			///             PolygonalBasis3d class.
 			///
 			/// @param[in]  mesh               The input volumetric mesh

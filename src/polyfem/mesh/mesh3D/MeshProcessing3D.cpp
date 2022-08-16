@@ -11,7 +11,6 @@
 #include <cassert>
 
 using namespace polyfem::mesh;
-using namespace polyfem::utils;
 using namespace polyfem;
 using namespace std;
 using namespace Eigen;

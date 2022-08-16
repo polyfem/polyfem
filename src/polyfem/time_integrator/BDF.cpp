@@ -4,7 +4,6 @@
 
 namespace polyfem::time_integrator
 {
-	using namespace utils;
 	void BDF::set_parameters(const nlohmann::json &params)
 	{
 		num_steps = params.value("num_steps", 1);

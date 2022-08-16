@@ -85,7 +85,7 @@ namespace polyfem
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle,
+			assembler, *mesh, obstacle, input_dirichelt,
 			n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
 			bases, gbases, ass_vals_cache,
 			formulation(), *problem,
@@ -703,7 +703,7 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle, input_dirichelt,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -749,7 +749,7 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle, input_dirichelt,
 								   n_bases, mesh->dimension(),
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -779,7 +779,7 @@ namespace polyfem
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle, input_dirichelt,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,

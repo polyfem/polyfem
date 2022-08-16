@@ -29,7 +29,6 @@ namespace polyfem
 		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
-		parent_elements.clear();
 		obstacle.clear();
 
 		stiffness.resize(0, 0);
@@ -61,10 +60,7 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
-		if (min.size() == 2)
-			logger().info("mesh bb min [{} {}], max [{} {}]", min(0), min(1), max(0), max(1));
-		else
-			logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
 
@@ -78,11 +74,11 @@ namespace polyfem
 		// 		n_refs = 1;
 		// }
 		// if (n_refs > 0)
-		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
+		// 	mesh->refine(n_refs, args["refinement_location"], parent_elements);
 
+		if (!skip_boundary_sideset)
+			mesh->compute_boundary_ids(boundary_marker);
 		// TODO: renable this
-		// if (!skip_boundary_sideset)
-		// 	mesh->compute_boundary_ids(boundary_marker);
 		// BoxSetter::set_sidesets(args, *mesh);
 		set_materials();
 
@@ -91,9 +87,9 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		mesh::read_obstacle_geometry(
+		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension(), obstacle);
+			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -117,8 +113,8 @@ namespace polyfem
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
-			mesh::read_fem_geometry(
-				args["geometry"], args["root_path"], mesh,
+			mesh = mesh::read_fem_geometry(
+				args["geometry"], args["root_path"],
 				names, vertices, cells, non_conforming);
 		}
 
@@ -138,23 +134,9 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
-		if (min.size() == 2)
-			logger().info("mesh bb min [{}, {}], max [{}, {}]", min(0), min(1), max(0), max(1));
-		else
-			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
-
-		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		// {
-		// 	if (args["force_no_ref_for_harmonic"])
-		// 		logger().warn("Using harmonic bases without refinement");
-		// 	else
-		// 		n_refs = 1;
-		// }
-
-		// if (n_refs > 0)
-		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
 		set_materials();
 
@@ -165,9 +147,9 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		mesh::read_obstacle_geometry(
+		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension(), obstacle, names, vertices, cells);
+			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
@@ -179,9 +161,9 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading obstacles...");
-		mesh::read_obstacle_geometry(
+		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension(), obstacle);
+			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

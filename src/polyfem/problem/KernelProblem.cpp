@@ -211,16 +211,16 @@ namespace polyfem
 
 		void KernelProblem::set_parameters(const json &params)
 		{
-			if (params.count("formulation"))
+			if (params.count("formulation") && !params["formulation"].empty())
 				formulation_ = params["formulation"].get<std::string>();
 
-			if (params.count("n_kernels"))
+			if (params.count("n_kernels") && !params["n_kernels"] > 0)
 				n_kernels_ = params["n_kernels"];
 
-			if (params.count("kernel_distance"))
+			if (params.count("kernel_distance") && !params["kernel_distance"] > 0)
 				kernel_distance_ = params["kernel_distance"];
 
-			if (params.count("kernel_weights"))
+			if (params.count("kernel_weights") && !params["kernel_weights"].empty())
 			{
 				std::ifstream in(params["kernel_weights"].get<std::string>());
 				std::string token;

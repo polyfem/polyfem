@@ -37,7 +37,7 @@ namespace polyfem
 
 			auto solver = LinearSolver::create(solver_type, precond_type);
 			solver->setParameters(solver_param["linear"]);
-			polyfem::logger().debug("\tinternal solver {}", solver->name());
+			logger().debug("\tinternal solver {}", solver->name());
 
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
@@ -186,8 +186,8 @@ namespace polyfem
 					nlres[i] = 0;
 				nlres_norm = nlres.norm();
 
-				polyfem::logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",
-										it, nlres_norm, dx.norm());
+				logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",
+							   it, nlres_norm, dx.norm());
 			}
 
 			// solver_info["internal_solver"] = internal_solver;

@@ -41,7 +41,7 @@ namespace polyfem
 						f_in = objFunc.value(x);
 						if (std::isnan(f_in))
 						{
-							utils::logger().error("Original energy in line search is nan!");
+							logger().error("Original energy in line search is nan!");
 							return std::nan("");
 						}
 
@@ -120,7 +120,7 @@ namespace polyfem
 							//max_step_size should return a collision free step
 							assert(objFunc.is_step_collision_free(x, x1));
 
-							utils::logger().trace("ls it: {} f: {} (f_in + alpha * Cache): {} invalid: {} ", this->cur_iter, f, f_in + alpha * Cache, !valid);
+							logger().trace("ls it: {} f: {} (f_in + alpha * Cache): {} invalid: {} ", this->cur_iter, f, f_in + alpha * Cache, !valid);
 
 							this->cur_iter++;
 						}
@@ -135,7 +135,7 @@ namespace polyfem
 							objFunc.line_search_end();
 						}
 
-						utils::logger().warn(
+						logger().warn(
 							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
 							f_in, f, default_alpha_init, alpha, searchDir.norm(),
 							valid ? "true" : "false", this->cur_iter);
@@ -159,7 +159,7 @@ namespace polyfem
 						objFunc.line_search_end();
 					}
 
-					utils::logger().debug(
+					logger().debug(
 						"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
 						nan_free_step_size, collision_free_step_size, descent_step_size, alpha);
 

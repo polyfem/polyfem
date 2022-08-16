@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        config: [Debug]
+        config: [Debug, Release]
         threading: [TBB]
         include:
           - os: ubuntu-latest

@@ -181,7 +181,7 @@ namespace polyfem
 			NCMesh3D(const NCMesh3D &) = default;
 			NCMesh3D &operator=(const NCMesh3D &) = default;
 
-			void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
+			void refine(const int n_refinement, const double t) override;
 
 			bool is_conforming() const override { return false; }
 
@@ -243,6 +243,7 @@ namespace polyfem
 			double edge_length(const int gid) const override;
 
 			RowVectorNd point(const int global_index) const override;
+			void set_point(const int global_index, const RowVectorNd &p) override { throw std::runtime_error("Not implemented"); }
 			RowVectorNd edge_barycenter(const int e) const override;
 			RowVectorNd face_barycenter(const int f) const override;
 			RowVectorNd cell_barycenter(const int c) const override;
@@ -257,7 +258,6 @@ namespace polyfem
 			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
-			void set_body_ids(const Eigen::VectorXi &body_ids) override;
 
 			int get_boundary_id(const int primitive) const override { return faces[valid_to_all_face(primitive)].boundary_id; };
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
@@ -352,6 +352,8 @@ namespace polyfem
 			void build_index_mapping();
 
 			std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const override;
+
+			void append(const Mesh &mesh) override { throw std::runtime_error("Not implemented"); }
 
 		private:
 			struct ArrayHasher2D

@@ -23,7 +23,7 @@ namespace polyfem
 			return all_to_valid_edge(e_id);
 		}
 
-		void NCMesh3D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)
+		void NCMesh3D::refine(const int n_refinement, const double t)
 		{
 			if (n_refinement <= 0)
 				return;
@@ -36,7 +36,7 @@ namespace polyfem
 				if (refine_mask[i])
 					refine_element(i);
 
-			refine(n_refinement - 1, t, parent_nodes);
+			refine(n_refinement - 1, t);
 		}
 
 		bool NCMesh3D::is_boundary_element(const int element_global_id) const
@@ -275,14 +275,6 @@ namespace polyfem
 			}
 		}
 		void NCMesh3D::set_body_ids(const std::vector<int> &body_ids)
-		{
-			assert(body_ids.size() == n_cells());
-			for (int i = 0; i < body_ids.size(); i++)
-			{
-				elements[valid_to_all_elem(i)].body_id = body_ids[i];
-			}
-		}
-		void NCMesh3D::set_body_ids(const Eigen::VectorXi &body_ids)
 		{
 			assert(body_ids.size() == n_cells());
 			for (int i = 0; i < body_ids.size(); i++)

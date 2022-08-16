@@ -8,21 +8,18 @@
 
 namespace polyfem
 {
-	namespace utils
-	{
-		///
-		/// Retrieves the current logger.
-		///
-		/// @return     A const reference to Polyfem's logger object.
-		///
-		spdlog::logger &logger();
+	///
+	/// Retrieves the current logger.
+	///
+	/// @return     A const reference to Polyfem's logger object.
+	///
+	spdlog::logger &logger();
 
-		///
-		/// Setup a logger object to be used by Polyfem. Calling this function with other Polyfem function
-		/// is not thread-safe.
-		///
-		/// @param[in]  logger  New logger object to be used by Polyfem. Ownership is shared with Polyfem.
-		///s
-		void set_logger(std::shared_ptr<spdlog::logger> logger);
-	} // namespace utils
+	///
+	/// Setup a logger object to be used by Polyfem. Calling this function with other Polyfem function
+	/// is not thread-safe.
+	///
+	/// @param[in]  logger  New logger object to be used by Polyfem. Ownership is shared with Polyfem.
+	///s
+	void set_logger(std::shared_ptr<spdlog::logger> logger);
 } // namespace polyfem

@@ -710,16 +710,46 @@ namespace polyfem
 		const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
 		const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
 		const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
-		const std::string solmat_path = resolve_output_path(args["output"]["data"]["solution_mat"]);
 		const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
 		const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
+		const bool reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
 		if (!solution_path.empty())
 		{
 			std::ofstream out(solution_path);
 			out.precision(100);
 			out << std::scientific;
-			out << sol << std::endl;
+			if (reorder_output)
+			{
+				int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
+				Eigen::VectorXi reordering(n_bases);
+				reordering.setConstant(-1);
+
+				for (int i = 0; i < in_node_to_node.size(); ++i)
+				{
+					reordering[in_node_to_node[i]] = i;
+				}
+				Eigen::MatrixXd tmp_sol = unflatten(sol, problem_dim);
+				Eigen::MatrixXd tmp(tmp_sol.rows(), tmp_sol.cols());
+
+				for (int i = 0; i < reordering.size(); ++i)
+				{
+					if (reordering[i] < 0)
+						continue;
+
+					tmp.row(reordering[i]) = tmp_sol.row(i);
+				}
+
+				for (int i = 0; i < tmp.rows(); ++i)
+				{
+					for (int j = 0; j < tmp.cols(); ++j)
+						out << tmp(i, j) << " ";
+
+					out << std::endl;
+				}
+			}
+			else
+				out << sol << std::endl;
 			out.close();
 		}
 
@@ -750,15 +780,6 @@ namespace polyfem
 			out.precision(100);
 			out << nodes;
 			out.close();
-		}
-		if (!solmat_path.empty())
-		{
-			Eigen::MatrixXd result;
-			int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
-			compute_vertex_values(problem_dim, bases, sol, result);
-			std::ofstream out(solmat_path);
-			out.precision(20);
-			out << result;
 		}
 		if (!stress_path.empty())
 		{
@@ -967,6 +988,8 @@ namespace polyfem
 		Eigen::MatrixXd mapped;
 		int pts_index = 0;
 
+		std::string error_msg = "";
+
 		for (size_t i = 0; i < bases.size(); ++i)
 		{
 			const auto &bs = bases[i];
@@ -1014,7 +1037,7 @@ namespace polyfem
 						std::swap(elements[i][18], elements[i][19]);
 					}
 					if (disc_orders(i) > 4)
-						logger().warn("not implementd!!!"); // TODO: higher than 3
+						error_msg = "not implementd!!!"; // TODO: higher than 3
 				}
 				else
 				{
@@ -1024,12 +1047,15 @@ namespace polyfem
 						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
 					}
 					if (disc_orders(i) > 4)
-						logger().warn("not implementd!!!"); // TODO: higher than 3
+						error_msg = "not implementd!!!"; // TODO: higher than 3
 				}
 			}
 			else
-				logger().warn("not implementd!!!"); // TODO: hexes
+				error_msg = "not implementd!!!"; // TODO: hexes
 		}
+
+		if (!error_msg.empty())
+			logger().warn(error_msg);
 
 		assert(pts_index == points.rows());
 	}
@@ -1984,6 +2010,17 @@ namespace polyfem
 		}
 
 		pvd.SaveFile(name.c_str());
+	}
+
+	void State::save_subsolve(const int i, const int t)
+	{
+		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
+			return;
+
+		if (!solve_export_to_file)
+			solution_frames.emplace_back();
+
+		save_vtu(resolve_output_path(fmt::format("solve_{:d}.vtu", i)), t);
 	}
 
 } // namespace polyfem

@@ -80,7 +80,7 @@ namespace polyfem
 	{
 	public:
 		//---------------------------------------------------
-		//-----------------initializtion----------------------------------
+		//-----------------initializtion---------------------
 		//---------------------------------------------------
 
 		~State() = default;
@@ -90,35 +90,38 @@ namespace polyfem
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
+		/// @param[in] strict_validation strict validation of input
 		/// @param[in] output_dir output directory
-		void init(const json &args, const std::string &output_dir = "");
+		void init(const json &args, const bool strict_validation, const std::string &output_dir = "", const bool fallback_solver = false);
+
+		/// initialize time settings if args contains "time"
+		void init_time();
 
 		/// main input arguments containing all defaults
 		json args;
 
 		//---------------------------------------------------
-		//-----------------logger----------------------------------
+		//-----------------logger----------------------------
 		//---------------------------------------------------
 
 		/// initalizing the logger
-		/// @param[in] log_file is to write it to a file (use log_file="") to output to consolle
+		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
-		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
+		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
 
-		/// initalizing the logger writes to an outputstream
+		/// initalizing the logger writes to an output stream
 		/// @param[in] os output stream
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void init_logger(std::ostream &os, int log_level);
+		void init_logger(std::ostream &os, const spdlog::level::level_enum log_level);
 
-		///change log level
+		/// change log level
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void set_log_level(int log_level)
+		void set_log_level(const spdlog::level::level_enum log_level)
 		{
-			spdlog::level::level_enum level =
-				static_cast<spdlog::level::level_enum>(std::max(0, std::min(6, log_level)));
-			spdlog::set_level(level);
-			IPC_LOG(set_level(level));
+			spdlog::set_level(log_level);
+			logger().set_level(log_level);
+			ipc::logger().set_level(log_level);
 		}
 
 		/// gets the output log as json
@@ -133,11 +136,9 @@ namespace polyfem
 
 	private:
 		/// initalizing the logger meant for internal usage
-		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
+		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
 	public:
-		void init_timesteps();
-
 		/// Directory for output files
 		std::string output_dir;
 		/// density of the input, default=1.
@@ -146,8 +147,17 @@ namespace polyfem
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 
+	private:
+		void build_node_mapping();
+
+	public:
+		/// Inpute nodes (including high-order) to polyfem nodes, only for isoparametric
+		Eigen::VectorXi in_node_to_node;
+		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
+		Eigen::VectorXi in_primitive_to_primitive;
+
 		//---------------------------------------------------
-		//-----------------assembly----------------------------------
+		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
 		/// assembler, it dispatches call to the differnt assembers based on the formulation
@@ -221,7 +231,7 @@ namespace polyfem
 		{
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			//TODO verify me
+			// TODO: verify me
 			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
 
 			return n_b_samples;
@@ -235,7 +245,7 @@ namespace polyfem
 		void p_refinement(const mesh::Mesh3D &mesh3d);
 
 		//---------------------------------------------------
-		//-----------------solver----------------------------------
+		//-----------------solver----------------------------
 		//---------------------------------------------------
 
 		/// solves the proble, step 5
@@ -317,7 +327,7 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
 		//---------------------------------------------------
-		//-----------------nodes flags----------------------------------
+		//-----------------nodes flags-----------------------
 		//---------------------------------------------------
 
 		/// list of boundary nodes
@@ -332,12 +342,14 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
+		/// Matrices containing the input per node dirichelt
+		std::vector<Eigen::MatrixXd> input_dirichelt;
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;
 
 		//---------------------------------------------------
-		//-----------------Geometry----------------------------------
+		//-----------------Geometry--------------------------
 		//---------------------------------------------------
 
 		/// current mesh, it can be a Mesh2D or Mesh3D
@@ -398,11 +410,8 @@ namespace polyfem
 		/// Resets the mesh
 		void reset_mesh();
 
-		/// parent element used to track refinements
-		std::vector<int> parent_elements;
-
 		//---------------------------------------------------
-		//-----------------IPC----------------------------------
+		//-----------------IPC-------------------------------
 		//---------------------------------------------------
 
 		/// boundary mesh used for collision
@@ -432,19 +441,15 @@ namespace polyfem
 			Eigen::MatrixXi &boundary_triangles) const;
 
 		/// checks if vertex is obstacle
-		/// @param[in] vi vertex indes
+		/// @param[in] vi vertex index
 		/// @return if vertex is obstalce
 		bool is_obstacle_vertex(const size_t vi) const
 		{
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
 		}
 
-		// Eigen::MatrixXd boundary_nodes_pos_pressure;
-		// Eigen::MatrixXi boundary_edges_pressure;
-		// Eigen::MatrixXi boundary_triangles_pressure;
-
 		//---------------------------------------------------
-		//-----------------OUTPUT----------------------------------
+		//-----------------OUTPUT----------------------------
 		//---------------------------------------------------
 
 		/// boundary visualization mesh vertices
@@ -584,13 +589,13 @@ namespace polyfem
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index elemnt indes
+		/// @param[in] el_index element index
 		/// @param[in] local_pts points in the reference element
 		/// @param[out] result output
 		/// @param[out] result_grad output gradients
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index elemnt indes
+		/// @param[in] el_index element index
 		/// @param[in] local_pts points in the reference element
 		/// @param[in] fun function to used
 		/// @param[out] result output
@@ -598,7 +603,7 @@ namespace polyfem
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 		/// interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index elemnt indes
+		/// @param[in] el_index element index
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		/// @param[in] bases basis function
 		/// @param[in] local_pts points in the reference element
@@ -740,15 +745,19 @@ namespace polyfem
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
 		/// saves a timestep
 		/// @param[in] time time in secs
-		/// @param[in] t time indes
+		/// @param[in] t time index
 		/// @param[in] t0 initial time
 		/// @param[in] dt delta t
 		void save_timestep(const double time, const int t, const double t0, const double dt);
+		/// saves a subsolve when save_solve_sequence_debug is true
+		/// @param[in] i sub solve index
+		/// @param[in] t time index
+		void save_subsolve(const int i, const int t);
 
 		/// samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd discr;
 			// Eigen::MatrixXi el_id;
 			// const bool tmp = args["export"]["vis_boundary_only"];
@@ -763,7 +772,7 @@ namespace polyfem
 		/// samples to stess tensor on the visualization mesh and return them (fun)
 		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd points;
 			// Eigen::MatrixXi tets;
 			// Eigen::MatrixXi el_id;
@@ -780,7 +789,7 @@ namespace polyfem
 		/// samples to von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd points;
 			// Eigen::MatrixXi tets;
 			// Eigen::MatrixXi el_id;
@@ -797,7 +806,7 @@ namespace polyfem
 		/// samples to averaged von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
 		{
-			//TODO fix me TESEO
+			// TODO: fix me TESEO
 			// Eigen::MatrixXd points;
 			// Eigen::MatrixXi tets;
 			// Eigen::MatrixXi el_id;

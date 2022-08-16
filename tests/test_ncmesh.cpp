@@ -22,7 +22,7 @@ using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
 
-TEST_CASE("ncmesh2d", "[ncmesh]")
+TEST_CASE("ncmesh2d", "[.ncmesh]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
@@ -32,7 +32,8 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 			"geometry": [{
 				"mesh": "",
 				"enabled": true,
-				"type": "mesh"
+				"type": "mesh",
+				"surface_selection": 7
 			}],
 
 			"space":{
@@ -64,8 +65,8 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 	State state(1);
-	state.init_logger("", 6, false);
-	state.init(in_args);
+	state.init_logger("", spdlog::level::off, false);
+	state.init(in_args, true);
 
 	state.load_mesh(true);
 	NCMesh2D &ncmesh = *dynamic_cast<NCMesh2D *>(state.mesh.get());
@@ -96,7 +97,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	REQUIRE(fabs(state.l2_err) < 1e-10);
 }
 
-TEST_CASE("ncmesh3d", "[ncmesh]")
+TEST_CASE("ncmesh3d", "[.ncmesh]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
@@ -106,7 +107,8 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 			"geometry": [{
 				"mesh": "",
 				"enabled": true,
-				"type": "mesh"
+				"type": "mesh",
+				"surface_selection": 7
 			}],
 
 			"space":{
@@ -145,15 +147,15 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-186.msh";
 
 	State state;
-	state.init_logger("", 6, false);
-	state.init(in_args);
+	state.init_logger("", spdlog::level::off, false);
+	state.init(in_args, true);
 
 	state.load_mesh(true);
 	NCMesh3D &ncmesh = *dynamic_cast<NCMesh3D *>(state.mesh.get());
 	for (int n = 0; n < 2; n++)
 	{
 		ncmesh.prepare_mesh();
-		std::vector<int> ref_ids(int(ncmesh.n_cells()/2.01));
+		std::vector<int> ref_ids(int(ncmesh.n_cells() / 2.01));
 		for (int i = 0; i < ref_ids.size(); i++)
 			ref_ids[i] = i * 2;
 

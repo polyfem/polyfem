@@ -348,20 +348,32 @@ namespace polyfem
 
 		bool OBJWriter::save(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
 		{
+			const Eigen::IOFormat OBJ_VERTEX_FORMAT(
+				/*precision=*/Eigen::FullPrecision,
+				/*flags=*/Eigen::DontAlignCols,
+				/*coeffSeparator=*/" ",
+				/*rowSeparator=*/"",
+				/*rowPrefix=*/"v ",
+				/*rowSuffix=*/v.cols() == 2 ? " 0\n" : "\n",
+				/*matPrefix=*/"",
+				/*fill=*/"");
+
 			std::ofstream obj(path, std::ios::out);
 			if (!obj.is_open())
 				return false;
 
-			obj.precision(15);
+			obj << fmt::format(
+				"# Vertoces: {:d}\n# Edges: {:d}\n# Faces: {:d}",
+				v.rows(), e.rows(), f.rows());
 
 			for (int i = 0; i < v.rows(); ++i)
-				obj << "v " << v(i, 0) << " " << v(i, 1) << " " << (v.cols() > 2 ? v(i, 2) : 0) << "\n";
+				obj << v.row(i).format(OBJ_VERTEX_FORMAT);
 
 			for (int i = 0; i < e.rows(); ++i)
-				obj << "l " << e(i, 0) + 1 << " " << e(i, 1) + 1 << "\n";
+				obj << fmt::format("l {} {}\n", e(i, 0) + 1, e(i, 1) + 1);
 
 			for (int i = 0; i < f.rows(); ++i)
-				obj << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
+				obj << fmt::format("f {} {} {}\n", f(i, 0) + 1, f(i, 1) + 1, f(i, 2) + 1);
 
 			return true;
 		}
