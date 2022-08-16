@@ -248,12 +248,17 @@
     },
     {
         "pointer": "/geometry/*/surface_selection",
+        "type": "int",
+        "default": 0,
+        "doc": "Assign specified id to all surface elements of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
         "type": "object",
         "optional": [
             "threshold",
             "offset"
         ],
-        "default": null,
         "typename": "bbox",
         "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
     },
@@ -266,11 +271,6 @@
         "pointer": "/geometry/*/surface_selection/offset",
         "type": "int",
         "default": 0
-    },
-    {
-        "pointer": "/geometry/*/surface_selection",
-        "type": "int",
-        "doc": "Assign specified id to all surface elements of the geometry"
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -1022,7 +1022,7 @@
         "pointer": "/solver/contact/lagged_damping_weight",
         "default": 0,
         "type": "int",
-        "doc": "?"
+        "doc": "TODO"
     },
     {
         "pointer": "/solver/ignore_inertia",
@@ -2038,7 +2038,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2047,7 +2047,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2056,7 +2056,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2065,7 +2065,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2074,7 +2074,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2083,7 +2083,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2095,13 +2095,13 @@
         "optional": [
             "func"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/func",
         "type": "int",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2110,7 +2110,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2119,7 +2119,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2128,7 +2128,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2144,43 +2144,43 @@
             "turning_boundary",
             "bbox_center"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/axis_coordiante",
         "type": "int",
         "default": 2,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/n_turns",
         "type": "float",
         "default": 0.5,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/fixed_boundary",
         "type": "int",
         "default": 5,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/turning_boundary",
         "type": "int",
         "default": 6,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/bbox_center",
         "type": "list",
         "default": [],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/bbox_center/*",
         "type": "float",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2198,43 +2198,43 @@
             "turning_boundary1",
             "bbox_center"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/axis_coordiante0",
         "type": "int",
         "default": 2,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/axis_coordiante1",
         "type": "int",
         "default": 2,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/angular_v0",
         "type": "float",
         "default": 0.5,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/angular_v1",
         "type": "float",
         "default": -0.5,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/turning_boundary0",
         "type": "int",
         "default": 5,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/turning_boundary1",
         "type": "int",
         "default": 6,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2243,7 +2243,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2252,7 +2252,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2261,7 +2261,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO, add displacement, E, nu, formulation, mesh_size"
+        "doc": "TODO, add displacement, E, nu, formulation, mesh_size"
     },
     {
         "pointer": "/preset_problem",
@@ -2270,7 +2270,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2279,7 +2279,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2288,7 +2288,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2297,7 +2297,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO, add optionals"
+        "doc": "TODO, add optionals"
     },
     {
         "pointer": "/preset_problem",
@@ -2312,31 +2312,31 @@
             "kernel_distance",
             "kernel_weights"
         ],
-        "doc": "//TODO, add optionals"
+        "doc": "TODO, add optionals"
     },
     {
         "pointer": "/preset_problem/formulation",
         "type": "string",
         "default": "",
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/n_kernels",
         "type": "int",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/kernel_distance",
         "type": "float",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/kernel_weights",
         "type": "string",
         "default": "",
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2345,7 +2345,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO, add optionals"
+        "doc": "TODO, add optionals"
     },
     {
         "pointer": "/preset_problem",
@@ -2354,7 +2354,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2363,7 +2363,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2375,19 +2375,19 @@
         "optional": [
             "force"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/n_kernels/force",
         "type": "list",
         "default": [],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/n_kernels/force/*",
         "type": "float",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2396,7 +2396,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2405,7 +2405,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2414,7 +2414,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2423,7 +2423,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2432,7 +2432,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2441,7 +2441,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO, add inflow, outflow, inflow_amout, outflow_amout, direction, obstacle"
+        "doc": "TODO, add inflow, outflow, inflow_amout, outflow_amout, direction, obstacle"
     },
     {
         "pointer": "/preset_problem",
@@ -2453,19 +2453,19 @@
         "optional": [
             "U"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/n_kernels/U",
         "type": "float",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem/n_kernels/time_dependent",
         "type": "bool",
         "default": false,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2478,7 +2478,7 @@
             "U",
             "time_dependent"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2490,7 +2490,7 @@
         "optional": [
             "U"
         ],
-        "doc": "//TODO, add inflow_id, direction, no_slip"
+        "doc": "TODO, add inflow_id, direction, no_slip"
     },
     {
         "pointer": "/preset_problem",
@@ -2503,13 +2503,13 @@
             "time_dependent",
             "viscosity"
         ],
-        "doc": "//TODO, add radius"
+        "doc": "TODO, add radius"
     },
     {
         "pointer": "/preset_problem/n_kernels/viscosity",
         "type": "float",
         "default": 0,
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2521,7 +2521,7 @@
         "optional": [
             "viscosity"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2533,7 +2533,7 @@
         "optional": [
             "func"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2542,7 +2542,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2555,7 +2555,7 @@
             "func",
             "viscosity"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2568,7 +2568,7 @@
             "time_dependent",
             "viscosity"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2580,7 +2580,7 @@
         "optional": [
             "time_dependent"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2593,7 +2593,7 @@
             "U",
             "time_dependent"
         ],
-        "doc": "//TODO"
+        "doc": "TODO"
     },
     {
         "pointer": "/preset_problem",
@@ -2602,7 +2602,7 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO, type, omega, is_scalar"
+        "doc": "TODO, type, omega, is_scalar"
     },
     {
         "pointer": "/preset_problem",
@@ -2611,12 +2611,12 @@
         "required": [
             "type"
         ],
-        "doc": "//TODO, type, omega, is_scalar"
+        "doc": "TODO, type, omega, is_scalar"
     },
     {
         "pointer": "/preset_problem/type",
         "type": "string",
-        "doc": "//TODO",
+        "doc": "TODO",
         "options": [
             "Linear",
             "Quadratic",

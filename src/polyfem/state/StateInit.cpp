@@ -142,7 +142,7 @@ namespace polyfem
 #endif
 	}
 
-	void State::init(const json &p_args_in, const std::string &output_dir)
+	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir)
 	{
 		json args_in = p_args_in; // mutable copy
 
@@ -153,7 +153,7 @@ namespace polyfem
 		json rules;
 		jse::JSE jse;
 		{
-			jse.strict = true;
+			jse.strict = strict_validation;
 			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
 			std::ifstream file(polyfem_input_spec);
 

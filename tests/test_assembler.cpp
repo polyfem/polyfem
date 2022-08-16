@@ -15,6 +15,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	json in_args = json({});
 	in_args["geometry"] = {};
 	in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+	in_args["geometry"]["surface_selection"] = 7;
 	// in_args["geometry"]["mesh"] = path + "/circle2.msh";
 	// in_args["force_linear_geometry"] = true;
 
@@ -28,7 +29,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 
 	State state;
 	state.init_logger("", spdlog::level::err, false);
-	state.init(in_args);
+	state.init(in_args, true);
 	state.load_mesh();
 
 	state.compute_mesh_stats();
