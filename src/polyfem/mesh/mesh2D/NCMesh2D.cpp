@@ -757,15 +757,6 @@ namespace polyfem
 			}
 		}
 
-		void NCMesh2D::set_body_ids(const Eigen::VectorXi &body_ids)
-		{
-			assert(body_ids.size() == n_faces());
-			for (int i = 0; i < body_ids.size(); i++)
-			{
-				elements[valid_to_all_elem(i)].body_id = body_ids[i];
-			}
-		}
-
 		void NCMesh2D::set_boundary_ids(const std::vector<int> &boundary_ids)
 		{
 			assert(boundary_ids.size() == n_edges());

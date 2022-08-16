@@ -1,4 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
 #include "GeometryReader.hpp"
 
 #include <polyfem/mesh/Mesh.hpp>
@@ -13,11 +12,171 @@
 #include <Eigen/Core>
 
 #include <igl/edges.h>
-////////////////////////////////////////////////////////////////////////////////
 
 namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
+
+	std::unique_ptr<Mesh> read_fem_mesh(
+		const json &j_mesh,
+		const std::string &root_path,
+		const bool non_conforming)
+	{
+		if (!is_param_valid(j_mesh, "mesh"))
+			log_and_throw_error(fmt::format("Mesh {} is mising a \"mesh\" field!", j_mesh));
+
+		if (j_mesh["extract"].get<std::string>() != "volume")
+			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
+
+		std::unique_ptr<Mesh> mesh = Mesh::create(resolve_path(j_mesh["mesh"], root_path), non_conforming);
+
+		// --------------------------------------------------------------------
+
+		// NOTE: Normaliziation is done before transformations are applied and/or any selection operators
+		if (j_mesh["advanced"]["normalize_mesh"])
+			mesh->normalize();
+
+		// --------------------------------------------------------------------
+
+		Selection::BBox bbox;
+		mesh->bounding_box(bbox[0], bbox[1]);
+
+		{
+			MatrixNd A;
+			VectorNd b;
+			construct_affine_transformation(
+				j_mesh["transformation"],
+				(bbox[1] - bbox[0]).cwiseAbs().transpose(),
+				A, b);
+			mesh->apply_affine_transformation(A, b);
+		}
+		mesh->bounding_box(bbox[0], bbox[1]);
+
+		// --------------------------------------------------------------------
+
+		const int n_refs = j_mesh["n_refs"];
+		const double refinement_location = j_mesh["advanced"]["refinement_location"];
+		// TODO: renable this
+		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
+		// {
+		// 	if (args["force_no_ref_for_harmonic"])
+		// 		logger().warn("Using harmonic bases without refinement");
+		// 	else
+		// 		n_refs = 1;
+		// }
+		if (n_refs > 0)
+		{
+			logger().info("Performing global h-refinement with {} refinements", n_refs);
+			mesh->refine(n_refs, refinement_location);
+		}
+
+		// --------------------------------------------------------------------
+
+		if (j_mesh["advanced"]["min_component"].get<int>() != -1)
+			log_and_throw_error("Option \"min_component\" in geometry not implement yet!");
+		// TODO:
+		// if (args["min_component"] > 0) {
+		// 	Eigen::SparseMatrix<int> adj;
+		// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
+		// 	Eigen::MatrixXi C, counts;
+		// 	igl::connected_components(adj, C, counts);
+		// 	std::vector<int> valid;
+		// 	const int min_count = args["min_component"];
+		// 	for (int i = 0; i < counts.size(); ++i) {
+		// 		if (counts(i) >= min_count) {
+		// 			valid.push_back(i);
+		// 		}
+		// 	}
+		// 	tris.clear();
+		// 	for (int i = 0; i < C.size(); ++i) {
+		// 		for (int v : valid) {
+		// 			if (v == C(i)) {
+		// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+		// 	boundary_triangles.resize(tris.size(), 3);
+		// 	for (int i = 0; i < tris.size(); ++i) {
+		// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+		// 	}
+		// }
+
+		// --------------------------------------------------------------------
+
+		if (j_mesh["advanced"]["force_linear_geometry"].get<bool>())
+			log_and_throw_error("Option \"force_linear_geometry\" in geometry not implement yet!");
+		// TODO:
+		// if (!iso_parametric()) {
+		// 	if (args["force_linear_geometry"] || mesh->orders().size() <= 0) {
+		// 		geom_disc_orders.resizeLike(disc_orders);
+		// 		geom_disc_orders.setConstant(1);
+		// 	} else {
+		// 		geom_disc_orders = mesh->orders();
+		// 	}
+		// }
+
+		// --------------------------------------------------------------------
+
+		if (!j_mesh["point_selection"].is_null())
+			logger().warn("Geometry point seleections are not implemented nor used!");
+
+		if (!j_mesh["curve_selection"].is_null())
+			logger().warn("Geometry point seleections are not implemented nor used!");
+
+		// --------------------------------------------------------------------
+
+		// TODO: renable this
+		// if (!skip_boundary_sideset)
+		// 	mesh->compute_boundary_ids(boundary_marker);
+
+		std::vector<std::shared_ptr<Selection>> surface_selections =
+			build_selections(j_mesh["surface_selection"], root_path, bbox);
+
+		mesh->compute_boundary_ids([&](const size_t face_id, const RowVectorNd &p, bool is_boundary) {
+			if (!is_boundary)
+				return -1;
+
+			for (const auto &selection : surface_selections)
+				if (selection->inside(p))
+					return selection->id(face_id);
+			return std::numeric_limits<int>::max(); // default for no selected boundary
+		});
+
+		// --------------------------------------------------------------------
+
+		// If the selection is of the form {"id_offset": ...}
+		if (j_mesh["volume_selection"].is_object()
+			&& j_mesh["volume_selection"].size() == 1
+			&& j_mesh["volume_selection"].contains("id_offset"))
+		{
+			const int id_offset = j_mesh["volume_selection"]["id_offset"].get<int>();
+			const int n_body_ids = mesh->n_elements();
+			std::vector<int> body_ids(n_body_ids);
+			for (int i = 0; i < n_body_ids; ++i)
+				body_ids[i] = mesh->get_body_id(i) + id_offset;
+			mesh->set_body_ids(body_ids);
+		}
+		else
+		{
+			// Specified volume selection has priority over mesh's stored ids
+			std::vector<std::shared_ptr<Selection>> volume_selections =
+				build_selections(j_mesh["volume_selection"], root_path, bbox);
+
+			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
+				for (const auto &selection : volume_selections)
+					if (selection->inside(p))
+						return selection->id(cell_id);
+				return 0;
+			});
+		}
+
+		// --------------------------------------------------------------------
+
+		return mesh;
+	}
+
+	// ========================================================================
 
 	std::unique_ptr<Mesh> read_fem_geometry(
 		const json &geometry,
@@ -49,138 +208,116 @@ namespace polyfem::mesh
 		assert(_vertices.empty());
 		assert(_cells.empty());
 
+		// --------------------------------------------------------------------
+
 		if (geometry.empty())
 			log_and_throw_error("Provided geometry is empty!");
-
-		Eigen::MatrixXd vertices;
-		Eigen::MatrixXi cells;
-		std::vector<std::vector<int>> elements;
-		std::vector<std::vector<double>> weights;
-		size_t num_faces = 0;
-		std::vector<std::shared_ptr<Selection>> surface_selections;
-		std::vector<std::shared_ptr<Selection>> volume_selections;
 
 		std::vector<json> geometries;
 		// Note you can add more types here, just add them to geometries
 		if (geometry.is_object())
-		{
 			geometries.push_back(geometry);
-		}
 		else if (geometry.is_array())
-		{
 			geometries = geometry.get<std::vector<json>>();
-		}
+		else
+			log_and_throw_error("Invalid JSON geometry type!");
 
-		// TODO: Temporary global h-refinement until appending meshes is implemented
-		int n_refs = 0;
-		double refinement_location = -1;
+		// --------------------------------------------------------------------
 
-		for (int i = 0; i < geometries.size(); i++)
+		std::unique_ptr<Mesh> mesh = nullptr;
+
+		for (const json &geometry : geometries)
 		{
-			json complete_geometry = geometries[i];
-
-			if (!complete_geometry["enabled"].get<bool>())
+			if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
 				continue;
 
-			if (complete_geometry["is_obstacle"].get<bool>())
-				continue;
-
-			if (complete_geometry["type"] != "mesh")
+			if (geometry["type"] != "mesh")
 				log_and_throw_error(
-					fmt::format("Invalid geometry type \"{}\" for FEM mesh!", complete_geometry["type"]));
+					fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
 
-			read_fem_mesh(
-				complete_geometry, root_path, vertices, cells, elements,
-				weights, num_faces, surface_selections, volume_selections);
-
-			// TODO: Temporary global h-refinement until appending meshes is implemented
-			n_refs = std::max(n_refs, complete_geometry["n_refs"].get<int>());
-			const json j_ref_loc = complete_geometry["advanced"]["refinement_location"];
-			if (refinement_location < 0)
-				refinement_location = j_ref_loc;
-			else if (refinement_location != j_ref_loc.get<double>())
-				log_and_throw_error("Multiple refinement locations are not supported yet!");
+			if (mesh == nullptr)
+				mesh = read_fem_mesh(geometry, root_path, non_conforming);
+			else
+				mesh->append(read_fem_mesh(geometry, root_path, non_conforming));
 		}
 
-		if (vertices.size() == 0)
-			log_and_throw_error("No valid FEM meshes provided!");
+		// --------------------------------------------------------------------
 
-		std::unique_ptr<Mesh> mesh = Mesh::create(vertices, cells, non_conforming);
-
-		///////////////////////////////////////////////////////////////////////
-
-		// Only tris and tets
-		if ((vertices.cols() == 2 && cells.cols() == 3) || (vertices.cols() == 3 && cells.cols() == 4))
-		{
-			mesh->attach_higher_order_nodes(vertices, elements);
-			mesh->set_cell_weights(weights);
-		}
-
-		for (const auto &w : weights)
-		{
-			if (!w.empty())
-			{
-				mesh->set_is_rational(true);
-				break;
-			}
-		}
-
-		///////////////////////////////////////////////////////////////////////
-
-		// TODO: renable this
-		// if (args["normalize_mesh"])
-		// 	mesh->normalize();
-
-		// TODO: renable this
-		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		// {
-		// 	if (args["force_no_ref_for_harmonic"])
-		// 		logger().warn("Using harmonic bases without refinement");
-		// 	else
-		// 		n_refs = 1;
-		// }
-		// if (n_refs > 0)
-		// {
-		// 	logger().warn("Performing global h-refinement with {} refinements", n_refs);
-		// 	mesh->refine(n_refs, refinement_location);
-		// }
-
-		///////////////////////////////////////////////////////////////////////
-
-		// TODO: renable this
-		// if (!skip_boundary_sideset)
-		// 	mesh->compute_boundary_ids(boundary_marker);
-
-		mesh->compute_boundary_ids([&](const size_t face_id, const RowVectorNd &p, bool is_boundary) {
-			if (!is_boundary)
-				return -1;
-
-			for (const auto &selection : surface_selections)
-				if (selection->inside(face_id, p))
-					return selection->id(face_id);
-			return std::numeric_limits<int>::max(); // default for no selected boundary
-		});
-
-		// TODO: set default boundary ids to the side of the cube thing per mesh
-		if (surface_selections.size() == 0)
+		// If there where no surface selections, set default boundary ids to
+		// the side of the bounding box of the entire concatenated meshes.
+		if (!mesh->has_boundary_ids())
 		{
 			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
 			mesh->compute_boundary_ids(boundary_id_threshold);
 		}
 
-		///////////////////////////////////////////////////////////////////////
-
-		mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
-			for (const auto &selection : volume_selections)
-				if (selection->inside(cell_id, p))
-					return selection->id(cell_id);
-			return 0;
-		});
+		// --------------------------------------------------------------------
 
 		return mesh;
 	}
 
-	///////////////////////////////////////////////////////////////////////////
+	// ========================================================================
+
+	void read_obstacle_mesh(
+		const json &j_mesh,
+		const std::string &root_path,
+		Eigen::MatrixXd &vertices,
+		Eigen::VectorXi &codim_vertices,
+		Eigen::MatrixXi &codim_edges,
+		Eigen::MatrixXi &faces)
+	{
+		if (!is_param_valid(j_mesh, "mesh"))
+			log_and_throw_error(fmt::format("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh));
+
+		const std::string mesh_path = resolve_path(j_mesh["mesh"], root_path);
+
+		bool read_success = read_surface_mesh(
+			mesh_path, vertices, codim_vertices, codim_edges, faces);
+
+		if (!read_success)
+			// error already logged in read_surface_mesh()
+			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
+
+		// --------------------------------------------------------------------
+
+		{
+			const VectorNd mesh_dimensions = (vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
+			MatrixNd A;
+			VectorNd b;
+			construct_affine_transformation(j_mesh["transformation"], mesh_dimensions, A, b);
+			vertices = vertices * A.transpose();
+			vertices.rowwise() += b.transpose();
+		}
+
+		if (j_mesh["extract"].get<std::string>() == "edges" && faces.size() != 0)
+		{
+			Eigen::MatrixXi edges;
+			igl::edges(faces, edges);
+			faces.resize(0, 0);
+			codim_edges.conservativeResize(codim_edges.rows() + edges.rows(), 2);
+			codim_edges.bottomRows(edges.rows()) = edges;
+		}
+		else if (j_mesh["extract"].get<std::string>() == "points")
+		{
+			codim_edges.resize(0, 0);
+			faces.resize(0, 0);
+			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
+		}
+		else if (j_mesh["extract"].get<std::string>() == "volume")
+		{
+			//Clashes with defaults for non obstacle, here assume volume is suface
+			// log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+		}
+
+		if (j_mesh["n_refs"].get<int>() != 0)
+		{
+			log_and_throw_error("Option \"n_refs\" in obstacles not implement yet!");
+			if (j_mesh["advanced"]["refinement_location"].get<double>() != 0.5)
+				log_and_throw_error("Option \"refinement_location\" in obstacles not implement yet!");
+		}
+	}
+
+	// ========================================================================
 
 	Obstacle read_obstacle_geometry(
 		const json &geometry,
@@ -288,225 +425,15 @@ namespace polyfem::mesh
 		return obstacle;
 	}
 
-	///////////////////////////////////////////////////////////////////////////
+	// ========================================================================
 
-	void read_fem_mesh(
-		const json &jmesh,
-		const std::string &root_path,
-		Eigen::MatrixXd &in_vertices,
-		Eigen::MatrixXi &in_cells,
-		std::vector<std::vector<int>> &in_elements,
-		std::vector<std::vector<double>> &in_weights,
-		size_t &num_faces,
-		std::vector<std::shared_ptr<Selection>> &surface_selections,
-		std::vector<std::shared_ptr<Selection>> &volume_selections)
+	void construct_affine_transformation(
+		const json &transform,
+		const VectorNd &mesh_dimensions,
+		MatrixNd &A,
+		VectorNd &b)
 	{
-		if (!is_param_valid(jmesh, "mesh"))
-			log_and_throw_error(fmt::format("Mesh {} is mising a \"mesh\" field!", jmesh));
-
-		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
-
-		Eigen::MatrixXd vertices;
-		Eigen::MatrixXi cells;
-		std::vector<std::vector<int>> elements;
-		std::vector<std::vector<double>> weights;
-		std::vector<int> volume_ids;
-		bool read_success = read_fem_mesh(
-			mesh_path, vertices, cells, elements, weights, volume_ids);
-
-		if (!read_success)
-			// error already logged in read_fem_mesh()
-			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
-		else if (vertices.size() == 0)
-			log_and_throw_error(fmt::format("Mesh {} has zero vertices!", mesh_path));
-		else if (cells.size() == 0)
-			log_and_throw_error(fmt::format("Mesh {} has zero cells!", mesh_path));
-		else if (in_vertices.cols() != 0 && in_vertices.cols() != vertices.cols())
-			log_and_throw_error("Mixed dimension meshes is not implemented!");
-		else if (in_cells.size() != 0 && in_cells.cols() != cells.cols())
-			log_and_throw_error("Mixed tet and hex (tri and quad) meshes is not implemented!");
-
-		////////////////////////////////////////////////////////////////////////////
-
-		transform_mesh_from_json(jmesh["transformation"], vertices);
-
-		////////////////////////////////////////////////////////////////////////////
-
-		const size_t num_in_vertices = in_vertices.rows();
-		const int dim = num_in_vertices == 0 ? (vertices.cols()) : (in_vertices.cols());
-		assert(dim == 2 || dim == 3);
-		in_vertices.conservativeResize(in_vertices.rows() + vertices.rows(), dim);
-		in_vertices.bottomRows(vertices.rows()) = vertices;
-
-		////////////////////////////////////////////////////////////////////////////
-
-		const size_t num_in_cells = in_cells.rows();
-		const int cell_cols = in_cells.cols() == 0 ? (cells.cols()) : (in_cells.cols());
-		in_cells.conservativeResize(in_cells.rows() + cells.rows(), cell_cols);
-		in_cells.bottomRows(cells.rows()) = cells.array() + num_in_vertices; // Shift vertex ids in cells
-
-		////////////////////////////////////////////////////////////////////////////
-
-		if (jmesh["advanced"]["force_linear_geometry"].get<bool>())
-			log_and_throw_error("Option \"force_linear_geometry\" in geometry not implement yet!");
-
-		// Shift vertex ids in elements
-		for (auto &element : elements)
-			for (auto &id : element)
-				id += num_in_vertices;
-		in_elements.insert(in_elements.end(), elements.begin(), elements.end());
-		in_weights.insert(in_weights.end(), weights.begin(), weights.end());
-
-		///////////////////////////////////////////////////////////////////////
-
-		const Selection::BBox bbox = {{vertices.colwise().minCoeff(), vertices.colwise().maxCoeff()}};
-
-		// TODO: use tolerences in the selection
-		// const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
-		// mesh->compute_boundary_ids(boundary_id_threshold);
-
-		if (!jmesh["point_selection"].is_null())
-			logger().warn("Geometry point seleections are not implemented nor used!");
-
-		if (!jmesh["curve_selection"].is_null())
-			logger().warn("Geometry point seleections are not implemented nor used!");
-
-		///////////////////////////////////////////////////////////////////////////
-
-		const size_t num_local_faces = count_faces(dim, cells);
-		append_selections(root_path,
-						  jmesh["surface_selection"], bbox, num_faces,
-						  num_faces + num_local_faces, surface_selections);
-		num_faces += num_local_faces;
-
-		////////////////////////////////////////////////////////////////////////////
-
-		// If the selection is of the form {"id_offset": ...}
-		if (jmesh["volume_selection"].is_object() && jmesh["volume_selection"].size() == 1 && jmesh["volume_selection"].contains("id_offset"))
-			for (int &id : volume_ids)
-				id += jmesh["volume_selection"]["id_offset"].get<int>();
-		else
-			// Specified volume selection has priority over mesh's stored ids
-			append_selections(root_path,
-							  jmesh["volume_selection"], bbox, num_in_cells,
-							  num_in_cells + cells.rows(), volume_selections);
-		volume_selections.push_back(std::make_shared<SpecifiedSelection>(
-			volume_ids, num_in_cells, num_in_cells + cells.rows()));
-
-		////////////////////////////////////////////////////////////////////////////
-
-		if (jmesh["extract"].get<std::string>() != "volume")
-			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
-
-		if (jmesh["n_refs"].get<int>() != 0)
-		{
-			log_and_throw_error("Option \"n_refs\" in geometry not implement yet!");
-			if (jmesh["advanced"]["refinement_location"].get<double>() != 0.5)
-				log_and_throw_error("Option \"refinement_location\" in geometry not implement yet!");
-		}
-
-		if (jmesh["advanced"]["min_component"].get<int>() != -1)
-			log_and_throw_error("Option \"min_component\" in geometry not implement yet!");
-		// TODO:
-		// if (args["min_component"] > 0)
-		// {
-		// 	Eigen::SparseMatrix<int> adj;
-		// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
-		// 	Eigen::MatrixXi C, counts;
-		// 	igl::connected_components(adj, C, counts);
-
-		// 	std::vector<int> valid;
-		// 	const int min_count = args["min_component"];
-
-		// 	for (int i = 0; i < counts.size(); ++i)
-		// 	{
-		// 		if (counts(i) >= min_count)
-		// 		{
-		// 			valid.push_back(i);
-		// 		}
-		// 	}
-
-		// 	tris.clear();
-		// 	for (int i = 0; i < C.size(); ++i)
-		// 	{
-		// 		for (int v : valid)
-		// 		{
-		// 			if (v == C(i))
-		// 			{
-		// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
-		// 				break;
-		// 			}
-		// 		}
-		// 	}
-
-		// 	boundary_triangles.resize(tris.size(), 3);
-		// 	for (int i = 0; i < tris.size(); ++i)
-		// 	{
-		// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
-		// 	}
-		// }
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-
-	void read_obstacle_mesh(
-		const json &jmesh,
-		const std::string &root_path,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &codim_edges,
-		Eigen::MatrixXi &faces)
-	{
-		if (!is_param_valid(jmesh, "mesh"))
-			log_and_throw_error(fmt::format("Mesh obstacle {} is mising a \"mesh\" field!", jmesh));
-
-		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
-
-		bool read_success = read_surface_mesh(
-			mesh_path, vertices, codim_vertices, codim_edges, faces);
-
-		if (!read_success)
-			// error already logged in read_fem_mesh()
-			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
-
-		////////////////////////////////////////////////////////////////////////////
-
-		transform_mesh_from_json(jmesh["transformation"], vertices);
-
-		if (jmesh["extract"].get<std::string>() == "edges" && faces.size() != 0)
-		{
-			Eigen::MatrixXi edges;
-			igl::edges(faces, edges);
-			faces.resize(0, 0);
-			codim_edges.conservativeResize(codim_edges.rows() + edges.rows(), 2);
-			codim_edges.bottomRows(edges.rows()) = edges;
-		}
-		else if (jmesh["extract"].get<std::string>() == "points")
-		{
-			codim_edges.resize(0, 0);
-			faces.resize(0, 0);
-			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
-		}
-		else if (jmesh["extract"].get<std::string>() == "volume")
-		{
-			//Clashes with defaults for non obstacle, here assume volume is suface
-			// log_and_throw_error("Volumetric elements not supported for collision obstacles!");
-		}
-
-		if (jmesh["n_refs"].get<int>() != 0)
-		{
-			log_and_throw_error("Option \"n_refs\" in obstacles not implement yet!");
-			if (jmesh["advanced"]["refinement_location"].get<double>() != 0.5)
-				log_and_throw_error("Option \"refinement_location\" in obstacles not implement yet!");
-		}
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-
-	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices)
-	{
-		const int dim = vertices.cols();
-		assert(dim == 2 || dim == 3);
+		const int dim = mesh_dimensions.size();
 
 		// -----
 		// Scale
@@ -515,10 +442,8 @@ namespace polyfem::mesh
 		RowVectorNd scale;
 		if (transform["dimensions"].is_array()) // default is nullptr
 		{
-			VectorNd initial_dimensions =
-				(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
-			initial_dimensions =
-				(initial_dimensions.array() == 0).select(1, initial_dimensions);
+			VectorNd modified_dimensions =
+				(mesh_dimensions.array() == 0).select(1, mesh_dimensions);
 
 			scale = transform["dimensions"];
 			const int scale_size = scale.size();
@@ -526,7 +451,7 @@ namespace polyfem::mesh
 			if (scale_size < dim)
 				scale.tail(dim - scale_size).setZero();
 
-			scale.array() /= initial_dimensions.array();
+			scale.array() /= modified_dimensions.array();
 		}
 		else if (transform["scale"].is_number())
 		{
@@ -545,7 +470,7 @@ namespace polyfem::mesh
 				scale.setOnes();
 		}
 
-		vertices *= scale.asDiagonal();
+		A = scale.asDiagonal();
 
 		// ------
 		// Rotate
@@ -570,61 +495,53 @@ namespace polyfem::mesh
 			}
 		}
 
-		vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
+		A = R * A; // Scale first, then rotate
 
 		// ---------
 		// Translate
 		// ---------
 
-		RowVectorNd translation = transform["translation"];
-		const int translation_size = translation.size();
-		translation.conservativeResize(dim);
+		b = transform["translation"];
+		const int translation_size = b.size();
+		b.conservativeResize(dim);
 		if (translation_size < dim)
-			translation.tail(dim - translation_size).setZero();
-
-		vertices.rowwise() += translation;
+			b.tail(dim - translation_size).setZero();
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
+	// ========================================================================
 
-	void append_selections(
+	std::vector<std::shared_ptr<Selection>> build_selections(
+		const json &j_selections,
 		const std::string &root_path,
-		const json &new_selections,
-		const Selection::BBox &bbox,
-		const size_t &start_element_id,
-		const size_t &end_element_id,
-		std::vector<std::shared_ptr<Selection>> &selections)
+		const Selection::BBox &bbox)
 	{
-		if (new_selections.is_number_integer())
+		std::vector<std::shared_ptr<Selection>> selections;
+		if (j_selections.is_number_integer())
 		{
-			selections.push_back(std::make_shared<UniformSelection>(
-				new_selections.get<int>(), start_element_id, end_element_id));
+			selections.push_back(std::make_shared<UniformSelection>(j_selections.get<int>()));
 		}
-		else if (new_selections.is_string())
+		else if (j_selections.is_string())
 		{
-			selections.push_back(std::make_shared<FileSelection>(
-				resolve_path(new_selections, root_path), start_element_id, end_element_id));
+			selections.push_back(std::make_shared<FileSelection>(resolve_path(j_selections, root_path)));
 		}
-		else if (new_selections.is_object())
+		else if (j_selections.is_object())
 		{
 			//TODO clean me
-			if (!new_selections.contains("threshold"))
-				selections.push_back(Selection::build(
-					new_selections, bbox, start_element_id, end_element_id));
+			if (!j_selections.contains("threshold"))
+				selections.push_back(Selection::build(j_selections, bbox));
 		}
-		else if (new_selections.is_array())
+		else if (j_selections.is_array())
 		{
-			std::vector<json> new_selections_array = new_selections;
-			for (const json &s : new_selections_array)
+			for (const json &s : j_selections.get<std::vector<json>>())
 			{
-				selections.push_back(Selection::build(
-					s, bbox, start_element_id, end_element_id));
+				selections.push_back(Selection::build(s, bbox));
 			}
 		}
-		else if (!new_selections.is_null())
+		else if (!j_selections.is_null())
 		{
-			log_and_throw_error(fmt::format("Invalid selections: {}", new_selections));
+			log_and_throw_error(fmt::format("Invalid selections: {}", j_selections));
 		}
+		return selections;
 	}
 
 } // namespace polyfem::mesh

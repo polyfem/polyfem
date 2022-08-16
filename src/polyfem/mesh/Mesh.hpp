@@ -4,9 +4,11 @@
 #include <polyfem/mesh/mesh2D/Navigation.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/HashUtils.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
+
 #include <memory>
 
 namespace polyfem
@@ -68,6 +70,7 @@ namespace polyfem
 			/// @param[in] non_conforming yes or no for non conforming mesh
 			/// @return pointer to the mesh
 			static std::unique_ptr<Mesh> create(const std::string &path, const bool non_conforming = false);
+
 			///
 			/// factory to build the proper mesh
 			///
@@ -75,6 +78,7 @@ namespace polyfem
 			/// @param[in] non_conforming yes or no for non conforming mesh
 			/// @return pointer to the mesh
 			static std::unique_ptr<Mesh> create(GEO::Mesh &M, const bool non_conforming = false);
+
 			///
 			/// factory to build the proper mesh
 			///
@@ -83,6 +87,14 @@ namespace polyfem
 			/// @param[in] non_conforming yes or no for non conforming mesh
 			/// @return pointer to the mesh
 			static std::unique_ptr<Mesh> create(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &cells, const bool non_conforming = false);
+
+			///
+			/// factory to build the proper empty mesh
+			///
+			/// @param[in] dim dimension of the mesh
+			/// @param[in] non_conforming yes or no for non conforming mesh
+			/// @return pointer to the mesh
+			static std::unique_ptr<Mesh> create(const int dim, const bool non_conforming = false);
 
 		protected:
 			///
@@ -140,6 +152,11 @@ namespace polyfem
 			///
 			/// @return number of elements
 			int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
+			///
+			/// @brief utitlity to return the number of boundary elements, faces or edges in 3d and 2d
+			///
+			/// @return number of boundary elements
+			int n_boundary_elements() const { return (is_volume() ? n_faces() : n_edges()); }
 
 			///
 			/// @brief number of cells
@@ -274,6 +291,12 @@ namespace polyfem
 			/// @param[in] global_index *global* vertex index
 			/// @return RowVectorNd
 			virtual RowVectorNd point(const int global_index) const = 0;
+			/// @brief Set the point
+			///
+			/// @param[in] global_index *global* vertex index
+			/// @param[in] p value
+			virtual void set_point(const int global_index, const RowVectorNd &p) = 0;
+
 			/// @brief edge barycenter
 			///
 			/// @param[in] e *global* edge index
@@ -392,19 +415,20 @@ namespace polyfem
 			///
 			/// @param[in] body_ids vector of labels, one per element
 			virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
-			/// @brief Set the volume sections
-			///
-			/// @param[in] body_ids matrix of labels, one per element
-			virtual void set_body_ids(const Eigen::VectorXi &body_ids)
-			{
-				body_ids_ = std::vector<int>(body_ids.data(), body_ids.data() + body_ids.size());
-			}
 
 			/// @brief Get the boundary selection of an element (face in 3d, edge in 2d)
 			///
 			/// @param[in] primitive element id
 			/// @return label of element
-			virtual int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }
+			virtual int get_boundary_id(const int primitive) const
+			{
+				if (has_boundary_ids())
+					return boundary_ids_.at(primitive);
+				else if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
+					return std::numeric_limits<int>::max(); // default for no selected boundary
+				else
+					return -1; // default for no boundary
+			}
 			/// @brief Get the volume selection of an element (cell in 3d, face in 2d)
 			///
 			/// @param[in] primitive element id
@@ -412,7 +436,7 @@ namespace polyfem
 			virtual int get_body_id(const int primitive) const
 			{
 				if (has_body_ids())
-					return body_ids_[primitive];
+					return body_ids_.at(primitive);
 				else
 					return 0;
 			}
@@ -478,11 +502,11 @@ namespace polyfem
 
 			/// @brief list of *sorted* edges. Used to map to input vertices
 			///
-			/// @return ist of *sorted* edges
+			/// @return list of *sorted* edges
 			std::vector<std::pair<int, int>> edges() const;
 			/// @brief list of *sorted* faces. Used to map to input vertices
 			///
-			/// @return ist of *sorted* faces
+			/// @return list of *sorted* faces
 			std::vector<std::vector<int>> faces() const;
 
 			/// @brief map from edge (pair of v id) to the id of the edge
@@ -506,6 +530,25 @@ namespace polyfem
 			///
 			/// @return matrix of indices one per faces, pointing to the face vertices
 			inline const Eigen::MatrixXi &in_ordered_faces() const { return in_ordered_faces_; }
+
+			/// @brief appends a new mesh to the end of this
+			///
+			/// @param[in] mesh to append
+			virtual void append(const Mesh &mesh);
+
+			/// @brief appends a new mesh to the end of this, utility that takes pointer, calls other one
+			///
+			/// @param[in] mesh pointer to append
+			void append(const std::unique_ptr<Mesh> &mesh)
+			{
+				if (mesh != nullptr)
+					append(*mesh);
+			}
+
+			/// @brief Apply an affine transformation \f$Ax+b\f$ to the vertex positions \f$x\f$.
+			/// @param[in] A Multiplicative matrix component of transformation
+			/// @param[in] b Additive translation component of transformation
+			void apply_affine_transformation(const MatrixNd &A, const VectorNd &b);
 
 		protected:
 			/// @brief loads a mesh from the path

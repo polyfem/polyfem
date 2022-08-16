@@ -162,7 +162,7 @@ std::string tags = "[.]";
 TEST_CASE("runners", tags)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
-	std::ifstream file(POLYFEM_DATA_DIR "/system_test_list.txt");
+	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
 	std::string line;
 	spdlog::set_level(spdlog::level::info);
 	while (std::getline(file, line))

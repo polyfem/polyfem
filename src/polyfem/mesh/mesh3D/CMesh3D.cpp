@@ -1,4 +1,5 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
+#include <polyfem/mesh/mesh3D/MeshProcessing3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
@@ -43,6 +44,37 @@ namespace polyfem
 
 			Navigation3D::prepare_mesh(mesh_);
 			compute_elements_tag();
+
+			in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(n_vertices(), 0, n_vertices() - 1);
+			assert(in_ordered_vertices_[0] == 0);
+			assert(in_ordered_vertices_[1] == 1);
+			assert(in_ordered_vertices_[2] == 2);
+			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == n_vertices() - 1);
+
+			in_ordered_edges_.resize(mesh_.edges.size(), 2);
+
+			for (int e = 0; e < (int)mesh_.edges.size(); ++e)
+			{
+				assert(mesh_.edges[e].vs.size() == 2);
+				for (int lv = 0; lv < 2; ++lv)
+				{
+					in_ordered_edges_(e, lv) = mesh_.edges[e].vs[lv];
+				}
+			}
+			assert(in_ordered_edges_.size() > 0);
+
+			in_ordered_faces_.resize(mesh_.faces.size(), mesh_.faces[0].vs.size());
+
+			for (int f = 0; f < (int)mesh_.faces.size(); ++f)
+			{
+				assert(in_ordered_faces_.cols() == mesh_.faces[f].vs.size());
+
+				for (int lv = 0; lv < in_ordered_faces_.cols(); ++lv)
+				{
+					in_ordered_faces_(f, lv) = mesh_.faces[f].vs[lv];
+				}
+			}
+			assert(in_ordered_faces_.size() > 0);
 		}
 
 		bool CMesh3D::load(const std::string &path)
@@ -1217,6 +1249,17 @@ namespace polyfem
 			return pt;
 		}
 
+		void CMesh3D::set_point(const int global_index, const RowVectorNd &pt)
+		{
+			mesh_.points.col(global_index) = pt.transpose();
+			if (mesh_.vertices[global_index].v.size() == 3)
+			{
+				mesh_.vertices[global_index].v[0] = pt[0];
+				mesh_.vertices[global_index].v[1] = pt[1];
+				mesh_.vertices[global_index].v[2] = pt[2];
+			}
+		}
+
 		RowVectorNd CMesh3D::kernel(const int c) const
 		{
 			RowVectorNd pt(3);
@@ -1558,5 +1601,15 @@ namespace polyfem
 
 			igl::barycentric_coordinates(p, A, B, C, D, coord);
 		}
+
+		void CMesh3D::append(const Mesh &mesh)
+		{
+			assert(typeid(mesh) == typeid(CMesh3D));
+			Mesh::append(mesh);
+
+			const CMesh3D &mesh3d = dynamic_cast<const CMesh3D &>(mesh);
+			mesh_.append(mesh3d.mesh_);
+		}
+
 	} // namespace mesh
 } // namespace polyfem
