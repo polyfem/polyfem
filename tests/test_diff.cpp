@@ -620,45 +620,19 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 			"geometry": [
 				{
 					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							1.5001
-						],
-						"scale": 1.0
-					},
 					"volume_selection": 1,
 					"surface_selection": [
 						{
 							"id": 1,
 							"axis": "y",
-							"position": 1.99
-						}
-					],
-					"advanced": {
-						"normalize_mesh": false
-					}
-				},
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0.5
-						],
-						"scale": 1.0
-					},
-					"volume_selection": 2,
-					"surface_selection": [
+							"position": 0.499
+						},
 						{
 							"id": 2,
 							"axis": "-y",
-							"position": 0.01
+							"position": -0.499
 						}
-					],
-					"advanced": {
-						"normalize_mesh": false
-					}
+					]
 				}
 			],
 			"contact": {
@@ -682,14 +656,14 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 					{
 						"id": 2,
 						"value": [
-							0,
+							0.2,
 							0
 						]
 					}
 				]
 			},
 			"materials": {
-				"type": "NeoHookean",
+				"type": "LinearElasticity",
 				"E": 200,
 				"nu": 0.3,
 				"rho": 1
@@ -706,7 +680,6 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
-	in_args["geometry"][1]["mesh"] = path + "/../cube_dense.msh";
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
@@ -725,6 +698,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	state.assemble_stiffness_mat();
 	state.assemble_rhs();
 	state.solve_problem();
+	auto last_sol = state.sol;
 	double functional_val = j.energy(state);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
@@ -758,7 +732,8 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - former_functional_val) / 2. / t;
 
-	REQUIRE(derivative == Approx(finite_difference).epsilon(2e-4));
+	std::cout << derivative << " " << finite_difference << "\n";
+	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
 TEST_CASE("damping-transient", "[adjoint_method]")
