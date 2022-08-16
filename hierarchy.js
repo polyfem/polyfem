@@ -108,7 +108,7 @@ var hierarchy =
         [ "polyfem::mesh::NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", null ]
       ] ]
     ] ],
-    [ "polyfem::mesh::Mesh3DStorage", "structpolyfem_1_1mesh_1_1_mesh3_d_storage.html", null ],
+    [ "polyfem::mesh::Mesh3DStorage", "classpolyfem_1_1mesh_1_1_mesh3_d_storage.html", null ],
     [ "polyfem::mesh::Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", null ],
     [ "polyfem::mesh::MeshNodes", "classpolyfem_1_1mesh_1_1_mesh_nodes.html", null ],
     [ "polyfem::assembler::MixedAssembler< LocalAssembler >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],

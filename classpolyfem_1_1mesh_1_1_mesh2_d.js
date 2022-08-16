@@ -21,7 +21,6 @@ var classpolyfem_1_1mesh_1_1_mesh2_d =
     [ "next_around_vertex", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1", null ],
     [ "operator=", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a01572c5bb0bdb41351faa32eed2499b8", null ],
     [ "operator=", "classpolyfem_1_1mesh_1_1_mesh2_d.html#aa65ac6804f6cca2aae9d14bd610c849a", null ],
-    [ "set_point", "classpolyfem_1_1mesh_1_1_mesh2_d.html#aa1cca9819eddf537887c72bd30209d94", null ],
     [ "switch_edge", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581", null ],
     [ "switch_face", "classpolyfem_1_1mesh_1_1_mesh2_d.html#aee59636688d42983f472daa1a457a6f6", null ],
     [ "switch_vertex", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42", null ]

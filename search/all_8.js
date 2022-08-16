@@ -43,7 +43,7 @@ var searchData=
   ['hexquadrature_40',['HexQuadrature',['../classpolyfem_1_1quadrature_1_1_hex_quadrature.html#ae035e4d3b2e454b06c6cd5f95e5e22d4',1,'polyfem::quadrature::HexQuadrature::HexQuadrature()'],['../classpolyfem_1_1quadrature_1_1_hex_quadrature.html',1,'polyfem::quadrature::HexQuadrature']]],
   ['hexquadrature_2ecpp_41',['HexQuadrature.cpp',['../_hex_quadrature_8cpp.html',1,'']]],
   ['hexquadrature_2ehpp_42',['HexQuadrature.hpp',['../_hex_quadrature_8hpp.html',1,'']]],
-  ['hf_43',['HF',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['hf_43',['HF',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
   ['hooke_44',['hooke',['../namespaceelasticity__rhs.html#ac9ddcfd900a82f06105f1b39539b32b5',1,'elasticity_rhs']]],
   ['hooke_5f2d_5ffunction_45',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a306ab3d5653385f3debab954cb237d5f',1,'polyfem::autogen']]],
   ['hooke_5f3d_5ffunction_46',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#afb2847614459eb7fce5ba97b0bbd8ceb',1,'polyfem::autogen']]],
@@ -53,6 +53,6 @@ var searchData=
   ['hookelinearelasticity_2ehpp_50',['HookeLinearElasticity.hpp',['../_hooke_linear_elasticity_8hpp.html',1,'']]],
   ['hpp_51',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
   ['hsur_52',['HSur',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caacc5883e092a3e5989ee2a1f05e6b2934',1,'polyfem::mesh']]],
-  ['hv_53',['HV',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['hv_53',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
   ['hyb_54',['Hyb',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caaf232cbd41deb6ed29912b93b70a8aa30',1,'polyfem::mesh']]]
 ];

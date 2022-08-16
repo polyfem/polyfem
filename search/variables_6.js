@@ -7,11 +7,11 @@ var searchData=
   ['face_5fnodes_5f_4',['face_nodes_',['../classpolyfem_1_1mesh_1_1_mesh.html#ab8936c0a3ad41cbd0758d95f0ea5653d',1,'polyfem::mesh::Mesh']]],
   ['face_5foffset_5f_5',['face_offset_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a78d1145fb1f2aa2de1ea6e52293ff1e1',1,'polyfem::mesh::MeshNodes']]],
   ['facemap_6',['faceMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ab76b97e471b4c5b2019ddc5bde668d2a',1,'polyfem::mesh::NCMesh3D']]],
-  ['faces_7',['faces',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a',1,'polyfem::mesh::NCMesh2D::ncElem::faces()'],['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a6b3c9bc7951e282b25810ba1421b5c84',1,'polyfem::mesh::Mesh3DStorage::faces()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aef17d221de674f967131fdf7dcc8395e',1,'polyfem::mesh::NCMesh3D::ncElem::faces()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#afad0242f073a622c3619ca05900e86d5',1,'polyfem::mesh::NCMesh3D::faces()']]],
-  ['fe_8',['FE',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a08c9f5f8cbb08de1e06aa17688e9280a',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['faces_7',['faces',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a',1,'polyfem::mesh::NCMesh2D::ncElem::faces()'],['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a6b3c9bc7951e282b25810ba1421b5c84',1,'polyfem::mesh::Mesh3DStorage::faces()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aef17d221de674f967131fdf7dcc8395e',1,'polyfem::mesh::NCMesh3D::ncElem::faces()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#afad0242f073a622c3619ca05900e86d5',1,'polyfem::mesh::NCMesh3D::faces()']]],
+  ['fe_8',['FE',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a08c9f5f8cbb08de1e06aa17688e9280a',1,'polyfem::mesh::Mesh3DStorage']]],
   ['fe_9',['fe',['../namespacep__bases.html#ad72a1e76d715321e683a0470b5e431ae',1,'p_bases.fe()'],['../namespaceq__bases.html#a1f5e111796a138c961e775bf8f0a0d0d',1,'q_bases.fe()']]],
-  ['fh_10',['FH',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a70deae851db2f0efdece10be33ce5e08',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['fhi_11',['FHi',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad407492c5d0656c9811dc1f7054c3e0f',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['fh_10',['FH',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a70deae851db2f0efdece10be33ce5e08',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['fhi_11',['FHi',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad407492c5d0656c9811dc1f7054c3e0f',1,'polyfem::mesh::Mesh3DStorage']]],
   ['flow_5fdir_5f_12',['flow_dir_',['../classpolyfem_1_1problem_1_1_flow.html#aa2716a809f5cb3b335a9ef46431b981f',1,'polyfem::problem::Flow']]],
   ['followers_13',['followers',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aee8d03577c94f239b62f65ebe70b6bd7',1,'polyfem::mesh::NCMesh2D::ncBoundary::followers()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#ab47755da6213d7a493ecd5950bd9e862',1,'polyfem::mesh::NCMesh3D::ncBoundary::followers()']]],
   ['force_5f_14',['force_',['../classpolyfem_1_1problem_1_1_gravity_problem.html#a9edb8c650232babb711f277e3ca16d48',1,'polyfem::problem::GravityProblem']]],
@@ -27,5 +27,5 @@ var searchData=
   ['fun_5f_24',['fun_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a22e2efaf2e7e4ff344e1631953f031ac',1,'polyfem::utils::InterpolatedFunction2d']]],
   ['func_25',['func',['../namespaceq__bases.html#a282a463b5587ae6454d1062fea47d298',1,'q_bases.func()'],['../namespacep__bases.html#a85cc6a89dd1a82f16ecb6133d551092e',1,'p_bases.func()']]],
   ['func_5f_26',['func_',['../classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#aea40950fc578ac126c86368d8b859c1f',1,'polyfem::problem::TransientStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a9ac31819cc6522b5980d55ccbda420f1',1,'polyfem::problem::SimpleStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7',1,'polyfem::problem::GenericScalarProblemExact::func_()']]],
-  ['fv_27',['FV',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad58e5eaac4fb3b7383c2bcc4fe90cc52',1,'polyfem::mesh::Mesh3DStorage']]]
+  ['fv_27',['FV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad58e5eaac4fb3b7383c2bcc4fe90cc52',1,'polyfem::mesh::Mesh3DStorage']]]
 ];

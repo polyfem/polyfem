@@ -5,7 +5,7 @@ var searchData=
   ['mesh_2',['Mesh',['../classpolyfem_1_1mesh_1_1_mesh.html',1,'polyfem::mesh']]],
   ['mesh2d_3',['Mesh2D',['../classpolyfem_1_1mesh_1_1_mesh2_d.html',1,'polyfem::mesh']]],
   ['mesh3d_4',['Mesh3D',['../classpolyfem_1_1mesh_1_1_mesh3_d.html',1,'polyfem::mesh']]],
-  ['mesh3dstorage_5',['Mesh3DStorage',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html',1,'polyfem::mesh']]],
+  ['mesh3dstorage_5',['Mesh3DStorage',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html',1,'polyfem::mesh']]],
   ['mesh_5fquality_6',['Mesh_Quality',['../structpolyfem_1_1mesh_1_1_mesh___quality.html',1,'polyfem::mesh']]],
   ['meshnodes_7',['MeshNodes',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html',1,'polyfem::mesh']]],
   ['minsurfproblem_8',['MinSurfProblem',['../classpolyfem_1_1problem_1_1_min_surf_problem.html',1,'polyfem::problem']]],

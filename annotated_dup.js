@@ -85,7 +85,7 @@ var annotated_dup =
         [ "Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", "classpolyfem_1_1mesh_1_1_mesh" ],
         [ "Mesh2D", "classpolyfem_1_1mesh_1_1_mesh2_d.html", "classpolyfem_1_1mesh_1_1_mesh2_d" ],
         [ "Mesh3D", "classpolyfem_1_1mesh_1_1_mesh3_d.html", "classpolyfem_1_1mesh_1_1_mesh3_d" ],
-        [ "Mesh3DStorage", "structpolyfem_1_1mesh_1_1_mesh3_d_storage.html", "structpolyfem_1_1mesh_1_1_mesh3_d_storage" ],
+        [ "Mesh3DStorage", "classpolyfem_1_1mesh_1_1_mesh3_d_storage.html", "classpolyfem_1_1mesh_1_1_mesh3_d_storage" ],
         [ "Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", "structpolyfem_1_1mesh_1_1_mesh___quality" ],
         [ "MeshNodes", "classpolyfem_1_1mesh_1_1_mesh_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_nodes" ],
         [ "NCMesh2D", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d" ],

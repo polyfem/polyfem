@@ -21,6 +21,6 @@ var searchData=
   ['tree_5f_18',['tree_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a843f96d811d92dd9cfd3e6ad9d59383a',1,'polyfem::utils::InterpolatedFunction2d']]],
   ['tri_5ffunc_19',['tri_func',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a9193d985e32abe72f0ebe197d39856de',1,'polyfem::problem::PointBasedTensorProblem::BCValue']]],
   ['tris_5f_20',['tris_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a1db932e9fd98fedb3edfecade2a3c90d',1,'polyfem::utils::InterpolatedFunction2d']]],
-  ['type_21',['type',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a34540104fe4aff4c68b0cbdb1fcad9cb',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['type_21',['type',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a34540104fe4aff4c68b0cbdb1fcad9cb',1,'polyfem::mesh::Mesh3DStorage']]],
   ['type_5f_22',['type_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a14a22a021e572ad7b1ce1deac25a75c5',1,'polyfem::mesh::LocalBoundary']]]
 ];

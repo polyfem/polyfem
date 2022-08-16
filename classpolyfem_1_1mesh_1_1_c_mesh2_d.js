@@ -4,6 +4,7 @@ var classpolyfem_1_1mesh_1_1_c_mesh2_d =
     [ "~CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a228f83e89ee2bc1014d1116f89cc19f7", null ],
     [ "CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a24d2bcdfcbf387761064b4bc72fb6a25", null ],
     [ "CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aa0105c052c9472180a908f62aea376f7", null ],
+    [ "append", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac76c33ff3aee81cbe3e488f030c06a48", null ],
     [ "attach_higher_order_nodes", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#adee7e38b7b60601cb04eff9b365b90c5", null ],
     [ "bounding_box", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ad6d60d8241b9e0b60532f273e7a67614", null ],
     [ "build_from_matrices", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae0b6f2f9c4c0135c616107504a22e9cf", null ],

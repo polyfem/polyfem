@@ -5,7 +5,7 @@ var searchData=
   ['undefined_5fcount_2',['undefined_count',['../classpolyfem_1_1_state.html#a575818b1de776f3b6d1a86fd682cbf3b',1,'polyfem::State']]],
   ['unflatten_3',['unflatten',['../namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5',1,'polyfem::utils']]],
   ['uniformattributes_4',['UniformAttributes',['../classpolyfem_1_1renderer_1_1_uniform_attributes.html',1,'polyfem::renderer']]],
-  ['uniformselection_5',['UniformSelection',['../classpolyfem_1_1utils_1_1_uniform_selection.html',1,'polyfem::utils::UniformSelection'],['../classpolyfem_1_1utils_1_1_uniform_selection.html#a5a088a343fec4c8e4c8c25d39cd69a7a',1,'polyfem::utils::UniformSelection::UniformSelection()']]],
+  ['uniformselection_5',['UniformSelection',['../classpolyfem_1_1utils_1_1_uniform_selection.html',1,'polyfem::utils::UniformSelection'],['../classpolyfem_1_1utils_1_1_uniform_selection.html#a21f600fc6dc5ef2994080296bee1f714',1,'polyfem::utils::UniformSelection::UniformSelection()']]],
   ['unique_5ffun_6',['unique_fun',['../namespaceq__bases.html#ab70be99749abd7ca478d05e36c1966c1',1,'q_bases.unique_fun()'],['../namespacep__bases.html#a5d5895607c20f1fd03b3879b6e9b1879',1,'p_bases.unique_fun()']]],
   ['unique_5fnodes_7',['unique_nodes',['../namespaceq__bases.html#a53832db9881fbd26bde33ee31c8f36da',1,'q_bases.unique_nodes()'],['../namespacep__bases.html#a69fde9f0dc030492bf8859fcdfdd6492',1,'p_bases.unique_nodes()']]],
   ['unitflowwithobstacle_8',['UnitFlowWithObstacle',['../classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html',1,'polyfem::problem::UnitFlowWithObstacle'],['../classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#a7771fbd31eb1937fd8386da6f10187e2',1,'polyfem::problem::UnitFlowWithObstacle::UnitFlowWithObstacle()']]],

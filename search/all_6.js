@@ -17,11 +17,11 @@ var searchData=
   ['face_5fvertex_14',['face_vertex',['../classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399',1,'polyfem::mesh::Mesh::face_vertex()'],['../classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a92b9f6cca33231a35eb90f63b60f60f9',1,'polyfem::mesh::CMesh2D::face_vertex()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ad1b0345064e58d94daf29830820fcdab',1,'polyfem::mesh::NCMesh2D::face_vertex()'],['../classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a576869589c66ade663856a21689d91bd',1,'polyfem::mesh::CMesh3D::face_vertex()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#adb6575b8c2332ab9eefabdaa0f5ddd4d',1,'polyfem::mesh::NCMesh3D::face_vertex(const int f_id, const int lv_id) const override']]],
   ['facemap_15',['faceMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ab76b97e471b4c5b2019ddc5bde668d2a',1,'polyfem::mesh::NCMesh3D']]],
   ['facenodes_16',['FaceNodes',['../classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html',1,'polyfem::mesh::Mesh']]],
-  ['faces_17',['faces',['../classpolyfem_1_1mesh_1_1_mesh.html#ad07dcb246770556ead116247fcad1da5',1,'polyfem::mesh::Mesh::faces()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#afad0242f073a622c3619ca05900e86d5',1,'polyfem::mesh::NCMesh3D::faces()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aef17d221de674f967131fdf7dcc8395e',1,'polyfem::mesh::NCMesh3D::ncElem::faces()'],['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a6b3c9bc7951e282b25810ba1421b5c84',1,'polyfem::mesh::Mesh3DStorage::faces()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a',1,'polyfem::mesh::NCMesh2D::ncElem::faces()']]],
+  ['faces_17',['faces',['../classpolyfem_1_1mesh_1_1_mesh.html#ad07dcb246770556ead116247fcad1da5',1,'polyfem::mesh::Mesh::faces()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#afad0242f073a622c3619ca05900e86d5',1,'polyfem::mesh::NCMesh3D::faces()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aef17d221de674f967131fdf7dcc8395e',1,'polyfem::mesh::NCMesh3D::ncElem::faces()'],['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a6b3c9bc7951e282b25810ba1421b5c84',1,'polyfem::mesh::Mesh3DStorage::faces()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a',1,'polyfem::mesh::NCMesh2D::ncElem::faces()']]],
   ['faces_5fto_5fids_18',['faces_to_ids',['../classpolyfem_1_1mesh_1_1_mesh.html#a870ccdba92d3735bdc3541c84f9815ec',1,'polyfem::mesh::Mesh']]],
   ['facet_5fbarycenter_19',['facet_barycenter',['../namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04',1,'polyfem::mesh']]],
   ['factory_20',['factory',['../classpolyfem_1_1problem_1_1_problem_factory.html#aa0b0d09b559f11aeb691c69b593ec4e6',1,'polyfem::problem::ProblemFactory']]],
-  ['fe_21',['FE',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a08c9f5f8cbb08de1e06aa17688e9280a',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['fe_21',['FE',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a08c9f5f8cbb08de1e06aa17688e9280a',1,'polyfem::mesh::Mesh3DStorage']]],
   ['fe_22',['fe',['../namespacep__bases.html#ad72a1e76d715321e683a0470b5e431ae',1,'p_bases.fe()'],['../namespaceq__bases.html#a1f5e111796a138c961e775bf8f0a0d0d',1,'q_bases.fe()']]],
   ['febasis2d_23',['FEBasis2d',['../classpolyfem_1_1basis_1_1_f_e_basis2d.html',1,'polyfem::basis']]],
   ['febasis2d_2ecpp_24',['FEBasis2d.cpp',['../_f_e_basis2d_8cpp.html',1,'']]],
@@ -32,9 +32,9 @@ var searchData=
   ['febioreader_29',['FEBioReader',['../classpolyfem_1_1utils_1_1_f_e_bio_reader.html',1,'polyfem::utils']]],
   ['febioreader_2ecpp_30',['FEBioReader.cpp',['../_f_e_bio_reader_8cpp.html',1,'']]],
   ['febioreader_2ehpp_31',['FEBioReader.hpp',['../_f_e_bio_reader_8hpp.html',1,'']]],
-  ['fh_32',['FH',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a70deae851db2f0efdece10be33ce5e08',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['fhi_33',['FHi',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad407492c5d0656c9811dc1f7054c3e0f',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['fileselection_34',['FileSelection',['../classpolyfem_1_1utils_1_1_file_selection.html#a87dd610214d0eabd4b088344e0942d43',1,'polyfem::utils::FileSelection::FileSelection()'],['../classpolyfem_1_1utils_1_1_file_selection.html',1,'polyfem::utils::FileSelection']]],
+  ['fh_32',['FH',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a70deae851db2f0efdece10be33ce5e08',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['fhi_33',['FHi',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad407492c5d0656c9811dc1f7054c3e0f',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['fileselection_34',['FileSelection',['../classpolyfem_1_1utils_1_1_file_selection.html#a8a4eb50d0f75772f33c30577657beb16',1,'polyfem::utils::FileSelection::FileSelection()'],['../classpolyfem_1_1utils_1_1_file_selection.html',1,'polyfem::utils::FileSelection']]],
   ['finalize_35',['finalize',['../classpolyfem_1_1assembler_1_1_assembly_values.html#affc7db5dc956b16ab8196d2aeacc1cf0',1,'polyfem::assembler::AssemblyValues']]],
   ['finalize2d_36',['finalize2d',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b',1,'polyfem::assembler::ElementAssemblyValues']]],
   ['finalize3d_37',['finalize3d',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b',1,'polyfem::assembler::ElementAssemblyValues']]],
@@ -80,5 +80,5 @@ var searchData=
   ['fun_5f_77',['fun_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a22e2efaf2e7e4ff344e1631953f031ac',1,'polyfem::utils::InterpolatedFunction2d']]],
   ['func_78',['func',['../namespacep__bases.html#a85cc6a89dd1a82f16ecb6133d551092e',1,'p_bases.func()'],['../namespaceq__bases.html#a282a463b5587ae6454d1062fea47d298',1,'q_bases.func()']]],
   ['func_5f_79',['func_',['../classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#aea40950fc578ac126c86368d8b859c1f',1,'polyfem::problem::TransientStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a9ac31819cc6522b5980d55ccbda420f1',1,'polyfem::problem::SimpleStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7',1,'polyfem::problem::GenericScalarProblemExact::func_()']]],
-  ['fv_80',['FV',['../structpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad58e5eaac4fb3b7383c2bcc4fe90cc52',1,'polyfem::mesh::Mesh3DStorage']]]
+  ['fv_80',['FV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad58e5eaac4fb3b7383c2bcc4fe90cc52',1,'polyfem::mesh::Mesh3DStorage']]]
 ];

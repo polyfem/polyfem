@@ -116,9 +116,10 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1utils_1_1_selection.ht
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpolyfem_1_1utils_1_1_selection-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">polyfem::utils::Selection Class Reference</div></div>
+  <div class="headertitle"><div class="title">polyfem::utils::Selection Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -137,28 +138,29 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3434f0886a61fb7c3782af15cf7ea609"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a3434f0886a61fb7c3782af15cf7ea609">Selection</a> (const int <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a>, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
-<tr class="separator:a3434f0886a61fb7c3782af15cf7ea609"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2960580490c072a4815a6a3fc2942570"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a2960580490c072a4815a6a3fc2942570">Selection</a> (const int <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a>)</td></tr>
+<tr class="separator:a2960580490c072a4815a6a3fc2942570"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb6aaafa0f609198f966c6bce2442894"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894">~Selection</a> ()</td></tr>
 <tr class="separator:afb6aaafa0f609198f966c6bce2442894"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15693545140baece5e4decb6e8d8ef57"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a15693545140baece5e4decb6e8d8ef57">inside</a> (const size_t element_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) const</td></tr>
-<tr class="separator:a15693545140baece5e4decb6e8d8ef57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d13d43d8672fdc8ef6c0d8d234884a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a82d13d43d8672fdc8ef6c0d8d234884a">inside</a> (const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) const =0</td></tr>
+<tr class="separator:a82d13d43d8672fdc8ef6c0d8d234884a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd627ad856653ef2b453bc69fdc25c0f"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a> (const size_t element_id) const</td></tr>
 <tr class="separator:abd627ad856653ef2b453bc69fdc25c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aef8ce1cc0a8d7fbb13142099a52074c6"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#aef8ce1cc0a8d7fbb13142099a52074c6">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;selection, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const size_t start_element_id=0, const size_t end_element_id=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
-<tr class="separator:aef8ce1cc0a8d7fbb13142099a52074c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa103af90d18e6be2a4556fe8a92e9ca7"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#aa103af90d18e6be2a4556fe8a92e9ca7">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;selection, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox)</td></tr>
+<tr class="separator:aa103af90d18e6be2a4556fe8a92e9ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ac58313bcde7050af90c21f0a2f9bee62"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#ac58313bcde7050af90c21f0a2f9bee62">Selection</a> ()</td></tr>
+<tr class="separator:ac58313bcde7050af90c21f0a2f9bee62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a8b5e11bad5215f5f08b23b7c551c75a7"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7">id_</a></td></tr>
 <tr class="separator:a8b5e11bad5215f5f08b23b7c551c75a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77e6a4d17024e7fd6ea503e52142a709"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a77e6a4d17024e7fd6ea503e52142a709">start_element_id_</a></td></tr>
-<tr class="separator:a77e6a4d17024e7fd6ea503e52142a709"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82a6524f5824e28a800771baf30b9e45"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a82a6524f5824e28a800771baf30b9e45">end_element_id_</a></td></tr>
-<tr class="separator:a82a6524f5824e28a800771baf30b9e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -181,39 +183,31 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a3434f0886a61fb7c3782af15cf7ea609" name="a3434f0886a61fb7c3782af15cf7ea609"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3434f0886a61fb7c3782af15cf7ea609">&#9670;&nbsp;</a></span>Selection()</h2>
+<a id="a2960580490c072a4815a6a3fc2942570" name="a2960580490c072a4815a6a3fc2942570"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2960580490c072a4815a6a3fc2942570">&#9670;&nbsp;</a></span>Selection() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">polyfem::utils::Selection::Selection </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>id</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>start_element_id</em> = <code>0</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>end_element_id</em> = <code>std::numeric_limits&lt;size_t&gt;::max()</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00014">14</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00015">15</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
 </div>
 </div>
@@ -240,13 +234,40 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00020">20</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00017">17</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ac58313bcde7050af90c21f0a2f9bee62" name="ac58313bcde7050af90c21f0a2f9bee62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac58313bcde7050af90c21f0a2f9bee62">&#9670;&nbsp;</a></span>Selection() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::utils::Selection::Selection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00028">28</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aef8ce1cc0a8d7fbb13142099a52074c6" name="aef8ce1cc0a8d7fbb13142099a52074c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef8ce1cc0a8d7fbb13142099a52074c6">&#9670;&nbsp;</a></span>build()</h2>
+<a id="aa103af90d18e6be2a4556fe8a92e9ca7" name="aa103af90d18e6be2a4556fe8a92e9ca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa103af90d18e6be2a4556fe8a92e9ca7">&#9670;&nbsp;</a></span>build()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -264,19 +285,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh_bbox</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>start_element_id</em> = <code>0</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>end_element_id</em> = <code>std::numeric_limits&lt;size_t&gt;::max()</code>&#160;</td>
+          <td class="paramname"><em>mesh_bbox</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -291,11 +300,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00029">29</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00013">13</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00014">polyfem::utils::log_and_throw_error()</a>, and <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00590">polyfem::mesh::append_selections()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00513">polyfem::mesh::build_selections()</a>.</p>
 
 </div>
 </div>
@@ -325,14 +334,14 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a227e40188af18bd7f9c2cca7d566b604">polyfem::utils::SpecifiedSelection</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00024">24</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00021">21</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00033">id_</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00030">id_</a>.</p>
 
 </div>
 </div>
-<a id="a15693545140baece5e4decb6e8d8ef57" name="a15693545140baece5e4decb6e8d8ef57"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15693545140baece5e4decb6e8d8ef57">&#9670;&nbsp;</a></span>inside()</h2>
+<a id="a82d13d43d8672fdc8ef6c0d8d234884a" name="a82d13d43d8672fdc8ef6c0d8d234884a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d13d43d8672fdc8ef6c0d8d234884a">&#9670;&nbsp;</a></span>inside()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -341,67 +350,25 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool polyfem::utils::Selection::inside </td>
+          <td class="memname">virtual bool polyfem::utils::Selection::inside </td>
           <td>(</td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>element_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
-          <td class="paramname"><em>p</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1utils_1_1_box_selection.html#a76bf29344c1c55cfb41f471d0623180b">polyfem::utils::BoxSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a14ccad7fc6475a4d728503f01dfdc2b5">polyfem::utils::SphereSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#ae335abfac88ee04abd88a9ef2030c90a">polyfem::utils::AxisPlaneSelection</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_plane_selection.html#ab2818147c8cead59c91639a9da9c2610">polyfem::utils::PlaneSelection</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00024">24</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00035">end_element_id_</a>, and <a class="el" href="_selection_8hpp_source.html#l00034">start_element_id_</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00088">polyfem::utils::BoxSelection::inside()</a>, <a class="el" href="_selection_8cpp_source.html#l00133">polyfem::utils::SphereSelection::inside()</a>, <a class="el" href="_selection_8cpp_source.html#l00176">polyfem::utils::AxisPlaneSelection::inside()</a>, and <a class="el" href="_selection_8cpp_source.html#l00210">polyfem::utils::PlaneSelection::inside()</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1utils_1_1_box_selection.html#a73ae87b59ff91f533ae3b1a2cc14f4bf">polyfem::utils::BoxSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a50cf1b2de9921c91b8ff6f473678b7eb">polyfem::utils::SphereSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#a0f6aae133a3232163eef53fda49dcb92">polyfem::utils::AxisPlaneSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_plane_selection.html#ac5020fe4c1e9b4346072c9975eb7fee2">polyfem::utils::PlaneSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_uniform_selection.html#ac56d4f0438e1eaaf7472d11c2c81ae7d">polyfem::utils::UniformSelection</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a335cab61e5a5ba718c667f54561ff975">polyfem::utils::SpecifiedSelection</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a82a6524f5824e28a800771baf30b9e45" name="a82a6524f5824e28a800771baf30b9e45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82a6524f5824e28a800771baf30b9e45">&#9670;&nbsp;</a></span>end_element_id_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t polyfem::utils::Selection::end_element_id_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00035">35</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00232">polyfem::utils::SpecifiedSelection::id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00024">inside()</a>.</p>
-
-</div>
-</div>
 <a id="a8b5e11bad5215f5f08b23b7c551c75a7" name="a8b5e11bad5215f5f08b23b7c551c75a7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8b5e11bad5215f5f08b23b7c551c75a7">&#9670;&nbsp;</a></span>id_</h2>
 
@@ -422,35 +389,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00033">33</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00030">30</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_selection_8hpp_source.html#l00024">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00111">polyfem::utils::SphereSelection::SphereSelection()</a>.</p>
-
-</div>
-</div>
-<a id="a77e6a4d17024e7fd6ea503e52142a709" name="a77e6a4d17024e7fd6ea503e52142a709"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77e6a4d17024e7fd6ea503e52142a709">&#9670;&nbsp;</a></span>start_element_id_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t polyfem::utils::Selection::start_element_id_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00034">34</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00232">polyfem::utils::SpecifiedSelection::id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00024">inside()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_selection_8hpp_source.html#l00021">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00085">polyfem::utils::SphereSelection::SphereSelection()</a>.</p>
 
 </div>
 </div>

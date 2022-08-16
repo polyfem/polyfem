@@ -208,6 +208,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afa7be5fda2a128f5473d4ad8b63be61d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update elements types.  <a href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#afa7be5fda2a128f5473d4ad8b63be61d">More...</a><br /></td></tr>
 <tr class="separator:afa7be5fda2a128f5473d4ad8b63be61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ddff0692147549ba44b6366e912e36d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a9ddff0692147549ba44b6366e912e36d">set_point</a> (const int global_index, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) override</td></tr>
+<tr class="memdesc:a9ddff0692147549ba44b6366e912e36d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the point.  <a href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a9ddff0692147549ba44b6366e912e36d">More...</a><br /></td></tr>
 <tr class="separator:a9ddff0692147549ba44b6366e912e36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af83fbccdc67bac8c265979729cfe8640"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af83fbccdc67bac8c265979729cfe8640">point</a> (const int global_index) const override</td></tr>
 <tr class="memdesc:af83fbccdc67bac8c265979729cfe8640"><td class="mdescLeft">&#160;</td><td class="mdescRight">point coordinates  <a href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af83fbccdc67bac8c265979729cfe8640">More...</a><br /></td></tr>
@@ -247,6 +248,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aabcf6a321819c2b1a3a8c65f4b1d95f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aabcf6a321819c2b1a3a8c65f4b1d95f1">triangulate_faces</a> (Eigen::MatrixXi &amp;tris, Eigen::MatrixXd &amp;pts, std::vector&lt; int &gt; &amp;ranges) const override</td></tr>
 <tr class="memdesc:aabcf6a321819c2b1a3a8c65f4b1d95f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">generate a triangular representation of every face  <a href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aabcf6a321819c2b1a3a8c65f4b1d95f1">More...</a><br /></td></tr>
 <tr class="separator:aabcf6a321819c2b1a3a8c65f4b1d95f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac76c33ff3aee81cbe3e488f030c06a48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac76c33ff3aee81cbe3e488f030c06a48">append</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;mesh) override</td></tr>
+<tr class="memdesc:ac76c33ff3aee81cbe3e488f030c06a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends a new mesh to the end of this  <a href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac76c33ff3aee81cbe3e488f030c06a48">More...</a><br /></td></tr>
+<tr class="separator:ac76c33ff3aee81cbe3e488f030c06a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">polyfem::mesh::Mesh2D</a></td></tr>
 <tr class="memitem:ab18ff604f927d7e928496b4bb358162c inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ab18ff604f927d7e928496b4bb358162c">Mesh2D</a> ()=default</td></tr>
 <tr class="separator:ab18ff604f927d7e928496b4bb358162c inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -273,8 +277,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af9d2f81e2afdf5218773168bd71bd2de inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec49796c4551f0519797c3442bd46aae inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aec49796c4551f0519797c3442bd46aae">face_node</a> (const <a class="el" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a> &amp;index, const int n_new_nodes, const int i, const int j) const =0</td></tr>
 <tr class="separator:aec49796c4551f0519797c3442bd46aae inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1cca9819eddf537887c72bd30209d94 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aa1cca9819eddf537887c72bd30209d94">set_point</a> (const int global_index, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p)=0</td></tr>
-<tr class="separator:aa1cca9819eddf537887c72bd30209d94 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a310e8b13dbda9defdd7f0468e23d9407 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a310e8b13dbda9defdd7f0468e23d9407">cell_barycenter</a> (const int index) const override</td></tr>
 <tr class="memdesc:a310e8b13dbda9defdd7f0468e23d9407 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">cell barycenter  <a href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a310e8b13dbda9defdd7f0468e23d9407">More...</a><br /></td></tr>
 <tr class="separator:a310e8b13dbda9defdd7f0468e23d9407 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh2_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -338,6 +340,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0140181b551c7bf0c162d6898155f294 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294">n_elements</a> () const</td></tr>
 <tr class="memdesc:a0140181b551c7bf0c162d6898155f294 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">utitlity to return the number of elements, cells or faces in 3d and 2d  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294">More...</a><br /></td></tr>
 <tr class="separator:a0140181b551c7bf0c162d6898155f294 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad45e1e9607532dbcfe63d08ed334b85c inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad45e1e9607532dbcfe63d08ed334b85c">n_boundary_elements</a> () const</td></tr>
+<tr class="memdesc:ad45e1e9607532dbcfe63d08ed334b85c inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">utitlity to return the number of boundary elements, faces or edges in 3d and 2d  <a href="classpolyfem_1_1mesh_1_1_mesh.html#ad45e1e9607532dbcfe63d08ed334b85c">More...</a><br /></td></tr>
+<tr class="separator:ad45e1e9607532dbcfe63d08ed334b85c inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf5c9547e7891266b92e6f1a2ac5d697 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">n_cells</a> () const =0</td></tr>
 <tr class="memdesc:aaf5c9547e7891266b92e6f1a2ac5d697 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of cells  <a href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">More...</a><br /></td></tr>
 <tr class="separator:aaf5c9547e7891266b92e6f1a2ac5d697 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -407,6 +412,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a564e7b06452fbb2d2abd6c1dd0bc0366 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">point</a> (const int global_index) const =0</td></tr>
 <tr class="memdesc:a564e7b06452fbb2d2abd6c1dd0bc0366 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">point coordinates  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">More...</a><br /></td></tr>
 <tr class="separator:a564e7b06452fbb2d2abd6c1dd0bc0366 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a499a0ccaf891a28ab3563d45a184a124 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a499a0ccaf891a28ab3563d45a184a124">set_point</a> (const int global_index, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p)=0</td></tr>
+<tr class="memdesc:a499a0ccaf891a28ab3563d45a184a124 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the point.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a499a0ccaf891a28ab3563d45a184a124">More...</a><br /></td></tr>
+<tr class="separator:a499a0ccaf891a28ab3563d45a184a124 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1969921941c1fdfbbd8999a7852b5731 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">edge_barycenter</a> (const int e) const =0</td></tr>
 <tr class="memdesc:a1969921941c1fdfbbd8999a7852b5731 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">edge barycenter  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">More...</a><br /></td></tr>
 <tr class="separator:a1969921941c1fdfbbd8999a7852b5731 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -482,9 +490,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4c42cdd2891d4bc0d8743dc4e776ca14 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">set_body_ids</a> (const std::vector&lt; int &gt; &amp;body_ids)</td></tr>
 <tr class="memdesc:a4c42cdd2891d4bc0d8743dc4e776ca14 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the volume sections.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">More...</a><br /></td></tr>
 <tr class="separator:a4c42cdd2891d4bc0d8743dc4e776ca14 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f2e83710adcd0112b142fbfa38d34ee inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a7f2e83710adcd0112b142fbfa38d34ee">set_body_ids</a> (const Eigen::VectorXi &amp;body_ids)</td></tr>
-<tr class="memdesc:a7f2e83710adcd0112b142fbfa38d34ee inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the volume sections.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a7f2e83710adcd0112b142fbfa38d34ee">More...</a><br /></td></tr>
-<tr class="separator:a7f2e83710adcd0112b142fbfa38d34ee inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e569bdb72d6c480fe1f27ee4acda141 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141">get_boundary_id</a> (const int primitive) const</td></tr>
 <tr class="memdesc:a5e569bdb72d6c480fe1f27ee4acda141 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the boundary selection of an element (face in 3d, edge in 2d)  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141">More...</a><br /></td></tr>
 <tr class="separator:a5e569bdb72d6c480fe1f27ee4acda141 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -542,6 +547,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aec6b2ba4a32c51cc8999ccd0c79d54e2 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aec6b2ba4a32c51cc8999ccd0c79d54e2">in_ordered_faces</a> () const</td></tr>
 <tr class="memdesc:aec6b2ba4a32c51cc8999ccd0c79d54e2 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Order of the input edges.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#aec6b2ba4a32c51cc8999ccd0c79d54e2">More...</a><br /></td></tr>
 <tr class="separator:aec6b2ba4a32c51cc8999ccd0c79d54e2 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9917a167f244c16c020d08e48cadc13 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad9917a167f244c16c020d08e48cadc13">append</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;mesh)</td></tr>
+<tr class="memdesc:ad9917a167f244c16c020d08e48cadc13 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends a new mesh to the end of this  <a href="classpolyfem_1_1mesh_1_1_mesh.html#ad9917a167f244c16c020d08e48cadc13">More...</a><br /></td></tr>
+<tr class="separator:ad9917a167f244c16c020d08e48cadc13 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7d57e3914abee26cf1e9abbffbaf714 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa7d57e3914abee26cf1e9abbffbaf714">append</a> (const std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; &amp;mesh)</td></tr>
+<tr class="memdesc:aa7d57e3914abee26cf1e9abbffbaf714 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">appends a new mesh to the end of this, utility that takes pointer, calls other one  <a href="classpolyfem_1_1mesh_1_1_mesh.html#aa7d57e3914abee26cf1e9abbffbaf714">More...</a><br /></td></tr>
+<tr class="separator:aa7d57e3914abee26cf1e9abbffbaf714 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c1d573c9697269c01b0ec07f108887 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a82c1d573c9697269c01b0ec07f108887">apply_affine_transformation</a> (const <a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a> &amp;A, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b)</td></tr>
+<tr class="memdesc:a82c1d573c9697269c01b0ec07f108887 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply an affine transformation \(Ax+b\) to the vertex positions \(x\).  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a82c1d573c9697269c01b0ec07f108887">More...</a><br /></td></tr>
+<tr class="separator:a82c1d573c9697269c01b0ec07f108887 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -585,6 +599,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a5a5cfda12f4c4a2a534ca3c396858015 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5a5cfda12f4c4a2a534ca3c396858015">create</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;cells, const bool non_conforming=false)</td></tr>
 <tr class="memdesc:a5a5cfda12f4c4a2a534ca3c396858015 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">factory to build the proper mesh  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a5a5cfda12f4c4a2a534ca3c396858015">More...</a><br /></td></tr>
 <tr class="separator:a5a5cfda12f4c4a2a534ca3c396858015 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad29a743e8abae25baa941f6c142841 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaad29a743e8abae25baa941f6c142841">create</a> (const int dim, const bool non_conforming=false)</td></tr>
+<tr class="memdesc:aaad29a743e8abae25baa941f6c142841 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">factory to build the proper empty mesh  <a href="classpolyfem_1_1mesh_1_1_mesh.html#aaad29a743e8abae25baa941f6c142841">More...</a><br /></td></tr>
+<tr class="separator:aaad29a743e8abae25baa941f6c142841 inherit pub_static_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1mesh_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a></td></tr>
 <tr class="memitem:a1575362bfcf4556fb8f862f012e9278c inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2">ElementType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c">elements_tag_</a></td></tr>
 <tr class="memdesc:a1575362bfcf4556fb8f862f012e9278c inherit pro_attribs_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">list of element types  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c">More...</a><br /></td></tr>
@@ -730,6 +747,46 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac76c33ff3aee81cbe3e488f030c06a48" name="ac76c33ff3aee81cbe3e488f030c06a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac76c33ff3aee81cbe3e488f030c06a48">&#9670;&nbsp;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::CMesh2D::append </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>appends a new mesh to the end of this </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>to append </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad9917a167f244c16c020d08e48cadc13">polyfem::mesh::Mesh</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">662</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00460">polyfem::mesh::Mesh::append()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="p__bases_8py_source.html#l00232">p_bases::indices</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">n_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">point()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00456">set_point()</a>.</p>
+
+</div>
+</div>
 <a id="adee7e38b7b60601cb04eff9b365b90c5" name="adee7e38b7b60601cb04eff9b365b90c5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adee7e38b7b60601cb04eff9b365b90c5">&#9670;&nbsp;</a></span>attach_higher_order_nodes()</h2>
 
@@ -775,9 +832,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ad1cc49ad1ae481001afbf52721dcfe49">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00169">169</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">190</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00538">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00534">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_mesh_8hpp_source.html#l00536">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="p__bases_8py_source.html#l00372">p_bases::nodes</a>, <a class="el" href="_mesh_8hpp_source.html#l00529">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00581">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00577">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_mesh_8hpp_source.html#l00579">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00058">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="p__bases_8py_source.html#l00372">p_bases::nodes</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -826,9 +883,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00368">368</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00389">389</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">compute_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">compute_boundary_ids()</a>.</p>
 
 </div>
 </div>
@@ -878,9 +935,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a47f0e3391109b093b2e1c8782c68caa2">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00145">145</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">166</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00538">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00526">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00534">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00536">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00303">polyfem::mesh::orient_normals_2d()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00574">polyfem::mesh::to_geogram_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00581">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00547">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00577">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00579">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00303">polyfem::mesh::orient_normals_2d()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00574">polyfem::mesh::to_geogram_mesh()</a>.</p>
 
 </div>
 </div>
@@ -932,7 +989,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00041">41</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
 </div>
 </div>
@@ -970,9 +1027,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ae226ec0e107162494cfc9931cf9ed3f3">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00545">545</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00566">566</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00527">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00069">polyfem::mesh::Mesh2D::face_barycenter()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00142">polyfem::mesh::Mesh::n_elements()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00570">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00069">polyfem::mesh::Mesh2D::face_barycenter()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>.</p>
 
 </div>
 </div>
@@ -1011,9 +1068,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a8a6de9cbe928b4411f9413eb102b66d3">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">557</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">578</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00525">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00368">bounding_box()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00389">bounding_box()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 
 </div>
 </div>
@@ -1051,9 +1108,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa77157cc1c817bb90b4e30d0f51f5b5f">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00587">587</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00608">608</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00525">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 
 </div>
 </div>
@@ -1091,9 +1148,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3788f7ec79a7dab5333430631f010730">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00604">604</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00625">625</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00525">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 
 </div>
 </div>
@@ -1131,9 +1188,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a129dd721dab31ee5bf7b8a775af30473">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00616">616</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00637">637</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00525">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 
 </div>
 </div>
@@ -1171,9 +1228,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a33528f94d714d562fc736567c63a5a82">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00628">628</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00649">649</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00525">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 
 </div>
 </div>
@@ -1204,11 +1261,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a46596119e02dda1e34dac2f448eb87dc">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00526">526</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00547">547</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00096">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00523">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00096">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00566">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00145">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00122">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>.</p>
 
 </div>
 </div>
@@ -1247,11 +1304,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">537</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">558</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">point()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">point()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">compute_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">compute_boundary_ids()</a>.</p>
 
 </div>
 </div>
@@ -1290,9 +1347,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0d51b3e9aa1a6db8cf897a98ac7dc486">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00427">427</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00448">448</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">point()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">point()</a>.</p>
 
 </div>
 </div>
@@ -1338,9 +1395,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#af9d2f81e2afdf5218773168bd71bd2de">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00302">302</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00323">323</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_mesh_8hpp_source.html#l00534">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00529">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_mesh_8hpp_source.html#l00577">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -1392,9 +1449,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">40</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00628">compute_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00649">compute_boundary_ids()</a>.</p>
 
 </div>
 </div>
@@ -1446,9 +1503,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aec49796c4551f0519797c3442bd46aae">polyfem::mesh::Mesh2D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00324">324</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">345</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00536">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh_8cpp_source.html#l00364">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00406">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_8hpp_source.html#l00529">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00579">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh_8cpp_source.html#l00346">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00388">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 
 </div>
 </div>
@@ -1500,7 +1557,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00039">39</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
 </div>
 </div>
@@ -1542,9 +1599,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">85</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">c2e_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_navigation_8cpp_source.html#l00096">polyfem::mesh::Navigation::get_index_from_face()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_navigation_8cpp_source.html#l00096">polyfem::mesh::Navigation::get_index_from_face()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00169">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00450">is_boundary_element()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00471">is_boundary_element()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
 
 </div>
 </div>
@@ -1585,9 +1642,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">48</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">boundary_edges_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_edges_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00450">is_boundary_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">compute_boundary_ids()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00471">is_boundary_element()</a>.</p>
 
 </div>
 </div>
@@ -1626,9 +1683,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00450">450</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00471">471</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">n_face_vertices()</a>, and <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">n_face_vertices()</a>, and <a class="el" href="_mesh2_d_8hpp_source.html#l00058">polyfem::mesh::Mesh2D::next_around_face()</a>.</p>
 
 </div>
 </div>
@@ -1669,7 +1726,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00043">43</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">boundary_vertices_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">boundary_vertices_</a>.</p>
 
 </div>
 </div>
@@ -1740,9 +1797,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a939979be61d7499528476866d9b58270">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00122">122</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">143</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00538">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00526">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00534">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00536">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00303">polyfem::mesh::orient_normals_2d()</a>, and <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00581">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00547">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00577">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00579">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00303">polyfem::mesh::orient_normals_2d()</a>, and <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>.</p>
 
 </div>
 </div>
@@ -1781,7 +1838,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab8cf908389fe077868331f225c115be7">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00076">76</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00097">97</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
 </div>
 </div>
@@ -1815,9 +1872,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">34</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00169">attach_higher_order_nodes()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">compute_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">attach_higher_order_nodes()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">compute_boundary_ids()</a>.</p>
 
 </div>
 </div>
@@ -1858,9 +1915,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">37</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00450">is_boundary_element()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00471">is_boundary_element()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
 
 </div>
 </div>
@@ -1894,9 +1951,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">33</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00169">attach_higher_order_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">attach_higher_order_nodes()</a>.</p>
 
 </div>
 </div>
@@ -1930,9 +1987,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">35</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00465">triangulate_faces()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00486">triangulate_faces()</a>.</p>
 
 </div>
 </div>
@@ -1963,9 +2020,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a6a0669fa090fe02438840545e6da8dc1">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00382">382</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00403">403</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
 </div>
 </div>
@@ -2056,11 +2113,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">441</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">462</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00427">edge_length()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00302">edge_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00324">face_node()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00448">edge_length()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00323">edge_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">face_node()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
 
 </div>
 </div>
@@ -2111,7 +2168,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">26</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">c2e_</a>, <a class="el" href="_refinement_8hpp_source.html#l00106">polyfem::mesh::Polygons::catmul_clark_split_func()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00526">compute_elements_tag()</a>, <a class="el" href="_mesh_8cpp_source.html#l00406">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, <a class="el" href="_mesh_8hpp_source.html#l00142">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00529">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_refinement_8hpp_source.html#l00087">polyfem::mesh::Polygons::polar_split_func()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00736">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="_refinement_8hpp_source.html#l00106">polyfem::mesh::Polygons::catmul_clark_split_func()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00547">compute_elements_tag()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01229">polyfem::mesh::generate_edges()</a>, <a class="el" href="_mesh_8hpp_source.html#l00588">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00590">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00586">polyfem::mesh::Mesh::in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00388">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_refinement_8hpp_source.html#l00087">polyfem::mesh::Polygons::polar_split_func()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00736">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 
 </div>
 </div>
@@ -2149,11 +2206,22 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#aa1cca9819eddf537887c72bd30209d94">polyfem::mesh::Mesh2D</a>.</p>
+<p>Set the point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">global_index</td><td><em>global</em> vertex index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p</td><td>value </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00435">435</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a499a0ccaf891a28ab3563d45a184a124">polyfem::mesh::Mesh</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00456">456</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>.</p>
 
 </div>
 </div>
@@ -2185,9 +2253,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">89</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">c2e_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, and <a class="el" href="_navigation_8cpp_source.html#l00136">polyfem::mesh::Navigation::switch_edge()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, and <a class="el" href="_navigation_8cpp_source.html#l00136">polyfem::mesh::Navigation::switch_edge()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00324">face_node()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">face_node()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00431">polyfem::utils::BoundarySampler::normal_for_polygon_edge()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00344">polyfem::utils::BoundarySampler::quadrature_for_polygon_edge()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00306">polyfem::utils::BoundarySampler::sample_polygon_edge()</a>.</p>
 
 </div>
 </div>
@@ -2219,7 +2287,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">90</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">c2e_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, and <a class="el" href="_navigation_8cpp_source.html#l00159">polyfem::mesh::Navigation::switch_face()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">c2e_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, and <a class="el" href="_navigation_8cpp_source.html#l00159">polyfem::mesh::Navigation::switch_face()</a>.</p>
 
 </div>
 </div>
@@ -2251,9 +2319,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">88</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, and <a class="el" href="_navigation_8cpp_source.html#l00115">polyfem::mesh::Navigation::switch_vertex()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, and <a class="el" href="_navigation_8cpp_source.html#l00115">polyfem::mesh::Navigation::switch_vertex()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00169">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00302">edge_node()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00324">face_node()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00323">edge_node()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">face_node()</a>.</p>
 
 </div>
 </div>
@@ -2309,9 +2377,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a61552f3bfd14586834855334677a11b5">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00465">465</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00486">486</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">n_vertices()</a>.</p>
+<p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs::f</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">n_vertices()</a>.</p>
 
 </div>
 </div>
@@ -2342,9 +2410,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a42eacd6c5a9ca45ff6c38e70351c1f8a">polyfem::mesh::Mesh</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00532">532</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00553">553</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00096">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00523">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00096">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00566">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">mesh_</a>.</p>
 
 </div>
 </div>
@@ -2369,9 +2437,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">102</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">104</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00145">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00122">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>.</p>
 
 </div>
 </div>
@@ -2395,9 +2463,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">101</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">103</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00145">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00043">is_boundary_vertex()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00122">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00043">is_boundary_vertex()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>.</p>
 
 </div>
 </div>
@@ -2421,9 +2489,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00100">100</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">102</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00145">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00122">load()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">switch_face()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">load()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">switch_face()</a>.</p>
 
 </div>
 </div>
@@ -2447,9 +2515,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00099">99</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8hpp_source.html#l00101">101</a> of file <a class="el" href="_c_mesh2_d_8hpp_source.html">CMesh2D.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00169">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00145">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00041">cell_vertex()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00526">compute_elements_tag()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00537">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00427">edge_length()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00039">face_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00122">load()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">n_face_vertices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">n_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00382">normalize()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00441">point()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00435">set_point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">switch_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00465">triangulate_faces()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00532">update_elements_tag()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00041">cell_vertex()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00547">compute_elements_tag()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00558">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00448">edge_length()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00039">face_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00085">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">load()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00037">n_face_vertices()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00035">n_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00403">normalize()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00462">point()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">refine()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00456">set_point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">switch_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00088">switch_vertex()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00486">triangulate_faces()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00553">update_elements_tag()</a>.</p>
 
 </div>
 </div>

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['unflatten_0',['unflatten',['../namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5',1,'polyfem::utils']]],
-  ['uniformselection_1',['UniformSelection',['../classpolyfem_1_1utils_1_1_uniform_selection.html#a5a088a343fec4c8e4c8c25d39cd69a7a',1,'polyfem::utils::UniformSelection']]],
+  ['uniformselection_1',['UniformSelection',['../classpolyfem_1_1utils_1_1_uniform_selection.html#a21f600fc6dc5ef2994080296bee1f714',1,'polyfem::utils::UniformSelection']]],
   ['unitflowwithobstacle_2',['UnitFlowWithObstacle',['../classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#a7771fbd31eb1937fd8386da6f10187e2',1,'polyfem::problem::UnitFlowWithObstacle']]],
   ['update_5fbarrier_5fstiffness_3',['update_barrier_stiffness',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a149dffd78e2d408e505715f1060d7d17',1,'polyfem::solver::NLProblem']]],
   ['update_5fconstraint_5fset_4',['update_constraint_set',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ab4db7f9846e876349e8c139706eaf0b3',1,'polyfem::solver::NLProblem']]],
