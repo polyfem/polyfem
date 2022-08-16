@@ -142,7 +142,7 @@ namespace polyfem
 #endif
 	}
 
-	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir)
+	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir, const bool fallback_solver)
 	{
 		json args_in = p_args_in; // mutable copy
 
@@ -198,10 +198,18 @@ namespace polyfem
 			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
 			if (solver_found == ss.end())
 			{
-				std::stringstream sss;
-				for (const auto &s : ss)
-					sss << ", " << s;
-				log_and_throw_error(fmt::format("Solver {} is invalid, should be one of {}", s_json, sss.str()));
+				if (fallback_solver)
+				{
+					logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
+					this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+				}
+				else
+				{
+					std::stringstream sss;
+					for (const auto &s : ss)
+						sss << ", " << s;
+					log_and_throw_error(fmt::format("Solver {} is invalid, should be one of {}", s_json, sss.str()));
+				}
 			}
 
 			const auto pp = polysolve::LinearSolver::availablePrecond();

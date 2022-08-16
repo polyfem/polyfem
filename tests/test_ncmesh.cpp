@@ -22,7 +22,7 @@ using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
 
-TEST_CASE("ncmesh2d", "[ncmesh]")
+TEST_CASE("ncmesh2d", "[.ncmesh]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
@@ -97,7 +97,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	REQUIRE(fabs(state.l2_err) < 1e-10);
 }
 
-TEST_CASE("ncmesh3d", "[ncmesh]")
+TEST_CASE("ncmesh3d", "[.ncmesh]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
