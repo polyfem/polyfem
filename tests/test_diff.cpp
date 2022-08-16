@@ -137,10 +137,10 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 							"position": 0.001
 						}
 					],
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": true
-					}
+					"transformation": {
+						"translation": [0.5, 0.5, 0.5]
+					},
+					"n_refs": 0
 				}
 			],
 			"space": {
@@ -260,13 +260,9 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 			"geometry": [
 				{
 					"mesh": "",
-					"surface_selection": [
-						{
-							"id": 11,
-							"axis": "-x",
-							"position": 0.001
-						}
-					]
+					"transformation": {
+						"translation": [0.5, 0.5]
+					}
 				}
 			],
 			"space": {
@@ -283,7 +279,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 				],
 				"dirichlet_boundary": [
 					{
-						"id": 11,
+						"id": 1,
 						"value": [
 							0,
 							0
@@ -370,8 +366,17 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 
 	double new_functional_val = state.J_static(j);
 
-	double finite_difference = (new_functional_val - functional_val) / t;
+	state.perturb_mesh(velocity_discrete * (-2*t));
 
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+
+	state.solve_problem();
+
+	double old_functional_val = state.J_static(j);
+
+	double finite_difference = (new_functional_val - old_functional_val) / t / 2;
+	std::cout << finite_difference << ", " << derivative << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
@@ -490,10 +495,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 						"axis": "-y",
 						"position": 0.01
 					}
-				],
-				"advanced": {
-					"normalize_mesh": false
-				}
+				]
 			},
 			{
 				"mesh": "",
@@ -516,10 +518,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 						"axis": "-y",
 						"position": 0.01
 					}
-				],
-				"advanced": {
-					"normalize_mesh": false
-				}
+				]
 			}
 		],
 		"differentiable": true,
@@ -574,7 +573,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	state.assemble_stiffness_mat();
 	state.assemble_rhs();
 	state.solve_problem();
-	// state.pre_sol = state.sol;
+	state.pre_sol = state.sol;
 	double functional_val = func.energy(state);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
@@ -753,6 +752,174 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(2e-4));
 }
 
+TEST_CASE("damping-transient", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"(
+		{
+			"geometry": [
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							0,
+							0
+						],
+						"rotation": 0,
+						"scale": [
+							3,
+							0.02
+						]
+					},
+					"volume_selection": 3,
+					"surface_selection": 3,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				},
+				{
+					"mesh": "",
+					"transformation": {
+						"translation": [
+							-1.5,
+							0.3
+						],
+						"rotation": 0,
+						"scale": 0.5
+					},
+					"volume_selection": 1,
+					"surface_selection": 1,
+					"n_refs": 0,
+					"advanced": {
+						"normalize_mesh": false
+					}
+				}
+			],
+			"space": {
+				"discr_order": 1,
+				"advanced": {
+					"quadrature_order": 5
+				}
+			},
+			"time": {
+				"tend": 0.4,
+				"dt": 0.01,
+				"integrator": "BDF",
+				"BDF": {
+					"num_steps": 2
+				}
+			},
+			"contact": {
+				"enabled": true,
+				"friction_coefficient": 0.5
+			},
+			"solver": {
+				"contact": {
+					"barrier_stiffness": 100000.0
+				}
+			},
+			"boundary_conditions": {
+				"rhs": [
+					0,
+					9.8
+				],
+				"dirichlet_boundary": [
+					{
+						"id": 3,
+						"value": [
+							0,
+							0
+						]
+					}
+				]
+			},
+			"initial_conditions": {
+				"velocity": [
+					{
+						"id": 1,
+						"value": [
+							5,
+							0
+						]
+					}
+				]
+			},
+			"differentiable": true,
+			"materials": {
+				"type": "NeoHookean",
+				"E": 1000000.0,
+				"nu": 0.3,
+				"rho": 1000,
+				"phi": 10,
+				"psi": 10
+			},
+			"output": {
+				"paraview": {
+					"vismesh_rel_area": 1,
+					"skip_frame": 1
+				},
+				"advanced": {
+					"save_time_sequence": false
+				}
+			}
+		}
+	)"_json;
+	in_args["geometry"][0]["mesh"] = path + "/../square.obj";
+	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
+
+	// compute reference solution
+	State state_reference(8);
+	auto in_args_ref = in_args;
+	in_args_ref["materials"]["phi"] = 1;
+	in_args_ref["materials"]["psi"] = 20;
+	state_reference.init_logger("", spdlog::level::level_enum::info, false);
+	state_reference.init(in_args_ref);
+	state_reference.load_mesh();
+	state_reference.solve();
+
+	State state(8);
+	state.init_logger("", spdlog::level::level_enum::err, false);
+	state.init(in_args);
+	state.load_mesh();
+	state.solve();
+
+	TrajectoryFunctional func;
+	func.set_interested_ids({1}, {});
+	func.set_reference(&state_reference, state, {1, 3});
+	func.set_surface_integral();
+
+	double functional_val = func.energy(state);
+
+	Eigen::VectorXd velocity_discrete;
+	velocity_discrete.setOnes(2);
+
+	Eigen::VectorXd one_form = func.gradient(state, "damping-parameter");
+
+	const double step_size = 1e-5;
+
+	state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() + velocity_discrete(0) * step_size;
+	state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + velocity_discrete(1) * step_size;
+	state.set_materials();
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	state.solve_problem();
+	double next_functional_val = func.energy(state);
+
+	state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() - velocity_discrete(0) * step_size * 2;
+	state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() - velocity_discrete(1) * step_size * 2;
+	state.set_materials();
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	state.solve_problem();
+	double former_functional_val = func.energy(state);
+
+	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2;
+	double derivative = (one_form.array() * velocity_discrete.array()).sum();
+	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
+}
+
 TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -808,7 +975,7 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 				"dt": 0.01,
 				"integrator": "BDF",
 				"BDF": {
-					"steps": 2
+					"num_steps": 2
 				}
 			},
 			"contact": {
@@ -1082,22 +1249,13 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 				{
 					"mesh": "",
 					"transformation": {
-						"translation": [
-							0,
-							0
-						],
-						"rotation": 0,
 						"scale": [
 							3,
 							0.02
 						]
 					},
 					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 3
 				},
 				{
 					"mesh": "",
@@ -1106,15 +1264,10 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 							-1.5,
 							0.3
 						],
-						"rotation": 0,
 						"scale": 0.5
 					},
 					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 1
 				}
 			],
 			"space": {
@@ -1125,19 +1278,19 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			},
 			"time": {
 				"tend": 0.2,
-				"dt": 0.01,
+				"dt": 0.4,
 				"integrator": "BDF",
 				"BDF": {
-					"steps": 2
+					"num_steps": 2
 				}
 			},
 			"contact": {
 				"enabled": true,
-				"friction_coefficient": 0.5
+				"friction_coefficient": 0.2
 			},
 			"solver": {
 				"contact": {
-					"barrier_stiffness": 23216604
+					"barrier_stiffness": 1e4
 				}
 			},
 			"boundary_conditions": {
@@ -1169,19 +1322,9 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			"differentiable": true,
 			"materials": {
 				"type": "NeoHookean",
-				"E": 1000000.0,
+				"E": 1e5,
 				"nu": 0.3,
-				"rho": 1000,
-				"phi": 10,
-				"psi": 10
-			},
-			"output": {
-				"paraview": {
-					"vismesh_rel_area": 1
-				},
-				"advanced": {
-					"save_time_sequence": false
-				}
+				"rho": 1000
 			}
 		}
 	)"_json;
@@ -1222,13 +1365,18 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 
 	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
 
-	const double step_size = 1e-7;
+	const double step_size = 1e-5;
 	state.initial_vel_update += velocity_discrete * step_size;
 
 	state.solve_problem();
 	double next_functional_val = func.energy(state);
 
-	double finite_difference = (next_functional_val - functional_val) / step_size;
+	state.initial_vel_update -= velocity_discrete * step_size * 2;
+
+	state.solve_problem();
+	double last_functional_val = func.energy(state);
+
+	double finite_difference = (next_functional_val - last_functional_val) / step_size / 2;
 
 	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(1e-5));
 }
@@ -1432,11 +1580,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 						]
 					},
 					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 3
 				},
 				{
 					"mesh": "",
@@ -1453,11 +1597,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 						]
 					},
 					"volume_selection": 2,
-					"surface_selection": 2,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 2
 				},
 				{
 					"mesh": "",
@@ -1474,11 +1614,7 @@ TEST_CASE("material-contact-3d", "[adjoint_method]")
 						]
 					},
 					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 1
 				}
 			],
 			"space": {
@@ -1613,11 +1749,7 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 						]
 					},
 					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 3
 				},
 				{
 					"mesh": "",
@@ -1634,11 +1766,7 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 						]
 					},
 					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 1
 				}
 			],
 			"space": {
@@ -1648,7 +1776,7 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 				}
 			},
 			"time": {
-				"tend": 0.2,
+				"tend": 0.1,
 				"dt": 0.02
 			},
 			"contact": {
@@ -1690,22 +1818,13 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 				]
 			},
 			"differentiable": true,
-			"materials": [
-				{
-					"id": 1,
-					"E": 1000000.0,
-					"nu": 0.3,
-					"rho": 1000,
-					"type": "NeoHookean"
-				},
-				{
-					"id": 3,
-					"E": 1000000.0,
-					"nu": 0.3,
-					"rho": 1000,
-					"type": "NeoHookean"
-				}
-			],
+			"materials": 
+			{
+				"E": 1000000.0,
+				"nu": 0.3,
+				"rho": 1000,
+				"type": "NeoHookean"
+			},
 			"output": {
 				"paraview": {
 					"vismesh_rel_area": 1
@@ -1739,7 +1858,7 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 	Eigen::VectorXd one_form = func.gradient(state, "shape");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
-	const double t = 1e-7;
+	const double t = 1e-6;
 	state.perturb_mesh(velocity_discrete * t);
 
 	state.assemble_rhs();
@@ -1747,7 +1866,14 @@ TEST_CASE("shape-contact-3d", "[adjoint_method]")
 	state.solve_problem();
 	double next_functional_val = func.energy(state);
 
-	double finite_difference = (next_functional_val - functional_val) / t;
+	state.perturb_mesh(velocity_discrete * (-2*t));
+
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	state.solve_problem();
+	double former_functional_val = func.energy(state);
+
+	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
 
 	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(1e-4));
 }
@@ -1761,22 +1887,13 @@ TEST_CASE("barycenter", "[adjoint_method]")
 				{
 					"mesh": "",
 					"transformation": {
-						"translation": [
-							0,
-							0
-						],
-						"rotation": 0,
 						"scale": [
 							3,
 							0.02
 						]
 					},
 					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 3
 				},
 				{
 					"mesh": "",
@@ -1785,15 +1902,10 @@ TEST_CASE("barycenter", "[adjoint_method]")
 							-1.5,
 							0.3
 						],
-						"rotation": 0,
 						"scale": 0.5
 					},
 					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 1
 				}
 			],
 			"space": {
@@ -1804,19 +1916,19 @@ TEST_CASE("barycenter", "[adjoint_method]")
 			},
 			"time": {
 				"tend": 0.2,
-				"dt": 0.01,
+				"dt": 0.02,
 				"integrator": "BDF",
 				"BDF": {
-					"steps": 2
+					"num_steps": 2
 				}
 			},
 			"contact": {
 				"enabled": true,
-				"friction_coefficient": 0.5
+				"friction_coefficient": 0.2
 			},
 			"solver": {
 				"contact": {
-					"barrier_stiffness": 23216604
+					"barrier_stiffness": 1e5
 				}
 			},
 			"boundary_conditions": {
@@ -1898,13 +2010,18 @@ TEST_CASE("barycenter", "[adjoint_method]")
 
 	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
 
-	const double step_size = 1e-5;
+	const double step_size = 1e-6;
 	state.initial_vel_update += velocity_discrete * step_size;
 
 	state.solve_problem();
 	double next_functional_val = func.energy(state);
 
-	double finite_difference = (next_functional_val - functional_val) / step_size;
+	state.initial_vel_update -= velocity_discrete * step_size * 2;
+
+	state.solve_problem();
+	double last_functional_val = func.energy(state);
+
+	double finite_difference = (next_functional_val - last_functional_val) / step_size / 2;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
@@ -1965,7 +2082,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 				"dt": 0.01,
 				"integrator": "BDF",
 				"BDF": {
-					"steps": 2
+					"num_steps": 2
 				}
 			},
 			"contact": {

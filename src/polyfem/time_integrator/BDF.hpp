@@ -74,6 +74,6 @@ namespace polyfem::time_integrator
 		static double betas(const int i);
 
 	protected:
-		int num_steps;
+		int num_steps = 1;
 	};
 } // namespace polyfem::time_integrator

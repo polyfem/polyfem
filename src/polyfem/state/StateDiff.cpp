@@ -486,7 +486,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 		{
 			logger().warn("Integrator type not supported for differentiability.");
@@ -555,13 +555,13 @@ namespace polyfem
 				assembler.assemble_energy_hessian(nl->rhs_assembler.formulation(), mesh->is_volume(), n_bases, false, bases, gbases, ass_vals_cache, full, nl->mat_cache, energy_hessian);
 			}
 
-			// if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
-			// {
-			// 	StiffnessMatrix damping_hessian(full_size, full_size);
-			// 	damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
+			if (problem->is_time_dependent() && damping_assembler.local_assembler().is_valid() && diff_cached.size() > 0)
+			{
+				StiffnessMatrix damping_hessian(full_size, full_size);
+				damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, nl->dt(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
 
-			// 	energy_hessian += damping_hessian;
-			// }
+				energy_hessian += damping_hessian;
+			}
 		}
 
 		StiffnessMatrix barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
@@ -614,21 +614,20 @@ namespace polyfem
 			if (nl->get_is_time_dependent())
 			{
 				double beta = bdf_order < 1 ? std::nan("") : time_integrator::BDF::betas(bdf_order - 1);
-				double dt = args["time"]["dt"];
-				double acceleration_scaling = beta * beta * dt * dt;
+				double acceleration_scaling = beta * beta * nl->dt() * nl->dt();
 				barrier_hessian /= acceleration_scaling;
 				friction_hessian /= acceleration_scaling;
 				hessian_prev /= acceleration_scaling;
 			}
 		}
 
-		// if (problem->is_time_dependent() && (args["materials"]["phi"].get<double>() > 0 || args["materials"]["psi"].get<double>() > 0) && diff_cached.size() > 0)
-		// {
-		// 	StiffnessMatrix damping_hessian_prev(full_size, full_size);
-		// 	damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, args["time"]["dt"].get<double>(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
+		if (problem->is_time_dependent() && damping_assembler.local_assembler().is_valid() && diff_cached.size() > 0)
+		{
+			StiffnessMatrix damping_hessian_prev(full_size, full_size);
+			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, nl->dt(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
 
-		// 	hessian_prev += damping_hessian_prev;
-		// }
+			hessian_prev += damping_hessian_prev;
+		}
 
 		hessian = energy_hessian + nl->barrier_stiffness() * barrier_hessian + friction_hessian;
 	}
@@ -1195,7 +1194,7 @@ namespace polyfem
 			return;
 
 		const auto params = args["materials"];
-		// if (params["phi"].get<double>() == 0 && params["psi"].get<double>() == 0)
+		if (!damping_assembler.local_assembler().is_valid())
 			return;
 
 		const double dt = args["time"]["dt"];
@@ -1518,7 +1517,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1557,7 +1556,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1645,7 +1644,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1735,7 +1734,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1794,7 +1793,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1826,7 +1825,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1902,7 +1901,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2022,7 +2021,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2081,7 +2080,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2115,7 +2114,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2161,7 +2160,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2207,7 +2206,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 

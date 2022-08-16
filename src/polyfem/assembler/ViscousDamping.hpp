@@ -40,6 +40,8 @@ namespace polyfem
 			inline int size() const { return size_; }
 			void set_size(const int size);
 
+			bool is_valid() const { return (psi_ > 0) && (phi_ > 0); }
+
 		private:
 			// material parameters controlling shear and bulk damping
 			double psi_ = 0, phi_ = 0;

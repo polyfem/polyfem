@@ -83,8 +83,6 @@ namespace polyfem
 
 		void ViscousDamping::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
-
 			if (params.contains("psi"))
 				psi_ = params["psi"];
 			if (params.contains("phi"))

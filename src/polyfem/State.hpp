@@ -218,6 +218,7 @@ namespace polyfem
 		Eigen::MatrixXd pressure;
 
 		Eigen::MatrixXd pre_sol;
+		std::vector<Eigen::MatrixXd> pre_sols;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
@@ -1044,14 +1045,14 @@ namespace polyfem
 			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
+		/// set the multimaterial, this is mean for internal usage.
+		void set_materials();
+
 	private:
 		/// splits the solution in solution and pressure for mixed problems
 		void sol_to_pressure();
 		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
-
-		/// set the multimaterial, this is mean for internal usage.
-		void set_materials();
 
 #ifdef POLYFEM_WITH_TBB
 		/// limits the number of used threads
