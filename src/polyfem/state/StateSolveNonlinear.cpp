@@ -324,6 +324,8 @@ namespace polyfem
 			mesh::remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
 		}
 
+		// --------------------------------------------------------------------
+
 		// Save old values
 		const int old_n_bases = n_bases;
 		const std::vector<ElementBases> old_bases = bases;
@@ -334,14 +336,18 @@ namespace polyfem
 		y.col(1) = solve_data.nl_problem->time_integrator()->v_prev();
 		y.col(2) = solve_data.nl_problem->time_integrator()->a_prev();
 
+		// --------------------------------------------------------------------
+
 		this->load_mesh(V_new, F_new);
 		// FIXME:
 		mesh->compute_boundary_ids(1e-6);
-		mesh->set_body_ids(Eigen::VectorXi::Ones(mesh->n_elements()));
+		mesh->set_body_ids(std::vector<int>(mesh->n_elements(), 1));
 		this->set_materials(); // TODO: Explain why I need this?
 		this->build_basis();
 		this->assemble_rhs();
 		this->assemble_stiffness_mat();
+
+		// --------------------------------------------------------------------
 
 		// L2 Projection
 		ass_vals_cache.clear(); // Clear this because the mass matrix needs to be recomputed
@@ -385,6 +391,8 @@ namespace polyfem
 				V_new.rows())
 					  << std::endl;
 		}
+
+		// --------------------------------------------------------------------
 
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))

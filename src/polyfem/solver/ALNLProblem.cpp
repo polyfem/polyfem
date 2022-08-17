@@ -76,11 +76,11 @@ namespace polyfem
 			const double val = super::value(x, only_elastic);
 
 			// ₙ
-			// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (xₖ - x̂ₖ)ᵀ M (xₖ - x̂ₖ)
+			// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (xₖ - x̂ₖ)ᵀ lump(M) (xₖ - x̂ₖ)
 			// ᵏ
 			TVector distv;
 			compute_distance(x, distv);
-			// TODO: replace this with the actual mass matrix
+			// TODO: replace this with the actual lumped mass matrix
 			Eigen::SparseMatrix<double> M = sparse_identity(x.size(), x.size());
 			const double AL_penalty = weight_ / 2 * distv.transpose() * M * distv;
 
@@ -108,7 +108,7 @@ namespace polyfem
 
 			TVector grad_AL;
 			compute_distance(x, grad_AL);
-			//logger().trace("dist grad {}", tmp.norm());
+			// logger().trace("dist grad {}", tmp.norm());
 			grad_AL *= weight_;
 
 			gradv += grad_AL;
@@ -128,7 +128,7 @@ namespace polyfem
 			// compute_distance(x, distv);
 			// const double dist = distv.norm();
 
-			return false; //dist < stop_dist_;
+			return false; // dist < stop_dist_;
 		}
 	} // namespace solver
 } // namespace polyfem
