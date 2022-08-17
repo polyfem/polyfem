@@ -869,6 +869,31 @@ namespace polyfem
 			index_prepared = true;
 		}
 
+		void NCMesh3D::append(const Mesh &mesh)
+		{
+			assert(typeid(mesh) == typeid(NCMesh3D));
+			Mesh::append(mesh);
+
+			const NCMesh3D &mesh3d = dynamic_cast<const NCMesh3D &>(mesh);
+
+			const int n_v = n_vertices();
+			const int n_f = n_cells();
+			
+			vertices.reserve(n_v + mesh3d.n_vertices());
+			for (int i = 0; i < mesh3d.n_vertices(); i++)
+			{
+				vertices.emplace_back(mesh3d.vertices[i].pos);
+			}
+			for (int i = 0; i < mesh3d.n_cells(); i++)
+			{
+				Eigen::Vector4i cell = mesh3d.elements[i].vertices;
+				cell = cell.array() + n_v;
+				add_element(cell, -1);
+			}
+
+			prepare_mesh();
+		}
+
 		bool NCMesh3D::load(const std::string &path)
 		{
 			if (!StringUtils::endswith(path, ".HYBRID"))
