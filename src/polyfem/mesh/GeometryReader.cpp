@@ -50,6 +50,7 @@ namespace polyfem::mesh
 				A, b);
 			mesh->apply_affine_transformation(A, b);
 		}
+
 		mesh->bounding_box(bbox[0], bbox[1]);
 
 		// --------------------------------------------------------------------
@@ -146,22 +147,23 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// If the selection is of the form {"id_offset": ...}
-		if (j_mesh["volume_selection"].is_object()
-			&& j_mesh["volume_selection"].size() == 1
-			&& j_mesh["volume_selection"].contains("id_offset"))
+		const json volume_selection = j_mesh["volume_selection"];
+		if (volume_selection.is_object()
+			&& volume_selection.size() == 1
+			&& volume_selection.contains("id_offset"))
 		{
-			const int id_offset = j_mesh["volume_selection"]["id_offset"].get<int>();
+			const int id_offset = volume_selection["id_offset"].get<int>();
 			const int n_body_ids = mesh->n_elements();
 			std::vector<int> body_ids(n_body_ids);
 			for (int i = 0; i < n_body_ids; ++i)
 				body_ids[i] = mesh->get_body_id(i) + id_offset;
 			mesh->set_body_ids(body_ids);
 		}
-		else
+		else if (!volume_selection.is_number_integer() || volume_selection.get<int>() >= 0)
 		{
 			// Specified volume selection has priority over mesh's stored ids
 			std::vector<std::shared_ptr<Selection>> volume_selections =
-				build_selections(j_mesh["volume_selection"], root_path, bbox);
+				build_selections(volume_selection, root_path, bbox);
 
 			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
 				for (const auto &selection : volume_selections)

@@ -223,16 +223,173 @@
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "int",
-        "default": 0,
-        "doc": "Assign specified id to all volume elements of the geometry"
+        "default": -1,
+        "doc": "Assign specified id to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0))."
     },
     {
         "pointer": "/geometry/*/volume_selection",
+        "type": "object",
+        "required": [
+            "id_offset"
+        ],
+        "typename": "id_offset",
+        "doc": "Offsets the volume IDs loaded from the mesh."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "Offsets the volume IDs loaded from the mesh."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "list",
+        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+    },
+    {
+        "pointer": "/geometry/*/#volume_selection",
         "type": "file",
         "extensions": [
             ".txt"
         ],
         "doc": "Load ids from a file; the file is required to have one id per volume element of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "box"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "box",
+        "doc": "Assign the id to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "radius",
+            "center"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "sphere",
+        "doc": "Assign the id to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "relative",
+            "offset"
+        ],
+        "default": null,
+        "typename": "plane",
+        "doc": "Assign the id to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "axis",
+            "position"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "axis",
+        "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/id",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/center",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/axis",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/axis",
+        "type": "string"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/offset",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/position",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/relative",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/point",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/normal",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/normal/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/box",
+        "type": "list",
+        "min": 2,
+        "max": 2
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/box/*",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "default": []
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/box/*/*",
+        "type": "float",
+        "default": 0
     },
     {
         "pointer": "/geometry/*/point_selection",
@@ -491,6 +648,49 @@
     {
         "pointer": "/space/discr_order",
         "default": 1,
+        "type": "int",
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "type": "file",
+        "extensions": [
+            ".txt",
+            ".bin"
+        ],
+        "doc": "Path to file containing Lagrange element order for the space for the main unknown per element."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "type": "list",
+        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
+    },
+    {
+        "pointer": "/space/discr_order/*",
+        "type": "object",
+        "required": [
+            "id",
+            "order"
+        ],
+        "doc": "Lagrange element order for the a space tagged with volume ID for the main unknown."
+    },
+    {
+        "pointer": "/space/discr_order/*/id",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/id",
+        "type": "list",
+        "doc": "List of volume selection IDs to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/order",
         "type": "int",
         "doc": "Lagrange element order for the space for the main unknown, for all elements."
     },
