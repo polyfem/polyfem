@@ -41,6 +41,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "faces", "classpolyfem_1_1mesh_1_1_mesh.html#ad07dcb246770556ead116247fcad1da5", null ],
     [ "faces_to_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a870ccdba92d3735bdc3541c84f9815ec", null ],
     [ "get_body_id", "classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef", null ],
+    [ "get_body_ids", "classpolyfem_1_1mesh_1_1_mesh.html#ab66149e5d692cf4b94a9f286b4aaa7b0", null ],
     [ "get_boundary_id", "classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141", null ],
     [ "get_edges", "classpolyfem_1_1mesh_1_1_mesh.html#a1bbd6a108623834041041c6278c49a92", null ],
     [ "get_edges", "classpolyfem_1_1mesh_1_1_mesh.html#a2ea0bc3e6fc5b76774b835fe9542ef9f", null ],

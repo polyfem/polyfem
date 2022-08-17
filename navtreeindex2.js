@@ -1,7 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_polyhedron_quadrature_8hpp.html":[5,0,1,0,5,7],
-"_polyhedron_quadrature_8hpp_source.html":[5,0,1,0,5,7],
 "_problem_8cpp.html":[5,0,1,0,0,33],
 "_problem_8cpp_source.html":[5,0,1,0,0,33],
 "_problem_8hpp.html":[5,0,1,0,0,34],
@@ -249,5 +247,7 @@ var NAVTREEINDEX2 =
 "auto__p__bases_8hpp.html#a9c2688a6744801097c2f8baa081ab3a7":[5,0,1,0,1,6,5],
 "auto__p__bases_8hpp.html#ab382930872a9372e2e2b81ef165471af":[5,0,1,0,1,6,3],
 "auto__p__bases_8hpp.html#ac26a7d8619bbd1be4b8133a921df2751":[5,0,1,0,1,6,1],
-"auto__p__bases_8hpp.html#acb852da43087916bb4919c07218b4540":[5,0,1,0,1,6,0]
+"auto__p__bases_8hpp.html#acb852da43087916bb4919c07218b4540":[5,0,1,0,1,6,0],
+"auto__p__bases_8hpp_source.html":[5,0,1,0,1,6],
+"auto__q__bases_8cpp.html":[5,0,1,0,1,7]
 };

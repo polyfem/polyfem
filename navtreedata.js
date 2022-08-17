@@ -76,17 +76,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_l_n_l_problem_8cpp.html",
-"_mass_matrix_assembler_8hpp.html",
-"_polyhedron_quadrature_8hpp.html",
-"auto__p__bases_8hpp_source.html",
-"classpolyfem_1_1_lame_parameters.html#a6e1e8149ed2a2559bd81455af95a6474",
-"classpolyfem_1_1_state.html#a9e0192203baf1e55bd148493230b4122",
-"classpolyfem_1_1assembler_1_1_assembly_values.html#aafc00c4359176133c0d65d930c8918d6",
-"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#acb82d00adbe174f43bcb2827af2d2d82",
-"classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5fbe585e69b68e836f57946467f44e30",
-"classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a579170927fcdb8ec26b6fc6052f0a41c",
-"classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#a9ff247faa934bfbe0370516fe8e5249a",
-"classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9aec0f93c9198a676982a968fe25a75a",
+"_matrix_utils_8cpp.html",
+"_problem_8cpp.html",
+"auto__q__bases_8cpp.html#a18ee2912d770a6bc9cfe2a485a9ecb25",
+"classpolyfem_1_1_lame_parameters.html#a7a8072d472d64e99f4ce803d3ef56714",
+"classpolyfem_1_1_state.html#aa02573da9533bdd5a12bb8a6fedea3fb",
+"classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d",
+"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ad6ff89e63dca590329de16d98769a8e4",
+"classpolyfem_1_1assembler_1_1_n_l_assembler.html#a8f8929f6d244f5f0d0e24ccfdbb92aa1",
+"classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a59fdb583f823305b3019b2be86cd4b17",
+"classpolyfem_1_1basis_1_1_r_b_f_with_linear.html#aaf4083b7bc6125f7add67af7ac17eec5",
+"classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9efca3d3ef88c4dec1ddad55d9a0d816",
 "classpolyfem_1_1mesh_1_1_mesh.html#ad9917a167f244c16c020d08e48cadc13",
 "classpolyfem_1_1mesh_1_1_mesh_nodes.html#a55ba14abe407e9bf4be20577977c43be",
 "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ae8067170b8b47f6017f1dcc9c362f511",
@@ -101,9 +101,9 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a4e7da6b6dc12d81f22aab089afd63a5a",
 "functions_func_k.html",
 "namespacepolyfem.html#ae42c1f8fedf96741b1166a16392bbf80",
-"namespaceq__bases.html#ae12d70eb9f96c650569661316f3133ca",
-"struct_d_scalar2.html#af7af35c5422abf47074e17cfc977d1df",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a90bb3b35c01790b2bbde3aa76f13f12b"
+"namespaceq__bases.html#ae5567cc3ff8c51169b59f2d6fdb8b962",
+"struct_d_scalar2.html#afa50b6af8bab0bc51d633e09abdff0d7",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a9219b016caa48a223548b48faddaf937"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

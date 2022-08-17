@@ -334,6 +334,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0417a588019e24120727a6667d0cfcef"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef">get_body_id</a> (const int primitive) const</td></tr>
 <tr class="memdesc:a0417a588019e24120727a6667d0cfcef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the volume selection of an element (cell in 3d, face in 2d)  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef">More...</a><br /></td></tr>
 <tr class="separator:a0417a588019e24120727a6667d0cfcef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab66149e5d692cf4b94a9f286b4aaa7b0"><td class="memItemLeft" align="right" valign="top">virtual const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#ab66149e5d692cf4b94a9f286b4aaa7b0">get_body_ids</a> () const</td></tr>
+<tr class="memdesc:ab66149e5d692cf4b94a9f286b4aaa7b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the volume selection of all elements (cells in 3d, faces in 2d)  <a href="classpolyfem_1_1mesh_1_1_mesh.html#ab66149e5d692cf4b94a9f286b4aaa7b0">More...</a><br /></td></tr>
+<tr class="separator:ab66149e5d692cf4b94a9f286b4aaa7b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a0448ef817e94ed705e39ac818bf9e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1">has_boundary_ids</a> () const</td></tr>
 <tr class="memdesc:a2a0448ef817e94ed705e39ac818bf9e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">checks if surface selections are available  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1">More...</a><br /></td></tr>
 <tr class="separator:a2a0448ef817e94ed705e39ac818bf9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -619,9 +622,9 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00460">460</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00570">body_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00568">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00581">cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00583">cell_weights_</a>, <a class="el" href="_mesh_8hpp_source.html#l00577">edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>, <a class="el" href="_mesh_8hpp_source.html#l00579">face_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00423">get_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00450">has_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00446">has_boundary_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00588">in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00590">in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00586">in_ordered_vertices_</a>, <a class="el" href="_mesh_8hpp_source.html#l00574">is_rational_</a>, <a class="el" href="_mesh_8hpp_source.html#l00159">n_boundary_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">n_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">orders_</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00576">body_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00574">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00587">cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00589">cell_weights_</a>, <a class="el" href="_mesh_8hpp_source.html#l00583">edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>, <a class="el" href="_mesh_8hpp_source.html#l00585">face_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00423">get_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00456">has_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00452">has_boundary_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00594">in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00596">in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00592">in_ordered_vertices_</a>, <a class="el" href="_mesh_8hpp_source.html#l00580">is_rational_</a>, <a class="el" href="_mesh_8hpp_source.html#l00159">n_boundary_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">n_vertices()</a>, <a class="el" href="_mesh_8hpp_source.html#l00578">orders_</a>, and <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01605">polyfem::mesh::CMesh3D::append()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00542">append()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00662">polyfem::mesh::CMesh2D::append()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01605">polyfem::mesh::CMesh3D::append()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00548">append()</a>.</p>
 
 </div>
 </div>
@@ -657,7 +660,7 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00542">542</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00548">548</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>.</p>
 
@@ -1057,9 +1060,9 @@ Private Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>list of weights </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00474">474</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00480">480</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00583">cell_weights_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00589">cell_weights_</a>.</p>
 
 </div>
 </div>
@@ -1862,7 +1865,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00374">374</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
 
@@ -2077,9 +2080,41 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00436">436</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00570">body_ids_</a>, and <a class="el" href="_mesh_8hpp_source.html#l00450">has_body_ids()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00576">body_ids_</a>, and <a class="el" href="_mesh_8hpp_source.html#l00456">has_body_ids()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00855">polyfem::assembler::GenericTensorProblem::initial_acceleration()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00789">polyfem::assembler::GenericTensorProblem::initial_solution()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00989">polyfem::assembler::GenericScalarProblem::initial_solution()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00822">polyfem::assembler::GenericTensorProblem::initial_velocity()</a>.</p>
+
+</div>
+</div>
+<a id="ab66149e5d692cf4b94a9f286b4aaa7b0" name="ab66149e5d692cf4b94a9f286b4aaa7b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab66149e5d692cf4b94a9f286b4aaa7b0">&#9670;&nbsp;</a></span>get_body_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const std::vector&lt; int &gt; &amp; polyfem::mesh::Mesh::get_body_ids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the volume selection of all elements (cells in 3d, faces in 2d) </p>
+<dl class="section return"><dt>Returns</dt><dd>Const reference to the vector of body IDs </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00445">445</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00576">body_ids_</a>.</p>
 
 </div>
 </div>
@@ -2120,7 +2155,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00423">423</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00446">has_boundary_ids()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">is_boundary_edge()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">is_boundary_face()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00574">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00452">has_boundary_ids()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb">is_boundary_edge()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">is_boundary_face()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00133">polyfem::assembler::GenericTensorProblem::dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00938">polyfem::assembler::GenericScalarProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00021">polyfem::problem::ElasticProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00052">polyfem::problem::TorsionElasticProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00144">polyfem::problem::DoubleTorsionElasticProblem::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00249">polyfem::problem::ElasticProblemZeroBC::dirichlet_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00605">polyfem::problem::WalkProblem::dirichlet_bc()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00103">polyfem::problem::NodeProblem::dirichlet_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00120">polyfem::problem::PointBasedTensorProblem::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00055">polyfem::problem::ConstantVelocity::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00148">polyfem::problem::DrivenCavity::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00179">polyfem::problem::DrivenCavityC0::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00214">polyfem::problem::DrivenCavitySmooth::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00258">polyfem::problem::Flow::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00354">polyfem::problem::FlowWithObstacle::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00480">polyfem::problem::CornerFlow::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00526">polyfem::problem::Lshape::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00573">polyfem::problem::UnitFlowWithObstacle::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00721">polyfem::problem::StokesLawProblem::dirichlet_bc()</a>, <a class="el" href="_stokes_problem_8cpp_source.html#l00798">polyfem::problem::Airfoil::dirichlet_bc()</a>, <a class="el" href="_state_output_8cpp_source.html#l00061">polyfem::State::get_sidesets()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00169">polyfem::assembler::GenericTensorProblem::neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00968">polyfem::assembler::GenericScalarProblem::neumann_bc()</a>, <a class="el" href="_elastic_problem_8cpp_source.html#l00737">polyfem::problem::ElasticCantileverExact::neumann_bc()</a>, <a class="el" href="_node_problem_8cpp_source.html#l00129">polyfem::problem::NodeProblem::neumann_bc()</a>, <a class="el" href="_point_based_problem_8cpp_source.html#l00139">polyfem::problem::PointBasedTensorProblem::neumann_bc()</a>, and <a class="el" href="_problem_8cpp_source.html#l00019">polyfem::assembler::Problem::setup_bc()</a>.</p>
 
@@ -2255,9 +2290,9 @@ Private Member Functions</h2></td></tr>
 <p>checks if volumes selections are available </p>
 <dl class="section return"><dt>Returns</dt><dd>volumes selections are available </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00450">450</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00456">456</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00570">body_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00576">body_ids_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00436">get_body_id()</a>.</p>
 
@@ -2289,9 +2324,9 @@ Private Member Functions</h2></td></tr>
 <p>checks if surface selections are available </p>
 <dl class="section return"><dt>Returns</dt><dd>surface selections are available </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00446">446</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00452">452</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00574">boundary_ids_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00423">get_boundary_id()</a>.</p>
 
@@ -2323,7 +2358,7 @@ Private Member Functions</h2></td></tr>
 <p>checks if the mesh has polytopes </p>
 <dl class="section return"><dt>Returns</dt><dd>if the mesh has polytopes </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00487">487</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00493">493</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_8cpp_source.html#l00359">is_polytope()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00154">n_elements()</a>.</p>
 
@@ -2355,9 +2390,9 @@ Private Member Functions</h2></td></tr>
 <p>Order of the input edges. </p>
 <dl class="section return"><dt>Returns</dt><dd>matrix of indices one per edge, pointing to the two vertices </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00528">528</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00534">534</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00588">in_ordered_edges_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00594">in_ordered_edges_</a>.</p>
 
 </div>
 </div>
@@ -2387,9 +2422,9 @@ Private Member Functions</h2></td></tr>
 <p>Order of the input edges. </p>
 <dl class="section return"><dt>Returns</dt><dd>matrix of indices one per faces, pointing to the face vertices </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00532">532</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00538">538</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00590">in_ordered_faces_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00596">in_ordered_faces_</a>.</p>
 
 </div>
 </div>
@@ -2419,9 +2454,9 @@ Private Member Functions</h2></td></tr>
 <p>Order of the input vertices. </p>
 <dl class="section return"><dt>Returns</dt><dd>vector of indices, one per vertex </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00524">524</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00530">530</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00586">in_ordered_vertices_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00592">in_ordered_vertices_</a>.</p>
 
 </div>
 </div>
@@ -2638,7 +2673,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00346">346</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65">polyfem::mesh::InterfaceCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb">polyfem::mesh::MultiSingularBoundaryCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64">polyfem::mesh::MultiSingularInteriorCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f">polyfem::mesh::RegularBoundaryCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba">polyfem::mesh::RegularInteriorCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5">polyfem::mesh::SimpleSingularBoundaryCube</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf">polyfem::mesh::SimpleSingularInteriorCube</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65">polyfem::mesh::InterfaceCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb">polyfem::mesh::MultiSingularBoundaryCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64">polyfem::mesh::MultiSingularInteriorCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f">polyfem::mesh::RegularBoundaryCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba">polyfem::mesh::RegularInteriorCube</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5">polyfem::mesh::SimpleSingularBoundaryCube</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf">polyfem::mesh::SimpleSingularInteriorCube</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh3_d_8cpp_source.html#l00199">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00099">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">polyfem::mesh::CMesh2D::face_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00322">polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex()</a>, <a class="el" href="_f_e_basis3d_8cpp_source.html#l01188">polyfem::basis::FEBasis3d::hex_face_local_nodes()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00025">polyfem::State::interpolate_boundary_function()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00118">polyfem::State::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_f_e_basis2d_8cpp_source.html#l00640">polyfem::basis::FEBasis2d::quad_edge_local_nodes()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00810">polyfem::mesh::to_geogram_mesh()</a>.</p>
 
@@ -2670,9 +2705,9 @@ Private Member Functions</h2></td></tr>
 <p>check if the mesh is linear </p>
 <dl class="section return"><dt>Returns</dt><dd>if the mesh is linear </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00501">501</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00507">507</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">orders_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00578">orders_</a>.</p>
 
 </div>
 </div>
@@ -2703,9 +2738,9 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00359">359</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0">polyfem::mesh::BoundaryPolytope</a>, <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af">polyfem::mesh::InteriorPolytope</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0">polyfem::mesh::BoundaryPolytope</a>, <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af">polyfem::mesh::InteriorPolytope</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00569">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">polyfem::basis::MVPolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00394">polyfem::basis::PolygonalBasis3d::compute_integral_constraints()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00714">polyfem::mesh::extract_polyhedra()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00487">has_poly()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00569">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">polyfem::basis::MVPolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00394">polyfem::basis::PolygonalBasis3d::compute_integral_constraints()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00714">polyfem::mesh::extract_polyhedra()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00493">has_poly()</a>.</p>
 
 </div>
 </div>
@@ -2737,7 +2772,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00246">246</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00574">is_rational_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00580">is_rational_</a>.</p>
 
 </div>
 </div>
@@ -2768,7 +2803,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00388">388</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789">polyfem::mesh::Simplex</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh2_d_8cpp_source.html#l00085">polyfem::mesh::Mesh2D::barycentric_coords()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01591">polyfem::mesh::CMesh3D::barycentric_coords()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00410">polyfem::mesh::Mesh3D::barycentric_coords()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00199">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00099">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">polyfem::mesh::CMesh2D::face_node()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00025">polyfem::State::interpolate_boundary_function()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00118">polyfem::State::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00462">polyfem::mesh::MeshNodes::node_ids_from_cell()</a>, <a class="el" href="_mesh_nodes_8cpp_source.html#l00310">polyfem::mesh::MeshNodes::node_ids_from_face()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, <a class="el" href="_f_e_basis3d_8cpp_source.html#l00877">polyfem::basis::FEBasis3d::tet_face_local_nodes()</a>, and <a class="el" href="_f_e_basis2d_8cpp_source.html#l00609">polyfem::basis::FEBasis2d::tri_edge_local_nodes()</a>.</p>
 
@@ -2801,7 +2836,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00326">326</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f">polyfem::mesh::RegularBoundaryCube</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba">polyfem::mesh::RegularInteriorCube</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f">polyfem::mesh::RegularBoundaryCube</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba">polyfem::mesh::RegularInteriorCube</a>.</p>
 
 </div>
 </div>
@@ -2945,7 +2980,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8cpp_source.html#l00365">365</a> of file <a class="el" href="_mesh_8cpp_source.html">Mesh.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00159">n_boundary_elements()</a>, and <a class="el" href="eigs_8py_source.html#l00128">eigs::path</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00574">boundary_ids_</a>, <a class="el" href="_mesh_8hpp_source.html#l00159">n_boundary_elements()</a>, and <a class="el" href="eigs_8py_source.html#l00128">eigs::path</a>.</p>
 
 </div>
 </div>
@@ -3077,7 +3112,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">n_cells()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">n_faces()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00569">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">polyfem::basis::MVPolygonalBasis2d::build_bases()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00566">polyfem::mesh::CMesh2D::compute_body_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01234">polyfem::mesh::CMesh3D::compute_body_ids()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00394">polyfem::basis::PolygonalBasis3d::compute_integral_constraints()</a>, <a class="el" href="_state_8cpp_source.html#l00471">polyfem::compute_integral_constraints()</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00101">polyfem::mesh::Mesh2D::elements_boxes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01569">polyfem::mesh::CMesh3D::elements_boxes()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00388">polyfem::mesh::Mesh3D::elements_boxes()</a>, <a class="el" href="_mesh_8hpp_source.html#l00487">has_poly()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00025">polyfem::State::interpolate_boundary_function()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00118">polyfem::State::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00344">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00569">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">polyfem::basis::MVPolygonalBasis2d::build_bases()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00566">polyfem::mesh::CMesh2D::compute_body_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01234">polyfem::mesh::CMesh3D::compute_body_ids()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00174">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00394">polyfem::basis::PolygonalBasis3d::compute_integral_constraints()</a>, <a class="el" href="_state_8cpp_source.html#l00471">polyfem::compute_integral_constraints()</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00101">polyfem::mesh::Mesh2D::elements_boxes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01569">polyfem::mesh::CMesh3D::elements_boxes()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00388">polyfem::mesh::Mesh3D::elements_boxes()</a>, <a class="el" href="_mesh_8hpp_source.html#l00493">has_poly()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00025">polyfem::State::interpolate_boundary_function()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00118">polyfem::State::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_state_interpolation_8cpp_source.html#l00226">polyfem::State::interpolate_boundary_tensor_function()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>.</p>
 
 </div>
 </div>
@@ -3297,7 +3332,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00242">242</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">orders_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00578">orders_</a>.</p>
 
 </div>
 </div>
@@ -3368,7 +3403,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a3cd34600a9e9a3d853c79c05634cbb5b">polyfem::mesh::NCMesh2D</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a41c990b52d185a073d710f88b603c6e6">polyfem::mesh::NCMesh3D</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00482">482</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00488">488</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -3496,7 +3531,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00417">417</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00570">body_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00576">body_ids_</a>.</p>
 
 </div>
 </div>
@@ -3536,7 +3571,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00413">413</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00568">boundary_ids_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00574">boundary_ids_</a>.</p>
 
 </div>
 </div>
@@ -3572,9 +3607,9 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00478">478</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00484">484</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00583">cell_weights_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00589">cell_weights_</a>.</p>
 
 </div>
 </div>
@@ -3612,7 +3647,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00250">250</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00574">is_rational_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00580">is_rational_</a>.</p>
 
 </div>
 </div>
@@ -3710,7 +3745,7 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00379">379</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00566">elements_tag_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00572">elements_tag_</a>.</p>
 
 </div>
 </div>
@@ -3863,9 +3898,9 @@ Private Member Functions</h2></td></tr>
 
 <p>list of volume labels </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00570">570</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00576">576</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00566">polyfem::mesh::CMesh2D::compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00769">polyfem::mesh::NCMesh2D::compute_body_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01234">polyfem::mesh::CMesh3D::compute_body_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00257">polyfem::mesh::NCMesh3D::compute_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00436">get_body_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00450">has_body_ids()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00417">set_body_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00566">polyfem::mesh::CMesh2D::compute_body_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00769">polyfem::mesh::NCMesh2D::compute_body_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01234">polyfem::mesh::CMesh3D::compute_body_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00257">polyfem::mesh::NCMesh3D::compute_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00436">get_body_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00445">get_body_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00456">has_body_ids()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00417">set_body_ids()</a>.</p>
 
 </div>
 </div>
@@ -3891,9 +3926,9 @@ Private Member Functions</h2></td></tr>
 
 <p>list of surface labels </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00568">568</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00574">574</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">polyfem::mesh::CMesh2D::compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00782">polyfem::mesh::NCMesh2D::compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00161">polyfem::mesh::NCMesh3D::compute_boundary_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01146">polyfem::mesh::CMesh3D::compute_boundary_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00423">get_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00446">has_boundary_ids()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">load_boundary_ids()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00413">set_boundary_ids()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00578">polyfem::mesh::CMesh2D::compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00782">polyfem::mesh::NCMesh2D::compute_boundary_ids()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00161">polyfem::mesh::NCMesh3D::compute_boundary_ids()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01146">polyfem::mesh::CMesh3D::compute_boundary_ids()</a>, <a class="el" href="_mesh_8hpp_source.html#l00423">get_boundary_id()</a>, <a class="el" href="_mesh_8hpp_source.html#l00452">has_boundary_ids()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">load_boundary_ids()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00413">set_boundary_ids()</a>.</p>
 
 </div>
 </div>
@@ -3919,7 +3954,7 @@ Private Member Functions</h2></td></tr>
 
 <p>high-oder nodes associates to cells </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00581">581</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00587">587</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00459">polyfem::mesh::CMesh3D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00416">polyfem::mesh::CMesh3D::build_from_matrices()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00199">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">polyfem::mesh::CMesh2D::load()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00080">polyfem::mesh::CMesh3D::load()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00958">polyfem::mesh::CMesh3D::normalize()</a>.</p>
 
@@ -3947,9 +3982,9 @@ Private Member Functions</h2></td></tr>
 
 <p>weights associates to cells for rational polynomail meshes </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00583">583</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00589">589</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00474">cell_weights()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00478">set_cell_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00480">cell_weights()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00484">set_cell_weights()</a>.</p>
 
 </div>
 </div>
@@ -3975,7 +4010,7 @@ Private Member Functions</h2></td></tr>
 
 <p>high-oder nodes associates to edges </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00577">577</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00583">583</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00459">polyfem::mesh::CMesh3D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00416">polyfem::mesh::CMesh3D::build_from_matrices()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00080">polyfem::mesh::Mesh3D::edge_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00323">polyfem::mesh::CMesh2D::edge_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">polyfem::mesh::CMesh2D::load()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00080">polyfem::mesh::CMesh3D::load()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00958">polyfem::mesh::CMesh3D::normalize()</a>.</p>
 
@@ -4003,7 +4038,7 @@ Private Member Functions</h2></td></tr>
 
 <p>list of element types </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00566">566</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00572">572</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00547">polyfem::mesh::CMesh2D::compute_elements_tag()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00673">polyfem::mesh::NCMesh2D::compute_elements_tag()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01270">polyfem::mesh::CMesh3D::compute_elements_tag()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00099">polyfem::mesh::NCMesh3D::compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00374">elements_tag()</a>, <a class="el" href="_mesh_8cpp_source.html#l00346">is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00359">is_polytope()</a>, <a class="el" href="_mesh_8cpp_source.html#l00388">is_simplex()</a>, <a class="el" href="_mesh_8cpp_source.html#l00326">is_spline_compatible()</a>, <a class="el" href="_mesh_8hpp_source.html#l00379">set_tag()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00553">polyfem::mesh::CMesh2D::update_elements_tag()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00677">polyfem::mesh::NCMesh2D::update_elements_tag()</a>, and <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00103">polyfem::mesh::NCMesh3D::update_elements_tag()</a>.</p>
 
@@ -4031,7 +4066,7 @@ Private Member Functions</h2></td></tr>
 
 <p>high-oder nodes associates to faces </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00579">579</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00585">585</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00459">polyfem::mesh::CMesh3D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00166">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00416">polyfem::mesh::CMesh3D::build_from_matrices()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00099">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">polyfem::mesh::CMesh2D::face_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00143">polyfem::mesh::CMesh2D::load()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00080">polyfem::mesh::CMesh3D::load()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00958">polyfem::mesh::CMesh3D::normalize()</a>.</p>
 
@@ -4059,9 +4094,9 @@ Private Member Functions</h2></td></tr>
 
 <p>Order of the input edges. </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00588">588</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00594">594</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00528">in_ordered_edges()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00534">in_ordered_edges()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
 
 </div>
 </div>
@@ -4087,9 +4122,9 @@ Private Member Functions</h2></td></tr>
 
 <p>Order of the input faces, TODO: change to std::vector of Eigen::Vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00590">590</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00596">596</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00532">in_ordered_faces()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00538">in_ordered_faces()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
 
 </div>
 </div>
@@ -4115,9 +4150,9 @@ Private Member Functions</h2></td></tr>
 
 <p>Order of the input vertices. </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00586">586</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00592">592</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00524">in_ordered_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00530">in_ordered_vertices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
 
 </div>
 </div>
@@ -4143,7 +4178,7 @@ Private Member Functions</h2></td></tr>
 
 <p>stores if the mesh is rational </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00574">574</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00580">580</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_mesh_8hpp_source.html#l00246">is_rational()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00250">set_is_rational()</a>.</p>
 
@@ -4171,9 +4206,9 @@ Private Member Functions</h2></td></tr>
 
 <p>list of geometry orders, one per cell </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00572">572</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_8hpp_source.html#l00578">578</a> of file <a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00459">polyfem::mesh::CMesh3D::attach_higher_order_nodes()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00199">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00080">polyfem::mesh::Mesh3D::edge_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00323">polyfem::mesh::CMesh2D::edge_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00099">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">polyfem::mesh::CMesh2D::face_node()</a>, <a class="el" href="_mesh_8hpp_source.html#l00501">is_linear()</a>, <a class="el" href="_mesh_8hpp_source.html#l00242">orders()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00460">append()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00190">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00459">polyfem::mesh::CMesh3D::attach_higher_order_nodes()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00199">polyfem::mesh::Mesh3D::cell_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00080">polyfem::mesh::Mesh3D::edge_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00323">polyfem::mesh::CMesh2D::edge_node()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00099">polyfem::mesh::Mesh3D::face_node()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00345">polyfem::mesh::CMesh2D::face_node()</a>, <a class="el" href="_mesh_8hpp_source.html#l00507">is_linear()</a>, <a class="el" href="_mesh_8hpp_source.html#l00242">orders()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00026">polyfem::mesh::CMesh2D::refine()</a>, and <a class="el" href="_c_mesh3_d_8cpp_source.html#l00019">polyfem::mesh::CMesh3D::refine()</a>.</p>
 
 </div>
 </div>

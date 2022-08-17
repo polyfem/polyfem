@@ -149,8 +149,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa103af90d18e6be2a4556fe8a92e9ca7"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#aa103af90d18e6be2a4556fe8a92e9ca7">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;selection, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox)</td></tr>
-<tr class="separator:aa103af90d18e6be2a4556fe8a92e9ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af23b02147d0e6ad038cb9d202cf3e1b5"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#af23b02147d0e6ad038cb9d202cf3e1b5">build</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const std::string &amp;root_path=&quot;&quot;)</td></tr>
+<tr class="memdesc:af23b02147d0e6ad038cb9d202cf3e1b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a selection objects from a JSON selection.  <a href="classpolyfem_1_1utils_1_1_selection.html#af23b02147d0e6ad038cb9d202cf3e1b5">More...</a><br /></td></tr>
+<tr class="separator:af23b02147d0e6ad038cb9d202cf3e1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd8931640fd6408c76b604b3608796bf"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">utils::Selection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#afd8931640fd6408c76b604b3608796bf">build_selections</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_selections, const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;mesh_bbox, const std::string &amp;root_path=&quot;&quot;)</td></tr>
+<tr class="memdesc:afd8931640fd6408c76b604b3608796bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a vector of selection objects from a JSON selection(s).  <a href="classpolyfem_1_1utils_1_1_selection.html#afd8931640fd6408c76b604b3608796bf">More...</a><br /></td></tr>
+<tr class="separator:afd8931640fd6408c76b604b3608796bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -261,13 +265,13 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00028">28</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00044">44</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa103af90d18e6be2a4556fe8a92e9ca7" name="aa103af90d18e6be2a4556fe8a92e9ca7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa103af90d18e6be2a4556fe8a92e9ca7">&#9670;&nbsp;</a></span>build()</h2>
+<a id="af23b02147d0e6ad038cb9d202cf3e1b5" name="af23b02147d0e6ad038cb9d202cf3e1b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af23b02147d0e6ad038cb9d202cf3e1b5">&#9670;&nbsp;</a></span>build()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -279,13 +283,19 @@ Protected Attributes</h2></td></tr>
           <td class="memname">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt; polyfem::utils::Selection::build </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>selection</em>, </td>
+          <td class="paramname"><em>j_selections</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh_bbox</em>&#160;</td>
+          <td class="paramname"><em>mesh_bbox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em> = <code>&quot;&quot;</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -300,11 +310,81 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00013">13</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p>Build a selection objects from a JSON selection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">j_selections</td><td>JSON object of selection(s). </td></tr>
+    <tr><td class="paramname">mesh_bbox</td><td>Bounding box of the mesh. </td></tr>
+    <tr><td class="paramname">root_path</td><td>Root path of the JSON file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Shared pointer to selection object. </dd></dl>
 
-<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00014">polyfem::utils::log_and_throw_error()</a>, and <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00014">14</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00513">polyfem::mesh::build_selections()</a>.</p>
+<p class="reference">References <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00014">polyfem::utils::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00045">build_selections()</a>.</p>
+
+</div>
+</div>
+<a id="afd8931640fd6408c76b604b3608796bf" name="afd8931640fd6408c76b604b3608796bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd8931640fd6408c76b604b3608796bf">&#9670;&nbsp;</a></span>build_selections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_selection.html">Selection</a> &gt; &gt; polyfem::utils::Selection::build_selections </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>j_selections</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a8465d134d77a8f8dfeaffdde17950e54">BBox</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh_bbox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a vector of selection objects from a JSON selection(s). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">j_selections</td><td>JSON object of selection(s). </td></tr>
+    <tr><td class="paramname">mesh_bbox</td><td>Bounding box of the mesh. </td></tr>
+    <tr><td class="paramname">root_path</td><td>Root path of the JSON file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Vector of selection objects. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00045">45</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00014">build()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00014">polyfem::utils::log_and_throw_error()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00020">polyfem::mesh::read_fem_mesh()</a>.</p>
 
 </div>
 </div>
@@ -336,7 +416,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00021">21</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00030">id_</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8hpp_source.html#l00046">id_</a>.</p>
 
 </div>
 </div>
@@ -389,9 +469,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00030">30</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00046">46</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_selection_8hpp_source.html#l00021">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00085">polyfem::utils::SphereSelection::SphereSelection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_selection_8hpp_source.html#l00021">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00122">polyfem::utils::SphereSelection::SphereSelection()</a>.</p>
 
 </div>
 </div>
