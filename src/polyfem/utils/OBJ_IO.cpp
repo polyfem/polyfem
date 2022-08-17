@@ -362,6 +362,10 @@ namespace polyfem
 			if (!obj.is_open())
 				return false;
 
+			obj << fmt::format(
+				"# Vertoces: {:d}\n# Edges: {:d}\n# Faces: {:d}",
+				v.rows(), e.rows(), f.rows());
+
 			for (int i = 0; i < v.rows(); ++i)
 				obj << v.row(i).format(OBJ_VERTEX_FORMAT);
 

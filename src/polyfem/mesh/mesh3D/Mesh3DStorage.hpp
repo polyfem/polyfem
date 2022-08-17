@@ -61,8 +61,9 @@ namespace polyfem
 			Hex
 		};
 
-		struct Mesh3DStorage
+		class Mesh3DStorage
 		{
+		public:
 			MeshType type;
 			Eigen::MatrixXd points;
 			std::vector<Vertex> vertices;
@@ -73,6 +74,119 @@ namespace polyfem
 			Eigen::MatrixXi EV;              //EV(2, ne)
 			Eigen::MatrixXi FV, FE, FH, FHi; //FV (3, nf), FE(3, nf), FH (2, nf), FHi(2, nf)
 			Eigen::MatrixXi HV, HF;          //HV(4, nh), HE(6, nh), HF(4, nh)
+
+			void append(const Mesh3DStorage &other)
+			{
+				if (other.type != type)
+					type = MeshType::Hyb;
+
+				const int n_v = points.cols();
+				const int n_e = edges.size();
+				const int n_f = faces.size();
+				const int n_c = elements.size();
+				assert(n_v == vertices.size());
+
+				assert(points.rows() == other.points.rows());
+				points.conservativeResize(points.rows(), n_v + other.points.cols());
+				points.rightCols(other.points.cols()) = other.points;
+
+				for (const auto &v : other.vertices)
+				{
+					auto tmp = v;
+					tmp.id += n_v;
+					for (auto &e : tmp.neighbor_vs)
+						e += n_v;
+
+					for (auto &e : tmp.neighbor_es)
+						e += n_e;
+
+					for (auto &e : tmp.neighbor_fs)
+						e += n_f;
+
+					for (auto &e : tmp.neighbor_hs)
+						e += n_c;
+
+					vertices.push_back(tmp);
+				}
+				assert(points.cols() == vertices.size());
+				assert(vertices.size() == n_v + other.vertices.size());
+
+				for (const auto &e : other.edges)
+				{
+					auto tmp = e;
+					tmp.id += n_e;
+					for (auto &e : tmp.vs)
+						e += n_v;
+
+					for (auto &e : tmp.neighbor_fs)
+						e += n_f;
+
+					for (auto &e : tmp.neighbor_hs)
+						e += n_c;
+
+					edges.push_back(tmp);
+				}
+				assert(edges.size() == n_e + other.edges.size());
+
+				for (const auto &f : other.faces)
+				{
+					auto tmp = f;
+					tmp.id += n_f;
+					for (auto &e : tmp.vs)
+						e += n_v;
+
+					for (auto &e : tmp.es)
+						e += n_e;
+
+					for (auto &e : tmp.neighbor_hs)
+						e += n_c;
+
+					faces.push_back(tmp);
+				}
+				assert(faces.size() == n_f + other.faces.size());
+
+				for (const auto &c : other.elements)
+				{
+					auto tmp = c;
+					tmp.id += n_c;
+					for (auto &e : tmp.vs)
+						e += n_v;
+
+					for (auto &e : tmp.es)
+						e += n_e;
+
+					for (auto &e : tmp.fs)
+						e += n_f;
+
+					elements.push_back(tmp);
+				}
+				assert(elements.size() == n_c + other.elements.size());
+
+				EV.conservativeResize(EV.rows(), other.EV.cols() + EV.cols());
+				EV.rightCols(other.EV.cols()) = other.EV.array() + n_v;
+
+				//////////////////
+
+				FV.conservativeResize(FV.rows(), other.FV.cols() + FV.cols());
+				FV.rightCols(other.FV.cols()) = other.FV.array() + n_v;
+
+				FE.conservativeResize(FE.rows(), other.FE.cols() + FE.cols());
+				FE.rightCols(other.FE.cols()) = other.FE.array() + n_e;
+
+				FH.conservativeResize(FH.rows(), other.FH.cols() + FH.cols());
+				FH.rightCols(other.FH.cols()) = other.FH.array() + n_c;
+
+				FHi.conservativeResize(FHi.rows(), other.FHi.cols() + FHi.cols());
+				FHi.rightCols(other.FHi.cols()) = other.FHi.array();
+
+				/////////////////
+
+				HV.conservativeResize(HV.rows(), other.HV.cols() + HV.cols());
+				HV.rightCols(other.HV.cols()) = other.HV.array() + n_v;
+
+				HF.conservativeResize(HF.rows(), other.HF.cols() + HF.cols());
+				HF.rightCols(other.HF.cols()) = other.HF.array() + n_f;
+			}
 		};
 
 		struct Mesh_Quality

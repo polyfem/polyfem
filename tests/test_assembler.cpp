@@ -15,18 +15,21 @@ TEST_CASE("hessian_lin", "[assembler]")
 	json in_args = json({});
 	in_args["geometry"] = {};
 	in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+	in_args["geometry"]["surface_selection"] = 7;
 	// in_args["geometry"]["mesh"] = path + "/circle2.msh";
 	// in_args["force_linear_geometry"] = true;
 
 	in_args["preset_problem"] = {};
-	in_args["preset_problem"]["name"] = "ElasticExact";
+	in_args["preset_problem"]["type"] = "ElasticExact";
 
 	in_args["materials"] = {};
 	in_args["materials"]["type"] = "LinearElasticity";
+	in_args["materials"]["E"] = 1e5;
+	in_args["materials"]["nu"] = 0.3;
 
 	State state;
-	state.init_logger("", spdlog::level::off, false);
-	state.init(in_args);
+	state.init_logger("", spdlog::level::err, false);
+	state.init(in_args, true);
 	state.load_mesh();
 
 	state.compute_mesh_stats();

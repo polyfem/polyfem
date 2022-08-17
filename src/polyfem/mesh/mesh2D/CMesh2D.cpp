@@ -71,6 +71,27 @@ namespace polyfem
 			}
 
 			compute_elements_tag();
+			generate_edges(mesh_);
+
+			in_ordered_vertices_ = Eigen::VectorXi::LinSpaced(mesh_.vertices.nb(), 0, mesh_.vertices.nb() - 1);
+			assert(in_ordered_vertices_[0] == 0);
+			assert(in_ordered_vertices_[1] == 1);
+			assert(in_ordered_vertices_[2] == 2);
+			assert(in_ordered_vertices_[in_ordered_vertices_.size() - 1] == mesh_.vertices.nb() - 1);
+
+			in_ordered_edges_.resize(mesh_.edges.nb(), 2);
+
+			for (int e = 0; e < (int)mesh_.edges.nb(); ++e)
+			{
+				for (int lv = 0; lv < 2; ++lv)
+				{
+					in_ordered_edges_(e, lv) = mesh_.edges.vertex(e, lv);
+				}
+				assert(in_ordered_edges_(e, 0) != in_ordered_edges_(e, 1));
+			}
+			assert(in_ordered_edges_.size() > 0);
+
+			in_ordered_faces_.resize(0, 0);
 		}
 
 		bool CMesh2D::load(const std::string &path)
@@ -636,6 +657,45 @@ namespace polyfem
 				std::sort(vs.begin(), vs.end());
 				boundary_ids_[e] = marker(vs, is_boundary);
 			}
+		}
+
+		void CMesh2D::append(const Mesh &mesh)
+		{
+			assert(typeid(mesh) == typeid(CMesh2D));
+			Mesh::append(mesh);
+
+			const CMesh2D &mesh2d = dynamic_cast<const CMesh2D &>(mesh);
+
+			const int n_v = n_vertices();
+			const int n_f = n_faces();
+
+			mesh_.vertices.create_vertices(mesh2d.n_vertices());
+			for (int i = n_v; i < (int)mesh_.vertices.nb(); ++i)
+			{
+				GEO::vec3 &p = mesh_.vertices.point(i);
+				set_point(i, mesh2d.point(i - n_v));
+			}
+
+			std::vector<GEO::index_t> indices;
+			for (int i = 0; i < mesh2d.n_faces(); ++i)
+			{
+				indices.clear();
+				for (int j = 0; j < mesh2d.mesh_.facets.nb_vertices(i); ++j)
+					indices.push_back(mesh2d.mesh_.facets.vertex(i, j) + n_v);
+
+				mesh_.facets.create_polygon(indices.size(), &indices[0]);
+			}
+
+			assert(n_vertices() == n_v + mesh2d.n_vertices());
+			assert(n_faces() == n_f + mesh2d.n_faces());
+
+			c2e_.reset();
+			boundary_vertices_.reset();
+			boundary_edges_.reset();
+			Navigation::prepare_mesh(mesh_);
+			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 		}
 	} // namespace mesh
 } // namespace polyfem

@@ -1,4 +1,5 @@
 #include "Navigation3D.hpp"
+#include "MeshProcessing3D.hpp"
 
 // #include <igl/Timer.h>
 #include <algorithm>

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	std::string json_file = "";
-	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
+	command_line.add_option("-j,--json", json_file, "Simulation JSON file")->check(CLI::ExistingFile);
 
 	std::string hdf5_file = "";
 	command_line.add_option("--hdf5", hdf5_file, "Simulation hdf5 file")->check(CLI::ExistingFile);
@@ -41,6 +41,12 @@ int main(int argc, char **argv)
 
 	bool is_quiet = false;
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
+
+	bool is_strict = true;
+	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
+
+	bool fallback_solver = false;
+	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
 
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
@@ -115,7 +121,7 @@ int main(int argc, char **argv)
 
 	State state(max_threads);
 	state.init_logger(log_file, log_level, is_quiet);
-	state.init(in_args, output_dir);
+	state.init(in_args, is_strict, output_dir, fallback_solver);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.

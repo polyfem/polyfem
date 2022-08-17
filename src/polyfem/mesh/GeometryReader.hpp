@@ -1,13 +1,27 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/utils/Types.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/utils/Selection.hpp>
+#include <polyfem/utils/Types.hpp>
 
 namespace polyfem::mesh
 {
+	///
+	/// @brief      read a FEM mesh from a geometry JSON
+	///
+	/// @param[in]  j_mesh           geometry JSON
+	/// @param[in]  root_path       root path of JSON
+	/// @param[in]  non_conforming  if true, the mesh will be non-conforming
+	///
+	/// @return created Mesh object
+	///
+	std::unique_ptr<Mesh> read_fem_mesh(
+		const json &j_mesh,
+		const std::string &root_path,
+		const bool non_conforming = false);
+
 	///
 	/// @brief      read FEM meshes from a geometry JSON array (or single)
 	///
@@ -23,6 +37,24 @@ namespace polyfem::mesh
 		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
 		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 		const bool non_conforming = false);
+
+	///
+	/// @brief      read a obstacle mesh from a geometry JSON
+	///
+	/// @param[in]  j_mesh           geometry JSON
+	/// @param[in]  root_path       root path of JSON
+	/// @param[out] vertices        #V x 3/2 output vertices positions
+	/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
+	/// @param[out] codim_edges     indicies in vertices for the codimensional edges
+	/// @param[out] faces           indicies in vertices for the surface faces
+	///
+	void read_obstacle_mesh(
+		const json &j_mesh,
+		const std::string &root_path,
+		Eigen::MatrixXd &vertices,
+		Eigen::VectorXi &codim_vertices,
+		Eigen::MatrixXi &codim_edges,
+		Eigen::MatrixXi &faces);
 
 	///
 	/// @brief      read a FEM mesh from a geometry JSON
@@ -44,67 +76,27 @@ namespace polyfem::mesh
 		const bool non_conforming = false);
 
 	///
-	/// @brief      read a FEM mesh from a geometry JSON
+	/// @brief Construct an affine transformation \f$Ax+b\f$.
 	///
-	/// @param[in]  jmesh           geometry JSON
-	/// @param[in]  root_path       root path of JSON
-	/// @param[out] vertices        #V x 3/2 output vertices positions
-	/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
-	/// @param[out] codim_edges     indicies in vertices for the codimensional edges
-	/// @param[out] faces           indicies in vertices for the surface faces
+	/// @param[in]  transform       JSON object with the mesh data
+	/// @param[in]  mesh_dimensions Dimensions of the mesh (i.e., width, height, depth)
+	/// @param[out] A               Multiplicative matrix component of transformation
+	/// @param[out] b               Additive translation component of transformation
 	///
-	void read_fem_mesh(
-		const json &jmesh,
+	void construct_affine_transformation(
+		const json &transform,
+		const VectorNd &mesh_dimensions,
+		MatrixNd &A,
+		VectorNd &b);
+
+	/// @brief Build a vector of selection objects from a JSON selection(s).
+	/// @param j_selections JSON object of selection(s).
+	/// @param root_path    Root path of the JSON file.
+	/// @param bbox         Bounding box of the mesh.
+	/// @return Vector of selection objects.
+	std::vector<std::shared_ptr<utils::Selection>> build_selections(
+		const json &j_selections,
 		const std::string &root_path,
-		Eigen::MatrixXd &vertices,
-		Eigen::MatrixXi &cells,
-		std::vector<std::vector<int>> &elements,
-		std::vector<std::vector<double>> &weights,
-		size_t &num_faces,
-		std::vector<std::shared_ptr<polyfem::utils::Selection>> &surface_selections,
-		std::vector<std::shared_ptr<polyfem::utils::Selection>> &volume_selections);
-
-	///
-	/// @brief      read a obstacle mesh from a geometry JSON
-	///
-	/// @param[in]  jmesh           geometry JSON
-	/// @param[in]  root_path       root path of JSON
-	/// @param[out] vertices        #V x 3/2 output vertices positions
-	/// @param[out] codim_vertices  indicies in vertices for the codimensional vertices
-	/// @param[out] codim_edges     indicies in vertices for the codimensional edges
-	/// @param[out] faces           indicies in vertices for the surface faces
-	///
-	void read_obstacle_mesh(
-		const json &jmesh,
-		const std::string &root_path,
-		Eigen::MatrixXd &vertices,
-		Eigen::VectorXi &codim_vertices,
-		Eigen::MatrixXi &codim_edges,
-		Eigen::MatrixXi &faces);
-
-	///
-	/// @brief      Fill in missing json geometry parameters with the default values
-	///
-	/// @param[in]  geometry_in   input json geometry parameters
-	/// @param[out] geometry_out  output json geometry parameters
-	///
-	void apply_default_geometry_parameters(
-		const json &geometry_in, json &geometry_out, const std::string &path_prefix = "");
-
-	///
-	/// @brief         Transform a mesh inplace using json parameters including scaling, rotation, and translation
-	///
-	/// @param[in]     transform json object with the mesh data
-	/// @param[in,out] vertices  #V x 3/2 input and output vertices positions
-	///
-	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices);
-
-	void append_selections(
-		const std::string &root_path,
-		const json &new_selections,
-		const polyfem::utils::Selection::BBox &bbox,
-		const size_t &start_element_id,
-		const size_t &end_element_id,
-		std::vector<std::shared_ptr<polyfem::utils::Selection>> &selections);
+		const utils::Selection::BBox &bbox);
 
 } // namespace polyfem::mesh

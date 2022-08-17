@@ -91,6 +91,8 @@ namespace polyfem
 
 			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
+			void append(const Mesh &mesh) override;
+
 		protected:
 			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &mesh) override;
