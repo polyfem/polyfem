@@ -132,7 +132,7 @@ namespace polyfem::mesh
 		// 	mesh->compute_boundary_ids(boundary_marker);
 
 		std::vector<std::shared_ptr<Selection>> surface_selections =
-			build_selections(j_mesh["surface_selection"], root_path, bbox);
+			Selection::build_selections(j_mesh["surface_selection"], bbox, root_path);
 
 		mesh->compute_boundary_ids([&](const size_t face_id, const RowVectorNd &p, bool is_boundary) {
 			if (!is_boundary)
@@ -159,11 +159,16 @@ namespace polyfem::mesh
 				body_ids[i] = mesh->get_body_id(i) + id_offset;
 			mesh->set_body_ids(body_ids);
 		}
+		// Specified negative volume selection are ignored and the default (0 (or MSH stored values) is used instead)
 		else if (!volume_selection.is_number_integer() || volume_selection.get<int>() >= 0)
 		{
 			// Specified volume selection has priority over mesh's stored ids
 			std::vector<std::shared_ptr<Selection>> volume_selections =
-				build_selections(volume_selection, root_path, bbox);
+				Selection::build_selections(volume_selection, bbox, root_path);
+
+			// Append the mesh's stored ids to the volume selection as a lowest priority selection
+			if (mesh->has_body_ids())
+				volume_selections.push_back(std::make_shared<SpecifiedSelection>(mesh->get_body_ids()));
 
 			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
 				for (const auto &selection : volume_selections)
@@ -307,7 +312,7 @@ namespace polyfem::mesh
 		}
 		else if (j_mesh["extract"].get<std::string>() == "volume")
 		{
-			//Clashes with defaults for non obstacle, here assume volume is suface
+			// Clashes with defaults for non obstacle, here assume volume is suface
 			// log_and_throw_error("Volumetric elements not supported for collision obstacles!");
 		}
 
@@ -508,42 +513,6 @@ namespace polyfem::mesh
 		b.conservativeResize(dim);
 		if (translation_size < dim)
 			b.tail(dim - translation_size).setZero();
-	}
-
-	// ========================================================================
-
-	std::vector<std::shared_ptr<Selection>> build_selections(
-		const json &j_selections,
-		const std::string &root_path,
-		const Selection::BBox &bbox)
-	{
-		std::vector<std::shared_ptr<Selection>> selections;
-		if (j_selections.is_number_integer())
-		{
-			selections.push_back(std::make_shared<UniformSelection>(j_selections.get<int>()));
-		}
-		else if (j_selections.is_string())
-		{
-			selections.push_back(std::make_shared<FileSelection>(resolve_path(j_selections, root_path)));
-		}
-		else if (j_selections.is_object())
-		{
-			//TODO clean me
-			if (!j_selections.contains("threshold"))
-				selections.push_back(Selection::build(j_selections, bbox));
-		}
-		else if (j_selections.is_array())
-		{
-			for (const json &s : j_selections.get<std::vector<json>>())
-			{
-				selections.push_back(Selection::build(s, bbox));
-			}
-		}
-		else if (!j_selections.is_null())
-		{
-			log_and_throw_error(fmt::format("Invalid selections: {}", j_selections));
-		}
-		return selections;
 	}
 
 } // namespace polyfem::mesh
