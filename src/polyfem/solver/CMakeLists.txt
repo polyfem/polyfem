@@ -15,6 +15,8 @@ set(SOURCES
 	OperatorSplittingSolver.cpp
 	ShapeProblem.hpp
 	ShapeProblem.cpp
+	MaterialProblem.hpp
+	MaterialProblem.cpp
 	OptimizationProblem.hpp
 	OptimizationProblem.cpp
 	Optimizations.hpp

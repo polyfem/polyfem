@@ -178,7 +178,7 @@ namespace polyfem
 		int optimization_dim() override { return 0; }
 
 		bool solution_changed_pre(const TVector &newX) override;
-		void solution_changed_post(const TVector &newX);
+		void solution_changed_post(const TVector &newX) override;
 
 		void save_to_file(const TVector &x0) override;
 

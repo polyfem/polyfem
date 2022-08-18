@@ -140,6 +140,8 @@ int main(int argc, char **argv)
 
 	std::string target_path, matching_type, opt_type;
 
+	json opt_params, trajectory_params;
+
 	Eigen::MatrixXd control_points, tangents, delta;
 	Eigen::Vector3d target_position;
 	target_position.setZero();
@@ -154,19 +156,25 @@ int main(int argc, char **argv)
 		file.close();
 
 		in_args["root_path"] = json_file;
+		opt_params = in_args["optimization"];
 
-		if (in_args["optimization"].contains("parameters"))
-			opt_type = in_args["optimization"]["parameters"][0]["type"];
+		if (opt_params.contains("parameters"))
+			opt_type = opt_params["parameters"][0]["type"];
+		else
+			throw std::runtime_error("No optimization parameter specified!");
 		assert(opt_types.count(opt_type));
 
-		if (in_args["optimization"].contains("functionals"))
+		if (opt_params.contains("functionals"))
 		{
-			auto trajectory_params = in_args["optimization"]["functionals"][0];
+			trajectory_params = opt_params["functionals"][0];
 
-			assert(trajectory_params["type"] == "trajectory");
+			if (trajectory_params["type"] != "trajectory")
+				throw std::runtime_error("The first functional should be trajectory!");
 
 			if (trajectory_params.contains("matching"))
 				matching_type = trajectory_params["matching"];
+			else
+				throw std::runtime_error("Matching type not specified!");
 			assert(matching_types.count(matching_type));
 
 			if (trajectory_params.contains("path"))
@@ -185,6 +193,8 @@ int main(int argc, char **argv)
 			// 	}
 			// }
 		}
+		else
+			throw std::runtime_error("No functional specifed in json!");
 	}
 	else
 	{
@@ -207,7 +217,7 @@ int main(int argc, char **argv)
 			target_in_args["root_path"] = target_path;
 		}
 		else
-			logger().error("Target json input missing!");
+			throw std::runtime_error("Target json input missing!");
 	}
 
 	if (!solver.empty())
@@ -215,9 +225,6 @@ int main(int argc, char **argv)
 
 	if (!output_dir.empty())
 		create_directories(output_dir);
-
-	// if (opt_type == "material")
-	// 	in_args["export"]["material_params"] = true;
 
 	// compute reference solution
 	State state_reference(max_threads);
@@ -256,7 +263,7 @@ int main(int argc, char **argv)
 
 	if (state.args["contact"]["enabled"] && !state.args["solver"]["contact"].contains("barrier_stiffness"))
 	{
-		logger().error("Not fixing the barrier stiffness!");
+		logger().error("Not fixing the barrier stiffness in optimization!");
 		return EXIT_FAILURE;
 	}
 
@@ -268,34 +275,30 @@ int main(int argc, char **argv)
 	}
 
 	std::set<int> interested_body_ids;
-	if (in_args["optimization"]["functionals"][0].contains("interested_body_ids"))
+	if (trajectory_params.contains("interested_body_ids"))
 	{
-		const auto &interested_bodies = in_args["optimization"]["functionals"][0]["interested_body_ids"].get<std::vector<int>>();
+		const auto &interested_bodies = trajectory_params["interested_body_ids"].get<std::vector<int>>();
 		interested_body_ids = std::set(interested_bodies.begin(), interested_bodies.end());
 	}
 
 	std::set<int> interested_boundary_ids;
-	if (in_args["optimization"]["functionals"][0].contains("interested_boundary_ids"))
+	if (trajectory_params.contains("interested_boundary_ids"))
 	{
-		const auto &interested_boundaries = in_args["optimization"]["functionals"][0]["interested_boundary_ids"].get<std::vector<int>>();
+		const auto &interested_boundaries = trajectory_params["interested_boundary_ids"].get<std::vector<int>>();
 		interested_boundary_ids = std::set(interested_boundaries.begin(), interested_boundaries.end());
 	}
 
 	std::set<int> reference_cached_body_ids;
 	if (matching_type == "exact")
 	{
-		if (in_args["optimization"]["functionals"][0].contains("reference_cached_body_ids"))
+		if (trajectory_params.contains("reference_cached_body_ids"))
 		{
-			const auto &ref_cached = in_args["optimization"]["functionals"][0]["reference_cached_body_ids"].get<std::vector<int>>();
+			const auto &ref_cached = trajectory_params["reference_cached_body_ids"].get<std::vector<int>>();
 			reference_cached_body_ids = std::set(ref_cached.begin(), ref_cached.end());
 		}
 		else if (interested_body_ids.size() != 0)
 		{
 			reference_cached_body_ids = interested_body_ids;
-		}
-		else
-		{
-			logger().error("Need to specify either \"reference_cached_body_ids\" or \"interested_body_ids\" for caching of solution.");
 		}
 	}
 
@@ -481,8 +484,8 @@ int main(int argc, char **argv)
 	// shape optimization
 	if (opt_type == "shape")
 		shape_optimization(state, func);
-	// else if (opt_type == "material")
-	// 	material_optimization(state, func, opt_params);
+	else if (opt_type == "material")
+		material_optimization(state, func);
 	// else if (opt_type == "initial")
 	// 	initial_condition_optimization(state, func, opt_params);
 	else

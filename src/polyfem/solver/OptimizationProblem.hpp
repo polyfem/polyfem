@@ -33,9 +33,13 @@ namespace polyfem
 
 		virtual int optimization_dim() { return 0; }
 
-		virtual bool solution_changed_pre(const TVector &newX) { return true; };
+		virtual bool solution_changed_pre(const TVector &newX) = 0;
 
-		void solution_changed_post(const TVector &newX) { return; }
+		virtual void solution_changed_post(const TVector &newX) 
+		{
+			cur_grad.resize(0);
+			cur_val = std::nan(""); 
+		}
 
 		void solution_changed(const TVector &newX);
 

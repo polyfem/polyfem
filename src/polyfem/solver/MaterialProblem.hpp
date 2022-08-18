@@ -1,13 +1,13 @@
 #pragma once
 
-#include <polyfem/solver/OptimizationProblem.hpp>
+#include "OptimizationProblem.hpp"
 
 namespace polyfem
 {
 	class MaterialProblem : public OptimizationProblem
 	{
 	public:
-		MaterialProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args);
+		MaterialProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
 		double target_value(const TVector &x);
 		double smooth_value(const TVector &x);
@@ -42,6 +42,10 @@ namespace polyfem
 	private:
 		double min_mu, min_lambda;
 		double max_mu, max_lambda;
+
+		bool has_material_smoothing = false;
+		json material_params;
+		json smoothing_params;
 
 		double smoothing_weight;
 		double target_weight = 1;

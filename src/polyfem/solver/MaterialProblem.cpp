@@ -1,8 +1,8 @@
-#include <polyfem/MaterialProblem.hpp>
+#include "MaterialProblem.hpp"
 
-#include <polyfem/Types.hpp>
-#include <polyfem/Timer.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/writeOBJ.h>
 
@@ -10,10 +10,11 @@
 
 namespace polyfem
 {
-	MaterialProblem::MaterialProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args) : OptimizationProblem(state_, j_, args)
+	using namespace utils;
+
+	MaterialProblem::MaterialProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
 	{
 		optimization_name = "material";
-		state.args["export"]["material_params"] = true;
 
 		x_to_param = [](const TVector &x, State &state) {
 			auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
@@ -43,29 +44,46 @@ namespace polyfem
 			dx = dparams.head(state.bases.size() * 2);
 		};
 
-		min_mu = 1;
-		if (opt_params.contains("min_mu"))
-			min_mu = opt_params["min_mu"];
-		max_mu = 1e10;
-		if (opt_params.contains("max_mu"))
-			max_mu = opt_params["max_mu"];
+		for (const auto &param : opt_params["parameters"])
+		{
+			if (param["type"] == "material")
+			{
+				material_params = param;
+				break;
+			}
+		}
 
-		min_lambda = 1;
-		if (opt_params.contains("min_lambda"))
-			min_lambda = opt_params["min_lambda"];
-		max_lambda = 1e10;
-		if (opt_params.contains("max_lambda"))
-			max_lambda = opt_params["max_lambda"];
+		min_mu = 0;
+		if (material_params.contains("min_mu"))
+			min_mu = material_params["min_mu"];
+		max_mu = std::numeric_limits<double>::max();
+		if (material_params.contains("max_mu"))
+			max_mu = material_params["max_mu"];
 
-		if (args.contains("target_weight"))
-			target_weight = args["target_weight"];
-		smoothing_weight = args.contains("smoothing_weight") ? args["smoothing_weight"].get<double>() : 0.;
+		min_lambda = 0;
+		if (material_params.contains("min_lambda"))
+			min_lambda = material_params["min_lambda"];
+		max_lambda = std::numeric_limits<double>::max();
+		if (material_params.contains("max_lambda"))
+			max_lambda = material_params["max_lambda"];
 
+		has_material_smoothing = false;
+		for (const auto &param : opt_params["functionals"])
+		{
+			if (param["type"] == "material_smoothing")
+			{
+				smoothing_params = param;
+				has_material_smoothing = true;
+				smoothing_weight = smoothing_params.value("weight", 1.0);
+				break;
+			}
+		}
+		
 		// Only works for 2d for now
-		if (!state.mesh->is_volume())
+		if (has_material_smoothing && !state.mesh->is_volume())
 		{
 			std::vector<Eigen::Triplet<bool>> tt_adjacency_list;
-			const Mesh2D &mesh2d = *dynamic_cast<const Mesh2D *>(state.mesh.get());
+			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
 			for (int i = 0; i < state.mesh->n_faces(); ++i)
 			{
 				auto idx = mesh2d.get_index_from_face(i);
@@ -97,10 +115,10 @@ namespace polyfem
 
 	void MaterialProblem::line_search_end(bool failed)
 	{
-		if (opt_params.contains("export_energies"))
+		if (opt_output_params.contains("export_energies"))
 		{
 			std::ofstream outfile;
-			outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
+			outfile.open(opt_output_params["export_energies"].get<std::string>(), std::ofstream::out | std::ofstream::app);
 
 			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << "\n";
 			outfile.close();
@@ -119,7 +137,7 @@ namespace polyfem
 			const auto lambda1 = state.assembler.lame_params().lambda_mat_;
 			const auto mu1 = state.assembler.lame_params().mu_mat_;
 
-			const double max_change = opt_params.contains("max_change") ? opt_params["max_change"].get<double>() : 1e10;
+			const double max_change = opt_nonlinear_params.value("max_change", std::numeric_limits<double>::max());
 			if ((lambda1 - lambda0).cwiseAbs().maxCoeff() > max_change || (mu1 - mu0).cwiseAbs().maxCoeff() > max_change || !is_step_valid(x0, newX))
 				size /= 2.;
 			else
@@ -137,7 +155,7 @@ namespace polyfem
 
 	double MaterialProblem::smooth_value(const TVector &x)
 	{
-		if (state.mesh->is_volume())
+		if (!has_material_smoothing || state.mesh->is_volume())
 			return 0;
 
 		// no need to use x because x_to_state was called in the solve
@@ -157,11 +175,15 @@ namespace polyfem
 
 	double MaterialProblem::value(const TVector &x)
 	{
-		double target_val, smooth_val;
-		target_val = target_value(x);
-		smooth_val = smooth_value(x);
-		logger().debug("target = {}, smooth = {}", target_val, smooth_val);
-		return target_val + smooth_val;
+		if (std::isnan(cur_val))
+		{
+			double target_val, smooth_val;
+			target_val = target_value(x);
+			smooth_val = smooth_value(x);
+			logger().debug("target = {}, smooth = {}", target_val, smooth_val);
+			cur_val = target_val + smooth_val;
+		}
+		return cur_val;
 	}
 
 	void MaterialProblem::target_gradient(const TVector &x, TVector &gradv)
@@ -174,7 +196,7 @@ namespace polyfem
 
 	void MaterialProblem::smooth_gradient(const TVector &x, TVector &gradv)
 	{
-		if (state.mesh->is_volume())
+		if (!has_material_smoothing || state.mesh->is_volume())
 		{
 			gradv.setZero(x.size());
 			return;
@@ -209,21 +231,25 @@ namespace polyfem
 
 	void MaterialProblem::gradient(const TVector &x, TVector &gradv)
 	{
-		Eigen::VectorXd grad_target, grad_smoothing;
-		target_gradient(x, grad_target);
-		smooth_gradient(x, grad_smoothing);
-		logger().debug("‖∇ target‖ = {}, ‖∇ smooth‖ = {}", grad_target.norm(), grad_smoothing.norm());
+		if (cur_grad.size() == 0)
+		{
+			Eigen::VectorXd grad_target, grad_smoothing;
+			target_gradient(x, grad_target);
+			smooth_gradient(x, grad_smoothing);
+			logger().debug("‖∇ target‖ = {}, ‖∇ smooth‖ = {}", grad_target.norm(), grad_smoothing.norm());
+			cur_grad = grad_target + grad_smoothing;
+		}
 
-		gradv = grad_target + grad_smoothing;
+		gradv = cur_grad;
 	}
 
 	bool MaterialProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 		const auto &cur_mus = state.assembler.lame_params().mu_mat_;
-		const double mu = state.args["mu"];
-		const double psi = state.args["params"]["psi"];
-		const double phi = state.args["params"]["phi"];
+		const double mu = state.args["contact"]["friction_coefficient"];
+		const double psi = state.damping_assembler.local_assembler().get_psi();
+		const double phi = state.damping_assembler.local_assembler().get_phi();
 
 		if (mu < 0 || psi < 0 || phi < 0)
 			return false;
@@ -251,7 +277,7 @@ namespace polyfem
 	bool MaterialProblem::solution_changed_pre(const TVector &newX)
 	{
 		x_to_param(newX, state);
-		state.build_basis();
+		state.set_materials();
 		return true;
 	}
 
