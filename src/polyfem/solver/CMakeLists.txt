@@ -1,6 +1,7 @@
 set(SOURCES
 	NonlinearSolver.hpp
 	SparseNewtonDescentSolver.hpp
+	LBFGSBSolver.hpp
 	LBFGSSolver.hpp
 	MMASolver.hpp
 	MMASolverAux.hpp

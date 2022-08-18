@@ -4,6 +4,7 @@
 #include "TopologyOptimizationProblem.hpp"
 #include "MaterialProblem.hpp"
 // #include "InitialConditionProblem.hpp"
+#include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
 #include "MMASolver.hpp"
 #include "GradientDescentSolver.hpp"
@@ -39,6 +40,11 @@ namespace polyfem
 			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
 				solver_params);
 		}
+		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
+		{
+			return std::make_shared<cppoptlib::LBFGSBSolver<ProblemType>>(
+				solver_params);
+		}
 		else if (name == "mma" || name == "MMA")
 		{
 			return std::make_shared<cppoptlib::MMASolver<ProblemType>>(
@@ -68,7 +74,7 @@ namespace polyfem
 	// 		opt_params["nl_iterations"] = 500;
 
 	// 	std::shared_ptr<InitialConditionProblem> initial_problem = std::make_shared<InitialConditionProblem>(state, j, opt_params);
-	// 	std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_params); //std::make_shared<cppoptlib::LBFGSSolver<InitialConditionProblem>>(opt_params);
+	// 	std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_params);
 	// 	nlsolver->setLineSearch(opt_params["line_search"]);
 
 	// 	// fix certain object
@@ -350,7 +356,7 @@ namespace polyfem
 		}
 
 		std::shared_ptr<MaterialProblem> material_problem = std::make_shared<MaterialProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params); // std::make_shared<cppoptlib::LBFGSSolver<MaterialProblem>>(opt_params);
+		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
 		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		// fix certain object
@@ -714,7 +720,7 @@ namespace polyfem
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
 		std::shared_ptr<ShapeProblem> shape_problem = std::make_shared<ShapeProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params); //std::make_shared<cppoptlib::LBFGSSolver<ShapeProblem>>(opt_params);
+		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
 		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::MatrixXd V;
@@ -804,7 +810,7 @@ namespace polyfem
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
 		std::shared_ptr<TopologyOptimizationProblem> top_opt = std::make_shared<TopologyOptimizationProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params); //std::make_shared<cppoptlib::LBFGSSolver<TopologyOptimizationProblem>>(opt_params);
+		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
 		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;

@@ -235,8 +235,7 @@ namespace cppoptlib
 				// ---------------
 
 				// Perform a line_search to compute step scale
-				// double rate = line_search(x, delta_x, objFunc);
-				double rate = 1;
+				double rate = (name() == "MMA") ? 1.0 : line_search(x, delta_x, objFunc);
 				if (std::isnan(rate))
 				{
 					// descent_strategy set by line_search upon failure
