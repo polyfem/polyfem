@@ -432,7 +432,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	// func_mass.set_min_mass(20);
 
 	State state;
-	state.init_logger("", spdlog::level::level_enum::debug, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 	state.load_mesh();
 	state.compute_mesh_stats();

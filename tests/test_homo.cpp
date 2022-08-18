@@ -108,9 +108,10 @@ TEST_CASE("elastic_homo", "[homogenization]")
             "nu": 0.2
         }
     })"_json;
+    in_args["geometry"][0]["mesh"] = path + "/../square5.msh";
 
 	State state(16);
-	state.init_logger("", spdlog::level::level_enum::debug, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 
 	state.load_mesh();
@@ -146,111 +147,6 @@ TEST_CASE("elastic_homo", "[homogenization]")
     REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
 }
 
-TEST_CASE("new_version_elastic", "[homogenization]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"({
-        "geometry": [
-            {
-                "mesh": "cross2D.msh",
-                "n_refs": 0,
-                "transformation": {
-                    "scale": 1
-                }
-            }
-        ],
-        "space": {
-            "discr_order": 1
-        },
-        "solver": {
-            "linear": {
-                "solver": "Eigen::PardisoLDLT"
-            }
-        },
-        "boundary_conditions": {
-            "periodic_boundary": true
-        },
-        "materials": {
-            "type": "LinearElastic",
-            "E": 10,
-            "nu": 0.2,
-            "homogenization": true
-        }
-    })"_json;
-
-	State state(16);
-	state.init_logger("", spdlog::level::level_enum::debug, false);
-	state.init(in_args);
-
-	state.load_mesh();
-
-    Eigen::MatrixXd reference_tensor;
-    state.homogenize_new(reference_tensor);
-
-    Eigen::MatrixXd homogenized_tensor;
-    state.homogenize_linear_elasticity(homogenized_tensor);
-
-    std::cout << reference_tensor << "\n" << homogenized_tensor << "\n";
-
-    REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
-}
-
-TEST_CASE("new_version_stokes", "[homogenization]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"({
-        "geometry": [
-            {
-                "mesh": "cross2D.msh",
-                "n_refs": 0,
-                "transformation": {
-                    "scale": 1
-                }
-            }
-        ],
-        "space": {
-            "discr_order": 2,
-            "pressure_discr_order": 1
-        },
-        "solver": {
-            "linear": {
-                "solver": "Eigen::PardisoLDLT"
-            }
-        },
-        "boundary_conditions": {
-            "periodic_boundary": true,
-            "dirichlet_boundary": [
-                {
-                    "id": 7,
-                    "value": [0,0]
-                }
-            ]
-        },
-        "materials": {
-            "type": "Stokes",
-            "E": 10,
-            "nu": 0.2,
-            "homogenization": true
-        }
-    })"_json;
-
-	State state(16);
-	state.init_logger("", spdlog::level::level_enum::debug, false);
-	state.init(in_args);
-
-	state.load_mesh();
-
-    Eigen::MatrixXd reference_tensor;
-    state.homogenize_new(reference_tensor);
-
-    Eigen::MatrixXd homogenized_tensor;
-    state.homogenize_stokes(homogenized_tensor);
-
-    std::cout << reference_tensor << "\n" << homogenized_tensor << "\n";
-
-    REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
-}
-
 TEST_CASE("elastic_homo_grad", "[homogenization]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -281,9 +177,10 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
             "nu": 0.2
         }
     })"_json;
+    in_args["geometry"][0]["mesh"] = path + "/../square5.msh";
 
 	State state(16);
-	state.init_logger("", spdlog::level::level_enum::debug, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 
 	state.load_mesh();
@@ -369,9 +266,10 @@ TEST_CASE("stokes_homo", "[homogenization]")
             "solid_permeability": 1e-8
         }
     })"_json;
+    in_args["geometry"][0]["mesh"] = path + "/../2D.mesh";
 
 	State state(16);
-	state.init_logger("", spdlog::level::level_enum::debug, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 
 	state.load_mesh();
@@ -443,9 +341,10 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
             "solid_permeability": 1e-8
         }
     })"_json;
+    in_args["geometry"][0]["mesh"] = path + "/../square6.msh";
 
 	State state(16);
-	state.init_logger("", spdlog::level::level_enum::debug, false);
+	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args);
 
 	state.load_mesh();

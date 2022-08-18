@@ -1061,8 +1061,7 @@ namespace polyfem
 		void set_materials();
 
 		//homogenization study of unit cell
-		void homogenize_linear_elasticity(Eigen::MatrixXd &C_H);
-		void homogenize_new(Eigen::MatrixXd &C_H)
+		void homogenization(Eigen::MatrixXd &C_H)
 		{
 			compute_mesh_stats();
 			build_basis();
@@ -1079,7 +1078,6 @@ namespace polyfem
 		}
 		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
 		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
-		void homogenize_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 
