@@ -306,11 +306,33 @@ namespace polyfem
 	public:
 		CenterXYTrajectoryFunctional()
 		{
-			functional_name = "CenterTrajectory";
+			functional_name = "CenterXYTrajectory";
 			surface_integral = false;
 			transient_integral_type = "simpson";
 		}
 		~CenterXYTrajectoryFunctional() = default;
+
+		double energy(State &state) override;
+		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+
+		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
+
+	private:
+		std::vector<Eigen::VectorXd> target_series;
+		IntegrableFunctional get_volume_functional();
+		IntegrableFunctional get_center_trajectory_functional(const int d);
+	};
+
+	class CenterXZTrajectoryFunctional : public CompositeFunctional
+	{
+	public:
+		CenterXZTrajectoryFunctional()
+		{
+			functional_name = "CenterXZTrajectory";
+			surface_integral = false;
+			transient_integral_type = "simpson";
+		}
+		~CenterXZTrajectoryFunctional() = default;
 
 		double energy(State &state) override;
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;

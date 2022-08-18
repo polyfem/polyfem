@@ -160,34 +160,24 @@ namespace polyfem
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		double value(const TVector &x, const bool only_elastic) { return value(x); };
+		double value(const TVector &x, const bool only_elastic) { return 0; };
 		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
-
-		TVector get_lower_bound(const TVector& x) 
-		{
-			TVector min(x.size());
-			min.setConstant(std::numeric_limits<double>::min());
-			return min; 
-		}
-		TVector get_upper_bound(const TVector& x) 
-		{
-			TVector max(x.size());
-			max.setConstant(std::numeric_limits<double>::max());
-			return max; 
-		}
 
 		void smoothing(const TVector &x, TVector &new_x) override;
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 		TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
-		bool is_intersection_free(const TVector &x);
+		bool is_intersection_free(const TVector &x) override;
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
-		double max_step_size(const TVector &x0, const TVector &x1);
+		double max_step_size(const TVector &x0, const TVector &x1) override;
 
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		void line_search_end(bool failed);
 		void post_step(const int iter_num, const TVector &x0) override;
 
-		void solution_changed(const TVector &newX) override;
+		int optimization_dim() override { return 0; }
+
+		bool solution_changed_pre(const TVector &newX) override;
+		void solution_changed_post(const TVector &newX) override;
 
 		void save_to_file(const TVector &x0) override;
 

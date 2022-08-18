@@ -254,35 +254,10 @@ namespace polyfem
 		return x_new;
 	}
 
-	void TopologyOptimizationProblem::solution_changed(const TVector &newX)
+	bool TopologyOptimizationProblem::solution_changed_pre(const TVector &newX)
 	{
-		if (cur_x.size() == newX.size() && cur_x == newX)
-			return;
-
 		state.assembler.update_lame_params_density(apply_filter(newX));
-		// solve_pde(newX);
-
-		cur_x = newX;
-		cur_val = std::nan("");
-		cur_grad.resize(0);
-	}
-
-	double TopologyOptimizationProblem::max_step_size(const TVector &x0, const TVector &x1)
-	{
-		double size = 1;
-		// while (size > 0)
-		// {
-		// 	auto newX = force_inequality_constraint(x0, (x1 - x0) * size);
-		// 	state.assembler.update_lame_params_density(apply_filter(newX));
-
-		// 	if (!is_step_valid(x0, newX))
-		// 		size /= 2.;
-		// 	else
-		// 		break;
-		// }
-		// state.assembler.update_lame_params_density(apply_filter(x0));
-
-		return size;
+		return true;
 	}
 
 	void TopologyOptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)

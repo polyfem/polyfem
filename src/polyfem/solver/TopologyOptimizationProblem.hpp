@@ -25,12 +25,9 @@ namespace polyfem
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 		TVector force_inequality_constraint(const TVector &x0, const TVector &dx);
-		bool is_intersection_free(const TVector &x) { return true; }
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
-		double max_step_size(const TVector &x0, const TVector &x1);
 		bool remesh(TVector &x) { return false; };
 
-		TVector get_lower_bound(const TVector& x) 
+		TVector get_lower_bound(const TVector& x) override
 		{
 			TVector min(x.size());
 			min.setConstant(min_density);
@@ -41,7 +38,7 @@ namespace polyfem
 			}
 			return min; 
 		}
-		TVector get_upper_bound(const TVector& x) 
+		TVector get_upper_bound(const TVector& x) override
 		{
 			TVector max(x.size());
 			max.setConstant(max_density);
@@ -56,7 +53,7 @@ namespace polyfem
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		void line_search_end(bool failed);
 
-		void solution_changed(const TVector &newX) override;
+		bool solution_changed_pre(const TVector &newX) override;
 
 		TVector apply_filter(const TVector &x);
 		TVector apply_filter_to_grad(const TVector &x, const TVector &grad);

@@ -174,7 +174,7 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		// volume constraint
-		bool has_volume_constraint = false;
+		has_volume_constraint = false;
 		for (const auto &param : opt_params["functionals"])
 		{
 			if (param["type"] == "volume_constraint")
@@ -214,8 +214,6 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
-
-		build_fixed_nodes();
 
 		// boundary smoothing
 		has_boundary_smoothing = false;
@@ -258,6 +256,8 @@ namespace polyfem
 			}
 			)");
 		}
+
+		build_fixed_nodes();
 
 		// constraints on optimization
 		x_to_param = [this](const TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
@@ -364,7 +364,7 @@ namespace polyfem
 	{
 		if (!has_boundary_smoothing)
 			return 0.;
-		
+
 		Eigen::MatrixXd V;
 		x_to_param(x, V_rest, V);
 
@@ -512,15 +512,6 @@ namespace polyfem
 		if (is_flipped(V1, elements))
 			return false;
 
-		// if (opt_params.contains("max_change"))
-		// {
-		// 	Eigen::MatrixXd V0;
-		// 	x_to_param(x0, V_rest, V0);
-		// 	double change = (V1 - V0).rowwise().norm().maxCoeff();
-		// 	if (change > opt_params["max_change"].get<double>())
-		// 		return false;
-		// }
-
 		return true;
 	}
 
@@ -630,16 +621,17 @@ namespace polyfem
 
 	void ShapeProblem::post_step(const int iter_num, const TVector &x0)
 	{
-		if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
-		{
-			double target_val, volume_val, barrier_val;
-			target_val = target_value(x0);
-			volume_val = volume_value(x0);
-			barrier_val = barrier_energy(x0);
-			boundary_smoothing_params["weight"] = boundary_smoothing_params["weight"].get<double>() * boundary_smoothing_params["adjustment_coeff"].get<double>() * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
+		if (boundary_smoothing_params.contains("adjust_weight_period"))
+			if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
+			{
+				double target_val, volume_val, barrier_val;
+				target_val = target_value(x0);
+				volume_val = volume_value(x0);
+				barrier_val = barrier_energy(x0);
+				boundary_smoothing_params["weight"] = boundary_smoothing_params["weight"].get<double>() * boundary_smoothing_params["adjustment_coeff"].get<double>() * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
 
-			logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
-		}
+				logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
+			}
 
 		iter++;
 
@@ -656,28 +648,30 @@ namespace polyfem
 		}
 	}
 
-	void ShapeProblem::solution_changed(const TVector &newX)
+	bool ShapeProblem::solution_changed_pre(const TVector &newX)
 	{
-		if (cur_x.size() == newX.size() && cur_x == newX)
-			return;
-
 		Eigen::MatrixXd V;
 		x_to_param(newX, V_rest, V);
-		auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		state.set_v(V);
 		mesh_flipped = is_flipped(V, elements);
 		if (mesh_flipped)
+		{
 			logger().debug("Mesh Flipped!");
-		else
-			solve_pde(newX);
+			return false;
+		}
 
-		cur_x = newX;
-		cur_grad.resize(0);
-		cur_val = std::nan("");
+		state.set_v(V);
+		return true;
+	}
+
+	void ShapeProblem::solution_changed_post(const TVector &newX)
+	{
+		OptimizationProblem::solution_changed_post(newX);
 
 		if (!has_collision || mesh_flipped)
 			return;
 
+		Eigen::MatrixXd V;
+		x_to_param(newX, V_rest, V);
 		update_constraint_set(collision_mesh.vertices(V));
 	}
 

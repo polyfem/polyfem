@@ -464,7 +464,7 @@ namespace polyfem
 			double damping_energy = 0;
 			if (is_time_dependent)
 			{
-				if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
+				if (state.damping_assembler.local_assembler().is_valid())
 				{
 					damping_energy = state.damping_assembler.assemble(state.mesh->is_volume(), dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev());
 				}
@@ -548,7 +548,7 @@ namespace polyfem
 			Eigen::MatrixXd damping_grad = Eigen::MatrixXd::Zero(grad.rows(), grad.cols());
 			if (is_time_dependent)
 			{
-				if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
+				if (state.damping_assembler.local_assembler().is_valid())
 				{
 					state.damping_assembler.assemble_grad(state.mesh->is_volume(), state.n_bases, dt(), state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), damping_grad);
 				}
@@ -622,7 +622,7 @@ namespace polyfem
 
 				if (is_time_dependent)
 				{
-					if (state.args["materials"]["phi"] > 0 || state.args["materials"]["psi"] > 0)
+					if (state.damping_assembler.local_assembler().is_valid())
 					{
 						state.damping_assembler.assemble_hessian(state.mesh->is_volume(), state.n_bases, dt(), project_to_psd, state.bases, gbases, state.ass_vals_cache, full, time_integrator()->x_prev(), mat_cache, damping_hessian);
 					}

@@ -36,9 +36,13 @@ namespace polyfem
 			//sets material params
 			void set_parameters(const json &params);
 			void set_params(const double psi, const double phi) { psi_ = psi; phi_ = phi; }
+			double get_psi() const { return psi_; }
+			double get_phi() const { return phi_; }
 
 			inline int size() const { return size_; }
 			void set_size(const int size);
+
+			bool is_valid() const { return (psi_ > 0) && (phi_ > 0); }
 
 		private:
 			// material parameters controlling shear and bulk damping

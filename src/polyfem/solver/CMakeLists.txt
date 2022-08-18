@@ -18,12 +18,15 @@ set(SOURCES
 	OperatorSplittingSolver.cpp
 	ShapeProblem.hpp
 	ShapeProblem.cpp
+	MaterialProblem.hpp
+	MaterialProblem.cpp
 	TopologyOptimizationProblem.hpp
 	TopologyOptimizationProblem.cpp
 	OptimizationProblem.hpp
 	OptimizationProblem.cpp
 	Optimizations.hpp
 	Optimizations.cpp
+	GeneralOptimizationProblem.hpp
 )
 
 prepend_current_path(SOURCES)

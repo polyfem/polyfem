@@ -23,7 +23,7 @@ namespace polyfem
 					std::cout << "]";
 			}
 			std::cout << "]\n";
-		};
+		}
 
 		void print_markers(const Eigen::MatrixXd &centers, const std::vector<bool> &active_mask)
 		{
@@ -45,7 +45,7 @@ namespace polyfem
 					std::cout << "]";
 			}
 			std::cout << "]\n";
-		};
+		}
 	} // namespace
 
 	OptimizationProblem::OptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : state(state_)
@@ -62,31 +62,36 @@ namespace polyfem
 		opt_params = state.args["optimization"];
 
 		save_freq = opt_output_params.contains("save_frequency") ? opt_output_params["save_frequency"].get<int>() : 1;
-
-		max_change = std::numeric_limits<double>::max();
-		if (opt_nonlinear_params.contains("max_change"))
-			max_change = opt_nonlinear_params["max_change"];
+		max_change = opt_nonlinear_params.contains("max_change") ? opt_nonlinear_params["max_change"].get<double>() : std::numeric_limits<double>::max();
 	}
 
 	void OptimizationProblem::solve_pde(const TVector &x)
 	{
-		if (!state.problem->is_time_dependent())
-			if (optimization_name == "shape")
-			{
-				if (x_at_ls_begin.size() == x.size())
-				{
-					logger().debug("Use better initial guess...");
-					if (sol_at_ls_begin.size() == x.size())
-						state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
-					else if (sol_at_ls_begin.size() == state.n_bases)
-						state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
-				}
-			}
-			else if (sol_at_ls_begin.size() > 0)
-			{
-				logger().debug("Use better initial guess...");
-				state.pre_sol = sol_at_ls_begin;
-			}
+		// TODO: Add in initial guess.
+		// if (!state.problem->is_time_dependent())
+		// {
+		// 	if (optimization_name == "shape")
+		// 	{
+		// 		if (x_at_ls_begin.size() == x.size())
+		// 		{
+		// 			logger().debug("Use better initial guess...");
+		// 			if (sol_at_ls_begin.size() == x.size())
+		// 				state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
+		// 			else if (sol_at_ls_begin.size() == state.n_bases)
+		// 				state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
+		// 		}
+		// 	}
+		// 	else if (sol_at_ls_begin.size() > 0)
+		// 	{
+		// 		logger().debug("Use better initial guess...");
+		// 		state.pre_sol = sol_at_ls_begin;
+		// 	}
+		// }
+		// else
+		// {
+		// 	if (optimization_name != "shape" && sols_at_ls_begin.size() > 0)
+		// 		state.pre_sols = sols_at_ls_begin;
+		// }
 
 		// control forward solve log level
 		const int cur_log = state.current_log_level;
@@ -96,21 +101,21 @@ namespace polyfem
 		if (state.problem->is_time_dependent() && save_iter < iter)
 		{
 			save_iter++;
-			state.output_dir = "iter_" + std::to_string(iter);
-			if (std::filesystem::exists(state.output_dir))
-				std::filesystem::remove_all(state.output_dir);
-			std::filesystem::create_directories(state.output_dir);
-			logger().info("Save time sequence to {} ...", state.output_dir);
+			if (save_iter % save_freq == 0)
+			{
+				state.output_dir = "iter_" + std::to_string(iter);
+				if (std::filesystem::exists(state.output_dir))
+					std::filesystem::remove_all(state.output_dir);
+				std::filesystem::create_directories(state.output_dir);
+				logger().info("Save time sequence to {} ...", state.output_dir);
+			}
 		}
 
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();
 		state.solve_problem();
 
-		if (optimization_name != "shape")
-			sol_at_ls_begin = state.sol;
-
-		if (j->get_functional_name() == "CenterTrajectory")
+		if (j->get_functional_name() == "CenterTrajectory" || j->get_functional_name() == "CenterXYTrajectory" || j->get_functional_name() == "CenterXZTrajectory")
 		{
 			CenterTrajectoryFunctional f;
 			f.set_interested_ids(j->get_interested_body_ids(), j->get_interested_boundary_ids());
@@ -132,6 +137,17 @@ namespace polyfem
 		state.set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 	}
 
+	void OptimizationProblem::solution_changed(const TVector &newX)
+	{
+		if (cur_x.size() == newX.size() && cur_x == newX)
+			return;
+
+		if (solution_changed_pre(newX))
+			solve_pde(newX);
+
+		solution_changed_post(newX);
+	}
+
 	void OptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
 		descent_direction = x1 - x0;
@@ -151,6 +167,18 @@ namespace polyfem
 			gradient(x0, gradv);
 
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
+		}
+
+		if (state.problem->is_time_dependent())
+		{
+			state.pre_sols.clear();
+			sols_at_ls_begin.clear();
+			for (const auto &cache : state.diff_cached)
+				sols_at_ls_begin.push_back(cache.u);
+		}
+		else
+		{
+			sol_at_ls_begin = state.sol;
 		}
 	}
 } // namespace polyfem

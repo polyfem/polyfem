@@ -153,7 +153,7 @@ namespace polyfem
 				"nonlinear": {
 					"solver" : "newton",
 					"f_delta" : 1e-10,
-					"x_delta" : 0,
+					"x_delta" : 1e-12,
 					"grad_norm" : 1e-8,
 					"min_step_size" : 0,
 					"max_iterations" : 1000,
@@ -171,7 +171,7 @@ namespace polyfem
 				"optimization_nonlinear": {
 					"solver" : "lbfgs",
 					"f_delta" : 1e-9,
-					"x_delta" : 0,
+					"x_delta" : 1e-12,
 					"grad_norm" : 1e-7,
 					"min_step_size" : 0,
 					"max_iterations" : 100,
@@ -466,7 +466,7 @@ namespace polyfem
 				"beta": 0.25
 			},
 			"BDF": {
-				"steps": 1
+				"num_steps": 1
 			}
 		})"_json;
 

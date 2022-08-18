@@ -418,6 +418,7 @@ namespace polyfem
 		{
 			assembler.add_multimaterial(0, body_params);
 			density.add_multimaterial(0, body_params);
+			damping_assembler.local_assembler().set_parameters(body_params);
 			return;
 		}
 
@@ -440,6 +441,7 @@ namespace polyfem
 				const int mid = id;
 				materials[mid] = mat;
 			}
+			damping_assembler.local_assembler().set_parameters(mat);
 		}
 
 		std::set<int> missing;

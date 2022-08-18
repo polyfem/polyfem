@@ -380,6 +380,8 @@ namespace polyfem
 
 		const int n_b_samples = n_boundary_samples();
 
+		cache_transient_adjoint_quantities(0);
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + dt * t;
@@ -440,6 +442,9 @@ namespace polyfem
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
+			if (pre_sols.size() == time_steps + 1 && pre_sols[t].rows() == sol.rows())
+				pre_sol = pre_sols[t];
+
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 
 			if (args["differentiable"])
@@ -627,6 +632,12 @@ namespace polyfem
 			alnl_problem.init_lagging(sol);
 		}
 
+		if (pre_sol.rows() == sol.rows())
+		{
+			logger().debug("Use better initial guess...");
+			sol = pre_sol;
+		}
+		
 		if (args["solver"]["contact"]["friction_iterations"] > 0)
 		{
 			logger().debug("Lagging iteration 1");

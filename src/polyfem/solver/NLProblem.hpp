@@ -196,6 +196,17 @@ namespace polyfem
 
 			StiffnessMatrix cached_stiffness;
 			const assembler::RhsAssembler &rhs_assembler;
+
+			double dt() const
+			{
+				if (_time_integrator)
+				{
+					assert(time_integrator()->dt() > 0);
+					return time_integrator()->dt();
+				}
+				else
+					return 1;
+			}
 			
 		protected:
 			const State &state;
@@ -228,17 +239,6 @@ namespace polyfem
 			ipc::BroadPhaseMethod _broad_phase_method;
 			double _ccd_tolerance;
 			int _ccd_max_iterations;
-
-			double dt() const
-			{
-				if (_time_integrator)
-				{
-					assert(time_integrator()->dt() > 0);
-					return time_integrator()->dt();
-				}
-				else
-					return 1;
-			}
 
 			ipc::Constraints _constraint_set;
 			ipc::FrictionConstraints _friction_constraint_set;
