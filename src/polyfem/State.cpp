@@ -599,6 +599,23 @@ namespace polyfem
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
 
+		if (formulation() == "MultiModels")
+		{
+			assert(args["materials"].is_array());
+
+			std::vector<std::string> materials(mesh->n_elements());
+
+			std::map<int, std::string> mats;
+
+			for (const auto &m : args["materials"])
+				mats[m["id"].get<int>()] = m["type"];
+
+			for (int i = 0; i < materials.size(); ++i)
+				materials[i] = mats.at(mesh->get_body_id(i));
+
+			assembler.init_multimodels(materials);
+		}
+
 		n_bases = 0;
 		n_pressure_bases = 0;
 
@@ -881,7 +898,10 @@ namespace polyfem
 					const int node_id = in_node_to_node[nodes[n]];
 					tmp(n, 0) = node_id;
 					for (int d = 0; d < problem_dim; ++d)
-						boundary_nodes.push_back(node_id * problem_dim + d);
+					{
+						if (!std::isnan(tmp(n, d + 1)))
+							boundary_nodes.push_back(node_id * problem_dim + d);
+					}
 				}
 
 				input_dirichlet.emplace_back(tmp);
