@@ -1,8 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"functions_func_l.html":[4,3,1,11],
-"functions_func_m.html":[4,3,1,12],
-"functions_func_n.html":[4,3,1,13],
 "functions_func_o.html":[4,3,1,14],
 "functions_func_p.html":[4,3,1,15],
 "functions_func_q.html":[4,3,1,16],
@@ -143,8 +140,8 @@ var NAVTREEINDEX24 =
 "namespacemembers_enum.html":[3,1,4],
 "namespacemembers_eval.html":[3,1,5],
 "namespacemembers_f.html":[3,1,0,5],
-"namespacemembers_func.html":[3,1,1,0],
 "namespacemembers_func.html":[3,1,1],
+"namespacemembers_func.html":[3,1,1,0],
 "namespacemembers_func_b.html":[3,1,1,1],
 "namespacemembers_func_c.html":[3,1,1,2],
 "namespacemembers_func_d.html":[3,1,1,3],
@@ -249,5 +246,8 @@ var NAVTREEINDEX24 =
 "namespacepolyfem.html#ac817fa541a79579685e3db46da222bdc":[3,0,6,32],
 "namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e":[3,0,6,30],
 "namespacepolyfem.html#ae42c1f8fedf96741b1166a16392bbf80":[3,0,6,29],
-"namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4":[3,0,6,18]
+"namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4":[3,0,6,18],
+"namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4":[3,0,6,26],
+"namespacepolyfem.html#afe7d5ac326e47bbc47caa5539c4f8172":[3,0,6,28],
+"namespacepolyfem_1_1assembler.html":[3,0,6,0]
 };

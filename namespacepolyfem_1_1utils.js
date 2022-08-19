@@ -42,6 +42,7 @@ var namespacepolyfem_1_1utils =
     [ "import_matrix", "namespacepolyfem_1_1utils.html#ab2105d1e3c8062e4d90f65820a3b72ea", null ],
     [ "is_param_valid", "namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a", null ],
     [ "log_and_throw_error", "namespacepolyfem_1_1utils.html#a4aa6a223372c11fff7378d34cd38d72d", null ],
+    [ "lump_matrix", "namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226", null ],
     [ "map_entity_tag_to_physical_tag", "namespacepolyfem_1_1utils.html#a558e9ba73951d941809ecf3631b15aca", null ],
     [ "maybe_parallel_for", "namespacepolyfem_1_1utils.html#a6271a11288e93e85b3d285403b962020", null ],
     [ "maybe_parallel_for", "namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c", null ],

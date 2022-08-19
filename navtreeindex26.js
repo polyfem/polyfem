@@ -1,7 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"namespaceq__bases.html#aefd408e88c0ce2b95ed824841f6cb539":[3,0,8,22],
-"namespaceq__bases.html#af0fe99b4361a802ac7ae1d0d9a9daed0":[3,0,8,21],
 "namespaceq__bases.html#af9ee1db492ab9311fe8a9a6e72eb862a":[3,0,8,10],
 "namespaceq__bases.html#afee1ddc28f4ec93a9aff452e3570b6b4":[3,0,8,5],
 "namespaces.html":[3,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX26 =
 "struct_d_scalar2.html#aec9ac875715861553a48e25edab5892e":[4,0,8,47],
 "struct_d_scalar2.html#af7af35c5422abf47074e17cfc977d1df":[4,0,8,4],
 "struct_d_scalar2.html#afa50b6af8bab0bc51d633e09abdff0d7":[4,0,8,44],
-"struct_diff_scalar_base.html":[4,0,6]
+"struct_diff_scalar_base.html":[4,0,6],
+"structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html":[4,0,1,0],
+"structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html":[3,0,4,0]
 };

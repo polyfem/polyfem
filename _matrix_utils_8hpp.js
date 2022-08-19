@@ -5,6 +5,7 @@ var _matrix_utils_8hpp =
     [ "determinant", "_matrix_utils_8hpp.html#abe6b8c4990a1c67602ca66d6d522d557", null ],
     [ "flatten", "_matrix_utils_8hpp.html#adac090350174847f46edfd397abd4ab4", null ],
     [ "import_matrix", "_matrix_utils_8hpp.html#ab2105d1e3c8062e4d90f65820a3b72ea", null ],
+    [ "lump_matrix", "_matrix_utils_8hpp.html#a2fb8d51756a3b76bee0485fa58e65226", null ],
     [ "read_matrix", "_matrix_utils_8hpp.html#a0255219cb34dae6d1d3f72c21e3f794a", null ],
     [ "read_matrix_ascii", "_matrix_utils_8hpp.html#aed345a137ad110f66d7b6776e42dfd31", null ],
     [ "read_matrix_binary", "_matrix_utils_8hpp.html#a3a7013cffc9caeecf20cdd711ddb309d", null ],

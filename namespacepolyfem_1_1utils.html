@@ -225,6 +225,9 @@ Functions</h2></td></tr>
 <tr class="separator:adac090350174847f46edfd397abd4ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafdbbff4a81a4fcba11129097b1109e5"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">unflatten</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int dim)</td></tr>
 <tr class="separator:aafdbbff4a81a4fcba11129097b1109e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fb8d51756a3b76bee0485fa58e65226"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">lump_matrix</a> (const Eigen::SparseMatrix&lt; double &gt; &amp;M)</td></tr>
+<tr class="memdesc:a2fb8d51756a3b76bee0485fa58e65226"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lump each row of a matrix into the diagonal.  <a href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">More...</a><br /></td></tr>
+<tr class="separator:a2fb8d51756a3b76bee0485fa58e65226"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afac51d1fd7878475ff843eef315f510c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">maybe_parallel_for</a> (int size, const std::function&lt; void(int, int, int)&gt; &amp;partial_for)</td></tr>
 <tr class="separator:afac51d1fd7878475ff843eef315f510c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6271a11288e93e85b3d285403b962020"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a6271a11288e93e85b3d285403b962020">maybe_parallel_for</a> (int size, const std::function&lt; void(int)&gt; &amp;body)</td></tr>
@@ -527,7 +530,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00114">114</a> of file <a class="el" href="_j_s_o_n_utils_8cpp_source.html">JSONUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00298">polyfem::State::init_time()</a>, <a class="el" href="_state_load_8cpp_source.html#l00099">polyfem::State::load_mesh()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00061">polyfem::solver::NLProblem::NLProblem()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00020">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00329">polyfem::mesh::read_obstacle_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00268">polyfem::mesh::read_obstacle_mesh()</a>, <a class="el" href="_state_8cpp_source.html#l01649">polyfem::State::root_path()</a>, <a class="el" href="_state_8cpp_source.html#l00408">polyfem::State::set_materials()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00574">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01051">polyfem::assembler::GenericScalarProblem::set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00298">polyfem::State::init_time()</a>, <a class="el" href="_state_load_8cpp_source.html#l00099">polyfem::State::load_mesh()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00061">polyfem::solver::NLProblem::NLProblem()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00020">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00329">polyfem::mesh::read_obstacle_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00268">polyfem::mesh::read_obstacle_mesh()</a>, <a class="el" href="_state_8cpp_source.html#l01636">polyfem::State::root_path()</a>, <a class="el" href="_state_8cpp_source.html#l00408">polyfem::State::set_materials()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00574">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01051">polyfem::assembler::GenericScalarProblem::set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -552,6 +555,39 @@ template&lt;typename T &gt; </div>
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00014">polyfem::utils::Selection::build()</a>, <a class="el" href="_state_8cpp_source.html#l00579">polyfem::State::build_basis()</a>, <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_state_init_8cpp_source.html#l00145">polyfem::State::init()</a>, <a class="el" href="_state_init_8cpp_source.html#l00298">polyfem::State::init_time()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00188">polyfem::mesh::read_fem_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00020">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00329">polyfem::mesh::read_obstacle_geometry()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00268">polyfem::mesh::read_obstacle_mesh()</a>.</p>
+
+</div>
+</div>
+<a id="a2fb8d51756a3b76bee0485fa58e65226" name="a2fb8d51756a3b76bee0485fa58e65226"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb8d51756a3b76bee0485fa58e65226">&#9670;&nbsp;</a></span>lump_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::SparseMatrix&lt; double &gt; polyfem::utils::lump_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>M</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lump each row of a matrix into the diagonal. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">M</td><td>Matrix to lump. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Lumped matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00581">581</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="eigs_8py_source.html#l00094">eigs::M</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">polyfem::solver::ALNLProblem::ALNLProblem()</a>, and <a class="el" href="_state_8cpp_source.html#l01160">polyfem::State::assemble_stiffness_mat()</a>.</p>
 
 </div>
 </div>
@@ -958,7 +994,7 @@ template&lt;typename T &gt; </div>
 
 <p class="reference">References <a class="el" href="eigs_8py_source.html#l00128">eigs::path</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00020">apply_default_params()</a>, <a class="el" href="_selection_8cpp_source.html#l00014">polyfem::utils::Selection::build()</a>, <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00020">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00268">polyfem::mesh::read_obstacle_mesh()</a>, and <a class="el" href="_state_8cpp_source.html#l01656">polyfem::State::resolve_input_path()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00020">apply_default_params()</a>, <a class="el" href="_selection_8cpp_source.html#l00014">polyfem::utils::Selection::build()</a>, <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00020">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00268">polyfem::mesh::read_obstacle_mesh()</a>, and <a class="el" href="_state_8cpp_source.html#l01643">polyfem::State::resolve_input_path()</a>.</p>
 
 </div>
 </div>
@@ -1022,7 +1058,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00032">32</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00088">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;::compute_update_direction()</a>, and <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00074">polyfem::solver::ALNLProblem::value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_n_l_problem_8cpp_source.html#l00025">polyfem::solver::ALNLProblem::ALNLProblem()</a>, and <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00088">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;::compute_update_direction()</a>.</p>
 
 </div>
 </div>
@@ -1126,7 +1162,7 @@ template&lt;typename Mat &gt; </div>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="eigs_8py_source.html#l00128">eigs::path</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00120">write_matrix_ascii()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00164">write_matrix_binary()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00033">polyfem::time_integrator::ImplicitTimeIntegrator::save_raw()</a>, and <a class="el" href="_state_8cpp_source.html#l01376">polyfem::State::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00033">polyfem::time_integrator::ImplicitTimeIntegrator::save_raw()</a>, and <a class="el" href="_state_8cpp_source.html#l01363">polyfem::State::solve_problem()</a>.</p>
 
 </div>
 </div>
