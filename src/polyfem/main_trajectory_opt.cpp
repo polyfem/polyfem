@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 
 	const std::set<std::string> opt_types = {"material", "shape", "initial"};
 
-	const std::set<std::string> matching_types = {"exact", "sdf"}; // , "exact-center", "sine", "max-height", "center-data", "last-center", "marker-data"};
+	const std::set<std::string> matching_types = {"exact", "sdf", "center-data"}; // , "exact-center", "sine", "max-height", , "last-center", "marker-data"};
 
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
@@ -322,8 +322,8 @@ int main(int argc, char **argv)
 	// 	func = CompositeFunctional::create("TargetY");
 	// else if (matching_type == "max-height")
 	// 	func = CompositeFunctional::create("Height");
-	// else if (matching_type == "center-data")
-	// 	func = CompositeFunctional::create("CenterXYTrajectory");
+	else if (matching_type == "center-data")
+		func = CompositeFunctional::create("CenterXYTrajectory");
 	// else if (matching_type == "marker-data")
 	// 	func = CompositeFunctional::create("NodeTrajectory");
 	else
@@ -380,31 +380,26 @@ int main(int argc, char **argv)
 	// 		return cos(x) * 0.7;
 	// 	});
 	// }
-	// else if (matching_type == "center-data")
-	// {
-	// 	auto &f = *dynamic_cast<CenterXYTrajectoryFunctional *>(func.get());
-	// 	std::ifstream infile(target_path);
-	// 	std::vector<Eigen::VectorXd> centers;
-	// 	double x = 0, y = 0;
-	// 	Eigen::VectorXd center;
-	// 	center.setZero(3);
-	// 	const int down_sample_rate = 1; // pick one line in every 1 lines
-	// 	int n = -1;
-	// 	while (infile.good())
-	// 	{
-	// 		infile >> x;
-	// 		infile >> y;
-	// 		n++;
-	// 		if (n % down_sample_rate != 0)
-	// 			continue;
-	// 		center(0) = x / 100;
-	// 		center(1) = y / 100; // cm to m
-	// 		centers.push_back(center);
-	// 	}
-	// 	infile.close();
-	// 	f.set_center_series(centers);
-	// 	print_centers(centers);
-	// }
+	else if (matching_type == "center-data")
+	{
+		auto &f = *dynamic_cast<CenterXYTrajectoryFunctional *>(func.get());
+		std::ifstream infile(target_path);
+		std::vector<Eigen::VectorXd> centers;
+		double x = 0, y = 0;
+		Eigen::VectorXd center;
+		center.setZero(3);
+		while (infile.good())
+		{
+			infile >> x;
+			infile >> y;
+			center(0) = x / 100;
+			center(1) = y / 100; // cm to m
+			centers.push_back(center);
+		}
+		infile.close();
+		f.set_center_series(centers);
+		print_centers(centers);
+	}
 	// else if (matching_type == "marker-data")
 	// {
 	// 	const std::string scene = in_args["optimization"]["name"];

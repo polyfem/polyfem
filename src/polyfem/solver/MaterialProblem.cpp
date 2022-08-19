@@ -53,19 +53,11 @@ namespace polyfem
 			}
 		}
 
-		min_mu = 0;
-		if (material_params.contains("min_mu"))
-			min_mu = material_params["min_mu"];
-		max_mu = std::numeric_limits<double>::max();
-		if (material_params.contains("max_mu"))
-			max_mu = material_params["max_mu"];
+		min_mu = material_params.value("min_mu", 0);
+		max_mu = material_params.value("max_mu", 1e15);
 
-		min_lambda = 0;
-		if (material_params.contains("min_lambda"))
-			min_lambda = material_params["min_lambda"];
-		max_lambda = std::numeric_limits<double>::max();
-		if (material_params.contains("max_lambda"))
-			max_lambda = material_params["max_lambda"];
+		min_lambda = material_params.value("min_lambda", 0);
+		max_lambda = material_params.value("max_lambda", 1e15);
 
 		has_material_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
@@ -255,21 +247,37 @@ namespace polyfem
 			return false;
 
 		if (cur_lambdas.minCoeff() < min_lambda || cur_mus.minCoeff() < min_mu)
+		{
 			return false;
+		}
 		if (cur_lambdas.maxCoeff() > max_lambda || cur_mus.maxCoeff() > max_mu)
+		{
 			return false;
-		if (opt_params.contains("min_phi") && opt_params["min_phi"].get<double>() > phi)
+		}
+		if (material_params.contains("min_phi") && material_params["min_phi"].get<double>() > phi)
+		{
 			return false;
-		if (opt_params.contains("max_phi") && opt_params["max_phi"].get<double>() < phi)
+		}
+		if (material_params.contains("max_phi") && material_params["max_phi"].get<double>() < phi)
+		{
 			return false;
-		if (opt_params.contains("min_psi") && opt_params["min_psi"].get<double>() > psi)
+		}
+		if (material_params.contains("min_psi") && material_params["min_psi"].get<double>() > psi)
+		{
 			return false;
-		if (opt_params.contains("max_psi") && opt_params["max_psi"].get<double>() < psi)
+		}
+		if (material_params.contains("max_psi") && material_params["max_psi"].get<double>() < psi)
+		{
 			return false;
-		if (opt_params.contains("min_fric") && opt_params["min_fric"].get<double>() > mu)
+		}
+		if (material_params.contains("min_fric") && material_params["min_fric"].get<double>() > mu)
+		{
 			return false;
-		if (opt_params.contains("max_fric") && opt_params["max_fric"].get<double>() < mu)
+		}
+		if (material_params.contains("max_fric") && material_params["max_fric"].get<double>() < mu)
+		{
 			return false;
+		}
 
 		return true;
 	}

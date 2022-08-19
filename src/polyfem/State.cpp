@@ -419,6 +419,29 @@ namespace polyfem
 			assembler.add_multimaterial(0, body_params);
 			density.add_multimaterial(0, body_params);
 			damping_assembler.local_assembler().set_parameters(body_params);
+
+			const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
+			const auto &cur_mus = assembler.lame_params().mu_mat_;
+			if (cur_lambdas.size() == 0 || cur_mus.size() == 0)
+			{
+				Eigen::MatrixXd lambdas(mesh->n_elements(), 1), mus(mesh->n_elements(), 1);
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					RowVectorNd barycenter;
+					if (!mesh->is_volume())
+					{
+						const auto &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+						barycenter = mesh2d.face_barycenter(e);
+					}
+					else
+					{
+						const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+						barycenter = mesh3d.cell_barycenter(e);
+					}
+					assembler.lame_params().lambda_mu(/*not used*/ 0, /*not used*/ 0, /*not used*/ 0, barycenter(0), barycenter(1), barycenter.size() < 3 ? 0.0 : barycenter(2), e, lambdas(e), mus(e));
+				}
+				assembler.update_lame_params(lambdas, mus);
+			}
 			return;
 		}
 
@@ -468,6 +491,29 @@ namespace polyfem
 			const json &tmp = it->second;
 			assembler.add_multimaterial(e, tmp);
 			density.add_multimaterial(e, tmp);
+		}
+
+		const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
+		const auto &cur_mus = assembler.lame_params().mu_mat_;
+		if (cur_lambdas.size() == 0 || cur_mus.size() == 0)
+		{
+			Eigen::MatrixXd lambdas(mesh->n_elements(), 1), mus(mesh->n_elements(), 1);
+			for (int e = 0; e < mesh->n_elements(); e++)
+			{
+				RowVectorNd barycenter;
+				if (!mesh->is_volume())
+				{
+					const auto &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+					barycenter = mesh2d.face_barycenter(e);
+				}
+				else
+				{
+					const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+					barycenter = mesh3d.cell_barycenter(e);
+				}
+				assembler.lame_params().lambda_mu(/*not used*/ 0, /*not used*/ 0, /*not used*/ 0, barycenter(0), barycenter(1), barycenter.size() < 3 ? 0.0 : barycenter(2), e, lambdas(e), mus(e));
+			}
+			assembler.update_lame_params(lambdas, mus);
 		}
 
 		for (int bid : missing)
@@ -774,29 +820,6 @@ namespace polyfem
 			n_geom_bases = n_bases;
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
-
-		const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
-		const auto &cur_mus = assembler.lame_params().mu_mat_;
-		if (cur_lambdas.size() == 0 || cur_mus.size() == 0)
-		{
-			Eigen::MatrixXd lambdas(bases.size(), 1), mus(bases.size(), 1);
-			for (int e = 0; e < bases.size(); e++)
-			{
-				RowVectorNd barycenter;
-				if (!mesh->is_volume())
-				{
-					const auto &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
-					barycenter = mesh2d.face_barycenter(e);
-				}
-				else
-				{
-					const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
-					barycenter = mesh3d.cell_barycenter(e);
-				}
-				assembler.lame_params().lambda_mu(/*not used*/ 0, /*not used*/ 0, /*not used*/ 0, barycenter(0), barycenter(1), barycenter.size() < 3 ? 0.0 : barycenter(2), e, lambdas(e), mus(e));
-			}
-			assembler.update_lame_params(lambdas, mus);
-		}
 
 		build_polygonal_basis();
 

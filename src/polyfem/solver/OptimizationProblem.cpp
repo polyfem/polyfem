@@ -61,41 +61,41 @@ namespace polyfem
 		opt_output_params = state.args["output"]["optimization"];
 		opt_params = state.args["optimization"];
 
-		save_freq = opt_output_params.contains("save_frequency") ? opt_output_params["save_frequency"].get<int>() : 1;
-		max_change = opt_nonlinear_params.contains("max_change") ? opt_nonlinear_params["max_change"].get<double>() : std::numeric_limits<double>::max();
+		save_freq = opt_output_params.value("save_frequency", 1);
+		max_change = opt_nonlinear_params.value("max_change", std::numeric_limits<double>::max());
 	}
 
 	void OptimizationProblem::solve_pde(const TVector &x)
 	{
 		// TODO: Add in initial guess.
-		// if (!state.problem->is_time_dependent())
-		// {
-		// 	if (optimization_name == "shape")
-		// 	{
-		// 		if (x_at_ls_begin.size() == x.size())
-		// 		{
-		// 			logger().debug("Use better initial guess...");
-		// 			if (sol_at_ls_begin.size() == x.size())
-		// 				state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
-		// 			else if (sol_at_ls_begin.size() == state.n_bases)
-		// 				state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
-		// 		}
-		// 	}
-		// 	else if (sol_at_ls_begin.size() > 0)
-		// 	{
-		// 		logger().debug("Use better initial guess...");
-		// 		state.pre_sol = sol_at_ls_begin;
-		// 	}
-		// }
-		// else
-		// {
-		// 	if (optimization_name != "shape" && sols_at_ls_begin.size() > 0)
-		// 		state.pre_sols = sols_at_ls_begin;
-		// }
+		if (!state.problem->is_time_dependent())
+		{
+			if (optimization_name == "shape")
+			{
+				if (x_at_ls_begin.size() == x.size())
+				{
+					logger().debug("Use better initial guess...");
+					if (sol_at_ls_begin.size() == x.size())
+						state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
+					else if (sol_at_ls_begin.size() == state.n_bases)
+						state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
+				}
+			}
+			else if (sol_at_ls_begin.size() > 0)
+			{
+				logger().debug("Use better initial guess...");
+				state.pre_sol = sol_at_ls_begin;
+			}
+		}
+		else
+		{
+			if (optimization_name != "shape" && sols_at_ls_begin.size() > 0)
+				state.pre_sols = sols_at_ls_begin;
+		}
 
 		// control forward solve log level
 		const int cur_log = state.current_log_level;
-		state.set_log_level(static_cast<spdlog::level::level_enum>(opt_output_params.contains("solve_log_level") ? opt_output_params["solve_log_level"].get<int>() : cur_log));
+		state.set_log_level(static_cast<spdlog::level::level_enum>(opt_output_params.value("solve_log_level", cur_log)));
 
 		auto output_dir = state.output_dir;
 		if (state.problem->is_time_dependent() && save_iter < iter)
@@ -173,16 +173,16 @@ namespace polyfem
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
 		}
 
-		if (state.problem->is_time_dependent())
-		{
-			state.pre_sols.clear();
-			sols_at_ls_begin.clear();
-			for (const auto &cache : state.diff_cached)
-				sols_at_ls_begin.push_back(cache.u);
-		}
-		else
-		{
-			sol_at_ls_begin = state.sol;
-		}
+		// if (state.problem->is_time_dependent())
+		// {
+		// 	state.pre_sols.clear();
+		// 	sols_at_ls_begin.clear();
+		// 	for (const auto &cache : state.diff_cached)
+		// 		sols_at_ls_begin.push_back(cache.u);
+		// }
+		// else
+		// {
+		// 	sol_at_ls_begin = state.sol;
+		// }
 	}
 } // namespace polyfem
