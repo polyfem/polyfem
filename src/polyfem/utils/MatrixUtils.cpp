@@ -578,6 +578,25 @@ Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 	return X;
 }
 
+Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatrix<double> &M)
+{
+	std::vector<Eigen::Triplet<double>> triplets;
+
+	for (int k = 0; k < M.outerSize(); ++k)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(M, k); it; ++it)
+		{
+			triplets.emplace_back(it.row(), it.row(), it.value());
+		}
+	}
+
+	Eigen::SparseMatrix<double> lumped(M.rows(), M.rows());
+	lumped.setFromTriplets(triplets.begin(), triplets.end());
+	lumped.makeCompressed();
+
+	return lumped;
+}
+
 // template instantiation
 template bool polyfem::utils::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::utils::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
