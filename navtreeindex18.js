@@ -1,6 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a415ac30072d942c0ecfe89c432716818":[4,0,3,3,28,0,13],
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a415ac30072d942c0ecfe89c432716818":[3,0,6,4,28,0,13],
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a493cd1f87decf590279a966e7d072bfb":[3,0,6,4,28,0,7],
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a493cd1f87decf590279a966e7d072bfb":[4,0,3,3,28,0,7],
@@ -249,5 +248,6 @@ var NAVTREEINDEX18 =
 "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ab84c54997d9dccc28e8186dcf332f2bb":[4,0,3,3,41,6],
 "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ab84c54997d9dccc28e8186dcf332f2bb":[3,0,6,4,41,6],
 "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ab8e9e1a66918b85f95c102e50cd775f4":[4,0,3,3,41,11],
-"classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ab8e9e1a66918b85f95c102e50cd775f4":[3,0,6,4,41,11]
+"classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ab8e9e1a66918b85f95c102e50cd775f4":[3,0,6,4,41,11],
+"classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#acfde0cce5e180d73802c0a7c9f66d765":[3,0,6,4,41,1]
 };

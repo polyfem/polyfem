@@ -1,6 +1,5 @@
 var NAVTREEINDEX6 =
 {
-"classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d":[3,0,6,0,3,2],
 "classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d":[4,0,3,0,3,2],
 "classpolyfem_1_1assembler_1_1_assembly_values.html#ae47177bceda101096daacf64afd9b6a1":[3,0,6,0,3,4],
 "classpolyfem_1_1assembler_1_1_assembly_values.html#ae47177bceda101096daacf64afd9b6a1":[4,0,3,0,3,4],
@@ -249,5 +248,6 @@ var NAVTREEINDEX6 =
 "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac877a0b256e0b4cb417f6dab4c3d61cc":[3,0,6,0,10,26],
 "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac877a0b256e0b4cb417f6dab4c3d61cc":[4,0,3,0,10,26],
 "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#acb82d00adbe174f43bcb2827af2d2d82":[3,0,6,0,10,4],
-"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#acb82d00adbe174f43bcb2827af2d2d82":[4,0,3,0,10,4]
+"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#acb82d00adbe174f43bcb2827af2d2d82":[4,0,3,0,10,4],
+"classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ad6ff89e63dca590329de16d98769a8e4":[4,0,3,0,10,48]
 };

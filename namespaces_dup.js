@@ -47,8 +47,7 @@ var namespaces_dup =
       [ "z", "namespaceelasticity__rhs.html#a7da2b62e54e8b30ff93de1396c5429c8", null ]
     ] ],
     [ "ipc", "namespaceipc.html", [
-      [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespaceipc.html#a55762a53348e0ed962546f70cef7086c", null ],
-      [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespaceipc.html#a86a8b4316e4051577f796299e3c00cad", null ]
+      [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespaceipc.html#a55762a53348e0ed962546f70cef7086c", null ]
     ] ],
     [ "nlohmann", "namespacenlohmann.html", "namespacenlohmann" ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],

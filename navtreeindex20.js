@@ -1,6 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"classpolyfem_1_1solver_1_1_n_l_problem.html#a13a42362068c1ca6fb07f9158f6865af":[3,0,6,7,3,7],
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a13a42362068c1ca6fb07f9158f6865af":[4,0,3,6,3,7],
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a149dffd78e2d408e505715f1060d7d17":[4,0,3,6,3,40],
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a149dffd78e2d408e505715f1060d7d17":[3,0,6,7,3,40],
@@ -249,5 +248,6 @@ var NAVTREEINDEX20 =
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aba2c584adcb4c5633f68a076110d5fd4":[4,0,3,6,4,20],
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aba2c584adcb4c5633f68a076110d5fd4":[3,0,6,7,4,20],
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#abc68f295053acbfa1afa99d049a70f54":[4,0,3,6,4,2],
-"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#abc68f295053acbfa1afa99d049a70f54":[3,0,6,7,4,2]
+"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#abc68f295053acbfa1afa99d049a70f54":[3,0,6,7,4,2],
+"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ac1c2a82acbea62d91aa40a3c062e881d":[3,0,6,7,4,36]
 };

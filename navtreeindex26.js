@@ -1,7 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"namespaceq__bases.html#ae5567cc3ff8c51169b59f2d6fdb8b962":[3,0,8,8],
-"namespaceq__bases.html#aef6c93b3e0117ea0d47a0e6a9ba503dc":[3,0,8,17],
 "namespaceq__bases.html#aefd408e88c0ce2b95ed824841f6cb539":[3,0,8,22],
 "namespaceq__bases.html#af0fe99b4361a802ac7ae1d0d9a9daed0":[3,0,8,21],
 "namespaceq__bases.html#af9ee1db492ab9311fe8a9a6e72eb862a":[3,0,8,10],
@@ -249,5 +247,7 @@ var NAVTREEINDEX26 =
 "struct_d_scalar2.html#ae9fe9454ceb6b0261a41c9c538c03d2e":[4,0,8,46],
 "struct_d_scalar2.html#aec857038963a0b4028b4e4306048c24c":[4,0,8,12],
 "struct_d_scalar2.html#aec9ac875715861553a48e25edab5892e":[4,0,8,47],
-"struct_d_scalar2.html#af7af35c5422abf47074e17cfc977d1df":[4,0,8,4]
+"struct_d_scalar2.html#af7af35c5422abf47074e17cfc977d1df":[4,0,8,4],
+"struct_d_scalar2.html#afa50b6af8bab0bc51d633e09abdff0d7":[4,0,8,44],
+"struct_diff_scalar_base.html":[4,0,6]
 };

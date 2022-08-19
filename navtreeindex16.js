@@ -1,6 +1,5 @@
 var NAVTREEINDEX16 =
 {
-"classpolyfem_1_1problem_1_1_corner_flow.html#ad5fdaf5f5dd6e8c049d87823a044ceaf":[4,0,3,3,4,2],
 "classpolyfem_1_1problem_1_1_corner_flow.html#ad5fdaf5f5dd6e8c049d87823a044ceaf":[3,0,6,4,4,2],
 "classpolyfem_1_1problem_1_1_corner_flow.html#adbf4a33582f5efece3139193587674ea":[4,0,3,3,4,3],
 "classpolyfem_1_1problem_1_1_corner_flow.html#adbf4a33582f5efece3139193587674ea":[3,0,6,4,4,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX16 =
 "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#ae9c96b2b7d3a6e1dac8fa7cec1e82f55":[4,0,3,3,18,8],
 "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#ae9c96b2b7d3a6e1dac8fa7cec1e82f55":[3,0,6,4,18,8],
 "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#aeddcc97e99e7216c39cc73c65ed96f30":[4,0,3,3,18,7],
-"classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#aeddcc97e99e7216c39cc73c65ed96f30":[3,0,6,4,18,7]
+"classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#aeddcc97e99e7216c39cc73c65ed96f30":[3,0,6,4,18,7],
+"classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783":[3,0,6,4,18,4]
 };

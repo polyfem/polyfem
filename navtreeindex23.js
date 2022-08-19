@@ -1,6 +1,5 @@
 var NAVTREEINDEX23 =
 {
-"classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a4e7da6b6dc12d81f22aab089afd63a5a":[4,0,3,8,19,19],
 "classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a4e7da6b6dc12d81f22aab089afd63a5a":[3,0,6,9,20,19],
 "classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a5cd57937e8740cf63ef1cc02848513aa":[3,0,6,9,20,17],
 "classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a5cd57937e8740cf63ef1cc02848513aa":[4,0,3,8,19,17],
@@ -249,5 +248,6 @@ var NAVTREEINDEX23 =
 "functions_func_f.html":[4,3,1,6],
 "functions_func_g.html":[4,3,1,7],
 "functions_func_h.html":[4,3,1,8],
-"functions_func_i.html":[4,3,1,9]
+"functions_func_i.html":[4,3,1,9],
+"functions_func_k.html":[4,3,1,10]
 };

@@ -1,6 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#acfde0cce5e180d73802c0a7c9f66d765":[3,0,6,4,41,1],
 "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#acfde0cce5e180d73802c0a7c9f66d765":[4,0,3,3,41,1],
 "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ad2c7216c1ceee341b811affdd65ccd5d":[4,0,3,3,41,0],
 "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#ad2c7216c1ceee341b811affdd65ccd5d":[3,0,6,4,41,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX19 =
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a0cb4b96209bb5d2f9239fa041c1dad14":[4,0,3,6,3,5],
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a0cb4b96209bb5d2f9239fa041c1dad14":[3,0,6,7,3,5],
 "classpolyfem_1_1solver_1_1_n_l_problem.html#a12bb4a2489bcf33f467186d50feb2397":[3,0,6,7,3,29],
-"classpolyfem_1_1solver_1_1_n_l_problem.html#a12bb4a2489bcf33f467186d50feb2397":[4,0,3,6,3,29]
+"classpolyfem_1_1solver_1_1_n_l_problem.html#a12bb4a2489bcf33f467186d50feb2397":[4,0,3,6,3,29],
+"classpolyfem_1_1solver_1_1_n_l_problem.html#a13a42362068c1ca6fb07f9158f6865af":[3,0,6,7,3,7]
 };

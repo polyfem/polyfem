@@ -1,6 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783":[3,0,6,4,18,4],
 "classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783":[4,0,3,3,18,4],
 "classpolyfem_1_1problem_1_1_gravity_problem.html":[3,0,6,4,19],
 "classpolyfem_1_1problem_1_1_gravity_problem.html":[4,0,3,3,19],
@@ -249,5 +248,6 @@ var NAVTREEINDEX17 =
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a27f959e46dc3d3b08d7489cf044c9322":[4,0,3,3,28,0,11],
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a27f959e46dc3d3b08d7489cf044c9322":[3,0,6,4,28,0,11],
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a3ba2c826498ce3623ea19bcefc9352d2":[4,0,3,3,28,0,2],
-"classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a3ba2c826498ce3623ea19bcefc9352d2":[3,0,6,4,28,0,2]
+"classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a3ba2c826498ce3623ea19bcefc9352d2":[3,0,6,4,28,0,2],
+"classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a415ac30072d942c0ecfe89c432716818":[4,0,3,3,28,0,13]
 };

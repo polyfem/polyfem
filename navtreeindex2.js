@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_problem_8cpp.html":[5,0,1,0,0,33],
 "_problem_8cpp_source.html":[5,0,1,0,0,33],
 "_problem_8hpp.html":[5,0,1,0,0,34],
 "_problem_8hpp_source.html":[5,0,1,0,0,34],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "auto__p__bases_8hpp.html#ac26a7d8619bbd1be4b8133a921df2751":[5,0,1,0,1,6,1],
 "auto__p__bases_8hpp.html#acb852da43087916bb4919c07218b4540":[5,0,1,0,1,6,0],
 "auto__p__bases_8hpp_source.html":[5,0,1,0,1,6],
-"auto__q__bases_8cpp.html":[5,0,1,0,1,7]
+"auto__q__bases_8cpp.html":[5,0,1,0,1,7],
+"auto__q__bases_8cpp.html#a18ee2912d770a6bc9cfe2a485a9ecb25":[5,0,1,0,1,7,4]
 };

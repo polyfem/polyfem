@@ -1,6 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ac1c2a82acbea62d91aa40a3c062e881d":[3,0,6,7,4,36],
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ac1c2a82acbea62d91aa40a3c062e881d":[4,0,3,6,4,36],
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acb209fc33bfb84395220cc09de3f70c4":[4,0,3,6,4,8],
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acb209fc33bfb84395220cc09de3f70c4":[3,0,6,7,4,8],
@@ -249,5 +248,6 @@ var NAVTREEINDEX21 =
 "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab7167f5a3ddbf2372da4c4e624ed3693":[4,0,3,7,3,0],
 "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab7167f5a3ddbf2372da4c4e624ed3693":[3,0,6,8,3,0],
 "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf":[3,0,6,8,3,8],
-"classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf":[4,0,3,7,3,8]
+"classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf":[4,0,3,7,3,8],
+"classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c":[3,0,6,8,3,16]
 };
