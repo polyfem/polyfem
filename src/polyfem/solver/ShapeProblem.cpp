@@ -224,7 +224,7 @@ namespace polyfem
 				boundary_smoothing_params = param;
 
 				if (param["scale_invariant"].get<bool>())
-					boundary_smoother.p = boundary_smoothing_params["power"];
+					boundary_smoother.p = boundary_smoothing_params.value("power", 2);
 				boundary_smoother.dim = dim;
 				boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
 				has_boundary_smoothing = true;
@@ -825,9 +825,9 @@ namespace polyfem
 
 				// modify json
 				bool flag = false;
-				for (int m = 0; m < state.args["meshes"].get<std::vector<json>>().size(); m++)
+				for (int m = 0; m < state.args["geometry"].get<std::vector<json>>().size(); m++)
 				{
-					if (state.args["meshes"][m]["body_id"].get<int>() != body_id)
+					if (state.args["geometry"][m]["volume_selection"].get<int>() != body_id)
 						continue;
 					if (!flag)
 						flag = true;
@@ -836,8 +836,8 @@ namespace polyfem
 						logger().error("Multiple meshes found with same body id!");
 						return false;
 					}
-					state.args["meshes"][m]["skip_transform"] = true;
-					state.args["meshes"][m]["mesh"] = after_remesh_path;
+					state.args["geometry"][m]["transformation"]["skip"] = true;
+					state.args["geometry"][m]["mesh"] = after_remesh_path;
 				}
 			}
 		}
@@ -874,7 +874,7 @@ namespace polyfem
 
 		state.get_vf(V, F);
 		scaled_jacobian(V, F, quality);
-		if (quality.minCoeff() <= shape_params["remesh_quality"].get<double>())
+		if (quality.minCoeff() <= shape_params["remesh_tolerance"].get<double>())
 		{
 			logger().error("Quality not good after remeshing!");
 			exit(0);

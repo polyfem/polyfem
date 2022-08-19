@@ -30,7 +30,7 @@ namespace cppoptlib
 		{
 		}
 
-		std::string name() const override { return "L-BFGS"; }
+		std::string name() const override { return "L-BFGS-B"; }
 
 	protected:
 		virtual int default_descent_strategy() override { return 1; }
@@ -41,7 +41,7 @@ namespace cppoptlib
 			switch (descent_strategy)
 			{
 			case 1:
-				return "L-BFGS";
+				return "L-BFGS-B";
 			case 2:
 				return "gradient descent";
 			default:

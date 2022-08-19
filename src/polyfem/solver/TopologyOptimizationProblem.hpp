@@ -10,12 +10,8 @@ namespace polyfem
 		TopologyOptimizationProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
 		double target_value(const TVector &x) { return j->energy(state) * target_weight; }
-		// double mass_value(const TVector &x);
-		// double smooth_value(const TVector &x);
 
 		void target_gradient(const TVector &x, TVector &gradv);
-		// void mass_gradient(const TVector &x, TVector &gradv);
-		// void smooth_gradient(const TVector &x, TVector &gradv);
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
@@ -50,7 +46,6 @@ namespace polyfem
 			return max; 
 		}
 
-		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		void line_search_end(bool failed);
 
 		bool solution_changed_pre(const TVector &newX) override;
@@ -71,10 +66,6 @@ namespace polyfem
 
 		double target_weight = 1;
 		bool has_mass_constraint;
-
-		// bool has_smooth_constraint;
-		// json smooth_params;
-		// Eigen::SparseMatrix<bool> tt_adjacency;
 
 		json top_params;
 

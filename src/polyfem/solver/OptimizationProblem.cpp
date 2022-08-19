@@ -1,4 +1,5 @@
 #include "OptimizationProblem.hpp"
+#include <polyfem/utils/StringUtils.hpp>
 
 namespace polyfem
 {
@@ -67,31 +68,30 @@ namespace polyfem
 
 	void OptimizationProblem::solve_pde(const TVector &x)
 	{
-		// TODO: Add in initial guess.
-		// if (!state.problem->is_time_dependent())
-		// {
-		// 	if (optimization_name == "shape")
-		// 	{
-		// 		if (x_at_ls_begin.size() == x.size())
-		// 		{
-		// 			logger().debug("Use better initial guess...");
-		// 			if (sol_at_ls_begin.size() == x.size())
-		// 				state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
-		// 			else if (sol_at_ls_begin.size() == state.n_bases)
-		// 				state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
-		// 		}
-		// 	}
-		// 	else if (sol_at_ls_begin.size() > 0)
-		// 	{
-		// 		logger().debug("Use better initial guess...");
-		// 		state.pre_sol = sol_at_ls_begin;
-		// 	}
-		// }
-		// else
-		// {
-		// 	if (optimization_name != "shape" && sols_at_ls_begin.size() > 0)
-		// 		state.pre_sols = sols_at_ls_begin;
-		// }
+		if (!state.problem->is_time_dependent())
+		{
+			if (optimization_name == "shape")
+			{
+				if (x_at_ls_begin.size() == x.size())
+				{
+					logger().debug("Use better initial guess...");
+					if (sol_at_ls_begin.size() == x.size())
+						state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
+					else if (sol_at_ls_begin.size() == state.n_bases)
+						state.pre_sol = sol_at_ls_begin + state.down_sampling_mat.transpose() * (x_at_ls_begin - x);
+				}
+			}
+			else if (sol_at_ls_begin.size() > 0)
+			{
+				logger().debug("Use better initial guess...");
+				state.pre_sol = sol_at_ls_begin;
+			}
+		}
+		else
+		{
+			if (optimization_name != "shape" && sols_at_ls_begin.size() > 0)
+				state.pre_sols = sols_at_ls_begin;
+		}
 
 		// control forward solve log level
 		const int cur_log = state.current_log_level;
@@ -115,7 +115,7 @@ namespace polyfem
 		state.assemble_stiffness_mat();
 		state.solve_problem();
 
-		if (j->get_functional_name() == "CenterTrajectory" || j->get_functional_name() == "CenterXYTrajectory" || j->get_functional_name() == "CenterXZTrajectory")
+		if (utils::StringUtils::startswith(j->get_functional_name(), "Center"))
 		{
 			CenterTrajectoryFunctional f;
 			f.set_interested_ids(j->get_interested_body_ids(), j->get_interested_boundary_ids());

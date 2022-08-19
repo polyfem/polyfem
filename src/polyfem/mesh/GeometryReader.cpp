@@ -605,6 +605,9 @@ namespace polyfem::mesh
 		const int dim = vertices.cols();
 		assert(dim == 2 || dim == 3);
 
+		if (transform.contains("skip") && transform["skip"].get<bool>())
+			return;
+
 		// -----
 		// Scale
 		// -----

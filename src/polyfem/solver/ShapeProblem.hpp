@@ -160,7 +160,7 @@ namespace polyfem
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		double value(const TVector &x, const bool only_elastic) { return value(x); };
+		double value(const TVector &x, const bool only_elastic) { if (only_elastic) return 0.; return value(x); };
 		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
 
 		void smoothing(const TVector &x, TVector &new_x) override;
