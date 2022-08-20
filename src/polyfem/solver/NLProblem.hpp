@@ -32,16 +32,16 @@ namespace polyfem
 			virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false);
 
 			virtual double value(const TVector &x, const bool only_elastic);
-			void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
+			virtual void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
 
-			bool is_step_valid(const TVector &x0, const TVector &x1);
-			bool is_step_collision_free(const TVector &x0, const TVector &x1);
-			double max_step_size(const TVector &x0, const TVector &x1);
-			bool is_intersection_free(const TVector &x);
+			virtual bool is_step_valid(const TVector &x0, const TVector &x1);
+			virtual bool is_step_collision_free(const TVector &x0, const TVector &x1);
+			virtual double max_step_size(const TVector &x0, const TVector &x1);
+			virtual bool is_intersection_free(const TVector &x);
 
-			void line_search_begin(const TVector &x0, const TVector &x1);
-			void line_search_end();
-			void post_step(const int iter_num, const TVector &x);
+			virtual void line_search_begin(const TVector &x0, const TVector &x1);
+			virtual void line_search_end();
+			virtual void post_step(const int iter_num, const TVector &x);
 
 #include <polyfem/utils/DisableWarnings.hpp>
 			virtual void hessian(const TVector &x, THessian &hessian);
@@ -128,21 +128,21 @@ namespace polyfem
 			void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 
 			virtual void update_quantities(const double t, const TVector &x);
-			void substepping(const double t);
-			void solution_changed(const TVector &newX);
+			virtual void substepping(const double t);
+			virtual void solution_changed(const TVector &newX);
 
-			void init_lagging(const TVector &x);
-			void update_lagging(const TVector &x);
-			double compute_lagging_error(const TVector &x);
-			bool lagging_converged(const TVector &x);
+			virtual void init_lagging(const TVector &x);
+			virtual void update_lagging(const TVector &x);
+			virtual double compute_lagging_error(const TVector &x);
+			virtual bool lagging_converged(const TVector &x);
 
-			const Eigen::MatrixXd &current_rhs();
+			virtual const Eigen::MatrixXd &current_rhs();
 
 			virtual bool stop(const TVector &x) { return false; }
 
 			void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
 
-			double heuristic_max_step(const TVector &dx);
+			virtual double heuristic_max_step(const TVector &dx);
 
 			inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
 
@@ -165,6 +165,9 @@ namespace polyfem
 			const assembler::RhsAssembler &rhs_assembler;
 			bool is_time_dependent;
 
+			double t;
+			const int full_size, reduced_size;
+
 		private:
 			const assembler::AssemblerUtils &assembler;
 			Eigen::MatrixXd _current_rhs;
@@ -173,8 +176,6 @@ namespace polyfem
 
 			bool ignore_inertia;
 
-			const int full_size, reduced_size;
-			double t;
 			bool rhs_computed;
 			bool project_to_psd;
 

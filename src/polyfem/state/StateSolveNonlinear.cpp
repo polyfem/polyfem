@@ -92,8 +92,7 @@ namespace polyfem
 				OBJWriter::save(
 					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
 					collision_mesh.edges(), collision_mesh.faces());
-				logger().error("Unable to solve, initial solution has intersections!");
-				throw std::runtime_error("Unable to solve, initial solution has intersections!");
+				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
 		}
 
@@ -202,13 +201,7 @@ namespace polyfem
 			al_weight *= 2;
 
 			if (al_weight >= max_al_weight)
-			{
-				const std::string msg =
-					fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
-				logger().error(msg);
-				throw std::runtime_error(msg);
-				break;
-			}
+				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
 
 			save_subsolve(++subsolve_count, t);
 		}
@@ -353,6 +346,7 @@ namespace polyfem
 		ass_vals_cache.clear(); // Clear this because the mass matrix needs to be recomputed
 		Eigen::MatrixXd x;
 		L2_projection(
+			*this, *solve_data.rhs_assembler,
 			mesh->is_volume(), mesh->is_volume() ? 3 : 2,
 			old_n_bases, old_bases, old_geom_bases,                // from
 			n_bases, bases, iso_parametric() ? bases : geom_bases, // to
@@ -369,9 +363,11 @@ namespace polyfem
 		}
 
 		// Compute Projection error
+		if (false)
 		{
 			Eigen::MatrixXd y2;
 			L2_projection(
+				*this, *solve_data.rhs_assembler,
 				mesh->is_volume(), mesh->is_volume() ? 3 : 2,
 				n_bases, bases, iso_parametric() ? bases : geom_bases, // from
 				old_n_bases, old_bases, old_geom_bases,                // to
