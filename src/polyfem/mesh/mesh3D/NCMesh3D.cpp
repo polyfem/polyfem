@@ -117,6 +117,11 @@ namespace polyfem
 			return vertices[valid_to_all_vertex(global_index)].pos.transpose();
 		}
 
+		void NCMesh3D::set_point(const int global_index, const RowVectorNd &p)
+		{
+			vertices[valid_to_all_vertex(global_index)].pos = p;
+		}
+
 		RowVectorNd NCMesh3D::edge_barycenter(const int e) const
 		{
 			const int v1 = edge_vertex(e, 0);
@@ -878,7 +883,7 @@ namespace polyfem
 
 			const int n_v = n_vertices();
 			const int n_f = n_cells();
-			
+
 			vertices.reserve(n_v + mesh3d.n_vertices());
 			for (int i = 0; i < mesh3d.n_vertices(); i++)
 			{
