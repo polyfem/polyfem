@@ -155,7 +155,7 @@ namespace cppoptlib
 					objFunc.gradient(x, grad);
 				}
 
-				const double grad_norm = grad.norm();
+				const double grad_norm = (objFunc.force_inequality_constraint(x, -grad) - x).norm();
 				logger().debug("grad norm: {}", grad_norm);
 				if (std::isnan(grad_norm))
 				{

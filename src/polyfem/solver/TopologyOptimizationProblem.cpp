@@ -67,7 +67,7 @@ namespace polyfem
 
 			RowVectorNd min, max;
 			state.mesh->bounding_box(min, max);
-			for (int i = 0; i < state.mesh->n_faces(); i++)
+			for (int i = 0; i < state.mesh->n_elements(); i++)
 			{
 				auto center_i = barycenters.row(i);
 				for (int j = 0; j <= i; j++)
@@ -83,7 +83,7 @@ namespace polyfem
 					}
 				}
 			}
-			tt_radius_adjacency.resize(state.mesh->n_faces(), state.mesh->n_faces());
+			tt_radius_adjacency.resize(state.mesh->n_elements(), state.mesh->n_elements());
 			tt_radius_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
 
 			tt_radius_adjacency_row_sum.setZero(tt_radius_adjacency.rows());
@@ -96,8 +96,7 @@ namespace polyfem
 	{
 		if (std::isnan(cur_val))
 		{
-			double target_val;
-			target_val = target_value(x);
+			double target_val = target_value(x);
 			logger().debug("target = {}", target_val);
 			cur_val = target_val;
 		}
@@ -198,14 +197,14 @@ namespace polyfem
 	double TopologyOptimizationProblem::inequality_constraint_val(const cppoptlib::Problem<double>::TVector &x, const int index)
 	{
 		double val = 0;
-		IntegrableFunctional j;
-		j.set_name("Mass");
-		j.set_transient_integral_type("final");
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setOnes(u.rows(), 1);
-			val *= params["density"].get<double>();
-		});
-		val = state.J(j);
+		auto filtered_x = apply_filter(x);
+		auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		for (int e = 0; e < state.bases.size(); e++)
+		{
+            assembler::ElementAssemblyValues vals;
+            state.ass_vals_cache.compute(e, state.mesh->is_volume(), state.bases[e], gbases[e], vals);
+			val += (vals.det.array() * vals.quadrature.weights.array()).sum() * filtered_x(e);
+		}
 
 		logger().debug("Current mass: {}, min {}, max {}", val, min_mass, max_mass);
 

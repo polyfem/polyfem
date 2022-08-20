@@ -14,7 +14,7 @@
 
 namespace polyfem
 {
-	double cross(double x, double y)
+	double cross2(double x, double y)
 	{
 		x = abs(x);
 		y = abs(y);
@@ -22,8 +22,25 @@ namespace polyfem
 			std::swap(x, y);
 
 		if (x < 0.1)
-			return 0.9;
-		return 0.1;
+			return 0.05;
+		return 0.95;
+	}
+
+	double cross3(double x, double y, double z)
+	{
+		x = abs(x);
+		y = abs(y);
+		z = abs(z);
+		if (x > y)
+			std::swap(x, y);
+		if (y > z)
+			std::swap(y, z);
+		if (x > y)
+			std::swap(x, y);
+
+		if (y < 0.2)
+			return 0.001;
+		return 1;
 	}
 
 	template <typename ProblemType>
@@ -814,6 +831,8 @@ namespace polyfem
 		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
+		if (density_mat.size() != state.bases.size())
+			density_mat.setZero(state.bases.size(), 1);
 		for (const auto &param : opt_params["parameters"])
 		{
 			if (param["type"] == "topology")
@@ -824,12 +843,20 @@ namespace polyfem
 				{
 					Eigen::MatrixXd barycenters;
 					if (state.mesh->is_volume())
-						state.mesh->cell_barycenters(barycenters);
-					else
-						state.mesh->face_barycenters(barycenters);
-					for (int e = 0; e < state.bases.size(); e++)
 					{
-						density_mat(e) = cross(barycenters(e,0), barycenters(e,1));
+						state.mesh->cell_barycenters(barycenters);
+						for (int e = 0; e < state.bases.size(); e++)
+						{
+							density_mat(e) = cross3(barycenters(e,0), barycenters(e,1), barycenters(e,2));
+						}
+					}
+					else
+					{
+						state.mesh->face_barycenters(barycenters);
+						for (int e = 0; e < state.bases.size(); e++)
+						{
+							density_mat(e) = cross2(barycenters(e,0), barycenters(e,1));
+						}
 					}
 					// density_mat.setOnes();
 				}
