@@ -214,49 +214,40 @@ namespace polyfem
 
 	bool MaterialProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
+		if ((x1 - x0).cwiseAbs().maxCoeff() > max_change)
+			return false;
+		solution_changed_pre(x1);
+
 		const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 		const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 		const double mu = state.args["contact"]["friction_coefficient"];
 		const double psi = state.damping_assembler.local_assembler().get_psi();
 		const double phi = state.damping_assembler.local_assembler().get_phi();
 
+		bool flag = true;
 		if (mu < 0 || psi < 0 || phi < 0)
-			return false;
+			flag = false;
 
 		if (cur_lambdas.minCoeff() < min_lambda || cur_mus.minCoeff() < min_mu)
-		{
-			return false;
-		}
+			flag = false;
 		if (cur_lambdas.maxCoeff() > max_lambda || cur_mus.maxCoeff() > max_mu)
-		{
-			return false;
-		}
+			flag = false;
 		if (material_params.contains("min_phi") && material_params["min_phi"].get<double>() > phi)
-		{
-			return false;
-		}
+			flag = false;
 		if (material_params.contains("max_phi") && material_params["max_phi"].get<double>() < phi)
-		{
-			return false;
-		}
+			flag = false;
 		if (material_params.contains("min_psi") && material_params["min_psi"].get<double>() > psi)
-		{
-			return false;
-		}
+			flag = false;
 		if (material_params.contains("max_psi") && material_params["max_psi"].get<double>() < psi)
-		{
-			return false;
-		}
+			flag = false;
 		if (material_params.contains("min_fric") && material_params["min_fric"].get<double>() > mu)
-		{
-			return false;
-		}
+			flag = false;
 		if (material_params.contains("max_fric") && material_params["max_fric"].get<double>() < mu)
-		{
-			return false;
-		}
+			flag = false;
 
-		return true;
+		solution_changed_pre(x0);
+
+		return flag;
 	}
 
 	bool MaterialProblem::solution_changed_pre(const TVector &newX)

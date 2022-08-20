@@ -94,7 +94,10 @@ namespace polyfem
 
 		double density(const int el_id) const
 		{
-			return density_mat_(el_id);
+			if (density_mat_.size() > 0)
+				return density_mat_(el_id);
+			else
+				return 0;
 		}
 
 		Eigen::MatrixXd lambda_mat_, mu_mat_, density_mat_;

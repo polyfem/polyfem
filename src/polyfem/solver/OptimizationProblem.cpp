@@ -169,16 +169,20 @@ namespace polyfem
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
 		}
 
-		// if (state.problem->is_time_dependent())
-		// {
-		// 	state.pre_sols.clear();
-		// 	sols_at_ls_begin.clear();
-		// 	for (const auto &cache : state.diff_cached)
-		// 		sols_at_ls_begin.push_back(cache.u);
-		// }
-		// else
-		// {
-		// 	sol_at_ls_begin = state.sol;
-		// }
+		bool use_better_initial_guess = opt_nonlinear_params.value("better_initial_guess", true);
+		if (use_better_initial_guess)
+		{
+			if (state.problem->is_time_dependent())
+			{
+				state.pre_sols.clear();
+				sols_at_ls_begin.clear();
+				for (const auto &cache : state.diff_cached)
+					sols_at_ls_begin.push_back(cache.u);
+			}
+			else
+			{
+				sol_at_ls_begin = state.sol;
+			}
+		}
 	}
 } // namespace polyfem
