@@ -437,8 +437,8 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	state.load_mesh();
 	state.compute_mesh_stats();
 	state.build_basis();
-	Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
-	density_mat.setConstant(0.5);
+	Eigen::MatrixXd density_mat;
+	density_mat.setConstant(state.mesh->n_elements(), 1, 0.5);
 	state.assembler.update_lame_params_density(density_mat, 5);
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
