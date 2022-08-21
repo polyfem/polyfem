@@ -21,6 +21,8 @@ set(SOURCES
 	ShapeProblem.cpp
 	MaterialProblem.hpp
 	MaterialProblem.cpp
+	InitialConditionProblem.hpp
+	InitialConditionProblem.cpp
 	TopologyOptimizationProblem.hpp
 	TopologyOptimizationProblem.cpp
 	OptimizationProblem.hpp

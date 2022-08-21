@@ -594,15 +594,6 @@ namespace polyfem
 	{
 		_candidates.clear();
 		_use_cached_candidates = false;
-
-		if (opt_output_params.contains("export_energies"))
-		{
-			std::ofstream outfile;
-			outfile.open(opt_output_params["export_energies"].get<std::string>(), std::ofstream::out | std::ofstream::app);
-
-			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << ", " << volume_value(cur_x) << ", " << barrier_energy(cur_x) << "\n";
-			outfile.close();
-		}
 	}
 
 	void ShapeProblem::save_to_file(const TVector &x0)

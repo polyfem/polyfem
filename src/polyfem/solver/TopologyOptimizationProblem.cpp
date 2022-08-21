@@ -154,14 +154,6 @@ namespace polyfem
 
 	void TopologyOptimizationProblem::line_search_end(bool failed)
 	{
-		if (opt_output_params.contains("export_energies"))
-		{
-			std::ofstream outfile;
-			outfile.open(opt_output_params["export_energies"].get<std::string>(), std::ofstream::out | std::ofstream::app);
-
-			outfile << value(cur_x) << "\n";
-			outfile.close();
-		}
 	}
 
 	cppoptlib::Problem<double>::TVector TopologyOptimizationProblem::apply_filter(const TVector &x)

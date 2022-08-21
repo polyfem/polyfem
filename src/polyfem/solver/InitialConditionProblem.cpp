@@ -1,8 +1,8 @@
-#include <polyfem/InitialConditionProblem.hpp>
+#include "InitialConditionProblem.hpp"
 
-#include <polyfem/Types.hpp>
-#include <polyfem/Timer.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/writeOBJ.h>
 
@@ -10,7 +10,7 @@
 
 namespace polyfem
 {
-	InitialConditionProblem::InitialConditionProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_, const json &args) : OptimizationProblem(state_, j_, args)
+	InitialConditionProblem::InitialConditionProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
 	{
 		assert(state.problem->is_time_dependent());
 		optimization_name = "initial";
@@ -38,15 +38,6 @@ namespace polyfem
 
 	void InitialConditionProblem::line_search_end(bool failed)
 	{
-		if (opt_params.contains("export_energies"))
-		{
-			std::ofstream outfile;
-			outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
-
-			outfile << value(cur_x) << "\n";
-			outfile.close();
-		}
-
 		if (!failed)
 			return;
 	}
@@ -74,10 +65,7 @@ namespace polyfem
 
 	bool InitialConditionProblem::solution_changed_pre(const TVector &newX)
 	{
-		Eigen::MatrixXd init_sol, init_vel;
-		x_to_param(newX, init_sol, init_vel);
-		state.initial_sol_update = init_sol;
-		state.initial_vel_update = init_vel;
+		x_to_param(newX, state.initial_sol_update, state.initial_vel_update);
 
 		return true;
 	}

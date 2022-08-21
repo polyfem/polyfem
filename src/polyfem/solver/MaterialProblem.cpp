@@ -109,14 +109,6 @@ namespace polyfem
 
 	void MaterialProblem::line_search_end(bool failed)
 	{
-		if (opt_output_params.contains("export_energies"))
-		{
-			std::ofstream outfile;
-			outfile.open(opt_output_params["export_energies"].get<std::string>(), std::ofstream::out | std::ofstream::app);
-
-			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << "\n";
-			outfile.close();
-		}
 	}
 
 	double MaterialProblem::target_value(const TVector &x)
