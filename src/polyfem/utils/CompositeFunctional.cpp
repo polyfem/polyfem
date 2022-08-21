@@ -1033,6 +1033,7 @@ namespace polyfem
 	double CenterXYTrajectoryFunctional::energy(State &state)
 	{
 		const int n_steps = state.args["time"]["time_steps"];
+		const double total_time = (transient_integral_type != "final") ? n_steps * state.args["time"]["dt"].get<double>() : 1.0;
 		const int n_targets = target_series.size();
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
@@ -1061,12 +1062,13 @@ namespace polyfem
 			return (x.head(2) / x(2) - target.head(2)).squaredNorm();
 		};
 
-		return sqrt(state.J_transient(js, func));
+		return sqrt(state.J_transient(js, func) / total_time);
 	}
 
 	Eigen::VectorXd CenterXYTrajectoryFunctional::gradient(State &state, const std::string &type)
 	{
 		const int n_steps = state.args["time"]["time_steps"];
+		const double total_time = (transient_integral_type != "final") ? n_steps * state.args["time"]["dt"].get<double>() : 1.0;
 		const int n_targets = target_series.size();
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
@@ -1106,7 +1108,7 @@ namespace polyfem
 			return grad;
 		};
 
-		return state.integral_gradient(js, func, type) / 2 / energy(state);
+		return state.integral_gradient(js, func, type) / 2 / energy(state) / sqrt(total_time);
 	}
 
 	IntegrableFunctional CenterXYTrajectoryFunctional::get_center_trajectory_functional(const int d)

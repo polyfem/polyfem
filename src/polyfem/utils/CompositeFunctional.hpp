@@ -32,7 +32,7 @@ namespace polyfem
 		std::string functional_name;
 		int p = 2;             // only used in stress functional
 		bool surface_integral; // only can be true for trajectory functional
-		std::string transient_integral_type = "simpson";
+		std::string transient_integral_type = "uniform";
 		std::set<int> interested_body_ids_;
 		std::set<int> interested_boundary_ids_;
 	};
@@ -218,7 +218,7 @@ namespace polyfem
 		{
 			functional_name = "Stress";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~StressFunctional() = default;
 
@@ -236,7 +236,7 @@ namespace polyfem
 		{
 			functional_name = "Compliance";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~ComplianceFunctional() = default;
 
@@ -254,7 +254,7 @@ namespace polyfem
 		{
 			functional_name = "HomogenizedStiffness";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~HomogenizedStiffnessFunctional() = default;
 
@@ -269,7 +269,7 @@ namespace polyfem
 		{
 			functional_name = "HomogenizedPermeability";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~HomogenizedPermeabilityFunctional() = default;
 
@@ -284,7 +284,7 @@ namespace polyfem
 		{
 			functional_name = "CenterTrajectory";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~CenterTrajectoryFunctional() = default;
 
@@ -308,7 +308,7 @@ namespace polyfem
 		{
 			functional_name = "CenterXYTrajectory";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~CenterXYTrajectoryFunctional() = default;
 
@@ -330,7 +330,7 @@ namespace polyfem
 		{
 			functional_name = "CenterXZTrajectory";
 			surface_integral = false;
-			transient_integral_type = "simpson";
+			transient_integral_type = "uniform";
 		}
 		~CenterXZTrajectoryFunctional() = default;
 

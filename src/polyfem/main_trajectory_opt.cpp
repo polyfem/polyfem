@@ -398,6 +398,7 @@ int main(int argc, char **argv)
 		}
 		infile.close();
 		f.set_center_series(centers);
+		f.set_transient_integral_type("uniform");
 		print_centers(centers);
 	}
 	// else if (matching_type == "marker-data")

@@ -172,6 +172,10 @@ namespace polyfem
 					"solver" : "lbfgs",
 					"f_delta" : 1e-9,
 					"x_delta" : 1e-12,
+					"max_change" : 1e10,
+					"max_step_size" : 1,
+					"export_energy" : "runtime.csv",
+					"debug_fd" : false,
 					"grad_norm" : 1e-7,
 					"min_step_size" : 0,
 					"max_iterations" : 100,
@@ -272,7 +276,8 @@ namespace polyfem
 				},
 
 				"optimization": {
-					"save_frequency": 1
+					"save_frequency": 1,
+					"solve_log_level": 2
 				},
 
 				"data" : {

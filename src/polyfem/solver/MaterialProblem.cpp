@@ -69,6 +69,8 @@ namespace polyfem
 				smoothing_weight = smoothing_params.value("weight", 1.0);
 				break;
 			}
+			else
+				target_weight = param.value("weight", 1.0);
 		}
 		
 		// Only works for 2d for now

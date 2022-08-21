@@ -248,7 +248,7 @@ namespace cppoptlib
 				x = objFunc.force_inequality_constraint(old_x, rate * delta_x);
 				objFunc.smoothing(old_x, x);
 
-				this->m_current.xDelta = (x - old_x).norm();
+				this->m_current.xDelta = (x - old_x).array().abs().maxCoeff();
 				objFunc.solution_changed(x);
 
 				// -----------
