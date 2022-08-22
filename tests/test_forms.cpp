@@ -20,10 +20,12 @@ using namespace polyfem::solver;
 using namespace polyfem::time_integrator;
 using namespace polyfem::assembler;
 
-std::shared_ptr<State> get_state()
+namespace
 {
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"(
+	std::shared_ptr<State> get_state()
+	{
+		const std::string path = POLYFEM_DATA_DIR;
+		json in_args = R"(
 		{
 			"materials": {
                 "type": "NeoHookean",
@@ -53,20 +55,21 @@ std::shared_ptr<State> get_state()
 			}
 
 		})"_json;
-	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+		in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
-	auto state = std::make_shared<State>(1);
-	state->init_logger("", spdlog::level::warn, false);
-	state->init(in_args, true);
+		auto state = std::make_shared<State>(1);
+		state->init_logger("", spdlog::level::warn, false);
+		state->init(in_args, true);
 
-	state->load_mesh();
+		state->load_mesh();
 
-	state->build_basis();
-	state->assemble_rhs();
-	state->assemble_stiffness_mat();
+		state->build_basis();
+		state->assemble_rhs();
+		state->assemble_stiffness_mat();
 
-	return state;
-}
+		return state;
+	}
+} // namespace
 
 template <typename Form>
 void test_form(Form &form, const State &state)

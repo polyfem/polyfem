@@ -17,6 +17,7 @@ set(test_sources
 	test_tbb.cpp
 	test_utils.cpp
   test_forms.cpp
+  test_form_values.cpp
   verify_run.cpp
 )
 
