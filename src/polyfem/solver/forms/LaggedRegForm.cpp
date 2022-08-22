@@ -2,36 +2,32 @@
 
 #include <polyfem/utils/MatrixUtils.hpp>
 
-namespace polyfem
+namespace polyfem::solver
 {
-	namespace solver
+	LaggedRegForm::LaggedRegForm(const double weight)
+		: weight_(weight)
 	{
-		LaggedRegForm::LaggedRegForm(const double lagged_damping_weight)
-			: lagged_damping_weight_(lagged_damping_weight)
-		{
-			//TODO
-			// lagged_damping_weight_ = state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
-		}
+		// TODO:
+		// lagged_damping_weight_ = state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
+	}
 
-		double LaggedRegForm::value(const Eigen::VectorXd &x)
-		{
-			return lagged_damping_weight_ * (x - x_lagged_).squaredNorm();
-		}
+	double LaggedRegForm::value(const Eigen::VectorXd &x)
+	{
+		return weight_ * (x - x_lagged_).squaredNorm();
+	}
 
-		void LaggedRegForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
-		{
-			gradv = lagged_damping_weight_ * (x - x_lagged_);
-		}
+	void LaggedRegForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	{
+		gradv = weight_ * (x - x_lagged_);
+	}
 
-		void LaggedRegForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
-		{
-			hessian = lagged_damping_weight_ * utils::sparse_identity(x.size(), x.size());
-		}
+	void LaggedRegForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	{
+		hessian = weight_ * utils::sparse_identity(x.size(), x.size());
+	}
 
-		void LaggedRegForm::update_lagging(const Eigen::VectorXd &x)
-		{
-			x_lagged_ = x;
-		};
-
-	} // namespace solver
-} // namespace polyfem
+	void LaggedRegForm::update_lagging(const Eigen::VectorXd &x)
+	{
+		x_lagged_ = x;
+	};
+} // namespace polyfem::solver

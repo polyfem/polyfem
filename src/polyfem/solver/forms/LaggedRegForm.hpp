@@ -4,25 +4,37 @@
 
 #include <polyfem/utils/Types.hpp>
 
-namespace polyfem
+namespace polyfem::solver
 {
-	namespace solver
+	/// @brief Tikonov regularization form between x and x_lagged
+	class LaggedRegForm : public Form
 	{
-		class LaggedRegForm : public Form
-		{
-		public:
-			LaggedRegForm(const double lagged_damping_weight);
+	public:
+		/// @brief Construct a new Lagged Regularization Form object
+		/// @param weight Weight of the regularization term
+		LaggedRegForm(const double weight_);
 
-			double value(const Eigen::VectorXd &x) override;
-			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-			void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		/// @brief Compute the value of the form
+		/// @param x Current solution
+		/// @return Computed value
+		double value(const Eigen::VectorXd &x) override;
 
-			void update_lagging(const Eigen::VectorXd &x) override;
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 
-		private:
-			Eigen::VectorXd x_lagged_; ///< @brief The full variables from the previous lagging solve.
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] hessian Output Hessian of the value wrt x
+		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
-			const double lagged_damping_weight_;
-		};
-	} // namespace solver
-} // namespace polyfem
+		/// @brief Update lagged fields
+		/// @param x Current solution
+		void update_lagging(const Eigen::VectorXd &x) override;
+
+	private:
+		Eigen::VectorXd x_lagged_; ///< The full variables from the previous lagging solve.
+		const double weight_;      ///< Weight of the regularization term
+	};
+} // namespace polyfem::solver

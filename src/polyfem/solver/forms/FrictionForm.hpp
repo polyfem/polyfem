@@ -10,38 +10,66 @@
 #include <ipc/collision_mesh.hpp>
 #include <ipc/friction/friction_constraint.hpp>
 
-namespace polyfem
+namespace polyfem::solver
 {
-	namespace solver
+	/// @brief Form of the lagged friction disapative potential and forces
+	class FrictionForm : public Form
 	{
-		class FrictionForm : public Form
-		{
-		public:
-			FrictionForm(const State &state,
-						 const double epsv, const double mu,
-						 const double dhat, const double &barrier_stiffness, const ipc::BroadPhaseMethod broad_phase_method,
-						 const double dt, const ipc::CollisionMesh &collision_mesh);
+	public:
+		/// @brief Construct a new Friction Form object
+		/// @param state Reference to the simulation state
+		/// @param epsv Smoothing factor between static and dynamic friction
+		/// @param mu Global coefficient of friction
+		/// @param dhat Barrier activation distance
+		/// @param barrier_stiffness Barrier stiffness multiplier
+		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
+		/// @param dt Time step size
+		FrictionForm(
+			const State &state,
+			const double epsv,
+			const double mu,
+			const double dhat,
+			const double &barrier_stiffness,
+			const ipc::BroadPhaseMethod broad_phase_method,
+			const double dt);
 
-			double value(const Eigen::VectorXd &x) override;
-			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-			void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		/// @brief Compute the value of the form
+		/// @param x Current solution
+		/// @return Computed value
+		double value(const Eigen::VectorXd &x) override;
 
-			void init_lagging(const Eigen::VectorXd &x) override;
-			void update_lagging(const Eigen::VectorXd &x) override;
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 
-		private:
-			const double epsv_;
-			const double mu_;
-			const double dt_;
-			const double dhat_;
-			//TODO: remove me with new IPC formulation
-			const double &barrier_stiffness_;
-			const ipc::CollisionMesh &collision_mesh_;
-			ipc::FrictionConstraints friction_constraint_set_;
-			Eigen::MatrixXd displaced_prev_; ///< @brief Displaced vertices at the start of the time-step.
-			const ipc::BroadPhaseMethod broad_phase_method_;
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] hessian Output Hessian of the value wrt x
+		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
-			const State &state_;
-		};
-	} // namespace solver
-} // namespace polyfem
+		/// @brief Initialize lagged fields
+		/// @param x Current solution
+		void init_lagging(const Eigen::VectorXd &x) override;
+
+		/// @brief Update lagged fields
+		/// @param x Current solution
+		void update_lagging(const Eigen::VectorXd &x) override;
+
+	private:
+		const State &state_; ///< Reference to the simulation state
+
+		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
+		const double mu_;                                ///< Global coefficient of friction
+		const double dt_;                                ///< Time step size
+		const double dhat_;                              ///< Barrier activation distance
+		const double &barrier_stiffness_;                ///< Barrier stiffness multiplier
+		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
+
+		ipc::FrictionConstraints friction_constraint_set_; ///< Lagged friction constraint set
+		Eigen::MatrixXd displaced_surface_prev_;           ///< Displaced vertices at the start of the time-step.
+
+		/// @brief Compute the displaced positions of the surface nodes
+		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
+	};
+} // namespace polyfem::solver

@@ -5,58 +5,60 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/State.hpp>
 
-namespace polyfem
+namespace polyfem::solver
 {
-	namespace solver
+	/// @brief Form representing body forces
+	class BodyForm : public Form
 	{
-		/// @brief Form representing body forces
-		class BodyForm : public Form
+	public:
+		/// @brief Construct a new Body Form object
+		/// @param state Reference to the simulation state
+		/// @param rhs_assembler Reference to the right hand side assembler
+		/// @param apply_DBC If true, set the Dirichlet boundary conditions in the RHS
+		BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const bool apply_DBC);
+
+		/// @brief Compute the value of the body force form
+		/// @param x Current solution
+		/// @return Value of the body force form
+		double value(const Eigen::VectorXd &x) override;
+
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Vector containing the current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] hessian Output Hessian of the value wrt x
+		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override { hessian.resize(x.size(), x.size()); }
+
+		/// @brief Update time dependent quantities
+		/// @param t New time
+		/// @param x Solution at time t
+		void update_quantities(const double t, const Eigen::VectorXd &x) override;
+
+		bool get_apply_DBC() { return apply_DBC_; }
+		void set_apply_DBC(const bool val)
 		{
-		public:
-			/// @brief Construct a new Body Form object
-			/// @param state Reference to the simulation state
-			/// @param rhs_assembler Reference to the right hand side assembler
-			/// @param apply_DBC If true, set the Dirichlet boundary conditions in the RHS
-			BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const bool apply_DBC);
+			rhs_computed_ = val == apply_DBC_;
+			apply_DBC_ = val;
+		}
 
-			/// @brief Compute the value of the body force form
-			/// @param x Current solution
-			/// @return Value of the body force form
-			double value(const Eigen::VectorXd &x) override;
+	private:
+		const State &state_;                           ///< Reference to the simulation state
+		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
+		bool is_formulation_mixed_;                    ///< True if the formulation is mixed
 
-			/// @brief Compute the first derivative of the value wrt x
-			/// @param[in] x Vector containing the current solution
-			/// @param[out] gradv Output gradient of the value wrt x
-			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+		double t_; ///< Current time
+		int ndof_; ///< Number of degrees of freedom
 
-			/// @brief Update time dependent quantities
-			/// @param t New time
-			/// @param x Solution at time t
-			void update_quantities(const double t, const Eigen::VectorXd &x) override;
+		bool apply_DBC_; ///< If true, set the Dirichlet boundary conditions in the RHS
 
-			bool get_apply_DBC() { return apply_DBC_; }
-			void set_apply_DBC(const bool val)
-			{
-				rhs_computed_ = val == apply_DBC_;
-				apply_DBC_ = val;
-			}
+		bool rhs_computed_;           ///< Flag to indicate if the rhs has been computed
+		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
 
-		private:
-			const State &state_;                           ///< Reference to the simulation state
-			const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
-			bool is_formulation_mixed_;                    ///< True if the formulation is mixed
-
-			double t_; ///< Current time
-			int ndof_; ///< Number of degrees of freedom
-
-			bool apply_DBC_; ///< If true, set the Dirichlet boundary conditions in the RHS
-
-			bool rhs_computed_;           ///< Flag to indicate if the rhs has been computed
-			Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
-
-			/// @brief Compute the current RHS (using cached values if possible)
-			/// @return Current RHS
-			const Eigen::MatrixXd &current_rhs();
-		};
-	} // namespace solver
-} // namespace polyfem
+		/// @brief Compute the current RHS (using cached values if possible)
+		/// @return Current RHS
+		const Eigen::MatrixXd &current_rhs();
+	};
+} // namespace polyfem::solver

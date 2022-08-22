@@ -1,29 +1,38 @@
 #pragma once
 
 #include "Form.hpp"
+
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-namespace polyfem
+namespace polyfem::solver
 {
-	namespace time_integrator
+	/// @brief Form of the inertia
+	class InertiaForm : public Form
 	{
-		class ImplicitTimeIntegrator;
-	}
+	public:
+		/// @brief Construct a new Inertia Form object
+		/// @param mass Mass matrix
+		/// @param time_integrator Time integrator
+		InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
-	namespace solver
-	{
-		class InertiaForm : public Form
-		{
-		public:
-			InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator);
+		/// @brief Compute the value of the form
+		/// @param x Current solution
+		/// @return Computed value
+		double value(const Eigen::VectorXd &x) override;
 
-			double value(const Eigen::VectorXd &x) override;
-			void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-			void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 
-		private:
-			const StiffnessMatrix &mass_;
-			const time_integrator::ImplicitTimeIntegrator &time_integrator_;
-		};
-	} // namespace solver
-} // namespace polyfem
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] hessian Output Hessian of the value wrt x
+		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+
+	private:
+		const StiffnessMatrix &mass_;                                    ///< Mass matrix
+		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
+	};
+} // namespace polyfem::solver
