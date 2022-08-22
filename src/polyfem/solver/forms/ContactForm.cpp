@@ -31,6 +31,7 @@ namespace polyfem
 			// use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
 			// _dhat = dhat;
 			assert(dhat_ > 0);
+			assert(barrier_stiffness_ >= 0);
 
 			// _broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
 			// _ccd_tolerance = state.args["solver"]["contact"]["CCD"]["tolerance"];
@@ -55,24 +56,29 @@ namespace polyfem
 		{
 			if (use_adaptive_barrier_stiffness_)
 			{
-				update_barrier_stiffness(x);
+				initialize_barrier_stiffness(x);
 			}
 		}
 
-		void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x)
+		Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 		{
-			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
+			return state_.collision_mesh.vertices(
+				state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
+		}
+
+		void ContactForm::initialize_barrier_stiffness(const Eigen::VectorXd &x)
+		{
+			const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 			update_constraint_set(displaced_surface);
 
-			Eigen::MatrixXd grad_energy(x.size(), 1); //TODO
+			Eigen::MatrixXd grad_energy(x.size(), 1); // TODO
 			grad_energy.setZero();
 
 			Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 				state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
 			grad_barrier = state_.collision_mesh.to_full_dof(grad_barrier);
 
-			// TODO uncomment me
+			// TODO: uncomment me
 			// barrier_stiffness_ = ipc::initial_barrier_stiffness(
 			// 	ipc::world_bbox_diagonal_length(displaced), dhat_, state_.avg_mass,
 			// 	grad_energy, grad_barrier, max_barrier_stiffness_);
@@ -82,8 +88,7 @@ namespace polyfem
 
 		void ContactForm::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
 		{
-			// Store the previous value used to compute the constraint set to avoid
-			// duplicate computation.
+			// Store the previous value used to compute the constraint set to avoid duplicate computation.
 			static Eigen::MatrixXd cached_displaced_surface;
 			if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 				return;
@@ -100,64 +105,43 @@ namespace polyfem
 
 		double ContactForm::value(const Eigen::VectorXd &x)
 		{
-			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
-
-			return barrier_stiffness_ * ipc::compute_barrier_potential(state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
+			return barrier_stiffness_ * ipc::compute_barrier_potential(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 		}
 
 		void ContactForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
-			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
-
-			gradv = barrier_stiffness_ * ipc::compute_barrier_potential_gradient(state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
+			gradv = barrier_stiffness_ * ipc::compute_barrier_potential_gradient(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 			gradv = state_.collision_mesh.to_full_dof(gradv);
 		}
 
 		void ContactForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time");
-			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
-
-			hessian = barrier_stiffness_ * ipc::compute_barrier_potential_hessian(state_.collision_mesh, displaced_surface, constraint_set_, dhat_, project_to_psd_);
+			hessian = barrier_stiffness_ * ipc::compute_barrier_potential_hessian(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_, project_to_psd_);
 			hessian = state_.collision_mesh.to_full_dof(hessian);
 		}
 
-		void ContactForm::solution_changed(const Eigen::VectorXd &newX)
+		void ContactForm::solution_changed(const Eigen::VectorXd &new_x)
 		{
-			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(newX, state_.mesh->dimension());
-
-			update_constraint_set(state_.collision_mesh.vertices(displaced));
+			update_constraint_set(compute_displaced_surface(new_x));
 		}
 
 		double ContactForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 		{
-			const Eigen::MatrixXd displaced0 = state_.boundary_nodes_pos + utils::unflatten(x0, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced1 = state_.boundary_nodes_pos + utils::unflatten(x1, state_.mesh->dimension());
-
 			// Extract surface only
-			const Eigen::MatrixXd V0 = state_.collision_mesh.vertices(displaced0);
-			const Eigen::MatrixXd V1 = state_.collision_mesh.vertices(displaced1);
+			const Eigen::MatrixXd V0 = compute_displaced_surface(x0);
+			const Eigen::MatrixXd V1 = compute_displaced_surface(x1);
 
 			// write_obj("s0.obj", V0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
 			// write_obj("s1.obj", V1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
 
 			double max_step;
-			if (use_cached_candidates_
-#ifdef IPC_TOOLKIT_WITH_CUDA
-				&& broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU
-#endif
-			)
+			if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
 				max_step = ipc::compute_collision_free_stepsize(
-					candidates_, state_.collision_mesh, V0, V1,
-					ccd_tolerance_, ccd_max_iterations_);
+					candidates_, state_.collision_mesh, V0, V1, ccd_tolerance_, ccd_max_iterations_);
 			else
 				max_step = ipc::compute_collision_free_stepsize(
-					state_.collision_mesh, V0, V1,
-					broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
-				// logger().trace("best step {}", max_step);
+					state_.collision_mesh, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
 
 #ifndef NDEBUG
 			// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
@@ -165,16 +149,13 @@ namespace polyfem
 
 			while (ipc::has_intersections(state_.collision_mesh, V_toi))
 			{
-				const double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
 				logger().error("taking max_step results in intersections (max_step={:g})", max_step);
 				max_step /= 2.0;
 
+				const double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
 				if (max_step <= 0 || Linf == 0)
-				{
-					const std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
-					logger().error(msg);
-					throw std::runtime_error(msg);
-				}
+					log_and_throw_error(fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf));
+
 				V_toi = (V1 - V0) * max_step + V0;
 			}
 #endif
@@ -184,13 +165,10 @@ namespace polyfem
 
 		void ContactForm::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 		{
-			const Eigen::MatrixXd displaced0 = state_.boundary_nodes_pos + utils::unflatten(x0, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced1 = state_.boundary_nodes_pos + utils::unflatten(x1, state_.mesh->dimension());
-
 			ipc::construct_collision_candidates(
 				state_.collision_mesh,
-				state_.collision_mesh.vertices(displaced0),
-				state_.collision_mesh.vertices(displaced1),
+				compute_displaced_surface(x0),
+				compute_displaced_surface(x1),
 				candidates_,
 				/*inflation_radius=*/dhat_ / 1.99, // divide by 1.99 instead of 2 to be conservative
 				broad_phase_method_);
@@ -206,26 +184,27 @@ namespace polyfem
 
 		void ContactForm::post_step(const int iter_num, const Eigen::VectorXd &x)
 		{
-			const Eigen::MatrixXd displaced = state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension());
-			const Eigen::MatrixXd displaced_surface = state_.collision_mesh.vertices(displaced);
+			const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-			//TODO
-			// if (state.args["output"]["advanced"]["save_nl_solve_sequence"])
-			// {
-			// 	write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-			// 			  displaced_surface, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-			// }
-			const double dist_sqr = ipc::compute_minimum_distance(state_.collision_mesh, displaced_surface, constraint_set_);
+			// TODO
+			//  if (state.args["output"]["advanced"]["save_nl_solve_sequence"])
+			//  {
+			//  	write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+			//  			  displaced_surface, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+			//  }
+			const double curr_distance_ = ipc::compute_minimum_distance(state_.collision_mesh, displaced_surface, constraint_set_);
 
-			if (use_adaptive_barrier_stiffness_)
+			if (prev_distance_ >= 0 && use_adaptive_barrier_stiffness_)
 			{
 				if (is_time_dependent_)
 				{
-					double prev_barrier_stiffness = barrier_stiffness_;
-					// TODO uncomment me
-					// ipc::update_barrier_stiffness(
-					// 	prev_distance_, dist_sqr, max_barrier_stiffness_,
+					const double prev_barrier_stiffness = barrier_stiffness_;
+
+					// TODO:
+					// barrier_stiffness_ = ipc::update_barrier_stiffness(
+					// 	prev_distance_, curr_distance_, max_barrier_stiffness_,
 					// 	barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
+
 					if (prev_barrier_stiffness != barrier_stiffness_)
 					{
 						polyfem::logger().debug(
@@ -235,18 +214,18 @@ namespace polyfem
 				}
 				else
 				{
-					update_barrier_stiffness(x);
+					initialize_barrier_stiffness(x);
 				}
 			}
 
-			prev_distance_ = dist_sqr;
+			prev_distance_ = curr_distance_;
 		}
 
 		void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
 		{
 			if (use_adaptive_barrier_stiffness_)
 			{
-				update_barrier_stiffness(x);
+				initialize_barrier_stiffness(x);
 			}
 		}
 

@@ -40,4 +40,10 @@ namespace polyfem
 	{
 		get_shared_logger() = std::move(p_logger);
 	}
+
+	void log_and_throw_error(const std::string &msg)
+	{
+		logger().error(msg);
+		throw std::runtime_error(msg);
+	}
 } // namespace polyfem
