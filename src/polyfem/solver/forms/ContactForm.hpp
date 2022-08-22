@@ -10,6 +10,8 @@
 
 namespace polyfem::solver
 {
+	class BodyForm;
+
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
@@ -18,19 +20,21 @@ namespace polyfem::solver
 		/// @param state Reference to the simulation state
 		/// @param dhat Barrier activation distance
 		/// @param use_adaptive_barrier_stiffness If true, use an adaptive barrier stiffness
-		/// @param barrier_stiffness Stiffness multiplier of the form
 		/// @param is_time_dependent Is the simulation time dependent?
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
+		/// @param acceleration_scaling form used for the adaptive barrier stiffness, clean me
+		/// @param body_form form used for the adaptive barrier stiffness, clean me
 		ContactForm(const State &state,
 					const double dhat,
 					const bool use_adaptive_barrier_stiffness,
-					const double &barrier_stiffness,
 					const bool is_time_dependent,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
-					const int ccd_max_iterations);
+					const int ccd_max_iterations,
+					const double acceleration_scaling,
+					std::shared_ptr<BodyForm> &body_form);
 
 		/// @brief Initialize the form
 		/// @param x Current solution
@@ -79,13 +83,17 @@ namespace polyfem::solver
 		/// @param x Current solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
+		/// @brief returns the current barrier stiffness
+		/// @return double the current barrier stifness
+		double barrier_stiffness() const { return barrier_stiffness_; }
+
 	private:
 		const State &state_; ///< Reference to the simulation state
 
 		const double dhat_; ///< Barrier activation distance
 
 		const bool use_adaptive_barrier_stiffness_; ///< If true, use an adaptive barrier stiffness
-		const double &barrier_stiffness_;           ///< Stiffness multiplier of the form
+		double barrier_stiffness_;                  ///< Stiffness multiplier of the form
 		double max_barrier_stiffness_;              ///< Maximum barrier stiffness to use when using adaptive barrier stiffness
 
 		const bool is_time_dependent_; ///< Is the simulation time dependent?
@@ -110,5 +118,8 @@ namespace polyfem::solver
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
+
+		std::shared_ptr<BodyForm> body_form_; ///< used for the adaptive barrier stiffness, clean me
+		const double acceleration_scaling_;   ///< used for the adaptive barrier stiffness, clean me
 	};
 } // namespace polyfem::solver

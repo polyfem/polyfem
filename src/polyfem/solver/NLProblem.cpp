@@ -103,15 +103,19 @@ namespace polyfem
 			_ccd_max_iterations = state.args["solver"]["contact"]["CCD"]["max_iterations"];
 
 			forms_.push_back(std::make_shared<ElasticForm>(state));
-			forms_.push_back(std::make_shared<BodyForm>(state, rhs_assembler, /*apply_DBC=*/reduced_size != full_size));
+			auto body_form = std::make_shared<BodyForm>(state, rhs_assembler, /*apply_DBC=*/reduced_size != full_size);
+			forms_.push_back(body_form);
 
 			if (state.args["contact"]["enabled"])
-				forms_.push_back(std::make_shared<ContactForm>(
-					state, _dhat, use_adaptive_barrier_stiffness, _barrier_stiffness, is_time_dependent,
-					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations));
-			if (_mu != 0)
-				forms_.push_back(std::make_shared<FrictionForm>(
-					state, _epsv, _mu, _dhat, _barrier_stiffness, _broad_phase_method, dt()));
+			{
+				auto contact_form = std::make_shared<ContactForm>(
+					state, _dhat, use_adaptive_barrier_stiffness, is_time_dependent,
+					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations, _time_integrator->acceleration_scaling(), body_form);
+				forms_.push_back(contact_form);
+				if (_mu != 0)
+					forms_.push_back(std::make_shared<FrictionForm>(
+						state, _epsv, _mu, _dhat, _barrier_stiffness, _broad_phase_method, dt()));
+			}
 			if (is_time_dependent)
 				forms_.push_back(std::make_shared<InertiaForm>(state.mass, *_time_integrator));
 		}

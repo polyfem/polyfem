@@ -1,4 +1,5 @@
 #include "ContactForm.hpp"
+#include "BodyForm.hpp"
 
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -12,19 +13,21 @@ namespace polyfem::solver
 	ContactForm::ContactForm(const State &state,
 							 const double dhat,
 							 const bool use_adaptive_barrier_stiffness,
-							 const double &barrier_stiffness,
 							 const bool is_time_dependent,
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
-							 const int ccd_max_iterations)
+							 const int ccd_max_iterations,
+							 const double acceleration_scaling,
+							 std::shared_ptr<BodyForm> &body_form)
 		: state_(state),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
-		  barrier_stiffness_(barrier_stiffness),
 		  is_time_dependent_(is_time_dependent),
 		  broad_phase_method_(broad_phase_method),
 		  ccd_tolerance_(ccd_tolerance),
-		  ccd_max_iterations_(ccd_max_iterations)
+		  ccd_max_iterations_(ccd_max_iterations),
+		  acceleration_scaling_(acceleration_scaling),
+		  body_form_(body_form)
 	{
 		// use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
 		// _dhat = dhat;
@@ -69,17 +72,27 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 		update_constraint_set(displaced_surface);
 
-		Eigen::MatrixXd grad_energy(x.size(), 1); // TODO
+		Eigen::MatrixXd grad_energy(x.size(), 1);
 		grad_energy.setZero();
+
+		const auto &gbases = state_.geom_bases();
+		state_.assembler.assemble_energy_gradient(state_.formulation(), state_.mesh->is_volume(), state_.n_bases, state_.bases, gbases, state_.ass_vals_cache, x, grad_energy);
+
+		// TODO
+		//  if (!ignore_inertia && is_time_dependent)
+		grad_energy += state_.mass * x / acceleration_scaling_;
+
+		Eigen::VectorXd body_energy(x.size());
+		body_form_->first_derivative(x, body_energy);
+		grad_energy += body_energy;
 
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
 		grad_barrier = state_.collision_mesh.to_full_dof(grad_barrier);
 
-		// TODO: uncomment me
-		// barrier_stiffness_ = ipc::initial_barrier_stiffness(
-		// 	ipc::world_bbox_diagonal_length(displaced), dhat_, state_.avg_mass,
-		// 	grad_energy, grad_barrier, max_barrier_stiffness_);
+		barrier_stiffness_ = ipc::initial_barrier_stiffness(
+			ipc::world_bbox_diagonal_length(displaced_surface), dhat_, state_.avg_mass,
+			grad_energy, grad_barrier, max_barrier_stiffness_);
 
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness_);
 	}
@@ -198,10 +211,9 @@ namespace polyfem::solver
 			{
 				const double prev_barrier_stiffness = barrier_stiffness_;
 
-				// TODO:
-				// barrier_stiffness_ = ipc::update_barrier_stiffness(
-				// 	prev_distance_, curr_distance_, max_barrier_stiffness_,
-				// 	barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
+				barrier_stiffness_ = ipc::update_barrier_stiffness(
+					prev_distance_, curr_distance_, max_barrier_stiffness_,
+					barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
 
 				if (prev_barrier_stiffness != barrier_stiffness_)
 				{
