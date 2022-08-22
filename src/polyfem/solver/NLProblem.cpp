@@ -103,7 +103,7 @@ namespace polyfem
 			_ccd_max_iterations = state.args["solver"]["contact"]["CCD"]["max_iterations"];
 
 			forms_.push_back(std::make_shared<ElasticForm>(state));
-			forms_.push_back(std::make_shared<BodyForm>(state, rhs_assembler));
+			forms_.push_back(std::make_shared<BodyForm>(state, rhs_assembler, /*apply_DBC=*/reduced_size != full_size));
 
 			if (state.args["contact"]["enabled"])
 				forms_.push_back(std::make_shared<ContactForm>(state, _dhat,
