@@ -18,7 +18,7 @@ namespace polyfem::solver
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations,
 							 const double acceleration_scaling,
-							 BodyForm &body_form)
+							 const BodyForm &body_form)
 		: state_(state),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
@@ -114,12 +114,12 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double ContactForm::value(const Eigen::VectorXd &x)
+	double ContactForm::value(const Eigen::VectorXd &x) const
 	{
 		return barrier_stiffness_ * ipc::compute_barrier_potential(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 	}
 
-	void ContactForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	void ContactForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = barrier_stiffness_ * ipc::compute_barrier_potential_gradient(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 		gradv = state_.collision_mesh.to_full_dof(gradv);
@@ -137,7 +137,7 @@ namespace polyfem::solver
 		update_constraint_set(compute_displaced_surface(new_x));
 	}
 
-	double ContactForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	double ContactForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		// Extract surface only
 		const Eigen::MatrixXd V0 = compute_displaced_surface(x0);

@@ -33,13 +33,13 @@ namespace polyfem::solver
 			state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
 	}
 
-	double FrictionForm::value(const Eigen::VectorXd &x)
+	double FrictionForm::value(const Eigen::VectorXd &x) const
 	{
 		return ipc::compute_friction_potential(
 			state_.collision_mesh, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
 	}
-	void FrictionForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	void FrictionForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::VectorXd grad_friction = ipc::compute_friction_potential_gradient(
 			state_.collision_mesh, displaced_surface_prev_, compute_displaced_surface(x),

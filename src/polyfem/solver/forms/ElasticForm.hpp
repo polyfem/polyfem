@@ -18,12 +18,12 @@ namespace polyfem::solver
 		/// @brief Compute the elastic potential value
 		/// @param x Current solution
 		/// @return Value of the elastic potential
-		double value(const Eigen::VectorXd &x) override;
+		double value(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
@@ -34,7 +34,7 @@ namespace polyfem::solver
 		/// @param x0 Current solution
 		/// @param x1 Proposed next solution
 		/// @return True if the step is allowed
-		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 	private:
 		const State &state_;                         ///< Reference to the simulation state
@@ -42,6 +42,9 @@ namespace polyfem::solver
 		const std::string formulation_;              ///< Elasticity formulation name
 		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
 		utils::SpareMatrixCache mat_cache_;          ///< Matrix cache
+
+		/// @brief Elasticity formulation name
+		const std::string &formulation() const { return formulation_; }
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

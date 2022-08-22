@@ -11,12 +11,12 @@ namespace polyfem::solver
 		// lagged_damping_weight_ = state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
 	}
 
-	double LaggedRegForm::value(const Eigen::VectorXd &x)
+	double LaggedRegForm::value(const Eigen::VectorXd &x) const
 	{
 		return 0.5 * weight_ * (x - x_lagged_).squaredNorm();
 	}
 
-	void LaggedRegForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	void LaggedRegForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = weight_ * (x - x_lagged_);
 	}

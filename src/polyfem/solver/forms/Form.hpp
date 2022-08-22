@@ -16,14 +16,15 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form
 		/// @param x Current solution
 		/// @return Computed value
-		virtual double value(const Eigen::VectorXd &x) = 0;
+		virtual double value(const Eigen::VectorXd &x) const = 0;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
+		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 
 		/// @brief Compute the second derivative of the value wrt x
+		/// @note This is not marked const because ElasticForm needs to cache the matrix assembly.
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
 		virtual void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) = 0;
@@ -32,13 +33,13 @@ namespace polyfem::solver
 		/// @param x0 Current solution
 		/// @param x1 Proposed next solution
 		/// @return True if the step is allowed
-		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
+		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 
 		/// @brief Determine the maximum step size allowable between the current and next solution
 		/// @param x0 Current solution (step size = 0)
 		/// @param x1 Next solution (step size = 1)
 		/// @return Maximum allowable step size
-		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
+		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return 1; }
 
 		/// @brief Initialize variables used during the line search
 		/// @param x0 Current solution

@@ -34,7 +34,7 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
 					const double acceleration_scaling,
-					BodyForm &body_form);
+					const BodyForm &body_form);
 
 		/// @brief Initialize the form
 		/// @param x Current solution
@@ -43,12 +43,12 @@ namespace polyfem::solver
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
-		double value(const Eigen::VectorXd &x) override;
+		double value(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param x Current solution
@@ -59,7 +59,7 @@ namespace polyfem::solver
 		/// @param x0 Current solution (step size = 0)
 		/// @param x1 Next solution (step size = 1)
 		/// @return Maximum allowable step size
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Initialize variables used during the line search
 		/// @param x0 Current solution
@@ -119,7 +119,7 @@ namespace polyfem::solver
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 
-		BodyForm &body_form_;               ///< used for the adaptive barrier stiffness, clean me
+		const BodyForm &body_form_;         ///< used for the adaptive barrier stiffness, clean me
 		const double acceleration_scaling_; ///< used for the adaptive barrier stiffness, clean me
 	};
 } // namespace polyfem::solver
