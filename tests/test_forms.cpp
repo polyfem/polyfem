@@ -83,21 +83,49 @@ void test_form(Form &form, const State &state)
 
 	for (int rand = 0; rand < n_rand; ++rand)
 	{
-		Eigen::VectorXd grad;
-		form.first_derivative(x, grad);
-
-		Eigen::VectorXd fgrad;
-		fd::finite_gradient(
-			x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad);
-
-		if (!fd::compare_gradient(grad, fgrad))
+		// Test gradient with finite differences
 		{
-			std::cout << "Gradient mismatch" << std::endl;
-			std::cout << "Gradient: " << grad.transpose() << std::endl;
-			std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+			Eigen::VectorXd grad;
+			form.first_derivative(x, grad);
+
+			Eigen::VectorXd fgrad;
+			fd::finite_gradient(
+				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad);
+
+			if (!fd::compare_gradient(grad, fgrad))
+			{
+				std::cout << "Gradient mismatch" << std::endl;
+				std::cout << "Gradient: " << grad.transpose() << std::endl;
+				std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+			}
+
+			CHECK(fd::compare_gradient(grad, fgrad));
 		}
 
-		CHECK(fd::compare_gradient(grad, fgrad));
+		// Test hessian with finite differences
+		{
+			StiffnessMatrix hess;
+			form.second_derivative(x, hess);
+
+			Eigen::MatrixXd fhess;
+			fd::finite_jacobian(
+				x,
+				[&form](const Eigen::VectorXd &x) -> Eigen::VectorXd {
+					Eigen::VectorXd grad;
+					form.first_derivative(x, grad);
+					return grad;
+				},
+				fhess);
+
+			if (!fd::compare_hessian(hess, fhess))
+			{
+				std::cout << "Hessian mismatch" << std::endl;
+				std::cout << "Hessian: " << hess << std::endl;
+				std::cout << "Finite hessian: " << fhess << std::endl;
+			}
+
+			CHECK(fd::compare_hessian(hess, fhess));
+		}
 
 		x.setRandom();
 		x /= 100;

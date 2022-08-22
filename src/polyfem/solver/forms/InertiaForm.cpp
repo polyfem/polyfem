@@ -14,7 +14,7 @@ namespace polyfem::solver
 		// time_integrator_.set_parameters(state.args["time"]["newmark"]);
 	}
 
-	double InertiaForm::value(const Eigen::VectorXd &x)
+	double InertiaForm::value(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd tmp = x - time_integrator_.x_tilde();
 		const double prod = tmp.transpose() * mass_ * tmp;
@@ -22,7 +22,7 @@ namespace polyfem::solver
 		return energy;
 	}
 
-	void InertiaForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	void InertiaForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = (mass_ * (x - time_integrator_.x_tilde())) / time_integrator_.acceleration_scaling();
 	}
