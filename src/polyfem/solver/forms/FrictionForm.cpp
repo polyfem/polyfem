@@ -1,4 +1,5 @@
 #include "FrictionForm.hpp"
+#include "ContactForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
 
@@ -8,16 +9,16 @@ namespace polyfem::solver
 							   const double epsv,
 							   const double mu,
 							   const double dhat,
-							   const double &barrier_stiffness,
 							   const ipc::BroadPhaseMethod broad_phase_method,
-							   const double dt)
+							   const double dt,
+							   std::shared_ptr<ContactForm> &contact_form)
 		: state_(state),
 		  epsv_(epsv),
 		  mu_(mu),
 		  dt_(dt),
 		  dhat_(dhat),
-		  barrier_stiffness_(barrier_stiffness),
-		  broad_phase_method_(broad_phase_method)
+		  broad_phase_method_(broad_phase_method),
+		  contact_form_(contact_form)
 	{
 		// TODO
 		// epsv_ = state_.args["contact"]["epsv"];
@@ -76,6 +77,6 @@ namespace polyfem::solver
 
 		ipc::construct_friction_constraint_set(
 			state_.collision_mesh, displaced_surface, constraint_set,
-			dhat_, barrier_stiffness_, mu_, friction_constraint_set_);
+			dhat_, contact_form_->barrier_stiffness(), mu_, friction_constraint_set_);
 	}
 } // namespace polyfem::solver

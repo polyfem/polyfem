@@ -114,7 +114,7 @@ namespace polyfem
 				forms_.push_back(contact_form);
 				if (_mu != 0)
 					forms_.push_back(std::make_shared<FrictionForm>(
-						state, _epsv, _mu, _dhat, _barrier_stiffness, _broad_phase_method, dt()));
+						state, _epsv, _mu, _dhat, _broad_phase_method, dt(), contact_form));
 			}
 			if (is_time_dependent)
 				forms_.push_back(std::make_shared<InertiaForm>(state.mass, *_time_integrator));

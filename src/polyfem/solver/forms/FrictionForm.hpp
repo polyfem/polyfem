@@ -12,6 +12,8 @@
 
 namespace polyfem::solver
 {
+	class ContactForm;
+
 	/// @brief Form of the lagged friction disapative potential and forces
 	class FrictionForm : public Form
 	{
@@ -24,14 +26,15 @@ namespace polyfem::solver
 		/// @param barrier_stiffness Barrier stiffness multiplier
 		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
 		/// @param dt Time step size
+		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
 		FrictionForm(
 			const State &state,
 			const double epsv,
 			const double mu,
 			const double dhat,
-			const double &barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase_method,
-			const double dt);
+			const double dt,
+			std::shared_ptr<ContactForm> &contact_form);
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -63,7 +66,6 @@ namespace polyfem::solver
 		const double mu_;                                ///< Global coefficient of friction
 		const double dt_;                                ///< Time step size
 		const double dhat_;                              ///< Barrier activation distance
-		const double &barrier_stiffness_;                ///< Barrier stiffness multiplier
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 
 		ipc::FrictionConstraints friction_constraint_set_; ///< Lagged friction constraint set
@@ -71,5 +73,7 @@ namespace polyfem::solver
 
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
+
+		std::shared_ptr<ContactForm> contact_form_; ///> necessary to have the barrier stiffnes, maybe clean me
 	};
 } // namespace polyfem::solver
