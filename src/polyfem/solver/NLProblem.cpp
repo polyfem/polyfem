@@ -42,7 +42,6 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
 {
-#ifdef IPC_TOOLKIT_WITH_CUDA
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		ipc::BroadPhaseMethod,
 		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
@@ -55,18 +54,6 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}});
-#else
-	NLOHMANN_JSON_SERIALIZE_ENUM(
-		ipc::BroadPhaseMethod,
-		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}});
-#endif
 } // namespace ipc
 
 namespace polyfem
@@ -432,10 +419,7 @@ namespace polyfem
 
 			double max_step;
 			if (_use_cached_candidates
-#ifdef IPC_TOOLKIT_WITH_CUDA
-				&& _broad_phase_method != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU
-#endif
-			)
+				&& _broad_phase_method != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
 				max_step = ipc::compute_collision_free_stepsize(
 					_candidates, state.collision_mesh, V0, V1,
 					_ccd_tolerance, _ccd_max_iterations);
@@ -503,7 +487,7 @@ namespace polyfem
 					state.collision_mesh,
 					state.collision_mesh.vertices(displaced0),
 					state.collision_mesh.vertices(displaced1),
-					ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
+					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
 
 			return is_valid;
 		}

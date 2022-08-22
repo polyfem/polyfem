@@ -635,15 +635,29 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				// TODO: b_discr_orders[i]["id"] can be an array
-				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
-				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
+				assert(b_discr_orders[i]["id"].is_array() || b_discr_orders[i]["id"].is_number_integer());
+
+				std::vector<int> ids;
+				if (b_discr_orders[i]["id"].is_array())
+					ids = b_discr_orders[i]["id"].get<decltype(ids)>();
+				else
+					ids.push_back(b_discr_orders[i]["id"]);
+
+				const int order = b_discr_orders[i]["order"];
+				for (const int id : ids)
+				{
+					b_orders[id] = order;
+					logger().trace("bid {}, discr {}", id, order);
+				}
 			}
 
 			for (int e = 0; e < mesh->n_elements(); ++e)
 			{
 				const int bid = mesh->get_body_id(e);
-				disc_orders[e] = b_orders.at(bid);
+				const auto order = b_orders.find(bid);
+				if (order == b_orders.end())
+					log_and_throw_error(fmt::format("Missing discretization order for body {}", bid));
+				disc_orders[e] = order->second;
 			}
 		}
 		else
@@ -1237,20 +1251,7 @@ namespace polyfem
 
 			if (args["solver"]["advanced"]["lump_mass_matrix"])
 			{
-
-				std::vector<Eigen::Triplet<double>> lumped;
-
-				for (int k = 0; k < mass.outerSize(); ++k)
-				{
-					for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-					{
-						lumped.emplace_back(it.row(), it.row(), it.value());
-					}
-				}
-
-				mass.resize(mass.rows(), mass.cols());
-				mass.setFromTriplets(lumped.begin(), lumped.end());
-				mass.makeCompressed();
+				mass = lump_matrix(mass);
 			}
 		}
 

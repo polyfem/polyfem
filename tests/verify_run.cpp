@@ -158,7 +158,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 #if defined(NDEBUG) && !defined(WIN32)
 std::string tags = "[run]";
 #else
-std::string tags = "[.]";
+std::string tags = "[.][run]";
 #endif
 TEST_CASE("runners", tags)
 {
