@@ -23,7 +23,7 @@ namespace polyfem
 	{
 		bases.clear();
 		pressure_bases.clear();
-		geom_bases.clear();
+		geom_bases_.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -178,7 +178,7 @@ namespace polyfem
 
 		bases.clear();
 		pressure_bases.clear();
-		geom_bases.clear();
+		geom_bases_.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		local_neumann_boundary.clear();

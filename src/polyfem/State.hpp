@@ -171,7 +171,14 @@ namespace polyfem
 		/// FE pressure bases for mixed elements, the size is #elements
 		std::vector<ElementBases> pressure_bases;
 		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
-		std::vector<ElementBases> geom_bases;
+		std::vector<ElementBases> geom_bases_;
+
+		/// @brief Get a constant reference to the geometry mapping bases.
+		/// @return A constant reference to the geometry mapping bases.
+		const std::vector<ElementBases> &geom_bases() const
+		{
+			return iso_parametric() ? bases : geom_bases_;
+		}
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;

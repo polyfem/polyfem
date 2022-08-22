@@ -144,7 +144,7 @@ namespace polyfem
 				return;
 
 			Eigen::MatrixXd grad_energy;
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 			assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad_energy);
 
 			if (!ignore_inertia && is_time_dependent)
@@ -542,7 +542,7 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 
 			const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, state.ass_vals_cache, full);
 			const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.n_boundary_samples(), t);
@@ -623,7 +623,7 @@ namespace polyfem
 		{
 			if (cached_stiffness.size() == 0)
 			{
-				const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+				const auto &gbases = state.geom_bases();
 				if (assembler.is_linear(state.formulation()))
 				{
 					assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, cached_stiffness);
@@ -666,7 +666,7 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 			assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
 
 			ElasticForm asd(state);
@@ -728,7 +728,7 @@ namespace polyfem
 			{
 				POLYFEM_SCOPED_TIMER("\telastic hessian time");
 
-				const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+				const auto &gbases = state.geom_bases();
 				if (assembler.is_linear(rhs_assembler.formulation()))
 				{
 					compute_cached_stiffness();

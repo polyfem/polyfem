@@ -14,27 +14,26 @@ namespace polyfem
 
 		double ElasticForm::value(const Eigen::VectorXd &x)
 		{
-			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
-			const double energy = assembler_.assemble_energy(formulation_, state_.mesh->is_volume(), state_.bases, gbases, state_.ass_vals_cache, x);
-
-			return energy;
+			return assembler_.assemble_energy(
+				formulation_, state_.mesh->is_volume(), state_.bases, state_.geom_bases(),
+				state_.ass_vals_cache, x);
 		}
 
 		void ElasticForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
 			Eigen::MatrixXd grad;
-			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
-			assembler_.assemble_energy_gradient(formulation_, state_.mesh->is_volume(), state_.n_bases, state_.bases, gbases, state_.ass_vals_cache, x, grad);
+			assembler_.assemble_energy_gradient(
+				formulation_, state_.mesh->is_volume(), state_.n_bases, state_.bases, state_.geom_bases(),
+				state_.ass_vals_cache, x, grad);
 			gradv = grad;
 		}
 
 		void ElasticForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
-			const auto full_size = x.size();
-			hessian.resize(full_size, full_size);
-			POLYFEM_SCOPED_TIMER("\telastic hessian time");
+			POLYFEM_SCOPED_TIMER("\telastic hessian");
 
-			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
+			hessian.resize(x.size(), x.size());
+
 			if (assembler_.is_linear(formulation_))
 			{
 				compute_cached_stiffness();
@@ -42,16 +41,18 @@ namespace polyfem
 			}
 			else
 			{
-				assembler_.assemble_energy_hessian(formulation_, state_.mesh->is_volume(), state_.n_bases, project_to_psd_, state_.bases, gbases, state_.ass_vals_cache, x, mat_cache_, hessian);
+				assembler_.assemble_energy_hessian(
+					formulation_, state_.mesh->is_volume(), state_.n_bases, project_to_psd_, state_.bases,
+					state_.geom_bases(), state_.ass_vals_cache, x, mat_cache_, hessian);
 			}
 		}
 
 		bool ElasticForm::is_step_valid(const Eigen::VectorXd &, const Eigen::VectorXd &x1)
 		{
-			Eigen::VectorXd grad(x1.size());
+			Eigen::VectorXd grad;
 			first_derivative(x1, grad);
 
-			if (std::isnan(grad.norm()))
+			if (grad.array().isNaN().any())
 				return false;
 
 			// Check the scalar field in the output does not contain NANs.
@@ -67,10 +68,11 @@ namespace polyfem
 		{
 			if (cached_stiffness_.size() == 0)
 			{
-				const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
 				if (assembler_.is_linear(state_.formulation()))
 				{
-					assembler_.assemble_problem(formulation_, state_.mesh->is_volume(), state_.n_bases, state_.bases, gbases, state_.ass_vals_cache, cached_stiffness_);
+					assembler_.assemble_problem(
+						formulation_, state_.mesh->is_volume(), state_.n_bases, state_.bases, state_.geom_bases(),
+						state_.ass_vals_cache, cached_stiffness_);
 				}
 			}
 		}

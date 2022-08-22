@@ -17,7 +17,7 @@ namespace polyfem
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, gbases, ass_vals_cache, formulation(),

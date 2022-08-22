@@ -116,7 +116,7 @@ namespace polyfem
 
 		void ContactForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
-			POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time");
+			POLYFEM_SCOPED_TIMER("\t\tbarrier hessian");
 			hessian = barrier_stiffness_ * ipc::compute_barrier_potential_hessian(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_, project_to_psd_);
 			hessian = state_.collision_mesh.to_full_dof(hessian);
 		}

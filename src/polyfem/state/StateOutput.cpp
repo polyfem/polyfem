@@ -162,7 +162,7 @@ namespace polyfem
 		std::vector<std::pair<int, int>> edges;
 		std::vector<std::tuple<int, int, int>> tris;
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
 		{
@@ -816,7 +816,7 @@ namespace polyfem
 
 		const auto &sampler = ref_element_sampler;
 
-		const auto &current_bases = iso_parametric() ? bases : geom_bases;
+		const auto &current_bases = geom_bases();
 		int tet_total_size = 0;
 		int pts_total_size = 0;
 
@@ -1455,7 +1455,7 @@ namespace polyfem
 			Eigen::MatrixXd local_pts;
 			Eigen::MatrixXi vis_faces_poly;
 
-			const auto &gbases = iso_parametric() ? bases : geom_bases;
+			const auto &gbases = geom_bases();
 
 			int index = 0;
 			const auto &sampler = ref_element_sampler;
@@ -1687,7 +1687,7 @@ namespace polyfem
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
 				Eigen::MatrixXd tensor_flat;
-				const auto &gbases = iso_parametric() ? bases : geom_bases;
+				const auto &gbases = geom_bases();
 				const ElementBases &gbs = gbases[el_index];
 				const ElementBases &bs = bases[el_index];
 				assembler.compute_tensor_value(formulation(), el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
@@ -1857,7 +1857,7 @@ namespace polyfem
 			return;
 		const auto &sampler = ref_element_sampler;
 
-		const auto &current_bases = iso_parametric() ? bases : geom_bases;
+		const auto &current_bases = geom_bases();
 		int seg_total_size = 0;
 		int pts_total_size = 0;
 		int faces_total_size = 0;

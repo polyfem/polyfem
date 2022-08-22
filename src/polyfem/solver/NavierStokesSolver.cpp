@@ -39,7 +39,7 @@ namespace polyfem
 			solver->setParameters(solver_param["linear"]);
 			logger().debug("\tinternal solver {}", solver->name());
 
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			const int precond_num = problem_dim * state.n_bases;
 
@@ -119,7 +119,7 @@ namespace polyfem
 		{
 			igl::Timer time;
 			const auto &assembler = state.assembler;
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			const int precond_num = problem_dim * state.n_bases;
 
@@ -168,7 +168,7 @@ namespace polyfem
 				logger().debug("\tinverting error: {}", (total_matrix * dx - nlres).norm());
 
 				x += dx;
-				//TODO check for nans
+				// TODO check for nans
 
 				time.start();
 				assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, mat_cache, nl_matrix);
