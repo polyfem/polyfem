@@ -29,6 +29,10 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
+		/// @brief Initialize lagged fields
+		/// @param x Current solution
+		void init_lagging(const Eigen::VectorXd &x) override;
+
 		/// @brief Update lagged fields
 		/// @param x Current solution
 		void update_lagging(const Eigen::VectorXd &x) override;

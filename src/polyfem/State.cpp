@@ -1265,6 +1265,23 @@ namespace polyfem
 		logger().info("sparsity: {}/{}", nn_zero, mat_size);
 	}
 
+	std::shared_ptr<RhsAssembler> State::build_rhs_assembler(
+		const int n_bases,
+		const std::vector<ElementBases> &bases,
+		const assembler::AssemblyValsCache &ass_vals_cache) const
+	{
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+
+		return std::make_shared<RhsAssembler>(
+			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, geom_bases(), ass_vals_cache, formulation(), *problem,
+			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
+	}
+
 	void State::assemble_rhs()
 	{
 		if (!mesh)
@@ -1304,20 +1321,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Assigning rhs...");
 
-		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		json rhs_solver_params = args["solver"]["linear"];
-		if (!rhs_solver_params.contains("Pardiso"))
-			rhs_solver_params["Pardiso"] = {};
-		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
-		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichlet,
-			n_bases, size,
-			bases, geom_bases(), ass_vals_cache,
-			formulation(), *problem,
-			args["space"]["advanced"]["bc_method"],
-			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
-
+		solve_data.rhs_assembler = build_rhs_assembler();
 		solve_data.rhs_assembler->assemble(density, rhs);
 		rhs *= -1;
 
@@ -1342,15 +1346,10 @@ namespace polyfem
 				Eigen::MatrixXd tmp(n_pressure_bases, 1);
 				tmp.setZero();
 
-				RhsAssembler tmp_rhs_assembler(
-					assembler, *mesh, obstacle, input_dirichlet,
-					n_pressure_bases, size,
-					pressure_bases, geom_bases(), pressure_ass_vals_cache,
-					formulation(), *problem,
-					args["space"]["advanced"]["bc_method"],
-					args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
+				std::shared_ptr<RhsAssembler> tmp_rhs_assembler = build_rhs_assembler(
+					n_pressure_bases, pressure_bases, pressure_ass_vals_cache);
 
-				tmp_rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), n_boundary_samples(), local_neumann_boundary, tmp);
+				tmp_rhs_assembler->set_bc(std::vector<LocalBoundary>(), std::vector<int>(), n_boundary_samples(), local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 			}
 		}

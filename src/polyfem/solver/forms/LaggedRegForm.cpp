@@ -13,7 +13,7 @@ namespace polyfem::solver
 
 	double LaggedRegForm::value(const Eigen::VectorXd &x)
 	{
-		return weight_ * (x - x_lagged_).squaredNorm();
+		return 0.5 * weight_ * (x - x_lagged_).squaredNorm();
 	}
 
 	void LaggedRegForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
@@ -26,8 +26,13 @@ namespace polyfem::solver
 		hessian = weight_ * utils::sparse_identity(x.size(), x.size());
 	}
 
+	void LaggedRegForm::init_lagging(const Eigen::VectorXd &x)
+	{
+		update_lagging(x);
+	}
+
 	void LaggedRegForm::update_lagging(const Eigen::VectorXd &x)
 	{
 		x_lagged_ = x;
-	};
+	}
 } // namespace polyfem::solver

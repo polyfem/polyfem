@@ -1,5 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
+
+#include <polyfem/time_integrator/ImplicitEuler.hpp>
+
+#include <finitediff.hpp>
 
 #include <catch2/catch.hpp>
 #include <iostream>
@@ -8,6 +17,8 @@
 
 using namespace polyfem;
 using namespace polyfem::solver;
+using namespace polyfem::time_integrator;
+using namespace polyfem::assembler;
 
 std::shared_ptr<State> get_state()
 {
@@ -28,6 +39,11 @@ std::shared_ptr<State> get_state()
 				"surface_selection": 7
 			}],
 
+			"time": {
+				"dt": 0.001,
+				"tend": 1.0
+			},
+
 			"boundary_conditions": {
 				"dirichlet_boundary": [{
 					"id": "all",
@@ -40,7 +56,7 @@ std::shared_ptr<State> get_state()
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 	auto state = std::make_shared<State>(1);
-	state->init_logger("", spdlog::level::debug, false);
+	state->init_logger("", spdlog::level::warn, false);
 	state->init(in_args, true);
 
 	state->load_mesh();
@@ -56,41 +72,132 @@ template <typename Form>
 void test_form(Form &form, const State &state)
 {
 	static const int n_rand = 10;
-	static const double eps = 1e-7;
-	static const double margin = 1e-2;
 
-	Eigen::MatrixXd x(state.n_bases * 2, 1);
-	x.setZero();
+	Eigen::VectorXd x = Eigen::VectorXd::Zero(state.n_bases * 2);
 
-	Eigen::VectorXd grad;
+	form.init(x);
+	form.init_lagging(x);
 
 	for (int rand = 0; rand < n_rand; ++rand)
 	{
-		const double energy = form.value(x);
+		Eigen::VectorXd grad;
 		form.first_derivative(x, grad);
 
-		for (int d = 0; d < x.size(); ++d)
-		{
-			Eigen::MatrixXd d_x = x;
-			d_x(d) += eps;
+		Eigen::VectorXd fgrad;
+		fd::finite_gradient(
+			x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad);
 
-			const double d_energy = form.value(d_x);
-			const double fd = (d_energy - energy) / eps;
-			if (rand == 0) // zero displacement is a minimum, grad should be zero
-				REQUIRE(grad(d) == Approx(0).margin(1e-10));
-			else
-				REQUIRE(grad(d) == Approx(fd).margin(margin));
+		if (!fd::compare_gradient(grad, fgrad))
+		{
+			std::cout << "Gradient mismatch" << std::endl;
+			std::cout << "Gradient: " << grad.transpose() << std::endl;
+			std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
 		}
+
+		CHECK(fd::compare_gradient(grad, fgrad));
 
 		x.setRandom();
 		x /= 100;
 	}
 }
 
-TEST_CASE("elastic", "[form]")
+TEST_CASE("body form", "[form]")
+{
+	const auto state_ptr = get_state();
+	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+	const bool apply_DBC = false; // GENERATE(true, false);
+
+	BodyForm form(*state_ptr, *rhs_assembler_ptr, apply_DBC);
+
+	CAPTURE(apply_DBC);
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("contact form", "[form]")
+{
+	const auto state_ptr = get_state();
+
+	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+	const bool apply_DBC = false; // GENERATE(true, false);
+	BodyForm body_form(*state_ptr, *rhs_assembler_ptr, apply_DBC);
+
+	const double dhat = 1e-3;
+	const bool use_adaptive_barrier_stiffness = GENERATE(true, false);
+	const double barrier_stiffness = 1e7;
+	const bool is_time_dependent = GENERATE(true, false);
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+	const double dt = 1e-3;
+
+	ContactForm form(
+		*state_ptr, dhat, use_adaptive_barrier_stiffness,
+		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations,
+		dt * dt, body_form);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("elastic form", "[form]")
 {
 	const auto state_ptr = get_state();
 	ElasticForm form(*state_ptr);
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("friction form", "[form]")
+{
+	const auto state_ptr = get_state();
+	const double epsv = 1e-3;
+	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
+	const double dhat = 1e-3;
+	const double barrier_stiffness = 1e7;
+	const bool is_time_dependent = GENERATE(true, false);
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const double dt = 1e-3;
+
+	const bool use_adaptive_barrier_stiffness = GENERATE(true, false);
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+
+	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+	const bool apply_DBC = false; // GENERATE(true, false);
+	BodyForm body_form(*state_ptr, *rhs_assembler_ptr, apply_DBC);
+
+	const ContactForm contact_form(
+		*state_ptr, dhat, use_adaptive_barrier_stiffness,
+		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations,
+		dt * dt, body_form);
+
+	FrictionForm form(
+		*state_ptr, epsv, mu, dhat, broad_phase_method, dt, contact_form);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("inertia form", "[form]")
+{
+	const auto state_ptr = get_state();
+
+	const double dt = 1e-3;
+	ImplicitEuler time_integrator;
+	time_integrator.init(
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		dt);
+
+	InertiaForm form(state_ptr->mass, time_integrator);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("lagged regularization form", "[form]")
+{
+	const auto state_ptr = get_state();
+
+	const double weight = 1e3;
+	LaggedRegForm form(weight);
 
 	test_form(form, *state_ptr);
 }

@@ -80,6 +80,6 @@ namespace polyfem::solver
 		bool is_project_to_psd() const { return project_to_psd_; }
 
 	protected:
-		bool project_to_psd_; ///< If true, the form's second derivative is projected to be positive semidefinite
+		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 	};
 } // namespace polyfem::solver

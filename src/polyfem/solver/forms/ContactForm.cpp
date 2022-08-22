@@ -18,7 +18,7 @@ namespace polyfem::solver
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations,
 							 const double acceleration_scaling,
-							 std::shared_ptr<BodyForm> &body_form)
+							 BodyForm &body_form)
 		: state_(state),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
@@ -83,7 +83,7 @@ namespace polyfem::solver
 		grad_energy += state_.mass * x / acceleration_scaling_;
 
 		Eigen::VectorXd body_energy(x.size());
-		body_form_->first_derivative(x, body_energy);
+		body_form_.first_derivative(x, body_energy);
 		grad_energy += body_energy;
 
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(

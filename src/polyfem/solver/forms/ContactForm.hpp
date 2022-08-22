@@ -34,7 +34,7 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
 					const double acceleration_scaling,
-					std::shared_ptr<BodyForm> &body_form);
+					BodyForm &body_form);
 
 		/// @brief Initialize the form
 		/// @param x Current solution
@@ -119,7 +119,7 @@ namespace polyfem::solver
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 
-		std::shared_ptr<BodyForm> body_form_; ///< used for the adaptive barrier stiffness, clean me
-		const double acceleration_scaling_;   ///< used for the adaptive barrier stiffness, clean me
+		BodyForm &body_form_;               ///< used for the adaptive barrier stiffness, clean me
+		const double acceleration_scaling_; ///< used for the adaptive barrier stiffness, clean me
 	};
 } // namespace polyfem::solver

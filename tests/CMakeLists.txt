@@ -33,6 +33,9 @@ target_link_libraries(unit_tests PUBLIC warnings::all)
 include(catch2)
 target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
 
+include(finite_diff)
+target_link_libraries(unit_tests PUBLIC finitediff::finitediff)
+
 ################################################################################
 # Compiler options
 ################################################################################

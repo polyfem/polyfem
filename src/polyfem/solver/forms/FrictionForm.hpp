@@ -34,7 +34,7 @@ namespace polyfem::solver
 			const double dhat,
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const double dt,
-			std::shared_ptr<ContactForm> &contact_form);
+			const ContactForm &contact_form);
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -74,6 +74,6 @@ namespace polyfem::solver
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
-		std::shared_ptr<ContactForm> contact_form_; ///> necessary to have the barrier stiffnes, maybe clean me
+		const ContactForm &contact_form_; ///> necessary to have the barrier stiffnes, maybe clean me
 	};
 } // namespace polyfem::solver

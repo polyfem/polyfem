@@ -7,6 +7,7 @@ namespace polyfem::solver
 	InertiaForm::InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator)
 		: mass_(mass), time_integrator_(time_integrator)
 	{
+		assert(mass.size() != 0);
 		// TODO
 		// time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		// time_integrator_.set_parameters(state.args["time"]["BDF"]);

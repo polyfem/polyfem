@@ -1181,8 +1181,8 @@
     },
     {
         "pointer": "/solver/contact/CCD/max_iterations",
-        "default": 1000000.0,
-        "type": "float",
+        "default": 1000000,
+        "type": "int",
         "doc": "Maximum number of iterations for continuous collision detection"
     },
     {

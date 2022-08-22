@@ -11,18 +11,7 @@ namespace polyfem
 	{
 		POLYFEM_SCOPED_TIMER("Setup RHS");
 
-		json rhs_solver_params = args["solver"]["linear"];
-		if (!rhs_solver_params.contains("Pardiso"))
-			rhs_solver_params["Pardiso"] = {};
-		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
-		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		const auto &gbases = geom_bases();
-
-		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, gbases, ass_vals_cache, formulation(),
-			*problem, args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"],
-			args["solver"]["linear"]["precond"], rhs_solver_params);
+		solve_data.rhs_assembler = build_rhs_assembler();
 
 		initial_solution(sol);
 
