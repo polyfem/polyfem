@@ -1903,9 +1903,9 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
-
-			one_form(2 * bases.size()) += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta_dt * mu);
+			Eigen::VectorXd force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
+			Eigen::VectorXd full_force = collision_mesh.to_full_dof(force);
+			one_form(2 * bases.size()) += (adjoint_p[t].array() * full_force.array()).sum() / (beta_dt * mu);
 
 			// damping coefficients
 			Eigen::VectorXd damping_term;

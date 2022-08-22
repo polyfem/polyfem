@@ -996,7 +996,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
-TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
+TEST_CASE("material-transient", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
@@ -1116,9 +1116,6 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	State state_reference(8);
 	auto in_args_ref = in_args;
 	in_args_ref["materials"]["E"] = 1e5;
-	in_args_ref["materials"]["phi"] = 1;
-	in_args_ref["materials"]["psi"] = 20;
-	in_args_ref["contact"]["friction_coefficient"] = 0.2;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 	state_reference.init(in_args_ref);
 	state_reference.load_mesh();
@@ -1138,17 +1135,13 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	double functional_val = func.energy(state);
 
 	Eigen::VectorXd velocity_discrete;
-	velocity_discrete.setOnes(state.bases.size() * 2 + 3);
-	velocity_discrete.head(state.bases.size() * 2) *= 1e3;
-	velocity_discrete.tail(2) *= 1e-2;
+	velocity_discrete.setOnes(state.bases.size() * 2);
+	velocity_discrete *= 1e3;
 
 	Eigen::VectorXd one_form = func.gradient(state, "material-full");
 
 	const double step_size = 1e-5;
 	state.perturb_material(velocity_discrete * step_size);
-	state.args["contact"]["friction_coefficient"] = state.args["contact"]["friction_coefficient"].get<double>() + velocity_discrete(velocity_discrete.size() - 3) * step_size;
-	state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() + velocity_discrete(velocity_discrete.size() - 2) * step_size;
-	state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + velocity_discrete(velocity_discrete.size() - 1) * step_size;
 
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
@@ -1157,9 +1150,6 @@ TEST_CASE("material-friction-damping-transient", "[adjoint_method]")
 	double next_functional_val = func.energy(state);
 
 	state.perturb_material(velocity_discrete * (-2) * step_size);
-	state.args["contact"]["friction_coefficient"] = state.args["contact"]["friction_coefficient"].get<double>() - velocity_discrete(velocity_discrete.size() - 3) * step_size * 2;
-	state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() - velocity_discrete(velocity_discrete.size() - 2) * step_size * 2;
-	state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() - velocity_discrete(velocity_discrete.size() - 1) * step_size * 2;
 
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
