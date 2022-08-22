@@ -181,6 +181,7 @@ namespace polyfem
 					"max_iterations" : 100,
 					"use_grad_norm" : true,
 					"relative_gradient" : false,
+					"better_initial_guess" : false,
 					"solver_info_log" : false,
 					"save_energy_over_line_if_fail" : false,
 
@@ -471,7 +472,7 @@ namespace polyfem
 				"beta": 0.25
 			},
 			"BDF": {
-				"num_steps": 1
+				"steps": 1
 			}
 		})"_json;
 

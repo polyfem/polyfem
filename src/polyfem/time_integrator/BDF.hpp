@@ -16,7 +16,7 @@ namespace polyfem::time_integrator
 		BDF() {}
 
 		/// @brief Set the number of steps parameters from a json object.
-		/// @param params json containing `{"num_steps": 1}`
+		/// @param params json containing `{"steps": 1}`
 		void set_parameters(const nlohmann::json &params) override;
 
 		using ImplicitTimeIntegrator::init;

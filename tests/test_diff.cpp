@@ -883,7 +883,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 				"dt": 0.01,
 				"integrator": "BDF",
 				"BDF": {
-					"num_steps": 2
+					"steps": 2
 				}
 			},
 			"contact": {
@@ -1051,7 +1051,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 				"dt": 0.01,
 				"integrator": "BDF",
 				"BDF": {
-					"num_steps": 2
+					"steps": 2
 				}
 			},
 			"contact": {
@@ -1356,7 +1356,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 				"dt": 0.4,
 				"integrator": "BDF",
 				"BDF": {
-					"num_steps": 2
+					"steps": 2
 				}
 			},
 			"contact": {
@@ -2003,7 +2003,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 				"dt": 0.02,
 				"integrator": "BDF",
 				"BDF": {
-					"num_steps": 2
+					"steps": 2
 				}
 			},
 			"contact": {
@@ -2166,7 +2166,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 				"dt": 0.01,
 				"integrator": "BDF",
 				"BDF": {
-					"num_steps": 2
+					"steps": 2
 				}
 			},
 			"contact": {

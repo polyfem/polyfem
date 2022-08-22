@@ -500,7 +500,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 		{
 			logger().warn("Integrator type not supported for differentiability.");
@@ -1634,7 +1634,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1673,7 +1673,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1780,7 +1780,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1870,7 +1870,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1929,7 +1929,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -1961,7 +1961,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2037,7 +2037,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2157,7 +2157,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2216,7 +2216,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2250,7 +2250,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2296,7 +2296,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
@@ -2342,7 +2342,7 @@ namespace polyfem
 		if (args["time"]["integrator"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["num_steps"].get<int>();
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
 		else
 			throw("Integrator type not supported for differentiability.");
 
