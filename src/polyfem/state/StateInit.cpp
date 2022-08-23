@@ -153,7 +153,7 @@ namespace polyfem
 				"nonlinear": {
 					"solver" : "newton",
 					"f_delta" : 1e-10,
-					"x_delta" : 1e-12,
+					"x_delta" : 0,
 					"grad_norm" : 1e-8,
 					"min_step_size" : 0,
 					"max_iterations" : 1000,
