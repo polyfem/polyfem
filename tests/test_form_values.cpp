@@ -86,7 +86,7 @@ namespace
 	}
 } // namespace
 
-TEST_CASE("body form value", "[form_value][body_form]")
+TEST_CASE("body form value", "[form][form_value][body_form]")
 {
 	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 	const bool apply_DBC = true;
@@ -100,7 +100,7 @@ TEST_CASE("body form value", "[form_value][body_form]")
 		"body_energy");
 }
 
-TEST_CASE("contact form value", "[form_value][contact_form]")
+TEST_CASE("contact form value", "[form][form_value][contact_form]")
 {
 	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 	const bool apply_DBC = true;
@@ -117,6 +117,7 @@ TEST_CASE("contact form value", "[form_value][contact_form]")
 			return std::make_shared<ContactForm>(
 				*state,
 				state->args["contact"]["dhat"],
+				// f.create_dataset("barrier_stiffness", data = barrier_stiffness)
 				!state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
 				state->problem->is_time_dependent(),
 				state->args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -128,7 +129,7 @@ TEST_CASE("contact form value", "[form_value][contact_form]")
 		"collision_energy");
 }
 
-TEST_CASE("elastic form value", "[form_value][elastic_form]")
+TEST_CASE("elastic form value", "[form][form_value][elastic_form]")
 {
 	check_form_value(
 		[](const std::shared_ptr<const State> state) {
@@ -137,7 +138,7 @@ TEST_CASE("elastic form value", "[form_value][elastic_form]")
 		"elastic_energy");
 }
 
-TEST_CASE("friction form value", "[form_value][friction_form]")
+TEST_CASE("friction form value", "[form][form_value][friction_form]")
 {
 	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 	const bool apply_DBC = true;
@@ -175,7 +176,7 @@ TEST_CASE("friction form value", "[form_value][friction_form]")
 		"friction_energy");
 }
 
-TEST_CASE("inertia form value", "[form_value][inertia_form]")
+TEST_CASE("inertia form value", "[form][form_value][inertia_form]")
 {
 	ImplicitEuler time_integrator;
 
@@ -192,7 +193,7 @@ TEST_CASE("inertia form value", "[form_value][inertia_form]")
 		"intertia_energy");
 }
 
-TEST_CASE("lagged regularization form value", "[form_value][lagged_reg_form]")
+TEST_CASE("lagged regularization form value", "[form][form_value][lagged_reg_form]")
 {
 	const double weight = 0.0;
 	check_form_value(
@@ -201,5 +202,3 @@ TEST_CASE("lagged regularization form value", "[form_value][lagged_reg_form]")
 		},
 		"lagged_damping");
 }
-
-// f.create_dataset("barrier_stiffness", data = barrier_stiffness)
