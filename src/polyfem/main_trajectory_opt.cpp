@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	CLI::App command_line{"polyfem"};
 
 	// Eigen::setNbThreads(1);
-	size_t max_threads = std::numeric_limits<size_t>::max();
+	size_t max_threads = std::min((size_t)32, std::numeric_limits<size_t>::max());
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	std::string json_file = "";
@@ -232,7 +232,7 @@ int main(int argc, char **argv)
 	{
 		logger().info("Start reference solve...");
 		target_in_args["differentiable"] = true;
-		state_reference.init_logger(in_args["output"]["optimization"]["solve_log_level"], log_level, false);
+		state_reference.init_logger(log_file, in_args["output"]["optimization"]["solve_log_level"], false);
 		state_reference.init(target_in_args, output_dir);
 		state_reference.load_mesh();
 

@@ -7,6 +7,7 @@
 #include "InitialConditionProblem.hpp"
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
+#include "BFGSSolver.hpp"
 #include "MMASolver.hpp"
 #include "GradientDescentSolver.hpp"
 #include <polyfem/utils/SplineParam.hpp>
@@ -56,6 +57,11 @@ namespace polyfem
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
 			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
+				solver_params);
+		}
+		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
+		{
+			return std::make_shared<cppoptlib::BFGSSolver<ProblemType>>(
 				solver_params);
 		}
 		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")

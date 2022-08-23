@@ -16,19 +16,19 @@
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	class LBFGSSolver : public NonlinearSolver<ProblemType>
+	class BFGSSolver : public NonlinearSolver<ProblemType>
 	{
 	public:
 		using Superclass = NonlinearSolver<ProblemType>;
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		LBFGSSolver(const json &solver_params)
+		BFGSSolver(const json &solver_params)
 			: Superclass(solver_params)
 		{
 		}
 
-		std::string name() const override { return "L-BFGS"; }
+		std::string name() const override { return "BFGS"; }
 
 	protected:
 		virtual int default_descent_strategy() override { return 1; }
@@ -39,7 +39,7 @@ namespace cppoptlib
 			switch (descent_strategy)
 			{
 			case 1:
-				return "L-BFGS";
+				return "BFGS";
 			case 2:
 				return "gradient descent";
 			default:
@@ -52,43 +52,28 @@ namespace cppoptlib
 			if (this->descent_strategy == 1)
 				this->descent_strategy++;
 
-			m_bfgs.reset(m_prev_x.size(), m_history_size);
-
 			assert(this->descent_strategy <= 2);
 		}
 
 	protected:
-		LBFGSpp::BFGSMat<Scalar> m_bfgs; // Approximation to the Hessian matrix
-
-		/// The number of corrections to approximate the inverse Hessian matrix.
-		/// The L-BFGS routine stores the computation results of previous \ref m
-		/// iterations to approximate the inverse Hessian matrix of the current
-		/// iteration. This parameter controls the size of the limited memories
-		/// (corrections). The default value is \c 6. Values less than \c 3 are
-		/// not recommended. Large values will result in excessive computing time.
-		int m_history_size = 6;
-
 		TVector m_prev_x;    // Previous x
 		TVector m_prev_grad; // Previous gradient
+
+        Eigen::MatrixXd hess;
 
 		void reset(const ProblemType &objFunc, const TVector &x) override
 		{
 			Superclass::reset(objFunc, x);
-
-			if (x.size() < m_history_size)
-			{
-				m_history_size = x.size();
-				polyfem::logger().warn("LBFGS history size larger than parameter dimension! Reduce it to parameter dimension!");
-			}
 
 			reset_history(objFunc, x);
 		}
 
 		void reset_history(const ProblemType &objFunc, const TVector &x)
 		{
-			m_bfgs.reset(x.size(), m_history_size);
 			m_prev_x.resize(x.size());
 			m_prev_grad.resize(x.size());
+
+            hess.setIdentity(x.size(), x.size());
 
 			// Use gradient descent for first iteration
 			this->descent_strategy = 2;
@@ -107,21 +92,23 @@ namespace cppoptlib
 			const TVector &grad,
 			TVector &direction) override
 		{
-			if (this->descent_strategy == 2)
-			{
-				// Use gradient descent in the first iteration or if the previous iteration failed
-				direction = -grad;
-			}
-			else
-			{
-				// Update s and y
-				// s_{i+1} = x_{i+1} - x_i
-				// y_{i+1} = g_{i+1} - g_i
-				m_bfgs.add_correction(x - m_prev_x, grad - m_prev_grad);
+            if (this->descent_strategy == 2)
+            {
+                direction = -grad;
+            }
+            else
+            {
+                direction = hess.ldlt().solve(-grad);
 
-				// Recursive formula to compute d = -H * g
-				m_bfgs.apply_Hv(grad, -Scalar(1), direction);
-			}
+                TVector y = grad - m_prev_grad;
+                TVector s = x - m_prev_x;
+                
+                double y_s = y.dot(s);
+                TVector Bs = hess * s;
+                double sBs = s.transpose() * Bs;
+
+                hess += (y * y.transpose()) / y_s - (Bs * Bs.transpose()) / sBs;
+            }
 
 			m_prev_x = x;
 			m_prev_grad = grad;

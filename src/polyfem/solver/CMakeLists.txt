@@ -3,6 +3,7 @@ set(SOURCES
 	SparseNewtonDescentSolver.hpp
 	LBFGSBSolver.hpp
 	LBFGSSolver.hpp
+	BFGSSolver.hpp
 	MMASolver.hpp
 	MMASolverAux.hpp
 	MMASolverAux.cpp
