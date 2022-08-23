@@ -26,29 +26,30 @@ namespace polyfem::solver
 		  broad_phase_method_(broad_phase_method),
 		  ccd_tolerance_(ccd_tolerance),
 		  ccd_max_iterations_(ccd_max_iterations),
-		  acceleration_scaling_(acceleration_scaling),
-		  body_form_(body_form)
+		  body_form_(body_form),
+		  acceleration_scaling_(acceleration_scaling)
 	{
-		// use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
-		// _dhat = dhat;
 		assert(dhat_ > 0);
-		assert(barrier_stiffness_ >= 0);
+		assert(ccd_tolerance > 0);
+
+		// use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
+		if (use_adaptive_barrier_stiffness_)
+		{
+			barrier_stiffness_ = 1;
+			logger().debug("Using adaptive barrier stiffness");
+		}
+		else
+		{
+			// assert(state.args["solver"]["contact"]["barrier_stiffness"].is_number());
+			assert(barrier_stiffness_ >= 0);
+			// _barrier_stiffness = state.args["solver"]["contact"]["barrier_stiffness"];
+			log_and_throw_error("Fixed barrier stiffness not implemented!");
+			logger().debug("Using fixed barrier stiffness of {}", barrier_stiffness_);
+		}
 
 		// _broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
 		// _ccd_tolerance = state.args["solver"]["contact"]["CCD"]["tolerance"];
 		// _ccd_max_iterations = state.args["solver"]["contact"]["CCD"]["max_iterations"];
-
-		// if (use_adaptive_barrier_stiffness)
-		// {
-		// 	barrier_stiffness_ = 1;
-		// 	logger().debug("Using adaptive barrier stiffness");
-		// }
-		// else
-		// {
-		// 	assert(state.args["solver"]["contact"]["barrier_stiffness"].is_number());
-		// 	_barrier_stiffness = state.args["solver"]["contact"]["barrier_stiffness"];
-		// 	logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
-		// }
 
 		prev_distance_ = -1;
 	}

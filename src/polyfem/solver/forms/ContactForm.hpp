@@ -87,6 +87,14 @@ namespace polyfem::solver
 		/// @return double the current barrier stifness
 		double barrier_stiffness() const { return barrier_stiffness_; }
 
+		/// @brief set the barrier stiffness
+		/// @param barrier_stiffness new barrier stiffness
+		void set_barrier_stiffness(const double barrier_stiffness)
+		{
+			assert(barrier_stiffness >= 0);
+			barrier_stiffness_ = barrier_stiffness;
+		}
+
 	private:
 		const State &state_; ///< Reference to the simulation state
 

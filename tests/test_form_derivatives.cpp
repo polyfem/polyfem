@@ -132,7 +132,7 @@ void test_form(Form &form, const State &state)
 	}
 }
 
-TEST_CASE("body form", "[form]")
+TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 {
 	const auto state_ptr = get_state();
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
@@ -144,7 +144,7 @@ TEST_CASE("body form", "[form]")
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("contact form", "[form]")
+TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const auto state_ptr = get_state();
 
@@ -153,7 +153,7 @@ TEST_CASE("contact form", "[form]")
 	BodyForm body_form(*state_ptr, *rhs_assembler_ptr, apply_DBC);
 
 	const double dhat = 1e-3;
-	const bool use_adaptive_barrier_stiffness = GENERATE(true, false);
+	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);
 	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
@@ -169,14 +169,14 @@ TEST_CASE("contact form", "[form]")
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("elastic form", "[form]")
+TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 {
 	const auto state_ptr = get_state();
 	ElasticForm form(*state_ptr);
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("friction form", "[form]")
+TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]")
 {
 	const auto state_ptr = get_state();
 	const double epsv = 1e-3;
@@ -187,7 +187,7 @@ TEST_CASE("friction form", "[form]")
 	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 	const double dt = 1e-3;
 
-	const bool use_adaptive_barrier_stiffness = GENERATE(true, false);
+	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
@@ -206,7 +206,7 @@ TEST_CASE("friction form", "[form]")
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("inertia form", "[form]")
+TEST_CASE("inertia form derivatives", "[form][form_derivatives][inertia_form]")
 {
 	const auto state_ptr = get_state();
 
@@ -223,7 +223,7 @@ TEST_CASE("inertia form", "[form]")
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("lagged regularization form", "[form]")
+TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][lagged_reg_form]")
 {
 	const auto state_ptr = get_state();
 

@@ -16,8 +16,8 @@ set(test_sources
 	test_solver.cpp
 	test_tbb.cpp
 	test_utils.cpp
-  test_forms.cpp
   test_form_values.cpp
+  test_form_derivatives.cpp
   verify_run.cpp
 )
 

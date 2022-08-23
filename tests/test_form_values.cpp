@@ -14,6 +14,7 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <memory>
+#include <filesystem>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -28,12 +29,12 @@ namespace
 		const std::string path = POLYFEM_DATA_DIR;
 		json in_args = json({});
 
-		std::ifstream file(path + json_file);
+		std::ifstream file(path + "/" + json_file);
 
 		if (file.is_open())
 			file >> in_args;
 
-		in_args["root_path"] = path + json_file;
+		in_args["root_path"] = path + "/" + json_file;
 
 		auto state = std::make_shared<State>(1);
 		state->init_logger("", spdlog::level::warn, false);
@@ -47,45 +48,158 @@ namespace
 
 		return state;
 	}
-} // namespace
 
-TEST_CASE("body form value", "[form_value]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	const std::string pattern = path + "forms/";
-
-	for (auto const &dir_entry : std::filesystem::directory_iterator{pattern})
+	void check_form_value(
+		const std::function<std::shared_ptr<Form>(const std::shared_ptr<const State>)> &create_form,
+		const std::string &expected_key)
 	{
-		if (dir_entry.path().extension() != ".hdf5")
-			continue;
+		const std::string path = POLYFEM_DATA_DIR;
+		const std::string pattern = path + "/forms/";
 
-		std::cout << "Processing: " << dir_entry.path() << std::endl;
-		HighFive::File file(dir_entry.path(), HighFive::File::ReadOnly);
-		std::string json_path = H5Easy::load<std::string>(file, "path");
-
-		auto state = get_state(json_path);
-
-		Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, "vals");
-		Eigen::MatrixXd expected = H5Easy::load<Eigen::MatrixXd>(file, "elastic_energy");
-
-		ElasticForm form(*state);
-
-		assert(x.rows() == expected.size());
-
-		for (int i = 0; i < expected.size(); ++i)
+		for (auto const &dir_entry : std::filesystem::directory_iterator{pattern})
 		{
-			const double val = form.value(x.row(i));
-			REQUIRE(val == Approx(expected(i)).margin(1e-9));
+			if (dir_entry.path().extension() != ".hdf5")
+				continue;
+
+			std::cout << "Processing: " << dir_entry.path() << std::endl;
+			HighFive::File file(dir_entry.path(), HighFive::File::ReadOnly);
+			std::string json_path = H5Easy::load<std::string>(file, "path");
+
+			Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, "vals");
+			Eigen::MatrixXd expected = H5Easy::load<Eigen::MatrixXd>(file, expected_key);
+
+			const std::shared_ptr<const State> state = get_state(json_path);
+			std::shared_ptr<Form> form = create_form(state);
+
+			assert(x.rows() == expected.size());
+
+			for (int i = 0; i < expected.size(); ++i)
+			{
+				form->init(x.row(i));
+				form->init_lagging(Eigen::VectorXd::Zero(x.cols())); // TODO
+
+				const double val = form->value(x.row(i));
+				if (!std::isnan(val) && !std::isnan(expected(i)))
+					CHECK(val == Approx(expected(i)).epsilon(1e-6).margin(1e-9));
+			}
 		}
 	}
+} // namespace
+
+TEST_CASE("body form value", "[form_value][body_form]")
+{
+	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+	const bool apply_DBC = true;
+
+	CAPTURE(apply_DBC);
+	check_form_value(
+		[&](const std::shared_ptr<const State> state) {
+			rhs_assembler = state->build_rhs_assembler();
+			return std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+		},
+		"body_energy");
 }
 
-// f.create_dataset("vals", data = vals)
-// f.create_dataset("elastic_energy", data = elastic_energy)
-// f.create_dataset("body_energy", data = body_energy)
-// f.create_dataset("friction_energy", data = friction_energy)
-// f.create_dataset("lagged_damping", data = lagged_damping)
-// f.create_dataset("intertia_energy", data = intertia_energy)
+TEST_CASE("contact form value", "[form_value][contact_form]")
+{
+	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+	const bool apply_DBC = true;
+	std::shared_ptr<BodyForm> body_form;
+
+	const double barrier_stiffness = 1e7;
+	// const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+
+	check_form_value(
+		[&](const std::shared_ptr<const State> state) {
+			rhs_assembler = state->build_rhs_assembler();
+			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+			const double dt = state->args["time"]["dt"];
+			return std::make_shared<ContactForm>(
+				*state,
+				state->args["contact"]["dhat"],
+				!state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
+				state->problem->is_time_dependent(),
+				state->args["solver"]["contact"]["CCD"]["broad_phase"],
+				state->args["solver"]["contact"]["CCD"]["tolerance"],
+				state->args["solver"]["contact"]["CCD"]["max_iterations"],
+				dt * dt,
+				*body_form);
+		},
+		"collision_energy");
+}
+
+TEST_CASE("elastic form value", "[form_value][elastic_form]")
+{
+	check_form_value(
+		[](const std::shared_ptr<const State> state) {
+			return std::make_shared<ElasticForm>(*state);
+		},
+		"elastic_energy");
+}
+
+TEST_CASE("friction form value", "[form_value][friction_form]")
+{
+	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+	const bool apply_DBC = true;
+	std::shared_ptr<BodyForm> body_form;
+
+	const double barrier_stiffness = 1e7;
+	std::shared_ptr<ContactForm> contact_form;
+
+	check_form_value(
+		[&](const std::shared_ptr<const State> state) {
+			rhs_assembler = state->build_rhs_assembler();
+			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+
+			const double dt = state->args["time"]["dt"];
+			contact_form = std::make_shared<ContactForm>(
+				*state,
+				state->args["contact"]["dhat"],
+				!state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
+				state->problem->is_time_dependent(),
+				state->args["solver"]["contact"]["CCD"]["broad_phase"],
+				state->args["solver"]["contact"]["CCD"]["tolerance"],
+				state->args["solver"]["contact"]["CCD"]["max_iterations"],
+				dt * dt,
+				*body_form);
+
+			return std::make_shared<FrictionForm>(
+				*state,
+				state->args["contact"]["epsv"],
+				state->args["contact"]["friction_coefficient"],
+				state->args["contact"]["dhat"],
+				state->args["solver"]["contact"]["CCD"]["broad_phase"],
+				dt,
+				*contact_form);
+		},
+		"friction_energy");
+}
+
+TEST_CASE("inertia form value", "[form_value][inertia_form]")
+{
+	ImplicitEuler time_integrator;
+
+	check_form_value(
+		[&](const std::shared_ptr<const State> state) {
+			const double dt = state->args["time"]["dt"];
+			time_integrator.init(
+				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
+				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
+				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
+				dt);
+			return std::make_shared<InertiaForm>(state->mass, time_integrator);
+		},
+		"intertia_energy");
+}
+
+TEST_CASE("lagged regularization form value", "[form_value][lagged_reg_form]")
+{
+	const double weight = 0.0;
+	check_form_value(
+		[&](const std::shared_ptr<const State>) {
+			return std::make_shared<LaggedRegForm>(weight);
+		},
+		"lagged_damping");
+}
+
 // f.create_dataset("barrier_stiffness", data = barrier_stiffness)
-// f.create_dataset("collision_energy", data = collision_energy)
-// f.create_dataset("path", data = path)
