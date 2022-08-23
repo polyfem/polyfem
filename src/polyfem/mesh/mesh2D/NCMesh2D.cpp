@@ -489,6 +489,31 @@ namespace polyfem
 			index_prepared = true;
 		}
 
+		void NCMesh2D::append(const Mesh &mesh)
+		{
+			assert(typeid(mesh) == typeid(NCMesh2D));
+			Mesh::append(mesh);
+
+			const NCMesh2D &mesh2d = dynamic_cast<const NCMesh2D &>(mesh);
+
+			const int n_v = n_vertices();
+			const int n_f = n_faces();
+			
+			vertices.reserve(n_v + mesh2d.n_vertices());
+			for (int i = 0; i < mesh2d.n_vertices(); i++)
+			{
+				vertices.emplace_back(mesh2d.vertices[i].pos);
+			}
+			for (int i = 0; i < mesh2d.n_faces(); i++)
+			{
+				Eigen::Vector3i face = mesh2d.elements[i].vertices;
+				face = face.array() + n_v;
+				add_element(face, -1);
+			}
+
+			prepare_mesh();
+		}
+
 		void NCMesh2D::traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge> &list) const
 		{
 			int v_mid = find_vertex(v);
