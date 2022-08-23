@@ -82,13 +82,15 @@ namespace
 			HighFive::File file(dir_entry.path(), HighFive::File::ReadOnly);
 			std::string json_path = H5Easy::load<std::string>(file, "path");
 
-			Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, "vals");
-			Eigen::MatrixXd expected = H5Easy::load<Eigen::MatrixXd>(file, expected_key);
+			const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, "vals");
+			const Eigen::MatrixXd expected = H5Easy::load<Eigen::MatrixXd>(file, expected_key);
+			const Eigen::MatrixXd barrier_stiffnesses = H5Easy::load<Eigen::MatrixXd>(file, "barrier_stiffness");
+
+			REQUIRE(x.rows() == expected.size());
+			REQUIRE(x.rows() == barrier_stiffnesses.size());
 
 			const std::shared_ptr<const State> state = get_state(json_path);
 			std::shared_ptr<Form> form = create_form(state);
-
-			assert(x.rows() == expected.size());
 
 			for (int i = 0; i < expected.size(); ++i)
 			{
