@@ -1,9 +1,10 @@
 #include "OptimizationProblem.hpp"
 #include "Optimizations.hpp"
 #include "ShapeProblem.hpp"
+#include <polyfem/assembler/RhsAssembler.hpp>
 #include "TopologyOptimizationProblem.hpp"
 #include "MaterialProblem.hpp"
-// #include "InitialConditionProblem.hpp"
+#include "InitialConditionProblem.hpp"
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
 #include "MMASolver.hpp"
@@ -75,285 +76,286 @@ namespace polyfem
 
 	double matrix_dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
-	// void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
-	// {
-	// 	if (!opt_params.contains("fDelta"))
-	// 		opt_params["fDelta"] = 0;
-	// 	if (!opt_params.contains("gradNorm"))
-	// 		opt_params["gradNorm"] = 0;
-	// 	if (!opt_params.contains("use_grad_norm_tol"))
-	// 		opt_params["use_grad_norm_tol"] = 0;
+	void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_params = state.args["optimization"];
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
-	// 	opt_params["useGradNorm"] = true;
-	// 	opt_params["relativeGradient"] = false;
+		std::shared_ptr<InitialConditionProblem> initial_problem = std::make_shared<InitialConditionProblem>(state, j);
+		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
-	// 	if (!opt_params.contains("nl_iterations"))
-	// 		opt_params["nl_iterations"] = 500;
+		json initial_params;
+		for (const auto &param : opt_params["parameters"])
+		{
+			if (param["type"] == "initial")
+			{
+				initial_params = param;
+				break;
+			}
+		}
 
-	// 	std::shared_ptr<InitialConditionProblem> initial_problem = std::make_shared<InitialConditionProblem>(state, j, opt_params);
-	// 	std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_params);
-	// 	nlsolver->setLineSearch(opt_params["line_search"]);
+		// fix certain object
+		std::set<int> optimize_body_ids;
+		if (initial_params.contains("volume_selection"))
+		{
+			for (int i : initial_params["volume_selection"])
+				optimize_body_ids.insert(i);
+		}
+		else
+			logger().info("No optimization body specified, optimize initial condition of every mesh...");
 
-	// 	// fix certain object
-	// 	std::set<int> optimize_body_ids;
-	// 	if (opt_params.contains("optimize_body_ids"))
-	// 	{
-	// 		for (int i : opt_params["optimize_body_ids"])
-	// 			optimize_body_ids.insert(i);
-	// 	}
-	// 	else
-	// 		logger().info("No optimization body specified, optimize initial condition of every mesh...");
+		// to get the initial velocity
+		{
+			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			json rhs_solver_params = state.args["solver"]["linear"];
+			if (!rhs_solver_params.contains("Pardiso"))
+				rhs_solver_params["Pardiso"] = {};
+			rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-	// 	// to get the initial velocity
-	// 	{
-	// 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-	// 		json rhs_solver_params = state.args["rhs_solver_params"];
-	// 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+			state.step_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+				state.assembler, *state.mesh, state.obstacle, state.input_dirichelt,
+				state.n_bases, state.problem->is_scalar() ? 1 : state.mesh->dimension(),
+				state.bases, gbases, state.ass_vals_cache,
+				state.formulation(), *state.problem,
+				state.args["space"]["advanced"]["bc_method"],
+				state.args["solver"]["linear"]["solver"], state.args["solver"]["linear"]["precond"], rhs_solver_params);
 
-	// 		state.step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-	// 			state.assembler, *state.mesh, state.obstacle,
-	// 			state.n_bases, state.problem->is_scalar() ? 1 : state.mesh->dimension(),
-	// 			state.bases, gbases, state.ass_vals_cache,
-	// 			state.formulation(), *state.problem,
-	// 			state.args["bc_method"],
-	// 			state.args["rhs_solver_type"], state.args["rhs_precond_type"], rhs_solver_params);
+			assembler::RhsAssembler &rhs_assembler = *state.step_data.rhs_assembler;
+			rhs_assembler.initial_solution(state.initial_sol_update);
+			rhs_assembler.initial_velocity(state.initial_vel_update);
+		}
+		auto initial_guess_vel = state.initial_vel_update, initial_guess_sol = state.initial_sol_update;
 
-	// 		RhsAssembler &rhs_assembler = *state.step_data.rhs_assembler;
-	// 		rhs_assembler.initial_solution(state.initial_sol_update);
-	// 		rhs_assembler.initial_velocity(state.initial_vel_update);
-	// 	}
-	// 	auto initial_guess_vel = state.initial_vel_update, initial_guess_sol = state.initial_sol_update;
+		const int dim = state.mesh->dimension();
+		const int dof = state.n_bases;
 
-	// 	const int dim = state.mesh->dimension();
-	// 	const int dof = state.n_bases;
+		std::map<int, std::array<int, 2>> body_id_map; // from body_id to {node_id, index}
+		int n = 0;
+		for (int e = 0; e < state.bases.size(); e++)
+		{
+			const int body_id = state.mesh->get_body_id(e);
+			if (!body_id_map.count(body_id) && (optimize_body_ids.count(body_id) || optimize_body_ids.size() == 0))
+			{
+				body_id_map[body_id] = {{state.bases[e].bases[0].global()[0].index, n}};
+				n++;
+			}
+		}
+		logger().info("{} objects found, each object has a constant initial velocity and position...", body_id_map.size());
 
-	// 	std::map<int, std::array<int, 2>> body_id_map; // from body_id to {node_id, index}
-	// 	int n = 0;
-	// 	for (int e = 0; e < state.bases.size(); e++)
-	// 	{
-	// 		const int body_id = state.mesh->get_body_id(e);
-	// 		if (!body_id_map.count(body_id) && (optimize_body_ids.count(body_id) || optimize_body_ids.size() == 0))
-	// 		{
-	// 			body_id_map[body_id] = {{state.bases[e].bases[0].global()[0].index, n}};
-	// 			n++;
-	// 		}
-	// 	}
-	// 	logger().info("{} objects found, each object has a constant initial velocity and position...", body_id_map.size());
+		// by default optimize for initial velocity
+		if (!initial_params.contains("restriction"))
+			initial_params["restriction"] = "velocity";
 
-	// 	// by default optimize for initial velocity
-	// 	if (!opt_params.contains("restriction"))
-	// 		opt_params["restriction"] = "velocity";
+		if (initial_params["restriction"].get<std::string>() == "velocity")
+		{
+			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+				init_sol = initial_guess_sol;
+				init_vel = initial_guess_vel;
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					if (!body_id_map.count(body_id))
+						continue;
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+							for (int d = 0; d < dim; d++)
+								init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+				}
+				std::cout << "initial velocity: " << std::setprecision(16) << x.transpose() << "\n";
+			};
 
-	// 	if (opt_params["restriction"].get<std::string>() == "velocity")
-	// 	{
-	// 		initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
-	// 			init_sol = initial_guess_sol;
-	// 			init_vel = initial_guess_vel;
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				if (!body_id_map.count(body_id))
-	// 					continue;
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 						for (int d = 0; d < dim; d++)
-	// 							init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
-	// 			}
-	// 			logger().debug("initial velocity: {}", x.transpose());
-	// 		};
+			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size());
+				for (auto i : body_id_map)
+					for (int d = 0; d < dim; d++)
+						x(i.second[1] * dim + d) = init_vel(i.second[0] * dim + d);
+			};
 
-	// 		initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size());
-	// 			for (auto i : body_id_map)
-	// 				for (int d = 0; d < dim; d++)
-	// 					x(i.second[1] * dim + d) = init_vel(i.second[0] * dim + d);
-	// 			logger().debug("initial velocity: {}", x.transpose());
-	// 		};
+			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size());
+				std::vector<bool> visited(dof, false);
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					if (!body_id_map.count(body_id))
+						continue;
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+						{
+							if (!visited[g.index])
+								visited[g.index] = true;
+							else
+								continue;
+							for (int d = 0; d < dim; d++)
+								x(dim * body_id_map[body_id][1] + d) += init_vel(g.index * dim + d);
+						}
+				}
+			};
+		}
+		else if (initial_params["restriction"].get<std::string>() == "velocityXZ")
+		{
+			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+				init_sol = initial_guess_sol;
+				init_vel = initial_guess_vel;
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					if (!body_id_map.count(body_id))
+						continue;
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+							for (int d = 0; d < dim; d++)
+								init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+				}
+				logger().debug("initial velocity: {}", x.transpose());
+			};
 
-	// 		initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size());
-	// 			std::vector<bool> visited(dof, false);
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				if (!body_id_map.count(body_id))
-	// 					continue;
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 					{
-	// 						if (!visited[g.index])
-	// 							visited[g.index] = true;
-	// 						else
-	// 							continue;
-	// 						for (int d = 0; d < dim; d++)
-	// 							x(dim * body_id_map[body_id][1] + d) += init_vel(g.index * dim + d);
-	// 					}
-	// 			}
-	// 		};
-	// 	}
-	// 	else if (opt_params["restriction"].get<std::string>() == "velocityXZ")
-	// 	{
-	// 		initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
-	// 			init_sol = initial_guess_sol;
-	// 			init_vel = initial_guess_vel;
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				if (!body_id_map.count(body_id))
-	// 					continue;
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 						for (int d = 0; d < dim; d++)
-	// 							init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
-	// 			}
-	// 			logger().debug("initial velocity: {}", x.transpose());
-	// 		};
+			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size());
+				for (auto i : body_id_map)
+					for (int d = 0; d < dim; d++)
+						x(i.second[1] * dim + d) = init_vel(i.second[0] * dim + d);
+				logger().debug("initial velocity: {}", x.transpose());
+			};
 
-	// 		initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size());
-	// 			for (auto i : body_id_map)
-	// 				for (int d = 0; d < dim; d++)
-	// 					x(i.second[1] * dim + d) = init_vel(i.second[0] * dim + d);
-	// 			logger().debug("initial velocity: {}", x.transpose());
-	// 		};
+			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size());
+				std::vector<bool> visited(dof, false);
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					if (!body_id_map.count(body_id))
+						continue;
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+						{
+							if (!visited[g.index])
+								visited[g.index] = true;
+							else
+								continue;
+							for (int d = 0; d < dim; d++)
+							{
+								if (d == 1)
+									continue;
+								x(dim * body_id_map[body_id][1] + d) += init_vel(g.index * dim + d);
+							}
+						}
+				}
+			};
+		}
+		else if (initial_params["restriction"].get<std::string>() == "position")
+		{
+			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+				init_sol.setZero(dof * dim, 1);
+				init_vel.setZero(dof * dim, 1);
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					if (!body_id_map.count(body_id))
+						continue;
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+							for (int d = 0; d < dim; d++)
+								init_sol(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+				}
+				logger().debug("initial solution: {}", x.transpose());
+			};
 
-	// 		initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size());
-	// 			std::vector<bool> visited(dof, false);
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				if (!body_id_map.count(body_id))
-	// 					continue;
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 					{
-	// 						if (!visited[g.index])
-	// 							visited[g.index] = true;
-	// 						else
-	// 							continue;
-	// 						for (int d = 0; d < dim; d++)
-	// 						{
-	// 							if (d == 1)
-	// 								continue;
-	// 							x(dim * body_id_map[body_id][1] + d) += init_vel(g.index * dim + d);
-	// 						}
-	// 					}
-	// 			}
-	// 		};
-	// 	}
-	// 	else if (opt_params["restriction"].get<std::string>() == "position")
-	// 	{
-	// 		initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
-	// 			init_sol.setZero(dof * dim, 1);
-	// 			init_vel.setZero(dof * dim, 1);
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				if (!body_id_map.count(body_id))
-	// 					continue;
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 						for (int d = 0; d < dim; d++)
-	// 							init_sol(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
-	// 			}
-	// 			logger().debug("initial solution: {}", x.transpose());
-	// 		};
+			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size());
+				for (auto i : body_id_map)
+				{
+					for (int d = 0; d < dim; d++)
+						x(i.second[1] * dim + d) = init_sol(i.second[0] * dim + d);
+				}
+				logger().debug("initial solution: {}", x.transpose());
+			};
 
-	// 		initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size());
-	// 			for (auto i : body_id_map)
-	// 			{
-	// 				for (int d = 0; d < dim; d++)
-	// 					x(i.second[1] * dim + d) = init_sol(i.second[0] * dim + d);
-	// 			}
-	// 			logger().debug("initial solution: {}", x.transpose());
-	// 		};
+			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size());
+				std::vector<bool> visited(dof, false);
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					if (!body_id_map.count(body_id))
+						continue;
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+						{
+							if (!visited[g.index])
+								visited[g.index] = true;
+							else
+								continue;
+							for (int d = 0; d < dim; d++)
+								x(dim * body_id_map[body_id][1] + d) += init_sol(g.index * dim + d);
+						}
+				}
+			};
+		}
+		else
+		{
+			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+				init_sol = initial_guess_sol;
+				init_vel = initial_guess_vel;
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+							for (int d = 0; d < dim; d++)
+							{
+								init_sol(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+								init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d + dim * body_id_map.size());
+							}
+				}
+				logger().debug("initial velocity: {}", x.tail(x.size() / 2).transpose());
+				logger().debug("initial position: {}", x.head(x.size() / 2).transpose());
+			};
 
-	// 		initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size());
-	// 			std::vector<bool> visited(dof, false);
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				if (!body_id_map.count(body_id))
-	// 					continue;
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 					{
-	// 						if (!visited[g.index])
-	// 							visited[g.index] = true;
-	// 						else
-	// 							continue;
-	// 						for (int d = 0; d < dim; d++)
-	// 							x(dim * body_id_map[body_id][1] + d) += init_sol(g.index * dim + d);
-	// 					}
-	// 			}
-	// 		};
-	// 	}
-	// 	else
-	// 	{
-	// 		initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
-	// 			init_sol = initial_guess_sol;
-	// 			init_vel = initial_guess_vel;
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 						for (int d = 0; d < dim; d++)
-	// 						{
-	// 							init_sol(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
-	// 							init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d + dim * body_id_map.size());
-	// 						}
-	// 			}
-	// 			logger().debug("initial velocity: {}", x.tail(x.size() / 2).transpose());
-	// 			logger().debug("initial position: {}", x.head(x.size() / 2).transpose());
-	// 		};
+			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size() * 2);
+				for (auto i : body_id_map)
+					for (int d = 0; d < dim; d++)
+					{
+						x(i.second[1] * dim + d) = init_sol(i.second[0] * dim + d);
+						x(i.second[1] * dim + d + dim * body_id_map.size()) = init_vel(i.second[0] * dim + d);
+					}
+				logger().debug("initial velocity: {}", x.tail(x.size() / 2).transpose());
+				logger().debug("initial position: {}", x.head(x.size() / 2).transpose());
+			};
 
-	// 		initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size() * 2);
-	// 			for (auto i : body_id_map)
-	// 				for (int d = 0; d < dim; d++)
-	// 				{
-	// 					x(i.second[1] * dim + d) = init_sol(i.second[0] * dim + d);
-	// 					x(i.second[1] * dim + d + dim * body_id_map.size()) = init_vel(i.second[0] * dim + d);
-	// 				}
-	// 			logger().debug("initial velocity: {}", x.tail(x.size() / 2).transpose());
-	// 			logger().debug("initial position: {}", x.head(x.size() / 2).transpose());
-	// 		};
+			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+				x.setZero(dim * body_id_map.size() * 2);
+				std::vector<bool> visited(dof, false);
+				for (int e = 0; e < state.bases.size(); e++)
+				{
+					const int body_id = state.mesh->get_body_id(e);
+					for (auto &bs : state.bases[e].bases)
+						for (auto &g : bs.global())
+						{
+							if (!visited[g.index])
+								visited[g.index] = true;
+							else
+								continue;
+							for (int d = 0; d < dim; d++)
+							{
+								x(dim * body_id_map[body_id][1] + d) += init_sol(g.index * dim + d);
+								x(dim * body_id_map[body_id][1] + d + dim * body_id_map.size()) += init_vel(g.index * dim + d);
+							}
+						}
+				}
+			};
+		}
+		Eigen::VectorXd x;
+		initial_problem->param_to_x(x, state.initial_sol_update, state.initial_vel_update);
 
-	// 		initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
-	// 			x.setZero(dim * body_id_map.size() * 2);
-	// 			std::vector<bool> visited(dof, false);
-	// 			for (int e = 0; e < state.bases.size(); e++)
-	// 			{
-	// 				const int body_id = state.mesh->get_body_id(e);
-	// 				for (auto &bs : state.bases[e].bases)
-	// 					for (auto &g : bs.global())
-	// 					{
-	// 						if (!visited[g.index])
-	// 							visited[g.index] = true;
-	// 						else
-	// 							continue;
-	// 						for (int d = 0; d < dim; d++)
-	// 						{
-	// 							x(dim * body_id_map[body_id][1] + d) += init_sol(g.index * dim + d);
-	// 							x(dim * body_id_map[body_id][1] + d + dim * body_id_map.size()) += init_vel(g.index * dim + d);
-	// 						}
-	// 					}
-	// 			}
-	// 		};
-	// 	}
-	// 	Eigen::VectorXd x;
-	// 	initial_problem->param_to_x(x, state.initial_sol_update, state.initial_vel_update);
+		nlsolver->minimize(*initial_problem, x);
 
-	// 	nlsolver->minimize(*initial_problem, x);
-
-	// 	json solver_info;
-	// 	nlsolver->getInfo(solver_info);
-	// 	std::cout << solver_info << std::endl;
-	// }
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
 
 	void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
