@@ -791,7 +791,11 @@ namespace polyfem
 		Eigen::MatrixXd C_H;
 		state.homogenize_weighted_stokes(C_H);
 
-		return -C_H(0, 1);//-C_H(1, 2);
+		std::cout << "Permeability tensor:\n" << C_H << "\n";
+		if (state.mesh->is_volume())
+			return -C_H(0, 1)-C_H(1, 2);
+		else
+			return -C_H(0, 1);
 	}
 
 	Eigen::VectorXd HomogenizedPermeabilityFunctional::gradient(State &state, const std::string &type)
@@ -800,7 +804,10 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		state.homogenize_weighted_stokes_grad(C_H, grad);
 
-		return -grad.col(1);//-grad.col(5);
+		if (state.mesh->is_volume())
+			return -grad.col(1)-grad.col(5);
+		else
+			return -grad.col(1);
 	}
 
 	double ComplianceFunctional::energy(State &state)
@@ -1037,8 +1044,7 @@ namespace polyfem
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
-		else
-			logger().debug("Downsample frame rate: {}", sample_rate);
+
 
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
@@ -1071,8 +1077,7 @@ namespace polyfem
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
-		else
-			logger().debug("Downsample frame rate: {}", sample_rate);
+
 
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
@@ -1152,13 +1157,12 @@ namespace polyfem
 
 	double CenterXZTrajectoryFunctional::energy(State &state)
 	{
-		const int n_steps = state.args["time_steps"];
+		const int n_steps = state.args["time"]["time_steps"];
 		const int n_targets = target_series.size();
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
-		else
-			logger().debug("Downsample frame rate: {}", sample_rate);
+
 
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
@@ -1187,13 +1191,12 @@ namespace polyfem
 
 	Eigen::VectorXd CenterXZTrajectoryFunctional::gradient(State &state, const std::string &type)
 	{
-		const int n_steps = state.args["time_steps"];
+		const int n_steps = state.args["time"]["time_steps"];
 		const int n_targets = target_series.size();
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
-		else
-			logger().debug("Downsample frame rate: {}", sample_rate);
+
 
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
