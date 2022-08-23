@@ -25,14 +25,15 @@ jobs:
           sudo make install
           sudo apt-get install graphviz
 
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Generate Doxygen Documentation
         run: doxygen Doxyfile
 
-      - name: Generate JSON Spec. Documentation
+      - name: Generate JSON Spec Documentation
         run: |
           git clone https://github.com/geometryprocessing/json-spec-engine.git
           pip install mako
