@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 
 	const std::set<std::string> opt_types = {"material", "shape", "initial"};
 
-	const std::set<std::string> matching_types = {"exact", "sdf", "center-data"}; // , "exact-center", "sine", "max-height", , "last-center", "marker-data"};
+	const std::set<std::string> matching_types = {"exact-center", "sine", "exact", "sdf", "center-data", "max-height", "last-center", "marker-data"};
 
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
@@ -180,18 +180,18 @@ int main(int argc, char **argv)
 			if (trajectory_params.contains("path"))
 				target_path = trajectory_params["path"];
 
-			// if (matching_type == "last-center")
-			// {
-			// 	assert(trajectory_params.contains("target_position"));
-			// 	int i = 0;
-			// 	for (double x : trajectory_params["target_position"].get<std::vector<double>>())
-			// 	{
-			// 		if (i >= target_position.size())
-			// 			break;
-			// 		target_position(i) = x;
-			// 		i++;
-			// 	}
-			// }
+			if (matching_type == "last-center")
+			{
+				assert(trajectory_params.contains("target_position"));
+				int i = 0;
+				for (double x : trajectory_params["target_position"].get<std::vector<double>>())
+				{
+					if (i >= target_position.size())
+						break;
+					target_position(i) = x;
+					i++;
+				}
+			}
 		}
 		else
 			throw std::runtime_error("No functional specifed in json!");
@@ -231,7 +231,8 @@ int main(int argc, char **argv)
 	if (matching_type == "exact") // || matching_type == "exact-center")
 	{
 		logger().info("Start reference solve...");
-		state_reference.init_logger(log_file, log_level, false);
+		target_in_args["differentiable"] = true;
+		state_reference.init_logger(in_args["output"]["optimization"]["solve_log_level"], log_level, false);
 		state_reference.init(target_in_args, output_dir);
 		state_reference.load_mesh();
 
@@ -314,18 +315,18 @@ int main(int argc, char **argv)
 		func = CompositeFunctional::create("Trajectory");
 	else if (matching_type == "sdf")
 		func = CompositeFunctional::create("SDFTrajectory");
-	// else if (matching_type == "exact-center")
-	// 	func = CompositeFunctional::create("CenterTrajectory");
-	// else if (matching_type == "last-center")
-	// 	func = CompositeFunctional::create("CenterXZTrajectory");
-	// else if (matching_type == "sine")
-	// 	func = CompositeFunctional::create("TargetY");
-	// else if (matching_type == "max-height")
-	// 	func = CompositeFunctional::create("Height");
+	else if (matching_type == "exact-center")
+		func = CompositeFunctional::create("CenterTrajectory");
+	else if (matching_type == "last-center")
+		func = CompositeFunctional::create("CenterXZTrajectory");
+	else if (matching_type == "sine")
+		func = CompositeFunctional::create("TargetY");
+	else if (matching_type == "max-height")
+		func = CompositeFunctional::create("Height");
 	else if (matching_type == "center-data")
 		func = CompositeFunctional::create("CenterXYTrajectory");
-	// else if (matching_type == "marker-data")
-	// 	func = CompositeFunctional::create("NodeTrajectory");
+	else if (matching_type == "marker-data")
+		func = CompositeFunctional::create("NodeTrajectory");
 	else
 		logger().error("Invalid target type!");
 
@@ -351,35 +352,35 @@ int main(int argc, char **argv)
 		f.set_spline_target(control_points, tangents, delta);
 		f.set_transient_integral_type("final");
 	}
-	// else if (matching_type == "exact-center")
-	// {
-	// 	auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
-	// 	std::vector<Eigen::VectorXd> barycenters;
-	// 	f.get_barycenter_series(state_reference, barycenters);
-	// 	f.set_center_series(barycenters);
-	// 	std::cout << "Centers: ";
-	// 	for (auto x : barycenters)
-	// 		std::cout << x.transpose() << ", ";
-	// 	std::cout << "\n";
-	// }
-	// else if (matching_type == "last-center")
-	// {
-	// 	auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
-	// 	f.set_transient_integral_type("final");
-	// 	std::vector<Eigen::VectorXd> barycenters(1);
-	// 	barycenters[0] = target_position;
-	// 	f.set_center_series(barycenters);
-	// }
-	// else if (matching_type == "sine")
-	// {
-	// 	auto &f = *dynamic_cast<TargetYFunctional *>(func.get());
-	// 	f.set_target_function([](const double x) {
-	// 		return sin(x) * 0.7;
-	// 	});
-	// 	f.set_target_function_derivative([](const double x) {
-	// 		return cos(x) * 0.7;
-	// 	});
-	// }
+	else if (matching_type == "exact-center")
+	{
+		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
+		std::vector<Eigen::VectorXd> barycenters;
+		f.get_barycenter_series(state_reference, barycenters);
+		f.set_center_series(barycenters);
+		std::cout << "Centers: ";
+		for (auto x : barycenters)
+			std::cout << x.transpose() << ", ";
+		std::cout << "\n";
+	}
+	else if (matching_type == "last-center")
+	{
+		auto &f = *dynamic_cast<CenterXZTrajectoryFunctional *>(func.get());
+		f.set_transient_integral_type("final");
+		std::vector<Eigen::VectorXd> barycenters(1);
+		barycenters[0] = target_position;
+		f.set_center_series(barycenters);
+	}
+	else if (matching_type == "sine")
+	{
+		auto &f = *dynamic_cast<TargetYFunctional *>(func.get());
+		f.set_target_function([](const double x) {
+			return sin(x) * 0.7;
+		});
+		f.set_target_function_derivative([](const double x) {
+			return cos(x) * 0.7;
+		});
+	}
 	else if (matching_type == "center-data")
 	{
 		auto &f = *dynamic_cast<CenterXYTrajectoryFunctional *>(func.get());
@@ -401,89 +402,89 @@ int main(int argc, char **argv)
 		f.set_transient_integral_type("uniform");
 		print_centers(centers);
 	}
-	// else if (matching_type == "marker-data")
-	// {
-	// 	const std::string scene = in_args["optimization"]["name"];
-	// 	auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(func.get());
-	// 	std::ifstream infile(target_path);
-	// 	std::vector<Eigen::VectorXd> markers;
-	// 	std::vector<Eigen::VectorXd> marker_rest_position;
-	// 	Eigen::VectorXd center(3);
-	// 	center << 0, 0, 0;
-	// 	while (infile.good())
-	// 	{
-	// 		if (scene == "Unit-Cell")
-	// 		{
-	// 			infile >> center(0);
-	// 			infile >> center(1);
-	// 			infile >> center(2);
-	// 			marker_rest_position.push_back(center);
-	// 		}
+	else if (matching_type == "marker-data")
+	{
+		const std::string scene = in_args["optimization"]["name"];
+		auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(func.get());
+		std::ifstream infile(target_path);
+		std::vector<Eigen::VectorXd> markers;
+		std::vector<Eigen::VectorXd> marker_rest_position;
+		Eigen::VectorXd center(3);
+		center << 0, 0, 0;
+		while (infile.good())
+		{
+			if (scene == "Unit-Cell")
+			{
+				infile >> center(0);
+				infile >> center(1);
+				infile >> center(2);
+				marker_rest_position.push_back(center);
+			}
 
-	// 		infile >> center(0);
-	// 		infile >> center(1);
-	// 		infile >> center(2);
-	// 		markers.push_back(center);
-	// 	}
-	// 	infile.close();
+			infile >> center(0);
+			infile >> center(1);
+			infile >> center(2);
+			markers.push_back(center);
+		}
+		infile.close();
 
-	// 	if (scene != "Unit-Cell")
-	// 	{
-	// 		if (markers.size() != 25)
-	// 			logger().error("Wrong sample number for compressed cube!");
-	// 		marker_rest_position.resize(25);
-	// 		for (int y = 0; y < 5; y++)
-	// 			for (int z = 0; z < 5; z++)
-	// 			{
-	// 				center << 0.02, -0.02 + 0.01 * y, -0.02 + 0.01 * z;
-	// 				marker_rest_position[y + 5 * z] = center;
-	// 			}
-	// 	}
+		if (scene != "Unit-Cell")
+		{
+			if (markers.size() != 25)
+				logger().error("Wrong sample number for compressed cube!");
+			marker_rest_position.resize(25);
+			for (int y = 0; y < 5; y++)
+				for (int z = 0; z < 5; z++)
+				{
+					center << 0.02, -0.02 + 0.01 * y, -0.02 + 0.01 * z;
+					marker_rest_position[y + 5 * z] = center;
+				}
+		}
 
-	// 	// markers to nodes
-	// 	Eigen::MatrixXd targets;
-	// 	targets.setZero(state.n_bases, state.mesh->dimension());
-	// 	std::vector<bool> active_mask(state.n_bases, false);
-	// 	Eigen::MatrixXd V;
-	// 	Eigen::MatrixXi F;
-	// 	state.get_vf(V, F, false);
-	// 	assert(targets.rows() == V.rows());
-	// 	for (int s = 0; s < marker_rest_position.size(); s++)
-	// 	{
-	// 		if (scene != "Unit-Cell")
-	// 			if (s == 3) // wrong data
-	// 				continue;
-	// 		double min_dist = std::numeric_limits<double>::max();
-	// 		int min_dist_id = -1;
-	// 		for (int v = 0; v < V.rows(); v++)
-	// 		{
-	// 			if ((V.row(v) - marker_rest_position[s].transpose()).norm() < min_dist)
-	// 			{
-	// 				min_dist_id = v;
-	// 				min_dist = (V.row(v) - marker_rest_position[s].transpose()).norm();
-	// 			}
-	// 		}
-	// 		if (active_mask[min_dist_id])
-	// 			logger().error("Same node has different markers!!");
-	// 		else if (min_dist > 1e-4)
-	// 		{
-	// 			logger().error("Too large err {} between {} and {}!!", min_dist, V.row(min_dist_id), marker_rest_position[s].transpose());
-	// 		}
-	// 		targets.row(min_dist_id) = markers[s];
-	// 		active_mask[min_dist_id] = true;
-	// 	}
-	// 	f.set_active_vertex_mask(active_mask);
-	// 	f.set_target_vertex_positions(targets);
-	// 	print_centers(targets, active_mask);
-	// }
+		// markers to nodes
+		Eigen::MatrixXd targets;
+		targets.setZero(state.n_bases, state.mesh->dimension());
+		std::vector<bool> active_mask(state.n_bases, false);
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F, false);
+		assert(targets.rows() == V.rows());
+		for (int s = 0; s < marker_rest_position.size(); s++)
+		{
+			if (scene != "Unit-Cell")
+				if (s == 3) // wrong data
+					continue;
+			double min_dist = std::numeric_limits<double>::max();
+			int min_dist_id = -1;
+			for (int v = 0; v < V.rows(); v++)
+			{
+				if ((V.row(v) - marker_rest_position[s].transpose()).norm() < min_dist)
+				{
+					min_dist_id = v;
+					min_dist = (V.row(v) - marker_rest_position[s].transpose()).norm();
+				}
+			}
+			if (active_mask[min_dist_id])
+				logger().error("Same node has different markers!!");
+			else if (min_dist > 1e-4)
+			{
+				logger().error("Too large err {} between {} and {}!!", min_dist, V.row(min_dist_id), marker_rest_position[s].transpose());
+			}
+			targets.row(min_dist_id) = markers[s];
+			active_mask[min_dist_id] = true;
+		}
+		f.set_active_vertex_mask(active_mask);
+		f.set_target_vertex_positions(targets);
+		print_centers(targets, active_mask);
+	}
 
 	// shape optimization
 	if (opt_type == "shape")
 		shape_optimization(state, func);
 	else if (opt_type == "material")
 		material_optimization(state, func);
-	// else if (opt_type == "initial")
-	// 	initial_condition_optimization(state, func, opt_params);
+	else if (opt_type == "initial")
+		initial_condition_optimization(state, func);
 	else
 		logger().error("Invalid optimization type!");
 
