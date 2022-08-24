@@ -3,6 +3,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
 #include <memory>
 
@@ -12,7 +13,8 @@ namespace polyfem::utils
 
 	std::shared_ptr<Selection> Selection::build(
 		const json &selection,
-		const Selection::BBox &mesh_bbox)
+		const Selection::BBox &mesh_bbox,
+		const std::string &root_path)
 	{
 		if (!selection.contains("id"))
 		{
@@ -30,13 +32,48 @@ namespace polyfem::utils
 		else if (selection.contains("normal"))
 			res = std::make_shared<PlaneSelection>(selection, mesh_bbox);
 		else if (selection["id"].is_string()) // assume ID is a file path
-			res = std::make_shared<FileSelection>(selection["id"], selection.value("id_offset", 0));
+			res = std::make_shared<FileSelection>(
+				resolve_path(selection["id"], root_path), selection.value("id_offset", 0));
 		else if (selection["id"].is_number_integer()) // assume ID is uniform
 			res = std::make_shared<UniformSelection>(selection["id"]);
 		else
 			log_and_throw_error(fmt::format("Selection not recognized: {}", selection.dump()));
 
 		return res;
+	}
+
+	std::vector<std::shared_ptr<Selection>> Selection::build_selections(
+		const json &j_selections,
+		const Selection::BBox &mesh_bbox,
+		const std::string &root_path)
+	{
+		std::vector<std::shared_ptr<Selection>> selections;
+		if (j_selections.is_number_integer())
+		{
+			selections.push_back(std::make_shared<UniformSelection>(j_selections.get<int>()));
+		}
+		else if (j_selections.is_string())
+		{
+			selections.push_back(std::make_shared<FileSelection>(resolve_path(j_selections, root_path)));
+		}
+		else if (j_selections.is_object())
+		{
+			// TODO clean me
+			if (!j_selections.contains("threshold"))
+				selections.push_back(build(j_selections, mesh_bbox));
+		}
+		else if (j_selections.is_array())
+		{
+			for (const json &s : j_selections.get<std::vector<json>>())
+			{
+				selections.push_back(build(s, mesh_bbox));
+			}
+		}
+		else if (!j_selections.is_null())
+		{
+			log_and_throw_error(fmt::format("Invalid selections: {}", j_selections));
+		}
+		return selections;
 	}
 
 	///////////////////////////////////////////////////////////////////////

@@ -10,8 +10,8 @@ message(STATUS "Third-party: creating target 'jse::jse'")
 include(FetchContent)
 FetchContent_Declare(
     jse
-    GIT_REPOSITORY https://github.com/zfergus/json-spec-engine.git
-    GIT_TAG 6fde77ff4b7f820e57a6da0a5a6d5e1024b1c62c
+    GIT_REPOSITORY https://github.com/geometryprocessing/json-spec-engine.git
+    GIT_TAG 93d74f7f5807a99c0aa28b6f11815e703dfed5d7
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(jse)
