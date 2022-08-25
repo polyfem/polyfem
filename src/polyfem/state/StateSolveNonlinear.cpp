@@ -150,8 +150,8 @@ namespace polyfem
 		// Disable damping for the final lagged iteration
 		if (friction_iterations <= 1)
 		{
-			nl_problem.lagged_damping_weight() = 0;
-			alnl_problem.lagged_damping_weight() = 0;
+			nl_problem.lagged_regularization_weight() = 0;
+			alnl_problem.lagged_regularization_weight() = 0;
 		}
 
 		// Save the subsolve sequence for debugging
@@ -222,7 +222,7 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 
 		// TODO: fix this
-		nl_problem.lagged_damping_weight() = 0;
+		nl_problem.lagged_regularization_weight() = 0;
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
@@ -234,7 +234,7 @@ namespace polyfem
 			nl_problem.init(sol);
 			// Disable damping for the final lagged iteration
 			if (lag_i == friction_iterations - 1)
-				nl_problem.lagged_damping_weight() = 0;
+				nl_problem.lagged_regularization_weight() = 0;
 			nl_solver->minimize(nl_problem, tmp_sol);
 
 			nl_solver->getInfo(nl_solver_info);

@@ -71,7 +71,7 @@ namespace polyfem
 			_epsv = state.args["contact"]["epsv"];
 			assert(_epsv > 0);
 			_mu = state.args["contact"]["friction_coefficient"];
-			_lagged_damping_weight = is_time_dependent ? 0 : state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
+			_lagged_regularization_weight = is_time_dependent ? 0 : state.args["solver"]["contact"]["lagged_regularization_weight"].get<double>();
 			use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
 			if (use_adaptive_barrier_stiffness)
 			{
@@ -477,9 +477,9 @@ namespace polyfem
 				logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 			}
 
-			double lagged_damping = _lagged_damping_weight * (full - x_lagged).squaredNorm();
+			double lagged_regularization = _lagged_regularization_weight * (full - x_lagged).squaredNorm();
 
-			const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
+			const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_regularization;
 
 			return non_contact_terms + _barrier_stiffness * collision_energy;
 		}
@@ -548,7 +548,7 @@ namespace polyfem
 				grad_barrier.setZero(full_size);
 			}
 
-			grad += _lagged_damping_weight * (full - x_lagged);
+			grad += _lagged_regularization_weight * (full - x_lagged);
 			grad += _barrier_stiffness * grad_barrier;
 
 			assert(grad.size() == full_size);
@@ -631,11 +631,11 @@ namespace polyfem
 				}
 			}
 
-			THessian lagged_damping_hessian = _lagged_damping_weight * sparse_identity(full.size(), full.size());
+			THessian lagged_regularization_hessian = _lagged_regularization_weight * sparse_identity(full.size(), full.size());
 
 			// Summing the hessian matrices like this might be less efficient than multiple `hessian += ...`, but
 			// it is much easier to read and export the individual matrices for inspection.
-			THessian non_contact_hessian = energy_hessian + inertia_hessian + friction_hessian + lagged_damping_hessian;
+			THessian non_contact_hessian = energy_hessian + inertia_hessian + friction_hessian + lagged_regularization_hessian;
 			hessian = non_contact_hessian + _barrier_stiffness * barrier_hessian;
 
 			assert(hessian.rows() == full_size);
