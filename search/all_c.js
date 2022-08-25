@@ -1,7 +1,7 @@
 var searchData=
 [
   ['l2_5ferr_0',['l2_err',['../classpolyfem_1_1_state.html#aa213543bd3913e0bb2a0bf1f1d90c2a1',1,'polyfem::State']]],
-  ['lagged_5fdamping_5fweight_1',['lagged_damping_weight',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a173faf3793d187b2b49be48bef3e4c45',1,'polyfem::solver::NLProblem']]],
+  ['lagged_5fregularization_5fweight_1',['lagged_regularization_weight',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a570761d97cbc05dc39a5cfdeaa9de8d7',1,'polyfem::solver::NLProblem']]],
   ['lagging_5fconverged_2',['lagging_converged',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ad9c7a025ea8abf8cf7d68934d61a4807',1,'polyfem::solver::NLProblem']]],
   ['lagrange_3',['Lagrange',['../classp__bases_1_1_lagrange.html',1,'p_bases.Lagrange'],['../classq__bases_1_1_lagrange.html',1,'q_bases.Lagrange']]],
   ['lambda_5fmu_4',['lambda_mu',['../classpolyfem_1_1_lame_parameters.html#adbe7284ebd8d24b11a16df2235931afd',1,'polyfem::LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &amp;lambda, double &amp;mu) const'],['../classpolyfem_1_1_lame_parameters.html#a9c34e8ec3c5b27e806417fc643065f74',1,'polyfem::LameParameters::lambda_mu(const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id, double &amp;lambda, double &amp;mu) const']]],

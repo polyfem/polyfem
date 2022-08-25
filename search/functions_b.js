@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['lagged_5fdamping_5fweight_0',['lagged_damping_weight',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a173faf3793d187b2b49be48bef3e4c45',1,'polyfem::solver::NLProblem']]],
+  ['lagged_5fregularization_5fweight_0',['lagged_regularization_weight',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a570761d97cbc05dc39a5cfdeaa9de8d7',1,'polyfem::solver::NLProblem']]],
   ['lagging_5fconverged_1',['lagging_converged',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ad9c7a025ea8abf8cf7d68934d61a4807',1,'polyfem::solver::NLProblem']]],
   ['lambda_5fmu_2',['lambda_mu',['../classpolyfem_1_1_lame_parameters.html#adbe7284ebd8d24b11a16df2235931afd',1,'polyfem::LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &amp;lambda, double &amp;mu) const'],['../classpolyfem_1_1_lame_parameters.html#a9c34e8ec3c5b27e806417fc643065f74',1,'polyfem::LameParameters::lambda_mu(const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id, double &amp;lambda, double &amp;mu) const']]],
   ['lame_5fparams_3',['lame_params',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13',1,'polyfem::assembler::AssemblerUtils::lame_params()'],['../classpolyfem_1_1assembler_1_1_linear_elasticity.html#a8688b72c40c17e4f2043cf1d392f0b9e',1,'polyfem::assembler::LinearElasticity::lame_params()'],['../classpolyfem_1_1assembler_1_1_multi_model.html#a8c1f78e24b4fca369a46d75da33ed2cf',1,'polyfem::assembler::MultiModel::lame_params()']]],

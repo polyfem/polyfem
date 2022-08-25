@@ -13,7 +13,7 @@ var searchData=
   ['_5fdt_10',['_dt',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3f5241e5e26d7a7d17249b646f64ccba',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
   ['_5fepsv_11',['_epsv',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ae4303e0ef484fa0232534c240f5a84ca',1,'polyfem::solver::NLProblem']]],
   ['_5ffriction_5fconstraint_5fset_12',['_friction_constraint_set',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a55703debe510d9d6e7202d94a46aaec8',1,'polyfem::solver::NLProblem']]],
-  ['_5flagged_5fdamping_5fweight_13',['_lagged_damping_weight',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a25dac1bec60ed469a2930251672b9fae',1,'polyfem::solver::NLProblem']]],
+  ['_5flagged_5fregularization_5fweight_13',['_lagged_regularization_weight',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a57a955fec1da045f428d849170ece7dd',1,'polyfem::solver::NLProblem']]],
   ['_5fmu_14',['_mu',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a1518bf8c55004e597ba71bf68f840436',1,'polyfem::solver::NLProblem']]],
   ['_5fprev_5fdistance_15',['_prev_distance',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac13de48c22c15751b511f5b3f34ac0d8',1,'polyfem::solver::NLProblem']]],
   ['_5ftime_5fintegrator_16',['_time_integrator',['../classpolyfem_1_1solver_1_1_n_l_problem.html#af472f4554c0b7215838731e244418297',1,'polyfem::solver::NLProblem']]],

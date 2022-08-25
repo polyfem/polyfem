@@ -217,8 +217,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5fb290a44a86dedf98ffd21d88555203"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfebeeaaa01f6d9823efb881b99b5da0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#adfebeeaaa01f6d9823efb881b99b5da0">is_project_to_psd</a> () const</td></tr>
 <tr class="separator:adfebeeaaa01f6d9823efb881b99b5da0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a173faf3793d187b2b49be48bef3e4c45"><td class="memItemLeft" align="right" valign="top">double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a173faf3793d187b2b49be48bef3e4c45">lagged_damping_weight</a> ()</td></tr>
-<tr class="separator:a173faf3793d187b2b49be48bef3e4c45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a570761d97cbc05dc39a5cfdeaa9de8d7"><td class="memItemLeft" align="right" valign="top">double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a570761d97cbc05dc39a5cfdeaa9de8d7">lagged_regularization_weight</a> ()</td></tr>
+<tr class="separator:a570761d97cbc05dc39a5cfdeaa9de8d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae40dcbe062815f50af03e04643c5a839"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ae40dcbe062815f50af03e04643c5a839">compute_displaced_points</a> (const TVector &amp;full, Eigen::MatrixXd &amp;displaced)</td></tr>
 <tr class="separator:ae40dcbe062815f50af03e04643c5a839"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a538bcb0107e656136c94a26e24755d5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a538bcb0107e656136c94a26e24755d5b">reduced_to_full_displaced_points</a> (const TVector &amp;reduced, Eigen::MatrixXd &amp;displaced)</td></tr>
@@ -300,9 +300,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a3ee61af3917f0e0b14f08858fecdbaec"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a3ee61af3917f0e0b14f08858fecdbaec">_displaced_prev</a></td></tr>
 <tr class="memdesc:a3ee61af3917f0e0b14f08858fecdbaec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displaced vertices at the start of the time-step.  <a href="classpolyfem_1_1solver_1_1_n_l_problem.html#a3ee61af3917f0e0b14f08858fecdbaec">More...</a><br /></td></tr>
 <tr class="separator:a3ee61af3917f0e0b14f08858fecdbaec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25dac1bec60ed469a2930251672b9fae"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a25dac1bec60ed469a2930251672b9fae">_lagged_damping_weight</a></td></tr>
-<tr class="memdesc:a25dac1bec60ed469a2930251672b9fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight for lagged damping (static solve).  <a href="classpolyfem_1_1solver_1_1_n_l_problem.html#a25dac1bec60ed469a2930251672b9fae">More...</a><br /></td></tr>
-<tr class="separator:a25dac1bec60ed469a2930251672b9fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57a955fec1da045f428d849170ece7dd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a57a955fec1da045f428d849170ece7dd">_lagged_regularization_weight</a></td></tr>
+<tr class="memdesc:a57a955fec1da045f428d849170ece7dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight for lagged damping (static solve).  <a href="classpolyfem_1_1solver_1_1_n_l_problem.html#a57a955fec1da045f428d849170ece7dd">More...</a><br /></td></tr>
+<tr class="separator:a57a955fec1da045f428d849170ece7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c814bca3c9728d43db8f74d9134fbc6"><td class="memItemLeft" align="right" valign="top">TVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a1c814bca3c9728d43db8f74d9134fbc6">x_lagged</a></td></tr>
 <tr class="memdesc:a1c814bca3c9728d43db8f74d9134fbc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The full variables from the previous lagging solve.  <a href="classpolyfem_1_1solver_1_1_n_l_problem.html#a1c814bca3c9728d43db8f74d9134fbc6">More...</a><br /></td></tr>
 <tr class="separator:a1c814bca3c9728d43db8f74d9134fbc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -390,7 +390,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_n_l_problem_8cpp_source.html#l00061">61</a> of file <a class="el" href="_n_l_problem_8cpp_source.html">NLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00165">_barrier_stiffness</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00193">_broad_phase_method</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00195">_ccd_max_iterations</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00194">_ccd_tolerance</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00182">_dhat</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00187">_epsv</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00190">_lagged_damping_weight</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00188">_mu</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00183">_prev_distance</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>, <a class="el" href="_state_8hpp_source.html#l00102">polyfem::State::args</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00045">polyfem::time_integrator::ImplicitTimeIntegrator::construct_time_integrator()</a>, <a class="el" href="_state_8cpp_source.html#l00273">polyfem::State::formulation()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00082">polyfem::assembler::AssemblerUtils::is_mixed()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00114">polyfem::utils::is_param_valid()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00164">use_adaptive_barrier_stiffness</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00165">_barrier_stiffness</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00193">_broad_phase_method</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00195">_ccd_max_iterations</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00194">_ccd_tolerance</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00182">_dhat</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00187">_epsv</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00190">_lagged_regularization_weight</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00188">_mu</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00183">_prev_distance</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00213">_time_integrator</a>, <a class="el" href="_state_8hpp_source.html#l00102">polyfem::State::args</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00170">assembler</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00045">polyfem::time_integrator::ImplicitTimeIntegrator::construct_time_integrator()</a>, <a class="el" href="_state_8cpp_source.html#l00273">polyfem::State::formulation()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00082">polyfem::assembler::AssemblerUtils::is_mixed()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00114">polyfem::utils::is_param_valid()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00167">is_time_dependent</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00163">state</a>, and <a class="el" href="_n_l_problem_8hpp_source.html#l00164">use_adaptive_barrier_stiffness</a>.</p>
 
 </div>
 </div>
@@ -1194,8 +1194,8 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 
 </div>
 </div>
-<a id="a173faf3793d187b2b49be48bef3e4c45" name="a173faf3793d187b2b49be48bef3e4c45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a173faf3793d187b2b49be48bef3e4c45">&#9670;&nbsp;</a></span>lagged_damping_weight()</h2>
+<a id="a570761d97cbc05dc39a5cfdeaa9de8d7" name="a570761d97cbc05dc39a5cfdeaa9de8d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a570761d97cbc05dc39a5cfdeaa9de8d7">&#9670;&nbsp;</a></span>lagged_regularization_weight()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1204,7 +1204,7 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double &amp; polyfem::solver::NLProblem::lagged_damping_weight </td>
+          <td class="memname">double &amp; polyfem::solver::NLProblem::lagged_regularization_weight </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1219,7 +1219,7 @@ template&lt;class FullMat , class ReducedMat &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00153">153</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00190">_lagged_damping_weight</a>.</p>
+<p class="reference">References <a class="el" href="_n_l_problem_8hpp_source.html#l00190">_lagged_regularization_weight</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00121">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 
@@ -2210,8 +2210,8 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 </div>
 </div>
-<a id="a25dac1bec60ed469a2930251672b9fae" name="a25dac1bec60ed469a2930251672b9fae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25dac1bec60ed469a2930251672b9fae">&#9670;&nbsp;</a></span>_lagged_damping_weight</h2>
+<a id="a57a955fec1da045f428d849170ece7dd" name="a57a955fec1da045f428d849170ece7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57a955fec1da045f428d849170ece7dd">&#9670;&nbsp;</a></span>_lagged_regularization_weight</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2220,7 +2220,7 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double polyfem::solver::NLProblem::_lagged_damping_weight</td>
+          <td class="memname">double polyfem::solver::NLProblem::_lagged_regularization_weight</td>
         </tr>
       </table>
   </td>
@@ -2234,7 +2234,7 @@ template&lt;class ReducedMat , class FullMat &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_n_l_problem_8hpp_source.html#l00190">190</a> of file <a class="el" href="_n_l_problem_8hpp_source.html">NLProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00153">lagged_damping_weight()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00061">NLProblem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8hpp_source.html#l00153">lagged_regularization_weight()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00061">NLProblem()</a>.</p>
 
 </div>
 </div>
