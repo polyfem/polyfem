@@ -108,6 +108,11 @@ namespace
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					form->init_lagging(x);
 				}
+				else if (call.rfind("update_lagging_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					form->update_lagging(x);
+				}
 				else if (call.rfind("update_quantities_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
