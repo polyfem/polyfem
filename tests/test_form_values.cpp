@@ -36,7 +36,7 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}});
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
 } // namespace ipc
 
 namespace
@@ -80,26 +80,117 @@ namespace
 
 			std::cout << "Processing: " << dir_entry.path() << std::endl;
 			HighFive::File file(dir_entry.path(), HighFive::File::ReadOnly);
-			std::string json_path = H5Easy::load<std::string>(file, "path");
+			std::string json_path = H5Easy::load<std::string>(file, "json_path");
 
-			const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, "vals");
-			const Eigen::MatrixXd expected = H5Easy::load<Eigen::MatrixXd>(file, expected_key);
-			const Eigen::MatrixXd barrier_stiffnesses = H5Easy::load<Eigen::MatrixXd>(file, "barrier_stiffness");
+			const std::vector<std::string> call_stack = H5Easy::load<std::vector<std::string>>(file, "call_stack");
 
-			REQUIRE(x.rows() == expected.size());
-			REQUIRE(x.rows() == barrier_stiffnesses.size());
+			Eigen::MatrixXd val;
 
 			const std::shared_ptr<const State> state = get_state(json_path);
 			std::shared_ptr<Form> form = create_form(state);
 
-			for (int i = 0; i < expected.size(); ++i)
+			for (int i = 0; i < call_stack.size(); ++i)
 			{
-				form->init(x.row(i));
-				form->init_lagging(Eigen::VectorXd::Zero(x.cols())); // TODO
+				const auto &call = call_stack[i];
 
-				const double val = form->value(x.row(i));
-				if (!std::isnan(val) && !std::isnan(expected(i)))
-					CHECK(val == Approx(expected(i)).epsilon(1e-6).margin(1e-9));
+				if (call.rfind("init_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					form->init(x);
+				}
+				else if (call.rfind("set_project_to_psd_", 0) == 0)
+				{
+					const bool val = H5Easy::load<bool>(file, call);
+					form->set_project_to_psd(val);
+				}
+				else if (call.rfind("init_lagging_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					form->init_lagging(x);
+				}
+				else if (call.rfind("update_quantities_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					REQUIRE(call_stack[i + 1].rfind("update_quantities_t_", 0) == 0);
+					const double t = H5Easy::load<double>(file, call_stack[i + 1]);
+					form->update_quantities(t, x);
+					++i;
+				}
+				else if (call.rfind("line_search_begin_0_", 0) == 0)
+				{
+					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
+					REQUIRE(call_stack[i + 1].rfind("line_search_begin_1_", 0) == 0);
+					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
+					form->line_search_begin(x0, x1);
+					++i;
+				}
+				else if (call.rfind("line_search_end_", 0) == 0)
+				{
+					form->line_search_end();
+				}
+				else if (call.rfind("max_step_size_0_", 0) == 0)
+				{
+					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
+					REQUIRE(call_stack[i + 1].rfind("max_step_size_1_", 0) == 0);
+					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
+					form->max_step_size(x0, x1);
+					++i;
+				}
+				else if (call.rfind("is_step_valid_0_", 0) == 0)
+				{
+					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
+					REQUIRE(call_stack[i + 1].rfind("is_step_valid_1_", 0) == 0);
+					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
+					form->is_step_valid(x0, x1);
+					++i;
+				}
+				else if (call.rfind("value_", 0) == 0)
+				{
+					val = H5Easy::load<Eigen::MatrixXd>(file, call);
+				}
+				else if (call.rfind("solution_changed_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					form->solution_changed(x);
+				}
+				else if (call.rfind("post_step_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					REQUIRE(call_stack[i + 1].rfind("post_step_iter_", 0) == 0);
+					const int iter = H5Easy::load<int>(file, call_stack[i + 1]);
+					form->post_step(iter, x);
+					++i;
+				}
+				else if (call.rfind(expected_key, 0) == 0)
+				{
+					const double expected = H5Easy::load<double>(file, call);
+					REQUIRE(val.size() > 0);
+					const double value = form->value(val);
+					if (!std::isnan(expected))
+						REQUIRE(value == Approx(expected).epsilon(1e-6).margin(1e-9));
+					else
+						REQUIRE(std::isnan(value));
+
+					val.resize(0, 0);
+				}
+				else
+				{
+					static const std::vector<std::string> tmp = {"elastic_energy_", "body_energy_", "friction_energy_", "lagged_damping_", "intertia_energy_", "barrier_stiffness_", "collision_energy_"};
+					bool found = false;
+
+					for (const auto &v : tmp)
+					{
+						if (call.rfind(v, 0) == 0)
+						{
+							found = true;
+							break;
+						}
+					}
+
+					if (!found)
+						std::cerr << call << " not found" << std::endl;
+					REQUIRE(found);
+				}
 			}
 		}
 	}
