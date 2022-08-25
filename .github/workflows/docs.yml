@@ -40,7 +40,7 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: 'polyfem',
               repo: 'polyfem.github.io',
-              workflow_id: 'json_api.yml',
+              workflow_id: 'build.yml',
               ref: 'docs'
             })
 
