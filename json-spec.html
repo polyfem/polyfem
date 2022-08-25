@@ -215,7 +215,7 @@ function toggleDarkMode() {
 						</div>
 						<div class="col-sm">
 							<code>File</code>
-							(['.obj', '.msh', '.stl'])
+							(['.obj', '.msh', '.stl', '.ply', '.mesh'])
 						</div>
 						<div class="auto">
 						
@@ -285,7 +285,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc</p>
+    			<p class="card-text">Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc.</p>
 			</div>
 		</div>
 
@@ -326,7 +326,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh</p>
+    			<p class="card-text">Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh.</p>
 			</div>
 		</div>
 
@@ -514,7 +514,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Type of rotation, supported are any permutation of (x[0-1]|y[0-1]|z[0-1), axis_angle, quaternion, or rotation_vector</p>
+    			<p class="card-text">Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector.</p>
 			</div>
 		</div>
 
@@ -615,7 +615,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. </p>
+    			<p class="card-text">Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems.</p>
 			</div>
 		</div>
 
@@ -722,7 +722,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Assign specified id to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0)).</p>
+    			<p class="card-text">Assign specified ID to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0)).</p>
 			</div>
 		</div>
 
@@ -865,7 +865,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Assign the id to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry.
+					Assign the ID to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry.
     			</div>
     			<div id="collapse41" class="collapse hide" aria-labelledby="heading41" data-parent="#accordion41">
 
@@ -1066,7 +1066,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Assign the id to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length.
+					Assign the ID to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length.
     			</div>
     			<div id="collapse52" class="collapse hide" aria-labelledby="heading52" data-parent="#accordion52">
 
@@ -1295,7 +1295,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Assign the id to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry.
+					Assign the ID to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry.
     			</div>
     			<div id="collapse63" class="collapse hide" aria-labelledby="heading63" data-parent="#accordion63">
 
@@ -1843,7 +1843,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Load ids from a file; the file is required to have one id per volume element of the geometry</p>
+    			<p class="card-text">Load ids from a file; the file is required to have one ID per volume element of the geometry</p>
 			</div>
 		</div>
 
@@ -1897,7 +1897,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Assign specified id to all surface elements of the geometry</p>
+    			<p class="card-text">Assign specified ID to all surface elements of the geometry</p>
 			</div>
 		</div>
 
@@ -2080,7 +2080,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Assign the id to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry.
+					Assign the ID to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry.
     			</div>
     			<div id="collapse98" class="collapse hide" aria-labelledby="heading98" data-parent="#accordion98">
 
@@ -2281,7 +2281,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Assign the id to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length.
+					Assign the ID to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length.
     			</div>
     			<div id="collapse109" class="collapse hide" aria-labelledby="heading109" data-parent="#accordion109">
 
@@ -2510,7 +2510,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry.
+					Assign the ID to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry.
     			</div>
     			<div id="collapse120" class="collapse hide" aria-labelledby="heading120" data-parent="#accordion120">
 
@@ -3058,7 +3058,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one id for each; each triple must correspond to a surface element</p>
+    			<p class="card-text">Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one ID for each; each triple must correspond to a surface element</p>
 			</div>
 		</div>
 
@@ -3565,7 +3565,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()
+					Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\nu$), density ($\rho$)
     			</div>
     			<div id="collapse169" class="collapse hide" aria-labelledby="heading169" data-parent="#accordion169">
 
@@ -3689,7 +3689,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Poisson ratio</p>
+    			<p class="card-text">Poisson's ratio</p>
 			</div>
 		</div>
 
@@ -3740,7 +3740,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -3824,7 +3824,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()
+					Material Parameters including ID, Lamé first ($\lambda$), Lamé second ($\mu$), density ($\rho$)
     			</div>
     			<div id="collapse180" class="collapse hide" aria-labelledby="heading180" data-parent="#accordion180">
 
@@ -3909,7 +3909,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Second lame parameter</p>
+    			<p class="card-text">Second Lamé parameter</p>
 			</div>
 		</div>
 
@@ -3948,7 +3948,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">First lame parameters</p>
+    			<p class="card-text">First Lamé parameters</p>
 			</div>
 		</div>
 
@@ -3999,7 +3999,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -4083,7 +4083,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()
+					Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\nu$), density ($\rho$)
     			</div>
     			<div id="collapse191" class="collapse hide" aria-labelledby="heading191" data-parent="#accordion191">
 
@@ -4207,7 +4207,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Poisson ratio</p>
+    			<p class="card-text">Poisson's ratio</p>
 			</div>
 		</div>
 
@@ -4258,7 +4258,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -4342,7 +4342,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()
+					Material Parameters including ID, Lamé first ($\lambda$), Lamé second ($\mu$), density ($\rho$)
     			</div>
     			<div id="collapse202" class="collapse hide" aria-labelledby="heading202" data-parent="#accordion202">
 
@@ -4427,7 +4427,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Second lame parameter</p>
+    			<p class="card-text">Second Lamé parameter</p>
 			</div>
 		</div>
 
@@ -4466,7 +4466,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">First lame parameters</p>
+    			<p class="card-text">First Lamé parameters</p>
 			</div>
 		</div>
 
@@ -4517,7 +4517,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -4601,7 +4601,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, E, nu, Density(rho), type()
+					Material Parameters including ID, E, nu, density ($\rho$)
     			</div>
     			<div id="collapse213" class="collapse hide" aria-labelledby="heading213" data-parent="#accordion213">
 
@@ -4725,7 +4725,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Poisson ratio</p>
+    			<p class="card-text">Poisson's ratio</p>
 			</div>
 		</div>
 
@@ -4776,7 +4776,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -4860,7 +4860,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, E, nu, Density(rho), type()
+					Material Parameters including ID, E, nu, density ($\rho$)
     			</div>
     			<div id="collapse224" class="collapse hide" aria-labelledby="heading224" data-parent="#accordion224">
 
@@ -5007,7 +5007,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -5091,7 +5091,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, E, nu, Density(rho), type()
+					Material Parameters including ID, E, nu, density ($\rho$)
     			</div>
     			<div id="collapse235" class="collapse hide" aria-labelledby="heading235" data-parent="#accordion235">
 
@@ -5215,7 +5215,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Poisson ratio</p>
+    			<p class="card-text">Poisson's ratio</p>
 			</div>
 		</div>
 
@@ -5266,7 +5266,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -5350,7 +5350,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, E, nu, Density(rho), type()
+					Material Parameters including ID, E, nu, density ($\rho$)
     			</div>
     			<div id="collapse246" class="collapse hide" aria-labelledby="heading246" data-parent="#accordion246">
 
@@ -5497,7 +5497,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -5581,7 +5581,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, viscosity, Density(rho), type()
+					Material Parameters including ID, viscosity, density ($\rho$)
     			</div>
     			<div id="collapse257" class="collapse hide" aria-labelledby="heading257" data-parent="#accordion257">
 
@@ -5717,7 +5717,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -5801,7 +5801,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, viscosity, Density(rho), type()
+					Material Parameters including ID, viscosity, density ($\rho$)
     			</div>
     			<div id="collapse266" class="collapse hide" aria-labelledby="heading266" data-parent="#accordion266">
 
@@ -5937,7 +5937,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -6021,7 +6021,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()
+					Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\nu$), density ($\rho$)
     			</div>
     			<div id="collapse275" class="collapse hide" aria-labelledby="heading275" data-parent="#accordion275">
 
@@ -6145,7 +6145,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Poisson ratio</p>
+    			<p class="card-text">Poisson's ratio</p>
 			</div>
 		</div>
 
@@ -6196,7 +6196,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -6280,7 +6280,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()
+					Material Parameters including ID, Lamé first ($\lambda$), Lamé second ($\mu$), density ($\rho$)
     			</div>
     			<div id="collapse286" class="collapse hide" aria-labelledby="heading286" data-parent="#accordion286">
 
@@ -6365,7 +6365,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Second lame parameter</p>
+    			<p class="card-text">Second Lamé parameter</p>
 			</div>
 		</div>
 
@@ -6404,7 +6404,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">First lame parameters</p>
+    			<p class="card-text">First Lamé parameters</p>
 			</div>
 		</div>
 
@@ -6455,7 +6455,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -6539,7 +6539,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Density(rho), type()
+					Material Parameters including ID, density ($\rho$)
     			</div>
     			<div id="collapse297" class="collapse hide" aria-labelledby="heading297" data-parent="#accordion297">
 
@@ -6636,7 +6636,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -6720,7 +6720,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, k, Density(rho), type()
+					Material Parameters including ID, k, density ($\rho$)
     			</div>
     			<div id="collapse304" class="collapse hide" aria-labelledby="heading304" data-parent="#accordion304">
 
@@ -6817,7 +6817,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -6941,7 +6941,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Material Parameters including id, Density(rho), type()
+					Material Parameters including ID, density ($\rho$)
     			</div>
     			<div id="collapse313" class="collapse hide" aria-labelledby="heading313" data-parent="#accordion313">
 
@@ -7038,7 +7038,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id</p>
+    			<p class="card-text">Volume selection ID</p>
 			</div>
 		</div>
 
@@ -12082,7 +12082,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Path to common settings will patch the current file</p>
+    			<p class="card-text">Path to common settings will patch the current file.</p>
 			</div>
 		</div>
 
@@ -12122,7 +12122,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">path for all relative paths, set automatically to the folder containing this json</p>
+    			<p class="card-text">Path for all relative paths, set automatically to the folder containing this json.</p>
 			</div>
 		</div>
 
@@ -13215,7 +13215,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					The time parameters: start time t0, end time tend, time step dt. 
+					The time parameters: start time `t0`, end time `tend`, time step `dt`.
     			</div>
     			<div id="collapse560" class="collapse hide" aria-labelledby="heading560" data-parent="#accordion560">
 
@@ -13301,7 +13301,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Delta t</p>
+    			<p class="card-text">Time step size $\Delta t$</p>
 			</div>
 		</div>
 
@@ -13674,7 +13674,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					The time parameters: start time t0, time step dt, number of time steps. 
+					The time parameters: start time `t0`, time step `dt`, number of time steps.
     			</div>
     			<div id="collapse579" class="collapse hide" aria-labelledby="heading579" data-parent="#accordion579">
 
@@ -13760,7 +13760,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Delta t</p>
+    			<p class="card-text">Time step size $\Delta t$</p>
 			</div>
 		</div>
 
@@ -14133,7 +14133,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					The time parameters: start time t0, end time tend, number of time steps. 
+					The time parameters: start time `t0`, end time `tend`, number of time steps.
     			</div>
     			<div id="collapse598" class="collapse hide" aria-labelledby="heading598" data-parent="#accordion598">
 
@@ -14649,7 +14649,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">True if contact handling is enabled</p>
+    			<p class="card-text">True if contact handling is enabled.</p>
 			</div>
 		</div>
 
@@ -14672,6 +14672,7 @@ function toggleDarkMode() {
 						</div>
 						<div class="col-sm">
 							<code>Float</code>
+							(0, inf)
 							= 0.001
 						</div>
 						<div class="auto">
@@ -14689,7 +14690,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">IPC barrier function parameter (see IPC paper)</p>
+    			<p class="card-text">Contact barrier activation distance.</p>
 			</div>
 		</div>
 
@@ -14729,7 +14730,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">dhat as percentage of the diagonal of the bounding box</p>
+    			<p class="card-text">$\hat{d}$ as percentage of the diagonal of the bounding box</p>
 			</div>
 		</div>
 
@@ -14752,6 +14753,7 @@ function toggleDarkMode() {
 						</div>
 						<div class="col-sm">
 							<code>Float</code>
+							(0, inf)
 							= 0.001
 						</div>
 						<div class="auto">
@@ -14769,7 +14771,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">IPC friction smoothing parameter (see IPC paper) </p>
+    			<p class="card-text">Friction smoothing parameter.</p>
 			</div>
 		</div>
 
@@ -14809,7 +14811,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Friction Coefficient</p>
+    			<p class="card-text">Coefficient of friction (global)</p>
 			</div>
 		</div>
 
@@ -14861,7 +14863,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					The settings for the solver including Linear solver, nonlinear solver, and some advanced options
+					The settings for the solver including linear solver, nonlinear solver, and some advanced options.
     			</div>
     			<div id="collapse630" class="collapse hide" aria-labelledby="heading630" data-parent="#accordion630">
 
@@ -14909,7 +14911,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Settings for linear solver
+					Settings for the linear solver.
     			</div>
     			<div id="collapse632" class="collapse hide" aria-labelledby="heading632" data-parent="#accordion632">
 
@@ -14955,7 +14957,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Linear solver type</p>
+    			<p class="card-text">Linear solver type.</p>
 			</div>
 		</div>
 
@@ -14995,7 +14997,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Preconditioner for iterative linear solver</p>
+    			<p class="card-text">Preconditioner used if using an iterative linear solver.</p>
 			</div>
 		</div>
 
@@ -15047,7 +15049,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section
+					Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section.
     			</div>
     			<div id="collapse638" class="collapse hide" aria-labelledby="heading638" data-parent="#accordion638">
 
@@ -15134,7 +15136,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Stopping criterion: minimal change of the energy f for the iterations to continue</p>
+    			<p class="card-text">Stopping criterion: minimal change of the energy f for the iterations to continue.</p>
 			</div>
 		</div>
 
@@ -15174,7 +15176,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Stopping criterion: Minimal gradient norm for the iterations to continue</p>
+    			<p class="card-text">Stopping criterion: Minimal gradient norm for the iterations to continue.</p>
 			</div>
 		</div>
 
@@ -15214,7 +15216,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Maximum number of iterations for a non-linear solve.</p>
+    			<p class="card-text">Maximum number of iterations for a nonlinear solve.</p>
 			</div>
 		</div>
 
@@ -15336,7 +15338,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Settings for line search in the nonlinear solver
+					Settings for line-search in the nonlinear solver
     			</div>
     			<div id="collapse652" class="collapse hide" aria-labelledby="heading652" data-parent="#accordion652">
 
@@ -15383,7 +15385,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">line search type</p>
+    			<p class="card-text">Line-search type</p>
 			</div>
 		</div>
 
@@ -15423,7 +15425,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy</p>
+    			<p class="card-text">When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy</p>
 			</div>
 		</div>
 
@@ -15485,7 +15487,7 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					Parameters for the AL for imposing Dirichlet bc. If the bc are not imposable, we add w*||u - bc||^2 to the energy (u is the solution at the Dirichlet nodes and bc are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double w until max_weight.
+					Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\|u - bc\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double $w$ until `max_weight`.
     			</div>
     			<div id="collapse658" class="collapse hide" aria-labelledby="heading658" data-parent="#accordion658">
 
@@ -16026,39 +16028,6 @@ function toggleDarkMode() {
 		
 		
 
-			
-		
-		<div class="card">
-			<div class="card-header">
-				<div class="container">
-				<h5>
-					<div class="row align-items-center">
-						<div class="auto">
-							<p class="text-primary">/solver/contact/lagged_damping_weight</p>
-						</div>
-						<div class="col-sm">
-							<code>Integer</code>
-							= 0
-						</div>
-						<div class="auto">
-						
-	<button class="btn" onclick="navigator.clipboard.writeText('lagged_damping_weight');">
-	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-	<path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-	<path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-	</svg>
-	</button>
-
-						</div>
-					</div>
-				</h5>
-				</div>
-  			</div>
-  			<div class="card-body">
-    			<p class="card-text"><span class="todo">TODO</span></p>
-			</div>
-		</div>
-
 
 
 						    </div>
@@ -16118,14 +16087,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion687">
+		<div id="accordion686">
   			<div class="card">
-    			<div class="card-header" id="heading687">
+    			<div class="card-header" id="heading686">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse687" aria-expanded="true" aria-controls="collapse687">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse686" aria-expanded="true" aria-controls="collapse686">
 								<h4>/solver/advanced</h4>
 								</button>
 							</div>
@@ -16149,7 +16118,7 @@ function toggleDarkMode() {
 					</div>
 					Advanced settings for the solver
     			</div>
-    			<div id="collapse687" class="collapse hide" aria-labelledby="heading687" data-parent="#accordion687">
+    			<div id="collapse686" class="collapse hide" aria-labelledby="heading686" data-parent="#accordion686">
 
 					<div class="container">
 
@@ -16266,14 +16235,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion693">
+		<div id="accordion692">
   			<div class="card">
-    			<div class="card-header" id="heading693">
+    			<div class="card-header" id="heading692">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse693" aria-expanded="true" aria-controls="collapse693">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse692" aria-expanded="true" aria-controls="collapse692">
 								<h4>/boundary_conditions</h4>
 								</button>
 							</div>
@@ -16295,9 +16264,9 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					The settings for boundary conditions. 
+					The settings for boundary conditions.
     			</div>
-    			<div id="collapse693" class="collapse hide" aria-labelledby="heading693" data-parent="#accordion693">
+    			<div id="collapse692" class="collapse hide" aria-labelledby="heading692" data-parent="#accordion692">
 
 					<div class="container">
 
@@ -16312,17 +16281,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion694">
+		<div id="accordion693">
   			<div class="card">
-    			<div class="card-header" id="heading694">
+    			<div class="card-header" id="heading693">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse694" aria-expanded="true" aria-controls="collapse694">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse693" aria-expanded="true" aria-controls="collapse693">
 						<h4>/boundary_conditions/rhs</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse694" class="collapse hide" aria-labelledby="heading694" data-parent="#accordion694">
+    			<div id="collapse693" class="collapse hide" aria-labelledby="heading693" data-parent="#accordion693">
 					
 		
 		<div class="card">
@@ -16351,7 +16320,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Right-hand side of the system being solved for scalar-valued pdes</p>
+    			<p class="card-text">Right-hand side of the system being solved for scalar-valued PDEs</p>
 			</div>
 		</div>
 
@@ -16383,7 +16352,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Right-hand side of the system being solved as a function of x,y,z,t</p>
+    			<p class="card-text">Right-hand side of the system being solved as a function of $x,y,z,t$.</p>
 			</div>
 		</div>
 
@@ -16394,17 +16363,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion698">
+		<div id="accordion697">
   			<div class="card">
-    			<div class="card-header" id="heading698">
+    			<div class="card-header" id="heading697">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse698" aria-expanded="true" aria-controls="collapse698">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse697" aria-expanded="true" aria-controls="collapse697">
 						<h4>/boundary_conditions/rhs/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse698" class="collapse hide" aria-labelledby="heading698" data-parent="#accordion698">
+    			<div id="collapse697" class="collapse hide" aria-labelledby="heading697" data-parent="#accordion697">
 					
 		
 		<div class="card">
@@ -16434,7 +16403,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Right-hand side of the system being solved, value</p>
+    			<p class="card-text">Right-hand side of the system being solved, value.</p>
 			</div>
 		</div>
 
@@ -16466,7 +16435,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Right-hand side of the system being solved as a function of x,y,z,t</p>
+    			<p class="card-text">Right-hand side of the system being solved as a function of $x,y,z,t$.</p>
 			</div>
 		</div>
 
@@ -16493,27 +16462,27 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion703">
+		<div id="accordion702">
   			<div class="card">
-    			<div class="card-header" id="heading703">
+    			<div class="card-header" id="heading702">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse703" aria-expanded="true" aria-controls="collapse703">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse702" aria-expanded="true" aria-controls="collapse702">
 						<h4>/boundary_conditions/dirichlet_boundary/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse703" class="collapse hide" aria-labelledby="heading703" data-parent="#accordion703">
+    			<div id="collapse702" class="collapse hide" aria-labelledby="heading702" data-parent="#accordion702">
 					
 		
-		<div id="accordion704">
+		<div id="accordion703">
   			<div class="card">
-    			<div class="card-header" id="heading704">
+    			<div class="card-header" id="heading703">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse704" aria-expanded="true" aria-controls="collapse704">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse703" aria-expanded="true" aria-controls="collapse703">
 								<h4>/boundary_conditions/dirichlet_boundary/*</h4>
 								</button>
 							</div>
@@ -16537,7 +16506,7 @@ function toggleDarkMode() {
 					</div>
 					Dirichlet boundary condition.
     			</div>
-    			<div id="collapse704" class="collapse hide" aria-labelledby="heading704" data-parent="#accordion704">
+    			<div id="collapse703" class="collapse hide" aria-labelledby="heading703" data-parent="#accordion703">
 
 
 					<div class="container">
@@ -16552,17 +16521,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion705">
+		<div id="accordion704">
   			<div class="card">
-    			<div class="card-header" id="heading705">
+    			<div class="card-header" id="heading704">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse705" aria-expanded="true" aria-controls="collapse705">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse704" aria-expanded="true" aria-controls="collapse704">
 						<h4>/boundary_conditions/dirichlet_boundary/*/id</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse705" class="collapse hide" aria-labelledby="heading705" data-parent="#accordion705">
+    			<div id="collapse704" class="collapse hide" aria-labelledby="heading704" data-parent="#accordion704">
 					
 		
 		<div class="card">
@@ -16591,7 +16560,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id of Dirichlet boundary condition from surface selection</p>
+    			<p class="card-text">ID of Dirichlet boundary condition from surface selection.</p>
 			</div>
 		</div>
 
@@ -16624,7 +16593,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">select all ids</p>
+    			<p class="card-text">select all ids.</p>
 			</div>
 		</div>
 
@@ -16645,17 +16614,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion710">
+		<div id="accordion709">
   			<div class="card">
-    			<div class="card-header" id="heading710">
+    			<div class="card-header" id="heading709">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse710" aria-expanded="true" aria-controls="collapse710">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse709" aria-expanded="true" aria-controls="collapse709">
 						<h4>/boundary_conditions/dirichlet_boundary/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse710" class="collapse hide" aria-labelledby="heading710" data-parent="#accordion710">
+    			<div id="collapse709" class="collapse hide" aria-labelledby="heading709" data-parent="#accordion709">
 					
 		
 		<div class="card">
@@ -16684,7 +16653,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Values of Dirichlet boundary condition for each dimension as a function of x,y,z,t</p>
+    			<p class="card-text">Values of Dirichlet boundary condition for each dimension as a function of $x,y,z,t$.</p>
 			</div>
 		</div>
 
@@ -16716,7 +16685,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Values of Dirichlet boundary condition for each dimension</p>
+    			<p class="card-text">Values of Dirichlet boundary condition for each dimension.</p>
 			</div>
 		</div>
 
@@ -16825,7 +16794,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension</p>
+    			<p class="card-text">Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension.</p>
 			</div>
 		</div>
 
@@ -16851,14 +16820,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion721">
+		<div id="accordion720">
   			<div class="card">
-    			<div class="card-header" id="heading721">
+    			<div class="card-header" id="heading720">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse721" aria-expanded="true" aria-controls="collapse721">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse720" aria-expanded="true" aria-controls="collapse720">
 								<h4>/boundary_conditions/neumann_boundary/*</h4>
 								</button>
 							</div>
@@ -16882,7 +16851,7 @@ function toggleDarkMode() {
 					</div>
 					Neumann boundary condition
     			</div>
-    			<div id="collapse721" class="collapse hide" aria-labelledby="heading721" data-parent="#accordion721">
+    			<div id="collapse720" class="collapse hide" aria-labelledby="heading720" data-parent="#accordion720">
 
 					<div class="container">
 
@@ -16926,7 +16895,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id of Neumann boundary condition</p>
+    			<p class="card-text">ID of Neumann boundary condition</p>
 			</div>
 		</div>
 
@@ -16944,17 +16913,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion726">
+		<div id="accordion725">
   			<div class="card">
-    			<div class="card-header" id="heading726">
+    			<div class="card-header" id="heading725">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse726" aria-expanded="true" aria-controls="collapse726">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse725" aria-expanded="true" aria-controls="collapse725">
 						<h4>/boundary_conditions/neumann_boundary/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse726" class="collapse hide" aria-labelledby="heading726" data-parent="#accordion726">
+    			<div id="collapse725" class="collapse hide" aria-labelledby="heading725" data-parent="#accordion725">
 					
 		
 		<div class="card">
@@ -16984,7 +16953,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Values of Neumann boundary condition for each dimension as function of x,y,z,t</p>
+    			<p class="card-text">Values of Neumann boundary condition for each dimension as function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -17056,14 +17025,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion732">
+		<div id="accordion731">
   			<div class="card">
-    			<div class="card-header" id="heading732">
+    			<div class="card-header" id="heading731">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse732" aria-expanded="true" aria-controls="collapse732">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse731" aria-expanded="true" aria-controls="collapse731">
 								<h4>/boundary_conditions/pressure_boundary/*</h4>
 								</button>
 							</div>
@@ -17087,7 +17056,7 @@ function toggleDarkMode() {
 					</div>
 					pressure BC entry
     			</div>
-    			<div id="collapse732" class="collapse hide" aria-labelledby="heading732" data-parent="#accordion732">
+    			<div id="collapse731" class="collapse hide" aria-labelledby="heading731" data-parent="#accordion731">
 
 
 					<div class="container">
@@ -17130,7 +17099,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id for the pressure Neumann boundary condition</p>
+    			<p class="card-text">ID for the pressure Neumann boundary condition</p>
 			</div>
 		</div>
 
@@ -17148,17 +17117,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion737">
+		<div id="accordion736">
   			<div class="card">
-    			<div class="card-header" id="heading737">
+    			<div class="card-header" id="heading736">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse737" aria-expanded="true" aria-controls="collapse737">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse736" aria-expanded="true" aria-controls="collapse736">
 						<h4>/boundary_conditions/pressure_boundary/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse737" class="collapse hide" aria-labelledby="heading737" data-parent="#accordion737">
+    			<div id="collapse736" class="collapse hide" aria-labelledby="heading736" data-parent="#accordion736">
 					
 		
 		<div class="card">
@@ -17187,7 +17156,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Values of pressure Neumann boundary condition as a function of x,y,z,t</p>
+    			<p class="card-text">Values of pressure Neumann boundary condition as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -17276,14 +17245,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion744">
+		<div id="accordion743">
   			<div class="card">
-    			<div class="card-header" id="heading744">
+    			<div class="card-header" id="heading743">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse744" aria-expanded="true" aria-controls="collapse744">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse743" aria-expanded="true" aria-controls="collapse743">
 								<h4>/boundary_conditions/obstacle_displacements/*</h4>
 								</button>
 							</div>
@@ -17307,7 +17276,7 @@ function toggleDarkMode() {
 					</div>
 					Obstacle displacements
     			</div>
-    			<div id="collapse744" class="collapse hide" aria-labelledby="heading744" data-parent="#accordion744">
+    			<div id="collapse743" class="collapse hide" aria-labelledby="heading743" data-parent="#accordion743">
 
 
 					<div class="container">
@@ -17350,7 +17319,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id of Obstacle displacements</p>
+    			<p class="card-text">ID of Obstacle displacements</p>
 			</div>
 		</div>
 
@@ -17368,17 +17337,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion749">
+		<div id="accordion748">
   			<div class="card">
-    			<div class="card-header" id="heading749">
+    			<div class="card-header" id="heading748">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse749" aria-expanded="true" aria-controls="collapse749">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse748" aria-expanded="true" aria-controls="collapse748">
 						<h4>/boundary_conditions/obstacle_displacements/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse749" class="collapse hide" aria-labelledby="heading749" data-parent="#accordion749">
+    			<div id="collapse748" class="collapse hide" aria-labelledby="heading748" data-parent="#accordion748">
 					
 		
 		<div class="card">
@@ -17407,7 +17376,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">Values of Obstacle displacements for each dimension as a function of x,y,z,t</p>
+    			<p class="card-text">Values of Obstacle displacements for each dimension as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -17481,14 +17450,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion753">
+		<div id="accordion752">
   			<div class="card">
-    			<div class="card-header" id="heading753">
+    			<div class="card-header" id="heading752">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse753" aria-expanded="true" aria-controls="collapse753">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse752" aria-expanded="true" aria-controls="collapse752">
 								<h4>/initial_conditions</h4>
 								</button>
 							</div>
@@ -17512,7 +17481,7 @@ function toggleDarkMode() {
 					</div>
 					Initial conditions for the time-dependent problem, imposed on the main variable, its derivative or second derivative
     			</div>
-    			<div id="collapse753" class="collapse hide" aria-labelledby="heading753" data-parent="#accordion753">
+    			<div id="collapse752" class="collapse hide" aria-labelledby="heading752" data-parent="#accordion752">
 
 					<div class="container">
 
@@ -17536,14 +17505,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion757">
+		<div id="accordion756">
   			<div class="card">
-    			<div class="card-header" id="heading757">
+    			<div class="card-header" id="heading756">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse757" aria-expanded="true" aria-controls="collapse757">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse756" aria-expanded="true" aria-controls="collapse756">
 								<h4>/initial_conditions/solution/*</h4>
 								</button>
 							</div>
@@ -17565,9 +17534,9 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					A list of (id, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas.
+					A list of (ID, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas.
     			</div>
-    			<div id="collapse757" class="collapse hide" aria-labelledby="heading757" data-parent="#accordion757">
+    			<div id="collapse756" class="collapse hide" aria-labelledby="heading756" data-parent="#accordion756">
 
 
 					<div class="container">
@@ -17610,7 +17579,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id from volume selections</p>
+    			<p class="card-text">ID from volume selections</p>
 			</div>
 		</div>
 
@@ -17628,17 +17597,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion762">
+		<div id="accordion761">
   			<div class="card">
-    			<div class="card-header" id="heading762">
+    			<div class="card-header" id="heading761">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse762" aria-expanded="true" aria-controls="collapse762">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse761" aria-expanded="true" aria-controls="collapse761">
 						<h4>/initial_conditions/solution/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse762" class="collapse hide" aria-labelledby="heading762" data-parent="#accordion762">
+    			<div id="collapse761" class="collapse hide" aria-labelledby="heading761" data-parent="#accordion761">
 					
 		
 		<div class="card">
@@ -17699,7 +17668,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">as a function of x,y,z,t</p>
+    			<p class="card-text">as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -17738,14 +17707,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion768">
+		<div id="accordion767">
   			<div class="card">
-    			<div class="card-header" id="heading768">
+    			<div class="card-header" id="heading767">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse768" aria-expanded="true" aria-controls="collapse768">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse767" aria-expanded="true" aria-controls="collapse767">
 								<h4>/initial_conditions/velocity/*</h4>
 								</button>
 							</div>
@@ -17767,9 +17736,9 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					A list of (id, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas.
+					A list of (ID, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas.
     			</div>
-    			<div id="collapse768" class="collapse hide" aria-labelledby="heading768" data-parent="#accordion768">
+    			<div id="collapse767" class="collapse hide" aria-labelledby="heading767" data-parent="#accordion767">
 
 
 					<div class="container">
@@ -17812,7 +17781,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id from volume selections</p>
+    			<p class="card-text">ID from volume selections</p>
 			</div>
 		</div>
 
@@ -17830,17 +17799,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion773">
+		<div id="accordion772">
   			<div class="card">
-    			<div class="card-header" id="heading773">
+    			<div class="card-header" id="heading772">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse773" aria-expanded="true" aria-controls="collapse773">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse772" aria-expanded="true" aria-controls="collapse772">
 						<h4>/initial_conditions/velocity/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse773" class="collapse hide" aria-labelledby="heading773" data-parent="#accordion773">
+    			<div id="collapse772" class="collapse hide" aria-labelledby="heading772" data-parent="#accordion772">
 					
 		
 		<div class="card">
@@ -17901,7 +17870,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">value as a function of x,y,z,t</p>
+    			<p class="card-text">value as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -17940,14 +17909,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion779">
+		<div id="accordion778">
   			<div class="card">
-    			<div class="card-header" id="heading779">
+    			<div class="card-header" id="heading778">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse779" aria-expanded="true" aria-controls="collapse779">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse778" aria-expanded="true" aria-controls="collapse778">
 								<h4>/initial_conditions/acceleration/*</h4>
 								</button>
 							</div>
@@ -17971,7 +17940,7 @@ function toggleDarkMode() {
 					</div>
 					entries
     			</div>
-    			<div id="collapse779" class="collapse hide" aria-labelledby="heading779" data-parent="#accordion779">
+    			<div id="collapse778" class="collapse hide" aria-labelledby="heading778" data-parent="#accordion778">
 
 
 					<div class="container">
@@ -18014,7 +17983,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">id from volume selections</p>
+    			<p class="card-text">ID from volume selections</p>
 			</div>
 		</div>
 
@@ -18032,17 +18001,17 @@ function toggleDarkMode() {
 		
 		
 
-		<div id="accordion784">
+		<div id="accordion783">
   			<div class="card">
-    			<div class="card-header" id="heading784">
+    			<div class="card-header" id="heading783">
       				<h5 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse784" aria-expanded="true" aria-controls="collapse784">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse783" aria-expanded="true" aria-controls="collapse783">
 						<h4>/initial_conditions/acceleration/*/value/*</h4>
 						</button>
 						Multiple Types
       				</h5>
     			</div>
-    			<div id="collapse784" class="collapse hide" aria-labelledby="heading784" data-parent="#accordion784">
+    			<div id="collapse783" class="collapse hide" aria-labelledby="heading783" data-parent="#accordion783">
 					
 		
 		<div class="card">
@@ -18104,7 +18073,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">value as a function of x,y,z,t</p>
+    			<p class="card-text">value as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -18146,14 +18115,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion788">
+		<div id="accordion787">
   			<div class="card">
-    			<div class="card-header" id="heading788">
+    			<div class="card-header" id="heading787">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse788" aria-expanded="true" aria-controls="collapse788">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse787" aria-expanded="true" aria-controls="collapse787">
 								<h4>/output</h4>
 								</button>
 							</div>
@@ -18177,7 +18146,7 @@ function toggleDarkMode() {
 					</div>
 					output settings
     			</div>
-    			<div id="collapse788" class="collapse hide" aria-labelledby="heading788" data-parent="#accordion788">
+    			<div id="collapse787" class="collapse hide" aria-labelledby="heading787" data-parent="#accordion787">
 
 					<div class="container">
 
@@ -18234,14 +18203,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion792">
+		<div id="accordion791">
   			<div class="card">
-    			<div class="card-header" id="heading792">
+    			<div class="card-header" id="heading791">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse792" aria-expanded="true" aria-controls="collapse792">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse791" aria-expanded="true" aria-controls="collapse791">
 								<h4>/output/paraview</h4>
 								</button>
 							</div>
@@ -18265,7 +18234,7 @@ function toggleDarkMode() {
 					</div>
 					Output in paraview format
     			</div>
-    			<div id="collapse792" class="collapse hide" aria-labelledby="heading792" data-parent="#accordion792">
+    			<div id="collapse791" class="collapse hide" aria-labelledby="heading791" data-parent="#accordion791">
 
 					<div class="container">
 
@@ -18562,14 +18531,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion808">
+		<div id="accordion807">
   			<div class="card">
-    			<div class="card-header" id="heading808">
+    			<div class="card-header" id="heading807">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse808" aria-expanded="true" aria-controls="collapse808">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse807" aria-expanded="true" aria-controls="collapse807">
 								<h4>/output/paraview/options</h4>
 								</button>
 							</div>
@@ -18593,7 +18562,7 @@ function toggleDarkMode() {
 					</div>
 					Optional fields in the output
     			</div>
-    			<div id="collapse808" class="collapse hide" aria-labelledby="heading808" data-parent="#accordion808">
+    			<div id="collapse807" class="collapse hide" aria-labelledby="heading807" data-parent="#accordion807">
 
 					<div class="container">
 
@@ -18870,14 +18839,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion822">
+		<div id="accordion821">
   			<div class="card">
-    			<div class="card-header" id="heading822">
+    			<div class="card-header" id="heading821">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse822" aria-expanded="true" aria-controls="collapse822">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse821" aria-expanded="true" aria-controls="collapse821">
 								<h4>/output/data</h4>
 								</button>
 							</div>
@@ -18901,7 +18870,7 @@ function toggleDarkMode() {
 					</div>
 					File names to write output data to.
     			</div>
-    			<div id="collapse822" class="collapse hide" aria-labelledby="heading822" data-parent="#accordion822">
+    			<div id="collapse821" class="collapse hide" aria-labelledby="heading821" data-parent="#accordion821">
 
 					<div class="container">
 
@@ -18985,7 +18954,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">System matrix without boundary conditions. Doesn't work for non-linear problems</p>
+    			<p class="card-text">System matrix without boundary conditions. Doesn't work for nonlinear problems</p>
 			</div>
 		</div>
 
@@ -19025,7 +18994,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">System matrix with boundary conditions. Doesn't work for non-linear problems</p>
+    			<p class="card-text">System matrix with boundary conditions. Doesn't work for nonlinear problems</p>
 			</div>
 		</div>
 
@@ -19278,14 +19247,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion842">
+		<div id="accordion841">
   			<div class="card">
-    			<div class="card-header" id="heading842">
+    			<div class="card-header" id="heading841">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse842" aria-expanded="true" aria-controls="collapse842">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse841" aria-expanded="true" aria-controls="collapse841">
 								<h4>/output/data/advanced</h4>
 								</button>
 							</div>
@@ -19309,7 +19278,7 @@ function toggleDarkMode() {
 					</div>
 					advanced options
     			</div>
-    			<div id="collapse842" class="collapse hide" aria-labelledby="heading842" data-parent="#accordion842">
+    			<div id="collapse841" class="collapse hide" aria-labelledby="heading841" data-parent="#accordion841">
 
 					<div class="container">
 
@@ -19386,14 +19355,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion846">
+		<div id="accordion845">
   			<div class="card">
-    			<div class="card-header" id="heading846">
+    			<div class="card-header" id="heading845">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse846" aria-expanded="true" aria-controls="collapse846">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse845" aria-expanded="true" aria-controls="collapse845">
 								<h4>/output/advanced</h4>
 								</button>
 							</div>
@@ -19417,7 +19386,7 @@ function toggleDarkMode() {
 					</div>
 					Additional output options
     			</div>
-    			<div id="collapse846" class="collapse hide" aria-labelledby="heading846" data-parent="#accordion846">
+    			<div id="collapse845" class="collapse hide" aria-labelledby="heading845" data-parent="#accordion845">
 
 					<div class="container">
 
@@ -19781,7 +19750,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">saves obj after every non-linear iteration, for debugging</p>
+    			<p class="card-text">saves obj after every nonlinear iteration, for debugging</p>
 			</div>
 		</div>
 
@@ -19844,14 +19813,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion868">
+		<div id="accordion867">
   			<div class="card">
-    			<div class="card-header" id="heading868">
+    			<div class="card-header" id="heading867">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse868" aria-expanded="true" aria-controls="collapse868">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse867" aria-expanded="true" aria-controls="collapse867">
 								<h4>/output/reference</h4>
 								</button>
 							</div>
@@ -19875,7 +19844,7 @@ function toggleDarkMode() {
 					</div>
 					Write out the analytic/numerical ground-truth solution and or its gradient
     			</div>
-    			<div id="collapse868" class="collapse hide" aria-labelledby="heading868" data-parent="#accordion868">
+    			<div id="collapse867" class="collapse hide" aria-labelledby="heading867" data-parent="#accordion867">
 
 					<div class="container">
 
@@ -19926,7 +19895,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">value as a function of x,y,z,t</p>
+    			<p class="card-text">value as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -19976,7 +19945,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">value as a function of x,y,z,t</p>
+    			<p class="card-text">value as a function of $x,y,z,t$</p>
 			</div>
 		</div>
 
@@ -20012,14 +19981,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion878">
+		<div id="accordion877">
   			<div class="card">
-    			<div class="card-header" id="heading878">
+    			<div class="card-header" id="heading877">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse878" aria-expanded="true" aria-controls="collapse878">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse877" aria-expanded="true" aria-controls="collapse877">
 								<h4>/input</h4>
 								</button>
 							</div>
@@ -20043,7 +20012,7 @@ function toggleDarkMode() {
 					</div>
 					input data
     			</div>
-    			<div id="collapse878" class="collapse hide" aria-labelledby="heading878" data-parent="#accordion878">
+    			<div id="collapse877" class="collapse hide" aria-labelledby="heading877" data-parent="#accordion877">
 
 					<div class="container">
 
@@ -20060,14 +20029,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion880">
+		<div id="accordion879">
   			<div class="card">
-    			<div class="card-header" id="heading880">
+    			<div class="card-header" id="heading879">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse880" aria-expanded="true" aria-controls="collapse880">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse879" aria-expanded="true" aria-controls="collapse879">
 								<h4>/input/data</h4>
 								</button>
 							</div>
@@ -20091,7 +20060,7 @@ function toggleDarkMode() {
 					</div>
 					input to restart time dependent sim
     			</div>
-    			<div id="collapse880" class="collapse hide" aria-labelledby="heading880" data-parent="#accordion880">
+    			<div id="collapse879" class="collapse hide" aria-labelledby="heading879" data-parent="#accordion879">
 
 					<div class="container">
 
@@ -20248,14 +20217,14 @@ function toggleDarkMode() {
 
 			
 		
-		<div id="accordion888">
+		<div id="accordion887">
   			<div class="card">
-    			<div class="card-header" id="heading888">
+    			<div class="card-header" id="heading887">
 					<div class="container">
 					<h5>
 						<div class="row align-items-center">
 							<div class="auto">
-								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse888" aria-expanded="true" aria-controls="collapse888">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse887" aria-expanded="true" aria-controls="collapse887">
 								<h4>/authen_t1</h4>
 								</button>
 							</div>
@@ -20277,9 +20246,9 @@ function toggleDarkMode() {
 						</div>
 					</h5>
 					</div>
-					use to test to compare different norms of solutions
+					Used to test to compare different norms of solutions.
     			</div>
-    			<div id="collapse888" class="collapse hide" aria-labelledby="heading888" data-parent="#accordion888">
+    			<div id="collapse887" class="collapse hide" aria-labelledby="heading887" data-parent="#accordion887">
 
 					<div class="container">
 
@@ -20323,7 +20292,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference h1 solution's norm</p>
+    			<p class="card-text">Reference h1 solution's norm.</p>
 			</div>
 		</div>
 
@@ -20363,7 +20332,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference h1 seminorm solution's norm</p>
+    			<p class="card-text">Reference h1 seminorm solution's norm.</p>
 			</div>
 		</div>
 
@@ -20403,7 +20372,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference l2 solution's norm</p>
+    			<p class="card-text">Reference $L^2$ solution's norm.</p>
 			</div>
 		</div>
 
@@ -20443,7 +20412,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference linf solution's norm</p>
+    			<p class="card-text">Reference $L^\infty$ solution's norm.</p>
 			</div>
 		</div>
 
@@ -20483,7 +20452,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference linf solution's gradient norm</p>
+    			<p class="card-text">Reference $L^\infty$ solution's gradient norm.</p>
 			</div>
 		</div>
 
@@ -20523,7 +20492,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference l8 solution's gradient norm</p>
+    			<p class="card-text">Reference $L^8$ solution's gradient norm.</p>
 			</div>
 		</div>
 
@@ -20563,7 +20532,7 @@ function toggleDarkMode() {
 				</div>
   			</div>
   			<div class="card-body">
-    			<p class="card-text">reference tolerance used in tests</p>
+    			<p class="card-text">Reference tolerance used in tests.</p>
 			</div>
 		</div>
 
