@@ -34,13 +34,18 @@ jobs:
         run: doxygen Doxyfile
 
       - name: Generate JSON Spec Documentation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git clone https://github.com/polyfem/polyfem.github.io.git
-          pip install -r ./polyfem.github.io/requirements.txt
+          # git clone git@github.com:polyfem/polyfem.github.io.git
+          git clone https://git:$GITHUB_TOKEN@github.com/polyfem/polyfem.github.io.git
+          pip install --quiet -r ./polyfem.github.io/requirements.txt
           git clone https://github.com/geometryprocessing/json-spec-engine.git
-          pip install -r ./json-spec-engine/requirements.txt
+          pip install --quiet -r ./json-spec-engine/requirements.txt
           python ./json-spec-engine/docs/spec2html.py -i ./input-spec.json -o ./polyfem.github.io/docs/json_api.md
           cd polyfem.github.io
+          git config user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config user.email "username@users.noreply.github.com"
           mkdocs gh-deploy
 
       - name: Create .nojekyll
