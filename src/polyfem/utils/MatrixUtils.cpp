@@ -214,6 +214,30 @@ bool polyfem::utils::write_sparse_matrix_csv(const std::string &path, const Eige
 	return true;
 }
 
+template <typename T>
+bool polyfem::utils::import_matrix(
+	const std::string &path, const json &import, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+{
+	bool success;
+	if (import.contains("offset"))
+	{
+		const int offset = import["offset"];
+
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> tmp;
+		success = read_matrix(path, tmp);
+		if (success)
+		{
+			assert(mat.rows() >= offset && mat.cols() >= 1);
+			mat.block(0, 0, offset, 1) = tmp.block(0, 0, offset, 1);
+		}
+	}
+	else
+	{
+		success = read_matrix(path, mat);
+	}
+	return success;
+}
+
 polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	: size_(size)
 {
@@ -306,7 +330,7 @@ void polyfem::utils::SpareMatrixCache::add_value(const int e, const int i, const
 		}
 		else
 		{
-			//mapping()[i].find(j)
+			// mapping()[i].find(j)
 			const auto &map = mapping()[i];
 			bool found = false;
 			for (const auto &p : map)
@@ -419,7 +443,8 @@ polyfem::StiffnessMatrix polyfem::utils::SpareMatrixCache::get_matrix(const bool
 		assert(size_ > 0);
 		const auto &outer_index = main_cache_ == nullptr ? outer_index_ : main_cache_->outer_index_;
 		const auto &inner_index = main_cache_ == nullptr ? inner_index_ : main_cache_->inner_index_;
-		mat_ = Eigen::Map<const StiffnessMatrix>(size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
+		mat_ = Eigen::Map<const StiffnessMatrix>(
+			size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
 
 		if (use_second_cache_)
 		{
@@ -553,7 +578,26 @@ Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 	return X;
 }
 
-//template instantiation
+Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatrix<double> &M)
+{
+	std::vector<Eigen::Triplet<double>> triplets;
+
+	for (int k = 0; k < M.outerSize(); ++k)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(M, k); it; ++it)
+		{
+			triplets.emplace_back(it.row(), it.row(), it.value());
+		}
+	}
+
+	Eigen::SparseMatrix<double> lumped(M.rows(), M.rows());
+	lumped.setFromTriplets(triplets.begin(), triplets.end());
+	lumped.makeCompressed();
+
+	return lumped;
+}
+
+// template instantiation
 template bool polyfem::utils::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::utils::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 
@@ -577,3 +621,6 @@ template bool polyfem::utils::write_matrix_binary<Eigen::MatrixXd>(const std::st
 template bool polyfem::utils::write_matrix_binary<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
 template bool polyfem::utils::write_matrix_binary<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
 template bool polyfem::utils::write_matrix_binary<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+
+template bool polyfem::utils::import_matrix<int>(const std::string &path, const json &import, Eigen::MatrixXi &mat);
+template bool polyfem::utils::import_matrix<double>(const std::string &path, const json &import, Eigen::MatrixXd &mat);

@@ -25,32 +25,28 @@ namespace polyfem
 		ALNLProblem::ALNLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const double weight)
 			: super(state, rhs_assembler, t, dhat, true), weight_(weight)
 		{
-			std::vector<Eigen::Triplet<double>> entries;
-
 			// stop_dist_ = 1e-2 * state.min_edge_length;
 
-			for (const auto bn : state.boundary_nodes)
-				entries.emplace_back(bn, bn, 1.0);
+			const int ndof = state.n_bases * state.mesh->dimension();
 
-			hessian_AL_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
-			hessian_AL_.setFromTriplets(entries.begin(), entries.end());
-			hessian_AL_.makeCompressed();
+			std::vector<bool> is_boundary_dof(ndof, true);
+			for (const auto bn : state.boundary_nodes)
+				is_boundary_dof[bn] = false;
+
+			masked_lumped_mass_ = state.mass.size() == 0 ? sparse_identity(ndof, ndof) : lump_matrix(state.mass);
+			assert(ndof == masked_lumped_mass_.rows() && ndof == masked_lumped_mass_.cols());
+			// Remove non-boundary ndof from mass matrix
+			masked_lumped_mass_.prune([&](const int &row, const int &col, const double &value) -> bool {
+				assert(row == col); // matrix should be diagonal
+				return !is_boundary_dof[row];
+			});
 
 			update_target(t);
-
-			std::vector<bool> mask(hessian_AL_.rows(), true);
-
-			for (const auto bn : state.boundary_nodes)
-				mask[bn] = false;
-
-			for (int i = 0; i < mask.size(); ++i)
-				if (mask[i])
-					not_boundary_.push_back(i);
 		}
 
 		void ALNLProblem::update_target(const double t)
 		{
-			target_x_.setZero(hessian_AL_.rows(), 1);
+			target_x_.setZero(masked_lumped_mass_.rows(), 1);
 			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), state.local_neumann_boundary, target_x_, t);
 		}
 
@@ -63,63 +59,41 @@ namespace polyfem
 			}
 		}
 
-		void ALNLProblem::compute_distance(const TVector &x, TVector &res)
-		{
-			res = x - target_x_;
-
-			for (const auto bn : not_boundary_)
-				res[bn] = 0;
-		}
-
 		double ALNLProblem::value(const TVector &x, const bool only_elastic)
 		{
 			const double val = super::value(x, only_elastic);
 
 			// ₙ
-			// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (xₖ - x̂ₖ)ᵀ M (xₖ - x̂ₖ)
+			// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (x - x̂)ᵀ M (x - x̂)
 			// ᵏ
-			TVector distv;
-			compute_distance(x, distv);
-			// TODO: replace this with the actual mass matrix
-			Eigen::SparseMatrix<double> M = sparse_identity(x.size(), x.size());
-			const double AL_penalty = weight_ / 2 * distv.transpose() * M * distv;
+			const TVector dist = x - target_x_;
+			const double AL_penalty = weight_ / 2 * dist.transpose() * masked_lumped_mass_ * dist;
 
 			// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
 			// ₙ    __
-			// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ)
+			// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ) = -λᵀ M (x - x̂)
 			// ᵏ
 
 			logger().trace("AL_penalty={}", sqrt(AL_penalty));
 
-			Eigen::MatrixXd ddd;
-			compute_displaced_points(x, ddd);
-			if (ddd.cols() == 2)
-			{
-				ddd.conservativeResize(ddd.rows(), 3);
-				ddd.col(2).setZero();
-			}
-
 			return val + AL_penalty;
 		}
 
-		void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic)
+		void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad, const bool only_elastic)
 		{
-			super::gradient_no_rhs(x, gradv, only_elastic);
+			super::gradient_no_rhs(x, grad, only_elastic);
 
-			TVector grad_AL;
-			compute_distance(x, grad_AL);
-			//logger().trace("dist grad {}", tmp.norm());
-			grad_AL *= weight_;
+			grad += weight_ * masked_lumped_mass_ * (x - target_x_);
 
-			gradv += grad_AL;
-			// gradv = tmp;
+			// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
 		}
 
 		void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
 		{
 			super::hessian_full(x, hessian);
-			hessian += weight_ * hessian_AL_;
+			hessian += weight_ * masked_lumped_mass_;
 			hessian.makeCompressed();
+			// Hessian of Lagrangian potential is zero
 		}
 
 		bool ALNLProblem::stop(const TVector &x)
@@ -128,7 +102,7 @@ namespace polyfem
 			// compute_distance(x, distv);
 			// const double dist = distv.norm();
 
-			return false; //dist < stop_dist_;
+			return false; // dist < stop_dist_;
 		}
 	} // namespace solver
 } // namespace polyfem

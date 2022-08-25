@@ -24,6 +24,8 @@
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <polysolve/LinearSolver.hpp>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -35,11 +37,8 @@
 #include <string>
 
 #include <ipc/collision_mesh.hpp>
-#include <ipc/ipc.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
-#include <ipc/friction/friction_constraint.hpp>
-
 #include <ipc/utils/logger.hpp>
+#include <ipc/friction/friction_constraint.hpp>
 
 // Forward declaration
 namespace cppoptlib
@@ -72,7 +71,7 @@ namespace polyfem
 	} // namespace solver
 
 	/// class to store time stepping data
-	class StepData
+	class SolveData
 	{
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
@@ -95,8 +94,9 @@ namespace polyfem
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
+		/// @param[in] strict_validation strict validation of input
 		/// @param[in] output_dir output directory
-		void init(const json &args, const std::string &output_dir = "");
+		void init(const json &args, const bool strict_validation, const std::string &output_dir = "", const bool fallback_solver = false);
 
 		/// initialize time settings if args contains "time"
 		void init_time();
@@ -125,7 +125,7 @@ namespace polyfem
 		{
 			spdlog::set_level(log_level);
 			logger().set_level(log_level);
-			IPC_LOG(set_level(log_level));
+			ipc::logger().set_level(log_level);
 			current_log_level = log_level;
 		}
 
@@ -178,7 +178,7 @@ namespace polyfem
 		std::vector<ElementBases> bases;
 		/// FE pressure bases for mixed elements, the size is #elements
 		std::vector<ElementBases> pressure_bases;
-		///Geometric mapping bases, if the elements are isoparametric, this list is empty
+		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
 
 		// Mapping from input nodes to FE nodes
@@ -205,7 +205,7 @@ namespace polyfem
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
 		/// stiffness and mass matrix.
-		/// Stiffness is not compute for non linear problems
+		/// Stiffness is not compute for nonlinear problems
 		StiffnessMatrix stiffness;
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
@@ -289,69 +289,71 @@ namespace polyfem
 		void compute_homogenized_tensor(Eigen::MatrixXd &C);
 
 		/// timedependent stuff cached
-		StepData step_data;
-		/// initialize transient solver
-		/// @param[in] c_sol current solution
-		void init_transient(Eigen::VectorXd &c_sol);
+		SolveData solve_data;
+		/// initialize solver
+		void init_solve();
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt);
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		/// @param[out] c_sol solution
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
-		/// solves transient scalar problem
-		/// @param[in] time_steps number of time steps
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		/// @param[out] x solution
-		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt);
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		/// @param[out] x solution
-		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		/// solves transient tensor non linear problem
+		void solve_transient_linear(const int time_steps, const double t0, const double dt);
+		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		/// initialized the non linear solver
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[in] rhs_assembler rhs assembler
-		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
-		/// steps trought time
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[in] t time
-		/// @param[out] solver_info output solver stats
-		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
+		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt);
+		/// initialize the nonlinear solver
+		/// @param[in] t (optional) initial time
+		void init_nonlinear_tensor_solve(const double t = 1.0);
 		/// solves a linear problem
 		void solve_linear();
 		/// solves a navier stokes
 		void solve_navier_stokes();
 		/// solves nonlinear problems
-		void solve_non_linear();
+		/// @param[in] t (optional) time step id
+		void solve_tensor_nonlinear(const int t = 0);
 
 		/// factory to create the nl solver depdending on input
-		/// @return non linear solver (eg newton or LBFGS)
+		/// @return nonlinear solver (eg newton or LBFGS)
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
+
+	protected:
+		/// @brief Load or compute the initial solution.
+		/// @param[out] solution Output solution variable.
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		/// @brief Load or compute the initial velocity.
+		/// @param[out] solution Output velocity variable.
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		/// @brief Load or compute the initial acceleration.
+		/// @param[out] solution Output acceleration variable.
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+
+		/// @brief Solve the linear problem with the given solver and system.
+		/// @param solver Linear solver.
+		/// @param A Linear system matrix.
+		/// @param b Right-hand side.
+		/// @param compute_spectrum If true, compute the spectrum.
+		void solve_linear(
+			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			StiffnessMatrix &A,
+			Eigen::VectorXd &b,
+			const bool compute_spectrum);
 
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------
 		//---------------------------------------------------
 
+	public:
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -365,7 +367,7 @@ namespace polyfem
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
 		/// Matrices containing the input per node dirichelt
-		std::vector<Eigen::MatrixXd> input_dirichelt;
+		std::vector<Eigen::MatrixXd> input_dirichlet;
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;
@@ -419,15 +421,24 @@ namespace polyfem
 			load_mesh(non_conforming);
 		}
 
-		///set the boundary sideset from a lambda that takes the face/edge barycenter
+		/// set the boundary sideset from a lambda that takes the face/edge barycenter
 		/// @param[in] boundary_marker function from face/edge barycenter that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		///set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker)
+		{
+			mesh->compute_boundary_ids(boundary_marker);
+		}
+		/// set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		/// @param[in] boundary_marker function from face/edge barycenter and a flag if the face/edge is boundary that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		///set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker)
+		{
+			mesh->compute_boundary_ids(boundary_marker);
+		}
+		/// set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		/// @param[in] boundary_marker function from face/edge vertices and a flag if the face/edge is boundary that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker)
+		{
+			mesh->compute_boundary_ids(boundary_marker);
+		}
 
 		/// Resets the mesh
 		void reset_mesh();
@@ -672,6 +683,8 @@ namespace polyfem
 		StiffnessMatrix down_sampling_mat;
 
 		void project_to_lower_order(Eigen::MatrixXd &y);
+		
+		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
 
 		//---------------------------------------------------
 		//-----------------OUTPUT----------------------------
@@ -815,7 +828,7 @@ namespace polyfem
 		/// @param[in] use_sampler uses the sampler or not
 		/// @param[in] boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
-		///interpolate the function fun.
+		/// interpolate the function fun.
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		/// @param[in] basis basis function
@@ -968,7 +981,7 @@ namespace polyfem
 		/// @param[in] name filename
 		/// @param[in] t time
 		void save_surface(const std::string &name);
-		///saves the wireframe
+		/// saves the wireframe
 		/// @param[in] name filename
 		/// @param[in] t time
 		void save_wire(const std::string &name, const double t);

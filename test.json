@@ -1,0 +1,97 @@
+{
+    "geometry": [
+        {
+            "mesh": "square.obj",
+            "transformation": {
+                "translation": [
+                    0,
+                    0
+                ],
+                "rotation": -30,
+                "scale": [
+                    5,
+                    0.02
+                ]
+            },
+            "volume_selection": 1,
+            "surface_selection": 1,
+            "n_refs": 0,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        },
+        {
+            "mesh": "circle.msh",
+            "transformation": {
+                "translation": [
+                    0.26,
+                    0.5
+                ],
+                "rotation": -30,
+                "scale": 1.0
+            },
+            "volume_selection": 2,
+            "surface_selection": 2,
+            "n_refs": 0,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        }
+    ],
+    "space": {
+        "discr_order": 2,
+        "advanced": {
+            "quadrature_order": 5
+        }
+    },
+    "time": {
+        "t0": 0,
+        "tend": 0.25,
+        "time_steps": 10
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 0.001,
+        "friction_coefficient": 0.2
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::SparseLU"
+        },
+        "contact": {
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [
+            0,
+            9.81
+        ],
+        "dirichlet_boundary": [
+            {
+                "id": 1,
+                "value": [
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    "differentiable": true,
+    "materials": {
+        "type": "NeoHookean",
+        "E": 1000000.0,
+        "nu": 0.48,
+        "rho": 1000,
+        "phi": 10,
+        "psi": 10
+    },
+    "output": {
+        "paraview": {
+            "vismesh_rel_area": 1,
+            "skip_frame": 1
+        },
+        "advanced": {
+            "save_time_sequence": false
+        }
+    }
+}

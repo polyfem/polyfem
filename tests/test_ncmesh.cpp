@@ -32,7 +32,8 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 			"geometry": [{
 				"mesh": "",
 				"enabled": true,
-				"type": "mesh"
+				"type": "mesh",
+				"surface_selection": 7
 			}],
 
 			"space":{
@@ -65,7 +66,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 
 	State state(1);
 	state.init_logger("", spdlog::level::off, false);
-	state.init(in_args);
+	state.init(in_args, true);
 
 	state.load_mesh(true);
 	NCMesh2D &ncmesh = *dynamic_cast<NCMesh2D *>(state.mesh.get());
@@ -106,7 +107,8 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 			"geometry": [{
 				"mesh": "",
 				"enabled": true,
-				"type": "mesh"
+				"type": "mesh",
+				"surface_selection": 7
 			}],
 
 			"space":{
@@ -146,7 +148,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 
 	State state;
 	state.init_logger("", spdlog::level::off, false);
-	state.init(in_args);
+	state.init(in_args, true);
 
 	state.load_mesh(true);
 	NCMesh3D &ncmesh = *dynamic_cast<NCMesh3D *>(state.mesh.get());

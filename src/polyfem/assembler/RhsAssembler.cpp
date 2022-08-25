@@ -36,7 +36,7 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichelt,
+		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichlet,
 								   const int n_basis, const int size,
 								   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const std::string &formulation, const Problem &problem,
@@ -48,7 +48,7 @@ namespace polyfem
 			  formulation_(formulation), problem_(problem),
 			  bc_method_(bc_method),
 			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
-			  input_dirichelt_(input_dirichelt)
+			  input_dirichlet_(input_dirichlet)
 		{
 		}
 
@@ -72,7 +72,7 @@ namespace polyfem
 
 					for (int d = 0; d < size_; ++d)
 					{
-						//rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
+						// rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 						for (int q = 0; q < quadrature.weights.size(); ++q)
 						{
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
@@ -237,7 +237,7 @@ namespace polyfem
 					{
 						const auto &b = bs.bases[i];
 						const auto &glob = b.global();
-						assert(glob.size() == 1);
+						// assert(glob.size() == 1);
 						for (size_t ii = 0; ii < glob.size(); ++ii)
 						{
 							fun(mesh_, ids, glob[ii].node, loc_sol);
@@ -261,7 +261,7 @@ namespace polyfem
 					ids.setConstant(e);
 
 					const Quadrature &quadrature = vals.quadrature;
-					//problem_.initial_solution(vals.val, loc_sol);
+					// problem_.initial_solution(vals.val, loc_sol);
 					fun(mesh_, ids, vals.val, loc_sol);
 
 					for (int d = 0; d < size_; ++d)
@@ -361,7 +361,7 @@ namespace polyfem
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
-						//pt found
+						// pt found
 						// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size_ * b.global()[ii].index) != bounday_nodes.end())
 						if (is_boundary[b.global()[ii].index])
 						{
@@ -437,13 +437,13 @@ namespace polyfem
 				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 				global_counter += rhs_fun.rows();
 
-				//UIState::ui_state().debug_data().add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+				// UIState::ui_state().debug_data().add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
-				//Eigen::MatrixXd asd(mapped.rows(), 3);
-				//asd.col(0)=mapped.col(0);
-				//asd.col(1)=mapped.col(1);
-				//asd.col(2)=rhs_fun;
-				//UIState::ui_state().debug_data().add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
+				// Eigen::MatrixXd asd(mapped.rows(), 3);
+				// asd.col(0)=mapped.col(0);
+				// asd.col(1)=mapped.col(1);
+				// asd.col(2)=rhs_fun;
+				// UIState::ui_state().debug_data().add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
 			}
 
 			assert(global_counter == total_size);
@@ -548,7 +548,7 @@ namespace polyfem
 						{
 							assert(is_boundary[glob[ii].index]);
 
-							//TODO, missing UV!!!!
+							// TODO, missing UV!!!!
 							df(global_primitive_ids, nans, glob[ii].node, rhs_fun);
 
 							for (int d = 0; d < size_; ++d)
@@ -660,7 +660,7 @@ namespace polyfem
 
 			if (bounday_nodes.size() > 0)
 			{
-				for (const auto &m : input_dirichelt_)
+				for (const auto &m : input_dirichlet_)
 				{
 					assert(m.cols() == size_ + 1);
 					for (int n = 0; n < m.rows(); ++n)
@@ -675,7 +675,7 @@ namespace polyfem
 				}
 			}
 
-			//Neumann
+			// Neumann
 			Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
 			Eigen::VectorXi global_primitive_ids;
 			Eigen::MatrixXd points, normals;
@@ -768,7 +768,7 @@ namespace polyfem
 				{
 					const int prev_size = rhs.size();
 					rhs.conservativeResize(final_rhs.size(), rhs.cols());
-					//Zero initial pressure
+					// Zero initial pressure
 					rhs.block(prev_size, 0, final_rhs.size() - prev_size, rhs.cols()).setZero();
 					rhs(rhs.size() - 1) = 0;
 				}
@@ -844,7 +844,7 @@ namespace polyfem
 			Eigen::MatrixXd forces;
 
 			ElementAssemblyValues vals;
-			//Neumann
+			// Neumann
 			Eigen::MatrixXd points, uv, normals;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_primitive_ids;

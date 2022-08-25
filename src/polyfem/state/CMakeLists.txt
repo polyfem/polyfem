@@ -7,6 +7,9 @@ set(SOURCES
 	StateHomogenization.cpp
 	StateSolve.cpp
 	StateDiff.cpp
+	StateSolveLinear.cpp
+	StateSolveNavierStokes.cpp
+	StateSolveNonlinear.cpp
 )
 
 prepend_current_path(SOURCES)

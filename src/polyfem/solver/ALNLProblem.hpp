@@ -41,11 +41,8 @@ namespace polyfem
 		private:
 			double weight_;
 			double stop_dist_;
-			THessian hessian_AL_;
-			std::vector<int> not_boundary_;
+			THessian masked_lumped_mass_;
 			Eigen::MatrixXd target_x_; // actually a vector with the same size as x
-
-			void compute_distance(const TVector &x, TVector &res);
 		};
 	} // namespace solver
 } // namespace polyfem

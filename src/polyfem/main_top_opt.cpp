@@ -94,9 +94,9 @@ int main(int argc, char **argv)
 	// create solver
 	State state(max_threads);
 	state.init_logger(log_file, log_level, false);
-	state.init(in_args, output_dir);
+	state.init(in_args, false, output_dir);
 
-	if (state.args["contact"]["enabled"] && (!state.args["contact"].contains("barrier_stiffness") || !state.args["contact"]["barrier_stiffness"].is_number()))
+	if (state.is_contact_enabled() && (!state.args["contact"].contains("barrier_stiffness") || !state.args["contact"]["barrier_stiffness"].is_number()))
 	{
 		logger().error("Not fixing the barrier stiffness!");
 		return EXIT_FAILURE;

@@ -199,7 +199,7 @@ namespace polyfem
 		// contact
 		const auto &opt_contact_params = state.args["solver"]["optimization_contact"];
 		has_collision = opt_contact_params["enabled"];
-		if (state.args["contact"]["enabled"] && !has_collision)
+		if (state.is_contact_enabled() && !has_collision)
 			logger().warn("Problem has collision, but collision detection in shape optimization is disabled!");
 		if (has_collision)
 		{
@@ -695,12 +695,6 @@ namespace polyfem
 		{
 			logger().error("Mesh flippped during remeshing!");
 			exit(0);
-		}
-
-		if (state.mesh->n_meshes() == 0)
-		{
-			logger().error("Use meshes instead of mesh when remeshing enabled!");
-			return false;
 		}
 
 		std::set<int> optimize_body_ids;

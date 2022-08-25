@@ -489,6 +489,31 @@ namespace polyfem
 			index_prepared = true;
 		}
 
+		void NCMesh2D::append(const Mesh &mesh)
+		{
+			assert(typeid(mesh) == typeid(NCMesh2D));
+			Mesh::append(mesh);
+
+			const NCMesh2D &mesh2d = dynamic_cast<const NCMesh2D &>(mesh);
+
+			const int n_v = n_vertices();
+			const int n_f = n_faces();
+			
+			vertices.reserve(n_v + mesh2d.n_vertices());
+			for (int i = 0; i < mesh2d.n_vertices(); i++)
+			{
+				vertices.emplace_back(mesh2d.vertices[i].pos);
+			}
+			for (int i = 0; i < mesh2d.n_faces(); i++)
+			{
+				Eigen::Vector3i face = mesh2d.elements[i].vertices;
+				face = face.array() + n_v;
+				add_element(face, -1);
+			}
+
+			prepare_mesh();
+		}
+
 		void NCMesh2D::traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge> &list) const
 		{
 			int v_mid = find_vertex(v);
@@ -749,15 +774,6 @@ namespace polyfem
 			}
 		}
 		void NCMesh2D::set_body_ids(const std::vector<int> &body_ids)
-		{
-			assert(body_ids.size() == n_faces());
-			for (int i = 0; i < body_ids.size(); i++)
-			{
-				elements[valid_to_all_elem(i)].body_id = body_ids[i];
-			}
-		}
-
-		void NCMesh2D::set_body_ids(const Eigen::VectorXi &body_ids)
 		{
 			assert(body_ids.size() == n_faces());
 			for (int i = 0; i < body_ids.size(); i++)

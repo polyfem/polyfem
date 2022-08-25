@@ -11,8 +11,6 @@
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
 
-#include <polyfem/basis/SpectralBasis2d.hpp>
-
 #include <polyfem/basis/SplineBasis2d.hpp>
 #include <polyfem/basis/SplineBasis3d.hpp>
 
@@ -186,6 +184,9 @@ namespace polyfem
 	{
 		if (!mesh->is_conforming())
 			return;
+		if (disc_orders.maxCoeff() >= 4)
+			return;
+
 		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
 		const int num_face_nodes = mesh_nodes->num_face_nodes();
@@ -246,11 +247,11 @@ namespace polyfem
 			assert(possible_nodes.size() > 0);
 			if (possible_nodes.size() > 1)
 			{
-#ifndef NDEBUG
-				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
-				for (int possible_node : possible_nodes)
-					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
-#endif
+				// #ifndef NDEBUG
+				// 				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+				// 				for (int possible_node : possible_nodes)
+				// 					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
+				// #endif
 
 				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 				assert(e_id < mesh->n_edges());
@@ -448,10 +449,6 @@ namespace polyfem
 		std::map<int, json> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			//TODO fix and check me
-			// check_for_unknown_args(default_material, body_params[i], fmt::format("/material[{}]", i));
-			// json mat = default_material;
-			// mat.merge_patch(body_params[i]);
 			json mat = body_params[i];
 			json id = mat["id"];
 			if (id.is_array())
@@ -609,7 +606,7 @@ namespace polyfem
 		if (args["space"]["use_p_ref"])
 			return false;
 		
-		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+		if (args["boundary_conditions"]["periodic_boundary"])
 			return false;
 
 		if (mesh->orders().size() <= 0)
@@ -626,7 +623,7 @@ namespace polyfem
 		if (args["space"]["discr_order"] == mesh->orders().minCoeff())
 			return true;
 
-		//TODO?
+		// TODO:
 		// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
 		// 	return true;
 
@@ -647,7 +644,7 @@ namespace polyfem
 		boundary_nodes.clear();
 		boundary_gnodes.clear();
 		boundary_gnodes_mask.clear();
-		input_dirichelt.clear();
+		input_dirichlet.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -695,15 +692,29 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				//TODO b_discr_orders[i]["id"] can be an array
-				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
-				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
+				assert(b_discr_orders[i]["id"].is_array() || b_discr_orders[i]["id"].is_number_integer());
+
+				std::vector<int> ids;
+				if (b_discr_orders[i]["id"].is_array())
+					ids = b_discr_orders[i]["id"].get<decltype(ids)>();
+				else
+					ids.push_back(b_discr_orders[i]["id"]);
+
+				const int order = b_discr_orders[i]["order"];
+				for (const int id : ids)
+				{
+					b_orders[id] = order;
+					logger().trace("bid {}, discr {}", id, order);
+				}
 			}
 
 			for (int e = 0; e < mesh->n_elements(); ++e)
 			{
 				const int bid = mesh->get_body_id(e);
-				disc_orders[e] = b_orders.at(bid);
+				const auto order = b_orders.find(bid);
+				if (order == b_orders.end())
+					log_and_throw_error(fmt::format("Missing discretization order for body {}", bid));
+				disc_orders[e] = order->second;
 			}
 		}
 		else
@@ -711,7 +722,7 @@ namespace polyfem
 			logger().error("space/discr_order must be either a number a path or an array");
 			throw "invalid json";
 		}
-		//TODO same for pressure!
+		// TODO: same for pressure!
 
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
@@ -792,6 +803,13 @@ namespace polyfem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if (args["space"]["advanced"]["use_spline"])
 			{
+				// TODO:
+				// if (!iso_parametric())
+				// {
+				// 	logger().error("Splines must be isoparametric, ignoring...");
+				// 	// FEBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases, local_boundary, poly_edge_to_data);
+				// }
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
 
@@ -826,7 +844,7 @@ namespace polyfem
 
 		build_polygonal_basis();
 
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			Eigen::SparseMatrix<bool, 0> tmp1(n_geom_bases, n_bases);
 			Eigen::SparseMatrix<bool, 0> tmp2(n_geom_bases, n_bases);
@@ -886,7 +904,7 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+		if (args["boundary_conditions"]["periodic_boundary"])
 		{
 			Eigen::VectorXi periodic_reduce_map;
 			periodic_reduce_map.setConstant(n_bases, 1, -1);
@@ -1091,7 +1109,7 @@ namespace polyfem
 						boundary_nodes.push_back(node_id * problem_dim + d);
 				}
 
-				input_dirichelt.emplace_back(tmp);
+				input_dirichlet.emplace_back(tmp);
 			}
 		}
 
@@ -1109,7 +1127,7 @@ namespace polyfem
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			if (!has_dhat && args["contact"]["dhat"] > min_edge_length)
 			{
@@ -1439,7 +1457,7 @@ void State::build_collision_mesh(
 		}
 		else
 		{
-			if (!args["contact"]["enabled"]) // collisions are non-linear
+			if (!is_contact_enabled()) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
@@ -1464,20 +1482,7 @@ void State::build_collision_mesh(
 
 			if (args["solver"]["advanced"]["lump_mass_matrix"])
 			{
-
-				std::vector<Eigen::Triplet<double>> lumped;
-
-				for (int k = 0; k < mass.outerSize(); ++k)
-				{
-					for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-					{
-						lumped.emplace_back(it.row(), it.row(), it.value());
-					}
-				}
-
-				mass.resize(mass.rows(), mass.cols());
-				mass.setFromTriplets(lumped.begin(), lumped.end());
-				mass.makeCompressed();
+				mass = lump_matrix(mass);
 			}
 		}
 
@@ -1536,8 +1541,8 @@ void State::build_collision_mesh(
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichelt,
+		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
+			assembler, *mesh, obstacle, input_dirichlet,
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 			formulation(), *problem,
@@ -1546,11 +1551,11 @@ void State::build_collision_mesh(
 
 		if (args["materials"].contains("homogenization") && args["materials"]["homogenization"].get<bool>())
 		{
-			step_data.rhs_assembler->assemble_homogenization(rhs);
+			solve_data.rhs_assembler->assemble_homogenization(rhs);
 		}
 		else
 		{
-			step_data.rhs_assembler->assemble(density, rhs);
+			solve_data.rhs_assembler->assemble(density, rhs);
 			rhs *= -1;
 		}
 
@@ -1576,7 +1581,7 @@ void State::build_collision_mesh(
 				tmp.setZero();
 
 				RhsAssembler tmp_rhs_assembler(
-					assembler, *mesh, obstacle, input_dirichelt,
+					assembler, *mesh, obstacle, input_dirichlet,
 					n_pressure_bases, size,
 					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 					formulation(), *problem,
@@ -1606,7 +1611,7 @@ void State::build_collision_mesh(
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"] && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && !is_contact_enabled() && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
@@ -1616,7 +1621,7 @@ void State::build_collision_mesh(
 			logger().error("Assemble the rhs first!");
 			return;
 		}
-		if (!args["boundary_conditions"]["periodic_boundary"].get<bool>())
+		if (!args["boundary_conditions"]["periodic_boundary"])
 		{
 			logger().error("No periodicity!");
 			return;
@@ -1701,7 +1706,7 @@ void State::build_collision_mesh(
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"] && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && !is_contact_enabled() && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
@@ -1728,6 +1733,8 @@ void State::build_collision_mesh(
 			Eigen::saveMarket(stiffness, full_mat_path);
 		}
 
+		init_solve();
+
 		if (problem->is_time_dependent())
 		{
 			const double t0 = args["time"]["t0"];
@@ -1741,29 +1748,33 @@ void State::build_collision_mesh(
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
-			Eigen::VectorXd c_sol;
-			init_transient(c_sol);
-			RhsAssembler &rhs_assembler = *(step_data.rhs_assembler);
-
 			if (formulation() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
+				solve_transient_navier_stokes(time_steps, t0, dt);
 			else if (formulation() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
-			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
-				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"]) // Collisions add nonlinearity to the problem
-				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
+				solve_transient_navier_stokes_split(time_steps, dt);
+			else if (assembler.is_linear(formulation()) && !is_contact_enabled()) // Collisions add nonlinearity to the problem
+				solve_transient_linear(time_steps, t0, dt);
+			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
+				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt);
 		}
 		else
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
-			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"])
+			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
 				solve_linear();
+			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
+				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_non_linear();
+			{
+				init_nonlinear_tensor_solve();
+				solve_tensor_nonlinear();
+				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
+				if (!u_path.empty())
+					write_matrix(u_path, sol);
+			}
 		}
 
 		timer.stop();

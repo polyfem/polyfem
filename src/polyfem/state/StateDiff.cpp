@@ -514,11 +514,11 @@ namespace polyfem
 
 		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());
 
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			if (diff_cached.size() > 0)
 				diff_cached.back().gradu_h_next = gradu_h_prev;
-			diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, step_data.nl_problem->get_constraint_set(), step_data.nl_problem->get_friction_constraint_set()});
+			diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, solve_data.nl_problem->get_constraint_set(), solve_data.nl_problem->get_friction_constraint_set()});
 		}
 		else
 			diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, ipc::Constraints(), ipc::FrictionConstraints()});
@@ -526,17 +526,17 @@ namespace polyfem
 
 	void State::compute_force_hessian(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
 	{
-		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"])
+		if (assembler.is_linear(formulation()) && !is_contact_enabled())
 		{
 			hessian = stiffness;
 			hessian_prev = StiffnessMatrix(stiffness.rows(), stiffness.cols());
 		}
 		else
 		{
-			if (step_data.nl_problem)
+			if (solve_data.nl_problem)
 			{
-				step_data.nl_problem->solution_changed(sol);
-				compute_force_hessian_nonlinear(step_data.nl_problem, hessian, hessian_prev, bdf_order);
+				solve_data.nl_problem->solution_changed(sol);
+				compute_force_hessian_nonlinear(solve_data.nl_problem, hessian, hessian_prev, bdf_order);
 			}
 		}
 	}
@@ -579,7 +579,7 @@ namespace polyfem
 		}
 
 		StiffnessMatrix barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-		if (args["contact"]["enabled"])
+		if (is_contact_enabled())
 		{
 			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(full, mesh->dimension());
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
@@ -1058,7 +1058,7 @@ namespace polyfem
 			for (const auto &lb : total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["space"]["advanced"]["quadrature_order"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["space"]["advanced"]["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -1504,15 +1504,15 @@ namespace polyfem
 	void State::compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!args["contact"]["enabled"])
+		if (!is_contact_enabled())
 			return;
 
-		const double dhat = step_data.nl_problem->dhat();
+		const double dhat = solve_data.nl_problem->dhat();
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
 		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
-		term = -step_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+		term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
 
 		// const double eps = 1e-6;
 		// Eigen::MatrixXd target = dq_h;
@@ -1547,16 +1547,16 @@ namespace polyfem
 	void State::compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraint_set, Eigen::VectorXd &term)
 	{
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!args["contact"]["enabled"] || args["contact"]["friction_coefficient"].get<double>() == 0)
+		if (!is_contact_enabled() || args["contact"]["friction_coefficient"].get<double>() == 0)
 			return;
 
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd U_prev = collision_mesh.vertices(utils::unflatten(prev_solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
-		const double kappa = step_data.nl_problem->barrier_stiffness();
-		const double dhat = step_data.nl_problem->dhat();
-		const double epsv = step_data.nl_problem->epsv_dt();
+		const double kappa = solve_data.nl_problem->barrier_stiffness();
+		const double dhat = solve_data.nl_problem->dhat();
+		const double epsv = solve_data.nl_problem->epsv_dt();
 
 		StiffnessMatrix hess = ipc::compute_friction_force_jacobian(
 			collision_mesh,
@@ -1596,8 +1596,8 @@ namespace polyfem
 		if (j.depend_on_u() || j.depend_on_gradu())
 		{
 			compute_shape_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
-			compute_derivative_contact_term(step_data.nl_problem->get_constraint_set(), sol, adjoint_sol, contact_term);
-			// compute_derivative_friction_term(sol, sol, adjoint_sol, step_data.nl_problem->get_friction_constraint_set(), friction_term);
+			compute_derivative_contact_term(solve_data.nl_problem->get_constraint_set(), sol, adjoint_sol, contact_term);
+			// compute_derivative_friction_term(sol, sol, adjoint_sol, solve_data.nl_problem->get_friction_constraint_set(), friction_term);
 			one_form += elasticity_term + contact_term; // + friction_term;
 		}
 	}
@@ -1621,7 +1621,7 @@ namespace polyfem
 	void State::dJ_friction_transient(const IntegrableFunctional &j, double &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["contact"]["enabled"]);
+		assert(is_contact_enabled());
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
@@ -1652,7 +1652,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(prev_solution, problem_dim));
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(solution, problem_dim));
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt(), 0, true);
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt(), 0, true);
 
 			one_form += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * dt);
 		}
@@ -1661,7 +1661,7 @@ namespace polyfem
 	void State::dJ_damping_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["contact"]["enabled"]);
+		assert(is_contact_enabled());
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
@@ -1855,7 +1855,7 @@ namespace polyfem
 	{
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
-		assert(args["contact"]["enabled"]);
+		assert(is_contact_enabled());
 		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
@@ -1903,7 +1903,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			Eigen::VectorXd force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
+			Eigen::VectorXd force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
 			Eigen::VectorXd full_force = collision_mesh.to_full_dof(force);
 			one_form(2 * bases.size()) += (adjoint_p[t].array() * full_force.array()).sum() / (beta_dt * mu);
 
@@ -2142,7 +2142,7 @@ namespace polyfem
 	{
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
-		assert(args["contact"]["enabled"]);
+		assert(is_contact_enabled());
 		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
@@ -2190,7 +2190,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
 
 			one_form(2 * bases.size()) += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta_dt * mu);
 
@@ -2235,7 +2235,7 @@ namespace polyfem
 	void State::dJ_friction_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, double &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["contact"]["enabled"]);
+		assert(is_contact_enabled());
 		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
@@ -2276,7 +2276,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, step_data.nl_problem->dhat(), step_data.nl_problem->barrier_stiffness(), step_data.nl_problem->epsv_dt());
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
 
 			one_form += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * mu * dt);
 		}
@@ -2284,7 +2284,7 @@ namespace polyfem
 	void State::dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
-		assert(args["contact"]["enabled"]);
+		assert(is_contact_enabled());
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);

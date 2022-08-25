@@ -112,7 +112,7 @@ TEST_CASE("elastic_homo", "[homogenization]")
 
 	State state(16);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 
 	state.load_mesh();
 
@@ -181,7 +181,7 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
 
 	State state(16);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 
 	state.load_mesh();
 
@@ -270,7 +270,7 @@ TEST_CASE("stokes_homo", "[homogenization]")
 
 	State state(16);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 
 	state.load_mesh();
 
@@ -345,7 +345,7 @@ TEST_CASE("stokes_homo_grad", "[homogenization]")
 
 	State state(16);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 
 	state.load_mesh();
 

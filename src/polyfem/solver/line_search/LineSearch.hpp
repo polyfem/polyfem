@@ -50,7 +50,6 @@ namespace polyfem
 				double classical_line_search_time;
 
 				double use_grad_norm_tol = -1;
-				bool save_energy_over_line_if_fail = false;
 
 			protected:
 				double min_step_size = 0;

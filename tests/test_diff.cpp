@@ -40,11 +40,16 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 					"mesh": "3rdparty/data/circle2.msh"
 				}
 			],
+			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				}
+			},
 			"space": {
 				"discr_order": 1
 			},
 			"boundary_conditions": {
-				"rhs": -20,
+				"rhs": [-20],
 				"dirichlet_boundary": [
 					{
 						"id": "all",
@@ -61,7 +66,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 
 	state.compute_mesh_stats();
@@ -143,6 +148,11 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 					"n_refs": 0
 				}
 			],
+			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				}
+			},
 			"space": {
 				"discr_order": 1,
 				"advanced": {
@@ -178,7 +188,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 
 	state.compute_mesh_stats();
@@ -272,6 +282,11 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 					"quadrature_order": 5
 				}
 			},
+			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				}
+			},
 			"boundary_conditions": {
 				"rhs": [
 					0,
@@ -298,7 +313,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 
 	state.compute_mesh_stats();
@@ -433,7 +448,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.compute_mesh_stats();
 	state.build_basis();
@@ -486,6 +501,9 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 			"discr_order": 1
 		},
 		"solver": {
+			"linear": {
+				"solver": "Eigen::SparseLU"
+			},
 			"nonlinear": {
 				"grad_norm": 1e-14,
 				"use_grad_norm": true
@@ -522,7 +540,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 	double functional_val = func.energy(state);
@@ -619,6 +637,9 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 			"dhat": 0.001
 		},
 		"solver": {
+			"linear": {
+				"solver": "Eigen::SparseLU"
+			},
 			"contact": {
 				"barrier_stiffness": 20
 			}
@@ -656,7 +677,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 
 	state.compute_mesh_stats();
@@ -732,6 +753,9 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 				"dhat": 0.001
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 20
 				}
@@ -775,7 +799,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 
 	state.compute_mesh_stats();
@@ -828,6 +852,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
+// failed
 TEST_CASE("damping-transient", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -891,6 +916,9 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 				"friction_coefficient": 0.5
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 100000.0
 				}
@@ -936,7 +964,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 					"skip_frame": 1
 				},
 				"advanced": {
-					"save_time_sequence": false
+					"save_time_sequence": true
 				}
 			}
 		}
@@ -950,13 +978,13 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	in_args_ref["materials"]["phi"] = 1;
 	in_args_ref["materials"]["psi"] = 20;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args_ref);
+	state_reference.init(in_args_ref, false);
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	State state(8);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 
@@ -996,6 +1024,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
+// failed
 TEST_CASE("material-transient", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -1059,6 +1088,9 @@ TEST_CASE("material-transient", "[adjoint_method]")
 				"friction_coefficient": 0.5
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 100000.0
 				}
@@ -1117,13 +1149,13 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	auto in_args_ref = in_args;
 	in_args_ref["materials"]["E"] = 1e5;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args_ref);
+	state_reference.init(in_args_ref, false);
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	State state(8);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 
@@ -1163,6 +1195,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
+// failed
 TEST_CASE("shape-transient-friction", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -1224,6 +1257,9 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 				"friction_coefficient": 0.2
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 100000.0
 				}
@@ -1270,7 +1306,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 
 	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 	double functional_val = func.energy(state);
@@ -1353,7 +1389,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			},
 			"time": {
 				"tend": 0.2,
-				"dt": 0.4,
+				"dt": 0.04,
 				"integrator": "BDF",
 				"BDF": {
 					"steps": 2
@@ -1364,6 +1400,9 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 				"friction_coefficient": 0.2
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 1e4
 				}
@@ -1421,13 +1460,13 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args_ref);
+	state_reference.init(in_args_ref, false);
 	state_reference.load_mesh();
 	state_reference.solve();
 
 	State state(8);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 
@@ -1598,13 +1637,13 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 0;
 // 	in_args_ref["initial_conditions"]["velocity"][0]["value"][2] = 0;
 // 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-// 	state_reference.init(in_args_ref);
+// 	state_reference.init(in_args_ref, false);
 // 	state_reference.load_mesh();
 // 	state_reference.solve();
 
 // 	State state(8);
 // 	state.init_logger("", spdlog::level::level_enum::err, false);
-// 	state.init(in_args);
+// 	state.init(in_args, false);
 // 	state.load_mesh();
 // 	state.solve();
 
@@ -1765,14 +1804,14 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 	// compute reference solution
 // 	State state_reference(8);
 // 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-// 	state_reference.init(in_args);
+// 	state_reference.init(in_args, false);
 // 	state_reference.args["materials"]["E"] = 1e4;
 // 	state_reference.load_mesh();
 // 	state_reference.solve();
 
 // 	State state(8);
 // 	state.init_logger("", spdlog::level::level_enum::err, false);
-// 	state.init(in_args);
+// 	state.init(in_args, false);
 // 	state.load_mesh();
 // 	state.solve();
 
@@ -1927,7 +1966,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 
 // 	State state(8);
 // 	state.init_logger("", spdlog::level::level_enum::err, false);
-// 	state.init(in_args);
+// 	state.init(in_args, false);
 // 	state.load_mesh();
 // 	state.solve();
 // 	double functional_val = func.energy(state);
@@ -2011,6 +2050,9 @@ TEST_CASE("barycenter", "[adjoint_method]")
 				"friction_coefficient": 0.2
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 1e5
 				}
@@ -2067,7 +2109,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args_ref);
+	state_reference.init(in_args_ref, false);
 	state_reference.load_mesh();
 	state_reference.solve();
 
@@ -2079,7 +2121,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 
 	State state(8);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 	double functional_val = func.energy(state);
@@ -2111,6 +2153,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
+// failed
 TEST_CASE("barycenter-height", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -2174,6 +2217,9 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 				"friction_coefficient": 0.5
 			},
 			"solver": {
+				"linear": {
+					"solver": "Eigen::SparseLU"
+				},
 				"contact": {
 					"barrier_stiffness": 23216604
 				}
@@ -2232,7 +2278,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
-	state_reference.init(in_args_ref);
+	state_reference.init(in_args_ref, false);
 	state_reference.load_mesh();
 	state_reference.solve();
 
@@ -2247,7 +2293,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 
 	State state(8);
 	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args);
+	state.init(in_args, false);
 	state.load_mesh();
 	state.solve();
 	double functional_val = func.energy(state);

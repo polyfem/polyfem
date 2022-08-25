@@ -6,8 +6,8 @@ namespace polyfem::time_integrator
 {
 	void BDF::set_parameters(const nlohmann::json &params)
 	{
-		if (params.contains("steps"))
-			num_steps = params["steps"];
+		assert(params.contains("BDF"));
+		num_steps = params["BDF"].value("steps", 1);
 		if (num_steps < 1 || num_steps > 6)
 		{
 			logger().warn("BDF num_steps must be 1 ≤ n ≤ 6}; using default of 1");

@@ -30,7 +30,7 @@ namespace cppoptlib
 			Success = 0,
 		};
 
-		NonlinearSolver(const json &solver_params)
+		NonlinearSolver(const polyfem::json &solver_params)
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
@@ -58,7 +58,6 @@ namespace cppoptlib
 			solver_info["line_search"] = line_search_name;
 
 			m_line_search->set_min_step_size(solver_params["min_step_size"]);
-			m_line_search->save_energy_over_line_if_fail = solver_params["save_energy_over_line_if_fail"];
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x)
@@ -210,7 +209,7 @@ namespace cppoptlib
 
 				if (!use_gradient_norm)
 				{
-					//TODO, we shold remove this
+					// TODO: shold we remove this?
 					// Use the maximum absolute displacement value divided by the timestep,
 					// so the units are in velocity units.
 					// TODO: Set this to the actual timestep
@@ -220,7 +219,7 @@ namespace cppoptlib
 				}
 				else
 				{
-					//if normalize_gradient, use relative to first norm
+					// if normalize_gradient, use relative to first norm
 					this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 				}
 				this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
@@ -326,8 +325,7 @@ namespace cppoptlib
 			update_solver_info();
 		}
 
-		double
-		line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc)
+		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc)
 		{
 			POLYFEM_SCOPED_TIMER("line search", line_search_time);
 
@@ -354,10 +352,7 @@ namespace cppoptlib
 			return rate;
 		}
 
-		void getInfo(json &params)
-		{
-			params = solver_info;
-		}
+		void getInfo(polyfem::json &params) { params = solver_info; }
 
 		ErrorCode error_code() const { return m_error_code; }
 
@@ -378,10 +373,11 @@ namespace cppoptlib
 		}
 
 		// Compute the search/update direction
-		virtual bool compute_update_direction(ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
+		virtual bool compute_update_direction(
+			ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
 
 	protected:
-		const json solver_params;
+		const polyfem::json solver_params;
 
 		virtual int default_descent_strategy() = 0;
 		virtual void increase_descent_strategy() = 0;
@@ -391,7 +387,7 @@ namespace cppoptlib
 
 		std::shared_ptr<polyfem::solver::line_search::LineSearch<ProblemType>> m_line_search;
 
-		int descent_strategy; //0, newton, 1 spd, 2 gradiant
+		int descent_strategy; // 0, newton, 1 spd, 2 gradiant
 
 		ErrorCode m_error_code;
 		bool use_gradient_norm;
@@ -399,7 +395,7 @@ namespace cppoptlib
 		bool solver_info_log;
 		double use_grad_norm_tol;
 
-		json solver_info;
+		polyfem::json solver_info;
 
 		double total_time;
 		double cumulative_total_time;
@@ -477,15 +473,10 @@ namespace cppoptlib
 				"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "
 				"broad_phase_ccd {:.3g}s, ccd {:.3g}s, "
 				"classical_line_search {:.3g}s",
-				grad_time,
-				assembly_time,
-				inverting_time,
-				line_search_time,
+				grad_time, assembly_time, inverting_time, line_search_time,
 				constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
-				obj_fun_time,
-				m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
-				m_line_search ? m_line_search->broad_phase_ccd_time : 0,
-				m_line_search ? m_line_search->ccd_time : 0,
+				obj_fun_time, m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
+				m_line_search ? m_line_search->broad_phase_ccd_time : 0, m_line_search ? m_line_search->ccd_time : 0,
 				m_line_search ? m_line_search->classical_line_search_time : 0);
 		}
 	};

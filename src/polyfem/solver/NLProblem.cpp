@@ -19,10 +19,10 @@
 static bool disable_collision = false;
 
 /*
-m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
-u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
-= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\\
-M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \\
+m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
+u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
+= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\newline
+M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \newline
 %
 M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 */
@@ -35,7 +35,6 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
 {
-#ifdef IPC_TOOLKIT_WITH_CUDA
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		ipc::BroadPhaseMethod,
 		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
@@ -48,18 +47,6 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}});
-#else
-	NLOHMANN_JSON_SERIALIZE_ENUM(
-		ipc::BroadPhaseMethod,
-		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}});
-#endif
 } // namespace ipc
 
 namespace polyfem
@@ -101,8 +88,7 @@ namespace polyfem
 			if (utils::is_param_valid(state.args, "time"))
 			{
 				_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-				_time_integrator->set_parameters(state.args["time"]["BDF"]);
-				_time_integrator->set_parameters(state.args["time"]["newmark"]);
+				_time_integrator->set_parameters(state.args["time"]);
 			}
 
 			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
@@ -112,7 +98,7 @@ namespace polyfem
 
 		void NLProblem::init(const TVector &full)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			assert(full.size() == full_size);
@@ -127,7 +113,7 @@ namespace polyfem
 		{
 			assert(full.size() == full_size);
 			_barrier_stiffness = 1;
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd grad_energy;
@@ -302,7 +288,7 @@ namespace polyfem
 
 		void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -328,7 +314,7 @@ namespace polyfem
 
 		double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return 1;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -344,10 +330,7 @@ namespace polyfem
 
 			double max_step;
 			if (_use_cached_candidates
-#ifdef IPC_TOOLKIT_WITH_CUDA
-				&& _broad_phase_method != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU
-#endif
-			)
+				&& _broad_phase_method != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
 				max_step = ipc::compute_collision_free_stepsize(
 					_candidates, state.collision_mesh, V0, V1,
 					_ccd_tolerance, _ccd_max_iterations);
@@ -380,7 +363,7 @@ namespace polyfem
 
 		bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return true;
 
 			// if (!state.problem->is_time_dependent())
@@ -413,14 +396,14 @@ namespace polyfem
 					state.collision_mesh,
 					state.collision_mesh.vertices(displaced0),
 					state.collision_mesh.vertices(displaced1),
-					ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
+					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
 
 			return is_valid;
 		}
 
 		bool NLProblem::is_intersection_free(const TVector &x)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return true;
 
 			Eigen::MatrixXd displaced;
@@ -488,7 +471,7 @@ namespace polyfem
 
 			double collision_energy = 0;
 			double friction_energy = 0;
-			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
+			if (!only_elastic && !disable_collision && state.is_contact_enabled())
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -562,7 +545,7 @@ namespace polyfem
 			}
 
 			Eigen::VectorXd grad_barrier;
-			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
+			if (!only_elastic && !disable_collision && state.is_contact_enabled())
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -643,7 +626,7 @@ namespace polyfem
 			}
 
 			THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-			if (!disable_collision && state.args["contact"]["enabled"])
+			if (!disable_collision && state.is_contact_enabled())
 			{
 				POLYFEM_SCOPED_TIMER("\tipc hessian(s) time");
 
@@ -743,7 +726,7 @@ namespace polyfem
 
 		void NLProblem::solution_changed(const TVector &newX)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			Eigen::MatrixXd displaced;
@@ -754,7 +737,7 @@ namespace polyfem
 
 		double NLProblem::heuristic_max_step(const TVector &dx)
 		{
-			// if (disable_collision || !state.args["contact"]["enabled"])
+			// if (disable_collision || !state.is_contact_enabled())
 			// 	return 1;
 
 			// //pSize = average(searchDir)
@@ -773,7 +756,7 @@ namespace polyfem
 
 		void NLProblem::post_step(const int iter_num, const TVector &x)
 		{
-			if (disable_collision || !state.args["contact"]["enabled"])
+			if (disable_collision || !state.is_contact_enabled())
 				return;
 
 			TVector full;

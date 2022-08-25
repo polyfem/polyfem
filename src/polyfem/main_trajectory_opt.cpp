@@ -233,7 +233,7 @@ int main(int argc, char **argv)
 		logger().info("Start reference solve...");
 		target_in_args["differentiable"] = true;
 		state_reference.init_logger(log_file, in_args["output"]["optimization"]["solve_log_level"], false);
-		state_reference.init(target_in_args, output_dir);
+		state_reference.init(target_in_args, false, output_dir);
 		state_reference.load_mesh();
 
 		// Mesh was not loaded successfully; load_mesh() logged the error.
@@ -259,10 +259,10 @@ int main(int argc, char **argv)
 
 	State state(max_threads);
 	state.init_logger(log_file, log_level, false);
-	state.init(in_args, output_dir);
+	state.init(in_args, false, output_dir);
 	state.load_mesh();
 
-	if (state.args["contact"]["enabled"] && !state.args["solver"]["contact"].contains("barrier_stiffness"))
+	if (state.is_contact_enabled() && !state.args["solver"]["contact"].contains("barrier_stiffness"))
 	{
 		logger().error("Not fixing the barrier stiffness in optimization!");
 		return EXIT_FAILURE;
