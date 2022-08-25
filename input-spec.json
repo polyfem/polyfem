@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1144,7 +1143,7 @@
             "friction_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "lagged_damping_weight"
+            "lagged_regularization_weight"
         ],
         "doc": "Settings for contact handling in the solver."
     },
