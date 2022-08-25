@@ -35,9 +35,13 @@ jobs:
 
       - name: Generate JSON Spec Documentation
         run: |
+          git clone https://github.com/polyfem/polyfem.github.io.git
+          pip install -r ./polyfem.github.io/requirements.txt
           git clone https://github.com/geometryprocessing/json-spec-engine.git
-          pip install mako
-          python ./json-spec-engine/docs/spec2html.py -i ./input-spec.json -o ./docs/html/json-spec.html
+          pip install -r ./json-spec-engine/requirements.txt
+          python ./json-spec-engine/docs/spec2html.py -i ./input-spec.json -o ./polyfem.github.io/docs/json_api.md
+          cd polyfem.github.io
+          mkdocs gh-deploy
 
       - name: Create .nojekyll
         run: touch docs/html/.nojekyll
