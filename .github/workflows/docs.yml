@@ -13,12 +13,6 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup SSH
-        uses: MrSquaare/ssh-setup-action@v1
-        with:
-          host: github.com
-          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Checkout Repository
         uses: actions/checkout@v2.4.2
 
@@ -42,8 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git clone git@github.com:polyfem/polyfem.github.io.git
-          # git clone https://git:$GITHUB_TOKEN@github.com/polyfem/polyfem.github.io.git
+          git clone https://git:$GITHUB_TOKEN@github.com/polyfem/polyfem.github.io.git
           pip install -r ./polyfem.github.io/requirements.txt
           git clone https://github.com/geometryprocessing/json-spec-engine.git
           pip install -r ./json-spec-engine/requirements.txt
