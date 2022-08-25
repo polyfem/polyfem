@@ -149,7 +149,7 @@ namespace polyfem
 			void set_project_to_psd(bool val) { project_to_psd = val; }
 			bool is_project_to_psd() const { return project_to_psd; }
 
-			double &lagged_damping_weight() { return _lagged_damping_weight; }
+			double &lagged_regularization_weight() { return _lagged_regularization_weight; }
 
 			void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 			void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
@@ -184,11 +184,11 @@ namespace polyfem
 			double max_barrier_stiffness_;
 
 			// friction variables
-			double _epsv;                    ///< @brief The boundary between static and dynamic friction.
-			double _mu;                      ///< @brief Coefficient of friction.
-			Eigen::MatrixXd _displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
-			double _lagged_damping_weight;   ///< @brief Weight for lagged damping (static solve).
-			TVector x_lagged;                ///< @brief The full variables from the previous lagging solve.
+			double _epsv;                         ///< @brief The boundary between static and dynamic friction.
+			double _mu;                           ///< @brief Coefficient of friction.
+			Eigen::MatrixXd _displaced_prev;      ///< @brief Displaced vertices at the start of the time-step.
+			double _lagged_regularization_weight; ///< @brief Weight for lagged damping (static solve).
+			TVector x_lagged;                     ///< @brief The full variables from the previous lagging solve.
 
 			ipc::BroadPhaseMethod _broad_phase_method;
 			double _ccd_tolerance;
