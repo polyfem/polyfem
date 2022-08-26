@@ -208,7 +208,7 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 			for (auto &f : forms_)
-				f->init_lagging(full);
+				f->update_lagging(full);
 
 			// TODO: DELETE ME BELOW
 			Eigen::MatrixXd displaced;
