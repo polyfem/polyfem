@@ -67,7 +67,7 @@ namespace
 	}
 
 	void check_form_value(
-		const std::function<std::shared_ptr<Form>(const std::shared_ptr<const State>)> &create_form,
+		const std::function<std::shared_ptr<Form>(const std::shared_ptr<const State>, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>)> &create_form,
 		const std::string &expected_key)
 	{
 		const std::string path = POLYFEM_DATA_DIR;
@@ -87,7 +87,16 @@ namespace
 			Eigen::MatrixXd val;
 
 			const std::shared_ptr<const State> state = get_state(json_path);
-			std::shared_ptr<Form> form = create_form(state);
+			auto time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state->args["time"]["integrator"]);
+			time_integrator->set_parameters(state->args["time"]);
+			const double dt = state->args["time"]["dt"];
+			time_integrator->init(
+				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
+				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
+				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
+				dt);
+
+			std::shared_ptr<Form> form = create_form(state, time_integrator);
 
 			for (int i = 0; i < call_stack.size(); ++i)
 			{
@@ -119,6 +128,7 @@ namespace
 					REQUIRE(call_stack[i + 1].rfind("update_quantities_t_", 0) == 0);
 					const double t = H5Easy::load<double>(file, call_stack[i + 1]);
 					form->update_quantities(t, x);
+					time_integrator->update_quantities(x);
 					++i;
 				}
 				else if (call.rfind("line_search_begin_0_", 0) == 0)
@@ -172,7 +182,10 @@ namespace
 					REQUIRE(val.size() > 0);
 					const double value = form->value(val);
 					if (!std::isnan(expected))
+					{
+						assert(fabs(value - expected) < 1e-7);
 						REQUIRE(value == Approx(expected).epsilon(1e-6).margin(1e-9));
+					}
 					else
 						REQUIRE(std::isnan(value));
 
@@ -208,7 +221,7 @@ TEST_CASE("body form value", "[form][form_value][body_form]")
 
 	CAPTURE(apply_DBC);
 	check_form_value(
-		[&](const std::shared_ptr<const State> state) {
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
 			rhs_assembler = state->build_rhs_assembler();
 			return std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 		},
@@ -225,7 +238,7 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 	// const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 
 	check_form_value(
-		[&](const std::shared_ptr<const State> state) {
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 			const double dt = state->args["time"]["dt"];
@@ -247,7 +260,7 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 TEST_CASE("elastic form value", "[form][form_value][elastic_form]")
 {
 	check_form_value(
-		[](const std::shared_ptr<const State> state) {
+		[](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
 			return std::make_shared<ElasticForm>(*state);
 		},
 		"elastic_energy");
@@ -263,7 +276,7 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 	std::shared_ptr<ContactForm> contact_form;
 
 	check_form_value(
-		[&](const std::shared_ptr<const State> state) {
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 
@@ -293,17 +306,10 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 
 TEST_CASE("inertia form value", "[form][form_value][inertia_form]")
 {
-	ImplicitEuler time_integrator;
 
 	check_form_value(
-		[&](const std::shared_ptr<const State> state) {
-			const double dt = state->args["time"]["dt"];
-			time_integrator.init(
-				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
-				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
-				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
-				dt);
-			return std::make_shared<InertiaForm>(state->mass, time_integrator);
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator) {
+			return std::make_shared<InertiaForm>(state->mass, *time_integrator);
 		},
 		"intertia_energy");
 }
@@ -312,7 +318,7 @@ TEST_CASE("lagged regularization form value", "[form][form_value][lagged_reg_for
 {
 	const double weight = 0.0;
 	check_form_value(
-		[&](const std::shared_ptr<const State>) {
+		[&](const std::shared_ptr<const State>, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
 			return std::make_shared<LaggedRegForm>(weight);
 		},
 		"lagged_damping");
