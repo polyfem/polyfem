@@ -67,7 +67,7 @@ namespace
 	}
 
 	void check_form_value(
-		const std::function<std::shared_ptr<Form>(const std::shared_ptr<const State>, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>)> &create_form,
+		const std::function<std::vector<std::shared_ptr<Form>>(const std::shared_ptr<const State>, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>)> &create_forms,
 		const std::string &expected_key)
 	{
 		const std::string path = POLYFEM_DATA_DIR;
@@ -96,7 +96,7 @@ namespace
 			const double dt = H5Easy::load<double>(file, "dt");
 			time_integrator->init(x_prev, v_prev, a_prev, dt);
 
-			std::shared_ptr<Form> form = create_form(state, time_integrator);
+			std::vector<std::shared_ptr<Form>> forms = create_forms(state, time_integrator);
 
 			for (int i = 0; i < call_stack.size(); ++i)
 			{
@@ -105,29 +105,34 @@ namespace
 				if (call.rfind("init_lagging_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
-					form->init_lagging(x);
+					for (auto &form : forms)
+						form->init_lagging(x);
 				}
 				else if (call.rfind("init_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
-					form->init(x);
+					for (auto &form : forms)
+						form->init(x);
 				}
 				else if (call.rfind("set_project_to_psd_", 0) == 0)
 				{
 					const bool val = H5Easy::load<bool>(file, call);
-					form->set_project_to_psd(val);
+					for (auto &form : forms)
+						form->set_project_to_psd(val);
 				}
 				else if (call.rfind("update_lagging_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
-					form->update_lagging(x);
+					for (auto &form : forms)
+						form->update_lagging(x);
 				}
 				else if (call.rfind("update_quantities_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("update_quantities_t_", 0) == 0);
 					const double t = H5Easy::load<double>(file, call_stack[i + 1]);
-					form->update_quantities(t, x);
+					for (auto &form : forms)
+						form->update_quantities(t, x);
 					time_integrator->update_quantities(x);
 					++i;
 				}
@@ -136,19 +141,22 @@ namespace
 					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("line_search_begin_1_", 0) == 0);
 					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
-					form->line_search_begin(x0, x1);
+					for (auto &form : forms)
+						form->line_search_begin(x0, x1);
 					++i;
 				}
 				else if (call.rfind("line_search_end_", 0) == 0)
 				{
-					form->line_search_end();
+					for (auto &form : forms)
+						form->line_search_end();
 				}
 				else if (call.rfind("max_step_size_0_", 0) == 0)
 				{
 					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("max_step_size_1_", 0) == 0);
 					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
-					form->max_step_size(x0, x1);
+					for (auto &form : forms)
+						form->max_step_size(x0, x1);
 					++i;
 				}
 				else if (call.rfind("is_step_valid_0_", 0) == 0)
@@ -156,7 +164,8 @@ namespace
 					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("is_step_valid_1_", 0) == 0);
 					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
-					form->is_step_valid(x0, x1);
+					for (auto &form : forms)
+						form->is_step_valid(x0, x1);
 					++i;
 				}
 				else if (call.rfind("value_", 0) == 0)
@@ -166,21 +175,23 @@ namespace
 				else if (call.rfind("solution_changed_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
-					form->solution_changed(x);
+					for (auto &form : forms)
+						form->solution_changed(x);
 				}
 				else if (call.rfind("post_step_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("post_step_iter_", 0) == 0);
 					const int iter = H5Easy::load<int>(file, call_stack[i + 1]);
-					form->post_step(iter, x);
+					for (auto &form : forms)
+						form->post_step(iter, x);
 					++i;
 				}
 				else if (call.rfind(expected_key, 0) == 0)
 				{
 					const double expected = H5Easy::load<double>(file, call);
 					REQUIRE(val.size() > 0);
-					const double value = form->value(val);
+					const double value = forms[0]->value(val);
 					if (!std::isnan(expected))
 					{
 						REQUIRE(value == Approx(expected).epsilon(1e-6).margin(1e-9));
@@ -222,7 +233,8 @@ TEST_CASE("body form value", "[form][form_value][body_form]")
 	check_form_value(
 		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
 			rhs_assembler = state->build_rhs_assembler();
-			return std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC)};
+			return res;
 		},
 		"body_energy");
 }
@@ -241,17 +253,20 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 
-			return std::make_shared<ContactForm>(
-				*state,
-				state->args["contact"]["dhat"],
-				// f.create_dataset("barrier_stiffness", data = barrier_stiffness)
-				!state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
-				state->problem->is_time_dependent(),
-				state->args["solver"]["contact"]["CCD"]["broad_phase"],
-				state->args["solver"]["contact"]["CCD"]["tolerance"],
-				state->args["solver"]["contact"]["CCD"]["max_iterations"],
-				ti->acceleration_scaling(),
-				*body_form);
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<ContactForm>(
+														  *state,
+														  state->args["contact"]["dhat"],
+														  // f.create_dataset("barrier_stiffness", data = barrier_stiffness)
+														  !state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
+														  state->problem->is_time_dependent(),
+														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
+														  state->args["solver"]["contact"]["CCD"]["tolerance"],
+														  state->args["solver"]["contact"]["CCD"]["max_iterations"],
+														  ti->acceleration_scaling(),
+														  *body_form),
+													  body_form};
+
+			return res;
 		},
 		"collision_energy");
 }
@@ -260,7 +275,8 @@ TEST_CASE("elastic form value", "[form][form_value][elastic_form]")
 {
 	check_form_value(
 		[](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
-			return std::make_shared<ElasticForm>(*state);
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<ElasticForm>(*state)};
+			return res;
 		},
 		"elastic_energy");
 }
@@ -290,14 +306,16 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 				ti->acceleration_scaling(),
 				*body_form);
 
-			return std::make_shared<FrictionForm>(
-				*state,
-				state->args["contact"]["epsv"],
-				state->args["contact"]["friction_coefficient"],
-				state->args["contact"]["dhat"],
-				state->args["solver"]["contact"]["CCD"]["broad_phase"],
-				ti->dt(),
-				*contact_form);
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<FrictionForm>(
+														  *state,
+														  state->args["contact"]["epsv"],
+														  state->args["contact"]["friction_coefficient"],
+														  state->args["contact"]["dhat"],
+														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
+														  ti->dt(),
+														  *contact_form),
+													  contact_form, body_form};
+			return res;
 		},
 		"friction_energy");
 }
@@ -307,7 +325,8 @@ TEST_CASE("inertia form value", "[form][form_value][inertia_form]")
 
 	check_form_value(
 		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator) {
-			return std::make_shared<InertiaForm>(state->mass, *time_integrator);
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<InertiaForm>(state->mass, *time_integrator)};
+			return res;
 		},
 		"intertia_energy");
 }
@@ -317,7 +336,8 @@ TEST_CASE("lagged regularization form value", "[form][form_value][lagged_reg_for
 	const double weight = 0.0;
 	check_form_value(
 		[&](const std::shared_ptr<const State>, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
-			return std::make_shared<LaggedRegForm>(weight);
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<LaggedRegForm>(weight)};
+			return res;
 		},
 		"lagged_damping");
 }
