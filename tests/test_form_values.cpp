@@ -102,7 +102,12 @@ namespace
 			{
 				const auto &call = call_stack[i];
 
-				if (call.rfind("init_", 0) == 0)
+				if (call.rfind("init_lagging_", 0) == 0)
+				{
+					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
+					form->init_lagging(x);
+				}
+				else if (call.rfind("init_", 0) == 0)
 				{
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					form->init(x);
@@ -111,11 +116,6 @@ namespace
 				{
 					const bool val = H5Easy::load<bool>(file, call);
 					form->set_project_to_psd(val);
-				}
-				else if (call.rfind("init_lagging_", 0) == 0)
-				{
-					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
-					form->init_lagging(x);
 				}
 				else if (call.rfind("update_lagging_", 0) == 0)
 				{
@@ -183,7 +183,6 @@ namespace
 					const double value = form->value(val);
 					if (!std::isnan(expected))
 					{
-						assert(fabs(value - expected) < 1e-7);
 						REQUIRE(value == Approx(expected).epsilon(1e-6).margin(1e-9));
 					}
 					else
