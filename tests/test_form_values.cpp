@@ -89,12 +89,12 @@ namespace
 			const std::shared_ptr<const State> state = get_state(json_path);
 			auto time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state->args["time"]["integrator"]);
 			time_integrator->set_parameters(state->args["time"]);
-			const double dt = state->args["time"]["dt"];
-			time_integrator->init(
-				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
-				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
-				Eigen::VectorXd::Zero(state->n_bases * state->mesh->dimension()),
-				dt);
+
+			const Eigen::MatrixXd x_prev = H5Easy::load<Eigen::MatrixXd>(file, "x_prev");
+			const Eigen::MatrixXd v_prev = H5Easy::load<Eigen::MatrixXd>(file, "v_prev");
+			const Eigen::MatrixXd a_prev = H5Easy::load<Eigen::MatrixXd>(file, "a_prev");
+			const double dt = H5Easy::load<double>(file, "dt");
+			time_integrator->init(x_prev, v_prev, a_prev, dt);
 
 			std::shared_ptr<Form> form = create_form(state, time_integrator);
 
@@ -238,10 +238,10 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 	// const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 
 	check_form_value(
-		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
-			const double dt = state->args["time"]["dt"];
+
 			return std::make_shared<ContactForm>(
 				*state,
 				state->args["contact"]["dhat"],
@@ -251,7 +251,7 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 				state->args["solver"]["contact"]["CCD"]["broad_phase"],
 				state->args["solver"]["contact"]["CCD"]["tolerance"],
 				state->args["solver"]["contact"]["CCD"]["max_iterations"],
-				dt * dt,
+				ti->acceleration_scaling(),
 				*body_form);
 		},
 		"collision_energy");
@@ -276,11 +276,10 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 	std::shared_ptr<ContactForm> contact_form;
 
 	check_form_value(
-		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator>) {
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 
-			const double dt = state->args["time"]["dt"];
 			contact_form = std::make_shared<ContactForm>(
 				*state,
 				state->args["contact"]["dhat"],
@@ -289,7 +288,7 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 				state->args["solver"]["contact"]["CCD"]["broad_phase"],
 				state->args["solver"]["contact"]["CCD"]["tolerance"],
 				state->args["solver"]["contact"]["CCD"]["max_iterations"],
-				dt * dt,
+				ti->acceleration_scaling(),
 				*body_form);
 
 			return std::make_shared<FrictionForm>(
@@ -298,7 +297,7 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 				state->args["contact"]["friction_coefficient"],
 				state->args["contact"]["dhat"],
 				state->args["solver"]["contact"]["CCD"]["broad_phase"],
-				dt,
+				ti->dt(),
 				*contact_form);
 		},
 		"friction_energy");
