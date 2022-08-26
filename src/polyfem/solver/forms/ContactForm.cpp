@@ -204,7 +204,7 @@ namespace polyfem::solver
 		//  	write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
 		//  			  displaced_surface, state_.collision_mesh.edges(), state_.collision_mesh.faces());
 		//  }
-		const double curr_distance_ = ipc::compute_minimum_distance(state_.collision_mesh, displaced_surface, constraint_set_);
+		const double curr_distance = ipc::compute_minimum_distance(state_.collision_mesh, displaced_surface, constraint_set_);
 
 		if (prev_distance_ >= 0 && use_adaptive_barrier_stiffness_)
 		{
@@ -213,7 +213,7 @@ namespace polyfem::solver
 				const double prev_barrier_stiffness = barrier_stiffness_;
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
-					prev_distance_, curr_distance_, max_barrier_stiffness_,
+					prev_distance_, curr_distance, max_barrier_stiffness_,
 					barrier_stiffness_, ipc::world_bbox_diagonal_length(displaced_surface));
 
 				if (prev_barrier_stiffness != barrier_stiffness_)
@@ -229,7 +229,7 @@ namespace polyfem::solver
 			}
 		}
 
-		prev_distance_ = curr_distance_;
+		prev_distance_ = curr_distance;
 	}
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
