@@ -124,7 +124,7 @@ namespace cppoptlib
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
 			std::ofstream outfile;
-			if (solver_params.contains("export_energy") && solver_params["export_energy"].template get<std::string>() != "")
+			if (solver_params["export_energy"].template get<std::string>() != "")
 				outfile.open(solver_params["export_energy"].template get<std::string>());
 
 			do

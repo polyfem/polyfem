@@ -990,6 +990,7 @@
         "optional": [
             "linear",
             "nonlinear",
+            "optimization_nonlinear",
             "augmented_lagrangian",
             "contact",
             "ignore_inertia",
@@ -1033,9 +1034,33 @@
             "min_step_size",
             "use_grad_norm",
             "relative_gradient",
-            "line_search"
+            "line_search",
+            "export_energy"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solver",
+            "f_delta",
+            "debug_fd",
+            "max_step_size",
+            "max_change",
+            "better_initial_guess",
+            "x_delta",
+            "solver_info_log",
+            "grad_norm",
+            "max_iterations",
+            "min_step_size",
+            "use_grad_norm",
+            "relative_gradient",
+            "line_search",
+            "export_energy"
+        ],
+        "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
     },
     {
         "pointer": "/solver/nonlinear/solver",
@@ -1090,6 +1115,12 @@
         "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
     },
     {
+        "pointer": "/solver/nonlinear/export_energy",
+        "default": "",
+        "type": "string",
+        "doc": "Save energy and gradient in optimizations to file"
+    },
+    {
         "pointer": "/solver/nonlinear/relative_gradient",
         "default": false,
         "type": "bool",
@@ -1121,6 +1152,126 @@
     {
         "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
         "default": 0.0001,
+        "type": "float",
+        "doc": "When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/solver",
+        "default": "lbfgs",
+        "type": "string",
+        "options": [
+            "mma",
+            "lbfgs",
+            "bfgs",
+            "lbfgsb",
+            "gradientdescent"
+        ],
+        "doc": "Nonlinear solver type"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/export_energy",
+        "default": "runtime.csv",
+        "type": "string",
+        "doc": "Save energy and gradient in optimizations to file"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/debug_fd",
+        "default": false,
+        "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },    
+    {
+        "pointer": "/solver/optimization_nonlinear/max_change",
+        "default": 1e10,
+        "type": "float",
+        "doc": "Max difference in design variables in single iteration"
+    },  
+    {
+        "pointer": "/solver/optimization_nonlinear/max_step_size",
+        "default": 1,
+        "type": "float",
+        "doc": "Max step size in line search"
+    },    
+    {
+        "pointer": "/solver/optimization_nonlinear/better_initial_guess",
+        "default": false,
+        "type": "bool",
+        "doc": "Use former solves as the initial guess in line search iterations"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/f_delta",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/x_delta",
+        "default": 0,
+        "type": "float",
+        "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/solver_info_log",
+        "default": true,
+        "type": "bool",
+        "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/grad_norm",
+        "default": 1e-08,
+        "type": "float",
+        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/min_step_size",
+        "default": 0,
+        "type": "float",
+        "doc": "Minimum step size in line search"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/max_iterations",
+        "default": 200,
+        "type": "int",
+        "doc": "Maximum number of iterations for a non-linear solve."
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/use_grad_norm",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/relative_gradient",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/line_search",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "method",
+            "use_grad_norm_tol"
+        ],
+        "doc": "Settings for line search in the optimization nonlinear solver"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/line_search/method",
+        "default": "backtracking",
+        "type": "string",
+        "options": [
+            "armijo",
+            "armijo_alt",
+            "backtracking",
+            "more_thuente",
+            "none"
+        ],
+        "doc": "line search type"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/line_search/use_grad_norm_tol",
+        "default": 0,
         "type": "float",
         "doc": "When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy"
     },
@@ -1945,7 +2096,8 @@
             "paraview",
             "data",
             "advanced",
-            "reference"
+            "reference",
+            "optimization"
         ],
         "doc": "output settings"
     },
@@ -1970,6 +2122,28 @@
             "options"
         ],
         "doc": "Output in paraview format"
+    },
+    {
+        "pointer": "/output/optimization",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solve_log_level",
+            "save_frequency"
+        ],
+        "doc": "Optimization output options"
+    },
+    {
+        "pointer": "/output/optimization/save_frequency",
+        "default": 1,
+        "type": "int",
+        "doc": "Optimization output frequency"
+    },
+    {
+        "pointer": "/output/optimization/solve_log_level",
+        "default": 2,
+        "type": "int",
+        "doc": "Log level in forward solve"
     },
     {
         "pointer": "/output/paraview/file_name",

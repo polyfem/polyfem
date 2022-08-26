@@ -62,8 +62,8 @@ namespace polyfem
 		opt_output_params = state.args["output"]["optimization"];
 		opt_params = state.args["optimization"];
 
-		save_freq = opt_output_params.value("save_frequency", 1);
-		max_change = opt_nonlinear_params.value("max_change", std::numeric_limits<double>::max());
+		save_freq = opt_output_params["save_frequency"];
+		max_change = opt_nonlinear_params["max_change"];
 	}
 
 	void OptimizationProblem::solve_pde(const TVector &x)
