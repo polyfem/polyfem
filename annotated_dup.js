@@ -70,6 +70,13 @@ var annotated_dup =
         [ "SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
         [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ]
       ] ],
+      [ "io", "namespacepolyfem_1_1io.html", [
+        [ "FEBioReader", "classpolyfem_1_1io_1_1_f_e_bio_reader.html", null ],
+        [ "MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
+        [ "OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", "classpolyfem_1_1io_1_1_o_b_j_reader" ],
+        [ "OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", "classpolyfem_1_1io_1_1_o_b_j_writer" ],
+        [ "VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", "classpolyfem_1_1io_1_1_v_t_u_writer" ]
+      ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
         [ "Navigation", "namespacepolyfem_1_1mesh_1_1_navigation.html", [
           [ "Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", "structpolyfem_1_1mesh_1_1_navigation_1_1_index" ]
@@ -92,8 +99,7 @@ var annotated_dup =
         [ "NCMesh2D", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh2_d" ],
         [ "NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d" ],
         [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", "classpolyfem_1_1mesh_1_1_obstacle" ],
-        [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ],
-        [ "VTUWriter", "classpolyfem_1_1mesh_1_1_v_t_u_writer.html", "classpolyfem_1_1mesh_1_1_v_t_u_writer" ]
+        [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ]
       ] ],
       [ "problem", "namespacepolyfem_1_1problem.html", [
         [ "Airfoil", "classpolyfem_1_1problem_1_1_airfoil.html", "classpolyfem_1_1problem_1_1_airfoil" ],
@@ -189,15 +195,11 @@ var annotated_dup =
         [ "BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", "classpolyfem_1_1utils_1_1_box_selection" ],
         [ "EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
         [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
-        [ "FEBioReader", "classpolyfem_1_1utils_1_1_f_e_bio_reader.html", null ],
         [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
         [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
         [ "HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", "structpolyfem_1_1utils_1_1_hash_vector" ],
         [ "InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", "classpolyfem_1_1utils_1_1_interpolated_function2d" ],
-        [ "MshReader", "classpolyfem_1_1utils_1_1_msh_reader.html", null ],
         [ "NThread", "classpolyfem_1_1utils_1_1_n_thread.html", "classpolyfem_1_1utils_1_1_n_thread" ],
-        [ "OBJReader", "classpolyfem_1_1utils_1_1_o_b_j_reader.html", "classpolyfem_1_1utils_1_1_o_b_j_reader" ],
-        [ "OBJWriter", "classpolyfem_1_1utils_1_1_o_b_j_writer.html", "classpolyfem_1_1utils_1_1_o_b_j_writer" ],
         [ "PlaneSelection", "classpolyfem_1_1utils_1_1_plane_selection.html", "classpolyfem_1_1utils_1_1_plane_selection" ],
         [ "RBFInterpolation", "classpolyfem_1_1utils_1_1_r_b_f_interpolation.html", "classpolyfem_1_1utils_1_1_r_b_f_interpolation" ],
         [ "RefElementSampler", "classpolyfem_1_1utils_1_1_ref_element_sampler.html", "classpolyfem_1_1utils_1_1_ref_element_sampler" ],

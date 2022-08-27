@@ -14,7 +14,7 @@ var searchData=
   ['mixedassembler_3c_20polyfem_3a_3aassembler_3a_3aincompressiblelinearelasticitymixed_20_3e_11',['MixedAssembler&lt; polyfem::assembler::IncompressibleLinearElasticityMixed &gt;',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
   ['mixedassembler_3c_20polyfem_3a_3aassembler_3a_3astokesmixed_20_3e_12',['MixedAssembler&lt; polyfem::assembler::StokesMixed &gt;',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
   ['morethuentelinesearch_13',['MoreThuenteLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html',1,'polyfem::solver::line_search']]],
-  ['mshreader_14',['MshReader',['../classpolyfem_1_1utils_1_1_msh_reader.html',1,'polyfem::utils']]],
+  ['mshreader_14',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
   ['multimodel_15',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
   ['mvpolygonalbasis2d_16',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
 ];

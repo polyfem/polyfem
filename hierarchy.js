@@ -46,7 +46,7 @@ var hierarchy =
     [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", null ],
     [ "polyfem::basis::FEBasis2d", "classpolyfem_1_1basis_1_1_f_e_basis2d.html", null ],
     [ "polyfem::basis::FEBasis3d", "classpolyfem_1_1basis_1_1_f_e_basis3d.html", null ],
-    [ "polyfem::utils::FEBioReader", "classpolyfem_1_1utils_1_1_f_e_bio_reader.html", null ],
+    [ "polyfem::io::FEBioReader", "classpolyfem_1_1io_1_1_f_e_bio_reader.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
@@ -116,7 +116,7 @@ var hierarchy =
     [ "polyfem::assembler::MixedAssembler< polyfem::assembler::BilaplacianMixed >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],
     [ "polyfem::assembler::MixedAssembler< polyfem::assembler::IncompressibleLinearElasticityMixed >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],
     [ "polyfem::assembler::MixedAssembler< polyfem::assembler::StokesMixed >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],
-    [ "polyfem::utils::MshReader", "classpolyfem_1_1utils_1_1_msh_reader.html", null ],
+    [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
     [ "polyfem::solver::NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html", null ],
@@ -139,8 +139,8 @@ var hierarchy =
     [ "polyfem::assembler::NLAssembler< polyfem::assembler::SaintVenantElasticity >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
     [ "polyfem::problem::NodeValues", "classpolyfem_1_1problem_1_1_node_values.html", null ],
     [ "polyfem::utils::NThread", "classpolyfem_1_1utils_1_1_n_thread.html", null ],
-    [ "polyfem::utils::OBJReader", "classpolyfem_1_1utils_1_1_o_b_j_reader.html", null ],
-    [ "polyfem::utils::OBJWriter", "classpolyfem_1_1utils_1_1_o_b_j_writer.html", null ],
+    [ "polyfem::io::OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", null ],
+    [ "polyfem::io::OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", null ],
     [ "polyfem::mesh::Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", null ],
     [ "polyfem::assembler::OgdenElasticity", "classpolyfem_1_1assembler_1_1_ogden_elasticity.html", null ],
     [ "polyfem::solver::OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html", null ],
@@ -247,5 +247,5 @@ var hierarchy =
     [ "polyfem::renderer::UniformAttributes", "classpolyfem_1_1renderer_1_1_uniform_attributes.html", null ],
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
-    [ "polyfem::mesh::VTUWriter", "classpolyfem_1_1mesh_1_1_v_t_u_writer.html", null ]
+    [ "polyfem::io::VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", null ]
 ];

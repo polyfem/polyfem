@@ -6,7 +6,7 @@ var searchData=
   ['cache_3',['cache',['../_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95',1,'cache():&#160;Assembler.cpp'],['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a927a13315d2c48728a01bdcf0e0302d0',1,'polyfem::assembler::AssemblyValsCache::cache()']]],
   ['cached_5fstiffness_4',['cached_stiffness',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a502b8e1a1944c898133b03fa0d527cd9',1,'polyfem::solver::NLProblem']]],
   ['ccd_5ftime_5',['ccd_time',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5903e76e0529bcdc7c3a67cf6802cceb',1,'polyfem::solver::line_search::LineSearch']]],
-  ['cell_5fdata_5f_6',['cell_data_',['../classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a1e29a4c8f98a1cf8df9ba3d41f3d9208',1,'polyfem::mesh::VTUWriter']]],
+  ['cell_5fdata_5f_6',['cell_data_',['../classpolyfem_1_1io_1_1_v_t_u_writer.html#a55857a51e9e2fa82555576507381fc36',1,'polyfem::io::VTUWriter']]],
   ['cell_5fnodes_5f_7',['cell_nodes_',['../classpolyfem_1_1mesh_1_1_mesh.html#a8c37bb829ba87ab978e1e9d569bf58ec',1,'polyfem::mesh::Mesh']]],
   ['cell_5foffset_5f_8',['cell_offset_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#ae30f461f4791c88705315b57e188ac00',1,'polyfem::mesh::MeshNodes']]],
   ['cell_5fweights_5f_9',['cell_weights_',['../classpolyfem_1_1mesh_1_1_mesh.html#a932113776cd86cd95e32850a7db16d54',1,'polyfem::mesh::Mesh']]],
@@ -40,6 +40,6 @@ var searchData=
   ['current_5fe_5f_37',['current_e_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a9145ee4421ffd5cbbdb9269a3b4b13dc',1,'polyfem::utils::SpareMatrixCache']]],
   ['current_5fe_5findex_5f_38',['current_e_index_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#aa1fa3c6e89a044b00a7d16ceaff30632',1,'polyfem::utils::SpareMatrixCache']]],
   ['current_5findices_39',['current_indices',['../namespacep__bases.html#a482e93806367591d684b2c432e56984b',1,'p_bases.current_indices()'],['../namespaceq__bases.html#a8ec9a79797cdb20932c29ecb7097996f',1,'q_bases.current_indices()']]],
-  ['current_5fscalar_5fpoint_5fdata_5f_40',['current_scalar_point_data_',['../classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a87e107e063ad6018ed8cfc701e1c7890',1,'polyfem::mesh::VTUWriter']]],
-  ['current_5fvector_5fpoint_5fdata_5f_41',['current_vector_point_data_',['../classpolyfem_1_1mesh_1_1_v_t_u_writer.html#a30470edca4c2e19ae07f5c479ed833ec',1,'polyfem::mesh::VTUWriter']]]
+  ['current_5fscalar_5fpoint_5fdata_5f_40',['current_scalar_point_data_',['../classpolyfem_1_1io_1_1_v_t_u_writer.html#aff5eb9324755daedadb00758962955f2',1,'polyfem::io::VTUWriter']]],
+  ['current_5fvector_5fpoint_5fdata_5f_41',['current_vector_point_data_',['../classpolyfem_1_1io_1_1_v_t_u_writer.html#a6796416d73c2ec24cd2a862b6baa8bde',1,'polyfem::io::VTUWriter']]]
 ];

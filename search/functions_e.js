@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['objreader_0',['OBJReader',['../classpolyfem_1_1utils_1_1_o_b_j_reader.html#a2914bf25d433db3d8a4df0991db723fc',1,'polyfem::utils::OBJReader']]],
-  ['objwriter_1',['OBJWriter',['../classpolyfem_1_1utils_1_1_o_b_j_writer.html#a00db9563ac1d28aa2d3826508bcf56a1',1,'polyfem::utils::OBJWriter']]],
+  ['objreader_0',['OBJReader',['../classpolyfem_1_1io_1_1_o_b_j_reader.html#a355379bd80f9d347147f2c6ff97efcd6',1,'polyfem::io::OBJReader']]],
+  ['objwriter_1',['OBJWriter',['../classpolyfem_1_1io_1_1_o_b_j_writer.html#a9a7d5152259217228b39f418d9a6db05',1,'polyfem::io::OBJWriter']]],
   ['obstacle_2',['Obstacle',['../classpolyfem_1_1mesh_1_1_obstacle.html#a608e002241d405ed009eea7e5772a8fc',1,'polyfem::mesh::Obstacle']]],
   ['offset_5fpolygon_3',['offset_polygon',['../namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7',1,'polyfem::mesh']]],
   ['ogdenelasticity_4',['OgdenElasticity',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a301aaf2ef1203301f03aaa8a43e091da',1,'polyfem::assembler::OgdenElasticity']]],

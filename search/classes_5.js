@@ -4,7 +4,7 @@ var searchData=
   ['facenodes_1',['FaceNodes',['../classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html',1,'polyfem::mesh::Mesh']]],
   ['febasis2d_2',['FEBasis2d',['../classpolyfem_1_1basis_1_1_f_e_basis2d.html',1,'polyfem::basis']]],
   ['febasis3d_3',['FEBasis3d',['../classpolyfem_1_1basis_1_1_f_e_basis3d.html',1,'polyfem::basis']]],
-  ['febioreader_4',['FEBioReader',['../classpolyfem_1_1utils_1_1_f_e_bio_reader.html',1,'polyfem::utils']]],
+  ['febioreader_4',['FEBioReader',['../classpolyfem_1_1io_1_1_f_e_bio_reader.html',1,'polyfem::io']]],
   ['fileselection_5',['FileSelection',['../classpolyfem_1_1utils_1_1_file_selection.html',1,'polyfem::utils']]],
   ['flow_6',['Flow',['../classpolyfem_1_1problem_1_1_flow.html',1,'polyfem::problem']]],
   ['flowwithobstacle_7',['FlowWithObstacle',['../classpolyfem_1_1problem_1_1_flow_with_obstacle.html',1,'polyfem::problem']]],

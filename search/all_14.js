@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['t_0',['T',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ab898f86e40d086ed9e13aba18281480a',1,'polyfem::solver::OperatorSplittingSolver']]],
-  ['t_1',['t',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac1185839e5fd626d239bac666d073858',1,'polyfem::solver::NLProblem']]],
+  ['t_0',['t',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac1185839e5fd626d239bac666d073858',1,'polyfem::solver::NLProblem']]],
+  ['t_1',['T',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ab898f86e40d086ed9e13aba18281480a',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['target_5fx_5f_2',['target_x_',['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#acbe45b392e174f2a9ddd044e65bb2aee',1,'polyfem::solver::ALNLProblem']]],
   ['tau_3',['tau',['../classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html#a3659c0117607068507589d821a33358b',1,'polyfem::solver::line_search::ArmijoLineSearch']]],
   ['taylorgreenvortexproblem_4',['TaylorGreenVortexProblem',['../classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html',1,'polyfem::problem::TaylorGreenVortexProblem'],['../classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3614e15446131f68e9c657b73010e5f6',1,'polyfem::problem::TaylorGreenVortexProblem::TaylorGreenVortexProblem()']]],

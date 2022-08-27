@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: src/polyfem/utils/FEBioReader.cpp File Reference</title>
+<title>PolyFEM: src/polyfem/io/FEBioReader.cpp File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -121,15 +121,15 @@ $(document).ready(function(){initNavTree('_f_e_bio_reader_8cpp.html',''); initRe
 <code>#include &lt;<a class="el" href="_generic_problem_8hpp_source.html">polyfem/assembler/GenericProblem.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_assembler_utils_8hpp_source.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_r_b_f_interpolation_8hpp_source.html">polyfem/utils/RBFInterpolation.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_matrix_i_o_8hpp_source.html">polyfem/io/MatrixIO.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_string_utils_8hpp_source.html">polyfem/utils/StringUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_matrix_utils_8hpp_source.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;igl/Timer.h&gt;</code><br />
 <code>#include &lt;tinyxml2.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for FEBioReader.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_f_e_bio_reader_8cpp__incl.svg" width="5646" height="1246"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_f_e_bio_reader_8cpp__incl.svg" width="5246" height="1171"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -139,7 +139,7 @@ Include dependency graph for FEBioReader.cpp:</div>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepolyfem_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html">polyfem::utils</a></td></tr>
+<tr class="memitem:namespacepolyfem_1_1io"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1io.html">polyfem::io</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
@@ -155,7 +155,7 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00026">26</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00027">27</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00241">polyfem::assembler::GenericTensorProblem::add_dirichlet_boundary()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00255">polyfem::assembler::GenericTensorProblem::update_dirichlet_boundary()</a>.</p>
 
@@ -173,7 +173,7 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00026">26</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00027">27</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00241">polyfem::assembler::GenericTensorProblem::add_dirichlet_boundary()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00255">polyfem::assembler::GenericTensorProblem::update_dirichlet_boundary()</a>.</p>
 
@@ -191,7 +191,7 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00026">26</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00027">27</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00241">polyfem::assembler::GenericTensorProblem::add_dirichlet_boundary()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00255">polyfem::assembler::GenericTensorProblem::update_dirichlet_boundary()</a>.</p>
 
@@ -209,7 +209,7 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00025">25</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_f_e_bio_reader_8cpp_source.html#l00026">26</a> of file <a class="el" href="_f_e_bio_reader_8cpp_source.html">FEBioReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -219,7 +219,7 @@ Namespaces</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_45751013e7de66cb9317c15709b40c18.html">utils</a></li><li class="navelem"><a class="el" href="_f_e_bio_reader_8cpp.html">FEBioReader.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_734cdad6c925c4f361e29f2a6d60e23c.html">io</a></li><li class="navelem"><a class="el" href="_f_e_bio_reader_8cpp.html">FEBioReader.cpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>

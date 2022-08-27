@@ -12,7 +12,7 @@ var searchData=
   ['bilaplacian_5faux_5f_9',['bilaplacian_aux_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#ab6c7090b8dc55deb3ec74934592e509f',1,'polyfem::assembler::AssemblerUtils']]],
   ['bilaplacian_5fmain_5f_10',['bilaplacian_main_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a76080a4768021893f33047c81a17cab7',1,'polyfem::assembler::AssemblerUtils']]],
   ['bilaplacian_5fmixed_5f_11',['bilaplacian_mixed_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#aaaef194b7b5edb4a54635602122cb299',1,'polyfem::assembler::AssemblerUtils']]],
-  ['binary_5f_12',['binary_',['../_v_t_u_writer_8hpp.html#ad139edcd5a95667fd99c314eccefa0a4',1,'binary_():&#160;VTUWriter.hpp'],['../classpolyfem_1_1mesh_1_1_v_t_u_writer.html#aa32db6a4f052a6907edac03ae326e4a5',1,'polyfem::mesh::VTUWriter::binary_()']]],
+  ['binary_5f_12',['binary_',['../_v_t_u_writer_8hpp.html#ad139edcd5a95667fd99c314eccefa0a4',1,'binary_():&#160;VTUWriter.hpp'],['../classpolyfem_1_1io_1_1_v_t_u_writer.html#a4c81a9f265129a831feaf5a5783aa0c6',1,'polyfem::io::VTUWriter::binary_()']]],
   ['blendingshader_13',['BlendingShader',['../classpolyfem_1_1renderer_1_1_program.html#af8854e9b101095dff631285ada650e7c',1,'polyfem::renderer::Program']]],
   ['body_5fid_14',['body_id',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a64b0d93cbfbc8d68f13f3c791cc347b3',1,'polyfem::mesh::NCMesh2D::ncElem::body_id()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#addf5cd146276db4d94d877919b1c6e03',1,'polyfem::mesh::NCMesh3D::ncElem::body_id()']]],
   ['body_5fids_5f_15',['body_ids_',['../classpolyfem_1_1mesh_1_1_mesh.html#aac2647ece338c19ad8dfe2629a29c6a7',1,'polyfem::mesh::Mesh']]],

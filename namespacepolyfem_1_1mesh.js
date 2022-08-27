@@ -45,7 +45,6 @@ var namespacepolyfem_1_1mesh =
     [ "NCMesh3D", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d" ],
     [ "Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", "classpolyfem_1_1mesh_1_1_obstacle" ],
     [ "Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", "structpolyfem_1_1mesh_1_1_vertex" ],
-    [ "VTUWriter", "classpolyfem_1_1mesh_1_1_v_t_u_writer.html", "classpolyfem_1_1mesh_1_1_v_t_u_writer" ],
     [ "EvalParametersFunc", "namespacepolyfem_1_1mesh.html#ab40b3d90650fc21517c5a9af3e4cf960", null ],
     [ "GetAdjacentLocalEdge", "namespacepolyfem_1_1mesh.html#adb5543570018cfbaaaf1932e5f1ba21a", null ],
     [ "BoundaryType", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826", [

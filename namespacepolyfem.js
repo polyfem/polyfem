@@ -36,6 +36,7 @@ var namespacepolyfem =
       [ "saint_venant_3d_function", "namespacepolyfem_1_1autogen.html#a12b075f5cf8ff8bc1f8918ca721bb079", null ]
     ] ],
     [ "basis", "namespacepolyfem_1_1basis.html", "namespacepolyfem_1_1basis" ],
+    [ "io", "namespacepolyfem_1_1io.html", "namespacepolyfem_1_1io" ],
     [ "mesh", "namespacepolyfem_1_1mesh.html", "namespacepolyfem_1_1mesh" ],
     [ "problem", "namespacepolyfem_1_1problem.html", "namespacepolyfem_1_1problem" ],
     [ "quadrature", "namespacepolyfem_1_1quadrature.html", "namespacepolyfem_1_1quadrature" ],

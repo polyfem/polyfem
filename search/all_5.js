@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['e_0',['e',['../classpolyfem_1_1mesh_1_1_obstacle.html#a4f9dafcf9dffc6df2ea9c9994aa9abc4',1,'polyfem::mesh::Obstacle']]],
-  ['e_1',['E',['../classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#aea8b1559cb29ca65fd14d461930d5e54',1,'polyfem::problem::ElasticCantileverExact']]],
+  ['e_0',['E',['../classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#aea8b1559cb29ca65fd14d461930d5e54',1,'polyfem::problem::ElasticCantileverExact']]],
+  ['e_1',['e',['../classpolyfem_1_1mesh_1_1_obstacle.html#a4f9dafcf9dffc6df2ea9c9994aa9abc4',1,'polyfem::mesh::Obstacle']]],
   ['e_5f_2',['e_',['../classpolyfem_1_1mesh_1_1_obstacle.html#a2517abcf6fae9e92a6ddbdf7884923bd',1,'polyfem::mesh::Obstacle']]],
   ['edge_3',['edge',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a52e08aee316746e5a0a8d0a1f1f256b0',1,'polyfem::mesh::NCMesh3D::ncVert::edge()'],['../structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html#a5f555e4f35f8cb81139fc4cac52b7b46',1,'polyfem::mesh::Navigation3D::Index::edge()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a4310447300f89d617acdef09605205aa',1,'polyfem::mesh::NCMesh2D::ncVert::edge()'],['../structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a3a4aa8f82431a4bd8fc60649450eb731',1,'polyfem::mesh::Navigation::Index::edge()']]],
   ['edge_4',['Edge',['../structpolyfem_1_1mesh_1_1_edge.html',1,'polyfem::mesh']]],

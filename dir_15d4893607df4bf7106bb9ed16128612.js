@@ -12,7 +12,5 @@ var dir_15d4893607df4bf7106bb9ed16128612 =
     [ "MeshUtils.cpp", "_mesh_utils_8cpp.html", "_mesh_utils_8cpp" ],
     [ "MeshUtils.hpp", "_mesh_utils_8hpp.html", "_mesh_utils_8hpp" ],
     [ "Obstacle.cpp", "_obstacle_8cpp.html", null ],
-    [ "Obstacle.hpp", "_obstacle_8hpp.html", "_obstacle_8hpp" ],
-    [ "VTUWriter.cpp", "_v_t_u_writer_8cpp.html", null ],
-    [ "VTUWriter.hpp", "_v_t_u_writer_8hpp.html", "_v_t_u_writer_8hpp" ]
+    [ "Obstacle.hpp", "_obstacle_8hpp.html", "_obstacle_8hpp" ]
 ];

@@ -2,7 +2,7 @@ var searchData=
 [
   ['main_0',['main',['../namespacetetrahedron.html#a7a30f3081ce9820ed5be706027cb7936',1,'tetrahedron.main()'],['../namespacetriangle.html#a72919946fd8d7cdd07d68f2d0588ee94',1,'triangle.main()'],['../main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main():&#160;main.cpp']]],
   ['make_5fnl_5fsolver_1',['make_nl_solver',['../classpolyfem_1_1_state.html#adfeed3b1b3607b844a01f519ff149161',1,'polyfem::State']]],
-  ['map_5fentity_5ftag_5fto_5fphysical_5ftag_2',['map_entity_tag_to_physical_tag',['../namespacepolyfem_1_1utils.html#a558e9ba73951d941809ecf3631b15aca',1,'polyfem::utils']]],
+  ['map_5fentity_5ftag_5fto_5fphysical_5ftag_2',['map_entity_tag_to_physical_tag',['../namespacepolyfem_1_1io.html#a50d2a67a897e7e93c2891fbf5dd792d0',1,'polyfem::io']]],
   ['mapping_3',['mapping',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#ac115eb5b0c60d2c540924d35fc5ae968',1,'polyfem::utils::SpareMatrixCache']]],
   ['mapping_5fsize_4',['mapping_size',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a0c166d4e099f1466063caf16c408135d',1,'polyfem::utils::SpareMatrixCache']]],
   ['mark_5fboundary_5',['mark_boundary',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#aa40925ab61348aee70034846b4815dac',1,'polyfem::mesh::NCMesh3D::mark_boundary()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9828d5ae86e84c5bfcc31547818673de',1,'polyfem::mesh::NCMesh2D::mark_boundary()']]],
