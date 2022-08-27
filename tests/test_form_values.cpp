@@ -189,9 +189,18 @@ namespace
 				}
 				else if (call.rfind(expected_key, 0) == 0)
 				{
-					const double expected = H5Easy::load<double>(file, call);
 					REQUIRE(val.size() > 0);
-					const double value = forms[0]->value(val);
+					const double expected = H5Easy::load<double>(file, call);
+					double value;
+					if (expected_key == "barrier_stiffness")
+					{
+						value = static_cast<ContactForm *>(forms[0].get())->barrier_stiffness();
+					}
+					else
+					{
+						value = forms[0]->value(val);
+					}
+
 					if (!std::isnan(expected))
 					{
 						REQUIRE(value == Approx(expected).epsilon(1e-6).margin(1e-9));
@@ -245,9 +254,6 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 	const bool apply_DBC = true;
 	std::shared_ptr<BodyForm> body_form;
 
-	const double barrier_stiffness = 1e7;
-	// const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
-
 	check_form_value(
 		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
 			rhs_assembler = state->build_rhs_assembler();
@@ -256,7 +262,6 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 			std::vector<std::shared_ptr<Form>> res = {std::make_shared<ContactForm>(
 														  *state,
 														  state->args["contact"]["dhat"],
-														  // f.create_dataset("barrier_stiffness", data = barrier_stiffness)
 														  !state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
 														  state->problem->is_time_dependent(),
 														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -269,6 +274,34 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 			return res;
 		},
 		"collision_energy");
+}
+
+TEST_CASE("barrier stiffness value", "[form][form_value][barrier_stiffness]")
+{
+	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+	const bool apply_DBC = true;
+	std::shared_ptr<BodyForm> body_form;
+
+	check_form_value(
+		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
+			rhs_assembler = state->build_rhs_assembler();
+			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+
+			std::vector<std::shared_ptr<Form>> res = {std::make_shared<ContactForm>(
+														  *state,
+														  state->args["contact"]["dhat"],
+														  !state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
+														  state->problem->is_time_dependent(),
+														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
+														  state->args["solver"]["contact"]["CCD"]["tolerance"],
+														  state->args["solver"]["contact"]["CCD"]["max_iterations"],
+														  ti->acceleration_scaling(),
+														  *body_form),
+													  body_form};
+
+			return res;
+		},
+		"barrier_stiffness");
 }
 
 TEST_CASE("elastic form value", "[form][form_value][elastic_form]")
