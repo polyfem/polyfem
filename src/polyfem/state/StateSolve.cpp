@@ -1,10 +1,12 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace io;
 	using namespace utils;
 
 	void State::init_solve()

@@ -1,7 +1,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -52,6 +52,7 @@ namespace polyfem
 {
 	using namespace assembler;
 	using namespace mesh;
+	using namespace io;
 	using namespace utils;
 
 	namespace

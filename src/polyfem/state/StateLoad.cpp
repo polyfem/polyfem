@@ -1,6 +1,6 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/utils/FEBioReader.hpp>
+#include <polyfem/io/FEBioReader.hpp>
 
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
@@ -17,6 +17,7 @@ namespace polyfem
 {
 	using namespace basis;
 	using namespace mesh;
+	using namespace io;
 	using namespace utils;
 
 	void State::reset_mesh()

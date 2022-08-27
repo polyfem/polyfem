@@ -1,12 +1,13 @@
 #include "PointBasedProblem.hpp"
 #include <polyfem/State.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <iostream>
 #include <string>
 
 namespace polyfem
 {
+	using namespace io;
 	using namespace utils;
 
 	namespace problem
@@ -21,7 +22,7 @@ namespace polyfem
 			{
 				assert(data.size() == 3);
 				init((double)data[0], (double)data[1], (double)data[2], dd);
-				//TODO add dimension
+				// TODO add dimension
 			}
 			else if (data.is_object())
 			{

@@ -3,9 +3,9 @@
 #include <polyfem/utils/RBFInterpolation.hpp>
 #include <polyfem/utils/Bessel.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
-#include <polyfem/utils/MshReader.hpp>
+#include <polyfem/io/MshReader.hpp>
+#include <polyfem/io/VTUWriter.hpp>
 #include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/mesh/VTUWriter.hpp>
 
 #ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/TriMesh.h>
@@ -18,6 +18,7 @@
 
 using namespace polyfem;
 using namespace polyfem::mesh;
+using namespace polyfem::io;
 using namespace polyfem::utils;
 
 TEST_CASE("interpolated_fun_2d", "[utils]")

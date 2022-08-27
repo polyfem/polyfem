@@ -1,8 +1,10 @@
 #include "VTUWriter.hpp"
+
 #include <polyfem/utils/Logger.hpp>
+
 namespace polyfem
 {
-	namespace mesh
+	namespace io
 	{
 		namespace
 		{
@@ -390,16 +392,16 @@ namespace polyfem
 		{
 			point_data_.push_back(VTKDataNode<double>(binary_));
 
-			//FIXME?
-			// if (data.cols() == 2)
-			// {
-			//  express::BlockEigen::MatrixXd<typename Eigen::MatrixXd::EntryType> data3((data.rows() * 3) / 2, data.columns(), 3, data.columns());
-			//  data3.allSet(0);
-			//  for (int i = 0; i < data3.nBlockRows(); ++i) {
-			//      data3.setBlockAt(i, 0, data.rowRange(i * n_components, (i + 1) * n_components));
-			//  }
-			//  point_data_.back().initialize(name, "Float32", data3, 3);
-			// } else
+			// FIXME?
+			//  if (data.cols() == 2)
+			//  {
+			//   express::BlockEigen::MatrixXd<typename Eigen::MatrixXd::EntryType> data3((data.rows() * 3) / 2, data.columns(), 3, data.columns());
+			//   data3.allSet(0);
+			//   for (int i = 0; i < data3.nBlockRows(); ++i) {
+			//       data3.setBlockAt(i, 0, data.rowRange(i * n_components, (i + 1) * n_components));
+			//   }
+			//   point_data_.back().initialize(name, "Float32", data3, 3);
+			//  } else
 
 			point_data_.back().initialize(name, "Float64", data, data.cols());
 			current_vector_point_data_ = name;
@@ -450,5 +452,5 @@ namespace polyfem
 			clear();
 			return true;
 		}
-	} // namespace mesh
+	} // namespace io
 } // namespace polyfem
