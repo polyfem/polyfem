@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/RBFInterpolation.hpp>
 
 #include <catch2/catch.hpp>
@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::io;
 using namespace polyfem::utils;
 
 TEST_CASE("interpolation", "[rbf_test]")

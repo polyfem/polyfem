@@ -5,8 +5,8 @@
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALNLProblem.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/OBJ_IO.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 #include <ipc/ipc.hpp>
@@ -14,6 +14,7 @@
 namespace polyfem
 {
 	using namespace solver;
+	using namespace io;
 	using namespace utils;
 
 	template <typename ProblemType>
@@ -78,7 +79,7 @@ namespace polyfem
 
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
-				OBJWriter::save(
+				OBJWriter::write(
 					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
 					collision_mesh.edges(), collision_mesh.faces());
 				logger().error("Unable to solve, initial solution has intersections!");
