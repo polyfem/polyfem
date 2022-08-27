@@ -26,8 +26,6 @@ set(SOURCES
 	InterpolatedFunction.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
-	L2Projection.hpp
-	L2Projection.cpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
 	MaybeParallelFor.hpp

@@ -10,8 +10,6 @@ set(SOURCES
 	MeshUtils.hpp
 	Obstacle.cpp
 	Obstacle.hpp
-	RemeshAdaptive.cpp
-	RemeshAdaptive.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
 )
@@ -23,3 +21,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(mesh2D)
 add_subdirectory(mesh3D)
+add_subdirectory(remesh)

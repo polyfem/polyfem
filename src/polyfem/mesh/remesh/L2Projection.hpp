@@ -6,7 +6,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALNLProblem.hpp>
 
-namespace polyfem::utils
+namespace polyfem::mesh
 {
 	using namespace polyfem::solver;
 	using namespace polyfem::assembler;
@@ -91,4 +91,4 @@ namespace polyfem::utils
 		void compute_distance(const TVector &x, TVector &res);
 	};
 
-} // namespace polyfem::utils
+} // namespace polyfem::mesh

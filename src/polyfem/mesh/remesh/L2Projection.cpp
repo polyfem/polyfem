@@ -6,11 +6,12 @@
 
 #include <Eigen/PardisoSupport>
 
-namespace polyfem::utils
+namespace polyfem::mesh
 {
 	using namespace polyfem::basis;
 	using namespace polyfem::assembler;
 	using namespace polyfem::solver;
+	using namespace polyfem::utils;
 
 	L2ProjectionOptimizationProblem::L2ProjectionOptimizationProblem(
 		const State &state,
@@ -256,4 +257,4 @@ namespace polyfem::utils
 		assert(residual_error < 1e-12);
 	}
 
-} // namespace polyfem::utils
+} // namespace polyfem::mesh

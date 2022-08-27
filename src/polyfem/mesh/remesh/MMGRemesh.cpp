@@ -3,7 +3,7 @@
 // License: MIT (https://github.com/cellogram/cellogram/blob/master/LICENSE)
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "RemeshAdaptive.hpp"
+#include "MMGRemesh.hpp"
 // #include <cellogram/MeshUtils.h>
 #include <iomanip>
 #include <cassert>
