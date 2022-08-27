@@ -475,8 +475,8 @@ namespace polyfem
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 
 					dx = dparams.head(2 * dof);
-					dx.tail(dof) *= cur_mus;
-					dx.head(dof) *= cur_lambdas;
+					dx.tail(dof) = dx.tail(dof).array() * cur_mus.array();
+					dx.head(dof) = dx.head(dof).array() * cur_lambdas.array();
 				};
 			}
 			else if (material_params["restriction"].get<std::string>() == "constant_log")

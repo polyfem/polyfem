@@ -129,7 +129,7 @@ namespace polyfem
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
 			state.get_vf(V, F, false);
-			V += utils::unflatten(state.sol, state.mesh->dimension());
+			V.block(0, 0, V.rows(), state.mesh->dimension()) += utils::unflatten(state.sol, state.mesh->dimension());
 			print_markers(V, f.get_active_vertex_mask());
 		}
 
