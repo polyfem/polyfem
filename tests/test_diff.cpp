@@ -1171,6 +1171,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	velocity_discrete *= 1e3;
 
 	Eigen::VectorXd one_form = func.gradient(state, "material-full");
+	one_form.conservativeResize(velocity_discrete.size());
 
 	const double step_size = 1e-5;
 	state.perturb_material(velocity_discrete * step_size);
@@ -1191,7 +1192,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 

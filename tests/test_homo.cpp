@@ -236,11 +236,7 @@ TEST_CASE("stokes_homo", "[homogenization]")
 	json in_args = R"({
         "geometry": [
             {
-                "mesh": "2D.mesh",
-                "n_refs": 0,
-                "transformation": {
-                    "scale": 1
-                }
+                "mesh": ""
             }
         ],
         "space": {
@@ -266,7 +262,7 @@ TEST_CASE("stokes_homo", "[homogenization]")
             "solid_permeability": 1e-8
         }
     })"_json;
-    in_args["geometry"][0]["mesh"] = path + "/../2D.mesh";
+    in_args["geometry"][0]["mesh"] = path + "/../2D.msh";
 
 	State state(16);
 	state.init_logger("", spdlog::level::level_enum::err, false);
