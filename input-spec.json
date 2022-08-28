@@ -1013,13 +1013,38 @@
         "pointer": "/solver/linear/solver",
         "default": "",
         "type": "string",
-        "doc": "Linear solver type."
+        "doc": "Linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
     },
     {
         "pointer": "/solver/linear/precond",
         "default": "",
         "type": "string",
-        "doc": "Preconditioner used if using an iterative linear solver."
+        "doc": "Preconditioner used if using an iterative linear solver.",
+        "options": [
+            "Eigen::IdentityPreconditioner",
+            "Eigen::DiagonalPreconditioner",
+            "Eigen::IncompleteCholesky",
+            "Eigen::LeastSquareDiagonalPreconditioner",
+            "Eigen::IncompleteLUT"
+        ]
     },
     {
         "pointer": "/solver/nonlinear",
@@ -2838,7 +2863,7 @@
     {
         "pointer": "/preset_problem/type",
         "type": "string",
-        "doc": "TODO",
+        "doc": "Type of preset problem to use.",
         "options": [
             "Linear",
             "Quadratic",
