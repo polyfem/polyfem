@@ -42,7 +42,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 			],
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			},
 			"space": {
@@ -150,7 +150,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 			],
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			},
 			"space": {
@@ -284,7 +284,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			},
 			"boundary_conditions": {
@@ -391,7 +391,8 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	double old_functional_val = state.J_static(j);
 
 	double finite_difference = (new_functional_val - old_functional_val) / t / 2;
-	std::cout << finite_difference << ", " << derivative << "\n";
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << old_functional_val << " f(x+dt) " << new_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
@@ -410,7 +411,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SparseLU"
+				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
 		"differentiable": true,
@@ -502,7 +503,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SparseLU"
+				"solver": "Eigen::SimplicialLDLT"
 			},
 			"nonlinear": {
 				"grad_norm": 1e-14,
@@ -638,7 +639,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SparseLU"
+				"solver": "Eigen::SimplicialLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 20
@@ -754,7 +755,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 20
@@ -848,7 +849,8 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - former_functional_val) / 2. / t;
 
-	std::cout << derivative << " " << finite_difference << "\n";
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
@@ -917,7 +919,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1020,7 +1022,8 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
@@ -1045,11 +1048,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 						]
 					},
 					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 3
 				},
 				{
 					"mesh": "",
@@ -1062,11 +1061,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 						"scale": 0.5
 					},
 					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
+					"surface_selection": 1
 				}
 			],
 			"space": {
@@ -1089,10 +1084,10 @@ TEST_CASE("material-transient", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
-					"barrier_stiffness": 100000.0
+					"barrier_stiffness": 1e5
 				}
 			},
 			"boundary_conditions": {
@@ -1124,7 +1119,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 			"differentiable": true,
 			"materials": {
 				"type": "NeoHookean",
-				"E": 1000000.0,
+				"E": 1e6,
 				"nu": 0.3,
 				"rho": 1000,
 				"phi": 10,
@@ -1170,8 +1165,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	velocity_discrete.setOnes(state.bases.size() * 2);
 	velocity_discrete *= 1e3;
 
-	Eigen::VectorXd one_form = func.gradient(state, "material-full");
-	one_form.conservativeResize(velocity_discrete.size());
+	Eigen::VectorXd one_form = func.gradient(state, "material");
 
 	const double step_size = 1e-5;
 	state.perturb_material(velocity_discrete * step_size);
@@ -1192,6 +1186,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
 	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
@@ -1259,7 +1254,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1344,10 +1339,8 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - prev_functional_val) / (2 * t);
 
-	std::cout << "prev functional value: " << prev_functional_val << std::endl;
-	std::cout << "new functional value: " << next_functional_val << std::endl;
-	std::cout << "derivative: " << derivative << std::endl;
-	std::cout << "finite difference: " << finite_difference << std::endl;
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << prev_functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
@@ -1402,7 +1395,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e4
@@ -1501,8 +1494,11 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	double last_functional_val = func.energy(state);
 
 	double finite_difference = (next_functional_val - last_functional_val) / step_size / 2;
+	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
-	REQUIRE((one_form.array() * velocity_discrete.array()).sum() == Approx(finite_difference).epsilon(1e-5));
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << last_functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
 // TEST_CASE("initial-contact-3d", "[adjoint_method]")
@@ -2052,7 +2048,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e5
@@ -2150,7 +2146,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - last_functional_val) / step_size / 2;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << last_functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
@@ -2219,7 +2216,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SparseLU"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 23216604
@@ -2317,6 +2314,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 
 	double finite_difference = (next_functional_val - functional_val) / step_size;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
