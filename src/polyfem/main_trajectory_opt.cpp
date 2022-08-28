@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	if (matching_type == "exact") // || matching_type == "exact-center")
+	if (utils::StringUtils::startswith(matching_type, "exact"))
 	{
 		if (!target_path.empty())
 		{
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
 
 	// compute reference solution
 	State state_reference(max_threads);
-	if (matching_type == "exact") // || matching_type == "exact-center")
+	if (utils::StringUtils::startswith(matching_type, "exact"))
 	{
 		logger().info("Start reference solve...");
 		target_in_args["differentiable"] = true;
