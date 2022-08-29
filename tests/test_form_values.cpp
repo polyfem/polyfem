@@ -22,6 +22,8 @@ using namespace polyfem::solver;
 using namespace polyfem::time_integrator;
 using namespace polyfem::assembler;
 
+static const bool verbose = false;
+
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
 {
@@ -104,40 +106,53 @@ namespace
 
 				if (call.rfind("init_lagging_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "init_lagging_" << std::endl;
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					for (auto &form : forms)
 						form->init_lagging(x);
 				}
 				else if (call.rfind("init_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "init_" << std::endl;
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					for (auto &form : forms)
 						form->init(x);
 				}
 				else if (call.rfind("set_project_to_psd_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "set_project_to_psd_" << std::endl;
 					const bool val = H5Easy::load<bool>(file, call);
 					for (auto &form : forms)
 						form->set_project_to_psd(val);
 				}
 				else if (call.rfind("update_lagging_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "update_lagging_" << std::endl;
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					for (auto &form : forms)
 						form->update_lagging(x);
 				}
 				else if (call.rfind("update_quantities_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "update_quantities_" << std::endl;
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("update_quantities_t_", 0) == 0);
 					const double t = H5Easy::load<double>(file, call_stack[i + 1]);
+					time_integrator->update_quantities(x);
+
 					for (auto &form : forms)
 						form->update_quantities(t, x);
-					time_integrator->update_quantities(x);
 					++i;
 				}
 				else if (call.rfind("line_search_begin_0_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "line_search_begin_0_" << std::endl;
 					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("line_search_begin_1_", 0) == 0);
 					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
@@ -147,11 +162,15 @@ namespace
 				}
 				else if (call.rfind("line_search_end_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "line_search_end_" << std::endl;
 					for (auto &form : forms)
 						form->line_search_end();
 				}
 				else if (call.rfind("max_step_size_0_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "max_step_size_0_" << std::endl;
 					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("max_step_size_1_", 0) == 0);
 					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
@@ -161,6 +180,8 @@ namespace
 				}
 				else if (call.rfind("is_step_valid_0_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "is_step_valid_0_" << std::endl;
 					const Eigen::MatrixXd x0 = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("is_step_valid_1_", 0) == 0);
 					const Eigen::MatrixXd x1 = H5Easy::load<Eigen::MatrixXd>(file, call_stack[i + 1]);
@@ -170,16 +191,22 @@ namespace
 				}
 				else if (call.rfind("value_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "value_" << std::endl;
 					val = H5Easy::load<Eigen::MatrixXd>(file, call);
 				}
 				else if (call.rfind("solution_changed_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "solution_changed_" << std::endl;
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					for (auto &form : forms)
 						form->solution_changed(x);
 				}
 				else if (call.rfind("post_step_", 0) == 0)
 				{
+					if (verbose)
+						std::cout << "post_step_" << std::endl;
 					const Eigen::MatrixXd x = H5Easy::load<Eigen::MatrixXd>(file, call);
 					REQUIRE(call_stack[i + 1].rfind("post_step_iter_", 0) == 0);
 					const int iter = H5Easy::load<int>(file, call_stack[i + 1]);
@@ -194,15 +221,19 @@ namespace
 					double value;
 					if (expected_key == "barrier_stiffness")
 					{
-						value = static_cast<ContactForm *>(forms[0].get())->barrier_stiffness();
+						value = static_cast<ContactForm *>(forms.back().get())->barrier_stiffness();
 					}
 					else
 					{
-						value = forms[0]->value(val);
+						value = forms.back()->value(val);
 					}
+
+					if (verbose)
+						std::cout << expected_key << " " << value << " " << call << std::endl;
 
 					if (!std::isnan(expected))
 					{
+						assert(fabs(value - expected) < 1e-3);
 						REQUIRE(value == Approx(expected).epsilon(1e-6).margin(1e-9));
 					}
 					else
@@ -253,23 +284,15 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 	const bool apply_DBC = true;
 	std::shared_ptr<BodyForm> body_form;
+	std::shared_ptr<InertiaForm> iform;
 
 	check_form_value(
 		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+			iform = std::make_shared<InertiaForm>(state->mass, *ti);
 
-			std::vector<std::shared_ptr<Form>> res = {std::make_shared<ContactForm>(
-														  *state,
-														  state->args["contact"]["dhat"],
-														  !state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
-														  state->problem->is_time_dependent(),
-														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
-														  state->args["solver"]["contact"]["CCD"]["tolerance"],
-														  state->args["solver"]["contact"]["CCD"]["max_iterations"],
-														  ti->acceleration_scaling(),
-														  *body_form),
-													  body_form};
+			std::vector<std::shared_ptr<Form>> res = {body_form, iform, std::make_shared<ContactForm>(*state, state->args["contact"]["dhat"], !state->args["solver"]["contact"]["barrier_stiffness"].is_number(), state->problem->is_time_dependent(), state->args["solver"]["contact"]["CCD"]["broad_phase"], state->args["solver"]["contact"]["CCD"]["tolerance"], state->args["solver"]["contact"]["CCD"]["max_iterations"], *body_form, iform)};
 
 			return res;
 		},
@@ -281,23 +304,15 @@ TEST_CASE("barrier stiffness value", "[form][form_value][barrier_stiffness]")
 	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 	const bool apply_DBC = true;
 	std::shared_ptr<BodyForm> body_form;
+	std::shared_ptr<InertiaForm> iform;
 
 	check_form_value(
 		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+			iform = std::make_shared<InertiaForm>(state->mass, *ti);
 
-			std::vector<std::shared_ptr<Form>> res = {std::make_shared<ContactForm>(
-														  *state,
-														  state->args["contact"]["dhat"],
-														  !state->args["solver"]["contact"]["barrier_stiffness"].is_number(),
-														  state->problem->is_time_dependent(),
-														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
-														  state->args["solver"]["contact"]["CCD"]["tolerance"],
-														  state->args["solver"]["contact"]["CCD"]["max_iterations"],
-														  ti->acceleration_scaling(),
-														  *body_form),
-													  body_form};
+			std::vector<std::shared_ptr<Form>> res = {body_form, iform, std::make_shared<ContactForm>(*state, state->args["contact"]["dhat"], !state->args["solver"]["contact"]["barrier_stiffness"].is_number(), state->problem->is_time_dependent(), state->args["solver"]["contact"]["CCD"]["broad_phase"], state->args["solver"]["contact"]["CCD"]["tolerance"], state->args["solver"]["contact"]["CCD"]["max_iterations"], *body_form, iform)};
 
 			return res;
 		},
@@ -319,6 +334,7 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 	std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 	const bool apply_DBC = true;
 	std::shared_ptr<BodyForm> body_form;
+	std::shared_ptr<InertiaForm> iform;
 
 	const double barrier_stiffness = 1e7;
 	std::shared_ptr<ContactForm> contact_form;
@@ -327,6 +343,7 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 		[&](const std::shared_ptr<const State> state, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> ti) {
 			rhs_assembler = state->build_rhs_assembler();
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
+			iform = std::make_shared<InertiaForm>(state->mass, *ti);
 
 			contact_form = std::make_shared<ContactForm>(
 				*state,
@@ -336,18 +353,9 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 				state->args["solver"]["contact"]["CCD"]["broad_phase"],
 				state->args["solver"]["contact"]["CCD"]["tolerance"],
 				state->args["solver"]["contact"]["CCD"]["max_iterations"],
-				ti->acceleration_scaling(),
-				*body_form);
+				*body_form, iform);
 
-			std::vector<std::shared_ptr<Form>> res = {std::make_shared<FrictionForm>(
-														  *state,
-														  state->args["contact"]["epsv"],
-														  state->args["contact"]["friction_coefficient"],
-														  state->args["contact"]["dhat"],
-														  state->args["solver"]["contact"]["CCD"]["broad_phase"],
-														  ti->dt(),
-														  *contact_form),
-													  contact_form, body_form};
+			std::vector<std::shared_ptr<Form>> res = {body_form, iform, contact_form, std::make_shared<FrictionForm>(*state, state->args["contact"]["epsv"], state->args["contact"]["friction_coefficient"], state->args["contact"]["dhat"], state->args["solver"]["contact"]["CCD"]["broad_phase"], ti->dt(), *contact_form)};
 			return res;
 		},
 		"friction_energy");

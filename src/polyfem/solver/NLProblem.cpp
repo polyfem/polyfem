@@ -106,19 +106,24 @@ namespace polyfem
 			auto body_form = std::make_shared<BodyForm>(state, rhs_assembler, /*apply_DBC=*/reduced_size != full_size);
 			forms_.push_back(body_form);
 
+			std::shared_ptr<InertiaForm> inertia_form = nullptr;
+
+			if (is_time_dependent)
+			{
+				inertia_form = std::make_shared<InertiaForm>(state.mass, *_time_integrator);
+				forms_.push_back(inertia_form);
+			}
+
 			if (state.args["contact"]["enabled"])
 			{
 				auto contact_form = std::make_shared<ContactForm>(
 					state, _dhat, use_adaptive_barrier_stiffness, is_time_dependent,
-					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations,
-					_time_integrator->acceleration_scaling(), *body_form);
+					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations, *body_form, inertia_form);
 				forms_.push_back(contact_form);
 				if (_mu != 0)
 					forms_.push_back(std::make_shared<FrictionForm>(
 						state, _epsv, _mu, _dhat, _broad_phase_method, dt(), *contact_form));
 			}
-			if (is_time_dependent)
-				forms_.push_back(std::make_shared<InertiaForm>(state.mass, *_time_integrator));
 		}
 
 		void NLProblem::init(const TVector &full)

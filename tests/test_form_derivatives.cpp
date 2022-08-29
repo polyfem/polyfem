@@ -161,10 +161,18 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double dt = 1e-3;
 
+	ImplicitEuler time_integrator;
+	time_integrator.init(
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		dt);
+
+	auto iform = std::make_shared<InertiaForm>(state_ptr->mass, time_integrator);
+
 	ContactForm form(
 		*state_ptr, dhat, use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations,
-		dt * dt, body_form);
+		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations, body_form, iform);
 
 	test_form(form, *state_ptr);
 }
@@ -195,10 +203,18 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const bool apply_DBC = false; // GENERATE(true, false);
 	BodyForm body_form(*state_ptr, *rhs_assembler_ptr, apply_DBC);
 
+	ImplicitEuler time_integrator;
+	time_integrator.init(
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		dt);
+
+	auto iform = std::make_shared<InertiaForm>(state_ptr->mass, time_integrator);
+
 	const ContactForm contact_form(
 		*state_ptr, dhat, use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations,
-		dt * dt, body_form);
+		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations, body_form, iform);
 
 	FrictionForm form(
 		*state_ptr, epsv, mu, dhat, broad_phase_method, dt, contact_form);

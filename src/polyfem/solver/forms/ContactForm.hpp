@@ -11,6 +11,7 @@
 namespace polyfem::solver
 {
 	class BodyForm;
+	class InertiaForm;
 
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
@@ -24,8 +25,8 @@ namespace polyfem::solver
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		/// @param acceleration_scaling form used for the adaptive barrier stiffness, clean me
 		/// @param body_form form used for the adaptive barrier stiffness, clean me
+		/// @param inertia_form form used for the adaptive barrier stiffness, clean me
 		ContactForm(const State &state,
 					const double dhat,
 					const bool use_adaptive_barrier_stiffness,
@@ -33,8 +34,8 @@ namespace polyfem::solver
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
-					const double acceleration_scaling,
-					const BodyForm &body_form);
+					const BodyForm &body_form,
+					const std::shared_ptr<InertiaForm> &inertia_form);
 
 		/// @brief Initialize the form
 		/// @param x Current solution
@@ -127,7 +128,7 @@ namespace polyfem::solver
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 
-		const BodyForm &body_form_;         ///< used for the adaptive barrier stiffness, clean me
-		const double acceleration_scaling_; ///< used for the adaptive barrier stiffness, clean me
+		const BodyForm &body_form_;                       ///< used for the adaptive barrier stiffness, clean me
+		const std::shared_ptr<InertiaForm> inertia_form_; ///< used for the adaptive barrier stiffness, clean me
 	};
 } // namespace polyfem::solver

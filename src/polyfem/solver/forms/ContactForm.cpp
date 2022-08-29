@@ -1,5 +1,6 @@
 #include "ContactForm.hpp"
 #include "BodyForm.hpp"
+#include "InertiaForm.hpp"
 
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -17,8 +18,8 @@ namespace polyfem::solver
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations,
-							 const double acceleration_scaling,
-							 const BodyForm &body_form)
+							 const BodyForm &body_form,
+							 const std::shared_ptr<InertiaForm> &inertia_form)
 		: state_(state),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
@@ -27,7 +28,7 @@ namespace polyfem::solver
 		  ccd_tolerance_(ccd_tolerance),
 		  ccd_max_iterations_(ccd_max_iterations),
 		  body_form_(body_form),
-		  acceleration_scaling_(acceleration_scaling)
+		  inertia_form_(inertia_form)
 	{
 		assert(dhat_ > 0);
 		assert(ccd_tolerance > 0);
@@ -79,9 +80,12 @@ namespace polyfem::solver
 		const auto &gbases = state_.geom_bases();
 		state_.assembler.assemble_energy_gradient(state_.formulation(), state_.mesh->is_volume(), state_.n_bases, state_.bases, gbases, state_.ass_vals_cache, x, grad_energy);
 
-		// TODO
-		//  if (!ignore_inertia && is_time_dependent)
-		grad_energy += state_.mass * x / acceleration_scaling_;
+		if (inertia_form_)
+		{
+			Eigen::VectorXd grad_inertia(x.size());
+			inertia_form_->first_derivative(x, grad_inertia);
+			grad_energy += grad_inertia;
+		}
 
 		Eigen::VectorXd body_energy(x.size());
 		body_form_.first_derivative(x, body_energy);
@@ -206,7 +210,7 @@ namespace polyfem::solver
 		//  }
 		const double curr_distance = ipc::compute_minimum_distance(state_.collision_mesh, displaced_surface, constraint_set_);
 
-		if (prev_distance_ >= 0 && use_adaptive_barrier_stiffness_)
+		if (use_adaptive_barrier_stiffness_)
 		{
 			if (is_time_dependent_)
 			{
@@ -234,7 +238,7 @@ namespace polyfem::solver
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
-		if (use_adaptive_barrier_stiffness_)
+		if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
 		{
 			initialize_barrier_stiffness(x);
 		}
