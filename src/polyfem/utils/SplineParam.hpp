@@ -142,6 +142,14 @@ namespace polyfem
 			val += (3 * t_2 - 2 * t) * tangent.row(1);
 		}
 
+		static void second_deriv(const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const double t, Eigen::MatrixXd &val)
+		{
+			val = (12 * t - 6) * control_point.row(0);
+			val += (6 * t - 4) * tangent.row(0);
+			val += (-12 * t + 6) * control_point.row(1);
+			val += (6 * t - 2) * tangent.row(1);
+		}
+
 	private:
 		const std::map<int, std::vector<int>> boundary_id_to_node_id_;
 		std::map<int, double> node_id_to_t_;

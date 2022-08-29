@@ -229,6 +229,30 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
+		void replace_rows_by_zero(StiffnessMatrix &reduced_mat, const StiffnessMatrix &mat, const std::vector<int> &rows)
+		{
+			reduced_mat.resize(mat.rows(), mat.cols());
+
+			std::vector<bool> mask(mat.rows(), false);
+			for (int i : rows)
+				mask[i] = true;
+
+			std::vector<Eigen::Triplet<double>> coeffs;
+			for (int k = 0; k < mat.outerSize(); ++k)
+			{
+				for (StiffnessMatrix::InnerIterator it(mat, k); it; ++it)
+				{
+					if (mask[it.row()])
+					{
+						continue;
+					}
+					else
+						coeffs.emplace_back(it.row(), it.col(), it.value());
+				}
+			}
+			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
+		}
+
 		void get_bdf_parts(
 			const int bdf_order,
 			const int index,
@@ -955,14 +979,14 @@ namespace polyfem
 								coeff += sol(g.index * dim + d) * g.val;
 							grad_u_q.row(d) += v.grad_t_m.row(q) * coeff;
 						}
-					
+
 					Eigen::MatrixXd stress;
 					if (formulation() == "LinearElasticity")
 						stress = mu * (grad_u_q + grad_u_q.transpose()) + lambda * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
 					else
 						logger().error("Unknown formulation!");
 
-					term(e) += density_power * pow(density_mat(e), density_power-1) * (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
+					term(e) += density_power * pow(density_mat(e), density_power - 1) * (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
 				}
 			}
 		}
@@ -1377,7 +1401,7 @@ namespace polyfem
 				auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
 				auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
 
-				const double value = da(q) * density_power * pow(density_mat(e), density_power-1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+				const double value = da(q) * density_power * pow(density_mat(e), density_power - 1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
 
 				term(e) -= value;
 			}
@@ -2025,6 +2049,113 @@ namespace polyfem
 
 		compute_shape_derivative_functional_term(diff_cached[0].u, j, functional_term, 0);
 		one_form += weights[0] * functional_term + mass_term;
+	}
+
+	// TODO: merge with the other solve_transient_adjoint, for now only used for dirichlet bc derivative
+	void State::solve_transient_adjoint_dirichlet(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p)
+	{
+		assert(problem->is_time_dependent());
+		assert(!problem->is_scalar());
+
+		int bdf_order = -1;
+		if (args["time"]["integrator"] == "ImplicitEuler")
+			bdf_order = 1;
+		else if (args["time"]["integrator"] == "BDF")
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+		else
+			throw("Integrator type not supported for differentiability.");
+
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+
+		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
+		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
+
+		if (!j.depend_on_u() && !j.depend_on_gradu())
+			return;
+
+		// set dirichlet rows of mass to identity
+		StiffnessMatrix reduced_mass;
+		replace_rows_by_identity(reduced_mass, mass, boundary_nodes);
+
+		std::vector<double> weights;
+		j.get_transient_quadrature_weights(time_steps, dt, weights);
+		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
+		for (int i = time_steps; i >= 0; --i)
+		{
+			double beta;
+			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
+			double beta_dt = beta * dt;
+
+			StiffnessMatrix gradu_h, gradu_h_next;
+			if (i > 0)
+				replace_rows_by_zero(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
+			replace_rows_by_zero(gradu_h_next, -beta_dt * diff_cached[i].gradu_h_next, boundary_nodes);
+
+			auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
+				json params_extended = params;
+				params_extended["step"] = i;
+				params_extended["t"] = i * args["time"]["dt"].get<double>();
+				return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params_extended);
+			};
+			Eigen::VectorXd gradu_j;
+			compute_adjoint_rhs(grad_j_func, diff_cached[i].u, gradu_j, j.is_surface_integral());
+
+			if (i > 0)
+			{
+				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
+				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - weights[i] * gradu_j;
+				for (const auto &b : boundary_nodes)
+				{
+					rhs_(b) += (1. / beta_dt) * (-2 * adjoint_p[i + 1](b));
+					if ((i + 2) < adjoint_p.size() - 1)
+						rhs_(b) += (1. / beta_dt) * adjoint_p[i + 2](b);
+				}
+				solve_zero_dirichlet(A, rhs_, {}, adjoint_nu[i]);
+				adjoint_p[i] = beta_dt * adjoint_nu[i] - sum_alpha_p;
+			}
+			else
+			{
+				adjoint_p[i] = -reduced_mass.transpose() * sum_alpha_p;
+				adjoint_nu[i] = -weights[i] * gradu_j - reduced_mass.transpose() * sum_alpha_nu + beta_dt * diff_cached[i].gradu_h_next.transpose() * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
+			}
+		}
+	}
+
+	void State::dJ_dirichlet_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
+	{
+		assert(problem->is_time_dependent());
+		assert(!problem->is_scalar());
+
+		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
+		solve_transient_adjoint_dirichlet(j, adjoint_nu, adjoint_p);
+
+		int bdf_order = -1;
+		if (args["time"]["integrator"] == "ImplicitEuler")
+			bdf_order = 1;
+		else if (args["time"]["integrator"] == "BDF")
+			bdf_order = args["time"]["BDF"]["steps"].get<int>();
+		else
+			throw("Integrator type not supported for differentiability.");
+
+		const double dt = args["time"]["dt"].get<double>();
+		const int time_steps = args["time"]["time_steps"].get<int>();
+
+		one_form.setZero(time_steps * boundary_nodes.size());
+		for (int i = 1; i <= time_steps; ++i)
+		{
+
+			const int real_order = std::min(bdf_order, i);
+			double beta = time_integrator::BDF::betas(real_order - 1);
+			double beta_dt = beta * dt;
+			for (int b = 0; b < boundary_nodes.size(); ++b)
+			{
+				one_form((i - 1) * boundary_nodes.size() + b) = -(1. / beta_dt) * adjoint_p[i](boundary_nodes[b]);
+			}
+		}
+
+		one_form *= 2;
 	}
 
 	void State::solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p)

@@ -121,6 +121,10 @@ namespace polyfem
 				{
 					mat_(i) = vals[i];
 				}
+
+				if (t_index_.size() > 0)
+					if (mat_.size() != t_index_.size())
+						logger().error("Specifying varying dirichlet over time, however 'time_reference' does not match dirichlet boundary conditions.");
 			}
 			else
 			{
@@ -157,10 +161,38 @@ namespace polyfem
 			tfunc_coo_ = coo;
 		}
 
+		void ExpressionValue::set_t(const json &t)
+		{
+			if (t.is_array())
+			{
+				for (int i = 0; i < t.size(); ++i)
+				{
+					t_index_[std::round(t[i].get<double>() * 1000.) / 1000.] = i;
+				}
+
+				if (mat_.size() != t_index_.size())
+					logger().error("Specifying varying dirichlet over time, however 'time_reference' does not match dirichlet boundary conditions.");
+			}
+		}
+
 		double ExpressionValue::operator()(double x, double y, double z, double t, int index) const
 		{
 			if (expr_.empty())
 			{
+				if (t_index_.size() > 0)
+				{
+					t = std::round(t * 1000.) / 1000.;
+					if (t_index_.count(t) != 0)
+					{
+						return mat_(t_index_.at(t));
+					}
+					else
+					{
+						logger().error("Cannot find dirichlet condition for time step {}.", t);
+						return 0;
+					}
+				}
+
 				if (mat_.size() > 0)
 					return mat_(index);
 

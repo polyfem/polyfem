@@ -645,7 +645,11 @@ namespace polyfem
 					if (ff.is_array())
 					{
 						for (size_t k = 0; k < ff.size(); ++k)
+						{
 							displacements_[i][k].init(ff[k]);
+							if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
+								displacements_[i][k].set_t(j_boundary[i - offset]["time_reference"]);
+						}
 					}
 					else
 					{

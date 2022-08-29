@@ -5,6 +5,7 @@
 #include "TopologyOptimizationProblem.hpp"
 #include "MaterialProblem.hpp"
 #include "InitialConditionProblem.hpp"
+#include "ControlProblem.hpp"
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
 #include "BFGSSolver.hpp"
@@ -855,7 +856,7 @@ namespace polyfem
 						state.mesh->cell_barycenters(barycenters);
 						for (int e = 0; e < state.bases.size(); e++)
 						{
-							density_mat(e) = cross3(barycenters(e,0), barycenters(e,1), barycenters(e,2));
+							density_mat(e) = cross3(barycenters(e, 0), barycenters(e, 1), barycenters(e, 2));
 						}
 					}
 					else
@@ -863,12 +864,12 @@ namespace polyfem
 						state.mesh->face_barycenters(barycenters);
 						for (int e = 0; e < state.bases.size(); e++)
 						{
-							density_mat(e) = cross2(barycenters(e,0), barycenters(e,1));
+							density_mat(e) = cross2(barycenters(e, 0), barycenters(e, 1));
 						}
 					}
 					// density_mat.setOnes();
 				}
-				
+
 				if (param.contains("power"))
 					state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat), param["power"]);
 				else
@@ -879,6 +880,33 @@ namespace polyfem
 
 		Eigen::VectorXd x = density_mat;
 		nlsolver->minimize(*top_opt, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
+
+	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_params = state.args["optimization"];
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+
+		std::shared_ptr<ControlProblem> control_problem = std::make_shared<ControlProblem>(state, j);
+		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		x.setZero(control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() * state.args["time_steps"].get<int>());
+		for (int i = 0; i < state.args["problem_params"]["dirichlet_boundary"].size(); ++i)
+			if (control_problem->get_optimize_boundary_ids_to_position().count(state.args["problem_params"]["dirichlet_boundary"][i]["id"].get<int>()) != 0)
+			{
+				int position = control_problem->get_optimize_boundary_ids_to_position().at(state.args["problem_params"]["dirichlet_boundary"][i]["id"].get<int>());
+				for (int k = 0; k < state.mesh->dimension(); ++k)
+					for (int t = 0; t < state.args["time_steps"]; ++t)
+						x(t * control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() + position * state.mesh->dimension() + k) = state.args["problem_params"]["dirichlet_boundary"][i]["value"][k][t].get<double>();
+			}
+		// logger().info("Starting x: {}", x);
+		nlsolver->minimize(*control_problem, x);
 
 		json solver_info;
 		nlsolver->getInfo(solver_info);
