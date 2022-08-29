@@ -74,6 +74,8 @@ namespace polyfem
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 		std::shared_ptr<solver::ALNLProblem> alnl_problem;
+
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
 
 	/// main class that contains the polyfem solver and all its state

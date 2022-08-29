@@ -1,5 +1,12 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
+
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
@@ -86,11 +93,68 @@ namespace polyfem
 			}
 		}
 
+		assert(solve_data.rhs_assembler != nullptr);
+
+		std::vector<std::shared_ptr<Form>> forms;
+		forms.push_back(std::make_shared<ElasticForm>(*this));
+		auto body_form = std::make_shared<BodyForm>(*this, *solve_data.rhs_assembler, /*apply_DBC=*/true);
+		forms.push_back(body_form);
+
+		std::shared_ptr<InertiaForm> inertia_form = nullptr;
+		if (utils::is_param_valid(args, "time"))
+		{
+			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+			solve_data.time_integrator->set_parameters(args["time"]);
+			inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
+			forms.push_back(inertia_form);
+		}
+		else
+		{
+			const double lagged_damping_weight = args["solver"]["contact"]["lagged_damping_weight"].get<double>();
+			if (lagged_damping_weight > 0)
+			{
+				forms.push_back(std::make_shared<LaggedRegForm>(lagged_damping_weight));
+			}
+		}
+
+		if (args["contact"]["enabled"])
+		{
+			const double dhat = args["contact"]["dhat"];
+			assert(dhat > 0);
+			const double epsv = args["contact"]["epsv"];
+			assert(epsv > 0);
+			const double mu = args["contact"]["friction_coefficient"];
+			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
+			double barrier_stiffness;
+			if (use_adaptive_barrier_stiffness)
+			{
+				barrier_stiffness = 1;
+				logger().debug("Using adaptive barrier stiffness");
+			}
+			else
+			{
+				assert(args["solver"]["contact"]["barrier_stiffness"].is_number());
+				barrier_stiffness = args["solver"]["contact"]["barrier_stiffness"];
+				logger().debug("Using fixed barrier stiffness of {}", barrier_stiffness);
+			}
+
+			const ipc::BroadPhaseMethod broad_phase_method = args["solver"]["contact"]["CCD"]["broad_phase"];
+			const double ccd_tolerance = args["solver"]["contact"]["CCD"]["tolerance"];
+			const int ccd_max_iterations = args["solver"]["contact"]["CCD"]["max_iterations"];
+
+			auto contact_form = std::make_shared<ContactForm>(*this, args["contact"]["dhat"], use_adaptive_barrier_stiffness,
+															  solve_data.time_integrator != nullptr,
+															  broad_phase_method, ccd_tolerance, ccd_max_iterations, *body_form, inertia_form);
+			forms.push_back(contact_form);
+			if (mu != 0)
+				forms.push_back(std::make_shared<FrictionForm>(
+					*this, epsv, mu, dhat, broad_phase_method, dt(), *contact_form));
+		}
+
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
-		assert(solve_data.rhs_assembler != nullptr);
 		solve_data.nl_problem =
-			std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t, args["contact"]["dhat"]);
+			std::make_shared<NLProblem>(*this, forms);
 
 		const double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
 		solve_data.alnl_problem =
@@ -109,8 +173,7 @@ namespace polyfem
 			assert(acceleration.size() == sol.size());
 
 			const double dt = args["time"]["dt"];
-			solve_data.nl_problem->init_time_integrator(sol, velocity, acceleration, dt);
-			solve_data.alnl_problem->init_time_integrator(sol, velocity, acceleration, dt);
+			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 		}
 
 		///////////////////////////////////////////////////////////////////////
