@@ -192,7 +192,7 @@ namespace
 				else if (call.rfind("value_", 0) == 0)
 				{
 					if (verbose)
-						std::cout << "value_" << std::endl;
+						std::cout << call << std::endl;
 					val = H5Easy::load<Eigen::MatrixXd>(file, call);
 				}
 				else if (call.rfind("solution_changed_", 0) == 0)
@@ -229,7 +229,7 @@ namespace
 					}
 
 					if (verbose)
-						std::cout << expected_key << " " << value << " " << call << std::endl;
+						std::cout << expected_key << " " << val.norm() << " " << value << "-" << expected << " " << call << std::endl;
 
 					if (!std::isnan(expected))
 					{
