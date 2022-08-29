@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	std::string solver;
 	command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
 
-	const std::set<std::string> opt_types = {"material", "shape", "initial"};
+	const std::set<std::string> opt_types = {"material", "shape", "initial", "control"};
 
 	const std::set<std::string> matching_types = {"exact-center", "sine", "exact", "sdf", "center-data", "max-height", "last-center", "marker-data"};
 
@@ -190,6 +190,44 @@ int main(int argc, char **argv)
 						break;
 					target_position(i) = x;
 					i++;
+				}
+			}
+			else if (matching_type == "sdf")
+			{
+				double dim;
+				if (trajectory_params.contains("control_points"))
+				{
+					if (trajectory_params["control_points"].is_array() && trajectory_params["control_points"].size() > 0)
+					{
+						control_points.setZero(trajectory_params["control_points"].size(), trajectory_params["control_points"][0].size());
+						for (int i = 0; i < trajectory_params["control_points"].size(); ++i)
+						{
+							dim = trajectory_params["control_points"][i].size();
+							for (int j = 0; j < trajectory_params["control_points"][i].size(); ++j)
+								control_points(i, j) = trajectory_params["control_points"][i][j].get<double>();
+						}
+					}
+				}
+
+				if (trajectory_params.contains("tangents"))
+				{
+					if (trajectory_params["tangents"].is_array() && trajectory_params["tangents"].size() > 0)
+					{
+						tangents.setZero(trajectory_params["tangents"].size(), trajectory_params["tangents"][0].size());
+						for (int i = 0; i < trajectory_params["tangents"].size(); ++i)
+							for (int j = 0; j < trajectory_params["tangents"][i].size(); ++j)
+								tangents(i, j) = trajectory_params["tangents"][i][j].get<double>();
+					}
+				}
+
+				if (trajectory_params.contains("delta"))
+				{
+					if (trajectory_params["delta"].is_array())
+					{
+						delta.setZero(trajectory_params["delta"].size(), 1);
+						for (int i = 0; i < delta.size(); ++i)
+							delta(i) = trajectory_params["delta"][i].get<double>();
+					}
 				}
 			}
 		}
@@ -341,14 +379,22 @@ int main(int argc, char **argv)
 	{
 		// TODO: Ingest this data from the json.
 		auto &f = *dynamic_cast<SDFTrajectoryFunctional *>(func.get());
-		control_points.setZero(2, 2);
-		control_points << 1.2, -1.7,
-			1.2, 1.7;
-		tangents.setZero(2, 2);
-		tangents << 0.5, 1,
-			-1.0, 1;
-		delta.setZero(1, 2);
-		delta << 0.01, 0.01;
+		if (control_points.size() == 0 || tangents.size() == 0)
+		{
+			control_points.setZero(2, 2);
+			control_points << 1.2, -1.7,
+				1.2, 1.7;
+			tangents.setZero(2, 2);
+			tangents << 2.5, 2,
+				-1.0, 1;
+		}
+		if (delta.size() == 0)
+		{
+			delta.setZero(1, 2);
+			delta << 0.01, 0.01;
+		}
+		logger().info("Control points are: {}", control_points);
+		logger().info("Tangents are: {}", tangents);
 		f.set_spline_target(control_points, tangents, delta);
 		f.set_transient_integral_type("final");
 	}
@@ -485,6 +531,8 @@ int main(int argc, char **argv)
 		material_optimization(state, func);
 	else if (opt_type == "initial")
 		initial_condition_optimization(state, func);
+	else if (opt_type == "control")
+		control_optimization(state, func);
 	else
 		logger().error("Invalid optimization type!");
 

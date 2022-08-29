@@ -12,6 +12,8 @@ namespace polyfem
 	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
 
 	void general_optimization(State &state, const std::vector<std::shared_ptr<OptimizationProblem>> params, const std::shared_ptr<CompositeFunctional> j);
-	
+
 	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
+
+	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
 } // namespace polyfem

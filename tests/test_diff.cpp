@@ -381,7 +381,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 
 	double new_functional_val = state.J_static(j);
 
-	state.perturb_mesh(velocity_discrete * (-2*t));
+	state.perturb_mesh(velocity_discrete * (-2 * t));
 
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
@@ -467,7 +467,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	Eigen::MatrixXd theta(state.bases.size(), 1);
 	for (int e = 0; e < state.bases.size(); e++)
 		theta(e) = (rand() % 1000) / 1000.0;
-	
+
 	Eigen::VectorXd one_form = func->gradient(state, "topology");
 	double derivative = (one_form.array() * theta.array()).sum();
 
@@ -1938,7 +1938,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 				]
 // 			},
 // 			"differentiable": true,
-// 			"materials": 
+// 			"materials":
 // 			{
 // 				"E": 1000000.0,
 // 				"nu": 0.3,
@@ -2316,5 +2316,349 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x+dt) " << next_functional_val << "\n";
 	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
+}
+
+TEST_CASE("dirichlet-sdf", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"(
+	{
+		"geometry": [
+			{
+				"mesh": "",
+				"transformation": {
+					"translation": [
+						0,
+						0
+					],
+					"rotation": 0,
+					"scale": [
+						2,
+						1
+					]
+				},
+				"volume_selection": 1,
+				"n_refs": 0,
+				"advanced": {
+					"normalize_mesh": false
+				},
+				"surface_selection": [
+					{
+						"id": 1,
+						"axis": "-x",
+						"position": -2,
+						"relative": false
+					},
+					{
+						"id": 2,
+						"axis": "x",
+						"position": 2,
+						"relative": false
+					},
+					{
+						"id": 4,
+						"relative": false,
+						"box": [
+							[
+								-2,
+								-1
+							],
+							[
+								2,
+								0
+							]
+						]
+					}
+				]
+			},
+			{
+				"mesh": "",
+				"transformation": {
+					"translation": [
+						0,
+						0.5
+					],
+					"rotation": 0,
+					"scale": 0.5
+				},
+				"volume_selection": 3,
+				"n_refs": 0,
+				"advanced": {
+					"normalize_mesh": false
+				},
+				"surface_selection": [
+					{
+						"id": 3,
+						"axis": "y",
+						"position": 0.5,
+						"relative": false
+					}
+				]
+			}
+		],
+		"differentiable": true,
+		"space": {
+			"discr_order": 1,
+			"advanced": {
+				"n_boundary_samples": 5,
+				"quadrature_order": 5
+			}
+		},
+		"time": {
+			"tend": 0.2,
+			"dt": 0.02,
+			"integrator": "BDF",
+			"BDF": {
+				"steps": 1
+			}
+		},
+		"contact": {
+			"enabled": true,
+			"friction_coefficient": 0
+		},
+		"solver": {
+			"linear": {
+				"solver": "Eigen::PardisoLU"
+			},
+			"nonlinear": {
+				"f_delta": 1e-15,
+				"grad_norm": 1e-15,
+				"max_iterations": 500
+			},
+			"contact": {
+				"barrier_stiffness": 100000
+			}
+		},
+		"boundary_conditions": {
+			"rhs": [
+				0,
+				9.8
+			],
+			"dirichlet_boundary": [
+				{
+					"id": 1,
+					"time_reference": [
+						0.02,
+						0.04,
+						0.06,
+						0.08,
+						0.1,
+						0.12,
+						0.14,
+						0.16,
+						0.18,
+						0.2,
+						0.22
+					],
+					"value": [
+						[
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						],
+						[
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						]
+					]
+				},
+				{
+					"id": 2,
+					"time_reference": [
+						0.02,
+						0.04,
+						0.06,
+						0.08,
+						0.1,
+						0.12,
+						0.14,
+						0.16,
+						0.18,
+						0.2,
+						0.22
+					],
+					"value": [
+						[
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						],
+						[
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						]
+					]
+				},
+				{
+					"id": 3,
+					"time_reference": [
+						0.02,
+						0.04,
+						0.06,
+						0.08,
+						0.1,
+						0.12,
+						0.14,
+						0.16,
+						0.18,
+						0.2,
+						0.22
+					],
+					"value": [
+						[
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						],
+						[
+							0.0,
+							-0.08,
+							-0.16,
+							-0.24,
+							-0.32,
+							-0.4,
+							-0.48,
+							-0.56,
+							-0.64,
+							-0.72,
+							-0.8
+						]
+					]
+				}
+			]
+		},
+		"materials": {
+			"type": "NeoHookean",
+			"E": 1000000.0,
+			"nu": 0.3,
+			"rho": 1000
+		},
+		"output": {
+			"paraview": {
+				"vismesh_rel_area": 1
+			},
+			"advanced": {
+				"save_time_sequence": true
+			}
+		}
+	}
+	)"_json;
+	in_args["geometry"][0]["mesh"] = path + "/../floor.msh";
+	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
+
+	State state(8);
+	state.init_logger("", spdlog::level::level_enum::err, false);
+	state.init(in_args, false);
+	state.load_mesh();
+	state.solve();
+
+	Eigen::MatrixXd control_points, tangents, delta;
+	control_points.setZero(2, 2);
+	control_points << -2.5, -0.1,
+		2.5, -0.1;
+	tangents.setZero(2, 2);
+	tangents << 1.5, -2,
+		1.5, 2;
+	delta.setZero(1, 2);
+	delta << 0.5, 0.5;
+	SDFTrajectoryFunctional func;
+	func.set_spline_target(control_points, tangents, delta);
+	func.set_interested_ids({}, {4});
+	func.set_surface_integral();
+	func.set_transient_integral_type("uniform");
+
+	const double functional_val = func.energy(state);
+
+	int time_steps = state.args["time"]["time_steps"].get<int>();
+
+	Eigen::VectorXd one_form = func.gradient(state, "dirichlet");
+	// std::cout << "one form " << one_form << std::endl;
+
+	srand(time(0));
+
+	double derivative;
+	double finite_difference;
+
+	derivative = 0;
+	finite_difference = 0;
+
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(time_steps, state.mesh->dimension());
+	for (int j = 0; j < time_steps; ++j)
+	{
+		for (int i = 0; i < state.mesh->dimension(); ++i)
+		{
+			double random_val = (rand() % 200) / 100. - 1.;
+			velocity_discrete(j, i) = random_val;
+		}
+	}
+
+	const double step_size = 1e-7;
+
+	State state_fd(8);
+	state_fd.init_logger("", spdlog::level::level_enum::err, false);
+	json temp_args = in_args;
+	for (int i = 0; i < 2; ++i)
+	{
+		for (int t = 0; t < time_steps; ++t)
+		{
+			temp_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
+			temp_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
+			temp_args["boundary_conditions"]["dirichlet_boundary"][2]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][2]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
+		}
+	}
+	state_fd.init(temp_args, false);
+	state_fd.load_mesh();
+	state_fd.solve();
+	double next_functional_val = func.energy(state_fd);
+
+	finite_difference = (next_functional_val - functional_val) / step_size;
+	for (int j = 0; j < time_steps; ++j)
+		for (int i = 0; i < state.boundary_nodes.size(); ++i)
+			derivative += one_form(j * state.boundary_nodes.size() + i) * velocity_discrete(j, i % 2);
+	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }

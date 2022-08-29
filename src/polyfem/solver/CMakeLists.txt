@@ -26,6 +26,8 @@ set(SOURCES
 	InitialConditionProblem.cpp
 	TopologyOptimizationProblem.hpp
 	TopologyOptimizationProblem.cpp
+	ControlProblem.cpp
+	ControlProblem.hpp
 	OptimizationProblem.hpp
 	OptimizationProblem.cpp
 	Optimizations.hpp
@@ -40,5 +42,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 ################################################################################
 # Subfolders
 ################################################################################
-
 add_subdirectory(line_search)

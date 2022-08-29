@@ -1179,19 +1179,19 @@
         "default": false,
         "type": "bool",
         "doc": "Use finite difference to verify gradient in optimization"
-    },    
+    },
     {
         "pointer": "/solver/optimization_nonlinear/max_change",
         "default": 1e10,
         "type": "float",
         "doc": "Max difference in design variables in single iteration"
-    },  
+    },
     {
         "pointer": "/solver/optimization_nonlinear/max_step_size",
         "default": 1,
         "type": "float",
         "doc": "Max step size in line search"
-    },    
+    },
     {
         "pointer": "/solver/optimization_nonlinear/better_initial_guess",
         "default": false,
@@ -1789,7 +1789,8 @@
             "value"
         ],
         "optional": [
-            "dimension"
+            "dimension",
+            "time_reference"
         ],
         "doc": "Dirichlet boundary condition."
     },
@@ -1827,6 +1828,16 @@
         "doc": "Values of Dirichlet boundary condition for each dimension"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "list",
+        "doc": "List of Dirichlet boundary condition for each dimension over time"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for each dimension over time"
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
         "type": "list",
         "default": [
@@ -1841,6 +1852,17 @@
         "type": "bool",
         "default": true,
         "doc": "value"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the Dirichlet boundary condition is specified"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for timestep"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",

@@ -322,7 +322,7 @@ namespace polyfem
 
 	double SDFTrajectoryFunctional::energy(State &state)
 	{
-		IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "shape");
+		IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "");
 
 		return state.J(j);
 	}
@@ -336,56 +336,141 @@ namespace polyfem
 		return grad;
 	}
 
-	void SDFTrajectoryFunctional::compute_distance(const Eigen::MatrixXd &point, double &distance)
+	void SDFTrajectoryFunctional::compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad)
 	{
-		auto g = [&](const Eigen::VectorXd &t) {
-			Eigen::MatrixXd fun(dim * (control_points_.rows() - 1), 1);
-			for (int i = 0; i < control_points_.rows() - 1; ++i)
-			{
-				Eigen::MatrixXd val;
-				SplineParam::eval(control_points_.block(i, 0, 2, dim), tangents_.block(i, 0, 2, dim), t(i, 0), val);
-				fun.block(dim * i, 0, dim, 1) = val.transpose() - point;
-			}
-			return fun;
+		auto dot = [](const Eigen::MatrixXd &a, const Eigen::MatrixXd &b) {
+			assert(a.cols() == 1);
+			assert(b.cols() == 1);
+			return (a.transpose() * b)(0);
 		};
-		auto J = [&](const Eigen::VectorXd &t) {
-			Eigen::MatrixXd jac = Eigen::MatrixXd::Zero(dim * (control_points_.rows() - 1), control_points_.rows() - 1);
-			for (int i = 0; i < t.rows(); ++i)
-			{
-				Eigen::MatrixXd val;
-				SplineParam::deriv(control_points_.block(i, 0, 2, dim), tangents_.block(i, 0, 2, dim), t(i, 0), val);
-				jac.block(dim * i, i, dim, 1) = val.transpose();
-			}
-			return jac;
+
+		auto f = [&](const double t, const int segment) {
+			Eigen::MatrixXd val;
+			SplineParam::eval(control_points_.block(segment, 0, 2, dim), tangents_.block(segment, 0, 2, dim), t, val);
+			val.transposeInPlace();
+			return val;
+		};
+
+		auto f_ = [&](const double t, const int segment) {
+			Eigen::MatrixXd val;
+			SplineParam::deriv(control_points_.block(segment, 0, 2, dim), tangents_.block(segment, 0, 2, dim), t, val);
+			val.transposeInPlace();
+			return val;
+		};
+
+		auto f__ = [&](const double t, const int segment) {
+			Eigen::MatrixXd val;
+			SplineParam::second_deriv(control_points_.block(segment, 0, 2, dim), tangents_.block(segment, 0, 2, dim), t, val);
+			val.transposeInPlace();
+			return val;
+		};
+
+		auto g = [&](const double t, const int segment) {
+			auto val = f(t, segment);
+			return dot(val, val) - 2 * dot(point, val) + dot(point, point);
+		};
+
+		auto g_ = [&](const double t, const int segment) {
+			auto val = f(t, segment);
+			auto deriv = f_(t, segment);
+			return 2 * dot(deriv, val) - 2 * dot(point, deriv);
+		};
+
+		auto g__ = [&](const double t, const int segment) {
+			auto val = f(t, segment);
+			auto deriv = f_(t, segment);
+			auto sec_deriv = f__(t, segment);
+			return 2 * dot(sec_deriv, val - point) + 2 * dot(deriv, deriv);
 		};
 
 		Eigen::MatrixXd t = Eigen::MatrixXd::Ones(control_points_.rows() - 1, 1) / 2.;
-		for (int i = 0; i < 100; ++i)
-		{
-			Eigen::MatrixXd jac_inv = J(t).completeOrthogonalDecomposition().pseudoInverse();
-			Eigen::MatrixXd func = g(t);
-			t -= jac_inv * func;
-		}
 
-		Eigen::MatrixXd distances = g(t);
-		double min_distance = DBL_MAX;
-		bool found = false;
 		for (int i = 0; i < t.rows(); ++i)
 		{
-			if ((t(i, 0) < 0) || (t(i, 0) > 1))
-				continue;
-			double curr_distance = distances.block(dim * i, 0, dim, 1).norm();
-			if (curr_distance < min_distance)
+			for (int iter = 0; iter < 50; ++iter)
 			{
-				min_distance = curr_distance;
-				found = true;
+				t(i) -= g_(t(i), i) / g__(t(i), i);
+				if (t(i) < 0 || t(i) > 1)
+					break;
 			}
 		}
 
-		if (!found)
-			min_distance = std::min(distances(0, 0), distances(t.rows() - 1, 0));
+		int nearest = -1;
+		double t_optimal = -1;
+		distance = -1.;
+		for (int i = 0; i < t.rows(); ++i)
+		{
+			if ((t(i) < 0) || (t(i) > 1))
+				continue;
+			double func = g(t(i), i);
+			if ((nearest == -1) || (func < distance))
+			{
+				nearest = i;
+				t_optimal = t(i);
+				distance = func;
+			}
+		}
 
-		distance = min_distance;
+		// If no nearest with t \in [0, 1] found, check the endpoints and assign one
+		if (nearest == -1)
+		{
+			double first = g(0, 0);
+			double last = g(1, t.rows() - 1);
+			if (first < last)
+			{
+				nearest = 0;
+				t_optimal = 0;
+				distance = first;
+			}
+			else
+			{
+
+				nearest = t.rows() - 1;
+				t_optimal = 1;
+				distance = last;
+			}
+		}
+		distance = pow(distance, 1. / 2.);
+
+		grad.setZero(3, 1);
+		if (distance < 1e-8)
+			return;
+
+		grad.col(0).segment(0, 2) = (point - f(t_optimal, nearest)) / distance;
+		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
+	}
+
+	void SDFTrajectoryFunctional::bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	{
+		Eigen::MatrixXd corner_val(4, 1);
+		Eigen::MatrixXd corner_grad(4, 3);
+		for (int i = 0; i < 4; ++i)
+		{
+			corner_val(i) = implicit_function_distance.at(keys[i]);
+			corner_grad.row(i) = implicit_function_grad.at(keys[i]).transpose();
+		}
+		Eigen::MatrixXd x(16, 1);
+		x << corner_val(0), corner_val(1), corner_val(2), corner_val(3),
+			delta_(0) * corner_grad(0, 0), delta_(0) * corner_grad(1, 0), delta_(0) * corner_grad(2, 0), delta_(0) * corner_grad(3, 0),
+			delta_(1) * corner_grad(0, 1), delta_(1) * corner_grad(1, 1), delta_(1) * corner_grad(2, 1), delta_(1) * corner_grad(3, 1),
+			delta_(0) * delta_(1) * corner_grad(0, 2), delta_(0) * delta_(1) * corner_grad(1, 2), delta_(0) * delta_(1) * corner_grad(2, 2), delta_(0) * delta_(1) * corner_grad(3, 2);
+
+		Eigen::MatrixXd coeffs = bicubic_mat * x;
+
+		auto bar_x = [&corner_point](double x_) { return (x_ - corner_point(0, 0)) / (corner_point(1, 0) - corner_point(0, 0)); };
+		auto bar_y = [&corner_point](double y_) { return (y_ - corner_point(0, 1)) / (corner_point(2, 1) - corner_point(0, 1)); };
+
+		val = 0;
+		grad.setZero(2, 1);
+		for (int i = 0; i < 4; ++i)
+			for (int j = 0; j < 4; ++j)
+			{
+				val += coeffs(i + j * 4) * pow(bar_x(point(0)), i) * pow(bar_y(point(1)), j);
+				grad(0) += i == 0 ? 0 : (coeffs(i + j * 4) * i * pow(bar_x(point(0)), i - 1) * pow(bar_y(point(1)), j));
+				grad(1) += j == 0 ? 0 : coeffs(i + j * 4) * pow(bar_x(point(0)), i) * j * pow(bar_y(point(1)), j - 1);
+			}
+
+		assert(!std::isnan(grad(0)) && !std::isnan(grad(0)));
 	}
 
 	void SDFTrajectoryFunctional::evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
@@ -409,30 +494,19 @@ namespace polyfem
 			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1)));
 			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1) + 1));
 			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1) + 1));
+			Eigen::MatrixXd corner_point(4, 2);
 			for (int i = 0; i < 4; ++i)
 			{
 				Eigen::MatrixXd clamped_point = keys.row(i).cwiseProduct(delta_).transpose();
-				if (implicit_function.count(keys_string[i]) == 0)
-					compute_distance(clamped_point, implicit_function[keys_string[i]]);
-				A.row(i) << 1., clamped_point(0), clamped_point(1), clamped_point(0) * clamped_point(1);
-				b(i) = implicit_function[keys_string[i]];
+				corner_point.row(i) = clamped_point.transpose();
+				if (implicit_function_distance.count(keys_string[i]) == 0)
+					compute_distance(clamped_point, implicit_function_distance[keys_string[i]], implicit_function_grad[keys_string[i]]);
 			}
+			bicubic_interpolation(corner_point, keys_string, point, val, grad);
 		}
 		else
 		{
 			logger().error("Don't yet support 3D SDF.");
-		}
-
-		Eigen::VectorXd weights = A.householderQr().solve(b);
-		if (dim == 2)
-		{
-			val = weights(0) + weights(1) * point(0) + weights(2) * point(1) + weights(3) * point(0) * point(1);
-			grad << weights(1) + weights(3) * point(1), weights(2) + weights(3) * point(0);
-		}
-		else
-		{
-			val = weights(0) + weights(1) * point(0) + weights(2) * point(1) + weights(3) * point(2) + weights(4) * point(0) * point(1) + weights(5) * point(1) * point(2) + weights(6) * point(0) * point(2) + weights(7) * point(0) * point(1) * point(2);
-			logger().error("Don't yet support trilinear interpolation.");
 		}
 
 		for (int i = 0; i < dim; ++i)
@@ -445,7 +519,7 @@ namespace polyfem
 
 	IntegrableFunctional SDFTrajectoryFunctional::get_trajectory_functional(const std::string &derivative_type)
 	{
-		assert(transient_integral_type == "final");
+		// assert(transient_integral_type == "final");
 		IntegrableFunctional j(surface_integral);
 		j.set_transient_integral_type(transient_integral_type);
 		{
@@ -489,7 +563,7 @@ namespace polyfem
 			}
 			else
 			{
-				logger().error("Don't yet support optimization of this Functional on not shape.");
+				j.set_dj_du(djdu_func);
 			}
 
 			return j;
@@ -791,9 +865,10 @@ namespace polyfem
 		Eigen::MatrixXd C_H;
 		state.homogenize_weighted_stokes(C_H);
 
-		std::cout << "Permeability tensor:\n" << C_H << "\n";
+		std::cout << "Permeability tensor:\n"
+				  << C_H << "\n";
 		if (state.mesh->is_volume())
-			return -C_H(0, 1)-C_H(1, 2);
+			return -C_H(0, 1) - C_H(1, 2);
 		else
 			return -C_H(0, 1);
 	}
@@ -805,7 +880,7 @@ namespace polyfem
 		state.homogenize_weighted_stokes_grad(C_H, grad);
 
 		if (state.mesh->is_volume())
-			return -grad.col(1)-grad.col(5);
+			return -grad.col(1) - grad.col(5);
 		else
 			return -grad.col(1);
 	}
@@ -1045,7 +1120,6 @@ namespace polyfem
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
 
-
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
 		js[1] = get_center_trajectory_functional(1);
@@ -1077,7 +1151,6 @@ namespace polyfem
 		const int sample_rate = n_targets > 1 ? n_steps / (n_targets - 1) : 1;
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
-
 
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
@@ -1163,7 +1236,6 @@ namespace polyfem
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
 
-
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
 		js[1] = get_center_trajectory_functional(2);
@@ -1197,7 +1269,6 @@ namespace polyfem
 		if (transient_integral_type != "final" && sample_rate * (n_targets - 1) != n_steps)
 			logger().error("Number of center series {} doesn't match with number of time steps: {}!", n_targets, n_steps);
 
-
 		std::vector<IntegrableFunctional> js(3);
 		js[0] = get_center_trajectory_functional(0);
 		js[1] = get_center_trajectory_functional(2);
@@ -1212,7 +1283,7 @@ namespace polyfem
 				target = target_series[step / sample_rate];
 			else
 				target = target_series.back();
-			
+
 			// double val = (x.head(2) / x(2) - target.head(2)).squaredNorm();
 			double val = pow(x(0) / x(2) - target(0), 2) + pow(x(1) / x(2) - target(2), 2);
 
@@ -1224,7 +1295,7 @@ namespace polyfem
 
 			for (int d = 0; d < 2; d++)
 			{
-				grad(d) = 2 / x(2) * (x(d) / x(2) - target(2*d));
+				grad(d) = 2 / x(2) * (x(d) / x(2) - target(2 * d));
 
 				grad(2) += -x(d) * grad(d) / x(2);
 			}

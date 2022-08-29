@@ -92,6 +92,24 @@ namespace polyfem
 		{
 			functional_name = "SDFTrajectory";
 			surface_integral = true;
+
+			bicubic_mat.resize(16, 16);
+			bicubic_mat << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0,
+				-3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0,
+				9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1,
+				-6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1,
+				2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0,
+				-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
+				4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1;
 		}
 		~SDFTrajectoryFunctional() = default;
 
@@ -103,19 +121,25 @@ namespace polyfem
 			control_points_ = control_points;
 			tangents_ = tangents;
 			dim = control_points.cols();
+			if (dim != 2)
+				logger().error("Only support 2d sdf at the moment.");
 			delta_ = delta;
 		}
+
+		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
+		void compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad);
+		void bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
 
 	private:
 		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
 
-		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
-		void compute_distance(const Eigen::MatrixXd &point, double &distance);
-
 		int dim;
 		double t_cached;
 		Eigen::MatrixXd delta_;
-		std::unordered_map<std::string, double> implicit_function;
+		std::unordered_map<std::string, double> implicit_function_distance;
+		std::unordered_map<std::string, Eigen::MatrixXd> implicit_function_grad;
+
+		Eigen::MatrixXd bicubic_mat;
 
 		Eigen::MatrixXd control_points_;
 		Eigen::MatrixXd tangents_;

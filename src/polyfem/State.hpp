@@ -195,7 +195,7 @@ namespace polyfem
 		/// Mapping from input nodes to FE nodes
 		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
 
-		//list of dirichlet boundary geometry nodes
+		// list of dirichlet boundary geometry nodes
 		std::vector<int> boundary_gnodes;
 		std::vector<bool> boundary_gnodes_mask;
 
@@ -515,6 +515,8 @@ namespace polyfem
 		void solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution);
 		void solve_adjoint(const SummableFunctional &j, Eigen::MatrixXd &adjoint_solution);
 		void solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
+		// TODO: Eventually merge with above
+		void solve_transient_adjoint_dirichlet(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
 		void solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution);
 		// Discretizes a vector field over the current mesh
 		void sample_field(std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1);
@@ -554,6 +556,7 @@ namespace polyfem
 		void dJ_damping_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_shape_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_dirichlet_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		// More generally, J_i is some function of a vector of \int j dx at time step i
 		double J_transient(const std::vector<IntegrableFunctional> &js, const std::function<double(const Eigen::VectorXd &, const json &)> &Ji);
 		void solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
@@ -631,6 +634,8 @@ namespace polyfem
 					dJ_damping_transient(j, grad);
 				else if (type == "material-full")
 					dJ_full_material_transient(j, grad);
+				else if (type == "dirichlet")
+					dJ_dirichlet_transient(j, grad);
 				else
 					logger().error("Unknown derivative type!");
 			}
@@ -683,7 +688,7 @@ namespace polyfem
 		StiffnessMatrix down_sampling_mat;
 
 		void project_to_lower_order(Eigen::MatrixXd &y);
-		
+
 		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
 
 		//---------------------------------------------------
@@ -785,14 +790,14 @@ namespace polyfem
 		void extract_vis_boundary_mesh();
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh(
-			ipc::CollisionMesh &collision_mesh_, 
+			ipc::CollisionMesh &collision_mesh_,
 			Eigen::MatrixXd &boundary_nodes_pos_,
 			Eigen::MatrixXi &boundary_edges_,
 			Eigen::MatrixXi &boundary_triangles_,
-			const int n_bases_, 
+			const int n_bases_,
 			const std::vector<ElementBases> &bases_) const;
 
-		//add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
+		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
 		int remove_pure_neumann_singularity(StiffnessMatrix &A);
 		int remove_pure_periodic_singularity(StiffnessMatrix &A);
 
@@ -1073,7 +1078,7 @@ namespace polyfem
 		/// set the multimaterial, this is mean for internal usage.
 		void set_materials();
 
-		//homogenization study of unit cell
+		// homogenization study of unit cell
 		void homogenization(Eigen::MatrixXd &C_H)
 		{
 			compute_mesh_stats();
