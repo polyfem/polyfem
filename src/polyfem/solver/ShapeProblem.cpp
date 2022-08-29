@@ -16,6 +16,22 @@
 
 #include <filesystem>
 
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}});
+} // namespace ipc
+
 namespace polyfem
 {
 	namespace
@@ -177,6 +193,10 @@ namespace polyfem
 		has_volume_constraint = false;
 		for (const auto &param : opt_params["functionals"])
 		{
+			if (param["type"] == "stress")
+			{
+				target_weight = param.value("weight", 1.0);
+			}
 			if (param["type"] == "volume_constraint")
 			{
 				volume_params = param;
@@ -349,7 +369,7 @@ namespace polyfem
 	{
 		if (mesh_flipped)
 			return std::nan("");
-		return j->energy(state);
+		return j->energy(state) * target_weight;
 	}
 
 	double ShapeProblem::volume_value(const TVector &x)
@@ -396,7 +416,7 @@ namespace polyfem
 			gradv.setZero(x.size());
 			return;
 		}
-		dparam_to_dx(gradv, j->gradient(state, "shape"));
+		dparam_to_dx(gradv, j->gradient(state, "shape") * target_weight);
 	}
 
 	void ShapeProblem::smooth_gradient(const TVector &x, TVector &gradv)
@@ -987,7 +1007,8 @@ namespace polyfem
 		// fix contact area, need threshold
 		if (shape_params.contains("fix_contact_surface") && shape_params["fix_contact_surface"].get<bool>())
 		{
-			assert(state.n_geom_bases == state.n_bases && "Higer order basis not supported, need a separate collision mesh for gbases!");
+			// if (state.n_geom_bases != state.n_bases)
+			// 	throw std::runtime_error("Higer order basis not supported, need a separate collision mesh for gbases!");
 			const double threshold = shape_params["fix_contact_surface_tol"].get<double>();
 			logger().info("Fix position of boundary nodes in contact.");
 
@@ -998,11 +1019,11 @@ namespace polyfem
 			{
 				const auto &constraint = contact_set.ee_constraints[c];
 
-				if (constraint.compute_distance(state.collision_mesh.vertices(V), state.collision_mesh.edges(), state.collision_mesh.faces()) >= threshold)
+				if (constraint.compute_distance(collision_mesh.vertices(V), collision_mesh.edges(), collision_mesh.faces()) >= threshold)
 					continue;
 
-				fixed_nodes.insert(state.collision_mesh.to_full_vertex_id(constraint.vertex_indices(state.collision_mesh.edges(), state.collision_mesh.faces())[0]));
-				fixed_nodes.insert(state.collision_mesh.to_full_vertex_id(constraint.vertex_indices(state.collision_mesh.edges(), state.collision_mesh.faces())[1]));
+				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0]));
+				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[1]));
 			}
 
 			contact_set.ee_constraints.clear();

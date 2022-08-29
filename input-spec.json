@@ -993,6 +993,7 @@
             "optimization_nonlinear",
             "augmented_lagrangian",
             "contact",
+            "optimization_contact",
             "ignore_inertia",
             "advanced"
         ],
@@ -1389,6 +1390,70 @@
         "default": 0,
         "type": "int",
         "doc": "TODO"
+    },
+    {
+        "pointer": "/solver/optimization_contact",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "CCD",
+            "barrier_stiffness",
+            "dhat"
+        ],
+        "doc": "Settings for optimization contact handling in the solver."
+    },
+    {
+        "pointer": "/solver/optimization_contact/CCD",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "broad_phase",
+            "tolerance",
+            "max_iterations"
+        ],
+        "doc": "CCD options"
+    },
+    {
+        "pointer": "/solver/optimization_contact/CCD/broad_phase",
+        "default": "hash_grid",
+        "type": "string",
+        "options": [
+            "hash_grid",
+            "HG",
+            "brute_force",
+            "BF",
+            "spatial_hash",
+            "SH",
+            "sweep_and_tiniest_queue",
+            "STQ",
+            "sweep_and_tiniest_queue_gpu",
+            "STQ_GPU"
+        ],
+        "doc": "Broad phase collision-detection algorithm to use"
+    },
+    {
+        "pointer": "/solver/optimization_contact/CCD/tolerance",
+        "default": 1e-06,
+        "type": "float",
+        "doc": "CCD tolerance"
+    },
+    {
+        "pointer": "/solver/optimization_contact/CCD/max_iterations",
+        "default": 1000000.0,
+        "type": "float",
+        "doc": "Maximum number of iterations for continuous collision detection"
+    },
+    {
+        "pointer": "/solver/optimization_contact/barrier_stiffness",
+        "type": "float",
+        "default": 0,
+        "doc": "The coefficient of clamped log-barrier function value when not adaptive"
+    },
+    {
+        "pointer": "/solver/optimization_contact/dhat",
+        "type": "float",
+        "default": 1e-3,
+        "doc": "The support size of barrier function"
     },
     {
         "pointer": "/solver/ignore_inertia",

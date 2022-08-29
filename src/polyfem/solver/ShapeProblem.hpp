@@ -211,6 +211,8 @@ namespace polyfem
 
 		Eigen::MatrixXd V_rest;
 
+		double target_weight = 1;
+
 		// only used for problems with contact
 
 		bool has_collision;
