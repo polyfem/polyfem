@@ -169,7 +169,7 @@ namespace polyfem
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
 		}
 
-		bool use_better_initial_guess = opt_nonlinear_params.value("better_initial_guess", true);
+		bool use_better_initial_guess = opt_nonlinear_params.value("better_initial_guess", !state.problem->is_time_dependent());
 		if (use_better_initial_guess)
 		{
 			if (state.problem->is_time_dependent())

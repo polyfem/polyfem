@@ -151,7 +151,7 @@ namespace polyfem
 
 		// by default optimize for initial velocity
 		if (!initial_params.contains("restriction"))
-			initial_params["restriction"] = "velocity";
+			initial_params["restriction"] = "";
 
 		if (initial_params["restriction"].get<std::string>() == "velocity")
 		{
