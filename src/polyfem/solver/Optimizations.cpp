@@ -6,6 +6,7 @@
 #include "MaterialProblem.hpp"
 #include "InitialConditionProblem.hpp"
 #include "ControlProblem.hpp"
+// #include "GeneralOptimizationProblem.hpp"
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
 #include "BFGSSolver.hpp"
@@ -83,14 +84,11 @@ namespace polyfem
 
 	double matrix_dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
-	void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	std::shared_ptr<InitialConditionProblem> setup_initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
 		std::shared_ptr<InitialConditionProblem> initial_problem = std::make_shared<InitialConditionProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		json initial_params;
 		for (const auto &param : opt_params["parameters"])
@@ -354,20 +352,14 @@ namespace polyfem
 				}
 			};
 		}
-		Eigen::VectorXd x;
-		initial_problem->param_to_x(x, state.initial_sol_update, state.initial_vel_update);
+		initial_problem->param_to_x(x_initial, state.initial_sol_update, state.initial_vel_update);
 
-		nlsolver->minimize(*initial_problem, x);
-
-		json solver_info;
-		nlsolver->getInfo(solver_info);
-		std::cout << solver_info << std::endl;
+		return initial_problem;
 	}
 
-	void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	std::shared_ptr<MaterialProblem> setup_material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 		json material_params;
 
 		state.args["output"]["paraview"]["options"]["material"] = true;
@@ -382,8 +374,6 @@ namespace polyfem
 		}
 
 		std::shared_ptr<MaterialProblem> material_problem = std::make_shared<MaterialProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		// fix certain object
 		std::set<int> optimize_body_ids;
@@ -730,24 +720,17 @@ namespace polyfem
 			}
 		}
 
-		Eigen::VectorXd x;
-		material_problem->param_to_x(x, state);
+		material_problem->param_to_x(x_initial, state);
 
-		nlsolver->minimize(*material_problem, x);
-
-		json solver_info;
-		nlsolver->getInfo(solver_info);
-		std::cout << solver_info << std::endl;
+		return material_problem;
 	}
 
-	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	std::shared_ptr<ShapeProblem> setup_shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
+
 		const auto &opt_params = state.args["optimization"];
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
 		std::shared_ptr<ShapeProblem> shape_problem = std::make_shared<ShapeProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::MatrixXd V;
 		Eigen::MatrixXi F;
@@ -821,23 +804,16 @@ namespace polyfem
 			}
 		}
 
-		Eigen::VectorXd x;
-		shape_problem->param_to_x(x, V);
-		nlsolver->minimize(*shape_problem, x);
+		shape_problem->param_to_x(x_initial, V);
 
-		json solver_info;
-		nlsolver->getInfo(solver_info);
-		std::cout << solver_info << std::endl;
+		return shape_problem;
 	}
 
-	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	std::shared_ptr<TopologyOptimizationProblem> setup_topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
 		std::shared_ptr<TopologyOptimizationProblem> top_opt = std::make_shared<TopologyOptimizationProblem>(state, j);
-		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
 		if (density_mat.size() != state.bases.size())
@@ -878,7 +854,20 @@ namespace polyfem
 			}
 		}
 
-		Eigen::VectorXd x = density_mat;
+		x_initial = density_mat;
+
+		return top_opt;
+	}
+
+	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		auto top_opt = setup_topology_optimization(state, j, x);
+
 		nlsolver->minimize(*top_opt, x);
 
 		json solver_info;
@@ -886,7 +875,7 @@ namespace polyfem
 		std::cout << solver_info << std::endl;
 	}
 
-	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	std::shared_ptr<ControlProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
@@ -906,10 +895,105 @@ namespace polyfem
 						x(t * control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() + position * state.mesh->dimension() + k) = state.args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>();
 			}
 		// logger().info("Starting x: {}", x);
+
+		x_initial = x;
+
+		return control_problem;
+	}
+
+	void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		auto initial_problem = setup_initial_condition_optimization(state, j, x);
+
+		nlsolver->minimize(*initial_problem, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
+
+	void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		auto material_problem = setup_material_optimization(state, j, x);
+
+		nlsolver->minimize(*material_problem, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
+
+	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		auto shape_problem = setup_shape_optimization(state, j, x);
+
+		nlsolver->minimize(*shape_problem, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
+
+	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		auto top_opt = setup_topology_optimization(state, j, x);
+
+		nlsolver->minimize(*top_opt, x);
+
+		json solver_info;
+		nlsolver->getInfo(solver_info);
+		std::cout << solver_info << std::endl;
+	}
+
+	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	{
+		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+
+		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
+		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		Eigen::VectorXd x;
+		auto control_problem = setup_control_optimization(state, j, x);
 		nlsolver->minimize(*control_problem, x);
 
 		json solver_info;
 		nlsolver->getInfo(solver_info);
 		std::cout << solver_info << std::endl;
+	}
+
+	void general_optimization(State &state, const std::vector<std::string> &opt_types, const std::shared_ptr<CompositeFunctional> j)
+	{
+		// const auto &opt_params = state.args["optimization"];
+		// const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+
+		// std::shared_ptr<ControlProblem> control_problem = std::make_shared<GeneralOptimizationProblem>(state, {}, j);
+		// std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
+		// nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+
+		// nlsolver->minimize(*control_problem, x);
+
+		// json solver_info;
+		// nlsolver->getInfo(solver_info);
+		// std::cout << solver_info << std::endl;
 	}
 } // namespace polyfem

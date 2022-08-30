@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	std::string solver;
 	command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
 
-	const std::set<std::string> opt_types = {"material", "shape", "initial", "control"};
+	const std::set<std::string> valid_opt_types = {"material", "shape", "initial", "control"};
 
 	const std::set<std::string> matching_types = {"exact-center", "sine", "exact", "sdf", "center-data", "max-height", "last-center", "marker-data"};
 
@@ -139,6 +139,7 @@ int main(int argc, char **argv)
 	json target_in_args = json({});
 
 	std::string target_path, matching_type, opt_type;
+	std::vector<std::string> opt_types;
 
 	json opt_params, trajectory_params;
 
@@ -159,10 +160,21 @@ int main(int argc, char **argv)
 		opt_params = in_args["optimization"];
 
 		if (opt_params.contains("parameters"))
-			opt_type = opt_params["parameters"][0]["type"];
+		{
+			if (opt_params["parameters"].size() == 1)
+			{
+				opt_type = opt_params["parameters"][0]["type"];
+				assert(valid_opt_types.count(opt_type));
+			}
+			else
+				for (int i = 0; i < opt_params["parameters"].size(); ++i)
+				{
+					opt_types.push_back(opt_params["parameters"][i]["type"]);
+					assert(valid_opt_types.count(opt_types[i]));
+				}
+		}
 		else
 			throw std::runtime_error("No optimization parameter specified!");
-		assert(opt_types.count(opt_type));
 
 		if (opt_params.contains("functionals"))
 		{
@@ -533,6 +545,8 @@ int main(int argc, char **argv)
 		initial_condition_optimization(state, func);
 	else if (opt_type == "control")
 		control_optimization(state, func);
+	else if (opt_type == "" && opt_types.size() > 0)
+		general_optimization(state, opt_types, func);
 	else
 		logger().error("Invalid optimization type!");
 
