@@ -1,7 +1,6 @@
 #include "MassMatrixAssembler.hpp"
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
-#include <polyfem/utils/SutherlandHodgmanClipping.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -279,16 +278,11 @@ namespace polyfem::assembler
 				assert(from_nodes.rows() == 3);
 				const Eigen::MatrixXd from_nodes_clockwise = triangle_to_clockwise_order(from_nodes);
 
-#ifdef POLYFEM_WITH_CLIPPER
-				std::vector<Eigen::MatrixXd> overlaps = Polygon::clip(to_nodes_clockwise, from_nodes_clockwise);
+				const std::vector<Eigen::MatrixXd> overlaps = PolygonClipping::clip(to_nodes_clockwise, from_nodes_clockwise);
 				assert(overlaps.size() <= 1);
 				if (overlaps.empty())
 					continue;
 				const Eigen::MatrixXd &overlap = overlaps[0];
-#else
-				Eigen::MatrixXd overlap; // = sutherland_hodgman_clipping(to_nodes_clockwise, from_nodes_clockwise);
-				throw std::runtime_error("Clipper not enabled");
-#endif
 
 				if (overlap.size() < 3)
 					continue;

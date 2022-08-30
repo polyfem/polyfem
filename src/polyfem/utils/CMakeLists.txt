@@ -46,8 +46,6 @@ set(SOURCES
 	StringUtils.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
-	SutherlandHodgmanClipping.cpp
-	SutherlandHodgmanClipping.hpp
 	Timer.hpp
 	Types.hpp
 )

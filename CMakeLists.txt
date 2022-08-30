@@ -244,6 +244,9 @@ target_link_libraries(polyfem PUBLIC HighFive::HighFive)
 include(mmg)
 target_link_libraries(polyfem PUBLIC mmg::mmg)
 
+include(polyclipper)
+target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
+
 ################################################################################
 # Optional libraries
 ################################################################################

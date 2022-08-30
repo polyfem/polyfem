@@ -183,7 +183,7 @@ void polyfem::mesh::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &O
 
 	// Convert input polygon to integer grid
 	ClipperOffset co;
-	co.AddPath(Polygon::toClipper(IV), jtSquare, etClosedPolygon);
+	co.AddPath(PolygonClipping::toClipperPolygon(IV), jtSquare, etClosedPolygon);
 
 	// Compute offset in the integer grid
 	Paths solution;
@@ -191,7 +191,7 @@ void polyfem::mesh::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &O
 	assert(solution.size() == 1);
 
 	// Convert back to double
-	OV = Polygon::fromClipper(solution.front());
+	OV = PolygonClipping::fromClipperPolygon(solution.front());
 #else
 	throw "Compile with clipper!";
 #endif
