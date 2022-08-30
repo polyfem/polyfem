@@ -25,8 +25,6 @@ namespace polyfem::solver
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		/// @param body_form form used for the adaptive barrier stiffness, clean me
-		/// @param inertia_form form used for the adaptive barrier stiffness, clean me
 		ContactForm(const State &state,
 					const double dhat,
 					const bool use_adaptive_barrier_stiffness,
