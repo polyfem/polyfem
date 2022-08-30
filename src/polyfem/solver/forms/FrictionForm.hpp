@@ -59,6 +59,8 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void update_lagging(const Eigen::VectorXd &x) override;
 
+		const Eigen::MatrixXd &displaced_surface_prev() const { return displaced_surface_prev_; }
+
 	private:
 		const State &state_; ///< Reference to the simulation state
 

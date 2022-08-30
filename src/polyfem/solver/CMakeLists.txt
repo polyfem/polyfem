@@ -4,8 +4,6 @@ set(SOURCES
 	LBFGSSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
-	ALNLProblem.cpp
-	ALNLProblem.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	TransientNavierStokesSolver.cpp

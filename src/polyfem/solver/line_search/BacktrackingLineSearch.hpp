@@ -48,7 +48,9 @@ namespace polyfem
 							return std::nan("");
 						}
 
-						step_size = objFunc.heuristic_max_step(delta_x);
+						step_size = 1;
+						// TODO: removed feature
+						// objFunc.heuristic_max_step(delta_x);
 					}
 
 					// ----------------------------

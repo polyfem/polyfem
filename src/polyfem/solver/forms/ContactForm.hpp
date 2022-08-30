@@ -96,6 +96,8 @@ namespace polyfem::solver
 			barrier_stiffness_ = barrier_stiffness;
 		}
 
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
+
 	private:
 		const State &state_; ///< Reference to the simulation state
 

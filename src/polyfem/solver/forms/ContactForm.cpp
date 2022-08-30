@@ -243,4 +243,36 @@ namespace polyfem::solver
 			initialize_barrier_stiffness(x);
 		}
 	}
+
+	bool ContactForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	{
+		const auto displaced0 = compute_displaced_surface(x0);
+		const auto displaced1 = compute_displaced_surface(x1);
+
+		// Skip CCD if the displacement is zero.
+		if ((displaced1 - displaced0).lpNorm<Eigen::Infinity>() == 0.0)
+		{
+			// Assumes initially intersection-free
+			return true;
+		}
+
+		// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
+
+		bool is_valid;
+		if (use_cached_candidates_)
+			is_valid = ipc::is_step_collision_free(
+				candidates_, state_.collision_mesh,
+				displaced0,
+				displaced1,
+				ccd_tolerance_, ccd_max_iterations_);
+		else
+			is_valid = ipc::is_step_collision_free(
+				state_.collision_mesh,
+				displaced0,
+				displaced1,
+				broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
+
+		return is_valid;
+	}
 } // namespace polyfem::solver

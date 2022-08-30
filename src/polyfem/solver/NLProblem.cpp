@@ -53,17 +53,18 @@ namespace polyfem
 {
 	using namespace assembler;
 	using namespace utils;
-	® namespace solver
+	namespace solver
 	{
 		using namespace polysolve;
 
-		NLProblem::NLProblem(const State &state, std::vector<std::shared_ptr<Form>> &forms, const bool no_reduced)
+		NLProblem::NLProblem(const State &state, std::vector<std::shared_ptr<Form>> &forms)
 			: state_(state),
 			  full_size((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
-			  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),
-			  forms_(form)
+			  actual_reduced_size(full_size - state.boundary_nodes.size()),
+			  forms_(forms)
 		{
-			assert(!assembler.is_mixed(state.formulation()));
+			assert(!state.assembler.is_mixed(state.formulation()));
+			set_full_size(false);
 		}
 
 		void NLProblem::init(const TVector &full)
@@ -92,25 +93,6 @@ namespace polyfem
 			reduced_to_full(x, full);
 			for (auto &f : forms_)
 				f->update_lagging(full);
-		}
-
-		double NLProblem::compute_lagging_error(const TVector &x)
-		{
-			// TODO: REFACTOR ME
-			//  Check || ∇B(xᵗ⁺¹) - h² Σ F(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≦ ϵ_d
-			//      ≡ || ∇B(xᵗ⁺¹) + ∇D(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≤ ϵ_d
-			TVector grad;
-			gradient(x, grad);
-			return grad.norm();
-		}
-
-		bool NLProblem::lagging_converged(const TVector &x)
-		{
-			// TODO: REFACTOR ME
-			double tol = state.args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
-			double grad_norm = compute_lagging_error(x);
-			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad_norm, tol);
-			return grad_norm <= tol;
 		}
 
 		void NLProblem::update_quantities(const double t, const TVector &x)
@@ -149,59 +131,6 @@ namespace polyfem
 				step = std::min(step, f->max_step_size(full0, full1));
 
 			return step;
-		}
-
-		bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
-		{
-			// TODO: DELETE ME BELOW
-			if (disable_collision || !state.is_contact_enabled())
-				return true;
-
-			// if (!state.problem->is_time_dependent())
-			// return false;
-
-			Eigen::MatrixXd displaced0, displaced1;
-			reduced_to_full_displaced_points(x0, displaced0);
-			reduced_to_full_displaced_points(x1, displaced1);
-
-			// Skip CCD if the displacement is zero.
-			if ((displaced1 - displaced0).lpNorm<Eigen::Infinity>() == 0.0)
-			{
-				// Assumes initially intersection-free
-				assert(is_intersection_free(x0));
-				return true;
-			}
-
-			// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
-			// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
-
-			bool is_valid;
-			if (_use_cached_candidates)
-				is_valid = ipc::is_step_collision_free(
-					_candidates, state.collision_mesh,
-					state.collision_mesh.vertices(displaced0),
-					state.collision_mesh.vertices(displaced1),
-					_ccd_tolerance, _ccd_max_iterations);
-			else
-				is_valid = ipc::is_step_collision_free(
-					state.collision_mesh,
-					state.collision_mesh.vertices(displaced0),
-					state.collision_mesh.vertices(displaced1),
-					_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
-
-			return is_valid;
-		}
-
-		bool NLProblem::is_intersection_free(const TVector &x)
-		{
-			// TODO: DELETE ME BELOW
-			if (disable_collision || !state.is_contact_enabled())
-				return true;
-
-			Eigen::MatrixXd displaced;
-			reduced_to_full_displaced_points(x, displaced);
-
-			return !ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(displaced));
 		}
 
 		bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
@@ -301,7 +230,7 @@ namespace polyfem
 			size_t kk = 0;
 			for (int i = 0; i < full_size; ++i)
 			{
-				if (kk < state.boundary_nodes.size() && state.boundary_nodes[kk] == i)
+				if (kk < state_.boundary_nodes.size() && state_.boundary_nodes[kk] == i)
 				{
 					++kk;
 					indices(i) = -1;
@@ -354,11 +283,6 @@ namespace polyfem
 
 			for (auto &f : forms_)
 				f->post_step(iter_num, full);
-		}
-
-		void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
-		{
-			time_integrator()->save_raw(x_path, v_path, a_path);
 		}
 	} // namespace solver
 } // namespace polyfem

@@ -169,39 +169,39 @@ namespace polyfem
 				return step_size;
 			}
 
-#ifndef NDEBUG
-			template <typename ProblemType>
-			double LineSearch<ProblemType>::compute_debug_collision_free_step_size(
-				const TVector &x,
-				const TVector &delta_x,
-				ProblemType &objFunc,
-				const double starting_step_size,
-				const double rate)
-			{
-				double step_size = starting_step_size;
+// #ifndef NDEBUG
+// 			template <typename ProblemType>
+// 			double LineSearch<ProblemType>::compute_debug_collision_free_step_size(
+// 				const TVector &x,
+// 				const TVector &delta_x,
+// 				ProblemType &objFunc,
+// 				const double starting_step_size,
+// 				const double rate)
+// 			{
+// 				double step_size = starting_step_size;
 
-				TVector new_x = x + step_size * delta_x;
-				{
-					POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
-					objFunc.solution_changed(new_x);
-				}
+// 				TVector new_x = x + step_size * delta_x;
+// 				{
+// 					POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
+// 					objFunc.solution_changed(new_x);
+// 				}
 
-				// safe guard check
-				while (!objFunc.is_step_collision_free(x, new_x))
-				{
-					logger().error("step is not collision free!!");
-					step_size *= rate;
-					new_x = x + step_size * delta_x;
-					{
-						POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
-						objFunc.solution_changed(new_x);
-					}
-				}
-				assert(objFunc.is_step_collision_free(x, new_x));
+// 				// safe guard check
+// 				while (!objFunc.is_step_collision_free(x, new_x))
+// 				{
+// 					logger().error("step is not collision free!!");
+// 					step_size *= rate;
+// 					new_x = x + step_size * delta_x;
+// 					{
+// 						POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
+// 						objFunc.solution_changed(new_x);
+// 					}
+// 				}
+// 				assert(objFunc.is_step_collision_free(x, new_x));
 
-				return step_size;
-			}
-#endif
+// 				return step_size;
+// 			}
+// #endif
 		} // namespace line_search
 	}     // namespace solver
 } // namespace polyfem

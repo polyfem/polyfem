@@ -64,8 +64,17 @@ namespace polyfem
 	namespace solver
 	{
 		class NLProblem;
-		class ALNLProblem;
+
+		class ContactForm;
+		class FrictionForm;
+		class BodyForm;
+		class ALForm;
 	} // namespace solver
+
+	namespace time_integrator
+	{
+		class ImplicitTimeIntegrator;
+	} // namespace time_integrator
 
 	/// class to store time stepping data
 	class SolveData
@@ -73,9 +82,15 @@ namespace polyfem
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
-		std::shared_ptr<solver::ALNLProblem> alnl_problem;
+
+		std::shared_ptr<solver::ContactForm> contact_form;
+		std::shared_ptr<solver::BodyForm> body_form;
+		std::shared_ptr<solver::ALForm> al_form;
+		std::shared_ptr<solver::FrictionForm> friction_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+
+		void set_al_weight(const double weight);
 	};
 
 	/// main class that contains the polyfem solver and all its state

@@ -47,7 +47,8 @@ namespace polyfem
 
 						objFunc.gradient(x, grad);
 
-						alpha_init = std::min(objFunc.heuristic_max_step(searchDir), alpha_init);
+						// TODO: removed feature
+						// alpha_init = std::min(objFunc.heuristic_max_step(searchDir), alpha_init);
 					}
 
 					{
@@ -94,8 +95,8 @@ namespace polyfem
 						const double Cache = c * grad.dot(searchDir);
 						valid = objFunc.is_step_valid(x, x1);
 
-						//max_step_size should return a collision free step
-						assert(objFunc.is_step_collision_free(x, x1));
+						// max_step_size should return a collision free step
+						// assert(objFunc.is_step_collision_free(x, x1));
 
 						while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !valid) && alpha > this->min_step_size && this->cur_iter <= this->max_step_size_iter)
 						{
@@ -117,8 +118,8 @@ namespace polyfem
 
 							valid = objFunc.is_step_valid(x, x1);
 
-							//max_step_size should return a collision free step
-							assert(objFunc.is_step_collision_free(x, x1));
+							// max_step_size should return a collision free step
+							// assert(objFunc.is_step_collision_free(x, x1));
 
 							logger().trace("ls it: {} f: {} (f_in + alpha * Cache): {} invalid: {} ", this->cur_iter, f, f_in + alpha * Cache, !valid);
 

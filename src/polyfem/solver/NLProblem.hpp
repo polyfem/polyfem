@@ -25,7 +25,7 @@ namespace polyfem
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef StiffnessMatrix THessian;
 
-			NLProblem(const State &state, std::vector<std::shared_ptr<Form>> &forms, const bool no_reduced = false);
+			NLProblem(const State &state, std::vector<std::shared_ptr<Form>> &forms);
 			void init(const TVector &displacement);
 
 			virtual double value(const TVector &x) override;
@@ -121,7 +121,9 @@ namespace polyfem
 			template <class FullVector>
 			void reduced_to_full(const TVector &reduced, FullVector &full)
 			{
-				reduced_to_full_aux(state_, full_size, reduced_size, reduced, current_rhs(), full);
+				// TODO: Fix me DBC
+				Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size, 1);
+				reduced_to_full_aux(state_, full_size, reduced_size, reduced, tmp, full);
 			}
 
 			virtual void update_quantities(const double t, const TVector &x);
@@ -132,9 +134,18 @@ namespace polyfem
 
 			void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
 
+			void set_full_size(const bool val)
+			{
+				if (val)
+					reduced_size = actual_reduced_size;
+				else
+					reduced_size = full_size;
+			}
+
 		private:
 			const State &state_;
-			const int full_size, reduced_size;
+			const int full_size, actual_reduced_size;
+			int reduced_size;
 			std::vector<std::shared_ptr<Form>> forms_;
 
 			void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
