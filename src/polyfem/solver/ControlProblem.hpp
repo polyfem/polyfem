@@ -46,6 +46,11 @@ namespace polyfem
 		double smoothing_weight;
 		std::vector<int> boundary_ids_list;
 
+		int time_steps;
+
+		json control_params;
+		json smoothing_params;
+
 		std::map<int, int> optimize_boundary_ids_to_position;
 	};
 } // namespace polyfem

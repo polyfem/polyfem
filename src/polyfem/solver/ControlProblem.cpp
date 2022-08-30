@@ -13,10 +13,25 @@ namespace polyfem
 	{
 		optimization_name = "control";
 
-		if (opt_params.contains("optimize_boundary_ids"))
+		for (const auto &functional_params : opt_params["functionals"])
+		{
+			if (functional_params["type"] == "control_smoothing")
+			{
+				smoothing_params = functional_params;
+			}
+		}
+		for (const auto &params : opt_params["parameters"])
+		{
+			if (params["type"] == "control")
+			{
+				control_params = params;
+			}
+		}
+
+		if (control_params.contains("optimize_boundary_ids"))
 		{
 			int count = 0;
-			for (int i : opt_params["optimize_boundary_ids"])
+			for (int i : control_params["optimize_boundary_ids"])
 			{
 				optimize_boundary_ids_to_position[i] = count;
 				count++;
@@ -57,11 +72,15 @@ namespace polyfem
 		}
 		assert(state.boundary_nodes.size() == boundary_ids_list.size());
 
-		smoothing_weight = opt_params.contains("smoothing_weight") ? opt_params["smoothing_weight"].get<double>() : 1.;
+		smoothing_weight = smoothing_params.contains("weight") ? smoothing_params["weight"].get<double>() : 1.;
+
+		time_steps = state.args["time"]["time_steps"].get<int>();
+		if (time_steps < 1)
+			logger().error("Set time_steps for control optimization, currently {}!", time_steps);
 
 		x_to_param = [&](const TVector &x, TVector &param) {
 			param.setZero(boundary_ids_list.size());
-			for (int t = 0; t < state.args["time_steps"].get<int>(); ++t)
+			for (int t = 0; t < time_steps; ++t)
 			{
 				for (int b = 0; b < boundary_ids_list.size(); ++b)
 				{
@@ -75,9 +94,9 @@ namespace polyfem
 			}
 		};
 		param_to_x = [&](TVector &x, const TVector &param) {
-			x.setZero(state.args["time_steps"].get<int>() * optimize_boundary_ids_to_position.size() * state.mesh->dimension());
-			assert(param.size() == (boundary_ids_list.size() * state.args["time_steps"].get<int>()));
-			for (int t = 0; t < state.args["time_steps"].get<int>(); ++t)
+			x.setZero(time_steps * optimize_boundary_ids_to_position.size() * state.mesh->dimension());
+			assert(param.size() == (boundary_ids_list.size() * time_steps));
+			for (int t = 0; t < time_steps; ++t)
 				for (int b = 0; b < boundary_ids_list.size(); ++b)
 				{
 					int boundary_id = boundary_ids_list[b];
@@ -89,9 +108,9 @@ namespace polyfem
 				}
 		};
 		dparam_to_dx = [&](TVector &dx, const TVector &dparam) {
-			dx.setZero(state.args["time_steps"].get<int>() * optimize_boundary_ids_to_position.size() * state.mesh->dimension());
-			assert(dparam.size() == (boundary_ids_list.size() * state.args["time_steps"].get<int>()));
-			for (int t = 0; t < state.args["time_steps"].get<int>(); ++t)
+			dx.setZero(time_steps * optimize_boundary_ids_to_position.size() * state.mesh->dimension());
+			assert(dparam.size() == (boundary_ids_list.size() * time_steps));
+			for (int t = 0; t < time_steps; ++t)
 				for (int b = 0; b < boundary_ids_list.size(); ++b)
 				{
 					int boundary_id = boundary_ids_list[b];
@@ -107,8 +126,7 @@ namespace polyfem
 	double ControlProblem::smooth_value(const TVector &x)
 	{
 		double val = 0;
-		double dt = state.args["dt"].get<double>();
-		double time_steps = state.args["time_steps"].get<int>();
+		double dt = state.args["time"]["dt"].get<double>();
 		int dim_per_timestep = optimize_boundary_ids_to_position.size() * state.mesh->dimension();
 
 		Eigen::VectorXd prev;
@@ -135,7 +153,7 @@ namespace polyfem
 
 	void ControlProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		Eigen::VectorXd dparam = j->gradient(state, "dirichlet"); // "dirichlet-fd");
+		Eigen::VectorXd dparam = j->gradient(state, "dirichlet");
 		logger().info("target dparam norm {}", dparam.norm());
 
 		dparam_to_dx(gradv, dparam);
@@ -145,8 +163,7 @@ namespace polyfem
 	void ControlProblem::smooth_gradient(const TVector &x, TVector &gradv)
 	{
 		gradv.setZero(x.size());
-		double dt = state.args["dt"].get<double>();
-		double time_steps = state.args["time_steps"].get<int>();
+		double dt = state.args["time"]["dt"].get<double>();
 		double dim_per_timestep = optimize_boundary_ids_to_position.size() * state.mesh->dimension();
 
 		Eigen::VectorXd prev;
@@ -208,15 +225,16 @@ namespace polyfem
 				dirichlet_bc = {{}, {}, {}};
 			for (int k = 0; k < state.mesh->dimension(); ++k)
 			{
-				for (int t = 0; t < state.args["time_steps"].get<int>(); ++t)
+				for (int t = 0; t < time_steps; ++t)
 				{
 					dirichlet_bc[k].push_back(newX(t * optimize_boundary_ids_to_position.size() * state.mesh->dimension() + kv.second * state.mesh->dimension() + k));
 				}
 				// Need time_steps + 1 entry, though unused.
-				dirichlet_bc[k].push_back(dirichlet_bc[k][state.args["time_steps"].get<int>() - 1]);
+				dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);
 			}
-			std::cout << kv.first << "\t" << kv.second << std::endl;
-			std::cout << "time steps: " << state.args["time_steps"].get<int>() << std::endl;
+			// std::cout << kv.first << "\t" << kv.second << std::endl;
+			// std::cout << "time steps: " << time_steps << std::endl;
+			logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, kv.second);
 			std::cout << dirichlet_bc << std::endl;
 			problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
 		}
