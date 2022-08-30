@@ -896,14 +896,14 @@ namespace polyfem
 		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
-		x.setZero(control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() * state.args["time_steps"].get<int>());
-		for (int i = 0; i < state.args["problem_params"]["dirichlet_boundary"].size(); ++i)
-			if (control_problem->get_optimize_boundary_ids_to_position().count(state.args["problem_params"]["dirichlet_boundary"][i]["id"].get<int>()) != 0)
+		x.setZero(control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() * state.args["time"]["time_steps"].get<int>());
+		for (int i = 0; i < state.args["boundary_conditions"]["dirichlet_boundary"].size(); ++i)
+			if (control_problem->get_optimize_boundary_ids_to_position().count(state.args["boundary_conditions"]["dirichlet_boundary"][i]["id"].get<int>()) != 0)
 			{
-				int position = control_problem->get_optimize_boundary_ids_to_position().at(state.args["problem_params"]["dirichlet_boundary"][i]["id"].get<int>());
+				int position = control_problem->get_optimize_boundary_ids_to_position().at(state.args["boundary_conditions"]["dirichlet_boundary"][i]["id"].get<int>());
 				for (int k = 0; k < state.mesh->dimension(); ++k)
-					for (int t = 0; t < state.args["time_steps"]; ++t)
-						x(t * control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() + position * state.mesh->dimension() + k) = state.args["problem_params"]["dirichlet_boundary"][i]["value"][k][t].get<double>();
+					for (int t = 0; t < state.args["time"]["time_steps"]; ++t)
+						x(t * control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() + position * state.mesh->dimension() + k) = state.args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>();
 			}
 		// logger().info("Starting x: {}", x);
 		nlsolver->minimize(*control_problem, x);
