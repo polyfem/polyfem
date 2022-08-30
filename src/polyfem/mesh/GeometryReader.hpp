@@ -89,14 +89,4 @@ namespace polyfem::mesh
 		MatrixNd &A,
 		VectorNd &b);
 
-	/// @brief Build a vector of selection objects from a JSON selection(s).
-	/// @param j_selections JSON object of selection(s).
-	/// @param root_path    Root path of the JSON file.
-	/// @param bbox         Bounding box of the mesh.
-	/// @return Vector of selection objects.
-	std::vector<std::shared_ptr<utils::Selection>> build_selections(
-		const json &j_selections,
-		const std::string &root_path,
-		const utils::Selection::BBox &bbox);
-
 } // namespace polyfem::mesh

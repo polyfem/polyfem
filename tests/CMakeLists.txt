@@ -27,7 +27,7 @@ add_executable(unit_tests ${test_sources})
 
 target_link_libraries(unit_tests PUBLIC polyfem::polyfem)
 
-target_link_libraries(unit_tests PUBLIC warnings::all)
+target_link_libraries(unit_tests PUBLIC polyfem::warnings)
 
 include(catch2)
 target_link_libraries(unit_tests PUBLIC Catch2::Catch2)

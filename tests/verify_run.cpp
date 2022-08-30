@@ -27,7 +27,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		}
 		else
 		{
-			logger().error("unable to open {} file", json_file);
+			spdlog::error("unable to open {} file", json_file);
 			return 1;
 		}
 	}
@@ -35,7 +35,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	std::string authent1 = "authen_t1";
 	if (!in_args.contains(authent1) && !allow_append)
 	{
-		logger().error("Not Allowed appending JSON!! Add a * to the beginning of filename.");
+		spdlog::error("Not Allowed appending JSON!! Add a * to the beginning of filename.");
 		return 2;
 	}
 
@@ -94,7 +94,8 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	State state(1);
-	state.init_logger("", spdlog::level::info, false);
+	state.init_logger("", spdlog::level::warn, false);
+	spdlog::set_level(spdlog::level::info);
 	state.init(args, "");
 	state.load_mesh();
 
@@ -126,7 +127,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 
 	if (in_args.contains(authent1))
 	{
-		logger().info("Authenticating..");
+		spdlog::info("Authenticating..");
 		auto authen = in_args.at(authent1);
 		auto margin = authen.at("margin").get<double>();
 		margin = 1e-5;
@@ -136,15 +137,15 @@ int authenticate_json(std::string json_file, const bool allow_append)
 			auto relerr = std::abs((gt_val - el.value().get<double>()) / std::max(std::abs(gt_val), 1e-5));
 			if (relerr > margin)
 			{
-				logger().error("Violating Authenticate {}", el.key());
+				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2}", el.key(), gt_val, el.value().get<double>());
 				return 2;
 			}
 		}
-		logger().info("Authenticated ✅");
+		spdlog::info("Authenticated ✅");
 	}
 	else
 	{
-		logger().warn("Appending JSON..");
+		spdlog::warn("Appending JSON..");
 
 		in_args[authent1] = out;
 		std::ofstream file(json_file);
@@ -157,14 +158,13 @@ int authenticate_json(std::string json_file, const bool allow_append)
 #if defined(NDEBUG) && !defined(WIN32)
 std::string tags = "[run]";
 #else
-std::string tags = "[.]";
+std::string tags = "[.][run]";
 #endif
 TEST_CASE("runners", tags)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
 	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
 	std::string line;
-	spdlog::set_level(spdlog::level::info);
 	while (std::getline(file, line))
 	{
 		DYNAMIC_SECTION(line)

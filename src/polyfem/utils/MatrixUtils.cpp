@@ -28,192 +28,6 @@ void polyfem::utils::show_matrix_stats(const Eigen::MatrixXd &M)
 	// logger().trace("{}", lu.solve(M) );
 }
 
-template <typename T>
-bool polyfem::utils::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
-{
-	std::string extension = std::filesystem::path(path).extension().string();
-	std::transform(extension.begin(), extension.end(), extension.begin(),
-				   [](unsigned char c) { return std::tolower(c); });
-
-	if (extension == ".txt")
-	{
-		return read_matrix_ascii(path, mat);
-	}
-	else if (extension == ".bin")
-	{
-		return read_matrix_binary(path, mat);
-	}
-	else
-	{
-		bool success = read_matrix_ascii(path, mat);
-		if (!success)
-			success = read_matrix_binary(path, mat); // Try with the binary format reader
-		return success;
-	}
-}
-
-template <typename Mat>
-bool polyfem::utils::write_matrix(const std::string &path, const Mat &mat)
-{
-	std::string extension = std::filesystem::path(path).extension().string();
-	std::transform(extension.begin(), extension.end(), extension.begin(),
-				   [](unsigned char c) { return std::tolower(c); });
-
-	if (extension == ".txt")
-	{
-		return write_matrix_ascii(path, mat);
-	}
-	else if (extension == ".bin")
-	{
-		return write_matrix_binary(path, mat);
-	}
-	else
-	{
-		logger().warn("Uknown output matrix format (\"{}\"). Using ASCII format.");
-		return write_matrix_ascii(path, mat);
-	}
-}
-
-template <typename T>
-bool polyfem::utils::read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
-{
-	std::fstream file;
-	file.open(path.c_str());
-
-	if (!file.good())
-	{
-		logger().error("Failed to open file: {}", path);
-		file.close();
-
-		return false;
-	}
-
-	std::string s;
-	std::vector<std::vector<T>> matrix;
-
-	while (getline(file, s))
-	{
-		if (s.empty())
-			continue;
-		std::stringstream input(s);
-		T temp;
-		matrix.emplace_back();
-
-		std::vector<T> &currentLine = matrix.back();
-
-		while (input >> temp)
-			currentLine.push_back(temp);
-	}
-
-	if (!igl::list_to_matrix(matrix, mat))
-	{
-		logger().error("list to matrix error");
-		file.close();
-
-		return false;
-	}
-
-	return true;
-}
-
-template <typename Mat>
-bool polyfem::utils::write_matrix_ascii(const std::string &path, const Mat &mat)
-{
-	std::ofstream out(path);
-	if (!out.good())
-	{
-		logger().error("Failed to write to file: {}", path);
-		out.close();
-
-		return false;
-	}
-
-	out.precision(15);
-	out << mat;
-	out.close();
-
-	return true;
-}
-
-template <typename T>
-bool polyfem::utils::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
-{
-	typedef typename Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Index Index;
-
-	std::ifstream in(path, std::ios::in | std::ios::binary);
-	if (!in.good())
-	{
-		logger().error("Failed to open file: {}", path);
-		in.close();
-
-		return false;
-	}
-
-	Index rows = 0, cols = 0;
-	in.read((char *)(&rows), sizeof(Index));
-	in.read((char *)(&cols), sizeof(Index));
-
-	mat.resize(rows, cols);
-	in.read((char *)mat.data(), rows * cols * sizeof(T));
-	in.close();
-
-	return true;
-}
-
-template <typename Mat>
-bool polyfem::utils::write_matrix_binary(const std::string &path, const Mat &mat)
-{
-	typedef typename Mat::Index Index;
-	typedef typename Mat::Scalar Scalar;
-	std::ofstream out(path, std::ios::out | std::ios::binary);
-
-	if (!out.good())
-	{
-		logger().error("Failed to write to file: {}", path);
-		out.close();
-
-		return false;
-	}
-
-	const Index rows = mat.rows(), cols = mat.cols();
-	out.write((const char *)(&rows), sizeof(Index));
-	out.write((const char *)(&cols), sizeof(Index));
-	out.write((const char *)mat.data(), rows * cols * sizeof(Scalar));
-	out.close();
-
-	return true;
-}
-
-bool polyfem::utils::write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat)
-{
-	std::ofstream csv(path, std::ios::out);
-
-	if (!csv.good())
-	{
-		logger().error("Failed to write to file: {}", path);
-		csv.close();
-
-		return false;
-	}
-
-	csv << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
-
-	csv << fmt::format("shape,{},{}\n", mat.rows(), mat.cols());
-	csv << "Row,Col,Val\n";
-	for (int k = 0; k < mat.outerSize(); ++k)
-	{
-		for (Eigen::SparseMatrix<double>::InnerIterator it(mat, k); it; ++it)
-		{
-			csv << it.row() << "," // row index
-				<< it.col() << "," // col index (here it is equal to k)
-				<< it.value() << "\n";
-		}
-	}
-	csv.close();
-
-	return true;
-}
-
 polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	: size_(size)
 {
@@ -306,7 +120,7 @@ void polyfem::utils::SpareMatrixCache::add_value(const int e, const int i, const
 		}
 		else
 		{
-			//mapping()[i].find(j)
+			// mapping()[i].find(j)
 			const auto &map = mapping()[i];
 			bool found = false;
 			for (const auto &p : map)
@@ -419,7 +233,8 @@ polyfem::StiffnessMatrix polyfem::utils::SpareMatrixCache::get_matrix(const bool
 		assert(size_ > 0);
 		const auto &outer_index = main_cache_ == nullptr ? outer_index_ : main_cache_->outer_index_;
 		const auto &inner_index = main_cache_ == nullptr ? inner_index_ : main_cache_->inner_index_;
-		mat_ = Eigen::Map<const StiffnessMatrix>(size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
+		mat_ = Eigen::Map<const StiffnessMatrix>(
+			size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
 
 		if (use_second_cache_)
 		{
@@ -553,27 +368,21 @@ Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 	return X;
 }
 
-//template instantiation
-template bool polyfem::utils::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template bool polyfem::utils::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatrix<double> &M)
+{
+	std::vector<Eigen::Triplet<double>> triplets;
 
-template bool polyfem::utils::write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
-template bool polyfem::utils::write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
-template bool polyfem::utils::write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
-template bool polyfem::utils::write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+	for (int k = 0; k < M.outerSize(); ++k)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(M, k); it; ++it)
+		{
+			triplets.emplace_back(it.row(), it.row(), it.value());
+		}
+	}
 
-template bool polyfem::utils::read_matrix_ascii<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template bool polyfem::utils::read_matrix_ascii<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+	Eigen::SparseMatrix<double> lumped(M.rows(), M.rows());
+	lumped.setFromTriplets(triplets.begin(), triplets.end());
+	lumped.makeCompressed();
 
-template bool polyfem::utils::write_matrix_ascii<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
-template bool polyfem::utils::write_matrix_ascii<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
-template bool polyfem::utils::write_matrix_ascii<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
-template bool polyfem::utils::write_matrix_ascii<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
-
-template bool polyfem::utils::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template bool polyfem::utils::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
-
-template bool polyfem::utils::write_matrix_binary<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
-template bool polyfem::utils::write_matrix_binary<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
-template bool polyfem::utils::write_matrix_binary<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
-template bool polyfem::utils::write_matrix_binary<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+	return lumped;
+}

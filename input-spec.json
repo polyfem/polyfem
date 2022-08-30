@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -29,13 +28,13 @@
         "extensions": [
             ".json"
         ],
-        "doc": "Path to common settings will patch the current file"
+        "doc": "Path to common settings will patch the current file."
     },
     {
         "pointer": "/root_path",
         "default": "",
         "type": "string",
-        "doc": "path for all relative paths, set automatically to the folder containing this json"
+        "doc": "Path for all relative paths, set automatically to the folder containing this json."
     },
     {
         "pointer": "/authen_t1",
@@ -50,55 +49,55 @@
             "err_lp",
             "margin"
         ],
-        "doc": "use to test to compare different norms of solutions"
+        "doc": "Used to test to compare different norms of solutions."
     },
     {
         "pointer": "/authen_t1/err_h1",
         "default": 0,
         "type": "float",
-        "doc": "reference h1 solution's norm"
+        "doc": "Reference h1 solution's norm."
     },
     {
         "pointer": "/authen_t1/err_h1_semi",
         "default": 0,
         "type": "float",
-        "doc": "reference h1 seminorm solution's norm"
+        "doc": "Reference h1 seminorm solution's norm."
     },
     {
         "pointer": "/authen_t1/err_l2",
         "default": 0,
         "type": "float",
-        "doc": "reference l2 solution's norm"
+        "doc": "Reference $L^2$ solution's norm."
     },
     {
         "pointer": "/authen_t1/err_linf",
         "default": 0,
         "type": "float",
-        "doc": "reference linf solution's norm"
+        "doc": "Reference $L^\\infty$ solution's norm."
     },
     {
         "pointer": "/authen_t1/err_linf_grad",
         "default": 0,
         "type": "float",
-        "doc": "reference linf solution's gradient norm"
+        "doc": "Reference $L^\\infty$ solution's gradient norm."
     },
     {
         "pointer": "/authen_t1/err_lp",
         "default": 0,
         "type": "float",
-        "doc": "reference l8 solution's gradient norm"
+        "doc": "Reference $L^8$ solution's gradient norm."
     },
     {
         "pointer": "/authen_t1/margin",
         "default": 0,
         "type": "float",
-        "doc": "reference tolerance used in tests"
+        "doc": "Reference tolerance used in tests."
     },
     {
         "pointer": "/geometry",
         "type": "list",
         "min": 1,
-        "doc": "List of /geometry objects."
+        "doc": "List of geometry objects."
     },
     {
         "pointer": "/geometry/*",
@@ -127,7 +126,9 @@
         "extensions": [
             ".obj",
             ".msh",
-            ".stl"
+            ".stl",
+            ".ply",
+            ".mesh"
         ],
         "doc": "Path of the mesh file to load."
     },
@@ -138,7 +139,7 @@
             "mesh"
         ],
         "default": "mesh",
-        "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc"
+        "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
     },
     {
         "pointer": "/geometry/*/extract",
@@ -150,7 +151,7 @@
             "surface"
         ],
         "default": "volume",
-        "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh"
+        "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh."
     },
     {
         "pointer": "/geometry/*/transformation",
@@ -169,36 +170,36 @@
         "pointer": "/geometry/*/transformation/rotation_mode",
         "type": "string",
         "default": "xyz",
-        "doc": "Type of rotation, supported are any permutation of (x[0-1]|y[0-1]|z[0-1), axis_angle, quaternion, or rotation_vector"
+        "doc": "Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector."
     },
     {
         "pointer": "/geometry/*/transformation/translation",
         "type": "list",
         "default": [],
-        "doc": "Translate, 2 entries for 2D problems, 3 entries for 3D problems."
+        "doc": "Translate (two entries for 2D problems or three entries for 3D problems)."
     },
     {
         "pointer": "/geometry/*/transformation/rotation",
         "type": "list",
         "default": [],
-        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode"
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D, three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode."
     },
     {
         "pointer": "/geometry/*/transformation/scale",
         "type": "list",
         "default": [],
-        "doc": "Scale by specified factors along axes, 2 entries for 2D problems, 3 entries for 3D problems."
+        "doc": "Scale by specified factors along axes (two entries for 2D problems or three entries for 3D problems)."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions",
         "type": "float",
         "default": 1,
-        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions",
         "type": "list",
-        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions/*",
@@ -223,8 +224,28 @@
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "int",
+        "default": -1,
+        "doc": "Assign specified ID to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0))."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "object",
+        "required": [
+            "id_offset"
+        ],
+        "typename": "id_offset",
+        "doc": "Offsets the volume IDs loaded from the mesh."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/id_offset",
+        "type": "int",
         "default": 0,
-        "doc": "Assign specified id to all volume elements of the geometry"
+        "doc": "Offsets the volume IDs loaded from the mesh."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "list",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/volume_selection",
@@ -232,7 +253,144 @@
         "extensions": [
             ".txt"
         ],
-        "doc": "Load ids from a file; the file is required to have one id per volume element of the geometry"
+        "doc": "Load ids from a file; the file is required to have one ID per volume element of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "box"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "box",
+        "doc": "Assign the ID to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "radius",
+            "center"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "sphere",
+        "doc": "Assign the ID to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "relative",
+            "offset"
+        ],
+        "default": null,
+        "typename": "plane",
+        "doc": "Assign the ID to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "axis",
+            "position"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "typename": "axis",
+        "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/id",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/center",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/axis",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/axis",
+        "type": "string"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/offset",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/position",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/relative",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/point",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/normal",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/normal/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/box",
+        "type": "list",
+        "min": 2,
+        "max": 2
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/box/*",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "default": []
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/box/*/*",
+        "type": "float",
+        "default": 0
     },
     {
         "pointer": "/geometry/*/point_selection",
@@ -250,7 +408,7 @@
         "pointer": "/geometry/*/surface_selection",
         "type": "int",
         "default": 0,
-        "doc": "Assign specified id to all surface elements of the geometry"
+        "doc": "Assign specified ID to all surface elements of the geometry"
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -275,7 +433,7 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "list",
-        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -283,7 +441,7 @@
         "extensions": [
             ".txt"
         ],
-        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one id for each; each triple must correspond to a surface element"
+        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one ID for each; each triple must correspond to a surface element"
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -297,7 +455,7 @@
         ],
         "default": null,
         "typename": "box",
-        "doc": "Assign the id to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -312,7 +470,7 @@
         ],
         "default": null,
         "typename": "sphere",
-        "doc": "Assign the id to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+        "doc": "Assign the ID to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -328,7 +486,7 @@
         ],
         "default": null,
         "typename": "plane",
-        "doc": "Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -495,6 +653,49 @@
         "doc": "Lagrange element order for the space for the main unknown, for all elements."
     },
     {
+        "pointer": "/space/discr_order",
+        "type": "file",
+        "extensions": [
+            ".txt",
+            ".bin"
+        ],
+        "doc": "Path to file containing Lagrange element order for the space for the main unknown per element."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "type": "list",
+        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
+    },
+    {
+        "pointer": "/space/discr_order/*",
+        "type": "object",
+        "required": [
+            "id",
+            "order"
+        ],
+        "doc": "Lagrange element order for the a space tagged with volume ID for the main unknown."
+    },
+    {
+        "pointer": "/space/discr_order/*/id",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/id",
+        "type": "list",
+        "doc": "List of volume selection IDs to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/order",
+        "type": "int",
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
+    },
+    {
         "pointer": "/space/pressure_discr_order",
         "default": 1,
         "type": "int",
@@ -641,7 +842,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "The time parameters: start time t0, end time tend, time step dt. "
+        "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
     {
         "pointer": "/time",
@@ -656,7 +857,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "The time parameters: start time t0, time step dt, number of time steps. "
+        "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
     {
         "pointer": "/time",
@@ -671,7 +872,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "The time parameters: start time t0, end time tend, number of time steps. "
+        "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
     {
         "pointer": "/time/t0",
@@ -690,7 +891,7 @@
         "pointer": "/time/dt",
         "type": "float",
         "min": 0,
-        "doc": "Delta t"
+        "doc": "Time step size $\\Delta t$"
     },
     {
         "pointer": "/time/time_steps",
@@ -763,31 +964,33 @@
         "pointer": "/contact/enabled",
         "default": false,
         "type": "bool",
-        "doc": "True if contact handling is enabled"
+        "doc": "True if contact handling is enabled."
     },
     {
         "pointer": "/contact/dhat",
         "default": 0.001,
+        "min": 0,
         "type": "float",
-        "doc": "IPC barrier function parameter (see IPC paper)"
+        "doc": "Contact barrier activation distance."
     },
     {
         "pointer": "/contact/dhat_percentage",
         "default": 0.8,
         "type": "float",
-        "doc": "dhat as percentage of the diagonal of the bounding box"
+        "doc": "$\\hat{d}$ as percentage of the diagonal of the bounding box"
     },
     {
         "pointer": "/contact/epsv",
         "default": 0.001,
+        "min": 0,
         "type": "float",
-        "doc": "IPC friction smoothing parameter (see IPC paper) "
+        "doc": "Friction smoothing parameter."
     },
     {
         "pointer": "/contact/friction_coefficient",
         "default": 0,
         "type": "float",
-        "doc": "Friction Coefficient"
+        "doc": "Coefficient of friction (global)"
     },
     {
         "pointer": "/solver",
@@ -801,7 +1004,7 @@
             "ignore_inertia",
             "advanced"
         ],
-        "doc": "The settings for the solver including Linear solver, nonlinear solver, and some advanced options"
+        "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
     {
         "pointer": "/solver/linear",
@@ -811,19 +1014,44 @@
             "solver",
             "precond"
         ],
-        "doc": "Settings for linear solver"
+        "doc": "Settings for the linear solver."
     },
     {
         "pointer": "/solver/linear/solver",
         "default": "",
         "type": "string",
-        "doc": "Linear solver type"
+        "doc": "Linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
     },
     {
         "pointer": "/solver/linear/precond",
         "default": "",
         "type": "string",
-        "doc": "Preconditioner for iterative linear solver"
+        "doc": "Preconditioner used if using an iterative linear solver.",
+        "options": [
+            "Eigen::IdentityPreconditioner",
+            "Eigen::DiagonalPreconditioner",
+            "Eigen::IncompleteCholesky",
+            "Eigen::LeastSquareDiagonalPreconditioner",
+            "Eigen::IncompleteLUT"
+        ]
     },
     {
         "pointer": "/solver/nonlinear",
@@ -838,7 +1066,7 @@
             "relative_gradient",
             "line_search"
         ],
-        "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+        "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
     {
         "pointer": "/solver/nonlinear/solver",
@@ -854,19 +1082,19 @@
         "pointer": "/solver/nonlinear/f_delta",
         "default": 1e-10,
         "type": "float",
-        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
+        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue."
     },
     {
         "pointer": "/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
-        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
+        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue."
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",
         "default": 1000,
         "type": "int",
-        "doc": "Maximum number of iterations for a non-linear solve."
+        "doc": "Maximum number of iterations for a nonlinear solve."
     },
     {
         "pointer": "/solver/nonlinear/use_grad_norm",
@@ -888,7 +1116,7 @@
             "method",
             "use_grad_norm_tol"
         ],
-        "doc": "Settings for line search in the nonlinear solver"
+        "doc": "Settings for line-search in the nonlinear solver"
     },
     {
         "pointer": "/solver/nonlinear/line_search/method",
@@ -901,13 +1129,13 @@
             "more_thuente",
             "none"
         ],
-        "doc": "line search type"
+        "doc": "Line-search type"
     },
     {
         "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
         "default": 0.0001,
         "type": "float",
-        "doc": "When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy"
+        "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -918,7 +1146,7 @@
             "max_weight",
             "force"
         ],
-        "doc": "Parameters for the AL for imposing Dirichlet bc. If the bc are not imposable, we add w*||u - bc||^2 to the energy (u is the solution at the Dirichlet nodes and bc are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double w until max_weight."
+        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double $w$ until `max_weight`."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
@@ -947,7 +1175,7 @@
             "friction_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "lagged_damping_weight"
+            "lagged_regularization_weight"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1019,10 +1247,10 @@
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
-        "pointer": "/solver/contact/lagged_damping_weight",
+        "pointer": "/solver/contact/lagged_regularization_weight",
         "default": 0,
         "type": "int",
-        "doc": "TODO"
+        "doc": "Weight used to regularize singular static problems."
     },
     {
         "pointer": "/solver/ignore_inertia",
@@ -1055,7 +1283,7 @@
     {
         "pointer": "/materials",
         "type": "list",
-        "doc": "Material Parameters lists including id pointing to volume selection, Young's modulus(E), Poisson ratio(nu), Density(rho),or Lame constants lambda/mu,  type()"
+        "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
     },
     {
         "pointer": "/materials/*",
@@ -1070,7 +1298,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1085,7 +1313,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1100,7 +1328,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1115,7 +1343,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1130,7 +1358,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1144,7 +1372,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1159,7 +1387,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1173,7 +1401,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1187,7 +1415,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, viscosity, Density(rho), type()"
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1201,7 +1429,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, viscosity, Density(rho), type()"
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1216,7 +1444,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1231,7 +1459,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1244,7 +1472,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Density(rho), type()"
+        "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1258,7 +1486,7 @@
             "rho",
             "k"
         ],
-        "doc": "Material Parameters including id, k, Density(rho), type()"
+        "doc": "Material Parameters including ID, k, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1271,13 +1499,13 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Density(rho), type()"
+        "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
-        "doc": "id"
+        "doc": "Volume selection ID"
     },
     {
         "pointer": "/materials/*/E",
@@ -1287,7 +1515,7 @@
     {
         "pointer": "/materials/*/nu",
         "type": "float",
-        "doc": "Poisson ratio"
+        "doc": "Poisson's ratio"
     },
     {
         "pointer": "/materials/*/viscosity",
@@ -1298,7 +1526,7 @@
         "pointer": "/materials/*/elasticity_tensor",
         "type": "list",
         "default": [],
-        "doc": "Simmetric elasticity tensor"
+        "doc": "Symmetric elasticity tensor"
     },
     {
         "pointer": "/materials/*/elasticity_tensor/*",
@@ -1338,12 +1566,12 @@
     {
         "pointer": "/materials/*/mu",
         "type": "float",
-        "doc": "First lame parameters"
+        "doc": "First Lamé parameters"
     },
     {
         "pointer": "/materials/*/lambda",
         "type": "float",
-        "doc": "Second lame parameter"
+        "doc": "Second Lamé parameter"
     },
     {
         "pointer": "/boundary_conditions",
@@ -1356,40 +1584,40 @@
             "pressure_boundary",
             "obstacle_displacements"
         ],
-        "doc": "The settings for boundary conditions. "
+        "doc": "The settings for boundary conditions."
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "float",
-        "doc": "Right-hand side of the system being solved for scalar-valued pdes"
+        "doc": "Right-hand side of the system being solved for scalar-valued PDEs"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "string",
-        "doc": "Right-hand side of the system being solved as a function of x,y,z,t"
+        "doc": "Right-hand side of the system being solved as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "default": "[]",
         "type": "list",
-        "doc": "Right-hand side of the system being solved for vector-valued pdes"
+        "doc": "Right-hand side of the system being solved for vector-valued PDEs."
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
         "default": 0,
         "type": "float",
-        "doc": "Right-hand side of the system being solved, value"
+        "doc": "Right-hand side of the system being solved, value."
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
         "type": "string",
-        "doc": "Right-hand side of the system being solved as a function of x,y,z,t"
+        "doc": "Right-hand side of the system being solved as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
+        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
@@ -1407,12 +1635,12 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
-        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension"
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
         "type": "int",
-        "doc": "id of Dirichlet boundary condition from surface selection"
+        "doc": "ID of Dirichlet boundary condition from surface selection."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
@@ -1420,22 +1648,22 @@
         "options": [
             "all"
         ],
-        "doc": "select all ids"
+        "doc": "select all ids."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value",
         "type": "list",
-        "doc": "Values of Dirichlet boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued pdes depending on the dimension"
+        "doc": "Values of Dirichlet boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued PDEs depending on the dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "string",
-        "doc": "Values of Dirichlet boundary condition for each dimension as a function of x,y,z,t"
+        "doc": "Values of Dirichlet boundary condition for each dimension as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "float",
-        "doc": "Values of Dirichlet boundary condition for each dimension"
+        "doc": "Values of Dirichlet boundary condition for each dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
@@ -1445,7 +1673,7 @@
             true,
             true
         ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
@@ -1457,7 +1685,7 @@
         "pointer": "/boundary_conditions/neumann_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of Neumann boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection. "
+        "doc": "The list of Neumann boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*",
@@ -1473,7 +1701,7 @@
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
         "default": 1,
-        "doc": "id of Neumann boundary condition"
+        "doc": "ID of Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value",
@@ -1485,7 +1713,7 @@
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
         "type": "string",
         "default": "",
-        "doc": "Values of Neumann boundary condition for each dimension as function of x,y,z,t"
+        "doc": "Values of Neumann boundary condition for each dimension as function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
@@ -1497,7 +1725,7 @@
         "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
-        "doc": "Dirichlet boundary condition for normal * value for vector-valued pdes."
+        "doc": "Dirichlet boundary condition for normal * value for vector-valued PDEs."
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*",
@@ -1515,7 +1743,7 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/id",
         "type": "int",
-        "doc": "id for the pressure Neumann boundary condition"
+        "doc": "ID for the pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
@@ -1525,7 +1753,7 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "string",
-        "doc": "Values of pressure Neumann boundary condition as a function of x,y,z,t"
+        "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
@@ -1536,7 +1764,7 @@
         "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
-        "doc": "The list of obstacle displacements. Each entry is an (id, value) pair, where ids are set by selection."
+        "doc": "The list of obstacle displacements. Each entry is an (ID, value) pair, where ids are set by selection."
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*",
@@ -1551,7 +1779,7 @@
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/id",
         "type": "int",
-        "doc": "id of Obstacle displacements"
+        "doc": "ID of Obstacle displacements"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value",
@@ -1561,7 +1789,7 @@
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
         "type": "string",
-        "doc": "Values of Obstacle displacements for each dimension as a function of x,y,z,t"
+        "doc": "Values of Obstacle displacements for each dimension as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
@@ -1593,12 +1821,12 @@
             "id",
             "value"
         ],
-        "doc": "A list of (id, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
+        "doc": "A list of (ID, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
     },
     {
         "pointer": "/initial_conditions/solution/*/id",
         "type": "int",
-        "doc": "id from volume selections"
+        "doc": "ID from volume selections"
     },
     {
         "pointer": "/initial_conditions/solution/*/value",
@@ -1613,7 +1841,7 @@
     {
         "pointer": "/initial_conditions/solution/*/value/*",
         "type": "string",
-        "doc": "as a function of x,y,z,t"
+        "doc": "as a function of $x,y,z,t$"
     },
     {
         "pointer": "/initial_conditions/velocity",
@@ -1629,12 +1857,12 @@
             "id",
             "value"
         ],
-        "doc": "A list of (id, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
+        "doc": "A list of (ID, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
     },
     {
         "pointer": "/initial_conditions/velocity/*/id",
         "type": "int",
-        "doc": "id from volume selections"
+        "doc": "ID from volume selections"
     },
     {
         "pointer": "/initial_conditions/velocity/*/value",
@@ -1651,7 +1879,7 @@
     {
         "pointer": "/initial_conditions/velocity/*/value/*",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/initial_conditions/acceleration",
@@ -1672,7 +1900,7 @@
     {
         "pointer": "/initial_conditions/acceleration/*/id",
         "type": "int",
-        "doc": "id from volume selections"
+        "doc": "ID from volume selections"
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value",
@@ -1690,7 +1918,7 @@
     {
         "pointer": "/initial_conditions/acceleration/*/value/*",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/output",
@@ -1847,13 +2075,13 @@
         "pointer": "/output/data/full_mat",
         "default": "",
         "type": "string",
-        "doc": "System matrix without boundary conditions. Doesn't work for non-linear problems"
+        "doc": "System matrix without boundary conditions. Doesn't work for nonlinear problems"
     },
     {
         "pointer": "/output/data/stiffness_mat",
         "default": "",
         "type": "string",
-        "doc": "System matrix with boundary conditions. Doesn't work for non-linear problems"
+        "doc": "System matrix with boundary conditions. Doesn't work for nonlinear problems"
     },
     {
         "pointer": "/output/data/stress_mat",
@@ -1926,7 +2154,7 @@
         "pointer": "/output/reference/solution/*",
         "default": "",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/output/reference/gradient",
@@ -1938,7 +2166,7 @@
         "pointer": "/output/reference/gradient/*",
         "default": "",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/output/advanced",
@@ -2010,7 +2238,7 @@
         "pointer": "/output/advanced/save_nl_solve_sequence",
         "default": false,
         "type": "bool",
-        "doc": "saves obj after every non-linear iteration, for debugging"
+        "doc": "saves obj after every nonlinear iteration, for debugging"
     },
     {
         "pointer": "/output/advanced/spectrum",
@@ -2642,7 +2870,7 @@
     {
         "pointer": "/preset_problem/type",
         "type": "string",
-        "doc": "TODO",
+        "doc": "Type of preset problem to use.",
         "options": [
             "Linear",
             "Quadratic",

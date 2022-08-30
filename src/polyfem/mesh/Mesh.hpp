@@ -440,6 +440,12 @@ namespace polyfem
 				else
 					return 0;
 			}
+			/// @brief Get the volume selection of all elements (cells in 3d, faces in 2d)
+			/// @return Const reference to the vector of body IDs
+			virtual const std::vector<int> &get_body_ids() const
+			{
+				return body_ids_;
+			}
 			/// @brief checks if surface selections are available
 			///
 			/// @return surface selections are available

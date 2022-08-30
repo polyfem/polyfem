@@ -4,15 +4,14 @@
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <fstream>
 
 namespace polyfem
 {
-	using namespace utils;
-
+	using namespace io;
 	namespace time_integrator
 	{
 		void ImplicitTimeIntegrator::init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt)
@@ -58,8 +57,8 @@ namespace polyfem
 			}
 			else
 			{
-				logger().warn("Unknown time integrator ({}); using implicit Euler", name);
-				return std::make_shared<ImplicitEuler>();
+				logger().error("Unknown time integrator ({})", name);
+				throw std::runtime_error(fmt::format("Unknown time integrator ({})", name));
 			}
 		}
 

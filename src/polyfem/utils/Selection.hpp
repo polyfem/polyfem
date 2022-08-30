@@ -20,9 +20,25 @@ namespace polyfem
 
 			virtual int id(const size_t element_id) const { return id_; }
 
+			/// @brief Build a selection objects from a JSON selection.
+			/// @param j_selections JSON object of selection(s).
+			/// @param mesh_bbox    Bounding box of the mesh.
+			/// @param root_path    Root path of the JSON file.
+			/// @return Shared pointer to selection object.
 			static std::shared_ptr<Selection> build(
-				const json &selection,
-				const BBox &mesh_bbox);
+				const json &j_selections,
+				const BBox &mesh_bbox,
+				const std::string &root_path = "");
+
+			/// @brief Build a vector of selection objects from a JSON selection(s).
+			/// @param j_selections JSON object of selection(s).
+			/// @param mesh_bbox    Bounding box of the mesh.
+			/// @param root_path    Root path of the JSON file.
+			/// @return Vector of selection objects.
+			static std::vector<std::shared_ptr<utils::Selection>> build_selections(
+				const json &j_selections,
+				const BBox &mesh_bbox,
+				const std::string &root_path = "");
 
 		protected:
 			Selection() {}

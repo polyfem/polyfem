@@ -1,5 +1,6 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
@@ -34,28 +35,6 @@ namespace polyfem
 			I.setIdentity();
 			return I;
 		}
-
-		/// Reads a matrix from a file. Determines the file format based on the path's extension.
-		template <typename T>
-		bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
-		/// Writes a matrix to a file. Determines the file format based on the path's extension.
-		template <typename Mat>
-		bool write_matrix(const std::string &path, const Mat &mat);
-
-		template <typename T>
-		bool read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
-		template <typename Mat>
-		bool write_matrix_ascii(const std::string &path, const Mat &mat);
-
-		template <typename T>
-		bool read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
-		template <typename Mat>
-		bool write_matrix_binary(const std::string &path, const Mat &mat);
-
-		bool write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat);
 
 		class SpareMatrixCache
 		{
@@ -118,6 +97,11 @@ namespace polyfem
 
 		// Unflatten rowwises, so every dim elements in x become a row.
 		Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim);
+
+		/// @brief Lump each row of a matrix into the diagonal.
+		/// @param M Matrix to lump.
+		/// @return Lumped matrix.
+		Eigen::SparseMatrix<double> lump_matrix(const Eigen::SparseMatrix<double> &M);
 	} // namespace utils
 } // namespace polyfem
 

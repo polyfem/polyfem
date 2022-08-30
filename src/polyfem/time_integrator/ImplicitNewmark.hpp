@@ -6,7 +6,7 @@ namespace polyfem::time_integrator
 {
 	/// Implicit Newmark-beta method.
 	/// \f[
-	/// 	x^{t+1} = x^t + \Delta t v^t + \frac{\Delta t^2}{2}((1-2\beta)a^t + 2 \beta a^{t+1})\\
+	/// 	x^{t+1} = x^t + \Delta t v^t + \frac{\Delta t^2}{2}((1-2\beta)a^t + 2 \beta a^{t+1})\newline
 	/// 	v^{t+1} = v^t + (1-\gamma)\Delta ta^t + \gamma \Delta ta^{t+1}
 	/// \f]
 	/// @see https://en.wikipedia.org/wiki/Newmark-beta_method
@@ -16,7 +16,7 @@ namespace polyfem::time_integrator
 		ImplicitNewmark() {}
 
 		/// @brief Set the `gamma` and `beta` parameters from a json object.
-		/// @param params json containing `{"gamma": 0.5, "beta": 0.25}`
+		/// @param params json containing `{"newmark": {"gamma": 0.5, "beta": 0.25}}`
 		void set_parameters(const nlohmann::json &params) override;
 
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).

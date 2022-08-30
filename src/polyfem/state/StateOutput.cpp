@@ -3,7 +3,7 @@
 
 #include <polyfem/utils/BoundarySampler.hpp>
 
-#include <polyfem/mesh/VTUWriter.hpp>
+#include <polyfem/io/VTUWriter.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
@@ -34,6 +34,7 @@ extern "C" size_t getPeakRSS();
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace io;
 	using namespace mesh;
 	using namespace solver;
 	using namespace utils;
@@ -1291,11 +1292,11 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			bool is_time_integrator_valid = step_data.nl_problem != nullptr && step_data.nl_problem->time_integrator() != nullptr;
+			bool is_time_integrator_valid = solve_data.nl_problem != nullptr && solve_data.nl_problem->time_integrator() != nullptr;
 			if (export_velocity)
 			{
 				Eigen::MatrixXd vel = is_time_integrator_valid
-										  ? step_data.nl_problem->time_integrator()->v_prev()
+										  ? solve_data.nl_problem->time_integrator()->v_prev()
 										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
 
 				Eigen::MatrixXd interp_vel;
@@ -1304,6 +1305,12 @@ namespace polyfem
 				{
 					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
 					obstacle.set_zero(interp_vel); // TODO
+				}
+
+				if (solve_export_to_file && interp_vel.cols() == 2)
+				{
+					interp_vel.conservativeResize(interp_vel.rows(), 3);
+					interp_vel.col(2).setZero();
 				}
 
 				if (solve_export_to_file)
@@ -1316,7 +1323,7 @@ namespace polyfem
 			if (export_acceleration)
 			{
 				Eigen::MatrixXd acc = is_time_integrator_valid
-										  ? step_data.nl_problem->time_integrator()->a_prev()
+										  ? solve_data.nl_problem->time_integrator()->a_prev()
 										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
 
 				Eigen::MatrixXd interp_acc;
@@ -1325,6 +1332,12 @@ namespace polyfem
 				{
 					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
 					obstacle.set_zero(interp_acc); // TODO
+				}
+
+				if (solve_export_to_file && interp_acc.cols() == 2)
+				{
+					interp_acc.conservativeResize(interp_acc.rows(), 3);
+					interp_acc.col(2).setZero();
 				}
 
 				if (solve_export_to_file)
@@ -1685,7 +1698,7 @@ namespace polyfem
 			}
 		}
 
-		if (args["contact"]["enabled"] && (export_contact_forces || export_friction_forces) && solve_export_to_file)
+		if (is_contact_enabled() && (export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
 			VTUWriter writer;
 
@@ -1703,7 +1716,7 @@ namespace polyfem
 				collision_mesh, displaced_surface, args["contact"]["dhat"], constraint_set,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
 
-			const double barrier_stiffness = step_data.nl_problem != nullptr ? step_data.nl_problem->barrier_stiffness() : 1;
+			const double barrier_stiffness = solve_data.nl_problem != nullptr ? solve_data.nl_problem->barrier_stiffness() : 1;
 
 			if (export_contact_forces)
 			{
@@ -1721,8 +1734,8 @@ namespace polyfem
 			if (export_friction_forces)
 			{
 				Eigen::MatrixXd displaced_surface_prev =
-					(step_data.nl_problem != nullptr)
-						? collision_mesh.vertices(step_data.nl_problem->displaced_prev())
+					(solve_data.nl_problem != nullptr)
+						? collision_mesh.vertices(solve_data.nl_problem->displaced_prev())
 						: displaced_surface;
 
 				ipc::FrictionConstraints friction_constraint_set;
