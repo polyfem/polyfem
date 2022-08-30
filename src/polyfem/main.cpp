@@ -51,9 +51,9 @@ int main(int argc, char **argv)
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
 
-	const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
-	std::string solver;
-	command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
+	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
+	// std::string solver;
+	// command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
 
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
@@ -112,6 +112,11 @@ int main(int argc, char **argv)
 			tmp.getDataSet("c").read(cells[i]);
 			tmp.getDataSet("v").read(vertices[i]);
 		}
+	}
+	else
+	{
+		logger().error("No input file specified!");
+		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
 	if (!output_dir.empty())
