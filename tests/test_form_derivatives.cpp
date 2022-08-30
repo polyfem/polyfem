@@ -172,7 +172,7 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 
 	ContactForm form(
 		*state_ptr, dhat, use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations, body_form, iform);
+		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations);
 
 	test_form(form, *state_ptr);
 }
@@ -214,7 +214,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 
 	const ContactForm contact_form(
 		*state_ptr, dhat, use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations, body_form, iform);
+		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
 		*state_ptr, epsv, mu, dhat, broad_phase_method, dt, contact_form);

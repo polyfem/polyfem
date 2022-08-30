@@ -292,7 +292,7 @@ TEST_CASE("contact form value", "[form][form_value][contact_form]")
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 			iform = std::make_shared<InertiaForm>(state->mass, *ti);
 
-			std::vector<std::shared_ptr<Form>> res = {body_form, iform, std::make_shared<ContactForm>(*state, state->args["contact"]["dhat"], !state->args["solver"]["contact"]["barrier_stiffness"].is_number(), state->problem->is_time_dependent(), state->args["solver"]["contact"]["CCD"]["broad_phase"], state->args["solver"]["contact"]["CCD"]["tolerance"], state->args["solver"]["contact"]["CCD"]["max_iterations"], *body_form, iform)};
+			std::vector<std::shared_ptr<Form>> res = {body_form, iform, std::make_shared<ContactForm>(*state, state->args["contact"]["dhat"], !state->args["solver"]["contact"]["barrier_stiffness"].is_number(), state->problem->is_time_dependent(), state->args["solver"]["contact"]["CCD"]["broad_phase"], state->args["solver"]["contact"]["CCD"]["tolerance"], state->args["solver"]["contact"]["CCD"]["max_iterations"])};
 
 			return res;
 		},
@@ -312,7 +312,7 @@ TEST_CASE("barrier stiffness value", "[form][form_value][barrier_stiffness]")
 			body_form = std::make_shared<BodyForm>(*state, *rhs_assembler, apply_DBC);
 			iform = std::make_shared<InertiaForm>(state->mass, *ti);
 
-			std::vector<std::shared_ptr<Form>> res = {body_form, iform, std::make_shared<ContactForm>(*state, state->args["contact"]["dhat"], !state->args["solver"]["contact"]["barrier_stiffness"].is_number(), state->problem->is_time_dependent(), state->args["solver"]["contact"]["CCD"]["broad_phase"], state->args["solver"]["contact"]["CCD"]["tolerance"], state->args["solver"]["contact"]["CCD"]["max_iterations"], *body_form, iform)};
+			std::vector<std::shared_ptr<Form>> res = {body_form, iform, std::make_shared<ContactForm>(*state, state->args["contact"]["dhat"], !state->args["solver"]["contact"]["barrier_stiffness"].is_number(), state->problem->is_time_dependent(), state->args["solver"]["contact"]["CCD"]["broad_phase"], state->args["solver"]["contact"]["CCD"]["tolerance"], state->args["solver"]["contact"]["CCD"]["max_iterations"])};
 
 			return res;
 		},
@@ -352,8 +352,7 @@ TEST_CASE("friction form value", "[form][form_value][friction_form]")
 				state->problem->is_time_dependent(),
 				state->args["solver"]["contact"]["CCD"]["broad_phase"],
 				state->args["solver"]["contact"]["CCD"]["tolerance"],
-				state->args["solver"]["contact"]["CCD"]["max_iterations"],
-				*body_form, iform);
+				state->args["solver"]["contact"]["CCD"]["max_iterations"]);
 
 			std::vector<std::shared_ptr<Form>> res = {body_form, iform, contact_form, std::make_shared<FrictionForm>(*state, state->args["contact"]["epsv"], state->args["contact"]["friction_coefficient"], state->args["contact"]["dhat"], state->args["solver"]["contact"]["CCD"]["broad_phase"], ti->dt(), *contact_form)};
 			return res;
