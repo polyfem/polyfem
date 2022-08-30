@@ -132,8 +132,6 @@ namespace polyfem
 			void init_lagging(const TVector &x);
 			void update_lagging(const TVector &x);
 
-			void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
-
 			void set_full_size(const bool val)
 			{
 				if (val)

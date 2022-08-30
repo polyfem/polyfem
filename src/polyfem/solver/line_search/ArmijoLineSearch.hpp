@@ -143,17 +143,17 @@ namespace polyfem
 						return std::nan("");
 					}
 
-#ifndef NDEBUG
-					// -------------
-					// CCD safeguard
-					// -------------
-					{
-						POLYFEM_SCOPED_TIMER("safeguard in LS");
-						alpha = this->compute_debug_collision_free_step_size(x, searchDir, objFunc, alpha, tau);
-					}
+					// #ifndef NDEBUG
+					// 					// -------------
+					// 					// CCD safeguard
+					// 					// -------------
+					// 					{
+					// 						POLYFEM_SCOPED_TIMER("safeguard in LS");
+					// 						alpha = this->compute_debug_collision_free_step_size(x, searchDir, objFunc, alpha, tau);
+					// 					}
 
-					const double debug_collision_free_step_size = alpha;
-#endif
+					// 					const double debug_collision_free_step_size = alpha;
+					// #endif
 
 					{
 						POLYFEM_SCOPED_TIMER("LS end");

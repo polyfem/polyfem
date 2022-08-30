@@ -102,18 +102,18 @@ namespace polyfem
 
 					const double descent_step_size = step_size;
 
-#ifndef NDEBUG
-					// -------------
-					// CCD safeguard
-					// -------------
+					// #ifndef NDEBUG
+					// 					// -------------
+					// 					// CCD safeguard
+					// 					// -------------
 
-					{
-						POLYFEM_SCOPED_TIMER("safeguard in LS");
-						step_size = this->compute_debug_collision_free_step_size(x, delta_x, objFunc, step_size, 0.5);
-					}
+					// 					{
+					// 						POLYFEM_SCOPED_TIMER("safeguard in LS");
+					// 						step_size = this->compute_debug_collision_free_step_size(x, delta_x, objFunc, step_size, 0.5);
+					// 					}
 
-					const double debug_collision_free_step_size = step_size;
-#endif
+					// 					const double debug_collision_free_step_size = step_size;
+					// #endif
 
 					{
 						POLYFEM_SCOPED_TIMER("LS end");

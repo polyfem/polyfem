@@ -81,7 +81,7 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
 
-		solve_data.nl_problem->save_raw(
+		solve_data.time_integrator->save_raw(
 			resolve_output_path(args["output"]["data"]["u_path"]),
 			resolve_output_path(args["output"]["data"]["v_path"]),
 			resolve_output_path(args["output"]["data"]["a_path"]));
