@@ -47,7 +47,6 @@ namespace polyfem::solver
 		const State &state_;                           ///< Reference to the simulation state
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
 
-		double weight_;                      ///< AL weight
 		StiffnessMatrix masked_lumped_mass_; ///< mass matrix masked by the AL dofs
 		Eigen::MatrixXd target_x_;           ///< actually a vector with the same size as x with target nodal positions
 

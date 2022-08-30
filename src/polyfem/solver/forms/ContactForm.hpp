@@ -10,9 +10,6 @@
 
 namespace polyfem::solver
 {
-	class BodyForm;
-	class InertiaForm;
-
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{

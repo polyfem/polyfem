@@ -1,6 +1,4 @@
 #include "ContactForm.hpp"
-#include "BodyForm.hpp"
-#include "InertiaForm.hpp"
 
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>

@@ -91,8 +91,8 @@ namespace polyfem
 			elastic_form->set_weight(inertia_form->acceleration_scaling());
 			body_form->set_weight(inertia_form->acceleration_scaling());
 
-			if (friction_form)
-				friction_form->set_weight(inertia_form->acceleration_scaling());
+			// if (friction_form)
+			// 	friction_form->set_weight(inertia_form->acceleration_scaling());
 		}
 	}
 
@@ -259,7 +259,6 @@ namespace polyfem
 			const double dt = args["time"]["dt"];
 			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 		}
-		solve_data.updated_barrier_stiffness(sol);
 		solve_data.update_dt();
 
 		///////////////////////////////////////////////////////////////////////
@@ -323,6 +322,7 @@ namespace polyfem
 			std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver<NLProblem>();
 			alnl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 			nl_problem.init(sol);
+			solve_data.updated_barrier_stiffness(sol);
 			tmp_sol = sol;
 			alnl_solver->minimize(nl_problem, tmp_sol);
 			json alnl_solver_info;
@@ -359,6 +359,7 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
 		nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 		nl_problem.init(sol);
+		solve_data.updated_barrier_stiffness(sol);
 		nl_solver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
 		nl_solver->getInfo(nl_solver_info);
@@ -385,6 +386,7 @@ namespace polyfem
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
+			solve_data.updated_barrier_stiffness(sol);
 			// Disable damping for the final lagged iteration
 			// TODO: fix this lagged damping
 			// if (lag_i == friction_iterations - 1)
