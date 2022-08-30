@@ -22,7 +22,7 @@ namespace polyfem::solver
 		update_target(t);
 	}
 
-	double ALForm::value(const Eigen::VectorXd &x) const
+	double ALForm::value_unscaled(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd dist = x - target_x_;
 		const double AL_penalty = weight_ / 2 * dist.transpose() * masked_lumped_mass_ * dist;
@@ -37,12 +37,12 @@ namespace polyfem::solver
 		return AL_penalty;
 	}
 
-	void ALForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ALForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = weight_ * masked_lumped_mass_ * (x - target_x_);
 	}
 
-	void ALForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ALForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		hessian = weight_ * masked_lumped_mass_;
 	}

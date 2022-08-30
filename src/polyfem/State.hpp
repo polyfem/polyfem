@@ -69,6 +69,8 @@ namespace polyfem
 		class FrictionForm;
 		class BodyForm;
 		class ALForm;
+		class InertiaForm;
+		class ElasticForm;
 	} // namespace solver
 
 	namespace time_integrator
@@ -87,10 +89,14 @@ namespace polyfem
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ALForm> al_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;
+		std::shared_ptr<solver::InertiaForm> inertia_form;
+		std::shared_ptr<solver::ElasticForm> elastic_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
 		void set_al_weight(const double weight);
+		void updated_barrier_stiffness(const Eigen::VectorXd &x);
+		void update_dt();
 	};
 
 	/// main class that contains the polyfem solver and all its state

@@ -33,29 +33,25 @@ namespace polyfem::solver
 					const bool is_time_dependent,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
-					const int ccd_max_iterations,
-					const BodyForm &body_form,
-					const std::shared_ptr<InertiaForm> &inertia_form);
+					const int ccd_max_iterations);
 
-		/// @brief Initialize the form
-		/// @param x Current solution
-		void init(const Eigen::VectorXd &x) override;
-
+	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
-		double value(const Eigen::VectorXd &x) const override;
+		double value_unscaled(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param x Current solution
 		/// @param hessian Output Hessian of the value wrt x
-		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
+	public:
 		/// @brief Determine the maximum step size allowable between the current and next solution
 		/// @param x0 Current solution (step size = 0)
 		/// @param x1 Next solution (step size = 1)
@@ -79,24 +75,15 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
 
-		/// @brief Update time-dependent fields
-		/// @param t Current time
-		/// @param x Current solution at time t
-		void update_quantities(const double t, const Eigen::VectorXd &x) override;
-
 		/// @brief returns the current barrier stiffness
 		/// @return double the current barrier stifness
-		double barrier_stiffness() const { return barrier_stiffness_; }
-
-		/// @brief set the barrier stiffness
-		/// @param barrier_stiffness new barrier stiffness
-		void set_barrier_stiffness(const double barrier_stiffness)
-		{
-			assert(barrier_stiffness >= 0);
-			barrier_stiffness_ = barrier_stiffness;
-		}
+		double barrier_stiffness() const { return weight_; }
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
+
+		/// @brief Initialize the barrier stiffness based on the current elasticity energy
+		/// @param x Current solution
+		void initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 	private:
 		const State &state_; ///< Reference to the simulation state
@@ -104,7 +91,6 @@ namespace polyfem::solver
 		const double dhat_; ///< Barrier activation distance
 
 		const bool use_adaptive_barrier_stiffness_; ///< If true, use an adaptive barrier stiffness
-		double barrier_stiffness_;                  ///< Stiffness multiplier of the form
 		double max_barrier_stiffness_;              ///< Maximum barrier stiffness to use when using adaptive barrier stiffness
 
 		const bool is_time_dependent_; ///< Is the simulation time dependent?
@@ -122,15 +108,8 @@ namespace polyfem::solver
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
-		/// @brief Initialize the barrier stiffness based on the current elasticity energy
-		/// @param x Current solution
-		void initialize_barrier_stiffness(const Eigen::VectorXd &x);
-
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
-
-		const BodyForm &body_form_;                       ///< used for the adaptive barrier stiffness, clean me
-		const std::shared_ptr<InertiaForm> inertia_form_; ///< used for the adaptive barrier stiffness, clean me
 	};
 } // namespace polyfem::solver

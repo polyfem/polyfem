@@ -10,7 +10,7 @@ namespace polyfem::solver
 		assert(mass.size() != 0);
 	}
 
-	double InertiaForm::value(const Eigen::VectorXd &x) const
+	double InertiaForm::value_unscaled(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd tmp = x - time_integrator_.x_tilde();
 		// TODO: Fix me DBC on x tilde
@@ -19,12 +19,12 @@ namespace polyfem::solver
 		return energy;
 	}
 
-	void InertiaForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void InertiaForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = (mass_ * (x - time_integrator_.x_tilde())) / time_integrator_.acceleration_scaling();
 	}
 
-	void InertiaForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void InertiaForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		hessian = mass_ / time_integrator_.acceleration_scaling();
 	}

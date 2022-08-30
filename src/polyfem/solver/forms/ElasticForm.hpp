@@ -15,21 +15,23 @@ namespace polyfem::solver
 		/// @param state Reference to the simulation state
 		ElasticForm(const State &state);
 
+	protected:
 		/// @brief Compute the elastic potential value
 		/// @param x Current solution
 		/// @return Value of the elastic potential
-		double value(const Eigen::VectorXd &x) const override;
+		double value_unscaled(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
+	public:
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
 		/// @param x0 Current solution
 		/// @param x1 Proposed next solution

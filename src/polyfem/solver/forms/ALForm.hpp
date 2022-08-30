@@ -18,29 +18,29 @@ namespace polyfem::solver
 		/// @param t current time
 		ALForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t);
 
+	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution
 		/// @return Computed value
-		double value(const Eigen::VectorXd &x) const override;
+		double value_unscaled(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
+	public:
 		/// @brief Update time dependent quantities
 		/// @param t New time
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 		void set_enabled(const bool val) { enabled_ = val; }
-		void set_weight(const double val) { weight_ = val; }
-
 		bool enabled() const override { return enabled_; }
 
 	private:

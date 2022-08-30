@@ -13,21 +13,29 @@ namespace polyfem::solver
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}
 
-		/// @brief Compute the value of the form
+		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value
-		virtual double value(const Eigen::VectorXd &x) const = 0;
+		inline double value(const Eigen::VectorXd &x) const { return weight_ * value_unscaled(x); }
 
-		/// @brief Compute the first derivative of the value wrt x
+		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
+		inline void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		{
+			first_derivative_unscaled(x, gradv);
+			gradv *= weight_;
+		}
 
-		/// @brief Compute the second derivative of the value wrt x
+		/// @brief Compute the second derivative of the value wrt x multiplied with the weigth
 		/// @note This is not marked const because ElasticForm needs to cache the matrix assembly.
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		virtual void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) = 0;
+		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		{
+			second_derivative_unscaled(x, hessian);
+			hessian *= weight_;
+		}
 
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
 		/// @param x0 Current solution
@@ -81,8 +89,25 @@ namespace polyfem::solver
 		bool is_project_to_psd() const { return project_to_psd_; }
 
 		virtual bool enabled() const { return true; }
+		void set_weight(const double val) { weight_ = val; }
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
+		double weight_ = 1;
+
+		/// @brief Compute the value of the form
+		/// @param x Current solution
+		/// @return Computed value
+		virtual double value_unscaled(const Eigen::VectorXd &x) const = 0;
+
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		virtual void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
+
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] hessian Output Hessian of the value wrt x
+		virtual void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) = 0;
 	};
 } // namespace polyfem::solver
