@@ -127,14 +127,13 @@ namespace polyfem::utils
 			for (int i = 0; i < subject_tet.rows(); i++)
 				positions[i] = toPolyClipperVector(subject_tet.row(i));
 
-			std::vector<std::vector<int>> neighbors = {{1, 3, 2}, {2, 3, 0}, {0, 1, 3}, {0, 1, 2}};
+			std::vector<std::vector<int>> neighbors = {{1, 3, 2}, {2, 3, 0}, {0, 3, 1}, {0, 1, 2}};
 
 			initializePolyhedron(poly, positions, neighbors);
 		}
 
 		// Clip the subject tet with the clipping tet.
 		{
-
 			// Convert the clipping tet to planes.
 			const Vector3d t0 = toPolyClipperVector(clipping_tet.row(0));
 			const Vector3d t1 = toPolyClipperVector(clipping_tet.row(1));
