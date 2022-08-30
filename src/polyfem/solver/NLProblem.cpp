@@ -152,6 +152,7 @@ namespace polyfem
 			TVector full, tmp;
 			reduced_to_full(x, full);
 			TVector fgrad(full.size());
+			fgrad.setZero();
 			for (int i = 0; i < forms_.size(); ++i)
 			{
 				const auto &f = forms_[i];
@@ -178,6 +179,7 @@ namespace polyfem
 
 			THessian tmp(full_size, full_size);
 			hessian.resize(full_size, full_size);
+			hessian.setZero();
 			for (int i = 0; i < forms_.size(); ++i)
 			{
 				const auto &f = forms_[i];
