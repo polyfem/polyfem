@@ -218,7 +218,6 @@ namespace polyfem
 		Eigen::MatrixXd pressure;
 
 		Eigen::MatrixXd pre_sol;
-		std::vector<Eigen::MatrixXd> pre_sols;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero

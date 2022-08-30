@@ -78,13 +78,14 @@ namespace polyfem
 		assert(!problem->is_scalar());                                       // tensor
 		assert(!assembler.is_mixed(formulation()));
 
+		const auto &cur_sol = (pre_sol.size() == sol.size()) ? pre_sol : sol;
 		///////////////////////////////////////////////////////////////////////
 		// Check for initial intersections
 		if (is_contact_enabled())
 		{
 			POLYFEM_SCOPED_TIMER("Check for initial intersections");
 
-			Eigen::MatrixXd displaced = boundary_nodes_pos + unflatten(sol, mesh->dimension());
+			Eigen::MatrixXd displaced = boundary_nodes_pos + unflatten(cur_sol, mesh->dimension());
 
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
@@ -156,7 +157,6 @@ namespace polyfem
 		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
 		const double max_al_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
 
-		nl_problem.full_to_reduced(sol, tmp_sol);
 		assert(sol.size() == rhs.size());
 		assert(tmp_sol.size() <= rhs.size());
 
@@ -171,6 +171,8 @@ namespace polyfem
 			logger().debug("Use better initial guess...");
 			sol = pre_sol;
 		}
+
+		nl_problem.full_to_reduced(sol, tmp_sol);
 
 		const int friction_iterations = args["solver"]["contact"]["friction_iterations"];
 		assert(friction_iterations >= 0);

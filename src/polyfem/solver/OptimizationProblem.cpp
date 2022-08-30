@@ -68,13 +68,12 @@ namespace polyfem
 
 	void OptimizationProblem::solve_pde(const TVector &x)
 	{
-		if (!state.problem->is_time_dependent())
+		if (!state.problem->is_time_dependent() && opt_nonlinear_params.value("better_initial_guess", true))
 		{
 			if (optimization_name == "shape")
 			{
 				if (x_at_ls_begin.size() == x.size())
 				{
-					logger().debug("Use better initial guess...");
 					if (sol_at_ls_begin.size() == x.size())
 						state.pre_sol = sol_at_ls_begin + x_at_ls_begin - x;
 					else if (sol_at_ls_begin.size() == state.n_bases)
@@ -83,14 +82,8 @@ namespace polyfem
 			}
 			else if (sol_at_ls_begin.size() > 0)
 			{
-				logger().debug("Use better initial guess...");
 				state.pre_sol = sol_at_ls_begin;
 			}
-		}
-		else
-		{
-			if (optimization_name != "shape" && sols_at_ls_begin.size() > 0)
-				state.pre_sols = sols_at_ls_begin;
 		}
 
 		// control forward solve log level
@@ -167,22 +160,6 @@ namespace polyfem
 			gradient(x0, gradv);
 
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
-		}
-
-		bool use_better_initial_guess = opt_nonlinear_params.value("better_initial_guess", !state.problem->is_time_dependent());
-		if (use_better_initial_guess)
-		{
-			if (state.problem->is_time_dependent())
-			{
-				state.pre_sols.clear();
-				sols_at_ls_begin.clear();
-				for (const auto &cache : state.diff_cached)
-					sols_at_ls_begin.push_back(cache.u);
-			}
-			else
-			{
-				sol_at_ls_begin = state.sol;
-			}
 		}
 	}
 } // namespace polyfem
