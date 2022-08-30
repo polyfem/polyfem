@@ -2,6 +2,7 @@
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 #include <igl/list_to_matrix.h>
 
@@ -385,4 +386,63 @@ Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatri
 	lumped.makeCompressed();
 
 	return lumped;
+}
+
+void polyfem::utils::full_to_reduced_matrix(
+	const int full_size,
+	const int reduced_size,
+	const std::vector<int> &removed_vars,
+	const StiffnessMatrix &full,
+	StiffnessMatrix &reduced)
+{
+	POLYFEM_SCOPED_TIMER("full to reduced matrix");
+
+	if (reduced_size == full_size || reduced_size == full.rows())
+	{
+		assert(reduced_size == full.rows() && reduced_size == full.cols());
+		reduced = full;
+		return;
+	}
+	assert(full.rows() == full_size && full.cols() == full_size);
+
+	Eigen::VectorXi indices(full_size);
+	int index = 0;
+	size_t kk = 0;
+	for (int i = 0; i < full_size; ++i)
+	{
+		if (kk < removed_vars.size() && removed_vars[kk] == i)
+		{
+			++kk;
+			indices(i) = -1;
+		}
+		else
+		{
+			indices(i) = index++;
+		}
+	}
+	assert(index == reduced_size);
+
+	std::vector<Eigen::Triplet<double>> entries;
+	entries.reserve(full.nonZeros()); // Conservative estimate
+	for (int k = 0; k < full.outerSize(); ++k)
+	{
+		if (indices(k) < 0)
+			continue;
+
+		for (StiffnessMatrix::InnerIterator it(full, k); it; ++it)
+		{
+			assert(it.col() == k);
+			if (indices(it.row()) < 0 || indices(it.col()) < 0)
+				continue;
+
+			assert(indices(it.row()) >= 0);
+			assert(indices(it.col()) >= 0);
+
+			entries.emplace_back(indices(it.row()), indices(it.col()), it.value());
+		}
+	}
+
+	reduced.resize(reduced_size, reduced_size);
+	reduced.setFromTriplets(entries.begin(), entries.end());
+	reduced.makeCompressed();
 }
