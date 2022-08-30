@@ -4,12 +4,13 @@
 #include <polyfem/solver/ALNLProblem.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/mesh/remesh/MMGRemesh.hpp>
-#include <polyfem/utils/OBJ_IO.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/PI.h>
 
 namespace polyfem::mesh
 {
+	using namespace io;
 	using namespace utils;
 
 	void remesh(State &state, const double t0, const double dt, const int t)
@@ -21,7 +22,7 @@ namespace polyfem::mesh
 		for (int i = 0; i < F.rows(); ++i)
 			for (int j = 0; j < F.cols(); ++j)
 				F(i, j) = state.mesh->face_vertex(i, j);
-		OBJWriter::save(state.resolve_output_path("rest.obj"), V, F);
+		OBJWriter::write(state.resolve_output_path("rest.obj"), V, F);
 
 		// TODO: compute stress at the nodes
 		// Eigen::MatrixXd SF;
@@ -53,7 +54,7 @@ namespace polyfem::mesh
 			// V_new = V;
 			// F_new = F;
 
-			OBJWriter::save(state.resolve_output_path("remeshed.obj"), V_new, F_new);
+			OBJWriter::write(state.resolve_output_path("remeshed.obj"), V_new, F_new);
 		}
 		else
 		{

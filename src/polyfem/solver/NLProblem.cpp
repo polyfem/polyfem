@@ -413,7 +413,7 @@ namespace polyfem
 			bool intersecting = ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(displaced));
 
 			// if (intersecting)
-			// 	OBJWriter::save("intersection.obj", state.collision_mesh.vertices(displaced), state.collision_mesh.edges(), state.collision_mesh.faces());
+			// 	OBJWriter::write("intersection.obj", state.collision_mesh.vertices(displaced), state.collision_mesh.edges(), state.collision_mesh.faces());
 
 			return !intersecting;
 		}
