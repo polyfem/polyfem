@@ -1,15 +1,19 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace io;
 	using namespace utils;
 
 	void State::init_solve()
 	{
 		POLYFEM_SCOPED_TIMER("Setup RHS");
+
+		logger().info("Solve using {} linear solver", args["solver"]["linear"]["solver"].get<std::string>());
 
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))

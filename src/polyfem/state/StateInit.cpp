@@ -166,63 +166,44 @@ namespace polyfem
 			}
 		}
 
+		// Set valid options for enabled linear solvers
+		for (int i = 0; i < rules.size(); i++)
+		{
+			if (rules[i]["pointer"] == "/solver/linear/solver")
+			{
+				rules[i]["default"] = polysolve::LinearSolver::defaultSolver();
+				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
+			}
+			else if (rules[i]["pointer"] == "/solver/linear/precond")
+			{
+				rules[i]["default"] = polysolve::LinearSolver::defaultPrecond();
+				rules[i]["options"] = polysolve::LinearSolver::availablePrecond();
+			}
+		}
+
+		// // Fallback to default linear solver if the specified solver is invalid
+		if (fallback_solver && args_in.contains("/solver/linear/solver"_json_pointer))
+		{
+			const std::string s_json = args_in["solver"]["linear"]["solver"];
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
+				args_in["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			}
+		}
+
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
 		{
-			logger().error("invalid input json, error {}", jse.log2str());
+			logger().error("invalid input json:\n{}", jse.log2str());
 			throw std::runtime_error("Invald input json file");
 		}
-		//end of check
+		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
-		// std::cout << this->args.dump() << std::endl;
-
-		if (args_in.contains("solver") && args_in["solver"].contains("linear"))
-		{
-			if (!args_in["solver"]["linear"].contains("solver"))
-				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-			if (!args_in["solver"]["linear"].contains("precond"))
-				this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
-		}
-		else
-		{
-			this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-			this->args["solver"]["linear"]["precond"] = polysolve::LinearSolver::defaultPrecond();
-		}
-
-		//this cannot be done in the spec as it is system dependent
-		{
-			const auto ss = polysolve::LinearSolver::availableSolvers();
-			const std::string s_json = this->args["solver"]["linear"]["solver"];
-			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
-			if (solver_found == ss.end())
-			{
-				if (fallback_solver)
-				{
-					logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
-					this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-				}
-				else
-				{
-					std::stringstream sss;
-					for (const auto &s : ss)
-						sss << ", " << s;
-					log_and_throw_error(fmt::format("Solver {} is invalid, should be one of {}", s_json, sss.str()));
-				}
-			}
-
-			const auto pp = polysolve::LinearSolver::availablePrecond();
-			const std::string p_json = this->args["solver"]["linear"]["precond"];
-			const auto precond_found = std::find(pp.begin(), pp.end(), p_json);
-			if (precond_found == pp.end())
-			{
-				std::stringstream sss;
-				for (const auto &s : pp)
-					sss << ", " << s;
-				log_and_throw_error(fmt::format("Precond {} is invalid, should be one of {}", s_json, sss.str()));
-			}
-		}
 
 		// std::cout << this->args.dump() << std::endl;
 

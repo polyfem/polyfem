@@ -12,7 +12,7 @@
 
 namespace polyfem
 {
-	namespace mesh
+	namespace io
 	{
 		namespace
 		{
@@ -69,7 +69,7 @@ namespace polyfem
 			private:
 				std::string name_;
 				bool binary_;
-				///Float32/
+				/// Float32/
 				std::string numeric_type_;
 				Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> data_;
 				int n_components_;
@@ -106,5 +106,5 @@ namespace polyfem
 			void write_cells(const Eigen::MatrixXi &cells, std::ostream &os);
 			void write_cells(const std::vector<std::vector<int>> &cells, const bool is_simplex, std::ostream &os);
 		};
-	} // namespace mesh
+	} // namespace io
 } // namespace polyfem
