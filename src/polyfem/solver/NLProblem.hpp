@@ -143,10 +143,7 @@ namespace polyfem
 			int reduced_size;
 			std::vector<std::shared_ptr<Form>> forms_;
 
-#include <polyfem/utils/DisableWarnings.hpp>
-			virtual void hessian_full(const TVector &x, THessian &gradv);
-#include <polyfem/utils/EnableWarnings.hpp>
-			void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
+			virtual void hessian_full(const TVector &x, THessian &hessian);
 		};
 	} // namespace solver
 } // namespace polyfem
