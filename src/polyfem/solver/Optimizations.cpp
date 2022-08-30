@@ -859,22 +859,6 @@ namespace polyfem
 		return top_opt;
 	}
 
-	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
-	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
-		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
-
-		Eigen::VectorXd x;
-		auto top_opt = setup_topology_optimization(state, j, x);
-
-		nlsolver->minimize(*top_opt, x);
-
-		json solver_info;
-		nlsolver->getInfo(solver_info);
-		std::cout << solver_info << std::endl;
-	}
-
 	std::shared_ptr<ControlProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
