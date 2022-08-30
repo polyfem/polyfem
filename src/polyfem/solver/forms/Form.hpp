@@ -80,6 +80,8 @@ namespace polyfem::solver
 		/// @brief Get if the form's second derivative is projected to psd
 		bool is_project_to_psd() const { return project_to_psd_; }
 
+		virtual bool enabled() const { return true; }
+
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 	};

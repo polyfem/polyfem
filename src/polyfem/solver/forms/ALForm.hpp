@@ -41,6 +41,8 @@ namespace polyfem::solver
 		void set_enabled(const bool val) { enabled_ = val; }
 		void set_weight(const double val) { weight_ = val; }
 
+		bool enabled() const override { return enabled_; }
+
 	private:
 		const State &state_;                           ///< Reference to the simulation state
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler

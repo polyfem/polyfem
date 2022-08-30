@@ -3,7 +3,7 @@
 namespace polyfem::solver
 {
 	ALForm::ALForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t)
-		: state_(state), rhs_assembler_(rhs_assembler)
+		: state_(state), rhs_assembler_(rhs_assembler), enabled_(true)
 	{
 		const int ndof = state.n_bases * state.mesh->dimension();
 
@@ -24,8 +24,6 @@ namespace polyfem::solver
 
 	double ALForm::value(const Eigen::VectorXd &x) const
 	{
-		if (!enabled_)
-			return 0;
 		const Eigen::VectorXd dist = x - target_x_;
 		const double AL_penalty = weight_ / 2 * dist.transpose() * masked_lumped_mass_ * dist;
 
@@ -41,24 +39,12 @@ namespace polyfem::solver
 
 	void ALForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		if (!enabled_)
-		{
-			gradv.resizeLike(x);
-			gradv.setZero();
-		}
-		else
-			gradv = weight_ * masked_lumped_mass_ * (x - target_x_);
+		gradv = weight_ * masked_lumped_mass_ * (x - target_x_);
 	}
 
 	void ALForm::second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		if (!enabled_)
-		{
-			hessian.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
-			hessian.setZero();
-		}
-		else
-			hessian = weight_ * masked_lumped_mass_;
+		hessian = weight_ * masked_lumped_mass_;
 	}
 
 	void ALForm::update_quantities(const double t, const Eigen::VectorXd &)

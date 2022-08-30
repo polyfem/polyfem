@@ -147,11 +147,8 @@ namespace polyfem
 
 		double NLProblem::value(const TVector &x)
 		{
-			return value(x, false);
-		}
+			// TODO: removed fearure const bool only_elastic
 
-		double NLProblem::value(const TVector &x, const bool only_elastic)
-		{
 			TVector full;
 			reduced_to_full(x, full);
 
@@ -159,7 +156,7 @@ namespace polyfem
 			for (int i = 0; i < forms_.size(); ++i)
 			{
 				const auto &f = forms_[i];
-				if (only_elastic && i == 2)
+				if (!f->enabled())
 					continue;
 				fvalue += f->value(full);
 			}
@@ -168,18 +165,15 @@ namespace polyfem
 
 		void NLProblem::gradient(const TVector &x, TVector &gradv)
 		{
-			gradient(x, gradv, false);
-		}
+			// TODO: removed fearure const bool only_elastic
 
-		void NLProblem::gradient(const TVector &x, TVector &gradv, const bool only_elastic)
-		{
 			TVector full, tmp;
 			reduced_to_full(x, full);
 			TVector fgrad(full.size());
 			for (int i = 0; i < forms_.size(); ++i)
 			{
 				const auto &f = forms_[i];
-				if (only_elastic && i == 2)
+				if (!f->enabled())
 					continue;
 				f->first_derivative(full, tmp);
 				fgrad += tmp;
@@ -207,6 +201,8 @@ namespace polyfem
 			for (int i = 0; i < forms_.size(); ++i)
 			{
 				const auto &f = forms_[i];
+				if (!f->enabled())
+					continue;
 				f->second_derivative(full, tmp);
 				hessian += tmp;
 			}

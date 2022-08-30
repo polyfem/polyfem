@@ -29,10 +29,10 @@ namespace polyfem
 			void init(const TVector &displacement);
 
 			virtual double value(const TVector &x) override;
-			virtual double value(const TVector &x, const bool only_elastic);
-
 			virtual void gradient(const TVector &x, TVector &gradv) override;
-			void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
+#include <polyfem/utils/DisableWarnings.hpp>
+			virtual void hessian(const TVector &x, THessian &hessian);
+#include <polyfem/utils/EnableWarnings.hpp>
 
 			bool is_step_valid(const TVector &x0, const TVector &x1);
 			double max_step_size(const TVector &x0, const TVector &x1);
@@ -41,10 +41,6 @@ namespace polyfem
 			void line_search_end();
 			void post_step(const int iter_num, const TVector &x);
 
-#include <polyfem/utils/DisableWarnings.hpp>
-			virtual void hessian(const TVector &x, THessian &hessian);
-			virtual void hessian_full(const TVector &x, THessian &gradv);
-#include <polyfem/utils/EnableWarnings.hpp>
 			void set_project_to_psd(bool val);
 
 			template <class FullMat, class ReducedMat>
@@ -118,6 +114,7 @@ namespace polyfem
 			{
 				full_to_reduced_aux(state_, full_size, reduced_size, full, reduced);
 			}
+
 			template <class FullVector>
 			void reduced_to_full(const TVector &reduced, FullVector &full)
 			{
@@ -146,6 +143,9 @@ namespace polyfem
 			int reduced_size;
 			std::vector<std::shared_ptr<Form>> forms_;
 
+#include <polyfem/utils/DisableWarnings.hpp>
+			virtual void hessian_full(const TVector &x, THessian &gradv);
+#include <polyfem/utils/EnableWarnings.hpp>
 			void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 		};
 	} // namespace solver
