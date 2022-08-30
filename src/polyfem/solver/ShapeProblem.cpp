@@ -13,6 +13,7 @@
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 #include <filesystem>
 
@@ -201,16 +202,11 @@ namespace polyfem
 			{
 				volume_params = param;
 				has_volume_constraint = true;
-				break;
+				j_volume = CompositeFunctional::create("Volume");
+				auto &func_volume = *dynamic_cast<VolumeFunctional *>(j_volume.get());
+				func_volume.set_max_volume(volume_params["soft_bound"][1]);
+				func_volume.set_min_volume(volume_params["soft_bound"][0]);
 			}
-		}
-
-		if (has_volume_constraint)
-		{
-			j_volume = CompositeFunctional::create("Volume");
-			auto &func_volume = *dynamic_cast<VolumeFunctional *>(j_volume.get());
-			func_volume.set_max_volume(volume_params["soft_bound"][1]);
-			func_volume.set_min_volume(volume_params["soft_bound"][0]);
 		}
 
 		// mesh topology
@@ -278,6 +274,7 @@ namespace polyfem
 		}
 
 		build_fixed_nodes();
+		build_tied_nodes();
 
 		// constraints on optimization
 		x_to_param = [this](const TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
@@ -285,6 +282,10 @@ namespace polyfem
 			for (int i = 0; i < V.rows(); i++)
 				for (int d = 0; d < this->dim; d++)
 					V(i, d) = x(i * this->dim + d);
+
+			for (const auto &pair : this->tied_nodes)
+				for (int d = 0; d < this->dim; d++)
+					V(pair[1], d) = V(pair[0], d);
 		};
 		param_to_x = [this](TVector &x, const Eigen::MatrixXd &V) {
 			x.setZero(V.rows() * this->dim, 1);
@@ -297,6 +298,12 @@ namespace polyfem
 			for (int b : this->fixed_nodes)
 				for (int d = 0; d < this->dim; d++)
 					grad_x(b * this->dim + d) = 0;
+			
+			for (const auto &pair : this->tied_nodes)
+			{
+				grad_x(seqN(pair[0]*this->dim,this->dim)) += grad_x(seqN(pair[1]*this->dim,this->dim));
+				grad_x(seqN(pair[1]*this->dim,this->dim)).setZero();
+			}
 		};
 	}
 
@@ -590,7 +597,8 @@ namespace polyfem
 		state.descent_direction = descent_direction;
 
 		x_at_ls_begin = x0;
-		sol_at_ls_begin = state.sol;
+		if (!state.problem->is_time_dependent())
+			sol_at_ls_begin = state.sol;
 
 		if (!has_collision)
 			return;
@@ -866,6 +874,7 @@ namespace polyfem
 		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
 
 		build_fixed_nodes();
+		build_tied_nodes();
 
 		cur_grad.resize(0);
 		cur_val = std::nan("");
@@ -886,6 +895,86 @@ namespace polyfem
 		}
 
 		return true;
+	}
+
+	void ShapeProblem::build_tied_nodes()
+	{
+		const double correspondence_threshold = shape_params.value("correspondence_threshold", 1e-8);
+		const double displace_dist = shape_params.value("displace_dist", 1e-4);
+
+		tied_nodes.clear();
+		tied_nodes_mask.assign(V_rest.rows(), false);
+		for (int i = 0; i < V_rest.rows(); i++)
+		{
+			for (int j = 0; j < i; j++)
+			{
+				if ((V_rest.row(i) - V_rest.row(j)).norm() < correspondence_threshold)
+				{
+					tied_nodes.push_back(std::array<int, 2>({{i, j}}));
+					tied_nodes_mask[i] = true;
+					tied_nodes_mask[j] = true;
+					logger().trace("Tie {} and {}", i, j);
+					break;
+				}
+			}
+		}
+
+		if (tied_nodes.size() == 0)
+			return;
+
+		assembler::ElementAssemblyValues vals;
+		Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
+		Eigen::VectorXi global_primitive_ids;
+		Eigen::MatrixXd points, normals;
+		Eigen::VectorXd weights;
+		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		
+		Eigen::VectorXd vertex_perturbation;
+		vertex_perturbation.setZero(state.n_geom_bases * dim, 1);
+
+		Eigen::VectorXi n_shared_edges;
+		n_shared_edges.setZero(state.n_geom_bases);
+		for (const auto &lb : state.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, 1, *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
+
+			if (!has_samples)
+				continue;
+
+			const ElementBases &gbs = gbases[e];
+
+			vals.compute(e, state.mesh->is_volume(), points, gbs, gbs);
+
+			const int n_quad_pts = weights.size() / lb.size();
+			for (int n = 0; n < vals.jac_it.size(); ++n)
+			{
+				normals.row(n) = normals.row(n) * vals.jac_it[n];
+				normals.row(n).normalize();
+			}
+
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *state.mesh);
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
+					assert(v.global.size() == 1);
+
+					if (tied_nodes_mask[v.global[0].index])
+					{
+						vertex_perturbation(seqN(v.global[0].index * dim, dim)) -= normals(n_quad_pts * i, seqN(0, dim)).transpose();
+						n_shared_edges(v.global[0].index) += 1;
+					}
+				}
+			}
+		}
+		for (int i = 0; i < n_shared_edges.size(); i++)
+			if (n_shared_edges(i) > 1)
+				vertex_perturbation(seqN(i * dim, dim)) *= displace_dist / vertex_perturbation(seqN(i * dim, dim)).norm();
+		state.pre_sol = state.down_sampling_mat.transpose() * vertex_perturbation;
 	}
 
 	void ShapeProblem::build_fixed_nodes()
@@ -1007,8 +1096,6 @@ namespace polyfem
 		// fix contact area, need threshold
 		if (shape_params.contains("fix_contact_surface") && shape_params["fix_contact_surface"].get<bool>())
 		{
-			// if (state.n_geom_bases != state.n_bases)
-			// 	throw std::runtime_error("Higer order basis not supported, need a separate collision mesh for gbases!");
 			const double threshold = shape_params["fix_contact_surface_tol"].get<double>();
 			logger().info("Fix position of boundary nodes in contact.");
 

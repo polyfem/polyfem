@@ -183,6 +183,7 @@ namespace polyfem
 
 		bool remesh(TVector &x);
 		void build_fixed_nodes();
+		void build_tied_nodes();
 
 		std::function<void(const TVector &x, const Eigen::MatrixXd &position, Eigen::MatrixXd &V)> x_to_param;
 		std::function<void(TVector &x, const Eigen::MatrixXd &V)> param_to_x;
@@ -193,27 +194,31 @@ namespace polyfem
 		const json &get_shape_params() { return shape_params; }
 
 	private:
+		Eigen::MatrixXd V_rest;
 		Eigen::MatrixXi elements;
 
 		std::set<int> fixed_nodes;
 
+		std::vector<bool> tied_nodes_mask;
+		std::vector<std::array<int, 2>> tied_nodes;
+
 		bool mesh_flipped = false;
 
+		json shape_params, slim_params;
+
+		double target_weight = 1;
+
+		// volume constraints
 		bool has_volume_constraint;
 		json volume_params;
 		std::shared_ptr<CompositeFunctional> j_volume;
 
+		// boundary smoothing
 		bool has_boundary_smoothing;
 		json boundary_smoothing_params;
 		boundary_smoothing boundary_smoother;
 
-		json shape_params, slim_params;
-
-		Eigen::MatrixXd V_rest;
-
-		double target_weight = 1;
-
-		// only used for problems with contact
+		// below only used for problems with contact
 
 		bool has_collision;
 
