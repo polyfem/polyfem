@@ -12,8 +12,8 @@
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/OBJ_IO.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
@@ -39,6 +39,7 @@ namespace ipc
 namespace polyfem
 {
 	using namespace solver;
+	using namespace io;
 	using namespace utils;
 
 	void SolveData::set_al_weight(const double weight)
@@ -120,7 +121,7 @@ namespace polyfem
 
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
-				OBJWriter::save(
+				OBJWriter::write(
 					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
 					collision_mesh.edges(), collision_mesh.faces());
 				logger().error("Unable to solve, initial solution has intersections!");
@@ -254,8 +255,8 @@ namespace polyfem
 		// TODO: fix me lagged damping
 		// if (friction_iterations <= 1)
 		// {
-		// 	nl_problem.lagged_damping_weight() = 0;
-		// 	alnl_problem.lagged_damping_weight() = 0;
+		// 	nl_problem.lagged_regularization_weight() = 0;
+		// 	alnl_problem.lagged_regularization_weight() = 0;
 		// }
 
 		// Save the subsolve sequence for debugging
@@ -328,7 +329,7 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 
 		// TODO: fix this lagged damping
-		// nl_problem.lagged_damping_weight() = 0;
+		// nl_problem.lagged_regularization_weight() = 0;
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
@@ -343,7 +344,7 @@ namespace polyfem
 			// Disable damping for the final lagged iteration
 			// TODO: fix this lagged damping
 			// if (lag_i == friction_iterations - 1)
-			// 	nl_problem.lagged_damping_weight() = 0;
+			// 	nl_problem.lagged_regularization_weight() = 0;
 			nl_solver->minimize(nl_problem, tmp_sol);
 
 			nl_solver->getInfo(nl_solver_info);

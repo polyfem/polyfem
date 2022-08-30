@@ -13,7 +13,6 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v2.4.2
 
@@ -33,11 +32,17 @@ jobs:
       - name: Generate Doxygen Documentation
         run: doxygen Doxyfile
 
-      - name: Generate JSON Spec Documentation
-        run: |
-          git clone https://github.com/geometryprocessing/json-spec-engine.git
-          pip install mako
-          python ./json-spec-engine/docs/spec2html.py -i ./input-spec.json -o ./docs/html/json-spec.html
+      - name: Launch JSON Spec Documentation Runner
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'polyfem',
+              repo: 'polyfem.github.io',
+              workflow_id: 'build.yml',
+              ref: 'docs'
+            })
 
       - name: Create .nojekyll
         run: touch docs/html/.nojekyll

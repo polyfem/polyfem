@@ -9,7 +9,7 @@
 
 #include <polyfem/utils/BoundarySampler.hpp>
 
-#include <polyfem/mesh/VTUWriter.hpp>
+#include <polyfem/io/VTUWriter.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
@@ -39,6 +39,7 @@ extern "C" size_t getPeakRSS();
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace io;
 	using namespace mesh;
 	using namespace solver;
 	using namespace utils;

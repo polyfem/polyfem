@@ -2,8 +2,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/utils/MshReader.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Selection.hpp>
