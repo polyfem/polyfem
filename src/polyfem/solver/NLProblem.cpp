@@ -149,121 +149,116 @@ namespace polyfem
 
 		void NLProblem::gradient(const TVector &x, TVector &gradv)
 		{
-			gradient(x, gradv, false);
-		}
-
-		TVector full, tmp;
-		reduced_to_full(x, full);
-		TVector fgrad(full.size());
-		for (int i = 0; i < forms_.size(); ++i)
-		{
-			const auto &f = forms_[i];
-			if (!f->enabled())
-				continue;
-			f->first_derivative(full, tmp);
-			fgrad += tmp;
-		}
-
-		full_to_reduced(fgrad, gradv);
-	}
-
-	void NLProblem::hessian(const TVector &x, THessian &hessian)
-	{
-		THessian full_hessian;
-		hessian_full(x, full_hessian);
-		full_hessian_to_reduced_hessian(full_hessian, hessian);
-	}
-
-	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
-	{
-		// scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
-
-		TVector full;
-		reduced_to_full(x, full);
-
-		THessian tmp(full_size, full_size);
-		hessian.resize(full_size, full_size);
-		for (int i = 0; i < forms_.size(); ++i)
-		{
-			const auto &f = forms_[i];
-			if (!f->enabled())
-				continue;
-			f->second_derivative(full, tmp);
-			hessian += tmp;
-		}
-		assert(hessian.rows() == full_size);
-		assert(hessian.cols() == full_size);
-	}
-
-	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
-	{
-		POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
-
-		if (reduced_size == full_size || reduced_size == full.rows())
-		{
-			assert(reduced_size == full.rows() && reduced_size == full.cols());
-			reduced = full;
-			return;
-		}
-
-		Eigen::VectorXi indices(full_size);
-		int index = 0;
-		size_t kk = 0;
-		for (int i = 0; i < full_size; ++i)
-		{
-			if (kk < state_.boundary_nodes.size() && state_.boundary_nodes[kk] == i)
+			TVector full, tmp;
+			reduced_to_full(x, full);
+			TVector fgrad(full.size());
+			for (int i = 0; i < forms_.size(); ++i)
 			{
-				++kk;
-				indices(i) = -1;
+				const auto &f = forms_[i];
+				if (!f->enabled())
+					continue;
+				f->first_derivative(full, tmp);
+				fgrad += tmp;
 			}
-			else
-			{
-				indices(i) = index++;
-			}
+
+			full_to_reduced(fgrad, gradv);
 		}
-		assert(index == reduced_size);
 
-		std::vector<Eigen::Triplet<double>> entries;
-		entries.reserve(full.nonZeros()); // Conservative estimate
-		for (int k = 0; k < full.outerSize(); ++k)
+		void NLProblem::hessian(const TVector &x, THessian &hessian)
 		{
-			if (indices(k) < 0)
-				continue;
+			THessian full_hessian;
+			hessian_full(x, full_hessian);
+			full_hessian_to_reduced_hessian(full_hessian, hessian);
+		}
 
-			for (THessian::InnerIterator it(full, k); it; ++it)
+		void NLProblem::hessian_full(const TVector &x, THessian &hessian)
+		{
+			TVector full;
+			reduced_to_full(x, full);
+
+			THessian tmp(full_size, full_size);
+			hessian.resize(full_size, full_size);
+			for (int i = 0; i < forms_.size(); ++i)
 			{
-				assert(it.col() == k);
-				if (indices(it.row()) < 0 || indices(it.col()) < 0)
+				const auto &f = forms_[i];
+				if (!f->enabled())
+					continue;
+				f->second_derivative(full, tmp);
+				hessian += tmp;
+			}
+			assert(hessian.rows() == full_size);
+			assert(hessian.cols() == full_size);
+		}
+
+		void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
+		{
+			POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
+
+			if (reduced_size == full_size || reduced_size == full.rows())
+			{
+				assert(reduced_size == full.rows() && reduced_size == full.cols());
+				reduced = full;
+				return;
+			}
+
+			Eigen::VectorXi indices(full_size);
+			int index = 0;
+			size_t kk = 0;
+			for (int i = 0; i < full_size; ++i)
+			{
+				if (kk < state_.boundary_nodes.size() && state_.boundary_nodes[kk] == i)
+				{
+					++kk;
+					indices(i) = -1;
+				}
+				else
+				{
+					indices(i) = index++;
+				}
+			}
+			assert(index == reduced_size);
+
+			std::vector<Eigen::Triplet<double>> entries;
+			entries.reserve(full.nonZeros()); // Conservative estimate
+			for (int k = 0; k < full.outerSize(); ++k)
+			{
+				if (indices(k) < 0)
 					continue;
 
-				assert(indices(it.row()) >= 0);
-				assert(indices(it.col()) >= 0);
+				for (THessian::InnerIterator it(full, k); it; ++it)
+				{
+					assert(it.col() == k);
+					if (indices(it.row()) < 0 || indices(it.col()) < 0)
+						continue;
 
-				entries.emplace_back(indices(it.row()), indices(it.col()), it.value());
+					assert(indices(it.row()) >= 0);
+					assert(indices(it.col()) >= 0);
+
+					entries.emplace_back(indices(it.row()), indices(it.col()), it.value());
+				}
 			}
+
+			reduced.resize(reduced_size, reduced_size);
+			reduced.setFromTriplets(entries.begin(), entries.end());
+			reduced.makeCompressed();
 		}
 
-		reduced.resize(reduced_size, reduced_size);
-		reduced.setFromTriplets(entries.begin(), entries.end());
-		reduced.makeCompressed();
-	}
+		void NLProblem::solution_changed(const TVector &newX)
+		{
+			Eigen::MatrixXd newFull;
+			reduced_to_full(newX, newFull);
 
-	void NLProblem::solution_changed(const TVector &newX)
-	{
-		Eigen::MatrixXd newFull;
-		reduced_to_full(newX, newFull);
+			for (auto &f : forms_)
+				f->solution_changed(newFull);
+		}
 
-		for (auto &f : forms_)
-			f->solution_changed(newFull);
-	}
+		void NLProblem::post_step(const int iter_num, const TVector &x)
+		{
+			TVector full;
+			reduced_to_full(x, full);
 
-	void NLProblem::post_step(const int iter_num, const TVector &x)
-	{
-		TVector full;
-		reduced_to_full(x, full);
-
-		for (auto &f : forms_)
-			f->post_step(iter_num, full);
-	}
-} // namespace solver
+			for (auto &f : forms_)
+				f->post_step(iter_num, full);
+		}
+	} // namespace solver
 } // namespace polyfem
