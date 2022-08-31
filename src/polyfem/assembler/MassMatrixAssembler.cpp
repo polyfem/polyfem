@@ -1,7 +1,9 @@
 #include "MassMatrixAssembler.hpp"
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -163,69 +165,20 @@ namespace polyfem::assembler
 
 	namespace
 	{
-		/// Compute barycentric coordinates (u, v, w) for point p with respect to triangle (a, b, c).
-		Eigen::Vector3d barycentric_coordinates(
-			const Eigen::Vector2d &p,
-			const Eigen::Vector2d &a,
-			const Eigen::Vector2d &b,
-			const Eigen::Vector2d &c)
-		{
-			Eigen::Matrix3d A;
-			A << a[0], b[0], c[0],
-				a[1], b[1], c[1],
-				1.0, 1.0, 1.0;
-			const Eigen::Vector3d rhs(p[0], p[1], 1.0);
-			// TODO: Can we use better than LU?
-			const Eigen::Vector3d uvw = A.partialPivLu().solve(rhs);
-			assert((A * uvw - rhs).norm() / rhs.norm() < 1e-12);
-			return uvw;
-		}
+		// TODO: use existing PolyFEM code instead of hard coding these gmappings
 
-		std::vector<Eigen::MatrixXd> triangle_fan(const Eigen::MatrixXd &convex_polygon)
-		{
-			assert(convex_polygon.rows() >= 3);
-			std::vector<Eigen::MatrixXd> triangles;
-			for (int i = 1; i < convex_polygon.rows() - 1; ++i)
-			{
-				triangles.emplace_back(3, convex_polygon.cols());
-				triangles.back().row(0) = convex_polygon.row(0);
-				triangles.back().row(1) = convex_polygon.row(i);
-				triangles.back().row(2) = convex_polygon.row(i + 1);
-			}
-			return triangles;
-		}
-
-		double triangle_area(const Eigen::MatrixXd &triangle)
-		{
-			const auto &a = triangle.row(0);
-			const auto &b = triangle.row(1);
-			const auto &c = triangle.row(2);
-			return 0.5 * ((b.x() - a.x()) * (c.y() - a.y()) - (c.x() - a.x()) * (b.y() - a.y()));
-		}
-
-		Eigen::Vector2d P1_2D_gmapping(
+		VectorNd P1_2D_gmapping(
 			const Eigen::MatrixXd &nodes, const Eigen::Vector2d &uv)
 		{
 			assert(nodes.rows() == 3);
 			return (1 - uv[0] - uv[1]) * nodes.row(0) + uv[0] * nodes.row(1) + uv[1] * nodes.row(2);
 		}
 
-		Eigen::MatrixXd triangle_to_clockwise_order(const Eigen::MatrixXd &T)
+		VectorNd P1_3D_gmapping(
+			const Eigen::MatrixXd &nodes, const Eigen::Vector3d &uvw)
 		{
-			assert(T.rows() == 3 && T.cols() == 2);
-			Eigen::Matrix3d A;
-			A << T(0, 0), T(0, 1), 1,
-				T(1, 0), T(1, 1), 1,
-				T(2, 0), T(2, 1), 1;
-			if (A.determinant() <= 0)
-				return T;
-
-			Eigen::MatrixXd T_clockwise(T.rows(), T.cols());
-			T_clockwise.row(0) = T.row(2);
-			T_clockwise.row(1) = T.row(1);
-			T_clockwise.row(2) = T.row(0);
-
-			return T_clockwise;
+			assert(nodes.rows() == 3);
+			return (1 - uvw[0] - uvw[1] - uvw[2]) * nodes.row(0) + uvw[0] * nodes.row(1) + uvw[1] * nodes.row(2) + uvw[2] * nodes.row(3);
 		}
 	}; // namespace
 
@@ -253,6 +206,12 @@ namespace polyfem::assembler
 		// const int n_from_bases = int(from_bases.size());
 		// const int n_to_bases = int(to_bases.size());
 
+		Quadrature quadrature;
+		if (is_volume)
+			TetQuadrature().get_quadrature(2, quadrature);
+		else
+			TriQuadrature().get_quadrature(2, quadrature);
+
 		// TODO: Use a AABB tree to find all intersecting elements then loop over only those pairs
 
 		// maybe_parallel_for(n_to_basis, [&](int start, int end, int thread_id) {
@@ -260,68 +219,49 @@ namespace polyfem::assembler
 
 		std::vector<Eigen::Triplet<double>> triplets;
 
-		Quadrature quadrature;
-		TriQuadrature().get_quadrature(2, quadrature);
-
-		// static int i = 0;
-		// std::vector<Eigen::Vector2d> vertices;
-
 		for (const ElementBases &to_element : to_bases)
 		{
 			const Eigen::MatrixXd to_nodes = to_element.nodes();
-			assert(to_nodes.rows() == 3);
-			const Eigen::MatrixXd to_nodes_clockwise = triangle_to_clockwise_order(to_nodes);
 
 			for (const ElementBases &from_element : from_bases)
 			{
 				const Eigen::MatrixXd from_nodes = from_element.nodes();
-				assert(from_nodes.rows() == 3);
-				const Eigen::MatrixXd from_nodes_clockwise = triangle_to_clockwise_order(from_nodes);
 
-				const std::vector<Eigen::MatrixXd> overlaps = PolygonClipping::clip(to_nodes_clockwise, from_nodes_clockwise);
-				assert(overlaps.size() <= 1);
-				if (overlaps.empty())
-					continue;
-				const Eigen::MatrixXd &overlap = overlaps[0];
+				// Compute the overlap between the two elements as a list of simplices.
+				const std::vector<Eigen::MatrixXd> overlap =
+					is_volume
+						? TetrahedronClipping::clip(to_nodes, from_nodes)
+						: TriangleClipping::clip(to_nodes, from_nodes);
 
-				if (overlap.size() < 3)
-					continue;
-
-				const std::vector<Eigen::MatrixXd> triangles = triangle_fan(overlap);
-
-				for (const Eigen::MatrixXd &triangle : triangles)
+				for (const Eigen::MatrixXd &simplex : overlap)
 				{
-					const double area = abs(triangle_area(triangle));
-					if (abs(area) == 0.0)
+					const double volume = abs(is_volume ? tetrahedron_volume(simplex) : triangle_area(simplex));
+					if (abs(volume) == 0.0)
 						continue;
-					assert(area > 0);
-					// vertices.emplace_back(triangle.row(0));
-					// vertices.emplace_back(triangle.row(1));
-					// vertices.emplace_back(triangle.row(2));
+					assert(volume > 0);
 
 					for (int qi = 0; qi < quadrature.size(); qi++)
 					{
-						// NOTE: the 2 is neccesary here because the mass matrix assembly use the
-						//       determinant of the Jacobian (i.e., area of the parallelogram)
-						const double w = 2 * area * quadrature.weights[qi];
-						const Eigen::Vector2d q = quadrature.points.row(qi);
+						// NOTE: the 2/6 is neccesary here because the mass matrix assembly use the
+						//       determinant of the Jacobian (i.e., area of the parallelogram/volume of the hexahedron)
+						const double w = (is_volume ? 6 : 2) * volume * quadrature.weights[qi];
+						const VectorNd q = quadrature.points.row(qi);
 
-						const Eigen::Vector2d p = P1_2D_gmapping(triangle, q);
+						const VectorNd p = is_volume ? P1_3D_gmapping(simplex, q) : P1_2D_gmapping(simplex, q);
 
-						const Eigen::RowVector2d from_uv =
-							barycentric_coordinates(p, from_nodes.row(0), from_nodes.row(1), from_nodes.row(2)).tail<2>().transpose();
-						const Eigen::RowVector2d to_uv =
-							barycentric_coordinates(p, to_nodes.row(0), to_nodes.row(1), to_nodes.row(2)).tail<2>().transpose();
+						// NOTE: Row vector because evaluate_bases expects a rows of a matrix.
+						const RowVectorNd from_bc = barycentric_coordinates(p, from_nodes).tail(size).transpose();
+						const RowVectorNd to_bc = barycentric_coordinates(p, to_nodes).tail(size).transpose();
 
 						std::vector<AssemblyValues> from_phi, to_phi;
-						from_element.evaluate_bases(from_uv, from_phi);
-						to_element.evaluate_bases(to_uv, to_phi);
+						from_element.evaluate_bases(from_bc, from_phi);
+						to_element.evaluate_bases(to_bc, to_phi);
 
 #ifndef NDEBUG
 						Eigen::MatrixXd debug;
-						from_element.eval_geom_mapping(from_uv, debug);
+						from_element.eval_geom_mapping(from_bc, debug);
 						assert((debug.transpose() - p).norm() < 1e-15);
-						to_element.eval_geom_mapping(to_uv, debug);
+						to_element.eval_geom_mapping(to_bc, debug);
 						assert((debug.transpose() - p).norm() < 1e-15);
 #endif
 
@@ -347,19 +287,6 @@ namespace polyfem::assembler
 				}
 			}
 		}
-
-		// open file for writing obj
-		// std::ofstream obj_file;
-		// obj_file.open(fmt::format("debug_{:03}.obj", i++));
-		// for (const auto &vertex : vertices)
-		// {
-		// 	obj_file << fmt::format("v {:g} {:g} 0\n", vertex(0), vertex(1));
-		// }
-		// for (int i = 0; i < vertices.size(); i += 3)
-		// {
-		// 	obj_file << fmt::format("f {} {} {}\n", i + 1, i + 2, i + 3);
-		// }
-		// obj_file.close();
 
 		mass.setFromTriplets(triplets.begin(), triplets.end());
 		mass.makeCompressed();

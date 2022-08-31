@@ -5,18 +5,10 @@
 #endif
 #include <polyclipper3d.hh>
 
-#include <ipc/utils/eigen_ext.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 
 namespace polyfem::utils
 {
-	namespace
-	{
-		double tet_signed_volume(const Eigen::MatrixXd &T)
-		{
-			return ipc::cross(T.row(1) - T.row(0), T.row(2) - T.row(0)).dot(T.row(3) - T.row(0));
-		}
-	} // namespace
-
 	std::vector<Eigen::MatrixXd> PolygonClipping::clip(
 		const Eigen::MatrixXd &subject_polygon,
 		const Eigen::MatrixXd &clipping_polygon)
@@ -110,6 +102,22 @@ namespace polyfem::utils
 #endif
 	}
 
+	std::vector<Eigen::MatrixXd> TriangleClipping::clip(
+		const Eigen::MatrixXd &subject_triangle,
+		const Eigen::MatrixXd &clipping_triangle)
+	{
+		const std::vector<Eigen::MatrixXd> overlap =
+			PolygonClipping::clip(
+				triangle_to_clockwise_order(subject_triangle),
+				triangle_to_clockwise_order(clipping_triangle));
+		assert(overlap.size() <= 1);
+
+		if (overlap.empty() || overlap[0].rows() < 3)
+			return std::vector<Eigen::MatrixXd>();
+
+		return triangle_fan(overlap[0]);
+	}
+
 	std::vector<Eigen::MatrixXd> TetrahedronClipping::clip(
 		const Eigen::MatrixXd &subject_tet,
 		const Eigen::MatrixXd &clipping_tet)
@@ -117,8 +125,8 @@ namespace polyfem::utils
 		using namespace PolyClipper;
 		assert(subject_tet.rows() == 4 && subject_tet.cols() == 3);
 		assert(clipping_tet.rows() == 4 && clipping_tet.cols() == 3);
-		assert(tet_signed_volume(subject_tet) > 0);
-		assert(tet_signed_volume(clipping_tet) > 0);
+		assert(tetrahedron_volume(subject_tet) > 0);
+		assert(tetrahedron_volume(clipping_tet) > 0);
 
 		// Convert the subject tet to PolyClipper format.
 		std::vector<Vertex3d<>> poly;
@@ -156,7 +164,7 @@ namespace polyfem::utils
 		{
 			for (int j = 0; j < 4; j++)
 				result[i].row(j) = fromPolyClipperVector(poly[T[i][j]].position);
-			assert(tet_signed_volume(result[i]) > 0);
+			assert(tetrahedron_volume(result[i]) > 0);
 		}
 
 		return result;

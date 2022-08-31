@@ -1,19 +1,12 @@
 #include <catch2/catch.hpp>
 
 #include <polyfem/utils/ClipperUtils.hpp>
-
-#include <ipc/utils/eigen_ext.hpp>
-
-namespace
-{
-	double tet_signed_volume(const Eigen::MatrixXd &T)
-	{
-		return ipc::cross(T.row(1) - T.row(0), T.row(2) - T.row(0)).dot(T.row(3) - T.row(0));
-	}
-} // namespace
+#include <polyfem/utils/GeometryUtils.hpp>
 
 TEST_CASE("Tetrahedra clipping", "[clipping]")
 {
+	using namespace polyfem::utils;
+
 	const double dz = GENERATE(take(100, random(-1.0, 1.0)));
 
 	Eigen::MatrixXd subject_tet(4, 3);
@@ -25,7 +18,7 @@ TEST_CASE("Tetrahedra clipping", "[clipping]")
 	Eigen::MatrixXd clipping_tet = subject_tet;
 	clipping_tet.col(2).array() += dz;
 
-	std::vector<Eigen::MatrixXd> r = polyfem::utils::TetrahedronClipping::clip(subject_tet, clipping_tet);
+	std::vector<Eigen::MatrixXd> r = TetrahedronClipping::clip(subject_tet, clipping_tet);
 
 	Eigen::MatrixXd expected_tet(4, 3);
 	expected_tet = (1 - abs(dz)) * subject_tet;
@@ -38,7 +31,7 @@ TEST_CASE("Tetrahedra clipping", "[clipping]")
 	CHECK(r[0].colwise().minCoeff().isApprox(expected_tet.colwise().minCoeff()));
 	CHECK(r[0].colwise().maxCoeff().isApprox(expected_tet.colwise().maxCoeff()));
 	CHECK(r[0].colwise().sum().isApprox(expected_tet.colwise().sum()));
-	CHECK(tet_signed_volume(r[0]) == Approx(tet_signed_volume(expected_tet)));
+	CHECK(tetrahedron_volume(r[0]) == Approx(tetrahedron_volume(expected_tet)));
 	// Node order might be different
 	for (int i = 0; i < 4; i++)
 	{

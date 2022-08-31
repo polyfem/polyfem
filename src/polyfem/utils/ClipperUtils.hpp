@@ -37,6 +37,21 @@ namespace polyfem::utils
 		static Eigen::Vector2d fromPolyClipperVector(const PolyClipper::Vector2d &v);
 	};
 
+	class TriangleClipping
+	{
+	public:
+		TriangleClipping() = delete;
+
+		/// @brief Clip a triangle using triangle.
+		/// @param[in] subject_triangle Triangle to clip.
+		/// @param[in] clipping_triangle Triangle to clip with.
+		/// @return Clipped polygon(s).
+		/// @return Triangularization of the clipped (convex) polygon. Each entry is a matrix of size 3×2 containing the three vertices of each triangle.
+		static std::vector<Eigen::MatrixXd> clip(
+			const Eigen::MatrixXd &subject_triangle,
+			const Eigen::MatrixXd &clipping_triangle);
+	};
+
 	class TetrahedronClipping
 	{
 	public:
