@@ -7,6 +7,7 @@
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/PI.h>
+#include <igl/boundary_facets.h>
 
 namespace polyfem::mesh
 {
@@ -18,11 +19,20 @@ namespace polyfem::mesh
 		Eigen::MatrixXd V(state.mesh->n_vertices(), state.mesh->dimension());
 		for (int i = 0; i < state.mesh->n_vertices(); ++i)
 			V.row(i) = state.mesh->point(i);
-		Eigen::MatrixXi F(state.mesh->n_faces(), state.mesh->dimension() + 1);
+
+		Eigen::MatrixXi F(state.mesh->n_elements(), state.mesh->dimension() + 1);
 		for (int i = 0; i < F.rows(); ++i)
 			for (int j = 0; j < F.cols(); ++j)
-				F(i, j) = state.mesh->face_vertex(i, j);
-		OBJWriter::write(state.resolve_output_path("rest.obj"), V, F);
+				F(i, j) = state.mesh->element_vertex(i, j);
+
+		if (!state.mesh->is_volume())
+			OBJWriter::write(state.resolve_output_path("rest.obj"), V, F);
+		else
+		{
+			Eigen::MatrixXi BF;
+			igl::boundary_facets(F, BF);
+			OBJWriter::write(state.resolve_output_path("rest.obj"), V, BF);
+		}
 
 		// TODO: compute stress at the nodes
 		// Eigen::MatrixXd SF;
@@ -32,7 +42,7 @@ namespace polyfem::mesh
 
 		// TODO: What measure to use for remeshing?
 		// SV.normalize();
-		SV.setOnes(state.mesh->n_vertices(), 1);
+		SV.setOnes(V.rows(), 1);
 		SV *= 0.1 / t;
 
 		MmgOptions mmg_options;
@@ -58,8 +68,9 @@ namespace polyfem::mesh
 		}
 		else
 		{
-			Eigen::MatrixXi _;
-			remesh_adaptive_3d(V, F, SV, V_new, _, F_new);
+			Eigen::MatrixXi BF_new;
+			remesh_adaptive_3d(V, F, SV, V_new, BF_new, F_new);
+			OBJWriter::write(state.resolve_output_path("remeshed.obj"), V_new, BF_new);
 		}
 
 		// --------------------------------------------------------------------

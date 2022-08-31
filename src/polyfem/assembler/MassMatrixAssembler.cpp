@@ -7,6 +7,8 @@
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <BVH.hpp>
+
 namespace polyfem::assembler
 {
 	using namespace polyfem::basis;
@@ -170,14 +172,14 @@ namespace polyfem::assembler
 		VectorNd P1_2D_gmapping(
 			const Eigen::MatrixXd &nodes, const Eigen::Vector2d &uv)
 		{
-			assert(nodes.rows() == 3);
+			assert(nodes.rows() == 3 && nodes.cols() == 2);
 			return (1 - uv[0] - uv[1]) * nodes.row(0) + uv[0] * nodes.row(1) + uv[1] * nodes.row(2);
 		}
 
 		VectorNd P1_3D_gmapping(
 			const Eigen::MatrixXd &nodes, const Eigen::Vector3d &uvw)
 		{
-			assert(nodes.rows() == 3);
+			assert(nodes.rows() == 4 && nodes.cols() == 3);
 			return (1 - uvw[0] - uvw[1] - uvw[2]) * nodes.row(0) + uvw[0] * nodes.row(1) + uvw[1] * nodes.row(2) + uvw[2] * nodes.row(3);
 		}
 	}; // namespace
@@ -213,6 +215,18 @@ namespace polyfem::assembler
 			TriQuadrature().get_quadrature(2, quadrature);
 
 		// TODO: Use a AABB tree to find all intersecting elements then loop over only those pairs
+		std::vector<std::array<Eigen::Vector3d, 2>> boxes(from_bases.size());
+		for (int i = 0; i < from_bases.size(); i++)
+		{
+			const Eigen::MatrixXd from_nodes = from_bases[i].nodes();
+			boxes[i][0].setZero();
+			boxes[i][0].head(size) = from_nodes.colwise().minCoeff();
+			boxes[i][1].setZero();
+			boxes[i][1].head(size) = from_nodes.colwise().maxCoeff();
+		}
+
+		BVH::BVH bvh;
+		bvh.init(boxes);
 
 		// maybe_parallel_for(n_to_basis, [&](int start, int end, int thread_id) {
 		// LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
@@ -223,8 +237,19 @@ namespace polyfem::assembler
 		{
 			const Eigen::MatrixXd to_nodes = to_element.nodes();
 
-			for (const ElementBases &from_element : from_bases)
+			std::vector<unsigned int> candidates;
 			{
+				Eigen::Vector3d bbox_min = Eigen::Vector3d::Zero();
+				bbox_min.head(size) = to_nodes.colwise().minCoeff();
+				Eigen::Vector3d bbox_max = Eigen::Vector3d::Zero();
+				bbox_max.head(size) = to_nodes.colwise().maxCoeff();
+				bvh.intersect_box(bbox_min, bbox_max, candidates);
+			}
+
+			// for (const ElementBases &from_element : from_bases)
+			for (const unsigned int from_element_i : candidates)
+			{
+				const ElementBases &from_element = from_bases[from_element_i];
 				const Eigen::MatrixXd from_nodes = from_element.nodes();
 
 				// Compute the overlap between the two elements as a list of simplices.

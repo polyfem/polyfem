@@ -182,24 +182,34 @@ namespace polyfem
 			/// @param[in] f_id *global* face id
 			/// @return  number of vertices
 			virtual int n_face_vertices(const int f_id) const = 0;
-			/// @brief id of the face vertex
-			///
-			/// @param[in] f_id *global* face id
-			/// @param[in] lv_id *local* vertex index
-			/// @return int id of the face vertex
-			virtual int face_vertex(const int f_id, const int lv_id) const = 0;
+
 			/// @brief id of the edge vertex
 			///
 			/// @param[in] e_id *global* edge id
 			/// @param[in] lv_id *local* vertex index
 			/// @return int id of the face vertex
 			virtual int edge_vertex(const int e_id, const int lv_id) const = 0;
+			/// @brief id of the face vertex
+			///
+			/// @param[in] f_id *global* face id
+			/// @param[in] lv_id *local* vertex index
+			/// @return int id of the face vertex
+			virtual int face_vertex(const int f_id, const int lv_id) const = 0;
 			/// @brief id of the vertex of a cell
 			///
 			/// @param[in] f_id *global* cell id
 			/// @param[in] lv_id *local* vertex id
 			/// @return vertex id
 			virtual int cell_vertex(const int f_id, const int lv_id) const = 0;
+			/// @brief id of the vertex of a element
+			///
+			/// @param[in] el_id *global* element id
+			/// @param[in] lv_id *local* vertex id
+			/// @return vertex id
+			int element_vertex(const int el_id, const int lv_id) const
+			{
+				return (is_volume() ? cell_vertex(el_id, lv_id) : face_vertex(el_id, lv_id));
+			}
 
 			/// @brief is vertex boundary
 			///
