@@ -4,6 +4,8 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <polyfem/io/OBJWriter.hpp>
+
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
@@ -121,8 +123,11 @@ namespace polyfem::solver
 		const Eigen::MatrixXd V0 = compute_displaced_surface(x0);
 		const Eigen::MatrixXd V1 = compute_displaced_surface(x1);
 
-		// write_obj("s0.obj", V0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		// write_obj("s1.obj", V1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		static int asd = 1;
+		std::cout << asd << " " << x0.norm() << " " << x1.norm() << std::endl;
+		io::OBJWriter::write("s0_" + std::to_string(asd) + ".obj", V0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		io::OBJWriter::write("s1_" + std::to_string(asd) + ".obj", V1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		++asd;
 
 		double max_step;
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
