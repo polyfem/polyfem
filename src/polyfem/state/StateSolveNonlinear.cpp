@@ -44,6 +44,8 @@ namespace polyfem
 
 	void SolveData::set_al_weight(const double weight)
 	{
+		if (al_form == nullptr)
+			return;
 		if (weight >= 0)
 		{
 			al_form->set_enabled(true);
@@ -63,6 +65,8 @@ namespace polyfem
 	{
 		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
 		if (inertia_form == nullptr)
+			return;
+		if (contact_form == nullptr)
 			return;
 
 		Eigen::VectorXd grad_energy(x.size(), 1);
@@ -127,12 +131,13 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
+
 				solve_data.time_integrator->update_quantities(sol);
 
-				solve_data.updated_barrier_stiffness(sol);
-				solve_data.update_dt();
-
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
+
+				solve_data.update_dt();
+				solve_data.updated_barrier_stiffness(sol);
 			}
 
 			save_timestep(t0 + dt * t, t, t0, dt);

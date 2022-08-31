@@ -30,6 +30,10 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 
+		/// @brief Initialize the form
+		/// @param x Current solution
+		void init(const Eigen::VectorXd &x) override;
+
 	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
@@ -47,6 +51,11 @@ namespace polyfem::solver
 		void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 	public:
+		/// @brief Update time-dependent fields
+		/// @param t Current time
+		/// @param x Current solution at time t
+		void update_quantities(const double t, const Eigen::VectorXd &x) override;
+
 		/// @brief Determine the maximum step size allowable between the current and next solution
 		/// @param x0 Current solution (step size = 0)
 		/// @param x1 Next solution (step size = 1)

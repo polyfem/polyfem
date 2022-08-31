@@ -42,6 +42,18 @@ namespace polyfem::solver
 		prev_distance_ = -1;
 	}
 
+	void ContactForm::init(const Eigen::VectorXd &x)
+	{
+		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
+		update_constraint_set(displaced_surface);
+	}
+
+	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
+	{
+		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
+		update_constraint_set(displaced_surface);
+	}
+
 	Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
 		return state_.collision_mesh.vertices(
@@ -51,7 +63,6 @@ namespace polyfem::solver
 	void ContactForm::initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
-		update_constraint_set(displaced_surface);
 
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			state_.collision_mesh, displaced_surface, constraint_set_, dhat_);
