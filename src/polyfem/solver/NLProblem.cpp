@@ -41,12 +41,13 @@ namespace polyfem
 	{
 		using namespace polysolve;
 
-		NLProblem::NLProblem(const State &state, std::vector<std::shared_ptr<Form>> &forms)
-			: state_(state),
+		NLProblem::NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, std::vector<std::shared_ptr<Form>> &forms)
+			: state_(state), rhs_assembler_(rhs_assembler),
 			  full_size((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 			  actual_reduced_size(full_size - state.boundary_nodes.size()),
 			  forms_(forms)
 		{
+			t_ = 0;
 			assert(!state.assembler.is_mixed(state.formulation()));
 			set_full_size(false);
 		}
@@ -81,6 +82,7 @@ namespace polyfem
 
 		void NLProblem::update_quantities(const double t, const TVector &x)
 		{
+			t_ = t;
 			TVector full;
 			reduced_to_full(x, full);
 

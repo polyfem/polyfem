@@ -25,7 +25,7 @@ namespace polyfem
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef StiffnessMatrix THessian;
 
-			NLProblem(const State &state, std::vector<std::shared_ptr<Form>> &forms);
+			NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, std::vector<std::shared_ptr<Form>> &forms);
 			void init(const TVector &displacement);
 
 			virtual double value(const TVector &x) override;
@@ -118,12 +118,17 @@ namespace polyfem
 			template <class FullVector>
 			void reduced_to_full(const TVector &reduced, FullVector &full)
 			{
-				// TODO: Fix me DBC
 				Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size, 1);
+
+				if (reduced_size != full_size)
+				{
+					// rhs_assembler.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, tmp, t_);
+					rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, t_);
+				}
 				reduced_to_full_aux(state_, full_size, reduced_size, reduced, tmp, full);
 			}
 
-			virtual void update_quantities(const double t, const TVector &x);
+			void update_quantities(const double t, const TVector &x);
 			void solution_changed(const TVector &newX);
 
 			void init_lagging(const TVector &x);
@@ -139,6 +144,9 @@ namespace polyfem
 
 		private:
 			const State &state_;
+			double t_;
+			const assembler::RhsAssembler &rhs_assembler_;
+
 			const int full_size, actual_reduced_size;
 			int reduced_size;
 			std::vector<std::shared_ptr<Form>> forms_;
