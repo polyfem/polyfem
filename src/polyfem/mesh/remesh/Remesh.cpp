@@ -34,17 +34,6 @@ namespace polyfem::mesh
 			OBJWriter::write(state.resolve_output_path("rest.obj"), V, BF);
 		}
 
-		// TODO: compute stress at the nodes
-		// Eigen::MatrixXd SF;
-		// compute_scalar_value(state.mesh->n_vertices(), sol, SF, false, false);
-		Eigen::MatrixXd SV, TV;
-		// average_grad_based_function(state.mesh->n_vertices(), sol, SV, TV, false, false);
-
-		// TODO: What measure to use for remeshing?
-		// SV.normalize();
-		SV.setOnes(V.rows(), 1);
-		SV *= 0.1 / t;
-
 		MmgOptions mmg_options;
 		mmg_options.hmin = 1e-4;
 
@@ -52,6 +41,11 @@ namespace polyfem::mesh
 		Eigen::MatrixXi F_new;
 		if (!state.mesh->is_volume())
 		{
+			// TODO: What measure to use for remeshing?
+			Eigen::MatrixXd SV;
+			SV.setOnes(V.rows(), 1);
+			SV *= 0.1 / t;
+
 			remesh_adaptive_2d(V, F, SV, V_new, F_new, mmg_options);
 
 			// Rotate 90 degrees each step
@@ -68,6 +62,11 @@ namespace polyfem::mesh
 		}
 		else
 		{
+			// TODO: What measure to use for remeshing?
+			Eigen::MatrixXd SV;
+			SV.setOnes(V.rows(), 1);
+			SV *= 0.1 / t;
+
 			Eigen::MatrixXi BF_new;
 			remesh_adaptive_3d(V, F, SV, V_new, BF_new, F_new);
 			OBJWriter::write(state.resolve_output_path("remeshed.obj"), V_new, BF_new);

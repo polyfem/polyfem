@@ -66,8 +66,7 @@ namespace polyfem::mesh
 		reduced_to_full(_x, x);
 
 		const double val =
-			double(0.5 * x.transpose() * m_M * x)
-			- double(x.transpose() * m_A * m_u_prev);
+			x.transpose() * (0.5 * m_M * x - m_A * m_u_prev);
 
 		// ₙ
 		// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (xₖ - x̂ₖ)ᵀ M (xₖ - x̂ₖ)
@@ -197,6 +196,12 @@ namespace polyfem::mesh
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+		json newton_args = state.args["solver"]["nonlinear"];
+		newton_args["f_delta"] = 0;
+		newton_args["grad_norm"] = 1e-8;
+		newton_args["use_grad_norm"] = true;
+		// newton_args["relative_gradient"] = true;
+
 		problem.line_search_begin(sol, tmp_sol);
 		while (
 			!std::isfinite(problem.value(tmp_sol))
@@ -208,7 +213,7 @@ namespace polyfem::mesh
 			logger().debug("Solving L2 Projection with weight {}", al_weight);
 
 			cppoptlib::SparseNewtonDescentSolver<L2ProjectionOptimizationProblem> solver(
-				state.args["solver"]["nonlinear"],
+				newton_args,
 				state.args["solver"]["linear"]["solver"],
 				state.args["solver"]["linear"]["precond"]);
 			solver.setLineSearch(state.args["solver"]["nonlinear"]["line_search"]["method"]);
@@ -230,7 +235,7 @@ namespace polyfem::mesh
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		cppoptlib::SparseNewtonDescentSolver<L2ProjectionOptimizationProblem> solver(
-			state.args["solver"]["nonlinear"],
+			newton_args,
 			state.args["solver"]["linear"]["solver"],
 			state.args["solver"]["linear"]["precond"]);
 		solver.setLineSearch(state.args["solver"]["nonlinear"]["line_search"]["method"]);
@@ -252,7 +257,9 @@ namespace polyfem::mesh
 		x.resize(rhs.rows(), y.cols());
 		x.col(0) = sol;
 		x.rightCols(2) = linear_solver.solve(rhs);
+		// x = linear_solver.solve(rhs);
 		double residual_error = (LHS * x.rightCols(2) - rhs).norm();
+		// double residual_error = (LHS * x - rhs).norm();
 		logger().critical("residual error in L2 projection: {}", residual_error);
 		assert(residual_error < 1e-12);
 	}
