@@ -247,7 +247,7 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
-		solve_data.nl_problem = std::make_shared<NLProblem>(*this, forms);
+		solve_data.nl_problem = std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, forms);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
