@@ -215,6 +215,12 @@ namespace polyfem::solver
 			return true;
 		}
 
+		// static int asd = 1;
+		// std::cout << std::setprecision(std::numeric_limits<long double>::digits10 + 2) << asd << " " << x0.norm() << " " << x1.norm() << std::endl;
+		// io::OBJWriter::write("is0_" + std::to_string(asd) + ".obj", displaced0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		// io::OBJWriter::write("is1_" + std::to_string(asd) + ".obj", displaced1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		// ++asd;
+
 		// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
 		// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
 

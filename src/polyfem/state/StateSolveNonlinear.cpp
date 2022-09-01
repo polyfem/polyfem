@@ -349,8 +349,10 @@ namespace polyfem
 				 {"info", alnl_solver_info}});
 
 			sol = tmp_sol;
+			solve_data.set_al_weight(-1);
 			nl_problem.full_to_reduced(sol, tmp_sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
+			nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
 
 			al_weight *= 2;
 
@@ -365,7 +367,6 @@ namespace polyfem
 
 			save_subsolve(++subsolve_count, t);
 		}
-		solve_data.set_al_weight(-1);
 		nl_problem.line_search_end();
 
 		///////////////////////////////////////////////////////////////////////
