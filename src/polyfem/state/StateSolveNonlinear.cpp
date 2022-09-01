@@ -64,8 +64,8 @@ namespace polyfem
 	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
 	{
 		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
-		if (inertia_form == nullptr)
-			return;
+		// if (inertia_form == nullptr)
+		// 	return;
 		if (contact_form == nullptr)
 			return;
 
