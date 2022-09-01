@@ -25,6 +25,7 @@ namespace polyfem
 			///
 			/// @param[in]  mesh               The input volumetric mesh
 			/// @param[in]  quadrature_order   The quadrature order
+			/// @param[in]  mass_quadrature_order   The quadrature order for mass
 			/// @param[in]  discr_order        The order of the elements (1-4)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for hex)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
@@ -40,6 +41,7 @@ namespace polyfem
 			static int build_bases(
 				const mesh::Mesh3D &mesh,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				const int discr_order,
 				const bool serendipity,
 				const bool has_polys,
@@ -56,6 +58,7 @@ namespace polyfem
 			///
 			/// @param[in]  mesh               The input volumetric mesh
 			/// @param[in]  quadrature_order   The quadrature order
+			/// @param[in]  mass_quadrature_order   The quadrature order for mass
 			/// @param[in]  discr_order        The order for each element
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for hex)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
@@ -71,6 +74,7 @@ namespace polyfem
 			static int build_bases(
 				const mesh::Mesh3D &mesh,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				const Eigen::VectorXi &discr_order,
 				const bool serendipity,
 				const bool has_polys,

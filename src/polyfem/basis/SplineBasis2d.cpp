@@ -673,7 +673,7 @@ namespace polyfem
 			}
 		} // namespace
 
-		int SplineBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data)
+		int SplineBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data)
 		{
 			using std::max;
 			assert(!mesh.is_volume());
@@ -701,9 +701,15 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				b.set_quadrature([quadrature_order](Quadrature &quad) {
+				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
+				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				b.set_quadrature([real_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
-					quad_quadrature.get_quadrature(quadrature_order, quad);
+					quad_quadrature.get_quadrature(real_order, quad);
+				});
+				b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+					QuadQuadrature quad_quadrature;
+					quad_quadrature.get_quadrature(real_mass_order, quad);
 				});
 				b.bases.resize(9);
 
@@ -764,9 +770,15 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				b.set_quadrature([quadrature_order](Quadrature &quad) {
+				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
+				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				b.set_quadrature([real_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
-					quad_quadrature.get_quadrature(quadrature_order, quad);
+					quad_quadrature.get_quadrature(real_order, quad);
+				});
+				b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+					QuadQuadrature quad_quadrature;
+					quad_quadrature.get_quadrature(real_mass_order, quad);
 				});
 
 				b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh) {

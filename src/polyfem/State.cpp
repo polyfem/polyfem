@@ -693,6 +693,7 @@ namespace polyfem
 		}
 
 		int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
+		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
 		if (assembler.is_mixed(formulation()))
 		{
 			const int disc_order = disc_orders.maxCoeff();
@@ -718,7 +719,7 @@ namespace polyfem
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -726,15 +727,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		else
@@ -750,7 +751,7 @@ namespace polyfem
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -758,15 +759,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		timer.stop();
@@ -1071,16 +1072,16 @@ namespace polyfem
 			{
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
 					logger().error("MeanValue bases not supported in 3D");
-				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
+				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
 				{
-					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
+					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
 				}
 				else
-					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
 			}
 		}
 		else
@@ -1092,14 +1093,14 @@ namespace polyfem
 					logger().error("MeanValue bases not supported in 3D");
 					throw "not implemented";
 				}
-				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
+				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
-					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
+					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
 				else
-					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
+					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
 			}
 		}
 

@@ -44,6 +44,7 @@ namespace polyfem
 			/// @param[in]     mesh                  Input volume mesh
 			/// @param[in]     n_bases               Total number of bases functions in the mesh
 			/// @param[in]     quadrature_order      Quadrature order for the polyhedra
+			/// @param[in]     mass_quadrature_order      Quadrature order for the polyhedra for mass
 			/// @param[in]     integral_constraints  Order of the integral constraints (0 = no constraints, 1 = linear, 2 = quadratic)
 			/// @param[in,out] bases                 List of the different basis (shape functions) used to discretize the PDE
 			/// @param[in]     gbases                List of the different basis used to discretize the geometry of the mesh
@@ -60,6 +61,7 @@ namespace polyfem
 				const mesh::Mesh3D &mesh,
 				const int n_bases,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				const int integral_constraints,
 				std::vector<ElementBases> &bases,
 				const std::vector<ElementBases> &gbases,
