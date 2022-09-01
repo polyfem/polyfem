@@ -314,10 +314,12 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 
 		nl_problem.line_search_begin(sol, tmp_sol);
+		Eigen::VectorXd tmp_sol_full;
+		nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
 		bool force_al = args["solver"]["augmented_lagrangian"]["force"];
 		while (
 			force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
-			|| (solve_data.contact_form != nullptr && !solve_data.contact_form->is_step_collision_free(sol, tmp_sol)))
+			|| (solve_data.contact_form != nullptr && !solve_data.contact_form->is_step_collision_free(sol, tmp_sol_full)))
 		{
 			force_al = false;
 			nl_problem.line_search_end();

@@ -123,11 +123,11 @@ namespace polyfem::solver
 		const Eigen::MatrixXd V0 = compute_displaced_surface(x0);
 		const Eigen::MatrixXd V1 = compute_displaced_surface(x1);
 
-		static int asd = 1;
-		std::cout << asd << " " << x0.norm() << " " << x1.norm() << std::endl;
-		io::OBJWriter::write("s0_" + std::to_string(asd) + ".obj", V0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		io::OBJWriter::write("s1_" + std::to_string(asd) + ".obj", V1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		++asd;
+		// static int asd = 1;
+		// std::cout << std::setprecision(std::numeric_limits<long double>::digits10 + 2) << asd << " " << x0.norm() << " " << x1.norm() << std::endl;
+		// io::OBJWriter::write("s0_" + std::to_string(asd) + ".obj", V0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		// io::OBJWriter::write("s1_" + std::to_string(asd) + ".obj", V1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		// ++asd;
 
 		double max_step;
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)

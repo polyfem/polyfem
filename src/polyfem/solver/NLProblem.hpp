@@ -136,7 +136,7 @@ namespace polyfem
 
 			void set_full_size(const bool val)
 			{
-				if (val)
+				if (!val)
 					reduced_size = actual_reduced_size;
 				else
 					reduced_size = full_size;
