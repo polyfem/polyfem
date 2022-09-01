@@ -32,7 +32,7 @@ namespace polyfem::io
 			return false;
 
 		obj << fmt::format(
-			"# Vertoces: {:d}\n# Edges: {:d}\n# Faces: {:d}",
+			"# Vertices: {:d}\n# Edges: {:d}\n# Faces: {:d}\n",
 			v.rows(), e.rows(), f.rows());
 
 		for (int i = 0; i < v.rows(); ++i)

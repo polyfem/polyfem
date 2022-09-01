@@ -64,8 +64,19 @@ namespace polyfem
 	namespace solver
 	{
 		class NLProblem;
-		class ALNLProblem;
+
+		class ContactForm;
+		class FrictionForm;
+		class BodyForm;
+		class ALForm;
+		class InertiaForm;
+		class ElasticForm;
 	} // namespace solver
+
+	namespace time_integrator
+	{
+		class ImplicitTimeIntegrator;
+	} // namespace time_integrator
 
 	/// class to store time stepping data
 	class SolveData
@@ -73,7 +84,19 @@ namespace polyfem
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
-		std::shared_ptr<solver::ALNLProblem> alnl_problem;
+
+		std::shared_ptr<solver::ContactForm> contact_form;
+		std::shared_ptr<solver::BodyForm> body_form;
+		std::shared_ptr<solver::ALForm> al_form;
+		std::shared_ptr<solver::FrictionForm> friction_form;
+		std::shared_ptr<solver::InertiaForm> inertia_form;
+		std::shared_ptr<solver::ElasticForm> elastic_form;
+
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+
+		void set_al_weight(const double weight);
+		void updated_barrier_stiffness(const Eigen::VectorXd &x);
+		void update_dt();
 	};
 
 	/// main class that contains the polyfem solver and all its state
@@ -171,7 +194,7 @@ namespace polyfem
 		/// FE pressure bases for mixed elements, the size is #elements
 		std::vector<ElementBases> pressure_bases;
 		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
-		std::vector<ElementBases> geom_bases;
+		std::vector<ElementBases> geom_bases_;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -219,12 +242,30 @@ namespace polyfem
 		/// @return if basis are isoparametric
 		bool iso_parametric() const;
 
+		/// @brief Get a constant reference to the geometry mapping bases.
+		/// @return A constant reference to the geometry mapping bases.
+		const std::vector<ElementBases> &geom_bases() const
+		{
+			return iso_parametric() ? bases : geom_bases_;
+		}
+
 		/// builds the bases step 2 of solve
 		void build_basis();
 		/// compute rhs, step 3 of solve
 		void assemble_rhs();
 		/// assemble matrices, step 4 of solve
 		void assemble_stiffness_mat();
+
+		/// build a RhsAssembler for the problem
+		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
+			const int n_bases,
+			const std::vector<ElementBases> &bases,
+			const assembler::AssemblyValsCache &ass_vals_cache) const;
+		/// build a RhsAssembler for the problem
+		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
+		{
+			return build_rhs_assembler(n_bases, bases, ass_vals_cache);
+		}
 
 		/// quadrature used for projecting boundary conditions
 		/// @return the quadrature used for projecting boundary conditions

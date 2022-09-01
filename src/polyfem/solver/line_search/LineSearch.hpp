@@ -65,14 +65,14 @@ namespace polyfem
 					const TVector &delta_x,
 					ProblemType &objFunc,
 					const double starting_step_size);
-#ifndef NDEBUG
-				double compute_debug_collision_free_step_size(
-					const typename ProblemType::TVector &x,
-					const typename ProblemType::TVector &delta_x,
-					ProblemType &objFunc,
-					const double starting_step_size,
-					const double rate);
-#endif
+				// #ifndef NDEBUG
+				// 				double compute_debug_collision_free_step_size(
+				// 					const typename ProblemType::TVector &x,
+				// 					const typename ProblemType::TVector &delta_x,
+				// 					ProblemType &objFunc,
+				// 					const double starting_step_size,
+				// 					const double rate);
+				// #endif
 			};
 		} // namespace line_search
 	}     // namespace solver

@@ -20,6 +20,8 @@ namespace polyfem
 	/// is not thread-safe.
 	///
 	/// @param[in]  logger  New logger object to be used by Polyfem. Ownership is shared with Polyfem.
-	///s
+	///
 	void set_logger(std::shared_ptr<spdlog::logger> logger);
+
+	void log_and_throw_error(const std::string &msg);
 } // namespace polyfem

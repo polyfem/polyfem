@@ -4,8 +4,6 @@ set(SOURCES
 	LBFGSSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
-	ALNLProblem.cpp
-	ALNLProblem.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	TransientNavierStokesSolver.cpp
@@ -23,3 +21,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 ################################################################################
 
 add_subdirectory(line_search)
+add_subdirectory(forms)

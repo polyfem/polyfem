@@ -53,7 +53,7 @@ namespace polyfem
 
 			time.start();
 			StiffnessMatrix stoke_stiffness;
-			Eigen::VectorXd prev_sol_mass(rhs.size()); //prev_sol_mass=prev_sol
+			Eigen::VectorXd prev_sol_mass(rhs.size()); // prev_sol_mass=prev_sol
 			prev_sol_mass.setZero();
 			prev_sol_mass.block(0, 0, velocity_mass.rows(), 1) = velocity_mass * prev_sol.block(0, 0, velocity_mass.rows(), 1);
 			for (int i : state.boundary_nodes)
@@ -138,7 +138,7 @@ namespace polyfem
 		{
 			igl::Timer time;
 			const auto &assembler = state.assembler;
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			const int precond_num = problem_dim * state.n_bases;
 
@@ -186,7 +186,7 @@ namespace polyfem
 				logger().debug("\tinverting time {}s", time.getElapsedTimeInSec());
 
 				x += dx;
-				//TODO check for nans
+				// TODO check for nans
 
 				time.start();
 				assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, mat_cache, nl_matrix);
