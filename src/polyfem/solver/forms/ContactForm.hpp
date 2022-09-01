@@ -89,6 +89,8 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
+		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
+
 	private:
 		const State &state_; ///< Reference to the simulation state
 

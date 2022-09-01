@@ -69,6 +69,9 @@ namespace polyfem
 		if (contact_form == nullptr)
 			return;
 
+		if (!contact_form->use_adaptive_barrier_stiffness())
+			return;
+
 		Eigen::VectorXd grad_energy(x.size(), 1);
 		grad_energy.setZero();
 
@@ -236,6 +239,10 @@ namespace polyfem
 			solve_data.contact_form = std::make_shared<ContactForm>(*this, args["contact"]["dhat"], use_adaptive_barrier_stiffness,
 																	solve_data.time_integrator != nullptr,
 																	broad_phase_method, ccd_tolerance, ccd_max_iterations);
+
+			if (!use_adaptive_barrier_stiffness)
+				solve_data.contact_form->set_weight(barrier_stiffness);
+
 			forms.push_back(solve_data.contact_form);
 			if (mu != 0)
 			{

@@ -25,9 +25,9 @@ namespace polyfem::solver
 	double ALForm::value_unscaled(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd dist = x - target_x_;
-		const double AL_penalty = weight_ / 2 * dist.transpose() * masked_lumped_mass_ * dist;
+		const double AL_penalty = 0.5 * dist.transpose() * masked_lumped_mass_ * dist;
 
-		// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
+		// TODO: Implement Lagrangian potential if needed (i.e., penalty exceeds maximum)
 		// ₙ    __
 		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ) = -λᵀ M (x - x̂)
 		// ᵏ
@@ -39,12 +39,12 @@ namespace polyfem::solver
 
 	void ALForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight_ * masked_lumped_mass_ * (x - target_x_);
+		gradv = masked_lumped_mass_ * (x - target_x_);
 	}
 
 	void ALForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		hessian = weight_ * masked_lumped_mass_;
+		hessian = masked_lumped_mass_;
 	}
 
 	void ALForm::update_quantities(const double t, const Eigen::VectorXd &)

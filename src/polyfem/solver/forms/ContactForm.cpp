@@ -29,18 +29,6 @@ namespace polyfem::solver
 		assert(dhat_ > 0);
 		assert(ccd_tolerance > 0);
 
-		if (use_adaptive_barrier_stiffness_)
-		{
-			weight_ = 1;
-			logger().debug("Using adaptive barrier stiffness");
-		}
-		else
-		{
-			assert(weight_ >= 0);
-			log_and_throw_error("Fixed barrier stiffness not implemented!");
-			logger().debug("Using fixed barrier stiffness of {}", weight_);
-		}
-
 		prev_distance_ = -1;
 	}
 

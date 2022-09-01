@@ -93,7 +93,8 @@ namespace polyfem::solver
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
-		double weight_ = 1;
+
+		double weight_ = 1; ///< weight of the form, eg barrier stiffness, AL, d^2
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution
