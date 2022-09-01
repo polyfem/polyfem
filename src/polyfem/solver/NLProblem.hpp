@@ -25,7 +25,7 @@ namespace polyfem
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef StiffnessMatrix THessian;
 
-			NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, std::vector<std::shared_ptr<Form>> &forms);
+			NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, std::vector<std::shared_ptr<Form>> &forms);
 			void init(const TVector &displacement);
 
 			virtual double value(const TVector &x) override;
