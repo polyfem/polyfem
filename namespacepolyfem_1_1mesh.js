@@ -104,7 +104,7 @@ var namespacepolyfem_1_1mesh =
     [ "read_fem_geometry", "namespacepolyfem_1_1mesh.html#afe913b5ef00d49c9ce25b6c414e39129", null ],
     [ "read_fem_mesh", "namespacepolyfem_1_1mesh.html#aa89f56a9f54a72d55430b772c5fd3bc5", null ],
     [ "read_obstacle_geometry", "namespacepolyfem_1_1mesh.html#a5675a84be23055c84c04d32acd85414c", null ],
-    [ "read_obstacle_mesh", "namespacepolyfem_1_1mesh.html#af005f3639cbc8f6699a22b5aedd7f431", null ],
+    [ "read_obstacle_mesh", "namespacepolyfem_1_1mesh.html#ab600d90ff9cc84e9d420c36b2ce10681", null ],
     [ "read_surface_mesh", "namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f", null ],
     [ "refine_polygonal_mesh", "namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559", null ],
     [ "refine_polygonal_mesh", "namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d", null ],
