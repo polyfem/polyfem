@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1061,6 +1062,7 @@
             "solver",
             "f_delta",
             "grad_norm",
+            "first_grad_norm_tol",
             "max_iterations",
             "use_grad_norm",
             "relative_gradient",
@@ -1089,6 +1091,12 @@
         "default": 1e-08,
         "type": "float",
         "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue."
+    },
+    {
+        "pointer": "/solver/nonlinear/first_grad_norm_tol",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",
