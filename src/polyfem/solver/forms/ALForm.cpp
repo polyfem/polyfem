@@ -13,6 +13,18 @@ namespace polyfem::solver
 
 		masked_lumped_mass_ = state.mass.size() == 0 ? polyfem::utils::sparse_identity(ndof, ndof) : polyfem::utils::lump_matrix(state.mass);
 		assert(ndof == masked_lumped_mass_.rows() && ndof == masked_lumped_mass_.cols());
+
+		// Give the collision obstacles a entry in the lumped mass matrix
+		if (state.obstacle.n_vertices() != 0)
+		{
+			const int n_fe_dof = ndof - state.obstacle.ndof();
+			const double avg_mass = masked_lumped_mass_.diagonal().head(n_fe_dof).mean();
+			for (int i = n_fe_dof; i < ndof; ++i)
+			{
+				masked_lumped_mass_.coeffRef(i, i) = avg_mass;
+			}
+		}
+
 		// Remove non-boundary ndof from mass matrix
 		masked_lumped_mass_.prune([&](const int &row, const int &col, const double &value) -> bool {
 			assert(row == col); // matrix should be diagonal
