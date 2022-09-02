@@ -28,7 +28,7 @@ var namespacepolyfem_1_1utils =
     [ "SphereSelection", "classpolyfem_1_1utils_1_1_sphere_selection.html", "classpolyfem_1_1utils_1_1_sphere_selection" ],
     [ "Timer", "classpolyfem_1_1utils_1_1_timer.html", "classpolyfem_1_1utils_1_1_timer" ],
     [ "UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", "classpolyfem_1_1utils_1_1_uniform_selection" ],
-    [ "apply_default_params", "namespacepolyfem_1_1utils.html#a3018867117b00d4899d44a7d14bed2d4", null ],
+    [ "apply_common_params", "namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9", null ],
     [ "create_thread_storage", "namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae", null ],
     [ "deg2rad", "namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19", null ],
     [ "determinant", "namespacepolyfem_1_1utils.html#abe6b8c4990a1c67602ca66d6d522d557", null ],

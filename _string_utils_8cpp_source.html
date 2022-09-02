@@ -237,15 +237,18 @@ $(document).ready(function(){initNavTree('_string_utils_8cpp_source.html',''); i
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">return</span> std::filesystem::weakly_canonical(resolved_path).string();</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    resolved_path = std::filesystem::weakly_canonical(</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">std::filesystem::path</a>(input_file_path).parent_path() / resolved_path);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (only_if_exists &amp;&amp; !std::filesystem::exists(resolved_path))</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    {</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>; <span class="comment">// return path unchanged</span></div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">return</span> resolved_path.string();</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">std::filesystem::path</a> input_dir_path(input_file_path);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">if</span> (!std::filesystem::is_directory(input_dir_path))</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        input_dir_path = input_dir_path.parent_path();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    resolved_path = std::filesystem::weakly_canonical(input_dir_path / resolved_path);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">if</span> (only_if_exists &amp;&amp; !std::filesystem::exists(resolved_path))</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>; <span class="comment">// return path unchanged</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> resolved_path.string();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> <a href="_spline_basis3d_8cpp_source.html#l00052">SplineBasis3d.cpp:52</a></div></div>
 <div class="ttc" id="a_string_utils_8hpp_html"><div class="ttname"><a href="_string_utils_8hpp.html">StringUtils.hpp</a></div></div>
 <div class="ttc" id="anamespaceeigs_html_a9fe38deb6414bc39f39d8ed436b42d3e"><div class="ttname"><a href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">eigs.path</a></div><div class="ttdeci">path</div><div class="ttdef"><b>Definition:</b> <a href="eigs_8py_source.html#l00128">eigs.py:128</a></div></div>

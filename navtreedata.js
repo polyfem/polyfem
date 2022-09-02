@@ -101,7 +101,7 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a13a0ba7a615ca5a98b904508ea0dce34",
 "elasticity__rhs_8py.html#ac9ddcfd900a82f06105f1b39539b32b5",
 "namespacep__bases.html#aefce99d39dd7f99318ac75d574b8b4de",
-"namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19",
+"namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a",
 "struct_d_scalar2.html#a2d6c4669fb3d0d1dd0d9a6dce7ab82a1",
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html"
 ];
