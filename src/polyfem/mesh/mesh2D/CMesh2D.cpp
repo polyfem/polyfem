@@ -50,7 +50,7 @@ namespace polyfem
 
 				mesh_.clear(false, false);
 
-				//TODO add tags to the refinement
+				// TODO add tags to the refinement
 				if (all_simplicial)
 				{
 					refine_triangle_mesh(mesh, mesh_);
@@ -96,7 +96,7 @@ namespace polyfem
 
 		bool CMesh2D::load(const std::string &path)
 		{
-			//This method should be used for special loading, like hybrid in 3d
+			// This method should be used for special loading, like hybrid in 3d
 
 			// edge_nodes_.clear();
 			// face_nodes_.clear();
@@ -211,7 +211,7 @@ namespace polyfem
 					orders_(f) = 1;
 					continue;
 				}
-				//P2
+				// P2
 				else if (nodes_ids.size() == 6)
 				{
 					orders_(f) = 2;
@@ -220,7 +220,7 @@ namespace polyfem
 					{
 						auto &n = edge_nodes_[index.edge];
 
-						//nodes not aleardy created
+						// nodes not aleardy created
 						if (n.nodes.size() <= 0)
 						{
 							n.v1 = index.vertex;
@@ -240,7 +240,7 @@ namespace polyfem
 						index = next_around_face(index);
 					}
 				}
-				//P3
+				// P3
 				else if (nodes_ids.size() == 10)
 				{
 					orders_(f) = 3;
@@ -249,7 +249,7 @@ namespace polyfem
 					{
 						auto &n = edge_nodes_[index.edge];
 
-						//nodes not aleardy created
+						// nodes not aleardy created
 						if (n.nodes.size() <= 0)
 						{
 							n.v1 = index.vertex;
@@ -305,14 +305,14 @@ namespace polyfem
 						n.nodes << V(nodes_ids[9], 0), V(nodes_ids[9], 1);
 					}
 				}
-				//P4
+				// P4
 				else if (nodes_ids.size() == 15)
 				{
 					orders_(f) = 4;
 					assert(false);
 					// unsupported P4 for geometry, need meshes for testing
 				}
-				//unsupported
+				// unsupported
 				else
 				{
 					assert(false);
@@ -362,13 +362,13 @@ namespace polyfem
 				}
 
 				assert(orders_(index.face) == 3);
-				//unsupported P4 for geometry
+				// unsupported P4 for geometry
 				const auto &n = face_nodes_[index.face];
 				return n.nodes.row(0);
 			}
 			else if (is_cube(index.face))
 			{
-				//supports only blilinear quads
+				// supports only blilinear quads
 				assert(orders_.size() <= 0 || orders_(index.face) == 1);
 
 				const auto v1 = point(index.vertex);
@@ -583,7 +583,7 @@ namespace polyfem
 			RowVectorNd min_corner, max_corner;
 			bounding_box(min_corner, max_corner);
 
-			//implement me properly
+			// implement me properly
 			for (int e = 0; e < n_edges(); ++e)
 			{
 				if (!is_boundary_edge(e))
@@ -610,7 +610,7 @@ namespace polyfem
 			boundary_ids_.resize(n_edges());
 			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
 
-			//implement me properly
+			// implement me properly
 			for (int e = 0; e < n_edges(); ++e)
 			{
 				if (!is_boundary_edge(e))
@@ -656,6 +656,20 @@ namespace polyfem
 				std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
 				std::sort(vs.begin(), vs.end());
 				boundary_ids_[e] = marker(vs, is_boundary);
+			}
+		}
+
+		void CMesh2D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_edges());
+
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				bool is_boundary = is_boundary_edge(e);
+				const auto p = edge_barycenter(e);
+				std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[e] = marker(e, vs, p, is_boundary);
 			}
 		}
 

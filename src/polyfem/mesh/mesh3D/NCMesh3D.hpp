@@ -255,6 +255,8 @@ namespace polyfem
 			void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
 			void compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker) override;
 			void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
+			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
+
 			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
@@ -265,7 +267,7 @@ namespace polyfem
 			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
 			RowVectorNd kernel(const int cell_id) const override;
-			//navigation wrapper
+			// navigation wrapper
 			Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const override;
 			Navigation3D::Index get_index_from_element(int hi) const override;
 
