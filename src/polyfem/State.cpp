@@ -180,10 +180,23 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
+		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
+		{
+			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
+			return;
+		}
+
 		if (!mesh->is_conforming())
+		{
+			logger().warn("Node ordering disabled, not supported for non-conforming meshes!");
 			return;
-		if (disc_orders.maxCoeff() >= 4)
+		}
+
+		if (mesh->in_ordered_vertices().size() <= 0 || mesh->in_ordered_edges().size() <= 0 || (mesh->is_volume() && mesh->in_ordered_faces().size() <= 0))
+		{
+			logger().warn("Node ordering disabled, input vertices/edges/faces not computed!");
 			return;
+		}
 
 		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
