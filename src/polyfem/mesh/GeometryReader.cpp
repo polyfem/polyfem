@@ -142,7 +142,7 @@ namespace polyfem::mesh
 			for (const auto &selection : surface_selections)
 			{
 				if (selection->inside(p_id, vs, p))
-					return selection->id(p_id);
+					return selection->id(p_id, vs);
 			}
 			return std::numeric_limits<int>::max(); // default for no selected boundary
 		});
@@ -178,7 +178,7 @@ namespace polyfem::mesh
 				{
 					// TODO add vs to compute_body_ids
 					if (selection->inside(cell_id, {}, p))
-						return selection->id(cell_id);
+						return selection->id(cell_id, {});
 				}
 				return 0;
 			});

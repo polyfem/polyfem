@@ -18,7 +18,7 @@ namespace polyfem
 
 			virtual bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const = 0;
 
-			virtual int id(const size_t element_id) const { return id_; }
+			virtual int id(const size_t element_id, const std::vector<int> &vs) const { return id_; }
 
 			/// @brief Build a selection objects from a JSON selection.
 			/// @param j_selections JSON object of selection(s).
@@ -128,9 +128,9 @@ namespace polyfem
 			SpecifiedSelection(
 				const std::vector<int> &ids);
 
-			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override { return true; }
+			virtual bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override { return true; }
 
-			int id(const size_t element_id) const override;
+			virtual int id(const size_t element_id, const std::vector<int> &vs) const override;
 
 		protected:
 			SpecifiedSelection() {}
@@ -146,6 +146,12 @@ namespace polyfem
 			FileSelection(
 				const std::string &file_path,
 				const int id_offset = 0);
+
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
+			int id(const size_t element_id, const std::vector<int> &vs) const override;
+
+		private:
+			std::vector<std::pair<int, std::vector<int>>> data_;
 		};
 	} // namespace utils
 } // namespace polyfem
