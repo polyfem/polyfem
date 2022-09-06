@@ -14,8 +14,6 @@ set(SOURCES
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
 	EnableWarnings.hpp
-	FEBioReader.cpp
-	FEBioReader.hpp
 	getRSS.c
 	HashUtils.hpp
 	Logger.cpp
@@ -28,10 +26,6 @@ set(SOURCES
 	MatrixUtils.hpp
 	MaybeParallelFor.hpp
 	MaybeParallelFor.tpp
-	MshReader.cpp
-	MshReader.hpp
-	OBJ_IO.cpp
-	OBJ_IO.hpp
 	par_for.cpp
 	par_for.hpp
 	raster.cpp

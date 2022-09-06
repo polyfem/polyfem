@@ -1,7 +1,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -52,6 +52,7 @@ namespace polyfem
 {
 	using namespace assembler;
 	using namespace mesh;
+	using namespace io;
 	using namespace utils;
 
 	namespace
@@ -179,10 +180,23 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
+		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
+		{
+			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
+			return;
+		}
+
 		if (!mesh->is_conforming())
+		{
+			logger().warn("Node ordering disabled, not supported for non-conforming meshes!");
 			return;
-		if (disc_orders.maxCoeff() >= 4)
+		}
+
+		if (mesh->in_ordered_vertices().size() <= 0 || mesh->in_ordered_edges().size() <= 0 || (mesh->is_volume() && mesh->in_ordered_faces().size() <= 0))
+		{
+			logger().warn("Node ordering disabled, input vertices/edges/faces not computed!");
 			return;
+		}
 
 		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
@@ -1251,20 +1265,7 @@ namespace polyfem
 
 			if (args["solver"]["advanced"]["lump_mass_matrix"])
 			{
-
-				std::vector<Eigen::Triplet<double>> lumped;
-
-				for (int k = 0; k < mass.outerSize(); ++k)
-				{
-					for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-					{
-						lumped.emplace_back(it.row(), it.row(), it.value());
-					}
-				}
-
-				mass.resize(mass.rows(), mass.cols());
-				mass.setFromTriplets(lumped.begin(), lumped.end());
-				mass.makeCompressed();
+				mass = lump_matrix(mass);
 			}
 		}
 

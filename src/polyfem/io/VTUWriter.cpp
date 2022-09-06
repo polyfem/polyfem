@@ -1,8 +1,10 @@
 #include "VTUWriter.hpp"
+
 #include <polyfem/utils/Logger.hpp>
+
 namespace polyfem
 {
-	namespace mesh
+	namespace io
 	{
 		namespace
 		{
@@ -390,7 +392,7 @@ namespace polyfem
 		{
 			point_data_.push_back(VTKDataNode<double>(binary_));
 
-			//FIXME?
+			// FIXME?
 			// if (data.cols() == 2)
 			// {
 			//  express::BlockEigen::MatrixXd<typename Eigen::MatrixXd::EntryType> data3((data.rows() * 3) / 2, data.columns(), 3, data.columns());
@@ -450,5 +452,5 @@ namespace polyfem
 			clear();
 			return true;
 		}
-	} // namespace mesh
+	} // namespace io
 } // namespace polyfem

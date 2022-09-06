@@ -2,8 +2,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/utils/MshReader.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Selection.hpp>
@@ -12,6 +12,7 @@
 #include <Eigen/Core>
 
 #include <igl/edges.h>
+#include <igl/boundary_facets.h>
 
 namespace polyfem::mesh
 {
@@ -268,6 +269,7 @@ namespace polyfem::mesh
 	void read_obstacle_mesh(
 		const json &j_mesh,
 		const std::string &root_path,
+		const int dim,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &codim_edges,
@@ -285,6 +287,11 @@ namespace polyfem::mesh
 			// error already logged in read_surface_mesh()
 			throw std::runtime_error(fmt::format("Unable to read mesh: {}", mesh_path));
 
+		const int prev_dim = vertices.cols();
+		vertices.conservativeResize(vertices.rows(), dim);
+		if (prev_dim < dim)
+			vertices.rightCols(dim - prev_dim).setZero();
+
 		// --------------------------------------------------------------------
 
 		{
@@ -296,24 +303,42 @@ namespace polyfem::mesh
 			vertices.rowwise() += b.transpose();
 		}
 
-		if (j_mesh["extract"].get<std::string>() == "edges" && faces.size() != 0)
+		std::string extract = j_mesh["extract"];
+		// Default: "volume" clashes with defaults for non obstacle, here assume volume is suface
+		if (extract == "volume")
+			extract = "surface";
+
+		if (extract == "points")
 		{
+			// points -> vertices (drop edges and faces)
+			codim_edges.resize(0, 0);
+			faces.resize(0, 0);
+			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
+		}
+		else if (extract == "edges" && faces.size() != 0)
+		{
+			// edges -> edges (drop faces)
 			Eigen::MatrixXi edges;
 			igl::edges(faces, edges);
 			faces.resize(0, 0);
 			codim_edges.conservativeResize(codim_edges.rows() + edges.rows(), 2);
 			codim_edges.bottomRows(edges.rows()) = edges;
 		}
-		else if (j_mesh["extract"].get<std::string>() == "points")
+		else if (extract == "surface" && dim == 2)
 		{
-			codim_edges.resize(0, 0);
-			faces.resize(0, 0);
-			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
+			// surface (2D) -> boundary edges (drop faces and interior edges)
+			Eigen::MatrixXi boundary_edges;
+			igl::boundary_facets(faces, boundary_edges);
+			codim_edges.conservativeResize(codim_edges.rows() + boundary_edges.rows(), 2);
+			codim_edges.bottomRows(boundary_edges.rows()) = boundary_edges;
+			faces.resize(0, 0); // Clear faces
 		}
-		else if (j_mesh["extract"].get<std::string>() == "volume")
+		// surface (3D) -> boundary faces
+		// No need to do anything for (extract == "surface" && dim == 3) since we used read_surface_mesh
+		else if (extract == "volume")
 		{
-			// Clashes with defaults for non obstacle, here assume volume is suface
-			// log_and_throw_error("Volumetric elements not supported for collision obstacles!");
+			// volume -> undefined
+			log_and_throw_error("Volumetric elements not supported for collision obstacles!");
 		}
 
 		if (j_mesh["n_refs"].get<int>() != 0)
@@ -391,10 +416,8 @@ namespace polyfem::mesh
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
 				read_obstacle_mesh(
-					complete_geometry, root_path, vertices, codim_vertices,
+					complete_geometry, root_path, dim, vertices, codim_vertices,
 					codim_edges, faces);
-
-				vertices.conservativeResize(vertices.rows(), dim);
 
 				json displacement = "{\"value\":[0, 0, 0]}"_json;
 				if (is_param_valid(complete_geometry, "surface_selection"))

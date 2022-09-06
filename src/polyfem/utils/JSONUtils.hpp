@@ -10,7 +10,7 @@ namespace polyfem
 	{
 		void log_and_throw_error(const std::string &msg);
 
-		void apply_default_params(json &args);
+		void apply_common_params(json &args);
 
 		// Templated degree to radians so a scalar or vector can be given
 		template <typename T>
