@@ -4,15 +4,14 @@
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <fstream>
 
 namespace polyfem
 {
-	using namespace utils;
-
+	using namespace io;
 	namespace time_integrator
 	{
 		void ImplicitTimeIntegrator::init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt)

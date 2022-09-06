@@ -3,7 +3,7 @@
 
 #include <polyfem/utils/BoundarySampler.hpp>
 
-#include <polyfem/mesh/VTUWriter.hpp>
+#include <polyfem/io/VTUWriter.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
@@ -34,6 +34,7 @@ extern "C" size_t getPeakRSS();
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace io;
 	using namespace mesh;
 	using namespace solver;
 	using namespace utils;
@@ -367,6 +368,8 @@ namespace polyfem
 
 			std::vector<std::tuple<int, int, int>> tris;
 
+			std::stringstream print_warning;
+
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
 				const ElementBases &b = bases[lb.element_id()];
@@ -459,11 +462,15 @@ namespace polyfem
 					}
 					else
 					{
-						logger().warn("Skipping face as it has {} nodes, boundary export supported up to p4", loc_nodes.size());
+
+						print_warning << loc_nodes.size() << " ";
 						// assert(false);
 					}
 				}
 			}
+
+			if (print_warning.str().size() > 0)
+				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
 
 			boundary_triangles.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)

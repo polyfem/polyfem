@@ -120,8 +120,11 @@ std::string polyfem::utils::resolve_path(
 		return std::filesystem::weakly_canonical(resolved_path).string();
 	}
 
-	resolved_path = std::filesystem::weakly_canonical(
-		std::filesystem::path(input_file_path).parent_path() / resolved_path);
+	std::filesystem::path input_dir_path(input_file_path);
+	if (!std::filesystem::is_directory(input_dir_path))
+		input_dir_path = input_dir_path.parent_path();
+
+	resolved_path = std::filesystem::weakly_canonical(input_dir_path / resolved_path);
 
 	if (only_if_exists && !std::filesystem::exists(resolved_path))
 	{

@@ -3,10 +3,8 @@
 
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
-
+#include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/utils/MshReader.hpp>
-
 #include <polyfem/utils/Logger.hpp>
 
 #include <geogram/basic/file_system.h>
@@ -19,6 +17,7 @@
 
 namespace polyfem
 {
+	using namespace io;
 	using namespace utils;
 
 	namespace mesh

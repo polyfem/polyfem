@@ -4,8 +4,8 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/utils/RBFInterpolation.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <igl/Timer.h>
@@ -15,8 +15,9 @@
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace utils;
 
-	namespace utils
+	namespace io
 	{
 		namespace
 		{
@@ -34,7 +35,7 @@ namespace polyfem
 					return std::make_shared<NoInterpolation>();
 			}
 
-			//verify
+			// verify
 			template <typename XMLNode>
 			bool load_control(const XMLNode *control, json &args)
 			{
@@ -126,7 +127,7 @@ namespace polyfem
 					V.row(i) = vertices[i].transpose();
 			}
 
-			//Need to chage!
+			// Need to chage!
 			template <typename XMLNode>
 			int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double, std::string>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos, std::vector<std::string> &mats, std::vector<int> &mids)
 			{
@@ -293,13 +294,13 @@ namespace polyfem
 					}
 				}
 
-				//Duplicated surface id
+				// Duplicated surface id
 				for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("Surface"); child != NULL; child = child->NextSiblingElement("Surface"))
 				{
 					const std::string name = std::string(child->Attribute("name"));
 					names[name] = id;
 
-					//TODO  only tri3
+					// TODO  only tri3
 					for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("tri3"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("tri3"))
 					{
 						const std::string ids = std::string(nodeid->GetText());
@@ -332,7 +333,7 @@ namespace polyfem
 				}
 			}
 
-			//Need to chage!
+			// Need to chage!
 			template <typename XMLNode>
 			void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, const double dt, const std::string &root_file, GenericTensorProblem &gproblem)
 			{
@@ -464,9 +465,9 @@ namespace polyfem
 					const int id = names.at(name);
 					const std::string centers = resolve_path(std::string(child->Attribute("centers")), root_file);
 					const std::string values = resolve_path(std::string(child->Attribute("values")), root_file);
-					const std::string rbf = "thin_plate"; //TODO
-					const double eps = 1e-3;              //TODO
-					//TODO add is x,y,z
+					const std::string rbf = "thin_plate"; // TODO
+					const double eps = 1e-3;              // TODO
+					// TODO add is x,y,z
 
 					Eigen::MatrixXd centers_mat, values_mat;
 					read_matrix(centers, centers_mat);
@@ -531,7 +532,7 @@ namespace polyfem
 				}
 			}
 
-			//Need to chage!
+			// Need to chage!
 			template <typename XMLNode>
 			void load_loads(const XMLNode *loads, const std::map<std::string, int> &names, const double dt, GenericTensorProblem &gproblem)
 			{
@@ -571,7 +572,7 @@ namespace polyfem
 					{
 						const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
 						const double pressure = atof(pressures.c_str()) * (gproblem.is_time_dependent() ? dt : 1);
-						//TODO added minus here
+						// TODO added minus here
 						logger().trace("adding Pressure id={} pressure={}", names.at(name), -pressure);
 						gproblem.add_pressure_boundary(names.at(name), -pressure, get_interpolation(gproblem.is_time_dependent()));
 					}
@@ -582,7 +583,7 @@ namespace polyfem
 				}
 			}
 
-			//Need to chage!
+			// Need to chage!
 			template <typename XMLNode>
 			void load_body_loads(const XMLNode *loads, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
 			{
@@ -674,7 +675,7 @@ namespace polyfem
 
 			std::map<int, std::tuple<double, double, double, std::string>> materials;
 
-			//TODO teseo FIx me
+			// TODO teseo FIx me
 			const std::string formulation_in = load_materials(febio, materials);
 			if (!args_in.contains("tensor_formulation"))
 				state.args["tensor_formulation"] = formulation_in;
@@ -793,7 +794,7 @@ namespace polyfem
 			GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(state.problem.get());
 			gproblem.set_time_dependent(time_dependent);
 
-			const double dt = 1; //double(state.args["tend"]) / int(state.args["time_steps"]);
+			const double dt = 1; // double(state.args["tend"]) / int(state.args["time_steps"]);
 			const auto *boundaries = febio->FirstChildElement("Boundary");
 			load_boundary_conditions(boundaries, names, dt, path, gproblem);
 
@@ -807,5 +808,5 @@ namespace polyfem
 			timer.stop();
 			logger().info(" took {}s", timer.getElapsedTime());
 		}
-	} // namespace utils
+	} // namespace io
 } // namespace polyfem

@@ -10,8 +10,6 @@ set(SOURCES
 	MeshUtils.hpp
 	Obstacle.cpp
 	Obstacle.hpp
-	VTUWriter.cpp
-	VTUWriter.hpp
 )
 
 prepend_current_path(SOURCES)
