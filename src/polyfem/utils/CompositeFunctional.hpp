@@ -368,4 +368,26 @@ namespace polyfem
 		IntegrableFunctional get_volume_functional();
 		IntegrableFunctional get_center_trajectory_functional(const int d);
 	};
+
+	class CenterZTrajectoryFunctional : public CompositeFunctional
+	{
+	public:
+		CenterZTrajectoryFunctional()
+		{
+			functional_name = "CenterZTrajectory";
+			surface_integral = false;
+			transient_integral_type = "uniform";
+		}
+		~CenterZTrajectoryFunctional() = default;
+
+		double energy(State &state) override;
+		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+
+		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
+
+	private:
+		std::vector<Eigen::VectorXd> target_series;
+		IntegrableFunctional get_volume_functional();
+		IntegrableFunctional get_center_trajectory_functional(const int d);
+	};
 } // namespace polyfem

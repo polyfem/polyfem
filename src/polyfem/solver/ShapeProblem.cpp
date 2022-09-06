@@ -857,8 +857,18 @@ namespace polyfem
 
 		// initialize things after remeshing
 		state.mesh.reset();
+		state.mesh = nullptr;
 		state.assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
 
+		json in_args = state.args;
+		for (auto &geo : in_args["geometry"])
+			if (geo.contains("transformation"))
+				geo.erase("transformation");
+		if (in_args.contains("time") && in_args["time"] == nullptr)
+			in_args.erase("time");
+		std::cout << in_args << std::endl;
+		state.init(in_args, false);
+		
 		state.load_mesh();
 		state.compute_mesh_stats();
 		state.build_basis();

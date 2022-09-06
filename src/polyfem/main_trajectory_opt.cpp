@@ -142,6 +142,7 @@ int main(int argc, char **argv)
 	std::vector<std::string> opt_types;
 
 	json opt_params, trajectory_params;
+	std::string transient_integral_type = "";
 
 	Eigen::MatrixXd control_points, tangents, delta;
 	Eigen::Vector3d target_position;
@@ -188,6 +189,9 @@ int main(int argc, char **argv)
 			else
 				throw std::runtime_error("Matching type not specified!");
 			assert(matching_types.count(matching_type));
+
+			if (trajectory_params.contains("transient_integral_type"))
+				transient_integral_type = trajectory_params["transient_integral_type"];
 
 			if (trajectory_params.contains("path"))
 				target_path = trajectory_params["path"];
@@ -296,7 +300,12 @@ int main(int argc, char **argv)
 		state_reference.compute_mesh_stats();
 		state_reference.build_basis();
 
-		state_reference.args["output"]["advanced"]["save_time_sequence"] = false;
+		if (state_reference.problem->is_time_dependent())
+		{
+			state_reference.output_dir = "target";
+			std::filesystem::create_directories(state_reference.output_dir);
+		}
+
 		state_reference.assemble_rhs();
 		state_reference.assemble_stiffness_mat();
 		state_reference.solve_problem();
@@ -379,6 +388,9 @@ int main(int argc, char **argv)
 		func = CompositeFunctional::create("NodeTrajectory");
 	else
 		logger().error("Invalid target type!");
+
+	if (transient_integral_type != "")
+		func->set_transient_integral_type(transient_integral_type);
 
 	func->set_interested_ids(interested_body_ids, interested_boundary_ids);
 
