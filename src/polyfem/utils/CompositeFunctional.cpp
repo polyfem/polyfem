@@ -850,7 +850,44 @@ namespace polyfem
 		Eigen::MatrixXd C_H;
 		state.homogenize_weighted_linear_elasticity(C_H);
 
-		return -C_H(1, 1);
+		if (state.mesh->is_volume())
+		{
+			if (subtype == "trace")
+				return -C_H.trace();
+			else if (subtype == "E11")
+				return -C_H(0, 0);
+			else if (subtype == "E22")
+				return -C_H(1, 1);
+			else if (subtype == "E33")
+				return -C_H(2, 2);
+			else if (subtype == "E12")
+				return -C_H(0, 1);
+			else if (subtype == "E44")
+				return -C_H(3, 3);
+			else if (subtype == "E55")
+				return -C_H(4, 4);
+			else if (subtype == "E66")
+				return -C_H(5, 5);
+			else
+				throw std::runtime_error("Unknown functional subtype!");
+		}
+		else
+		{
+			if (subtype == "trace")
+				return -C_H.trace();
+			else if (subtype == "E11")
+				return -C_H(0, 0);
+			else if (subtype == "E22")
+				return -C_H(1, 1);
+			else if (subtype == "E33")
+				return -C_H(2, 2);
+			else if (subtype == "E12")
+				return -C_H(0, 1);
+			else
+				throw std::runtime_error("Unknown functional subtype!");
+		}
+
+		return -C_H(0, 0);
 	}
 
 	Eigen::VectorXd HomogenizedStiffnessFunctional::gradient(State &state, const std::string &type)
@@ -859,7 +896,44 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		state.homogenize_weighted_linear_elasticity_grad(C_H, grad);
 
-		return -grad.col(1);
+		if (state.mesh->is_volume())
+		{
+			if (subtype == "trace")
+				return -grad.col(0)-grad.col(7)-grad.col(14)-grad.col(28)-grad.col(35)-grad.col(42);
+			else if (subtype == "E11")
+				return -grad.col(0);
+			else if (subtype == "E22")
+				return -grad.col(7);
+			else if (subtype == "E33")
+				return -grad.col(14);
+			else if (subtype == "E12")
+				return -grad.col(1);
+			else if (subtype == "E44")
+				return -grad.col(21);
+			else if (subtype == "E55")
+				return -grad.col(28);
+			else if (subtype == "E66")
+				return -grad.col(35);
+			else
+				throw std::runtime_error("Unknown functional subtype!");
+		}
+		else
+		{
+			if (subtype == "trace")
+				return -grad.col(0)-grad.col(4)-grad.col(8);
+			else if (subtype == "E11")
+				return -grad.col(0);
+			else if (subtype == "E22")
+				return -grad.col(4);
+			else if (subtype == "E33")
+				return -grad.col(8);
+			else if (subtype == "E12")
+				return -grad.col(1);
+			else
+				throw std::runtime_error("Unknown functional subtype!");
+		}
+
+		return -grad.col(0);
 	}
 
 	double HomogenizedPermeabilityFunctional::energy(State &state)

@@ -206,7 +206,13 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
 
     Eigen::MatrixXd grad;
     state.homogenize_weighted_linear_elasticity_grad(homogenized_tensor, grad);
-    Eigen::VectorXd trace_grad = grad.rowwise().sum();
+    // Eigen::VectorXd trace_grad = grad.col(0) + grad.col(4) + grad.col(8);
+
+    Eigen::VectorXd random_coeff(grad.cols());
+    for (int i = 0; i < random_coeff.size(); i++)
+        random_coeff(i) = (rand() % 1000) / 1000.0;
+
+    Eigen::VectorXd total_grad = grad * random_coeff;
 
     // finite difference
     Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
@@ -223,8 +229,8 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     state.assembler.update_lame_params_density(density_mat - theta * dt);
     state.homogenize_weighted_linear_elasticity(homogenized_tensor2);
 
-    const double finite_diff = (homogenized_tensor1.trace() - homogenized_tensor2.trace()) / dt / 2;
-    const double analytic = (trace_grad.array() * theta.array()).sum();
+    const double finite_diff = ((homogenized_tensor1 - homogenized_tensor2).array() * random_coeff.array()).sum() / dt / 2;
+    const double analytic = (total_grad.array() * theta.array()).sum();
 
     std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
     REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);

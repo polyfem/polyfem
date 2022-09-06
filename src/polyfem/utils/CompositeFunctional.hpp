@@ -30,6 +30,7 @@ namespace polyfem
 
 	protected:
 		std::string functional_name;
+		std::string subtype = "";
 		int p = 2;             // only used in stress functional
 		bool surface_integral; // only can be true for trajectory functional
 		std::string transient_integral_type = "uniform";

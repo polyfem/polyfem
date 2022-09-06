@@ -575,7 +575,6 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
             }
         }
     }
-    rhs *= 2;
 
     rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 
@@ -599,7 +598,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
     
     adjoint.conservativeResize(n_bases * dim, adjoint.cols());
 
-    grad.setZero(bases.size(), unit_disp_ids.size());
+    grad.setZero(bases.size(), unit_disp_ids.size() * unit_disp_ids.size());
     for (int e = 0; e < bases.size(); e++)
     {
         ElementAssemblyValues vals;
@@ -613,37 +612,67 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
             double lambda, mu;
             params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
             
-            for (int id = 0; id < unit_disp_ids.size(); id++)
+            for (int a = 0; a < unit_disp_ids.size(); a++)
             {
-                Eigen::MatrixXd grad_sol(dim, dim), grad_adjoint(dim, dim);
-                grad_sol.setZero();
-                grad_adjoint.setZero();
+                Eigen::MatrixXd grad_sol_a(dim, dim), grad_adjoint_a(dim, dim);
+                grad_sol_a.setZero();
+                grad_adjoint_a.setZero();
                 for (const auto &v : vals.basis_values)
                     for (int d = 0; d < dim; d++)
                     {
                         double coeff = 0;
                         for (const auto &g : v.global)
-                            coeff += w(g.index * dim + d, id) * g.val;
+                            coeff += w(g.index * dim + d, a) * g.val;
 
-                        grad_sol.row(d) += v.grad_t_m.row(q) * coeff;
+                        grad_sol_a.row(d) += v.grad_t_m.row(q) * coeff;
 
                         coeff = 0;
                         for (const auto &g : v.global)
-                            coeff += adjoint(g.index * dim + d, id) * g.val;
-                        grad_adjoint.row(d) += v.grad_t_m.row(q) * coeff;
+                            coeff += adjoint(g.index * dim + d, a) * g.val;
+                        grad_adjoint_a.row(d) += v.grad_t_m.row(q) * coeff;
                     }
                 
-                Eigen::MatrixXd react_strain, adjoint_strain;
-                react_strain = (grad_sol + grad_sol.transpose()) / 2;
-                auto diff_strain = react_strain - unit_strains[id];
+                Eigen::MatrixXd react_strain_a, adjoint_strain_a;
+                react_strain_a = (grad_sol_a + grad_sol_a.transpose()) / 2;
+                auto diff_strain_a = react_strain_a - unit_strains[a];
 
-                adjoint_strain = (grad_adjoint + grad_adjoint.transpose()) / 2;
-                
-                const double value1 = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain.array() * adjoint_strain.array()).sum() + lambda * diff_strain.trace() * adjoint_strain.trace());
+                adjoint_strain_a = (grad_adjoint_a + grad_adjoint_a.transpose()) / 2;
 
-                const double value2 = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain.array() * diff_strain.array()).sum() + lambda * diff_strain.trace() * diff_strain.trace());
+                const double value1 = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain_a.array() * adjoint_strain_a.array()).sum() + lambda * diff_strain_a.trace() * adjoint_strain_a.trace());
 
-                grad(e, id) += (value1 + value2) * pow(params.density(e), params.density_power_ - 1) * params.density_power_;
+                for (int b = 0; b <= a; b++)
+                {
+                    Eigen::MatrixXd grad_sol_b(dim, dim), grad_adjoint_b(dim, dim);
+                    grad_sol_b.setZero();
+                    grad_adjoint_b.setZero();
+                    for (const auto &v : vals.basis_values)
+                        for (int d = 0; d < dim; d++)
+                        {
+                            double coeff = 0;
+                            for (const auto &g : v.global)
+                                coeff += w(g.index * dim + d, b) * g.val;
+
+                            grad_sol_b.row(d) += v.grad_t_m.row(q) * coeff;
+
+                            coeff = 0;
+                            for (const auto &g : v.global)
+                                coeff += adjoint(g.index * dim + d, b) * g.val;
+                            grad_adjoint_b.row(d) += v.grad_t_m.row(q) * coeff;
+                        }
+                    
+                    Eigen::MatrixXd react_strain_b, adjoint_strain_b;
+                    react_strain_b = (grad_sol_b + grad_sol_b.transpose()) / 2;
+                    auto diff_strain_b = react_strain_b - unit_strains[b];
+
+                    adjoint_strain_b = (grad_adjoint_b + grad_adjoint_b.transpose()) / 2;
+
+                    const double value2 = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain_b.array() * adjoint_strain_b.array()).sum() + lambda * diff_strain_b.trace() * adjoint_strain_b.trace());
+                    const double value3 = quadrature.weights(q) * vals.det(q) * (2 * mu * (diff_strain_a.array() * diff_strain_b.array()).sum() + lambda * diff_strain_a.trace() * diff_strain_b.trace());
+
+                    grad(e, a * unit_disp_ids.size() + b) += (value1 + value2 + value3) * pow(params.density(e), params.density_power_ - 1) * params.density_power_;
+                    if (a != b)
+                        grad(e, b * unit_disp_ids.size() + a) = grad(e, a * unit_disp_ids.size() + b);
+                }
             }
         }
     }
