@@ -99,7 +99,7 @@ namespace polyfem::utils
 		}
 	}
 
-	bool BoxSelection::inside(const RowVectorNd &p) const
+	bool BoxSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(bbox_[0].size() == p.size());
 		assert(bbox_[1].size() == p.size());
@@ -139,7 +139,7 @@ namespace polyfem::utils
 		id_ = selection["id"];
 	}
 
-	bool SphereSelection::inside(const RowVectorNd &p) const
+	bool SphereSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(center_.size() == p.size());
 
@@ -177,7 +177,7 @@ namespace polyfem::utils
 		}
 	}
 
-	bool AxisPlaneSelection::inside(const RowVectorNd &p) const
+	bool AxisPlaneSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		const double v = p[std::abs(axis_) - 1];
 
@@ -206,7 +206,7 @@ namespace polyfem::utils
 			point_ = normal_ * selection.value("offset", 0.0);
 	}
 
-	bool PlaneSelection::inside(const RowVectorNd &p) const
+	bool PlaneSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(p.size() == normal_.size());
 		const RowVectorNd pp = p - point_;

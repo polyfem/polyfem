@@ -16,7 +16,7 @@ namespace polyfem
 
 			virtual ~Selection() {}
 
-			virtual bool inside(const RowVectorNd &p) const = 0;
+			virtual bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const = 0;
 
 			virtual int id(const size_t element_id) const { return id_; }
 
@@ -55,7 +55,7 @@ namespace polyfem
 				const json &selection,
 				const BBox &mesh_bbox);
 
-			bool inside(const RowVectorNd &p) const override;
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
 
 		protected:
 			BBox bbox_;
@@ -70,7 +70,7 @@ namespace polyfem
 				const json &selection,
 				const BBox &mesh_bbox);
 
-			bool inside(const RowVectorNd &p) const override;
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
 
 		protected:
 			RowVectorNd center_;
@@ -86,7 +86,7 @@ namespace polyfem
 				const json &selection,
 				const BBox &mesh_bbox);
 
-			bool inside(const RowVectorNd &p) const override;
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
 
 		protected:
 			int axis_;
@@ -102,7 +102,7 @@ namespace polyfem
 				const json &selection,
 				const BBox &mesh_bbox);
 
-			bool inside(const RowVectorNd &p) const override;
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
 
 		protected:
 			RowVectorNd normal_;
@@ -117,7 +117,7 @@ namespace polyfem
 			UniformSelection(const int id)
 				: Selection(id) {}
 
-			bool inside(const RowVectorNd &p) const override { return true; }
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override { return true; }
 		};
 
 		///////////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ namespace polyfem
 			SpecifiedSelection(
 				const std::vector<int> &ids);
 
-			bool inside(const RowVectorNd &p) const override { return true; }
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override { return true; }
 
 			int id(const size_t element_id) const override;
 
