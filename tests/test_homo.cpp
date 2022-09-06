@@ -218,7 +218,7 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
     Eigen::MatrixXd theta(state.bases.size(), 1);
     for (int i = 0; i < theta.size(); i++)
-        theta(i) = (rand() % 1000 ) / 1000.0;
+        theta(i) = (rand() % 1000) / 1000.0;
     const double dt = 1e-8;
 
     // state.density.init_multimaterial(density_mat + theta * dt);
@@ -228,8 +228,11 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     // state.density.init_multimaterial(density_mat - theta * dt);
     state.assembler.update_lame_params_density(density_mat - theta * dt);
     state.homogenize_weighted_linear_elasticity(homogenized_tensor2);
+    
+    Eigen::MatrixXd f_diff_mat = homogenized_tensor1 - homogenized_tensor2;
+    Eigen::VectorXd f_diff(Eigen::Map<Eigen::VectorXd>(f_diff_mat.data(), f_diff_mat.cols()*f_diff_mat.rows()));
 
-    const double finite_diff = ((homogenized_tensor1 - homogenized_tensor2).array() * random_coeff.array()).sum() / dt / 2;
+    const double finite_diff = f_diff.dot(random_coeff) / dt / 2;
     const double analytic = (total_grad.array() * theta.array()).sum();
 
     std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
