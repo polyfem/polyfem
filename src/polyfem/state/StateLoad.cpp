@@ -1,7 +1,5 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/io/FEBioReader.hpp>
-
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -17,7 +15,6 @@ namespace polyfem
 {
 	using namespace basis;
 	using namespace mesh;
-	using namespace io;
 	using namespace utils;
 
 	void State::reset_mesh()
@@ -151,20 +148,6 @@ namespace polyfem
 		obstacle = mesh::read_obstacle_geometry(
 			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
 			args["root_path"], mesh->dimension(), names, vertices, cells);
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
-	}
-
-	void State::load_febio(const std::string &path, const json &args_in)
-	{
-		FEBioReader::load(path, args_in, *this);
-
-		igl::Timer timer;
-		timer.start();
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
