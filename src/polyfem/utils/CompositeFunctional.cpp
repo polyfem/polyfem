@@ -470,6 +470,9 @@ namespace polyfem
 				grad(1) += j == 0 ? 0 : coeffs(i + j * 4) * pow(bar_x(point(0)), i) * j * pow(bar_y(point(1)), j - 1);
 			}
 
+		grad(0) /= (corner_point(1, 0) - corner_point(0, 0));
+		grad(1) /= (corner_point(2, 1) - corner_point(0, 1));
+
 		assert(!std::isnan(grad(0)) && !std::isnan(grad(0)));
 	}
 
@@ -897,7 +900,7 @@ namespace polyfem
 		if (state.mesh->is_volume())
 		{
 			if (subtype == "trace")
-				return -grad.col(0)-grad.col(7)-grad.col(14)-grad.col(28)-grad.col(35)-grad.col(42);
+				return -grad.col(0) - grad.col(7) - grad.col(14) - grad.col(28) - grad.col(35) - grad.col(42);
 			else if (subtype == "E11")
 				return -grad.col(0);
 			else if (subtype == "E22")
@@ -918,7 +921,7 @@ namespace polyfem
 		else
 		{
 			if (subtype == "trace")
-				return -grad.col(0)-grad.col(4)-grad.col(8);
+				return -grad.col(0) - grad.col(4) - grad.col(8);
 			else if (subtype == "E11")
 				return -grad.col(0);
 			else if (subtype == "E22")

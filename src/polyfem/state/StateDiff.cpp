@@ -2154,8 +2154,6 @@ namespace polyfem
 				one_form((i - 1) * boundary_nodes.size() + b) = -(1. / beta_dt) * adjoint_p[i](boundary_nodes[b]);
 			}
 		}
-
-		one_form *= 2;
 	}
 
 	void State::solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p)
