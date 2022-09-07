@@ -19,53 +19,63 @@ namespace polyfem
 
 		virtual ~OptimizationProblem() = default;
 
-		void solve_pde(const TVector &x);
+		virtual void solve_pde(const TVector &x) final;
+
+		virtual double target_value(const TVector &x) = 0;
+		virtual void target_gradient(const TVector &x, TVector &gradv) = 0;
+
+		virtual double value(const TVector &x) = 0;
+		virtual void gradient(const TVector &x, TVector &gradv) = 0;
+
+		virtual double value(const TVector &x, const bool only_elastic) { return value(x); }
+		virtual void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); }
 
 		virtual void smoothing(const TVector &x, TVector &new_x) {}
 		virtual bool is_intersection_free(const TVector &x) { return true; }
 
-		virtual void save_to_file(const TVector &x0)
-		{
-			if (iter % save_freq == 0)
-			{
-				logger().debug("Save to file {} ...", state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)));
-				state.save_vtu(state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)), 0.);
-			}
-		}
+		virtual void save_to_file(const TVector &x0) final;
 
-		bool stop(const TVector &x) { return false; }
+		virtual bool stop(const TVector &x) { return false; }
 
-		virtual int optimization_dim() { return 0; }
+		virtual int optimization_dim() = 0;
 
 		virtual bool solution_changed_pre(const TVector &newX) = 0;
 
-		virtual void solution_changed_post(const TVector &newX) 
+		virtual void solution_changed_post(const TVector &newX)
 		{
 			cur_x = newX;
 			cur_grad.resize(0);
-			cur_val = std::nan(""); 
+			cur_val = std::nan("");
 		}
 
-		virtual TVector get_lower_bound(const TVector& x) 
+		virtual TVector get_lower_bound(const TVector &x)
 		{
 			TVector min(x.size());
 			min.setConstant(std::numeric_limits<double>::min());
-			return min; 
+			return min;
 		}
-		virtual TVector get_upper_bound(const TVector& x) 
+		virtual TVector get_upper_bound(const TVector &x)
 		{
 			TVector max(x.size());
 			max.setConstant(std::numeric_limits<double>::max());
-			return max; 
+			return max;
 		}
 
-		void solution_changed(const TVector &newX);
+		virtual void solution_changed(const TVector &newX) final;
 
 		virtual void post_step(const int iter_num, const TVector &x0) { iter++; }
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1);
 
-		double heuristic_max_step(const TVector &dx)
+		virtual void line_search_end(bool failed) = 0;
+
+		virtual bool is_step_valid(const TVector &x0, const TVector &x1) = 0;
+
+		virtual bool remesh(TVector &x) = 0;
+
+		virtual TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
+
+		virtual double heuristic_max_step(const TVector &dx)
 		{
 			assert(opt_nonlinear_params.contains("max_step_size"));
 			return opt_nonlinear_params["max_step_size"];
@@ -75,8 +85,16 @@ namespace polyfem
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 
 		virtual int n_inequality_constraints() { return 0; }
-		virtual double inequality_constraint_val(const TVector &x, const int index) { assert(false); return std::nan(""); }
-		virtual TVector inequality_constraint_grad(const TVector &x, const int index) { assert(false); return TVector(); }
+		virtual double inequality_constraint_val(const TVector &x, const int index)
+		{
+			assert(false);
+			return std::nan("");
+		}
+		virtual TVector inequality_constraint_grad(const TVector &x, const int index)
+		{
+			assert(false);
+			return TVector();
+		}
 
 	protected:
 		State &state;

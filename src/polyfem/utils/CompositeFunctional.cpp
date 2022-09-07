@@ -392,8 +392,6 @@ namespace polyfem
 			for (int iter = 0; iter < 50; ++iter)
 			{
 				t(i) -= g_(t(i), i) / g__(t(i), i);
-				if (t(i) < 0 || t(i) > 1)
-					break;
 			}
 		}
 

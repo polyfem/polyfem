@@ -234,8 +234,7 @@ namespace polyfem
 			}
 			// std::cout << kv.first << "\t" << kv.second << std::endl;
 			// std::cout << "time steps: " << time_steps << std::endl;
-			logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, kv.second);
-			std::cout << dirichlet_bc << std::endl;
+			logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
 			problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
 		}
 

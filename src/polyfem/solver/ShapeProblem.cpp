@@ -298,11 +298,11 @@ namespace polyfem
 			for (int b : this->fixed_nodes)
 				for (int d = 0; d < this->dim; d++)
 					grad_x(b * this->dim + d) = 0;
-			
+
 			for (const auto &pair : this->tied_nodes)
 			{
-				grad_x(seqN(pair[0]*this->dim,this->dim)) += grad_x(seqN(pair[1]*this->dim,this->dim));
-				grad_x(seqN(pair[1]*this->dim,this->dim)).setZero();
+				grad_x(seqN(pair[0] * this->dim, this->dim)) += grad_x(seqN(pair[1] * this->dim, this->dim));
+				grad_x(seqN(pair[1] * this->dim, this->dim)).setZero();
 			}
 		};
 	}
@@ -624,20 +624,6 @@ namespace polyfem
 		_use_cached_candidates = false;
 	}
 
-	void ShapeProblem::save_to_file(const TVector &x0)
-	{
-		OptimizationProblem::save_to_file(x0);
-		if (!state.mesh->is_volume())
-			state.mesh->save(state.resolve_output_path(fmt::format("opt_{:d}.obj", iter)));
-		else
-		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state.get_vf(V, F);
-			igl::writeMESH(state.resolve_output_path(fmt::format("opt_{:d}.mesh", iter)), V, F, Eigen::MatrixXi());
-		}
-	}
-
 	void ShapeProblem::post_step(const int iter_num, const TVector &x0)
 	{
 		if (boundary_smoothing_params.contains("adjust_weight_period"))
@@ -868,7 +854,7 @@ namespace polyfem
 			in_args.erase("time");
 		std::cout << in_args << std::endl;
 		state.init(in_args, false);
-		
+
 		state.load_mesh();
 		state.compute_mesh_stats();
 		state.build_basis();
@@ -938,7 +924,7 @@ namespace polyfem
 		Eigen::MatrixXd points, normals;
 		Eigen::VectorXd weights;
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		
+
 		Eigen::VectorXd vertex_perturbation;
 		vertex_perturbation.setZero(state.n_geom_bases * dim, 1);
 

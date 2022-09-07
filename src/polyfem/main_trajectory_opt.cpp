@@ -558,7 +558,7 @@ int main(int argc, char **argv)
 	else if (opt_type == "control")
 		control_optimization(state, func);
 	else if (opt_type == "" && opt_types.size() > 0)
-		general_optimization(state, opt_types, func);
+		general_optimization(state, func);
 	else
 		logger().error("Invalid optimization type!");
 
