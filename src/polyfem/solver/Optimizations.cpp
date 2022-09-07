@@ -154,7 +154,7 @@ namespace polyfem
 
 		if (initial_params["restriction"].get<std::string>() == "velocity")
 		{
-			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+			initial_problem->x_to_param = [initial_guess_sol, initial_guess_vel, body_id_map, dim](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state) {
 				init_sol = initial_guess_sol;
 				init_vel = initial_guess_vel;
 				for (int e = 0; e < state.bases.size(); e++)
@@ -165,19 +165,19 @@ namespace polyfem
 					for (auto &bs : state.bases[e].bases)
 						for (auto &g : bs.global())
 							for (int d = 0; d < dim; d++)
-								init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+								init_vel(g.index * dim + d) = x(body_id_map.at(body_id)[1] * dim + d);
 				}
 				std::cout << "initial velocity: " << std::setprecision(16) << x.transpose() << "\n";
 			};
 
-			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->param_to_x = [body_id_map, dim](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size());
 				for (auto i : body_id_map)
 					for (int d = 0; d < dim; d++)
 						x(i.second[1] * dim + d) = init_vel(i.second[0] * dim + d);
 			};
 
-			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->dparam_to_dx = [body_id_map, dim, dof](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size());
 				std::vector<bool> visited(dof, false);
 				for (int e = 0; e < state.bases.size(); e++)
@@ -193,14 +193,14 @@ namespace polyfem
 							else
 								continue;
 							for (int d = 0; d < dim; d++)
-								x(dim * body_id_map[body_id][1] + d) += init_vel(g.index * dim + d);
+								x(dim * body_id_map.at(body_id)[1] + d) += init_vel(g.index * dim + d);
 						}
 				}
 			};
 		}
 		else if (initial_params["restriction"].get<std::string>() == "velocityXZ")
 		{
-			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+			initial_problem->x_to_param = [initial_guess_sol, initial_guess_vel, body_id_map, dim](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state) {
 				init_sol = initial_guess_sol;
 				init_vel = initial_guess_vel;
 				for (int e = 0; e < state.bases.size(); e++)
@@ -211,12 +211,12 @@ namespace polyfem
 					for (auto &bs : state.bases[e].bases)
 						for (auto &g : bs.global())
 							for (int d = 0; d < dim; d++)
-								init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+								init_vel(g.index * dim + d) = x(body_id_map.at(body_id)[1] * dim + d);
 				}
 				logger().debug("initial velocity: {}", x.transpose());
 			};
 
-			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->param_to_x = [body_id_map, dim](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size());
 				for (auto i : body_id_map)
 					for (int d = 0; d < dim; d++)
@@ -224,7 +224,7 @@ namespace polyfem
 				logger().debug("initial velocity: {}", x.transpose());
 			};
 
-			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->dparam_to_dx = [body_id_map, dim, dof](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size());
 				std::vector<bool> visited(dof, false);
 				for (int e = 0; e < state.bases.size(); e++)
@@ -243,7 +243,7 @@ namespace polyfem
 							{
 								if (d == 1)
 									continue;
-								x(dim * body_id_map[body_id][1] + d) += init_vel(g.index * dim + d);
+								x(dim * body_id_map.at(body_id)[1] + d) += init_vel(g.index * dim + d);
 							}
 						}
 				}
@@ -251,7 +251,7 @@ namespace polyfem
 		}
 		else if (initial_params["restriction"].get<std::string>() == "position")
 		{
-			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+			initial_problem->x_to_param = [body_id_map, dim, dof](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state) {
 				init_sol.setZero(dof * dim, 1);
 				init_vel.setZero(dof * dim, 1);
 				for (int e = 0; e < state.bases.size(); e++)
@@ -262,12 +262,12 @@ namespace polyfem
 					for (auto &bs : state.bases[e].bases)
 						for (auto &g : bs.global())
 							for (int d = 0; d < dim; d++)
-								init_sol(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
+								init_sol(g.index * dim + d) = x(body_id_map.at(body_id)[1] * dim + d);
 				}
 				logger().debug("initial solution: {}", x.transpose());
 			};
 
-			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->param_to_x = [body_id_map, dim](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size());
 				for (auto i : body_id_map)
 				{
@@ -277,7 +277,7 @@ namespace polyfem
 				logger().debug("initial solution: {}", x.transpose());
 			};
 
-			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->dparam_to_dx = [body_id_map, dim, dof](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size());
 				std::vector<bool> visited(dof, false);
 				for (int e = 0; e < state.bases.size(); e++)
@@ -293,14 +293,14 @@ namespace polyfem
 							else
 								continue;
 							for (int d = 0; d < dim; d++)
-								x(dim * body_id_map[body_id][1] + d) += init_sol(g.index * dim + d);
+								x(dim * body_id_map.at(body_id)[1] + d) += init_sol(g.index * dim + d);
 						}
 				}
 			};
 		}
 		else
 		{
-			initial_problem->x_to_param = [&](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+			initial_problem->x_to_param = [initial_guess_sol, initial_guess_vel, body_id_map, dim](const InitialConditionProblem::TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state) {
 				init_sol = initial_guess_sol;
 				init_vel = initial_guess_vel;
 				for (int e = 0; e < state.bases.size(); e++)
@@ -310,15 +310,15 @@ namespace polyfem
 						for (auto &g : bs.global())
 							for (int d = 0; d < dim; d++)
 							{
-								init_sol(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d);
-								init_vel(g.index * dim + d) = x(body_id_map[body_id][1] * dim + d + dim * body_id_map.size());
+								init_sol(g.index * dim + d) = x(body_id_map.at(body_id)[1] * dim + d);
+								init_vel(g.index * dim + d) = x(body_id_map.at(body_id)[1] * dim + d + dim * body_id_map.size());
 							}
 				}
 				logger().debug("initial velocity: {}", x.tail(x.size() / 2).transpose());
 				logger().debug("initial position: {}", x.head(x.size() / 2).transpose());
 			};
 
-			initial_problem->param_to_x = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->param_to_x = [body_id_map, dim](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size() * 2);
 				for (auto i : body_id_map)
 					for (int d = 0; d < dim; d++)
@@ -330,7 +330,7 @@ namespace polyfem
 				logger().debug("initial position: {}", x.head(x.size() / 2).transpose());
 			};
 
-			initial_problem->dparam_to_dx = [&](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+			initial_problem->dparam_to_dx = [body_id_map, dim, dof](InitialConditionProblem::TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 				x.setZero(dim * body_id_map.size() * 2);
 				std::vector<bool> visited(dof, false);
 				for (int e = 0; e < state.bases.size(); e++)
@@ -345,14 +345,14 @@ namespace polyfem
 								continue;
 							for (int d = 0; d < dim; d++)
 							{
-								x(dim * body_id_map[body_id][1] + d) += init_sol(g.index * dim + d);
-								x(dim * body_id_map[body_id][1] + d + dim * body_id_map.size()) += init_vel(g.index * dim + d);
+								x(dim * body_id_map.at(body_id)[1] + d) += init_sol(g.index * dim + d);
+								x(dim * body_id_map.at(body_id)[1] + d + dim * body_id_map.size()) += init_vel(g.index * dim + d);
 							}
 						}
 				}
 			};
 		}
-		initial_problem->param_to_x(x_initial, state.initial_sol_update, state.initial_vel_update);
+		initial_problem->param_to_x(x_initial, state.initial_sol_update, state.initial_vel_update, state);
 
 		return initial_problem;
 	}
@@ -407,7 +407,7 @@ namespace polyfem
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
 
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -415,12 +415,12 @@ namespace polyfem
 					{
 						const int body_id = state.mesh->get_body_id(e);
 
-						cur_lambdas(e) = x(body_id_map[body_id][1] * 2 + 0);
-						cur_mus(e) = x(body_id_map[body_id][1] * 2 + 1);
+						cur_lambdas(e) = x(body_id_map.at(body_id)[1] * 2 + 0);
+						cur_mus(e) = x(body_id_map.at(body_id)[1] * 2 + 1);
 					}
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map, dof](MaterialProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(2 * body_id_map.size());
@@ -431,19 +431,19 @@ namespace polyfem
 					}
 					logger().debug("material: {}", x.transpose());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(2 * body_id_map.size());
 					for (int e = 0; e < dof; e++)
 					{
 						const int body_id = state.mesh->get_body_id(e);
-						dx(body_id_map[body_id][1] * 2 + 0) += dparams(e);
-						dx(body_id_map[body_id][1] * 2 + 1) += dparams(e + dof);
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e + dof);
 					}
 				};
 			}
 			else if (material_params["restriction"].get<std::string>() == "log")
 			{
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [dof](const MaterialProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 					cur_mus = x.tail(dof).array().exp().matrix();
@@ -451,7 +451,7 @@ namespace polyfem
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 				};
 
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [dof](MaterialProblem::TVector &x, State &state) {
 					x.resize(2 * dof);
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
@@ -460,7 +460,7 @@ namespace polyfem
 					x.head(dof) = cur_lambdas.array().log().matrix();
 				};
 
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.resize(dof * 2);
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
@@ -474,7 +474,7 @@ namespace polyfem
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
 
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -486,8 +486,8 @@ namespace polyfem
 						const int body_id = state.mesh->get_body_id(e);
 						if (!body_id_map.count(body_id))
 							continue;
-						cur_lambdas(e) = std::exp(x(body_id_map[body_id][1] * 2 + 0));
-						cur_mus(e) = std::exp(x(body_id_map[body_id][1] * 2 + 1));
+						cur_lambdas(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 0));
+						cur_mus(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 1));
 					}
 					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size());
 					for (int i = 0; i < x.size(); i++)
@@ -495,7 +495,7 @@ namespace polyfem
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 					logger().debug("material: {}", x_display.transpose());
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(2 * body_id_map.size());
@@ -509,7 +509,7 @@ namespace polyfem
 						x_display(i) = std::exp(x(i));
 					logger().debug("material: {}", x_display.transpose());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					dx.setZero(2 * body_id_map.size());
@@ -518,8 +518,8 @@ namespace polyfem
 						const int body_id = state.mesh->get_body_id(e);
 						if (!body_id_map.count(body_id))
 							continue;
-						dx(body_id_map[body_id][1] * 2 + 0) += dparams(e) * cur_lambdas(e);
-						dx(body_id_map[body_id][1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * cur_lambdas(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
 					}
 				};
 			}
@@ -527,7 +527,7 @@ namespace polyfem
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
 
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -538,8 +538,8 @@ namespace polyfem
 					{
 						const int body_id = state.mesh->get_body_id(e);
 
-						cur_lambdas(e) = std::exp(x(body_id_map[body_id][1] * 2 + 0));
-						cur_mus(e) = std::exp(x(body_id_map[body_id][1] * 2 + 1));
+						cur_lambdas(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 0));
+						cur_mus(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 1));
 					}
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 
@@ -551,7 +551,7 @@ namespace polyfem
 					logger().debug("material: {}", x_display.transpose());
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(2 * body_id_map.size() + 1);
@@ -568,15 +568,15 @@ namespace polyfem
 					logger().debug("material: {}", x_display.transpose());
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					dx.setZero(2 * body_id_map.size() + 1);
 					for (int e = 0; e < dof; e++)
 					{
 						const int body_id = state.mesh->get_body_id(e);
-						dx(body_id_map[body_id][1] * 2 + 0) += dparams(e) * cur_lambdas(e);
-						dx(body_id_map[body_id][1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * cur_lambdas(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
 					}
 					dx(dx.size() - 1) = dparams(2 * dof) * state.args["contact"]["friction_coefficient"].get<double>();
 				};
@@ -585,7 +585,7 @@ namespace polyfem
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
 
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -596,8 +596,8 @@ namespace polyfem
 					{
 						const int body_id = state.mesh->get_body_id(e);
 
-						cur_lambdas(e) = std::exp(x(body_id_map[body_id][1] * 2 + 0));
-						cur_mus(e) = std::exp(x(body_id_map[body_id][1] * 2 + 1));
+						cur_lambdas(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 0));
+						cur_mus(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 1));
 					}
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 
@@ -611,7 +611,7 @@ namespace polyfem
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(2 * body_id_map.size() + 3);
@@ -631,15 +631,15 @@ namespace polyfem
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					dx.setZero(2 * body_id_map.size() + 3);
 					for (int e = 0; e < dof; e++)
 					{
 						const int body_id = state.mesh->get_body_id(e);
-						dx(body_id_map[body_id][1] * 2 + 0) += dparams(e) * cur_lambdas(e);
-						dx(body_id_map[body_id][1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * cur_lambdas(e);
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
 					}
 					dx.tail(3) = dparams.tail(3);
 					dx(dx.size() - 3) = dparams(dparams.size() - 3) * state.args["contact"]["friction_coefficient"].get<double>();
@@ -649,14 +649,14 @@ namespace polyfem
 			}
 			else if (material_params["restriction"].get<std::string>() == "friction_damping")
 			{
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
 					state.args["contact"]["friction_coefficient"] = x(x.size() - 3);
 					state.damping_assembler.local_assembler().set_params(x(x.size() - 2), x(x.size() - 1));
 
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
 					x.setZero(3);
 
 					x(x.size() - 3) = state.args["contact"]["friction_coefficient"].get<double>();
@@ -666,7 +666,7 @@ namespace polyfem
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(3);
 
 					dx.tail(3) = dparams.tail(3);
@@ -676,19 +676,19 @@ namespace polyfem
 			}
 			else if (material_params["restriction"].get<std::string>() == "friction")
 			{
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
 					state.args["contact"]["friction_coefficient"] = x(0);
 
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
 					x.setZero(1);
 
 					x(0) = state.args["contact"]["friction_coefficient"].get<double>();
 
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(1);
 
 					dx(0) = dparams(dparams.size() - 3);
@@ -698,11 +698,11 @@ namespace polyfem
 			}
 			else if (material_params["restriction"].get<std::string>() == "damping")
 			{
-				material_problem->x_to_param = [&](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
 					state.damping_assembler.local_assembler().set_params(x(x.size() - 2), x(x.size() - 1));
 					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
 				};
-				material_problem->param_to_x = [&](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
 					x.setZero(2);
 
 					x(x.size() - 2) = state.damping_assembler.local_assembler().get_psi();
@@ -710,7 +710,7 @@ namespace polyfem
 
 					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
 				};
-				material_problem->dparam_to_dx = [&](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(2);
 
 					dx.tail(2) = dparams.tail(2);

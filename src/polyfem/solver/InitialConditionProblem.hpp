@@ -27,7 +27,7 @@ namespace polyfem
 
 		bool solution_changed_pre(const TVector &newX) override;
 
-		std::function<void(const TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel)> x_to_param;
-		std::function<void(TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel)> param_to_x, dparam_to_dx;
+		std::function<void(const TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state)> x_to_param;
+		std::function<void(TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state)> param_to_x, dparam_to_dx;
 	};
 } // namespace polyfem

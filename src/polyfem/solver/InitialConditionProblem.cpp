@@ -17,7 +17,7 @@ namespace polyfem
 
 		const int dof = state.n_bases;
 		const int dim_ = dim;
-		x_to_param = [dim_, dof](const TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel) {
+		x_to_param = [dim_, dof](const TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state) {
 			init_sol.setZero(dof * dim_, 1);
 			init_vel.setZero(dof * dim_, 1);
 			for (int i = 0; i < dof; i++)
@@ -25,11 +25,11 @@ namespace polyfem
 					init_vel(i * dim_ + d) = x(d);
 		};
 
-		param_to_x = [dim_](TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+		param_to_x = [dim_](TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 			x = init_vel.block(0, 0, dim_, 1);
 		};
 
-		dparam_to_dx = [dim_, dof](TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel) {
+		dparam_to_dx = [dim_, dof](TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state) {
 			x.setZero(dim_);
 			for (int i = 0; i < dof; i++)
 				x += init_vel.block(i * dim_, 0, dim_, 1);
@@ -60,12 +60,12 @@ namespace polyfem
 			init_vel(i) = tmp(i + init_sol.size());
 		}
 
-		dparam_to_dx(gradv, init_sol, init_vel);
+		dparam_to_dx(gradv, init_sol, init_vel, state);
 	}
 
 	bool InitialConditionProblem::solution_changed_pre(const TVector &newX)
 	{
-		x_to_param(newX, state.initial_sol_update, state.initial_vel_update);
+		x_to_param(newX, state.initial_sol_update, state.initial_vel_update, state);
 
 		return true;
 	}
