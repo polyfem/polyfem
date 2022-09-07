@@ -212,6 +212,8 @@ namespace polyfem
 
 		double target_weight = 1;
 
+		int optimization_dim_ = 0;
+
 		// volume constraints
 		bool has_volume_constraint;
 		json volume_params;
