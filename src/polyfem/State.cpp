@@ -1673,7 +1673,7 @@ void State::build_collision_mesh(
 		}
 		// spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 		solver->getInfo(solver_info);
-		std::cout << A.rows() << " " << sol.rows() << " " << sol.cols() << " " << rhs.rows() << " " << rhs.cols() << "\n";
+
 		const auto error = (A * sol - rhs).norm();
 		if (error > 1e-4)
 			logger().error("Solver error: {}", error);

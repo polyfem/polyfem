@@ -78,7 +78,7 @@ double cross_elastic2(double x, double y)
 	return 0.1;
 }
 
-TEST_CASE("elastic_homo", "[homogenization]")
+TEST_CASE("density_elastic_homo", "[homogenization]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"({
@@ -147,7 +147,7 @@ TEST_CASE("elastic_homo", "[homogenization]")
     REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
 }
 
-TEST_CASE("elastic_homo_grad", "[homogenization]")
+TEST_CASE("density_elastic_homo_grad", "[homogenization]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"({
@@ -239,7 +239,93 @@ TEST_CASE("elastic_homo_grad", "[homogenization]")
     REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);
 }
 
-TEST_CASE("stokes_homo", "[homogenization]")
+TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"({
+        "geometry": [
+            {
+                "mesh": "",
+                "n_refs": 0
+            }
+        ],
+        "space": {
+            "discr_order": 1,
+            "advanced": {
+                "quadrature_order": 5
+            }
+        },
+        "solver": {
+            "linear": {
+                "solver": "Eigen::PardisoLDLT"
+            }
+        },
+        "boundary_conditions": {
+            "periodic_boundary": true
+        },
+        "materials": {
+            "homogenization": true,
+            "type": "LinearElasticity",
+            "E": 10,
+            "nu": 0.2
+        }
+    })"_json;
+    in_args["geometry"][0]["mesh"] = path + "/../cross2d.msh";
+
+	State state(16);
+	state.init_logger("", spdlog::level::level_enum::err, false);
+	state.init(in_args, false);
+
+	state.load_mesh();
+	state.compute_mesh_stats();
+	state.build_basis();
+
+    Eigen::MatrixXd homogenized_tensor;
+
+    Eigen::MatrixXd grad;
+    state.homogenize_linear_elasticity_shape_grad(homogenized_tensor, grad);
+    // Eigen::VectorXd trace_grad = grad.col(0) + grad.col(4) + grad.col(8);
+
+    Eigen::VectorXd random_coeff(grad.cols());
+    for (int i = 0; i < random_coeff.size(); i++)
+        random_coeff(i) = (rand() % 1000) / 1000.0;
+
+    Eigen::VectorXd total_grad = grad * random_coeff;
+
+    const int dim = state.mesh->dimension();
+    // finite difference
+    Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
+    Eigen::MatrixXd theta(state.n_geom_bases * dim, 1);
+    for (int i = 0; i < theta.size(); i++)
+        theta(i) = (rand() % 1000) / 1000.0;
+
+    for (int i = 0; i < state.n_geom_bases; i++)
+    {
+        auto node = state.geom_mesh_nodes->node_position(i);
+        if (node(0) > 0.5) node(0) = 1 - node(0);
+        if (node(1) > 0.5) node(1) = 1 - node(1);
+        if (node.minCoeff() < 1e-3)
+            theta.block(i * dim, 0, dim, 1).setZero();
+    }
+    const double dt = 1e-7;
+
+    state.perturb_mesh(theta * dt);
+    state.homogenization(homogenized_tensor1);
+
+    state.perturb_mesh(theta * (-2*dt));
+    state.homogenization(homogenized_tensor2);
+    
+    Eigen::MatrixXd f_diff_mat = homogenized_tensor1 - homogenized_tensor2;
+    Eigen::VectorXd f_diff(Eigen::Map<Eigen::VectorXd>(f_diff_mat.data(), f_diff_mat.cols()*f_diff_mat.rows()));
+
+    const double finite_diff = f_diff.dot(random_coeff) / dt / 2;
+    const double analytic = (total_grad.array() * theta.array()).sum();
+
+    std::cout << "Finite Diff: " << finite_diff << ", analytic: " << analytic << "\n";
+    REQUIRE(fabs((analytic - finite_diff) / std::max(finite_diff, analytic)) < 1e-3);
+}
+
+TEST_CASE("density_stokes_homo", "[homogenization]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"({
@@ -310,7 +396,7 @@ TEST_CASE("stokes_homo", "[homogenization]")
     REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
 }
 
-TEST_CASE("stokes_homo_grad", "[homogenization]")
+TEST_CASE("density_stokes_homo_grad", "[homogenization]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"({

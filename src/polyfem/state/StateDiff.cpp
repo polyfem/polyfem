@@ -371,6 +371,7 @@ namespace polyfem
 
 		// update assembly cache
 		ass_vals_cache.clear();
+		pressure_ass_vals_cache.clear();
 		if (n_bases <= args["cache_size"])
 		{
 			ass_vals_cache.init(mesh->is_volume(), bases, gbases);
