@@ -1047,6 +1047,11 @@ namespace polyfem
 				}
 			}
 		}
+
+		if (!problem->is_time_dependent() && boundary_nodes.empty())
+		{
+			log_and_throw_error("Static problem need to have some Dirichlet nodes!");
+		}
 	}
 
 	void State::build_polygonal_basis()
