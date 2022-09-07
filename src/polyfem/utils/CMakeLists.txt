@@ -43,6 +43,7 @@ set(SOURCES
 	RefElementSampler.cpp
 	RefElementSampler.hpp
 	SplineParam.hpp
+	CompositeSplineParam.hpp
 	StringUtils.cpp
 	StringUtils.hpp
 	ExpressionValue.cpp

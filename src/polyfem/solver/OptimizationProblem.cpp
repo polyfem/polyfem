@@ -1,6 +1,10 @@
 #include "OptimizationProblem.hpp"
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <igl/writeOBJ.h>
+#include <igl/writeMESH.h>
+#include <igl/write_triangle_mesh.h>
+
 namespace polyfem
 {
 	namespace
@@ -160,6 +164,26 @@ namespace polyfem
 			gradient(x0, gradv);
 
 			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
+		}
+	}
+
+	void OptimizationProblem::save_to_file(const TVector &x0)
+	{
+		logger().info("Iter {} Save Freq {}", iter, save_freq);
+		if (iter % save_freq == 0)
+		{
+			logger().debug("Save to file {} ...", state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)));
+			state.save_vtu(state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)), 0.);
+
+			if (!state.mesh->is_volume())
+				state.mesh->save(state.resolve_output_path(fmt::format("opt_{:d}.obj", iter)));
+			else
+			{
+				Eigen::MatrixXd V;
+				Eigen::MatrixXi F;
+				state.get_vf(V, F);
+				igl::writeMESH(state.resolve_output_path(fmt::format("opt_{:d}.mesh", iter)), V, F, Eigen::MatrixXi());
+			}
 		}
 	}
 } // namespace polyfem

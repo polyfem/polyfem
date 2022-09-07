@@ -147,12 +147,14 @@ namespace polyfem
 	public:
 		ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
-		double target_value(const TVector &x);
+		using OptimizationProblem::gradient;
+
+		double target_value(const TVector &x) override;
 		double volume_value(const TVector &x);
 		double smooth_value(const TVector &x);
 		double barrier_energy(const TVector &x);
 
-		void target_gradient(const TVector &x, TVector &gradv);
+		void target_gradient(const TVector &x, TVector &gradv) override;
 		void volume_gradient(const TVector &x, TVector &gradv);
 		void smooth_gradient(const TVector &x, TVector &gradv);
 		void barrier_gradient(const TVector &x, TVector &gradv);
@@ -160,12 +162,15 @@ namespace polyfem
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		double value(const TVector &x, const bool only_elastic) { if (only_elastic) return 0.; return value(x); };
-		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); };
+		double value(const TVector &x, const bool only_elastic) override
+		{
+			if (only_elastic)
+				return 0.;
+			return value(x);
+		};
 
 		void smoothing(const TVector &x, TVector &new_x) override;
 		bool is_step_valid(const TVector &x0, const TVector &x1);
-		TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 		bool is_intersection_free(const TVector &x) override;
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1) override;
@@ -174,12 +179,11 @@ namespace polyfem
 		void line_search_end(bool failed);
 		void post_step(const int iter_num, const TVector &x0) override;
 
-		int optimization_dim() override { return 0; }
+		void set_optimization_dim(const int optimization_dim) { optimization_dim_ = optimization_dim; }
+		int optimization_dim() override { return optimization_dim_; }
 
 		bool solution_changed_pre(const TVector &newX) override;
 		void solution_changed_post(const TVector &newX) override;
-
-		void save_to_file(const TVector &x0) override;
 
 		bool remesh(TVector &x);
 		void build_fixed_nodes();
@@ -207,6 +211,8 @@ namespace polyfem
 		json shape_params, slim_params;
 
 		double target_weight = 1;
+
+		int optimization_dim_ = 0;
 
 		// volume constraints
 		bool has_volume_constraint;
