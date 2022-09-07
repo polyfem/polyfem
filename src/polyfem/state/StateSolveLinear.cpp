@@ -42,9 +42,17 @@ namespace polyfem
 		}
 
 		Eigen::VectorXd x;
-		spectrum = dirichlet_solve(
-			*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
-			assembler.is_fluid(formulation()), use_avg_pressure);
+		if (args["differentiable"])
+		{
+			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
+		}
+		else
+		{
+			spectrum = dirichlet_solve(
+				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
+				assembler.is_fluid(formulation()), use_avg_pressure);
+		}
 
 		solver->getInfo(solver_info);
 
@@ -67,11 +75,13 @@ namespace polyfem
 		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
 
 		// --------------------------------------------------------------------
-
-		std::unique_ptr<polysolve::LinearSolver> solver =
+		if (lin_solver_cached)
+			lin_solver_cached.reset();
+		
+		lin_solver_cached =
 			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(args["solver"]["linear"]);
-		logger().info("{}...", solver->name());
+		lin_solver_cached->setParameters(args["solver"]["linear"]);
+		logger().info("{}...", lin_solver_cached->name());
 
 		// --------------------------------------------------------------------
 
@@ -84,7 +94,7 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
-		solve_linear(solver, A, b, args["output"]["advanced"]["spectrum"]);
+		solve_linear(lin_solver_cached, A, b, args["output"]["advanced"]["spectrum"]);
 	}
 
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt)

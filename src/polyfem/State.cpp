@@ -1668,7 +1668,7 @@ void State::build_collision_mesh(
 		for (int k = 0; k < rhs.cols(); k++)
 		{
 			b = rhs.col(k);
-			dirichlet_solve_prefactorized(*solver, A, b, boundary_nodes, x);
+			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
 			sol.col(k) = x;
 		}
 		// spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);

@@ -259,6 +259,8 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 
 	double finite_difference = (new_functional_val - functional_val) / t;
 
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x+dt) " << new_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
@@ -854,7 +856,6 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
-// failed
 TEST_CASE("damping-transient", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -1027,7 +1028,6 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
-// failed
 TEST_CASE("material-transient", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -1191,7 +1191,6 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
-// failed
 TEST_CASE("shape-transient-friction", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;

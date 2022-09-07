@@ -913,7 +913,16 @@ namespace polyfem
 		auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) { return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params); };
 		setup_adjoint(grad_j_func, A, b, j.is_surface_integral());
 
-		solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
+		if (lin_solver_cached)
+		{
+			for (int i : boundary_nodes)
+				b(i) = 0;
+			Eigen::VectorXd x;
+			dirichlet_solve_prefactorized(*lin_solver_cached, A, b, boundary_nodes, x);
+			adjoint_solution = x;
+		}
+		else
+			solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
 	}
 
 	void State::solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)

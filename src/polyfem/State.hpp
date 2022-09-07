@@ -499,6 +499,7 @@ namespace polyfem
 			ipc::FrictionConstraints friction_constraint_set;
 		};
 		std::vector<DiffCachedParts> diff_cached;
+		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached;
 		Eigen::MatrixXd initial_velocity_cache;
 
 		// one_form, for export use

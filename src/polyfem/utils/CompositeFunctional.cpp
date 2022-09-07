@@ -1,4 +1,3 @@
-#pragma once
 #include <polyfem/utils/CompositeFunctional.hpp>
 
 #include <polyfem/utils/SplineParam.hpp>
