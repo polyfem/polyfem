@@ -830,6 +830,44 @@ namespace polyfem
 		}
 	}
 
+	void State::interpolate_at_local_vals(const int el_index, const int actual_dim, const assembler::ElementAssemblyValues &vals, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+	{
+		if (!mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (fun.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		assert(fun.cols() == 1);
+
+		result.resize(vals.val.rows(), actual_dim);
+		result.setZero();
+
+		result_grad.resize(vals.val.rows(), mesh->dimension() * actual_dim);
+		result_grad.setZero();
+
+		const int n_loc_bases = int(vals.basis_values.size());
+
+		for (int i = 0; i < n_loc_bases; ++i)
+		{
+			const auto &val = vals.basis_values[i];
+
+			for (size_t ii = 0; ii < val.global.size(); ++ii)
+			{
+				for (int d = 0; d < actual_dim; ++d)
+				{
+					result.col(d) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.val;
+					result_grad.block(0, d * val.grad_t_m.cols(), result_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.grad_t_m;
+				}
+			}
+		}
+	}
+
 	bool State::check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only)
 	{
 		if (!mesh)

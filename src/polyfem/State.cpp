@@ -1663,18 +1663,19 @@ void State::build_collision_mesh(
 			rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 		}
 		sol.setZero(rhs.rows(), rhs.cols());
-
-		prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+		
+		StiffnessMatrix A_tmp = A;
+		prefactorize(*solver, A_tmp, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
 		for (int k = 0; k < rhs.cols(); k++)
 		{
 			b = rhs.col(k);
-			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
+			dirichlet_solve_prefactorized(*solver, A, b, boundary_nodes, x);
 			sol.col(k) = x;
 		}
 		// spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 		solver->getInfo(solver_info);
 
-		const auto error = (A * sol - rhs).norm();
+		const auto error = (A_tmp * sol - rhs).norm();
 		if (error > 1e-4)
 			logger().error("Solver error: {}", error);
 		else

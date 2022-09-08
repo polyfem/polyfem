@@ -867,6 +867,8 @@ namespace polyfem
 		/// @param[out] result_grad output gradients
 		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 
+		void interpolate_at_local_vals(const int el_index, const int actual_dim, const assembler::ElementAssemblyValues &vals, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
+
 		/// checks if mises are not nan
 		/// @param[in] fun function to used
 		/// @param[in] use_sampler uses the sampler or not

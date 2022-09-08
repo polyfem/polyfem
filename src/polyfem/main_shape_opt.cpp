@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 	std::string log_file = "";
 	spdlog::level::level_enum log_level = spdlog::level::debug;
-	size_t max_threads = std::numeric_limits<size_t>::max();
+	size_t max_threads = std::min((size_t)32, std::numeric_limits<size_t>::max());
 
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 

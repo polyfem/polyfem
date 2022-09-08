@@ -31,41 +31,6 @@ namespace polyfem
 		typedef std::vector<std::function<void(int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> VolumeIntegrandTerms;
 		typedef std::vector<std::function<void(int, const Eigen::VectorXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> SurfaceIntegrandTerms;
 
-		class LocalThreadMatStorage
-		{
-		public:
-			utils::SpareMatrixCache cache;
-			assembler::ElementAssemblyValues vals;
-			QuadratureVector da;
-
-			LocalThreadMatStorage()
-			{
-			}
-
-			LocalThreadMatStorage(const int buffer_size, const int rows, const int cols)
-			{
-				init(buffer_size, rows, cols);
-			}
-
-			LocalThreadMatStorage(const int buffer_size, const utils::SpareMatrixCache &c)
-			{
-				init(buffer_size, c);
-			}
-
-			void init(const int buffer_size, const int rows, const int cols)
-			{
-				// assert(rows == cols);
-				cache.reserve(buffer_size);
-				cache.init(rows, cols);
-			}
-
-			void init(const int buffer_size, const utils::SpareMatrixCache &c)
-			{
-				cache.reserve(buffer_size);
-				cache.init(c);
-			}
-		};
-
 		class LocalThreadVecStorage
 		{
 		public:
@@ -116,32 +81,42 @@ namespace polyfem
 			integral = 0;
 
 			const int n_elements = int(bases.size());
-			assembler::ElementAssemblyValues vals;
-			for (int e = 0; e < n_elements; ++e)
-			{
-				vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 
-				std::vector<Eigen::VectorXd> integrands;
-				for (const auto &integrand_function : integrand_functions)
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
 				{
-					Eigen::VectorXd vec_term;
-					integrand_function(e, quadrature.points, vals.val, vec_term);
-					integrands.push_back(vec_term);
-				}
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
-				for (int q = 0; q < da.size(); ++q)
-				{
-					double integrand_product = 1;
-					for (const auto &integrand : integrands)
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					std::vector<Eigen::VectorXd> integrands;
+					for (const auto &integrand_function : integrand_functions)
 					{
-						integrand_product *= integrand(q);
+						Eigen::VectorXd vec_term;
+						integrand_function(e, quadrature.points, vals.val, vec_term);
+						integrands.push_back(vec_term);
 					}
-					integral += integrand_product * da(q);
+
+					for (int q = 0; q < local_storage.da.size(); ++q)
+					{
+						double integrand_product = 1;
+						for (const auto &integrand : integrands)
+						{
+							integrand_product *= integrand(q);
+						}
+						local_storage.val += integrand_product * local_storage.da(q);
+					}
 				}
-			}
+			});
+			
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				integral += local_storage.val;
 		}
 
 		void surface_integral(
@@ -758,56 +733,66 @@ namespace polyfem
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
 		const int n_elements = int(bases.size());
-		assembler::ElementAssemblyValues vals;
 		if (!only_surface)
 		{
-			for (int e = 0; e < n_elements; ++e)
-			{
-				vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(b.size()));
+			
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-				const int n_loc_bases_ = int(vals.basis_values.size());
-				Eigen::MatrixXd u, grad_u;
-				interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-
-				json params = {};
-				params["elem"] = e;
-				params["body_id"] = mesh->get_body_id(e);
-				Eigen::MatrixXd result_ = grad_j(quadrature.points, vals.val, u, grad_u, params);
-				assert(result_.size() > 0);
-
-				for (int i = 0; i < n_loc_bases_; ++i)
+				for (int e = start; e < end; ++e)
 				{
-					const assembler::AssemblyValues &v = vals.basis_values[i];
-					assert(v.global.size() == 1);
-					for (int d = 0; d < actual_dim; d++)
-					{
-						double val = 0;
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+					// vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-						// j = j(x, grad u)
-						if (result_.cols() == grad_u.cols())
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					const int n_loc_bases_ = int(vals.basis_values.size());
+					Eigen::MatrixXd u, grad_u;
+					interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+
+					json params = {};
+					params["elem"] = e;
+					params["body_id"] = mesh->get_body_id(e);
+					Eigen::MatrixXd result_ = grad_j(quadrature.points, vals.val, u, grad_u, params);
+					assert(result_.size() > 0);
+
+					for (int i = 0; i < n_loc_bases_; ++i)
+					{
+						const assembler::AssemblyValues &v = vals.basis_values[i];
+						assert(v.global.size() == 1);
+						for (int d = 0; d < actual_dim; d++)
 						{
-							for (int q = 0; q < da.size(); ++q)
+							double val = 0;
+
+							// j = j(x, grad u)
+							if (result_.cols() == grad_u.cols())
 							{
-								Eigen::Matrix<double, -1, -1, RowMajor> grad_phi;
-								grad_phi.setZero(actual_dim, mesh->dimension());
-								grad_phi.row(d) = v.grad_t_m.row(q);
-								for (int k = 0; k < result_.cols(); k++)
-									val += result_(q, k) * grad_phi(k) * da(q);
+								for (int q = 0; q < local_storage.da.size(); ++q)
+								{
+									Eigen::Matrix<double, -1, -1, RowMajor> grad_phi;
+									grad_phi.setZero(actual_dim, mesh->dimension());
+									grad_phi.row(d) = v.grad_t_m.row(q);
+									for (int k = 0; k < result_.cols(); k++)
+										val += result_(q, k) * grad_phi(k) * local_storage.da(q);
+								}
 							}
+							// j = j(x, u)
+							else
+							{
+								for (int q = 0; q < local_storage.da.size(); ++q)
+									val += result_(q, d) * v.val(q) * local_storage.da(q);
+							}
+							local_storage.vec(v.global[0].index * actual_dim + d) += val;
 						}
-						// j = j(x, u)
-						else
-						{
-							for (int q = 0; q < da.size(); ++q)
-								val += result_(q, d) * v.val(q) * da(q);
-						}
-						b(v.global[0].index * actual_dim + d) += val;
 					}
 				}
-			}
+			});
+
+			for (const LocalThreadVecStorage &local_storage : storage)
+				b += local_storage.vec;
 		}
 		else
 		{
@@ -824,6 +809,7 @@ namespace polyfem
 				if (!has_samples)
 					continue;
 
+				assembler::ElementAssemblyValues vals;
 				vals.compute(e, mesh->is_volume(), points, bases[e], gbases[e]);
 
 				const Eigen::VectorXd da = weights.array();
@@ -836,7 +822,7 @@ namespace polyfem
 
 				const int n_loc_bases_ = int(vals.basis_values.size());
 				Eigen::MatrixXd u, grad_u;
-				interpolate_at_local_vals(e, points, solution, u, grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
 
 				std::vector<int> boundary_ids = {};
 				for (int i = 0; i < global_primitive_ids.size(); ++i)
@@ -1014,69 +1000,79 @@ namespace polyfem
 
 		if (j.is_volume_integral())
 		{
-			for (int e = 0; e < n_elements; ++e)
-			{
-				assembler::ElementAssemblyValues vals;
-				vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+			
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd u, grad_u;
-				interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-
-				Eigen::MatrixXd j_value;
-				json params = {};
-				params["elem"] = e;
-				params["body_id"] = mesh->get_body_id(e);
-				params["step"] = cur_time_step;
-				j.evaluate(assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, j_value);
-
-				Eigen::MatrixXd grad_j_value;
-				if (j.depend_on_gradu() || j.depend_on_u())
-					grad_j_value = j.grad_j(assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params);
-
-				Eigen::MatrixXd dj_dx;
-				if (j.depend_on_x())
-					j.dj_dx(assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_dx);
-
-				for (int q = 0; q < da.size(); ++q)
+				for (int e = start; e < end; ++e)
 				{
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+					assembler::ElementAssemblyValues gvals;
+					gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
 
-					for (auto &v : vals.basis_values)
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					Eigen::MatrixXd u, grad_u;
+					interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+
+					Eigen::MatrixXd j_value;
+					json params = {};
+					params["elem"] = e;
+					params["body_id"] = mesh->get_body_id(e);
+					params["step"] = cur_time_step;
+					j.evaluate(assembler.lame_params(), quadrature.points, gvals.val, u, grad_u, params, j_value);
+
+					Eigen::MatrixXd grad_j_value;
+					if (j.depend_on_gradu() || j.depend_on_u())
+						grad_j_value = j.grad_j(assembler.lame_params(), quadrature.points, gvals.val, u, grad_u, params);
+
+					Eigen::MatrixXd dj_dx;
+					if (j.depend_on_x())
+						j.dj_dx(assembler.lame_params(), quadrature.points, gvals.val, u, grad_u, params, dj_dx);
+
+					for (int q = 0; q < local_storage.da.size(); ++q)
 					{
-						for (int d = 0; d < mesh->dimension(); d++)
+						for (auto &v : gvals.basis_values)
 						{
-							Eigen::MatrixXd grad_v_q;
-							grad_v_q.setZero(mesh->dimension(), mesh->dimension());
-							grad_v_q.row(d) = v.grad_t_m.row(q);
-
-							double velocity_div = grad_v_q.trace();
-
-							term(v.global[0].index * mesh->dimension() + d) += j_value(q) * velocity_div * da(q);
-							if (j.depend_on_x())
+							for (int d = 0; d < mesh->dimension(); d++)
 							{
-								term(v.global[0].index * mesh->dimension() + d) += (v.val(q) * dj_dx(q, d)) * da(q);
-							}
-							if (j.depend_on_gradu())
-							{
-								Eigen::MatrixXd tau_q;
-								if (actual_dim == mesh->dimension())
-									vector2matrix(grad_j_value.row(q), tau_q);
-								else
-									tau_q = grad_j_value.row(q);
+								Eigen::MatrixXd grad_v_q;
+								grad_v_q.setZero(mesh->dimension(), mesh->dimension());
+								grad_v_q.row(d) = v.grad_t_m.row(q);
 
-								Eigen::MatrixXd grad_u_q;
-								if (mesh->dimension() == actual_dim)
-									vector2matrix(grad_u.row(q), grad_u_q);
-								else
-									grad_u_q = grad_u.row(q);
-								term(v.global[0].index * mesh->dimension() + d) += -dot(tau_q, grad_u_q * grad_v_q) * da(q);
+								double velocity_div = grad_v_q.trace();
+
+								local_storage.vec(v.global[0].index * mesh->dimension() + d) += j_value(q) * velocity_div * local_storage.da(q);
+								if (j.depend_on_x())
+								{
+									local_storage.vec(v.global[0].index * mesh->dimension() + d) += (v.val(q) * dj_dx(q, d)) * local_storage.da(q);
+								}
+								if (j.depend_on_gradu())
+								{
+									Eigen::MatrixXd tau_q;
+									if (actual_dim == mesh->dimension())
+										vector2matrix(grad_j_value.row(q), tau_q);
+									else
+										tau_q = grad_j_value.row(q);
+
+									Eigen::MatrixXd grad_u_q;
+									if (mesh->dimension() == actual_dim)
+										vector2matrix(grad_u.row(q), grad_u_q);
+									else
+										grad_u_q = grad_u.row(q);
+									local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_q, grad_u_q * grad_v_q) * local_storage.da(q);
+								}
 							}
 						}
 					}
 				}
-			}
+			});
+
+			for (const LocalThreadVecStorage &local_storage : storage)
+				term += local_storage.vec;
 		}
 		else
 		{
@@ -1234,60 +1230,71 @@ namespace polyfem
 
 		auto f_prime_gradu_gradv_function = assembler.get_stress_grad_multiply_mat_function(formulation());
 
-		for (int e = 0; e < n_elements; ++e)
-		{
-			assembler::ElementAssemblyValues vals;
-			vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			Eigen::MatrixXd u, grad_u, p, grad_p;
-			interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-			interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
-
-			Eigen::MatrixXd rhs_function;
-			problem->rhs(assembler, formulation(), vals.val, 0, rhs_function);
-			rhs_function *= -1;
-			for (int q = 0; q < vals.val.rows(); q++)
+			for (int e = start; e < end; ++e)
 			{
-				const double rho = density(quadrature.points.row(q), vals.val.row(q), e);
-				rhs_function.row(q) *= rho;
-			}
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+				assembler::ElementAssemblyValues gvals;
+				gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
 
-			for (int q = 0; q < da.size(); ++q)
-			{
-				Eigen::MatrixXd grad_u_i, grad_p_i;
-				if (mesh->dimension() == actual_dim)
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				Eigen::MatrixXd u, grad_u, p, grad_p;
+				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+
+				Eigen::MatrixXd rhs_function;
+				problem->rhs(assembler, formulation(), vals.val, 0, rhs_function);
+				rhs_function *= -1;
+				for (int q = 0; q < vals.val.rows(); q++)
 				{
-					vector2matrix(grad_u.row(q), grad_u_i);
-					vector2matrix(grad_p.row(q), grad_p_i);
-				}
-				else
-				{
-					grad_u_i = grad_u.row(q);
-					grad_p_i = grad_p.row(q);
+					const double rho = density(quadrature.points.row(q), vals.val.row(q), e);
+					rhs_function.row(q) *= rho;
 				}
 
-				for (auto &v : vals.basis_values)
+				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
-					for (int d = 0; d < mesh->dimension(); d++)
+					Eigen::MatrixXd grad_u_i, grad_p_i;
+					if (mesh->dimension() == actual_dim)
 					{
-						Eigen::MatrixXd grad_v_i;
-						grad_v_i.setZero(mesh->dimension(), mesh->dimension());
-						grad_v_i.row(d) = v.grad_t_m.row(q);
+						vector2matrix(grad_u.row(q), grad_u_i);
+						vector2matrix(grad_p.row(q), grad_p_i);
+					}
+					else
+					{
+						grad_u_i = grad_u.row(q);
+						grad_p_i = grad_p.row(q);
+					}
 
-						double velocity_div = grad_v_i.trace();
+					for (auto &v : gvals.basis_values)
+					{
+						for (int d = 0; d < mesh->dimension(); d++)
+						{
+							Eigen::MatrixXd grad_v_i;
+							grad_v_i.setZero(mesh->dimension(), mesh->dimension());
+							grad_v_i.row(d) = v.grad_t_m.row(q);
 
-						Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
-						f_prime_gradu_gradv_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
+							double velocity_div = grad_v_i.trace();
 
-						Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(mesh->dimension(), mesh->dimension());
-						term(v.global[0].index * mesh->dimension() + d) += (dot(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) + dot(p.row(q), rhs_function.row(q)) * velocity_div) * da(q);
+							Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
+							f_prime_gradu_gradv_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
+
+							Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(mesh->dimension(), mesh->dimension());
+							local_storage.vec(v.global[0].index * mesh->dimension() + d) += (dot(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) + dot(p.row(q), rhs_function.row(q)) * velocity_div) * local_storage.da(q);
+						}
 					}
 				}
 			}
-		}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 
 	void State::compute_shape_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
@@ -1315,15 +1322,17 @@ namespace polyfem
 			for (int e = start; e < end; ++e)
 			{
 				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+				assembler::ElementAssemblyValues gvals;
+				gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
 
 				const quadrature::Quadrature &quadrature = vals.quadrature;
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-				interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-				interpolate_at_local_vals(e, quadrature.points, prev_solution, prev_u, prev_grad_u);
-				interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
+				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, prev_solution, prev_u, prev_grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
 
 				Eigen::MatrixXd grad_u_i, grad_p_i, prev_grad_u_i;
 				Eigen::MatrixXd grad_v_i;
@@ -1336,7 +1345,7 @@ namespace polyfem
 					vector2matrix(grad_p.row(q), grad_p_i);
 					vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
 
-					for (auto &v : vals.basis_values)
+					for (auto &v : gvals.basis_values)
 					{
 						Eigen::MatrixXd stress_grad, stress_prev_grad;
 						damping_assembler.local_assembler().compute_stress_grad(e, dt, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_tensor, stress_grad);
@@ -1387,35 +1396,44 @@ namespace polyfem
 		const auto &density_mat = params.density_mat_;
 		const double density_power = params.density_power_;
 
-		for (int e = 0; e < n_elements; ++e)
-		{
-			assembler::ElementAssemblyValues vals;
-			vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+		
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-			Eigen::MatrixXd u, grad_u, p, grad_p;
-			interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-			interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
-
-			for (int q = 0; q < da.size(); ++q)
+			for (int e = start; e < end; ++e)
 			{
-				double lambda, mu;
-				params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
+				assembler::ElementAssemblyValues vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
-				Eigen::MatrixXd grad_p_i, grad_u_i;
-				vector2matrix(grad_p.row(q), grad_p_i);
-				vector2matrix(grad_u.row(q), grad_u_i);
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
-				auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
+				Eigen::MatrixXd u, grad_u, p, grad_p;
+				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
 
-				const double value = da(q) * density_power * pow(density_mat(e), density_power - 1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+				for (int q = 0; q < local_storage.da.size(); ++q)
+				{
+					double lambda, mu;
+					params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
 
-				term(e) -= value;
+					Eigen::MatrixXd grad_p_i, grad_u_i;
+					vector2matrix(grad_p.row(q), grad_p_i);
+					vector2matrix(grad_u.row(q), grad_u_i);
+
+					auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
+					auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
+
+					const double value = local_storage.da(q) * density_power * pow(density_mat(e), density_power - 1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+
+					local_storage.vec(e) -= value;
+				}
 			}
-		}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 
 	void State::compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
@@ -1428,32 +1446,41 @@ namespace polyfem
 
 		auto df_dmu_dlambda_function = assembler.get_dstress_dmu_dlambda_function(formulation());
 
-		for (int e = 0; e < n_elements; ++e)
-		{
-			assembler::ElementAssemblyValues vals;
-			vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+		
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-			Eigen::MatrixXd u, grad_u, p, grad_p;
-			interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-			interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
-
-			for (int q = 0; q < da.size(); ++q)
+			for (int e = start; e < end; ++e)
 			{
-				Eigen::MatrixXd grad_p_i, grad_u_i;
-				vector2matrix(grad_p.row(q), grad_p_i);
-				vector2matrix(grad_u.row(q), grad_u_i);
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
-				Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-				df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				// This needs to be a sum over material parameter basis.
-				term(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * da(q);
-				term(e) += -dot(f_prime_dlambda, grad_p_i) * da(q);
+				Eigen::MatrixXd u, grad_u, p, grad_p;
+				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+
+				for (int q = 0; q < local_storage.da.size(); ++q)
+				{
+					Eigen::MatrixXd grad_p_i, grad_u_i;
+					vector2matrix(grad_p.row(q), grad_p_i);
+					vector2matrix(grad_u.row(q), grad_u_i);
+
+					Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
+					df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
+
+					// This needs to be a sum over material parameter basis.
+					local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
+					local_storage.vec(e) += -dot(f_prime_dlambda, grad_p_i) * local_storage.da(q);
+				}
 			}
-		}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 
 	void State::compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
@@ -1464,34 +1491,43 @@ namespace polyfem
 		const int n_elements = int(bases.size());
 		term.setZero(2);
 
-		for (int e = 0; e < n_elements; ++e)
-		{
-			assembler::ElementAssemblyValues vals;
-			vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+		
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-			Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-			interpolate_at_local_vals(e, quadrature.points, solution, u, grad_u);
-			interpolate_at_local_vals(e, quadrature.points, prev_solution, prev_u, prev_grad_u);
-			interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
-
-			for (int q = 0; q < da.size(); ++q)
+			for (int e = start; e < end; ++e)
 			{
-				Eigen::MatrixXd grad_p_i, grad_u_i, prev_grad_u_i;
-				vector2matrix(grad_p.row(q), grad_p_i);
-				vector2matrix(grad_u.row(q), grad_u_i);
-				vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
-				Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
-				damping_assembler.local_assembler().compute_dstress_dpsi_dphi(e, args["time"]["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				// This needs to be a sum over material parameter basis.
-				term(0) += -dot(f_prime_dpsi, grad_p_i) * da(q);
-				term(1) += -dot(f_prime_dphi, grad_p_i) * da(q);
+				Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
+				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, prev_solution, prev_u, prev_grad_u);
+				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+
+				for (int q = 0; q < local_storage.da.size(); ++q)
+				{
+					Eigen::MatrixXd grad_p_i, grad_u_i, prev_grad_u_i;
+					vector2matrix(grad_p.row(q), grad_p_i);
+					vector2matrix(grad_u.row(q), grad_u_i);
+					vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
+
+					Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
+					damping_assembler.local_assembler().compute_dstress_dpsi_dphi(e, args["time"]["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
+
+					// This needs to be a sum over material parameter basis.
+					local_storage.vec(0) += -dot(f_prime_dpsi, grad_p_i) * local_storage.da(q);
+					local_storage.vec(1) += -dot(f_prime_dphi, grad_p_i) * local_storage.da(q);
+				}
 			}
-		}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 
 	void State::compute_mass_derivative_term(const Eigen::MatrixXd &adjoint_sol, const Eigen::MatrixXd &velocity, Eigen::VectorXd &term)
@@ -1502,37 +1538,48 @@ namespace polyfem
 		const int n_elements = int(bases.size());
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
 
-		for (int e = 0; e < n_elements; ++e)
-		{
-			assembler::ElementAssemblyValues vals;
-			vals.compute(e, mesh->is_volume(), gbases[e], gbases[e]);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+		
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-			Eigen::MatrixXd vel, grad_vel, p, grad_p;
-			interpolate_at_local_vals(e, quadrature.points, adjoint_sol, p, grad_p);
-			interpolate_at_local_vals(e, quadrature.points, velocity, vel, grad_vel);
-
-			for (int q = 0; q < da.size(); ++q)
+			for (int e = start; e < end; ++e)
 			{
-				const double rho = density(quadrature.points.row(q), vals.val.row(q), e);
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+				assembler::ElementAssemblyValues gvals;
+				gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
 
-				for (const auto &v : vals.basis_values)
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				Eigen::MatrixXd vel, grad_vel, p, grad_p;
+				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+				interpolate_at_local_vals(e, actual_dim, vals, velocity, vel, grad_vel);
+
+				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
-					for (int d = 0; d < mesh->dimension(); d++)
+					const double rho = density(quadrature.points.row(q), vals.val.row(q), e);
+
+					for (const auto &v : gvals.basis_values)
 					{
-						Eigen::MatrixXd grad_v_i;
-						grad_v_i.setZero(mesh->dimension(), mesh->dimension());
-						grad_v_i.row(d) = v.grad_t_m.row(q);
+						for (int d = 0; d < mesh->dimension(); d++)
+						{
+							Eigen::MatrixXd grad_v_i;
+							grad_v_i.setZero(mesh->dimension(), mesh->dimension());
+							grad_v_i.row(d) = v.grad_t_m.row(q);
 
-						double shape_velocity_div = grad_v_i.trace();
+							double shape_velocity_div = grad_v_i.trace();
 
-						term(v.global[0].index * mesh->dimension() + d) += rho * dot(p.row(q), vel.row(q)) * shape_velocity_div * da(q);
+							local_storage.vec(v.global[0].index * mesh->dimension() + d) += rho * dot(p.row(q), vel.row(q)) * shape_velocity_div * local_storage.da(q);
+						}
 					}
 				}
 			}
-		}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 
 	void State::compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
@@ -1545,8 +1592,13 @@ namespace polyfem
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
-		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
-		term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+		// StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
+		// term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+
+		Eigen::MatrixXd tmp = collision_mesh.displacement_dof_map() * adjoint_sol;
+		tmp = tmp.transpose() * ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat);
+		tmp = tmp * collision_mesh.displacement_dof_map();
+		term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * tmp.transpose();
 
 		// const double eps = 1e-6;
 		// Eigen::MatrixXd target = dq_h;
@@ -2395,30 +2447,39 @@ namespace polyfem
 
 		one_form = 0;
 
-		for (int t = time_steps; t > 0; --t)
-		{
-			const int real_order = std::min(bdf_order, t);
-			double beta = time_integrator::BDF::betas(real_order - 1);
+		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+		
+		utils::maybe_parallel_for(time_steps, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			for (int t_aux = start; t_aux < end; ++t_aux)
+			{
+				const int t = time_steps - t_aux - 1;
+				const int real_order = std::min(bdf_order, t);
+				double beta = time_integrator::BDF::betas(real_order - 1);
 
-			ipc::FrictionConstraints friction_constraint_set = diff_cached[t].friction_constraint_set;
-			const auto &solution = diff_cached[t].u;
-			const auto &prev_solution = diff_cached[t - 1].u;
+				const ipc::FrictionConstraints &friction_constraint_set = diff_cached[t].friction_constraint_set;
+				const auto &solution = diff_cached[t].u;
+				const auto &prev_solution = diff_cached[t - 1].u;
 
-			Eigen::MatrixXd solution_(n_bases, problem_dim), prev_solution_(n_bases, problem_dim);
-			for (int i = 0; i < n_bases; ++i)
-				for (int d = 0; d < problem_dim; d++)
-				{
-					solution_(i, d) = solution(i * problem_dim + d);
-					prev_solution_(i, d) = prev_solution(i * problem_dim + d);
-				}
+				Eigen::MatrixXd solution_(n_bases, problem_dim), prev_solution_(n_bases, problem_dim);
+				for (int i = 0; i < n_bases; ++i)
+					for (int d = 0; d < problem_dim; d++)
+					{
+						solution_(i, d) = solution(i * problem_dim + d);
+						prev_solution_(i, d) = prev_solution(i * problem_dim + d);
+					}
 
-			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
-			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
+				Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
+				Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
+				auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
 
-			one_form += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * mu * dt);
-		}
+				local_storage.val += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * mu * dt);
+			}
+		});
+
+		for (const LocalThreadScalarStorage &local_storage : storage)
+			one_form += local_storage.val;
 	}
 	void State::dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form)
 	{

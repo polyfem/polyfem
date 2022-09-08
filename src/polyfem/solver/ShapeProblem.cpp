@@ -629,11 +629,10 @@ namespace polyfem
 		if (boundary_smoothing_params.contains("adjust_weight_period"))
 			if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
 			{
-				double target_val, volume_val, barrier_val;
-				target_val = target_value(x0);
-				volume_val = volume_value(x0);
-				barrier_val = barrier_energy(x0);
-				boundary_smoothing_params["weight"] = boundary_smoothing_params["weight"].get<double>() * boundary_smoothing_params["adjustment_coeff"].get<double>() * (barrier_val + target_val + volume_val) / boundary_smoother.boundary_nodes.size();
+				TVector target_grad, smooth_grad;
+				target_gradient(x0, target_grad);
+				smooth_gradient(x0, smooth_grad);
+				boundary_smoothing_params["weight"] = target_grad.norm() / smooth_grad.norm() * boundary_smoothing_params["adjustment_coeff"].get<double>() * boundary_smoothing_params["weight"].get<double>();
 
 				logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
 			}

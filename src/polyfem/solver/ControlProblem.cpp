@@ -246,7 +246,7 @@ namespace polyfem
 		if (opt_params.contains("export_energies"))
 		{
 			std::ofstream outfile;
-			outfile.open(opt_params["export_energies"], std::ofstream::out | std::ofstream::app);
+			outfile.open(opt_params["export_energies"].get<std::string>(), std::ofstream::out | std::ofstream::app);
 
 			outfile << value(cur_x) << ", " << target_value(cur_x) << ", " << smooth_value(cur_x) << "\n";
 			outfile.close();
