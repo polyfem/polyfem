@@ -1592,13 +1592,13 @@ namespace polyfem
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
-		// StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
-		// term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
+		term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
 
-		Eigen::MatrixXd tmp = collision_mesh.displacement_dof_map() * adjoint_sol;
-		tmp = tmp.transpose() * ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat);
-		tmp = tmp * collision_mesh.displacement_dof_map();
-		term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * tmp.transpose();
+		// Eigen::MatrixXd tmp = collision_mesh.displacement_dof_map() * adjoint_sol;
+		// tmp = tmp.transpose() * ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat);
+		// tmp = tmp * collision_mesh.displacement_dof_map();
+		// term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * tmp.transpose();
 
 		// const double eps = 1e-6;
 		// Eigen::MatrixXd target = dq_h;
