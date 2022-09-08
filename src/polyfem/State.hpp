@@ -502,6 +502,9 @@ namespace polyfem
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached;
 		Eigen::MatrixXd initial_velocity_cache;
 
+		int n_linear_solves = 0;
+		int n_nonlinear_solves = 0;
+
 		// one_form, for export use
 		Eigen::VectorXd descent_direction;
 		// Aux functions for setting up adjoint equations

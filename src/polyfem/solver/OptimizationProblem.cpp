@@ -132,6 +132,8 @@ namespace polyfem
 
 		state.output_dir = output_dir;
 		state.set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+
+		logger().info("Linear Solves: {}, Non-linear Solves: {}", state.n_linear_solves, state.n_nonlinear_solves);
 	}
 
 	void OptimizationProblem::solution_changed(const TVector &newX)

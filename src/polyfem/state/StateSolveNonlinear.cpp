@@ -251,6 +251,9 @@ namespace polyfem
 
 		save_subsolve(++subsolve_count, t);
 
+		n_linear_solves += nl_solver_info["iterations"].get<int>();
+		n_nonlinear_solves += 1;
+
 		///////////////////////////////////////////////////////////////////////
 
 		// TODO: fix this
