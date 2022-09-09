@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -719,6 +720,7 @@
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
+            "mass_quadrature_order",
             "poly_bases",
             "integral_constraints",
             "n_harmonic_samples",
@@ -774,6 +776,12 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
+    },
+    {
+        "pointer": "/space/advanced/mass_quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
     },
     {
         "pointer": "/space/advanced/poly_bases",
@@ -1054,6 +1062,7 @@
             "solver",
             "f_delta",
             "grad_norm",
+            "first_grad_norm_tol",
             "max_iterations",
             "use_grad_norm",
             "relative_gradient",
@@ -1082,6 +1091,12 @@
         "default": 1e-08,
         "type": "float",
         "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue."
+    },
+    {
+        "pointer": "/solver/nonlinear/first_grad_norm_tol",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",
@@ -1167,8 +1182,7 @@
             "CCD",
             "friction_iterations",
             "friction_convergence_tol",
-            "barrier_stiffness",
-            "lagged_regularization_weight"
+            "barrier_stiffness"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1209,8 +1223,8 @@
     },
     {
         "pointer": "/solver/contact/CCD/max_iterations",
-        "default": 1000000.0,
-        "type": "float",
+        "default": 1000000,
+        "type": "int",
         "doc": "Maximum number of iterations for continuous collision detection"
     },
     {
@@ -1240,12 +1254,6 @@
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
-        "pointer": "/solver/contact/lagged_regularization_weight",
-        "default": 0,
-        "type": "int",
-        "doc": "Weight used to regularize singular static problems."
-    },
-    {
         "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
@@ -1257,7 +1265,8 @@
         "type": "object",
         "optional": [
             "cache_size",
-            "lump_mass_matrix"
+            "lump_mass_matrix",
+            "lagged_regularization_weight"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1272,6 +1281,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
+    },
+    {
+        "pointer": "/solver/advanced/lagged_regularization_weight",
+        "default": 0,
+        "type": "float",
+        "doc": "Weight used to regularize singular static problems."
     },
     {
         "pointer": "/materials",

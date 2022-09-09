@@ -38,6 +38,8 @@ namespace cppoptlib
 			use_gradient_norm = solver_params["use_grad_norm"];
 			normalize_gradient = solver_params["relative_gradient"];
 			use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
+
+			first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -90,6 +92,8 @@ namespace cppoptlib
 			this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 			this->m_current.fDelta = old_energy;
 
+			const auto current_g_norm = this->m_stop.gradNorm;
+			this->m_stop.gradNorm = first_grad_norm_tol;
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 			if (this->m_status != Status::Continue)
 			{
@@ -102,6 +106,7 @@ namespace cppoptlib
 				update_solver_info();
 				return;
 			}
+			this->m_stop.gradNorm = current_g_norm;
 
 			utils::Timer timer("non-linear solver", this->total_time);
 			timer.start();
@@ -222,12 +227,13 @@ namespace cppoptlib
 
 				const double step = (rate * delta_x).norm();
 
-				if (objFunc.stop(x))
-				{
-					this->m_status = Status::UserDefined;
-					m_error_code = ErrorCode::Success;
-					polyfem::logger().debug("[{}] Objective decided to stop", name());
-				}
+				// TODO: removed feature
+				//  if (objFunc.stop(x))
+				//  {
+				//  	this->m_status = Status::UserDefined;
+				//  	m_error_code = ErrorCode::Success;
+				//  	polyfem::logger().debug("[{}] Objective decided to stop", name());
+				//  }
 
 				objFunc.post_step(this->m_current.iterations, x);
 
@@ -323,6 +329,8 @@ namespace cppoptlib
 
 	protected:
 		const polyfem::json solver_params;
+
+		double first_grad_norm_tol;
 
 		virtual int default_descent_strategy() = 0;
 		virtual void increase_descent_strategy() = 0;

@@ -102,6 +102,19 @@ namespace polyfem
 		/// @param M Matrix to lump.
 		/// @return Lumped matrix.
 		Eigen::SparseMatrix<double> lump_matrix(const Eigen::SparseMatrix<double> &M);
+
+		/// @brief Map a full size matrix to a reduced one by dropping rows and columns.
+		/// @param[in] full_size Number of variables in the full system.
+		/// @param[in] reduced_size Number of variables in the reduced system.
+		/// @param[in] removed_vars Indices of the variables (rows and columns of full) to remove.
+		/// @param[in] full Full size matrix.
+		/// @param[out] reduced Output reduced size matrix.
+		void full_to_reduced_matrix(
+			const int full_size,
+			const int reduced_size,
+			const std::vector<int> &removed_vars,
+			const StiffnessMatrix &full,
+			StiffnessMatrix &reduced);
 	} // namespace utils
 } // namespace polyfem
 

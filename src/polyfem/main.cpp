@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 		if (file.is_open())
 			file >> in_args;
 		else
-			utils::log_and_throw_error(fmt::format("unable to open {} file", json_file));
+			log_and_throw_error(fmt::format("unable to open {} file", json_file));
 		file.close();
 
 		if (!in_args.contains("root_path"))
