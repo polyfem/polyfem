@@ -592,8 +592,9 @@ namespace polyfem
 			Eigen::VectorXd weights;
 
 			ElementAssemblyValues vals;
-
-			std::ofstream asd("test.obj");
+			static int vbbbbb = 1;
+			std::ofstream asd("test" + std::to_string(vbbbbb) + ".obj");
+			vbbbbb++;
 			int asdasd = 1;
 
 			for (const auto &lb : local_neumann_boundary)
@@ -611,36 +612,45 @@ namespace polyfem
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
-
+					Eigen::MatrixXd ppp(1, size_);
+					ppp = vals.val.row(n);
 					if (displacement.size() >= 0)
 					{
 						assert(size_ == 2 || size_ == 3);
 						deform_mat.resize(size_, size_);
-						deform_mat.setZero();
+						deform_mat.setIdentity();
 						for (const auto &b : vals.basis_values)
 						{
 							for (const auto &g : b.global)
 							{
 								for (int d = 0; d < size_; ++d)
-									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad_t_m.row(n);
+								{
+									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+
+									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
+								}
 							}
 						}
 
 						normals.row(n) = normals.row(n) * deform_mat;
 					}
 
+					normals.row(n) = normals.row(n) * vals.jac_it[n];
+
 					normals.row(n).normalize();
 
-					Eigen::MatrixXd xxx = vals.val.row(n) + 0.1 * normals.row(n);
-					asd << "v " << vals.val(n, 0) << " "
-						<< " " << vals.val(n, 1) << " "
-						<< (size_ == 3 ? vals.val(n, 2) : 0.0) << "\n";
-					asd << "v " << xxx(n, 0) << " "
-						<< " " << xxx(n, 1) << " "
-						<< (size_ == 3 ? xxx(n, 2) : 0.0) << "\n";
-					asd << "l " << asdasd << " " << asdasd + 1 << "\n";
-					asdasd += 2;
+					if (displacement.size() >= 0)
+					{
+						Eigen::MatrixXd xxx = ppp + 0.1 * normals.row(n);
+						asd << "v " << ppp(0) << " "
+							<< " " << ppp(1) << " "
+							<< (size_ == 3 ? ppp(2) : 0.0) << "\n";
+						asd << "v " << xxx(0) << " "
+							<< " " << xxx(1) << " "
+							<< (size_ == 3 ? xxx(2) : 0.0) << "\n";
+						asd << "l " << asdasd << " " << asdasd + 1 << "\n";
+						asdasd += 2;
+					}
 				}
 
 				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
