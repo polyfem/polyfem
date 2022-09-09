@@ -614,6 +614,9 @@ namespace polyfem
 				{
 					Eigen::MatrixXd ppp(1, size_);
 					ppp = vals.val.row(n);
+
+					normals.row(n) = normals.row(n) * vals.jac_it[n];
+
 					if (displacement.size() >= 0)
 					{
 						assert(size_ == 2 || size_ == 3);
@@ -625,7 +628,7 @@ namespace polyfem
 							{
 								for (int d = 0; d < size_; ++d)
 								{
-									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad_t_m.row(n);
 
 									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
 								}
@@ -634,8 +637,6 @@ namespace polyfem
 
 						normals.row(n) = normals.row(n) * deform_mat;
 					}
-
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
 
 					normals.row(n).normalize();
 
