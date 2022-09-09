@@ -586,12 +586,15 @@ namespace polyfem
 			}
 
 			// Neumann
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
+			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat;
 			Eigen::VectorXi global_primitive_ids;
 			Eigen::MatrixXd points, normals;
 			Eigen::VectorXd weights;
 
 			ElementAssemblyValues vals;
+
+			std::ofstream asd("test.obj");
+			int asdasd = 1;
 
 			for (const auto &lb : local_neumann_boundary)
 			{
@@ -609,8 +612,37 @@ namespace polyfem
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
 					normals.row(n) = normals.row(n) * vals.jac_it[n];
+
+					if (displacement.size() >= 0)
+					{
+						assert(size_ == 2 || size_ == 3);
+						deform_mat.resize(size_, size_);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < size_; ++d)
+									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad_t_m.row(n);
+							}
+						}
+
+						normals.row(n) = normals.row(n) * deform_mat;
+					}
+
 					normals.row(n).normalize();
+
+					Eigen::MatrixXd xxx = vals.val.row(n) + 0.1 * normals.row(n);
+					asd << "v " << vals.val(n, 0) << " "
+						<< " " << vals.val(n, 1) << " "
+						<< (size_ == 3 ? vals.val(n, 2) : 0.0) << "\n";
+					asd << "v " << xxx(n, 0) << " "
+						<< " " << xxx(n, 1) << " "
+						<< (size_ == 3 ? xxx(n, 2) : 0.0) << "\n";
+					asd << "l " << asdasd << " " << asdasd + 1 << "\n";
+					asdasd += 2;
 				}
+
 				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 				nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
 
@@ -755,7 +787,7 @@ namespace polyfem
 
 			ElementAssemblyValues vals;
 			// Neumann
-			Eigen::MatrixXd points, uv, normals;
+			Eigen::MatrixXd points, uv, normals, deform_mat;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_primitive_ids;
 			for (const auto &lb : local_neumann_boundary)
