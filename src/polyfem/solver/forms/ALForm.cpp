@@ -68,6 +68,6 @@ namespace polyfem::solver
 	void ALForm::update_target(const double t)
 	{
 		target_x_.setZero(masked_lumped_mass_.rows(), 1);
-		rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, target_x_, t);
+		rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, target_x_, Eigen::MatrixXd(), t);
 	}
 } // namespace polyfem::solver

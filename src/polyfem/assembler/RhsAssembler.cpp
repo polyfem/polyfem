@@ -556,7 +556,10 @@ namespace polyfem
 		void RhsAssembler::set_bc(
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
-			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs) const
+			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes,
+			const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary,
+			const Eigen::MatrixXd &displacement,
+			Eigen::MatrixXd &rhs) const
 		{
 			if (bc_method_ == "sample")
 				sample_bc(df, local_boundary, bounday_nodes, rhs);
@@ -645,7 +648,7 @@ namespace polyfem
 			}
 		}
 
-		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
+		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const Eigen::MatrixXd &displacement, const double t) const
 		{
 			set_bc(
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
@@ -654,7 +657,7 @@ namespace polyfem
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
 					problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
 				},
-				local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+				local_boundary, bounday_nodes, resolution, local_neumann_boundary, displacement, rhs);
 
 			obstacle_.update_displacement(t, rhs);
 		}

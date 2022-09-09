@@ -111,7 +111,7 @@ namespace polyfem
 
 			/* apply boundary condition */
 			solve_data.rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, time);
+				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* viscosity */
 			logger().info("Solving diffusion...");
@@ -134,7 +134,7 @@ namespace polyfem
 
 			/* apply boundary condition */
 			solve_data.rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, time);
+				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* export to vtu */
 			save_timestep(time, t, 0, dt);
@@ -185,7 +185,7 @@ namespace polyfem
 			solve_data.rhs_assembler->compute_energy_grad(
 				local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			solve_data.rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
+				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, Eigen::MatrixXd(), time);
 
 			const int prev_size = current_rhs.size();
 			if (prev_size != rhs.size())

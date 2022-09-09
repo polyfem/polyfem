@@ -125,7 +125,7 @@ namespace polyfem
 					current_rhs);
 
 				solve_data.rhs_assembler->set_bc(
-					local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
+					local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, sol, time);
 
 				if (assembler.is_mixed(formulation()))
 				{
@@ -154,14 +154,13 @@ namespace polyfem
 				current_rhs *= -1;
 
 				solve_data.rhs_assembler->set_bc(
-					std::vector<LocalBoundary>(), std::vector<int>(), n_b_samples, local_neumann_boundary, current_rhs,
-					time);
+					std::vector<LocalBoundary>(), std::vector<int>(), n_b_samples, local_neumann_boundary, current_rhs, sol, time);
 
 				current_rhs *= time_integrator->acceleration_scaling();
 				current_rhs += mass * time_integrator->x_tilde();
 
 				solve_data.rhs_assembler->set_bc(
-					local_boundary, boundary_nodes, n_b_samples, std::vector<LocalBoundary>(), current_rhs, time);
+					local_boundary, boundary_nodes, n_b_samples, std::vector<LocalBoundary>(), current_rhs, sol, time);
 
 				A = stiffness * time_integrator->acceleration_scaling() + mass;
 				b = current_rhs;

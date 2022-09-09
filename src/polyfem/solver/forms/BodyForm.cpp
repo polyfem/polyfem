@@ -12,7 +12,7 @@ namespace polyfem::solver
 			ndof_ += state.n_pressure_bases; // Pressure is a scalar
 
 		t_ = 0;
-		update_current_rhs();
+		update_current_rhs(Eigen::MatrixXd());
 	}
 
 	double BodyForm::value_unscaled(const Eigen::VectorXd &x) const
@@ -26,13 +26,13 @@ namespace polyfem::solver
 		gradv = -current_rhs_;
 	}
 
-	void BodyForm::update_quantities(const double t, const Eigen::VectorXd &)
+	void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
 		this->t_ = t;
-		update_current_rhs();
+		update_current_rhs(x);
 	}
 
-	void BodyForm::update_current_rhs()
+	void BodyForm::update_current_rhs(const Eigen::VectorXd &x)
 	{
 		rhs_assembler_.compute_energy_grad(
 			state_.local_boundary, state_.boundary_nodes, state_.density,
@@ -50,13 +50,13 @@ namespace polyfem::solver
 		rhs_assembler_.set_bc(
 			std::vector<mesh::LocalBoundary>(), std::vector<int>(),
 			state_.n_boundary_samples(), state_.local_neumann_boundary,
-			current_rhs_, t_);
+			current_rhs_, x, t_);
 
 		// Apply Dirichlet boundary conditions
 		if (apply_DBC_)
 			rhs_assembler_.set_bc(
 				state_.local_boundary, state_.boundary_nodes,
 				state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(),
-				current_rhs_, t_);
+				current_rhs_, x, t_);
 	}
 } // namespace polyfem::solver
