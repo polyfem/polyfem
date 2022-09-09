@@ -134,13 +134,8 @@ namespace polyfem
 			void init_lagging(const TVector &x);
 			void update_lagging(const TVector &x);
 
-			void set_full_size(const bool val)
-			{
-				if (!val)
-					reduced_size = actual_reduced_size;
-				else
-					reduced_size = full_size;
-			}
+			void use_full_size() { reduced_size = full_size; }
+			void use_reduced_size() { reduced_size = actual_reduced_size; }
 
 		private:
 			const State &state_;

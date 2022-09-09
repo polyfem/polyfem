@@ -85,9 +85,9 @@ namespace polyfem::solver
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
 
-		/// @brief Initialize the barrier stiffness based on the current elasticity energy
+		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		void initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
+		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 

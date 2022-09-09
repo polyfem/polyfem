@@ -49,7 +49,7 @@ namespace polyfem
 		{
 			t_ = t;
 			assert(!state.assembler.is_mixed(state.formulation()));
-			set_full_size(false);
+			use_reduced_size();
 		}
 
 		void NLProblem::init(const TVector &full)

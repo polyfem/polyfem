@@ -50,7 +50,7 @@ namespace polyfem::solver
 			state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
 	}
 
-	void ContactForm::initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
+	void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
@@ -190,7 +190,7 @@ namespace polyfem::solver
 			else
 			{
 				// TODO: missing feature
-				// initialize_barrier_stiffness(x);
+				// update_barrier_stiffness(x);
 			}
 		}
 

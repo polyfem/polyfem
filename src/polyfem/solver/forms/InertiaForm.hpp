@@ -32,9 +32,6 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
-	public:
-		inline double acceleration_scaling() const { return time_integrator_.acceleration_scaling(); }
-
 	private:
 		const StiffnessMatrix &mass_;                                    ///< Mass matrix
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
