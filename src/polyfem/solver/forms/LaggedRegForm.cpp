@@ -11,17 +11,17 @@ namespace polyfem::solver
 		// lagged_damping_weight_ = state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
 	}
 
-	double LaggedRegForm::value_unscaled(const Eigen::VectorXd &x) const
+	double LaggedRegForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return 0.5 * weight_ * (x - x_lagged_).squaredNorm();
 	}
 
-	void LaggedRegForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void LaggedRegForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = weight_ * (x - x_lagged_);
 	}
 
-	void LaggedRegForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void LaggedRegForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		hessian = weight_ * utils::sparse_identity(x.size(), x.size());
 	}

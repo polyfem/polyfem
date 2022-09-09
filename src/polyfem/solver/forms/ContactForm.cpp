@@ -82,18 +82,18 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double ContactForm::value_unscaled(const Eigen::VectorXd &x) const
+	double ContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return ipc::compute_barrier_potential(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 	}
 
-	void ContactForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = ipc::compute_barrier_potential_gradient(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 		gradv = state_.collision_mesh.to_full_dof(gradv);
 	}
 
-	void ContactForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		POLYFEM_SCOPED_TIMER("\t\tbarrier hessian");
 		hessian = ipc::compute_barrier_potential_hessian(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_, project_to_psd_);

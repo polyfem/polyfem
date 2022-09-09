@@ -20,17 +20,17 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form
 		/// @param x Current solution
 		/// @return Computed value
-		double value_unscaled(const Eigen::VectorXd &x) const override;
+		double value_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 	public:
 		inline double acceleration_scaling() const { return time_integrator_.acceleration_scaling(); }

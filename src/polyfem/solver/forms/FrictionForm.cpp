@@ -33,13 +33,13 @@ namespace polyfem::solver
 			state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
 	}
 
-	double FrictionForm::value_unscaled(const Eigen::VectorXd &x) const
+	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return ipc::compute_friction_potential(
 			state_.collision_mesh, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
 	}
-	void FrictionForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::VectorXd grad_friction = ipc::compute_friction_potential_gradient(
 			state_.collision_mesh, displaced_surface_prev_, compute_displaced_surface(x),
@@ -47,7 +47,7 @@ namespace polyfem::solver
 		gradv = state_.collision_mesh.to_full_dof(grad_friction);
 	}
 
-	void FrictionForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void FrictionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		POLYFEM_SCOPED_TIMER("\t\tfriction hessian");
 

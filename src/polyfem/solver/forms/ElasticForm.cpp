@@ -12,14 +12,14 @@ namespace polyfem::solver
 			compute_cached_stiffness();
 	}
 
-	double ElasticForm::value_unscaled(const Eigen::VectorXd &x) const
+	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return assembler_.assemble_energy(
 			formulation(), state_.mesh->is_volume(), state_.bases, state_.geom_bases(),
 			state_.ass_vals_cache, x);
 	}
 
-	void ElasticForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		Eigen::MatrixXd grad;
 		assembler_.assemble_energy_gradient(
@@ -28,7 +28,7 @@ namespace polyfem::solver
 		gradv = grad;
 	}
 
-	void ElasticForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ElasticForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		POLYFEM_SCOPED_TIMER("\telastic hessian");
 
