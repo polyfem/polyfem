@@ -2,7 +2,7 @@ var searchData=
 [
   ['g_5fbasis_5fvalues_5fcache_5f_0',['g_basis_values_cache_',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#a6d25809476f9acbaf3918d9cce8b49dc',1,'polyfem::assembler::ElementAssemblyValues']]],
   ['gbases_5f_1',['gbases_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481',1,'polyfem::assembler::RhsAssembler']]],
-  ['geom_5fbases_2',['geom_bases',['../classpolyfem_1_1_state.html#a01a4dad6f731acfcb3322dd119a9b64f',1,'polyfem::State']]],
+  ['geom_5fbases_5f_2',['geom_bases_',['../classpolyfem_1_1_state.html#aabd8d8f8b0e1db758fae56d6813467cd',1,'polyfem::State']]],
   ['geom_5fvertices_3',['geom_vertices',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab12dd8964258595195a150b69e434d3e',1,'polyfem::mesh::NCMesh2D::ncElem::geom_vertices()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#aa4f6be3020eb1d8caa9b4ce65e6dec87',1,'polyfem::mesh::NCMesh3D::ncElem::geom_vertices()']]],
   ['global_4',['global',['../classpolyfem_1_1assembler_1_1_assembly_values.html#a3a6afd7356f63fa091fd508a6c88a047',1,'polyfem::assembler::AssemblyValues']]],
   ['global_5f_5',['global_',['../classpolyfem_1_1basis_1_1_basis.html#ad4b24c0d8a1e14e5f471f20b7d3119e6',1,'polyfem::basis::Basis']]],

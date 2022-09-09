@@ -72,6 +72,7 @@ var namespacepolyfem =
     [ "gradient_from_energy", "namespacepolyfem.html#a93b490db14b885cefefcfec2efef81e1", null ],
     [ "hessian_from_energy", "namespacepolyfem.html#a9ff145877627ead4fe6d53c2e736fc1e", null ],
     [ "hessian_from_energy", "namespacepolyfem.html#a21c1cd56cff56ac7f62fc89920389f6d", null ],
+    [ "log_and_throw_error", "namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391", null ],
     [ "logger", "namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd", null ],
     [ "set_logger", "namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569", null ],
     [ "von_mises_stress_for_stress_tensor", "namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34", null ],

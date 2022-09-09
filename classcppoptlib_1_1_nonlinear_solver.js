@@ -25,6 +25,7 @@ var classcppoptlib_1_1_nonlinear_solver =
     [ "assembly_time", "classcppoptlib_1_1_nonlinear_solver.html#a9bc129fb40312b11fb73f982d4e127c5", null ],
     [ "constraint_set_update_time", "classcppoptlib_1_1_nonlinear_solver.html#a672065a5cd3466edda0e143f08922aaa", null ],
     [ "descent_strategy", "classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37", null ],
+    [ "first_grad_norm_tol", "classcppoptlib_1_1_nonlinear_solver.html#aab69895edd3ca28332e1cdfc43b8c792", null ],
     [ "grad_time", "classcppoptlib_1_1_nonlinear_solver.html#af29c29fba5a56d0c9e64e69281f5d5a9", null ],
     [ "inverting_time", "classcppoptlib_1_1_nonlinear_solver.html#ad8d818be91b1395bc6eeb920bf92ebc5", null ],
     [ "line_search_time", "classcppoptlib_1_1_nonlinear_solver.html#ab8857f4990c2e1d493b753feeead53b8", null ],

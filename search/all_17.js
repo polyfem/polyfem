@@ -2,7 +2,7 @@ var searchData=
 [
   ['walkproblem_0',['WalkProblem',['../classpolyfem_1_1problem_1_1_walk_problem.html',1,'polyfem::problem::WalkProblem'],['../classpolyfem_1_1problem_1_1_walk_problem.html#ae20a3ab2eb3e3b53e35c10fd749e3eb5',1,'polyfem::problem::WalkProblem::WalkProblem()']]],
   ['weight_1',['weight',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#ae78973fc299a76a01dabcc156eacd541',1,'polyfem::mesh::NCMesh2D::ncVert::weight()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#ae9a8cc8e4fe8f4ea101961322341f183',1,'polyfem::mesh::NCMesh3D::ncVert::weight()']]],
-  ['weight_5f_2',['weight_',['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#af7992b3fd97c2556cad0985a807dc77c',1,'polyfem::solver::ALNLProblem']]],
+  ['weight_5f_2',['weight_',['../classpolyfem_1_1solver_1_1_form.html#a489fc22d15e5e6fdfc4e05c804632339',1,'polyfem::solver::Form']]],
   ['weighted_5fsum_5fv_5fprevs_3',['weighted_sum_v_prevs',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#a4fef8dd2a5fb4d5c80be56933ff8628f',1,'polyfem::time_integrator::BDF']]],
   ['weighted_5fsum_5fx_5fprevs_4',['weighted_sum_x_prevs',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#a6f77c2777ad1e125180a18d5abf2f47b',1,'polyfem::time_integrator::BDF']]],
   ['weights_5',['weights',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a1a5dabbdabc34de8bdb554b84ea596d1',1,'polyfem::mesh::NCMesh2D::ncBoundary::weights()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a66e650c82b9d4f1acb2127db2145a589',1,'polyfem::mesh::NCMesh3D::ncBoundary::weights()'],['../classpolyfem_1_1quadrature_1_1_quadrature.html#aa4c4c3ae343c37060d42ebe0611f6034',1,'polyfem::quadrature::Quadrature::weights()']]],

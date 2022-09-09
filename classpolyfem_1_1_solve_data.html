@@ -113,6 +113,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_solve_data.html','');
 
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classpolyfem_1_1_solve_data-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::SolveData Class Reference</div></div>
@@ -124,35 +125,218 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_solve_data.html','');
 
 <p><code>#include &lt;<a class="el" href="_state_8hpp_source.html">State.hpp</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a01af50f2b424546be77c028d7632052b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a01af50f2b424546be77c028d7632052b">set_al_weight</a> (const double weight)</td></tr>
+<tr class="separator:a01af50f2b424546be77c028d7632052b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20dcd85c7e65018d6d6cc12827124349"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a20dcd85c7e65018d6d6cc12827124349">updated_barrier_stiffness</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:a20dcd85c7e65018d6d6cc12827124349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22c789be0d51dc9b560d200593171295"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a22c789be0d51dc9b560d200593171295">update_dt</a> ()</td></tr>
+<tr class="separator:a22c789be0d51dc9b560d200593171295"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a95006eab404840d788c35dabc7b9978c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a95006eab404840d788c35dabc7b9978c">rhs_assembler</a></td></tr>
 <tr class="separator:a95006eab404840d788c35dabc7b9978c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a594976bdaa43cb6cafcbf49ee1de0a99"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">solver::NLProblem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a594976bdaa43cb6cafcbf49ee1de0a99">nl_problem</a></td></tr>
 <tr class="separator:a594976bdaa43cb6cafcbf49ee1de0a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2cef02268de7524b6648b9eddd3219e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html">solver::ALNLProblem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#ab2cef02268de7524b6648b9eddd3219e">alnl_problem</a></td></tr>
-<tr class="separator:ab2cef02268de7524b6648b9eddd3219e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd2957c5c3dc50b61d82a4e8cd2b3368"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html">solver::ContactForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#abd2957c5c3dc50b61d82a4e8cd2b3368">contact_form</a></td></tr>
+<tr class="separator:abd2957c5c3dc50b61d82a4e8cd2b3368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16be32f112018931c9fcb9e33bf20086"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html">solver::BodyForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a16be32f112018931c9fcb9e33bf20086">body_form</a></td></tr>
+<tr class="separator:a16be32f112018931c9fcb9e33bf20086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17ea2402b990cd3942b7f22a2af4e002"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html">solver::ALForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a17ea2402b990cd3942b7f22a2af4e002">al_form</a></td></tr>
+<tr class="separator:a17ea2402b990cd3942b7f22a2af4e002"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0e818dae5e8376c8868723dd8250fcd"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html">solver::FrictionForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#ad0e818dae5e8376c8868723dd8250fcd">friction_form</a></td></tr>
+<tr class="separator:ad0e818dae5e8376c8868723dd8250fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3787585c1039d01f9b35ec731d5c9ca2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html">solver::InertiaForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a3787585c1039d01f9b35ec731d5c9ca2">inertia_form</a></td></tr>
+<tr class="separator:a3787585c1039d01f9b35ec731d5c9ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c294ec4dce23156e229078ca0c295da"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html">solver::ElasticForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#a6c294ec4dce23156e229078ca0c295da">elastic_form</a></td></tr>
+<tr class="separator:a6c294ec4dce23156e229078ca0c295da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf48031cea9e8e69f41b60e94296aaad"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html#acf48031cea9e8e69f41b60e94296aaad">time_integrator</a></td></tr>
+<tr class="separator:acf48031cea9e8e69f41b60e94296aaad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >class to store time stepping data </p>
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00071">71</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="ab2cef02268de7524b6648b9eddd3219e" name="ab2cef02268de7524b6648b9eddd3219e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2cef02268de7524b6648b9eddd3219e">&#9670;&nbsp;</a></span>alnl_problem</h2>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00082">82</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a01af50f2b424546be77c028d7632052b" name="a01af50f2b424546be77c028d7632052b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01af50f2b424546be77c028d7632052b">&#9670;&nbsp;</a></span>set_al_weight()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_a_l_n_l_problem.html">solver::ALNLProblem</a>&gt; polyfem::SolveData::alnl_problem</td>
+          <td class="memname">void polyfem::SolveData::set_al_weight </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00076">76</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00045">45</a> of file <a class="el" href="_state_solve_nonlinear_8cpp_source.html">StateSolveNonlinear.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00066">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00122">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00039">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00090">al_form</a>, <a class="el" href="_state_8hpp_source.html#l00089">body_form</a>, and <a class="el" href="_state_8hpp_source.html#l00086">nl_problem</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00283">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+
+</div>
+</div>
+<a id="a22c789be0d51dc9b560d200593171295" name="a22c789be0d51dc9b560d200593171295"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22c789be0d51dc9b560d200593171295">&#9670;&nbsp;</a></span>update_dt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::SolveData::update_dt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00094">94</a> of file <a class="el" href="_state_solve_nonlinear_8cpp_source.html">StateSolveNonlinear.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00089">body_form</a>, <a class="el" href="_state_8hpp_source.html#l00093">elastic_form</a>, <a class="el" href="_state_8hpp_source.html#l00092">inertia_form</a>, and <a class="el" href="_state_8hpp_source.html#l00095">time_integrator</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00126">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
+
+</div>
+</div>
+<a id="a20dcd85c7e65018d6d6cc12827124349" name="a20dcd85c7e65018d6d6cc12827124349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20dcd85c7e65018d6d6cc12827124349">&#9670;&nbsp;</a></span>updated_barrier_stiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::SolveData::updated_barrier_stiffness </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00064">64</a> of file <a class="el" href="_state_solve_nonlinear_8cpp_source.html">StateSolveNonlinear.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00089">body_form</a>, <a class="el" href="_state_8hpp_source.html#l00088">contact_form</a>, <a class="el" href="_state_8hpp_source.html#l00093">elastic_form</a>, <a class="el" href="_state_8hpp_source.html#l00092">inertia_form</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00283">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00126">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a17ea2402b990cd3942b7f22a2af4e002" name="a17ea2402b990cd3942b7f22a2af4e002"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ea2402b990cd3942b7f22a2af4e002">&#9670;&nbsp;</a></span>al_form</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html">solver::ALForm</a>&gt; polyfem::SolveData::al_form</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00090">90</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00045">set_al_weight()</a>.</p>
+
+</div>
+</div>
+<a id="a16be32f112018931c9fcb9e33bf20086" name="a16be32f112018931c9fcb9e33bf20086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16be32f112018931c9fcb9e33bf20086">&#9670;&nbsp;</a></span>body_form</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_body_form.html">solver::BodyForm</a>&gt; polyfem::SolveData::body_form</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00089">89</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00045">set_al_weight()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00094">update_dt()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00064">updated_barrier_stiffness()</a>.</p>
+
+</div>
+</div>
+<a id="abd2957c5c3dc50b61d82a4e8cd2b3368" name="abd2957c5c3dc50b61d82a4e8cd2b3368"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd2957c5c3dc50b61d82a4e8cd2b3368">&#9670;&nbsp;</a></span>contact_form</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html">solver::ContactForm</a>&gt; polyfem::SolveData::contact_form</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00088">88</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_output_8cpp_source.html#l01650">polyfem::State::save_surface()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00283">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00064">updated_barrier_stiffness()</a>.</p>
+
+</div>
+</div>
+<a id="a6c294ec4dce23156e229078ca0c295da" name="a6c294ec4dce23156e229078ca0c295da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c294ec4dce23156e229078ca0c295da">&#9670;&nbsp;</a></span>elastic_form</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html">solver::ElasticForm</a>&gt; polyfem::SolveData::elastic_form</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00093">93</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00094">update_dt()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00064">updated_barrier_stiffness()</a>.</p>
+
+</div>
+</div>
+<a id="ad0e818dae5e8376c8868723dd8250fcd" name="ad0e818dae5e8376c8868723dd8250fcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0e818dae5e8376c8868723dd8250fcd">&#9670;&nbsp;</a></span>friction_form</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html">solver::FrictionForm</a>&gt; polyfem::SolveData::friction_form</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00091">91</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_output_8cpp_source.html#l01650">polyfem::State::save_surface()</a>.</p>
+
+</div>
+</div>
+<a id="a3787585c1039d01f9b35ec731d5c9ca2" name="a3787585c1039d01f9b35ec731d5c9ca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3787585c1039d01f9b35ec731d5c9ca2">&#9670;&nbsp;</a></span>inertia_form</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html">solver::InertiaForm</a>&gt; polyfem::SolveData::inertia_form</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00092">92</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00094">update_dt()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00064">updated_barrier_stiffness()</a>.</p>
 
 </div>
 </div>
@@ -168,9 +352,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00075">75</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00086">86</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00066">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_output_8cpp_source.html#l01638">polyfem::State::save_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l01177">polyfem::State::save_volume()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00122">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00039">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00045">set_al_weight()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00283">polyfem::State::solve_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00126">polyfem::State::solve_transient_tensor_nonlinear()</a>.</p>
 
 </div>
 </div>
@@ -186,14 +370,33 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00074">74</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00085">85</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00066">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00012">polyfem::State::init_solve()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00077">polyfem::State::initial_acceleration()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00049">polyfem::State::initial_solution()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00067">polyfem::State::initial_velocity()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00014">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00015">polyfem::State::solve_navier_stokes()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00070">polyfem::State::solve_transient_linear()</a>, <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00032">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00012">polyfem::State::init_solve()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00066">polyfem::State::initial_acceleration()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00038">polyfem::State::initial_solution()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00056">polyfem::State::initial_velocity()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00014">polyfem::State::solve_linear()</a>, <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00015">polyfem::State::solve_navier_stokes()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00070">polyfem::State::solve_transient_linear()</a>, <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00144">polyfem::State::solve_transient_navier_stokes()</a>, and <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00032">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a id="acf48031cea9e8e69f41b60e94296aaad" name="acf48031cea9e8e69f41b60e94296aaad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf48031cea9e8e69f41b60e94296aaad">&#9670;&nbsp;</a></span>time_integrator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a>&gt; polyfem::SolveData::time_integrator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_state_8hpp_source.html#l00095">95</a> of file <a class="el" href="_state_8hpp_source.html">State.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_output_8cpp_source.html#l01182">polyfem::State::save_volume()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00126">polyfem::State::solve_transient_tensor_nonlinear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00094">update_dt()</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/<a class="el" href="_state_8hpp_source.html">State.hpp</a></li>
+<li>src/polyfem/state/<a class="el" href="_state_solve_nonlinear_8cpp_source.html">StateSolveNonlinear.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

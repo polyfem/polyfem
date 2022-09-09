@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['thessian_0',['THessian',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a0c0f0c01bb1c106408bf6c8346194657',1,'polyfem::solver::NLProblem::THessian()'],['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html#a0c0f0c01bb1c106408bf6c8346194657',1,'polyfem::solver::ALNLProblem::THessian()']]],
+  ['thessian_0',['THessian',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a0c0f0c01bb1c106408bf6c8346194657',1,'polyfem::solver::NLProblem']]],
   ['tvector_1',['TVector',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a17ffbdf8087400684d3d3609d20d09bf',1,'polyfem::solver::line_search::LineSearch::TVector()'],['../classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html#a17ffbdf8087400684d3d3609d20d09bf',1,'polyfem::solver::line_search::ArmijoLineSearch::TVector()'],['../classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a17ffbdf8087400684d3d3609d20d09bf',1,'polyfem::solver::line_search::BacktrackingLineSearch::TVector()'],['../classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html#a17ffbdf8087400684d3d3609d20d09bf',1,'polyfem::solver::line_search::CppOptArmijoLineSearch::TVector()'],['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html#a17ffbdf8087400684d3d3609d20d09bf',1,'polyfem::solver::line_search::MoreThuenteLineSearch::TVector()']]]
 ];

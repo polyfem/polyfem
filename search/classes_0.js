@@ -3,7 +3,7 @@ var searchData=
   ['adl_5fserializer_3c_20rowvector_3c_20t_2c_20dim_2c_20max_5fdim_20_3e_20_3e_0',['adl_serializer&lt; RowVector&lt; T, dim, max_dim &gt; &gt;',['../structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html',1,'nlohmann']]],
   ['adl_5fserializer_3c_20vector_3c_20t_2c_20dim_2c_20max_5fdim_20_3e_20_3e_1',['adl_serializer&lt; Vector&lt; T, dim, max_dim &gt; &gt;',['../structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html',1,'nlohmann']]],
   ['airfoil_2',['Airfoil',['../classpolyfem_1_1problem_1_1_airfoil.html',1,'polyfem::problem']]],
-  ['alnlproblem_3',['ALNLProblem',['../classpolyfem_1_1solver_1_1_a_l_n_l_problem.html',1,'polyfem::solver']]],
+  ['alform_3',['ALForm',['../classpolyfem_1_1solver_1_1_a_l_form.html',1,'polyfem::solver']]],
   ['armijolinesearch_4',['ArmijoLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html',1,'polyfem::solver::line_search']]],
   ['arrayhasher2d_5',['ArrayHasher2D',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html',1,'polyfem::mesh::NCMesh2D::ArrayHasher2D'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html',1,'polyfem::mesh::NCMesh3D::ArrayHasher2D']]],
   ['arrayhasher3d_6',['ArrayHasher3D',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html',1,'polyfem::mesh::NCMesh3D']]],

@@ -29,7 +29,7 @@ var searchData=
   ['quadraticelasticproblemexact_26',['QuadraticElasticProblemExact',['../classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact.html',1,'polyfem::problem::QuadraticElasticProblemExact'],['../classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact.html#af730aed411404999c9596bed57de7c30',1,'polyfem::problem::QuadraticElasticProblemExact::QuadraticElasticProblemExact()']]],
   ['quadraticproblem_27',['QuadraticProblem',['../classpolyfem_1_1problem_1_1_quadratic_problem.html',1,'polyfem::problem::QuadraticProblem'],['../classpolyfem_1_1problem_1_1_quadratic_problem.html#aae0fd5d3eb79d34ca3badb6bb6671120',1,'polyfem::problem::QuadraticProblem::QuadraticProblem()']]],
   ['quadrature_28',['Quadrature',['../classpolyfem_1_1quadrature_1_1_quadrature.html',1,'polyfem::quadrature']]],
-  ['quadrature_29',['quadrature',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#adbc15e5013c155c427ef462311c98c9d',1,'polyfem::assembler::ElementAssemblyValues']]],
+  ['quadrature_29',['quadrature',['../_mass_matrix_assembler_8cpp.html#a6e6c474c9eedb0961390091003af5685',1,'quadrature():&#160;MassMatrixAssembler.cpp'],['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#adbc15e5013c155c427ef462311c98c9d',1,'polyfem::assembler::ElementAssemblyValues::quadrature()']]],
   ['quadrature_2ehpp_30',['Quadrature.hpp',['../_quadrature_8hpp.html',1,'']]],
   ['quadrature_5fbuilder_5f_31',['quadrature_builder_',['../classpolyfem_1_1basis_1_1_element_bases.html#a624d4469689656631ac92a9eebf6fadb',1,'polyfem::basis::ElementBases']]],
   ['quadrature_5ffor_5fpolygon_5fedge_32',['quadrature_for_polygon_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a02cf0bca8805defe581ac1902403ced2',1,'polyfem::utils::BoundarySampler']]],

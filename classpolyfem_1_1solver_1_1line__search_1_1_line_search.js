@@ -5,7 +5,6 @@ var classpolyfem_1_1solver_1_1line__search_1_1_line_search =
     [ "LineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aebab190fce69f1ea77e9fc6852173d76", null ],
     [ "~LineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#abc022a0d423d25988b975c070c9c481a", null ],
     [ "compute_collision_free_step_size", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a07bc05931512b5257fd28bffe4fb7efc", null ],
-    [ "compute_debug_collision_free_step_size", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a6d5d9b20058cad6c6f1adad54362d846", null ],
     [ "compute_nan_free_step_size", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59", null ],
     [ "line_search", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aa83f2a2f12125d3b48b5384bfc742921", null ],
     [ "reset_times", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4a9d3142ceecbb0b63e8a2783bb6479e", null ],

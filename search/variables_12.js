@@ -9,7 +9,7 @@ var searchData=
   ['rbf_5ffunc_6',['rbf_func',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#a415ac30072d942c0ecfe89c432716818',1,'polyfem::problem::PointBasedTensorProblem::BCValue']]],
   ['real_7',['real',['../namespaceeigs.html#a9f82f1e05e7296a0e7c6d80e8a24fc94',1,'eigs']]],
   ['real_5findex_8',['real_index',['../namespaceq__bases.html#a828481552cc7bd78335c5b519f7fed46',1,'q_bases.real_index()'],['../namespacep__bases.html#abbee4f4ea162c1b3fa265d47e35f3328',1,'p_bases.real_index()']]],
-  ['reduced_5fsize_9',['reduced_size',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a52a7ee16ddaea4c04e427a07c14126e0',1,'polyfem::solver::NLProblem']]],
+  ['reduced_5fsize_9',['reduced_size',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a350fc4397aac9f745e2f92a1c38c187d',1,'polyfem::solver::NLProblem']]],
   ['ref_5felement_5fsampler_10',['ref_element_sampler',['../classpolyfem_1_1_state.html#a26d825e766fdf0e188962391b0eab2f3',1,'polyfem::State']]],
   ['refinehistory_11',['refineHistory',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a9c8ed6c582df742b4e7cd313f16dfba7',1,'polyfem::mesh::NCMesh2D::refineHistory()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a4db797962301cb4110e82a2c228d8f92',1,'polyfem::mesh::NCMesh3D::refineHistory()']]],
   ['reg_5fweight_12',['reg_weight',['../classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71',1,'cppoptlib::SparseNewtonDescentSolver']]],
@@ -24,6 +24,6 @@ var searchData=
   ['rho_5f_21',['rho_',['../classpolyfem_1_1_density.html#ae0c95f6937970dad01c66f642ffe17de',1,'polyfem::Density']]],
   ['rhs_22',['rhs',['../classpolyfem_1_1_state.html#afe053733859618a68636782c1034f592',1,'polyfem::State']]],
   ['rhs_5f_23',['rhs_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aa204764d5f7e4030c9ac9db0883949cc',1,'polyfem::assembler::GenericTensorProblem::rhs_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae347a586d5f85f4a65e12f364604226a',1,'polyfem::assembler::GenericScalarProblem::rhs_()'],['../classpolyfem_1_1problem_1_1_node_problem.html#a05858c92281675e0669827cb532e6cad',1,'polyfem::problem::NodeProblem::rhs_()'],['../classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ab458d2d6ae43d838b6a17bee64a74f8a',1,'polyfem::problem::PointBasedTensorProblem::rhs_()']]],
-  ['rhs_5fassembler_24',['rhs_assembler',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a9e187a648e375b94b0f12a5a318694b4',1,'polyfem::solver::NLProblem::rhs_assembler()'],['../classpolyfem_1_1_solve_data.html#a95006eab404840d788c35dabc7b9978c',1,'polyfem::SolveData::rhs_assembler()']]],
-  ['rhs_5fcomputed_25',['rhs_computed',['../classpolyfem_1_1solver_1_1_n_l_problem.html#adc59cc103ef605ca2802d74d82e9eddd',1,'polyfem::solver::NLProblem']]]
+  ['rhs_5fassembler_24',['rhs_assembler',['../classpolyfem_1_1_solve_data.html#a95006eab404840d788c35dabc7b9978c',1,'polyfem::SolveData']]],
+  ['rhs_5fassembler_5f_25',['rhs_assembler_',['../classpolyfem_1_1solver_1_1_a_l_form.html#a72ecf37f03d8e388aaed7fa8190b1ef9',1,'polyfem::solver::ALForm::rhs_assembler_()'],['../classpolyfem_1_1solver_1_1_body_form.html#a0f22a36c134ec75dbe58436071f47524',1,'polyfem::solver::BodyForm::rhs_assembler_()'],['../classpolyfem_1_1solver_1_1_n_l_problem.html#a8956f9b63449756dded30cf38f435203',1,'polyfem::solver::NLProblem::rhs_assembler_()']]]
 ];

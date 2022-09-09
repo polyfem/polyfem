@@ -9,6 +9,7 @@ var searchData=
   ['bilaplacianmain_6',['BilaplacianMain',['../classpolyfem_1_1assembler_1_1_bilaplacian_main.html',1,'polyfem::assembler']]],
   ['bilaplacianmixed_7',['BilaplacianMixed',['../classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html',1,'polyfem::assembler']]],
   ['bilaplacianproblemwithsolution_8',['BilaplacianProblemWithSolution',['../classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html',1,'polyfem::problem']]],
-  ['boundarysampler_9',['BoundarySampler',['../classpolyfem_1_1utils_1_1_boundary_sampler.html',1,'polyfem::utils']]],
-  ['boxselection_10',['BoxSelection',['../classpolyfem_1_1utils_1_1_box_selection.html',1,'polyfem::utils']]]
+  ['bodyform_9',['BodyForm',['../classpolyfem_1_1solver_1_1_body_form.html',1,'polyfem::solver']]],
+  ['boundarysampler_10',['BoundarySampler',['../classpolyfem_1_1utils_1_1_boundary_sampler.html',1,'polyfem::utils']]],
+  ['boxselection_11',['BoxSelection',['../classpolyfem_1_1utils_1_1_box_selection.html',1,'polyfem::utils']]]
 ];

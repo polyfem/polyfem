@@ -10,9 +10,11 @@ var searchData=
   ['flowwithobstacle_7',['FlowWithObstacle',['../classpolyfem_1_1problem_1_1_flow_with_obstacle.html',1,'polyfem::problem']]],
   ['follower_5fedge_8',['follower_edge',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html',1,'polyfem::mesh::NCMesh2D::follower_edge'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html',1,'polyfem::mesh::NCMesh3D::follower_edge']]],
   ['follower_5fface_9',['follower_face',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html',1,'polyfem::mesh::NCMesh2D::follower_face'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html',1,'polyfem::mesh::NCMesh3D::follower_face']]],
-  ['formulationproperties_10',['FormulationProperties',['../structpolyfem_1_1assembler_1_1_formulation_properties.html',1,'polyfem::assembler']]],
-  ['fragmentattributes_11',['FragmentAttributes',['../classpolyfem_1_1renderer_1_1_fragment_attributes.html',1,'polyfem::renderer']]],
-  ['framebufferattributes_12',['FrameBufferAttributes',['../classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html',1,'polyfem::renderer']]],
-  ['frankeproblem_13',['FrankeProblem',['../classpolyfem_1_1problem_1_1_franke_problem.html',1,'polyfem::problem']]],
-  ['frankeproblemold_14',['FrankeProblemOld',['../classpolyfem_1_1problem_1_1_franke_problem_old.html',1,'polyfem::problem']]]
+  ['form_10',['Form',['../classpolyfem_1_1solver_1_1_form.html',1,'polyfem::solver']]],
+  ['formulationproperties_11',['FormulationProperties',['../structpolyfem_1_1assembler_1_1_formulation_properties.html',1,'polyfem::assembler']]],
+  ['fragmentattributes_12',['FragmentAttributes',['../classpolyfem_1_1renderer_1_1_fragment_attributes.html',1,'polyfem::renderer']]],
+  ['framebufferattributes_13',['FrameBufferAttributes',['../classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html',1,'polyfem::renderer']]],
+  ['frankeproblem_14',['FrankeProblem',['../classpolyfem_1_1problem_1_1_franke_problem.html',1,'polyfem::problem']]],
+  ['frankeproblemold_15',['FrankeProblemOld',['../classpolyfem_1_1problem_1_1_franke_problem_old.html',1,'polyfem::problem']]],
+  ['frictionform_16',['FrictionForm',['../classpolyfem_1_1solver_1_1_friction_form.html',1,'polyfem::solver']]]
 ];

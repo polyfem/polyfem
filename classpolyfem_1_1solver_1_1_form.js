@@ -1,0 +1,26 @@
+var classpolyfem_1_1solver_1_1_form =
+[
+    [ "~Form", "classpolyfem_1_1solver_1_1_form.html#aeed3585f6af9b01c48c07809f745f01f", null ],
+    [ "enabled", "classpolyfem_1_1solver_1_1_form.html#aff214a3de8103f43c54038e4916b6957", null ],
+    [ "first_derivative", "classpolyfem_1_1solver_1_1_form.html#a2c8aac126073d7bd5ce46de58e30cdaa", null ],
+    [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a", null ],
+    [ "init", "classpolyfem_1_1solver_1_1_form.html#a57af020e5b4adb1f79380daade52a514", null ],
+    [ "init_lagging", "classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39", null ],
+    [ "is_project_to_psd", "classpolyfem_1_1solver_1_1_form.html#a5480916379212a87367e3efce8c441f4", null ],
+    [ "is_step_valid", "classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4", null ],
+    [ "line_search_begin", "classpolyfem_1_1solver_1_1_form.html#aa88b23bfc5c51229123b96514d822fa7", null ],
+    [ "line_search_end", "classpolyfem_1_1solver_1_1_form.html#ab7cf0e74998f574f9b51502cb3eae209", null ],
+    [ "max_step_size", "classpolyfem_1_1solver_1_1_form.html#ab9da0c5d97cbb385ffc9b6685d29d06c", null ],
+    [ "post_step", "classpolyfem_1_1solver_1_1_form.html#a1db6efac98eb859c4a6f47df7f5a367c", null ],
+    [ "second_derivative", "classpolyfem_1_1solver_1_1_form.html#a6d83fd3e57dbab2ab736ff5236ba32fb", null ],
+    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b", null ],
+    [ "set_project_to_psd", "classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4", null ],
+    [ "set_weight", "classpolyfem_1_1solver_1_1_form.html#a097471f0b37691a73a4c6fade599dfa9", null ],
+    [ "solution_changed", "classpolyfem_1_1solver_1_1_form.html#a297e1bb86a754a8240e9c2ef67a169f7", null ],
+    [ "update_lagging", "classpolyfem_1_1solver_1_1_form.html#a7bb685b88126eff05d1f4a925ed2635d", null ],
+    [ "update_quantities", "classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c", null ],
+    [ "value", "classpolyfem_1_1solver_1_1_form.html#a14d2ee6928c73fc77eb7a7fa1542d27a", null ],
+    [ "value_unweighted", "classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92", null ],
+    [ "project_to_psd_", "classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2", null ],
+    [ "weight_", "classpolyfem_1_1solver_1_1_form.html#a489fc22d15e5e6fdfc4e05c804632339", null ]
+];

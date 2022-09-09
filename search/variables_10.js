@@ -26,11 +26,12 @@ var searchData=
   ['pressure_5fboundary_5fnodes_23',['pressure_boundary_nodes',['../classpolyfem_1_1_state.html#a4230959fa25c50f0dac42f71ad8d8897',1,'polyfem::State']]],
   ['pressure_5finterpolation_5f_24',['pressure_interpolation_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aac7fed540f21e4a52b54f689571e5b04',1,'polyfem::assembler::GenericTensorProblem']]],
   ['pressures_5f_25',['pressures_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3bc13447529022663b9d4c9d6775da79',1,'polyfem::assembler::GenericTensorProblem']]],
-  ['primitive_5fto_5fnode_5f_26',['primitive_to_node_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a2bb6f0e5bf725a6e151168e142b18d4e',1,'polyfem::mesh::MeshNodes']]],
-  ['problem_27',['problem',['../classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6',1,'polyfem::State']]],
-  ['problem_5f_28',['problem_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#af08d7be34b6adcf4c5a89aacf89e3868',1,'polyfem::assembler::RhsAssembler']]],
-  ['problem_5fnames_5f_29',['problem_names_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9',1,'polyfem::problem::ProblemFactory']]],
-  ['problems_5f_30',['problems_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da',1,'polyfem::problem::ProblemFactory']]],
-  ['project_5fto_5fpsd_31',['project_to_psd',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac55b786776d7702e60ebc87e0cc116df',1,'polyfem::solver::NLProblem']]],
-  ['pts_5f_32',['pts_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a76c0df30347d0589e499ac00ec7b258b',1,'polyfem::utils::InterpolatedFunction2d']]]
+  ['prev_5fdistance_5f_26',['prev_distance_',['../classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539',1,'polyfem::solver::ContactForm']]],
+  ['primitive_5fto_5fnode_5f_27',['primitive_to_node_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a2bb6f0e5bf725a6e151168e142b18d4e',1,'polyfem::mesh::MeshNodes']]],
+  ['problem_28',['problem',['../classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6',1,'polyfem::State']]],
+  ['problem_5f_29',['problem_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#af08d7be34b6adcf4c5a89aacf89e3868',1,'polyfem::assembler::RhsAssembler']]],
+  ['problem_5fnames_5f_30',['problem_names_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9',1,'polyfem::problem::ProblemFactory']]],
+  ['problems_5f_31',['problems_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da',1,'polyfem::problem::ProblemFactory']]],
+  ['project_5fto_5fpsd_5f_32',['project_to_psd_',['../classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2',1,'polyfem::solver::Form']]],
+  ['pts_5f_33',['pts_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a76c0df30347d0589e499ac00ec7b258b',1,'polyfem::utils::InterpolatedFunction2d']]]
 ];

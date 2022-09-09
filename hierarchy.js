@@ -51,6 +51,15 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh3D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html", null ],
+    [ "polyfem::solver::Form", "classpolyfem_1_1solver_1_1_form.html", [
+      [ "polyfem::solver::ALForm", "classpolyfem_1_1solver_1_1_a_l_form.html", null ],
+      [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
+      [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", null ],
+      [ "polyfem::solver::ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", null ],
+      [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
+      [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
+      [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ]
+    ] ],
     [ "polyfem::assembler::FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", null ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
@@ -150,9 +159,7 @@ var hierarchy =
     [ "polyfem::quadrature::PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", null ],
     [ "polyfem::quadrature::PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ],
     [ "cppoptlib::Problem", null, [
-      [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
-        [ "polyfem::solver::ALNLProblem", "classpolyfem_1_1solver_1_1_a_l_n_l_problem.html", null ]
-      ] ]
+      [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", null ]
     ] ],
     [ "polyfem::assembler::Problem", "classpolyfem_1_1assembler_1_1_problem.html", [
       [ "polyfem::assembler::GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", null ],

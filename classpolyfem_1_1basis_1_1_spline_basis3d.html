@@ -123,8 +123,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_spline_basis
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a9f1f170b3ff8a338f311101ecdcb07c1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_spline_basis3d.html#a9f1f170b3ff8a338f311101ecdcb07c1">build_bases</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, const int quadrature_order, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;poly_face_to_data)</td></tr>
-<tr class="separator:a9f1f170b3ff8a338f311101ecdcb07c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4181a77f4137cb4bcd32127e570d2435"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_spline_basis3d.html#a4181a77f4137cb4bcd32127e570d2435">build_bases</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, const int quadrature_order, const int mass_quadrature_order, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;poly_face_to_data)</td></tr>
+<tr class="separator:a4181a77f4137cb4bcd32127e570d2435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf55fbeee6feca46bb556153727f70d5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_spline_basis3d.html#aaf55fbeee6feca46bb556153727f70d5">fit_nodes</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">mesh::Mesh3D</a> &amp;mesh, const int n_bases, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;gbases)</td></tr>
 <tr class="separator:aaf55fbeee6feca46bb556153727f70d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -132,8 +132,8 @@ Static Public Member Functions</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_spline_basis3d_8hpp_source.html#l00016">16</a> of file <a class="el" href="_spline_basis3d_8hpp_source.html">SplineBasis3d.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a9f1f170b3ff8a338f311101ecdcb07c1" name="a9f1f170b3ff8a338f311101ecdcb07c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f1f170b3ff8a338f311101ecdcb07c1">&#9670;&nbsp;</a></span>build_bases()</h2>
+<a id="a4181a77f4137cb4bcd32127e570d2435" name="a4181a77f4137cb4bcd32127e570d2435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4181a77f4137cb4bcd32127e570d2435">&#9670;&nbsp;</a></span>build_bases()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -152,6 +152,12 @@ Static Public Member Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>quadrature_order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>mass_quadrature_order</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -228,7 +234,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_spline_basis3d_8cpp_source.html#l01203">1203</a> of file <a class="el" href="_spline_basis3d_8cpp_source.html">SplineBasis3d.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_spline_basis3d_8cpp_source.html#l01216">1216</a> of file <a class="el" href="_spline_basis3d_8cpp_source.html">SplineBasis3d.cpp</a>.</p>
 
 </div>
 </div>
