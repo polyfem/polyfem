@@ -11,8 +11,7 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new Lagged Regularization Form object
-		/// @param weight Weight of the regularization term
-		LaggedRegForm(const double weight_);
+		LaggedRegForm();
 
 	protected:
 		/// @brief Compute the value of the form
@@ -41,6 +40,5 @@ namespace polyfem::solver
 
 	private:
 		Eigen::VectorXd x_lagged_; ///< The full variables from the previous lagging solve.
-		const double weight_;      ///< Weight of the regularization term
 	};
 } // namespace polyfem::solver

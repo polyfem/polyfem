@@ -4,26 +4,24 @@
 
 namespace polyfem::solver
 {
-	LaggedRegForm::LaggedRegForm(const double weight)
-		: weight_(weight)
+	LaggedRegForm::LaggedRegForm()
 	{
-		// TODO:
-		// lagged_damping_weight_ = state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
 	}
 
 	double LaggedRegForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return 0.5 * weight_ * (x - x_lagged_).squaredNorm();
+		return 0.5 * (x - x_lagged_).squaredNorm();
 	}
 
 	void LaggedRegForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight_ * (x - x_lagged_);
+		gradv = (x - x_lagged_);
 	}
 
 	void LaggedRegForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		hessian = weight_ * utils::sparse_identity(x.size(), x.size());
+		hessian.resize(x.size(), x.size());
+		hessian.setIdentity();
 	}
 
 	void LaggedRegForm::init_lagging(const Eigen::VectorXd &x)

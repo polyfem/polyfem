@@ -16,7 +16,10 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value
-		inline double value(const Eigen::VectorXd &x) const { return weight_ * value_unweighted(x); }
+		inline double value(const Eigen::VectorXd &x) const
+		{
+			return weight_ * value_unweighted(x);
+		}
 
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
 		/// @param[in] x Current solution

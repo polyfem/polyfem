@@ -20,11 +20,7 @@ namespace polyfem::solver
 		  broad_phase_method_(broad_phase_method),
 		  contact_form_(contact_form)
 	{
-		// TODO
-		// epsv_ = state_.args["contact"]["epsv"];
 		assert(epsv_ > 0);
-		// mu_ = state_.args["contact"]["friction_coefficient"];
-		// assert(mu_ > 0);
 	}
 
 	Eigen::MatrixXd FrictionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
@@ -58,7 +54,7 @@ namespace polyfem::solver
 		hessian = state_.collision_mesh.to_full_dof(hessian);
 	}
 
-	// more than one step?
+	// TODO: hanlde lagging with more than one step
 	void FrictionForm::init_lagging(const Eigen::VectorXd &x)
 	{
 		displaced_surface_prev_ = compute_displaced_surface(x);

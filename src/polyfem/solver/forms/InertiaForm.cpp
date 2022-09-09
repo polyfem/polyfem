@@ -13,7 +13,7 @@ namespace polyfem::solver
 	double InertiaForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd tmp = x - time_integrator_.x_tilde();
-		// TODO: Fix me DBC on x tilde
+		// FIXME: DBC on x tilde
 		const double prod = tmp.transpose() * mass_ * tmp;
 		const double energy = 0.5 * prod;
 		return energy;
