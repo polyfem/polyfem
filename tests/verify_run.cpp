@@ -131,7 +131,6 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		spdlog::info("Authenticating..");
 		json authen = in_args.at(tests_key);
 		double margin = authen.value("margin", 1e-5);
-		margin = 1e-5;
 		for (const std::string &key : test_keys)
 		{
 			const double prev_val = out[key];
