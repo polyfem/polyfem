@@ -130,16 +130,22 @@ namespace polyfem
 		{
 			integral = 0;
 
+			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+
+			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
 			Eigen::MatrixXd uv, samples, gtmp;
 			Eigen::VectorXi global_primitive_ids;
 			Eigen::MatrixXd points, normals;
 			Eigen::VectorXd weights;
 
-			assembler::ElementAssemblyValues vals;
-
-			for (const auto &lb : local_boundary)
+			for (int lb_id = start; lb_id < end; ++lb_id)
 			{
+				const auto &lb = local_boundary[lb_id];
 				const int e = lb.element_id();
+
+				assembler::ElementAssemblyValues vals;
 				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
@@ -174,9 +180,13 @@ namespace polyfem
 					{
 						integrand_product *= integrand(q);
 					}
-					integral += integrand_product * da(q);
+					local_storage.val += integrand_product * da(q);
 				}
 			}
+			});
+
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				integral += local_storage.val;
 		}
 
 		void replace_rows_by_identity(StiffnessMatrix &reduced_mat, const StiffnessMatrix &mat, const std::vector<int> &rows)
@@ -1077,17 +1087,25 @@ namespace polyfem
 		else
 		{
 			assert(!iso_parametric() || disc_orders[0] == 1);
-			Eigen::VectorXi global_primitive_ids;
-			Eigen::MatrixXd uv, points, normals;
-			Eigen::VectorXd weights;
 
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
 			get_vf(V, F);
 
-			for (const auto &lb : total_local_boundary)
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+
+			utils::maybe_parallel_for(total_local_boundary.size(), [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			Eigen::VectorXi global_primitive_ids;
+			Eigen::MatrixXd uv, points, normals;
+			Eigen::VectorXd weights;
+
+			for (int lb_id = start; lb_id < end; ++lb_id)
 			{
+				const auto &lb = total_local_boundary[lb_id];
 				const int e = lb.element_id();
+				
 				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, args["space"]["advanced"]["n_boundary_samples"], *mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
@@ -1197,10 +1215,10 @@ namespace polyfem
 									velocity_div = dr.dot(dtheta) / dr.squaredNorm();
 								}
 
-								term(v.global[0].index * mesh->dimension() + d) += j_value(q) * velocity_div * da(q);
+								local_storage.vec(v.global[0].index * mesh->dimension() + d) += j_value(q) * velocity_div * da(q);
 								if (j.depend_on_x())
 								{
-									term(v.global[0].index * mesh->dimension() + d) += (v.val(q) * dj_dx(q, d)) * da(q);
+									local_storage.vec(v.global[0].index * mesh->dimension() + d) += (v.val(q) * dj_dx(q, d)) * da(q);
 								}
 								if (j.depend_on_gradu())
 								{
@@ -1209,13 +1227,17 @@ namespace polyfem
 										vector2matrix(grad_j_value.row(q), tau_i);
 									else
 										tau_i = grad_j_value.row(q);
-									term(v.global[0].index * mesh->dimension() + d) += -dot(tau_i, grad_u_i * grad_v_i) * da(q);
+									local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_i, grad_u_i * grad_v_i) * da(q);
 								}
 							}
 						}
 					}
 				}
 			}
+			});
+
+			for (const LocalThreadVecStorage &local_storage : storage)
+				term += local_storage.vec;
 		}
 	}
 
