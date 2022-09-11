@@ -470,6 +470,63 @@ namespace polyfem
 					dx.head(dof) = dx.head(dof).array() * cur_lambdas.array();
 				};
 			}
+			else if (material_params["restriction"].get<std::string>() == "constant_E_nu")
+			{
+				logger().info("{} objects found, each object has constant material parameter nu...", body_id_map.size());
+
+				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
+					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
+					auto cur_mus = state.assembler.lame_params().mu_mat_;
+
+					for (int e = 0; e < dof; e++)
+					{
+						const int body_id = state.mesh->get_body_id(e);
+
+						if (!body_id_map.count(body_id))
+							continue;
+
+						const double E = x(body_id_map.at(body_id)[1] * 2 + 0);
+						const double nu = x(body_id_map.at(body_id)[1] * 2 + 1);
+
+						cur_lambdas(e) = E * nu / ((1 + nu) * (1 - 2 * nu));
+						cur_mus(e) = E / 2 / (1 + nu);
+					}
+					state.assembler.update_lame_params(cur_lambdas, cur_mus);
+					logger().debug("material E nu: {}", x.transpose());
+				};
+				material_problem->param_to_x = [body_id_map, dof](MaterialProblem::TVector &x, State &state) {
+					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
+					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
+					x.setZero(body_id_map.size() * 2);
+					for (auto i : body_id_map)
+					{
+						x(i.second[1] * 2 + 0) = cur_mus(i.second[0]) * (3 * cur_lambdas(i.second[0]) + 2 * cur_mus(i.second[0])) / (cur_lambdas(i.second[0]) + cur_mus(i.second[0]));
+						x(i.second[1] * 2 + 1) = cur_lambdas(i.second[0]) / (2 * (cur_lambdas(i.second[0]) + cur_mus(i.second[0])));
+					}
+					logger().debug("material E nu: {}", x.transpose());
+				};
+				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
+					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
+					dx.setZero(body_id_map.size() * 2);
+
+					for (int e = 0; e < dof; e++)
+					{
+						const int body_id = state.mesh->get_body_id(e);
+						const double E = cur_mus(e) * (3 * cur_lambdas(e) + 2 * cur_mus(e)) / (cur_lambdas(e) + cur_mus(e));
+						const double nu = cur_lambdas(e) / (2 * (cur_lambdas(e) + cur_mus(e)));
+						const double dlambda_dnu = E * (1 + 2 * nu * nu) / pow(2 * nu * nu + nu - 1, 2);
+						const double dmu_dnu = -E / 2 / pow(1 + nu, 2);
+						const double dlambda_dE = nu / (2 * nu * nu + nu - 1);
+						const double dmu_dE = 1 / 2 / (1 + nu);
+
+						if (!body_id_map.count(body_id))
+							continue;
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * dlambda_dE + dparams(e + dof) * dmu_dE;
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e) * dlambda_dnu + dparams(e + dof) * dmu_dnu;
+					}
+				};
+			}
 			else if (material_params["restriction"].get<std::string>() == "constant_log")
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
