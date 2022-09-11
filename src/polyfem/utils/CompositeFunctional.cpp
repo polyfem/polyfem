@@ -629,9 +629,9 @@ namespace polyfem
 		logger().trace("Current volume: {}", current_volume);
 
 		if (current_volume > max_volume)
-			return pow(current_volume - max_volume, 2);
+			return pow(current_volume / max_volume - 1, 2);
 		else if (current_volume < min_volume)
-			return pow(current_volume - min_volume, 2);
+			return pow(current_volume / min_volume - 1, 2);
 		else
 			return 0.;
 	}
@@ -646,9 +646,9 @@ namespace polyfem
 
 		double derivative = 0;
 		if (current_volume > max_volume)
-			derivative = 2 * (current_volume - max_volume);
+			derivative = 2 * (current_volume / max_volume - 1) / max_volume;
 		else if (current_volume < min_volume)
-			derivative = 2 * (current_volume - min_volume);
+			derivative = 2 * (current_volume / min_volume - 1) / min_volume;
 
 		return derivative * grad;
 	}
