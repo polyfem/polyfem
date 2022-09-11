@@ -691,10 +691,32 @@ namespace polyfem
 		double min_quality = quality.minCoeff();
 		double avg_quality = quality.sum() / quality.size();
 		logger().debug("Mesh worst quality: {}, avg quality: {}", min_quality, avg_quality);
-		if (!shape_params.contains("remesh_tolerance") || min_quality > shape_params["remesh_tolerance"].get<double>())
-			return false;
 
-		logger().info("Remeshing ...");
+		static int no_remesh_iter = 1;
+
+		bool should_remesh = false;
+
+		if (shape_params.contains("remesh_tolerance") && min_quality < shape_params["remesh_tolerance"].get<double>())
+		{
+			should_remesh = true;
+			logger().debug("Remesh due to bad quality...");
+		}
+
+		if (shape_params.contains("remesh_period") && (no_remesh_iter % shape_params["remesh_period"].get<int>() == 0))
+		{
+			should_remesh = true;
+			logger().debug("Remesh every {} iter...", shape_params["remesh_period"].get<int>());
+		}
+
+		if (!should_remesh)
+		{
+			no_remesh_iter++;
+			return false;
+		}
+
+		no_remesh_iter = 1;
+
+		// logger().info("Remeshing ...");
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
@@ -823,9 +845,9 @@ namespace polyfem
 
 				// modify json
 				bool flag = false;
-				for (int m = 0; m < state.args["geometry"].get<std::vector<json>>().size(); m++)
+				for (int m = 0; m < state.in_args["geometry"].get<std::vector<json>>().size(); m++)
 				{
-					if (state.args["geometry"][m]["volume_selection"].get<int>() != body_id)
+					if (state.in_args["geometry"][m]["volume_selection"].get<int>() != body_id)
 						continue;
 					if (!flag)
 						flag = true;
@@ -834,8 +856,8 @@ namespace polyfem
 						logger().error("Multiple meshes found with same body id!");
 						return false;
 					}
-					state.args["geometry"][m]["transformation"]["skip"] = true;
-					state.args["geometry"][m]["mesh"] = after_remesh_path;
+					state.in_args["geometry"][m]["transformation"]["skip"] = true;
+					state.in_args["geometry"][m]["mesh"] = after_remesh_path;
 				}
 			}
 		}
@@ -845,12 +867,10 @@ namespace polyfem
 		state.mesh = nullptr;
 		state.assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
 
-		json in_args = state.args;
+		json in_args = state.in_args;
 		for (auto &geo : in_args["geometry"])
 			if (geo.contains("transformation"))
 				geo.erase("transformation");
-		if (in_args.contains("time") && in_args["time"] == nullptr)
-			in_args.erase("time");
 		std::cout << in_args << std::endl;
 		state.init(in_args, false);
 
@@ -879,15 +899,18 @@ namespace polyfem
 
 		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
 
-		logger().info("Remeshing done!");
+		logger().info("Remeshing finished!");
 
 		state.get_vf(V, F);
 		scaled_jacobian(V, F, quality);
-		if (quality.minCoeff() <= shape_params["remesh_tolerance"].get<double>())
-		{
-			logger().error("Quality not good after remeshing!");
-			exit(0);
-		}
+		// if (quality.minCoeff() <= shape_params["remesh_tolerance"].get<double>())
+		// {
+		// 	logger().error("Quality not good after remeshing!");
+		// 	exit(0);
+		// }
+		min_quality = quality.minCoeff();
+		avg_quality = quality.sum() / quality.size();
+		logger().debug("Mesh worst quality: {}, avg quality: {}", min_quality, avg_quality);
 
 		return true;
 	}

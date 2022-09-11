@@ -103,6 +103,7 @@ namespace polyfem
 
 		/// main input arguments containing all defaults
 		json args;
+		json in_args;
 
 		//---------------------------------------------------
 		//-----------------logger----------------------------

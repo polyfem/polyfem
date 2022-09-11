@@ -146,6 +146,7 @@ namespace polyfem
 	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir, const bool fallback_solver)
 	{
 		json args_in = p_args_in; // mutable copy
+		in_args = p_args_in;
 
 		if (args_in.contains("common"))
 			apply_default_params(args_in);
