@@ -130,17 +130,17 @@ namespace polyfem
 		{
 			integral = 0;
 
-			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+			// auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 
-			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
-				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			// utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
+			// 	LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 			Eigen::MatrixXd uv, samples, gtmp;
 			Eigen::VectorXi global_primitive_ids;
 			Eigen::MatrixXd points, normals;
 			Eigen::VectorXd weights;
 
-			for (int lb_id = start; lb_id < end; ++lb_id)
+			for (int lb_id = 0; lb_id < local_boundary.size(); ++lb_id)
 			{
 				const auto &lb = local_boundary[lb_id];
 				const int e = lb.element_id();
@@ -180,13 +180,14 @@ namespace polyfem
 					{
 						integrand_product *= integrand(q);
 					}
-					local_storage.val += integrand_product * da(q);
+					// local_storage.val += integrand_product * da(q);
+					integral += integrand_product * da(q);
 				}
 			}
-			});
+			// });
 
-			for (const LocalThreadScalarStorage &local_storage : storage)
-				integral += local_storage.val;
+			// for (const LocalThreadScalarStorage &local_storage : storage)
+			// 	integral += local_storage.val;
 		}
 
 		void replace_rows_by_identity(StiffnessMatrix &reduced_mat, const StiffnessMatrix &mat, const std::vector<int> &rows)
