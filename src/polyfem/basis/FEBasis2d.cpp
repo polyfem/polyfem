@@ -673,6 +673,7 @@ Eigen::VectorXi FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh
 int FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
+	const int mass_quadrature_order,
 	const int discr_order,
 	const bool serendipity,
 	const bool has_polys,
@@ -686,12 +687,13 @@ int FEBasis2d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_faces());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+	return build_bases(mesh, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 }
 
 int FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
+	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_orders,
 	const bool serendipity,
 	const bool has_polys,
@@ -752,9 +754,14 @@ int FEBasis2d::build_bases(
 		if (mesh.is_cube(e))
 		{
 			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
+			const int real_mass_order = std::max(mass_quadrature_order, discr_order * 2 + 1);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				QuadQuadrature quad_quadrature;
 				quad_quadrature.get_quadrature(real_order, quad);
+			});
+			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+				QuadQuadrature quad_quadrature;
+				quad_quadrature.get_quadrature(real_mass_order, quad);
 			});
 			// quad_quadrature.get_quadrature(real_order, b.quadrature);
 
@@ -788,9 +795,14 @@ int FEBasis2d::build_bases(
 		else if (mesh.is_simplex(e))
 		{
 			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
+			const int real_mass_order = std::max(mass_quadrature_order, (discr_order)*2 + 1);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				TriQuadrature tri_quadrature;
 				tri_quadrature.get_quadrature(real_order, quad);
+			});
+			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+				TriQuadrature tri_quadrature;
+				tri_quadrature.get_quadrature(real_mass_order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {

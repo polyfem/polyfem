@@ -23,6 +23,7 @@ namespace polyfem
 				const mesh::Mesh2D &mesh,
 				const int n_bases,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,
 				const std::vector<ElementBases> &gbases,
 				const std::map<int, InterfaceData> &poly_edge_to_data,

@@ -573,6 +573,7 @@ namespace polyfem
 			const Mesh3D &mesh,
 			const int n_bases,
 			const int quadrature_order,
+			const int mass_quadrature_order,
 			const int integral_constraints,
 			std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
@@ -621,6 +622,8 @@ namespace polyfem
 								 triangulated_faces, tmp_quadrature, scaling, translation);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
+				//TODO
+				b.set_mass_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				// b.scaling_ = scaling;
 				// b.translation_ = translation;
 

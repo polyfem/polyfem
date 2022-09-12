@@ -34,7 +34,7 @@ namespace polyfem
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
 
 		Eigen::MatrixXd local_pts;
-		auto &gbases = iso_parametric() ? bases : geom_bases;
+		auto &gbases = geom_bases();
 		if (mesh->dimension() == 2)
 		{
 			if (gbases[0].bases.size() == 3)
@@ -145,7 +145,7 @@ namespace polyfem
 	{
 		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		Eigen::MatrixXd current_rhs = rhs;
 
 		StiffnessMatrix velocity_mass;

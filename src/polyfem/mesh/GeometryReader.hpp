@@ -51,6 +51,7 @@ namespace polyfem::mesh
 	void read_obstacle_mesh(
 		const json &j_mesh,
 		const std::string &root_path,
+		const int dim,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &codim_edges,

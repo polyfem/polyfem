@@ -25,6 +25,8 @@ namespace polyfem
 			void append_plane(const VectorNd &origin, const VectorNd &normal);
 
 			inline int n_vertices() const { return v_.rows(); }
+			inline int dim() const { return dim_; }
+			inline int ndof() const { return n_vertices() * dim(); }
 			inline const Eigen::MatrixXd &v() const { return v_; }
 			inline const Eigen::VectorXi &codim_v() const { return codim_v_; }
 			inline const Eigen::MatrixXi &f() const { return f_; }

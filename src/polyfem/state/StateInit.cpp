@@ -146,8 +146,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		if (args_in.contains("common"))
-			apply_default_params(args_in);
+		apply_common_params(args_in);
 
 		// CHECK validity json
 		json rules;

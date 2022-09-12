@@ -28,6 +28,7 @@ namespace polyfem
 
 			// quadrature points to evaluate the basis functions inside the element
 			void compute_quadrature(quadrature::Quadrature &quadrature) const { quadrature_builder_(quadrature); }
+			void compute_mass_quadrature(quadrature::Quadrature &quadrature) const { mass_quadrature_builder_(quadrature); }
 			Eigen::VectorXi local_nodes_for_primitive(const int local_index, const mesh::Mesh &mesh) const { return local_node_from_primitive_(local_index, mesh); }
 
 			// whether the basis functions should be evaluated in the parametric domain (FE bases),
@@ -60,6 +61,7 @@ namespace polyfem
 			}
 
 			void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
+			void set_mass_quadrature(const QuadratureFunction &fun) { mass_quadrature_builder_ = fun; }
 
 			// evaluation functions
 			void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
@@ -99,6 +101,7 @@ namespace polyfem
 			EvalBasesFunc eval_bases_func_;
 			EvalBasesFunc eval_grads_func_;
 			QuadratureFunction quadrature_builder_;
+			QuadratureFunction mass_quadrature_builder_;
 
 			LocalNodeFromPrimitiveFunc local_node_from_primitive_;
 		};

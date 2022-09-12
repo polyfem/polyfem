@@ -343,6 +343,7 @@ namespace polyfem
 			const Mesh2D &mesh,
 			const int n_bases,
 			const int quadrature_order,
+			const int mass_quadrature_order,
 			std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
 			const std::map<int, InterfaceData> &poly_edge_to_data,
@@ -405,7 +406,11 @@ namespace polyfem
 				Quadrature tmp_quadrature;
 				poly_quadr.get_quadrature(polygon, quadrature_order, tmp_quadrature);
 
+				Quadrature tmp_mass_quadrature;
+				poly_quadr.get_quadrature(polygon, mass_quadrature_order, tmp_mass_quadrature);
+
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
+				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });
 
 				const double tol = 1e-10;
 				b.set_bases_func([polygon, tol](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
