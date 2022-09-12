@@ -18,7 +18,7 @@
             "initial_conditions",
             "output",
             "input",
-            "authen_t1"
+            "tests"
         ],
         "doc": "Root of the configuration file."
     },
@@ -38,7 +38,7 @@
         "doc": "Path for all relative paths, set automatically to the folder containing this json."
     },
     {
-        "pointer": "/authen_t1",
+        "pointer": "/tests",
         "default": null,
         "type": "object",
         "optional": [
@@ -48,51 +48,68 @@
             "err_linf",
             "err_linf_grad",
             "err_lp",
-            "margin"
+            "margin",
+            "time_steps"
         ],
         "doc": "Used to test to compare different norms of solutions."
     },
     {
-        "pointer": "/authen_t1/err_h1",
+        "pointer": "/tests/err_h1",
         "default": 0,
         "type": "float",
         "doc": "Reference h1 solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_h1_semi",
+        "pointer": "/tests/err_h1_semi",
         "default": 0,
         "type": "float",
         "doc": "Reference h1 seminorm solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_l2",
+        "pointer": "/tests/err_l2",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^2$ solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_linf",
+        "pointer": "/tests/err_linf",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^\\infty$ solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_linf_grad",
+        "pointer": "/tests/err_linf_grad",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^\\infty$ solution's gradient norm."
     },
     {
-        "pointer": "/authen_t1/err_lp",
+        "pointer": "/tests/err_lp",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^8$ solution's gradient norm."
     },
     {
-        "pointer": "/authen_t1/margin",
-        "default": 0,
+        "pointer": "/tests/margin",
+        "default": 1e-5,
         "type": "float",
         "doc": "Reference tolerance used in tests."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Number of time steps to test."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "type": "string",
+        "options": [
+            "all",
+            "static"
+        ],
+        "doc": "Number of time steps to test."
     },
     {
         "pointer": "/geometry",
