@@ -80,7 +80,7 @@ namespace polyfem
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 
-	int State::remove_pure_neumann_singularity(StiffnessMatrix &A)
+	int State::remove_pure_neumann_singularity(StiffnessMatrix &A) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const auto& gbases = iso_parametric() ? bases : geom_bases;
@@ -316,7 +316,7 @@ namespace polyfem
 			return 0;
 	}
 
-	int State::remove_pure_periodic_singularity(StiffnessMatrix &A)
+	int State::remove_pure_periodic_singularity(StiffnessMatrix &A) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const auto& gbases = iso_parametric() ? bases : geom_bases;
@@ -368,75 +368,25 @@ namespace polyfem
 		}
 		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean" || formulation() == "Stokes")
 		{
-			Eigen::MatrixXd test_func;
-			if (problem_dim == 2)
-			{
-				test_func.setZero(n_bases * problem_dim, 2);
-				
-				// (1, 0)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 0, 0) = 1;
-
-				// (0, 1)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 1, 1) = 1;
-			}
-			else if (problem_dim == 3)
-			{
-				test_func.setZero(n_bases * problem_dim, 3);
-				
-				// (1, 0, 0)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 0, 0) = 1;
-
-				// (0, 1, 0)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 1, 1) = 1;
-
-				// (0, 0, 1)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 2, 2) = 1;
-			}
-			else
-				assert(false);
-
-			Eigen::MatrixXd coeffs(n_bases * problem_dim, test_func.cols());
+			Eigen::MatrixXd coeffs(n_bases * problem_dim, mesh->dimension());
 			coeffs.setZero();
 
 			// coeffs = mass * test_func;
 
-			for (int k = 0; k < test_func.cols(); k++)
+			for (int e = 0; e < bases.size(); e++)
 			{
-				for (int e = 0; e < bases.size(); e++)
+				ElementAssemblyValues vals;
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+
+				const int n_loc_bases = int(vals.basis_values.size());
+				for (int i = 0; i < n_loc_bases; ++i) 
 				{
-					ElementAssemblyValues vals;
-					vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-
-					Eigen::MatrixXd result;
-					result.setZero(vals.val.rows(), mesh->dimension());
-
-					const int n_loc_bases = int(vals.basis_values.size());
-					for (int i = 0; i < n_loc_bases; ++i) 
+					const auto &val = vals.basis_values[i];
+					for (size_t ii = 0; ii < val.global.size(); ++ii) 
 					{
-						const auto &val = vals.basis_values[i];
-						for (size_t ii = 0; ii < val.global.size(); ++ii) 
-						{
-							for (int d = 0; d < problem_dim; ++d)
-							{
-								result.col(d) += val.global[ii].val * test_func(val.global[ii].index * problem_dim + d, k) * val.val;
-							}
-						}
-					}
-
-					for (int i = 0; i < n_loc_bases; ++i) 
-					{
-						const auto &val = vals.basis_values[i];
-						for (size_t ii = 0; ii < val.global.size(); ++ii) 
-						{
-							Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-							for (int d = 0; d < problem_dim; d++)
-								coeffs(val.global[ii].index * problem_dim + d, k) += (tmp.array() * result.col(d).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-						}
+						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
+						for (int k = 0; k < mesh->dimension(); k++)
+							coeffs(val.global[ii].index * problem_dim + k, k) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 					}
 				}
 			}

@@ -111,10 +111,13 @@ namespace cppoptlib
 
 				if (reg_weight > 0)
 				{
-					hessian += reg_weight * polyfem::utils::sparse_identity(hessian.rows(), hessian.cols());
+					polyfem::StiffnessMatrix id = polyfem::utils::sparse_identity(x.size(), x.size());
+					id.resize(hessian.rows(), hessian.cols());
+					hessian += reg_weight * id;
 				}
 			}
 
+			TVector b = -grad;
 			{
 				POLYFEM_SCOPED_TIMER("linear solve", this->inverting_time);
 				// TODO: get the correct size
@@ -136,11 +139,15 @@ namespace cppoptlib
 					return compute_update_direction(objFunc, x, grad, direction);
 				}
 
-				linear_solver->solve(-grad, direction); // H Δx = -g
+				b.conservativeResize(hessian.rows());
+				b.segment(grad.size(), b.size() - grad.size()).setZero();
+				direction.conservativeResize(b.size());
+				linear_solver->solve(b, direction); // H Δx = -g
 			}
 
 			// gradient descent, check descent direction
-			const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
+			const double residual = (hessian * direction - b).norm(); // H Δx + g = 0
+			direction.conservativeResizeLike(x);
 			if (std::isnan(residual))
 			{
 				increase_descent_strategy();

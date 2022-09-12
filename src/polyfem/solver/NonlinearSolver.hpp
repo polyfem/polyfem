@@ -94,7 +94,7 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 			// double first_grad_norm = grad.norm();
-			const double first_grad_norm = (objFunc.force_inequality_constraint(x, -grad) - x).norm();
+			const double first_grad_norm = objFunc.n_inequality_constraints() > 0 ? (objFunc.force_inequality_constraint(x, -grad) - x).norm() : grad.norm();
 			if (std::isnan(first_grad_norm))
 			{
 				this->m_status = Status::UserDefined;
@@ -154,7 +154,7 @@ namespace cppoptlib
 					objFunc.gradient(x, grad);
 				}
 
-				const double grad_norm = (objFunc.force_inequality_constraint(x, -grad) - x).norm();
+				const double grad_norm = objFunc.n_inequality_constraints() > 0 ? (objFunc.force_inequality_constraint(x, -grad) - x).norm() : grad.norm();
 				logger().debug("grad norm: {}", grad_norm);
 				if (std::isnan(grad_norm))
 				{

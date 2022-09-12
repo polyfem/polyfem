@@ -578,6 +578,15 @@ namespace polyfem
 			THessian full_hessian;
 			hessian_full(x, full_hessian);
 			full_hessian_to_reduced_hessian(full_hessian, hessian);
+
+			// lagrange multiplier for periodic bc
+			if (reduced_size == full_size && !state.problem->is_time_dependent())
+			{
+				if (state.args["boundary_conditions"]["periodic_boundary"].get<bool>())
+					state.remove_pure_periodic_singularity(hessian);
+				else
+					state.remove_pure_neumann_singularity(hessian);
+			}
 		}
 
 		void NLProblem::hessian_full(const TVector &x, THessian &hessian)

@@ -802,8 +802,8 @@ namespace polyfem
 			const std::vector<ElementBases> &bases_) const;
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
-		int remove_pure_neumann_singularity(StiffnessMatrix &A);
-		int remove_pure_periodic_singularity(StiffnessMatrix &A);
+		int remove_pure_neumann_singularity(StiffnessMatrix &A) const;
+		int remove_pure_periodic_singularity(StiffnessMatrix &A) const;
 
 		/// compute the errors, not part of solve
 		void compute_errors();
