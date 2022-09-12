@@ -245,9 +245,9 @@ var NAVTREEINDEX8 =
 "classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923":[4,0,3,0,29,17],
 "classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6":[3,0,6,0,29,21],
 "classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6":[4,0,3,0,29,21],
-"classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3":[3,0,6,0,29,11],
 "classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3":[4,0,3,0,29,11],
+"classpolyfem_1_1assembler_1_1_problem.html#ae8cf4b02ffd4667accda36a466f790c3":[3,0,6,0,29,11],
 "classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6":[4,0,3,0,29,4],
 "classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6":[3,0,6,0,29,4],
-"classpolyfem_1_1assembler_1_1_problem.html#aedd9fdf5b278fd428d8272deea907fc8":[3,0,6,0,29,8]
+"classpolyfem_1_1assembler_1_1_problem.html#aedd9fdf5b278fd428d8272deea907fc8":[4,0,3,0,29,8]
 };
