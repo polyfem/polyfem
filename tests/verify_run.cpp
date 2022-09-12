@@ -90,7 +90,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		args["root_path"] = json_file;
 	}
 
-	State state(1);
+	State state(/*max_threads=*/1);
 	state.init_logger("", spdlog::level::warn, false);
 	spdlog::set_level(spdlog::level::info);
 	state.init(args, "");
