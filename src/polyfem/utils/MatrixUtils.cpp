@@ -60,7 +60,7 @@ void polyfem::utils::SpareMatrixCache::init(const size_t size)
 	mat_.setZero();
 }
 
-void SpareMatrixCache::init(const size_t rows, const size_t cols)
+void polyfem::utils::SpareMatrixCache::init(const size_t rows, const size_t cols)
 {
 	assert(mapping().empty());
 

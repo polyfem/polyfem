@@ -7,6 +7,8 @@
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <BVH.hpp>
+
 namespace polyfem
 {
 	using namespace basis;

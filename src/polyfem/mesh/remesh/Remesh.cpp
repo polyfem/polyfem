@@ -1,7 +1,5 @@
 #include "Remesh.hpp"
 
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/ALNLProblem.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/mesh/remesh/MMGRemesh.hpp>
 #include <polyfem/io/OBJWriter.hpp>
@@ -11,6 +9,7 @@
 
 namespace polyfem::mesh
 {
+	using namespace time_integrator;
 	using namespace io;
 	using namespace utils;
 
@@ -74,16 +73,17 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
+		const ImplicitTimeIntegrator &time_integrator = *state.solve_data.time_integrator;
+
 		// Save old values
 		const int old_n_bases = state.n_bases;
 		const std::vector<ElementBases> old_bases = state.bases;
-		// TODO: replace with state.geom_bases()
-		const std::vector<ElementBases> old_geom_bases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const std::vector<ElementBases> old_geom_bases = state.geom_bases();
 		const StiffnessMatrix old_mass = state.mass;
 		Eigen::MatrixXd y(state.sol.size(), 3); // Old values of independent variables
 		y.col(0) = state.sol;
-		y.col(1) = state.solve_data.nl_problem->time_integrator()->v_prev();
-		y.col(2) = state.solve_data.nl_problem->time_integrator()->a_prev();
+		y.col(1) = time_integrator.v_prev();
+		y.col(2) = time_integrator.a_prev();
 
 		// --------------------------------------------------------------------
 
@@ -104,8 +104,8 @@ namespace polyfem::mesh
 		L2_projection(
 			state, *state.solve_data.rhs_assembler,
 			state.mesh->is_volume(), state.mesh->is_volume() ? 3 : 2,
-			old_n_bases, old_bases, old_geom_bases,                                              // from
-			state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, // to // TODO: replace with state.geom_bases()
+			old_n_bases, old_bases, old_geom_bases,         // from
+			state.n_bases, state.bases, state.geom_bases(), // to
 			state.ass_vals_cache, y, x, /*lump_mass_matrix=*/false);
 
 		state.sol = x.col(0);
@@ -126,8 +126,8 @@ namespace polyfem::mesh
 			L2_projection(
 				state, *state.solve_data.rhs_assembler,
 				state.mesh->is_volume(), state.mesh->is_volume() ? 3 : 2,
-				state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, // from // TODO: replace with state.geom_bases()
-				old_n_bases, old_bases, old_geom_bases,                                              // to
+				state.n_bases, state.bases, state.geom_bases(), // from
+				old_n_bases, old_bases, old_geom_bases,         // to
 				ass_vals_cache, x, y2);
 
 			auto error = [&old_mass](const Eigen::VectorXd &old_y, const Eigen::VectorXd &new_y) -> double {
@@ -147,33 +147,12 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		// TODO: Replace with state.build_rhs_assembler()
-		json rhs_solver_params = state.args["solver"]["linear"];
-		if (!rhs_solver_params.contains("Pardiso"))
-			rhs_solver_params["Pardiso"] = {};
-		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		state.solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			state.assembler, *state.mesh, state.obstacle, state.input_dirichlet,
-			state.n_bases, state.problem->is_scalar() ? 1 : state.mesh->dimension(),
-			state.bases, gbases, state.ass_vals_cache,
-			state.formulation(), *state.problem,
-			state.args["space"]["advanced"]["bc_method"],
-			state.args["solver"]["linear"]["solver"],
-			state.args["solver"]["linear"]["precond"],
-			rhs_solver_params);
-
-		const int full_size = state.n_bases * state.mesh->dimension();
-		const int reduced_size = state.n_bases * state.mesh->dimension() - state.boundary_nodes.size();
-
-		state.solve_data.nl_problem = std::make_shared<NLProblem>(
-			state, *state.solve_data.rhs_assembler, t0 + t * dt, state.args["contact"]["dhat"]);
-		state.solve_data.nl_problem->init_time_integrator(state.sol, vel, acc, dt);
-
-		double al_weight = state.args["solver"]["augmented_lagrangian"]["initial_weight"];
-		state.solve_data.alnl_problem = std::make_shared<ALNLProblem>(
-			state, *state.solve_data.rhs_assembler, t0 + t * dt, state.args["contact"]["dhat"], al_weight);
-		state.solve_data.alnl_problem->init_time_integrator(state.sol, vel, acc, dt);
+		state.solve_data.rhs_assembler = state.build_rhs_assembler();
+		state.init_nonlinear_tensor_solve(t0 + t * dt);
+		if (state.problem->is_time_dependent())
+		{
+			state.solve_data.time_integrator->init(state.sol, vel, acc, dt);
+		}
 
 		// TODO: Check for inversions and intersections due to remeshing
 	}

@@ -1,4 +1,6 @@
 set(SOURCES
+	ALSolver.cpp
+	ALSolver.hpp
 	NonlinearSolver.hpp
 	SparseNewtonDescentSolver.hpp
 	LBFGSSolver.hpp

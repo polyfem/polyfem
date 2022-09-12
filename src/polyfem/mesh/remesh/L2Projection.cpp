@@ -1,5 +1,6 @@
 #include "L2Projection.hpp"
 
+#include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -8,132 +9,7 @@
 
 namespace polyfem::mesh
 {
-	using namespace polyfem::basis;
-	using namespace polyfem::assembler;
-	using namespace polyfem::solver;
 	using namespace polyfem::utils;
-
-	L2ProjectionOptimizationProblem::L2ProjectionOptimizationProblem(
-		const State &state,
-		const RhsAssembler &rhs_assembler,
-		const THessian &M,
-		const THessian &A,
-		const TVector &u_prev,
-		const double t,
-		const double weight)
-		: NLProblem(state, rhs_assembler, t, 1e-3), m_M(M), m_A(A), m_u_prev(u_prev), weight_(weight)
-	{
-		std::vector<Eigen::Triplet<double>> entries;
-
-		// stop_dist_ = 1e-2 * state.min_edge_length;
-
-		for (const auto bn : state.boundary_nodes)
-			entries.emplace_back(bn, bn, 1.0);
-
-		hessian_AL_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
-		hessian_AL_.setFromTriplets(entries.begin(), entries.end());
-		hessian_AL_.makeCompressed();
-
-		update_target(t);
-
-		std::vector<bool> mask(hessian_AL_.rows(), true);
-
-		for (const auto bn : state.boundary_nodes)
-			mask[bn] = false;
-
-		for (int i = 0; i < mask.size(); ++i)
-			if (mask[i])
-				not_boundary_.push_back(i);
-	}
-
-	void L2ProjectionOptimizationProblem::update_target(const double t)
-	{
-		target_x_.setZero(hessian_AL_.rows(), 1);
-		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), state.local_neumann_boundary, target_x_, t);
-	}
-
-	void L2ProjectionOptimizationProblem::compute_distance(const TVector &x, TVector &res)
-	{
-		res = x - target_x_;
-
-		for (const auto bn : not_boundary_)
-			res[bn] = 0;
-	}
-
-	double L2ProjectionOptimizationProblem::value(const TVector &_x)
-	{
-		TVector x;
-		reduced_to_full(_x, x);
-
-		const double val =
-			x.transpose() * (0.5 * m_M * x - m_A * m_u_prev);
-
-		// ₙ
-		// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖² = ½ κ (xₖ - x̂ₖ)ᵀ M (xₖ - x̂ₖ)
-		// ᵏ
-		TVector distv;
-		compute_distance(x, distv);
-		// TODO: replace this with the actual mass matrix
-		Eigen::SparseMatrix<double> M = sparse_identity(x.size(), x.size());
-		const double AL_penalty = weight_ / 2 * distv.transpose() * M * distv;
-
-		// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
-		// ₙ    __
-		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ)
-		// ᵏ
-
-		logger().trace("AL_penalty={}", sqrt(AL_penalty));
-
-		// Eigen::MatrixXd ddd;
-		// compute_displaced_points(x, ddd);
-		// if (ddd.cols() == 2)
-		// {
-		// 	ddd.conservativeResize(ddd.rows(), 3);
-		// 	ddd.col(2).setZero();
-		// }
-
-		return val + AL_penalty;
-	}
-
-	void L2ProjectionOptimizationProblem::gradient(const TVector &_x, TVector &grad)
-	{
-		TVector x;
-		reduced_to_full(_x, x);
-
-		TVector grad_full = m_M * x - m_A * m_u_prev;
-
-		TVector grad_AL;
-		compute_distance(x, grad_AL);
-		// logger().trace("dist grad {}", tmp.norm());
-		grad_AL *= weight_;
-
-		grad_full += grad_AL;
-		full_to_reduced(grad_full, grad);
-	}
-
-	void L2ProjectionOptimizationProblem::hessian(const TVector &x, THessian &hessian)
-	{
-		full_hessian_to_reduced_hessian(m_M + weight_ * hessian_AL_, hessian);
-	}
-
-	const Eigen::MatrixXd &L2ProjectionOptimizationProblem::current_rhs()
-	{
-		// if (!rhs_computed)
-		{
-			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.density, state.n_boundary_samples(), state.local_neumann_boundary, state.rhs, t, _current_rhs);
-			// rhs_computed = true;
-			assert(_current_rhs.size() == full_size);
-			rhs_assembler.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
-
-			if (reduced_size != full_size)
-			{
-				// rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
-				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), _current_rhs, t);
-			}
-		}
-
-		return _current_rhs;
-	}
 
 	/// @brief Project the quantities in u on to the space spanned by mesh.bases.
 	void L2_projection(
@@ -184,11 +60,14 @@ namespace polyfem::mesh
 		double al_weight = state.args["solver"]["augmented_lagrangian"]["initial_weight"];
 		const double max_al_weight = state.args["solver"]["augmented_lagrangian"]["max_weight"];
 
-		L2ProjectionOptimizationProblem problem(
-			state, rhs_assembler, M, A, y.col(0),
-			/*t=*/0, // TODO: use the correct time
-			al_weight);
+		const double t = 0;
 
+		std::shared_ptr<L2ProjectionForm> l2_projection_form = std::make_shared<L2ProjectionForm>(M, A, y.col(0));
+		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(state, rhs_assembler, t);
+		std::vector<std::shared_ptr<Form>> forms = {l2_projection_form, al_form};
+		NLProblem problem(state, rhs_assembler, t, forms);
+
+		/*
 		Eigen::VectorXd sol = Eigen::VectorXd::Zero(M.rows());
 		Eigen::VectorXd tmp_sol;
 
@@ -262,6 +141,30 @@ namespace polyfem::mesh
 		// double residual_error = (LHS * x - rhs).norm();
 		logger().critical("residual error in L2 projection: {}", residual_error);
 		assert(residual_error < 1e-12);
+		*/
+	}
+
+	L2ProjectionForm::L2ProjectionForm(
+		const StiffnessMatrix &M,
+		const StiffnessMatrix &A,
+		const Eigen::VectorXd &x_prev)
+		: M_(M), rhs_(A * x_prev)
+	{
+	}
+
+	double L2ProjectionForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		return x.transpose() * (0.5 * M_ * x - rhs_);
+	}
+
+	void L2ProjectionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		gradv = M_ * x - rhs_;
+	}
+
+	void L2ProjectionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	{
+		hessian = M_;
 	}
 
 } // namespace polyfem::mesh

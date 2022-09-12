@@ -6,6 +6,8 @@
 #include "CppOptArmijoLineSearch.hpp"
 #include "MoreThuenteLineSearch.hpp"
 
+#include <fstream>
+
 namespace polyfem
 {
 	namespace solver
