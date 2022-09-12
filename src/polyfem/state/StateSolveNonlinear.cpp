@@ -46,18 +46,18 @@ namespace polyfem
 	{
 		if (al_form == nullptr)
 			return;
-		if (weight >= 0)
+		if (weight > 0)
 		{
 			al_form->set_enabled(true);
 			al_form->set_weight(weight);
 			body_form->set_apply_DBC(x, false);
-			nl_problem->set_full_size(true);
+			nl_problem->use_full_size();
 		}
 		else
 		{
 			al_form->set_enabled(false);
 			body_form->set_apply_DBC(x, true);
-			nl_problem->set_full_size(false);
+			nl_problem->use_reduced_size();
 		}
 	}
 
@@ -88,18 +88,19 @@ namespace polyfem
 		body_form->first_derivative(x, body_energy);
 		grad_energy += body_energy;
 
-		contact_form->initialize_barrier_stiffness(x, grad_energy);
+		contact_form->update_barrier_stiffness(x, grad_energy);
 	}
 
 	void SolveData::update_dt()
 	{
 		if (inertia_form)
 		{
-			elastic_form->set_weight(inertia_form->acceleration_scaling());
-			body_form->set_weight(inertia_form->acceleration_scaling());
+			elastic_form->set_weight(time_integrator->acceleration_scaling());
+			body_form->set_weight(time_integrator->acceleration_scaling());
 
+			// TODO: Determine if friction should be scaled by h²
 			// if (friction_form)
-			// 	friction_form->set_weight(inertia_form->acceleration_scaling());
+			// 	friction_form->set_weight(time_integrator->acceleration_scaling());
 		}
 	}
 
@@ -191,19 +192,18 @@ namespace polyfem
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			solve_data.time_integrator->set_parameters(args["time"]);
-			solve_data.time_integrator->set_parameters(args["time"]["BDF"]);
-			solve_data.time_integrator->set_parameters(args["time"]["newmark"]);
 			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 			forms.push_back(solve_data.inertia_form);
 		}
 		else
 		{
-			// TODO: fix me
-			//  const double lagged_damping_weight = args["solver"]["contact"]["lagged_damping_weight"].get<double>();
-			//  if (lagged_damping_weight > 0)
-			//  {
-			//  	forms.push_back(std::make_shared<LaggedRegForm>(lagged_damping_weight));
-			//  }
+			// FIXME:
+			// const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
+			// if (lagged_regularization_weight > 0)
+			// {
+			// 	forms.push_back(std::make_shared<LaggedRegForm>(lagged_damping_weight));
+			// 	forms.back()->set_weight(lagged_regularization_weight);
+			// }
 		}
 
 		solve_data.al_form = std::make_shared<ALForm>(*this, *solve_data.rhs_assembler, t);
@@ -213,41 +213,43 @@ namespace polyfem
 		solve_data.friction_form = nullptr;
 		if (args["contact"]["enabled"])
 		{
-			const double dhat = args["contact"]["dhat"];
-			assert(dhat > 0);
-			const double epsv = args["contact"]["epsv"];
-			assert(epsv > 0);
-			const double mu = args["contact"]["friction_coefficient"];
+
 			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
-			double barrier_stiffness;
+
+			solve_data.contact_form = std::make_shared<ContactForm>(
+				*this,
+				args["contact"]["dhat"],
+				use_adaptive_barrier_stiffness,
+				/*is_time_dependent=*/solve_data.time_integrator != nullptr,
+				args["solver"]["contact"]["CCD"]["broad_phase"],
+				args["solver"]["contact"]["CCD"]["tolerance"],
+				args["solver"]["contact"]["CCD"]["max_iterations"]);
+
 			if (use_adaptive_barrier_stiffness)
 			{
-				barrier_stiffness = 1;
+				solve_data.contact_form->set_weight(1);
 				logger().debug("Using adaptive barrier stiffness");
 			}
 			else
 			{
-				assert(args["solver"]["contact"]["barrier_stiffness"].is_number());
-				barrier_stiffness = args["solver"]["contact"]["barrier_stiffness"];
-				logger().debug("Using fixed barrier stiffness of {}", barrier_stiffness);
+				solve_data.contact_form->set_weight(args["solver"]["contact"]["barrier_stiffness"]);
+				logger().debug("Using fixed barrier stiffness of {}", solve_data.contact_form->barrier_stiffness());
 			}
 
-			const ipc::BroadPhaseMethod broad_phase_method = args["solver"]["contact"]["CCD"]["broad_phase"];
-			const double ccd_tolerance = args["solver"]["contact"]["CCD"]["tolerance"];
-			const int ccd_max_iterations = args["solver"]["contact"]["CCD"]["max_iterations"];
-
-			solve_data.contact_form = std::make_shared<ContactForm>(*this, args["contact"]["dhat"], use_adaptive_barrier_stiffness,
-																	solve_data.time_integrator != nullptr,
-																	broad_phase_method, ccd_tolerance, ccd_max_iterations);
-
-			if (!use_adaptive_barrier_stiffness)
-				solve_data.contact_form->set_weight(barrier_stiffness);
-
 			forms.push_back(solve_data.contact_form);
-			if (mu != 0)
+
+			// ----------------------------------------------------------------
+
+			if (args["contact"]["friction_coefficient"].get<double>() != 0)
 			{
-				const double dt = args["time"]["dt"];
-				solve_data.friction_form = std::make_shared<FrictionForm>(*this, epsv, mu, dhat, broad_phase_method, dt, *solve_data.contact_form);
+				solve_data.friction_form = std::make_shared<FrictionForm>(
+					*this,
+					args["contact"]["epsv"],
+					args["contact"]["friction_coefficient"],
+					args["contact"]["dhat"],
+					args["solver"]["contact"]["CCD"]["broad_phase"],
+					args.value("/time/dt"_json_pointer, 1.0), // dt=1.0 if static
+					*solve_data.contact_form);
 				forms.push_back(solve_data.friction_form);
 			}
 		}
@@ -307,7 +309,7 @@ namespace polyfem
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
 
 		// Disable damping for the final lagged iteration
-		// TODO: fix me lagged damping
+		// TODO: fix me lagged regularization
 		// if (friction_iterations <= 1)
 		// {
 		// 	nl_problem.lagged_regularization_weight() = 0;
@@ -358,10 +360,7 @@ namespace polyfem
 
 			if (al_weight >= max_al_weight)
 			{
-				const std::string msg =
-					fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
-				logger().error(msg);
-				throw std::runtime_error(msg);
+				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
 				break;
 			}
 

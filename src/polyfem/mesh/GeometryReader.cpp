@@ -324,7 +324,7 @@ namespace polyfem::mesh
 			codim_edges.conservativeResize(codim_edges.rows() + edges.rows(), 2);
 			codim_edges.bottomRows(edges.rows()) = edges;
 		}
-		else if (extract == "surface" && dim == 2)
+		else if (extract == "surface" && dim == 2 && faces.size() != 0)
 		{
 			// surface (2D) -> boundary edges (drop faces and interior edges)
 			Eigen::MatrixXi boundary_edges;

@@ -16,14 +16,17 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value
-		inline double value(const Eigen::VectorXd &x) const { return weight_ * value_unscaled(x); }
+		inline double value(const Eigen::VectorXd &x) const
+		{
+			return weight_ * value_unweighted(x);
+		}
 
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
 		inline void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
-			first_derivative_unscaled(x, gradv);
+			first_derivative_unweighted(x, gradv);
 			gradv *= weight_;
 		}
 
@@ -33,7 +36,7 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
-			second_derivative_unscaled(x, hessian);
+			second_derivative_unweighted(x, hessian);
 			hessian *= weight_;
 		}
 
@@ -99,16 +102,16 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form
 		/// @param x Current solution
 		/// @return Computed value
-		virtual double value_unscaled(const Eigen::VectorXd &x) const = 0;
+		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		virtual void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
+		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		virtual void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) = 0;
+		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) = 0;
 	};
 } // namespace polyfem::solver

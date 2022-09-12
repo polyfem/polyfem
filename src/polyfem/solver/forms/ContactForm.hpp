@@ -38,17 +38,17 @@ namespace polyfem::solver
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
-		double value_unscaled(const Eigen::VectorXd &x) const override;
+		double value_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param x Current solution
 		/// @param hessian Output Hessian of the value wrt x
-		void second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 	public:
 		/// @brief Update time-dependent fields
@@ -85,9 +85,9 @@ namespace polyfem::solver
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
 
-		/// @brief Initialize the barrier stiffness based on the current elasticity energy
+		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		void initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
+		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 

@@ -347,7 +347,7 @@ Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 	{
 		for (int j = 0; j < X.cols(); ++j)
 		{
-			x(i * X.cols() + j) = x(i);
+			x(i * X.cols() + j) = X(i, j);
 		}
 	}
 	assert(X(0, 0) == x(0));

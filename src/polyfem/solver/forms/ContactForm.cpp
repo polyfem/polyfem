@@ -50,7 +50,7 @@ namespace polyfem::solver
 			state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
 	}
 
-	void ContactForm::initialize_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
+	void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
@@ -82,18 +82,18 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double ContactForm::value_unscaled(const Eigen::VectorXd &x) const
+	double ContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return ipc::compute_barrier_potential(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 	}
 
-	void ContactForm::first_derivative_unscaled(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = ipc::compute_barrier_potential_gradient(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_);
 		gradv = state_.collision_mesh.to_full_dof(gradv);
 	}
 
-	void ContactForm::second_derivative_unscaled(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		POLYFEM_SCOPED_TIMER("\t\tbarrier hessian");
 		hessian = ipc::compute_barrier_potential_hessian(state_.collision_mesh, compute_displaced_surface(x), constraint_set_, dhat_, project_to_psd_);
@@ -110,12 +110,6 @@ namespace polyfem::solver
 		// Extract surface only
 		const Eigen::MatrixXd V0 = compute_displaced_surface(x0);
 		const Eigen::MatrixXd V1 = compute_displaced_surface(x1);
-
-		// static int asd = 1;
-		// std::cout << std::setprecision(std::numeric_limits<long double>::digits10 + 2) << asd << " " << x0.norm() << " " << x1.norm() << std::endl;
-		// io::OBJWriter::write("s0_" + std::to_string(asd) + ".obj", V0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		// io::OBJWriter::write("s1_" + std::to_string(asd) + ".obj", V1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		// ++asd;
 
 		double max_step;
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
@@ -196,7 +190,7 @@ namespace polyfem::solver
 			else
 			{
 				// TODO: missing feature
-				// initialize_barrier_stiffness(x);
+				// update_barrier_stiffness(x);
 			}
 		}
 
@@ -214,15 +208,6 @@ namespace polyfem::solver
 			// Assumes initially intersection-free
 			return true;
 		}
-
-		// static int asd = 1;
-		// std::cout << std::setprecision(std::numeric_limits<long double>::digits10 + 2) << asd << " " << x0.norm() << " " << x1.norm() << std::endl;
-		// io::OBJWriter::write("is0_" + std::to_string(asd) + ".obj", displaced0, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		// io::OBJWriter::write("is1_" + std::to_string(asd) + ".obj", displaced1, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		// ++asd;
-
-		// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
-		// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
 
 		bool is_valid;
 		if (use_cached_candidates_)

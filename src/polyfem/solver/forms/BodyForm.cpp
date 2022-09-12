@@ -15,12 +15,12 @@ namespace polyfem::solver
 		update_current_rhs(Eigen::VectorXd());
 	}
 
-	double BodyForm::value_unscaled(const Eigen::VectorXd &x) const
+	double BodyForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return rhs_assembler_.compute_energy(x, state_.local_neumann_boundary, state_.density, state_.n_boundary_samples(), t_);
 	}
 
-	void BodyForm::first_derivative_unscaled(const Eigen::VectorXd &, Eigen::VectorXd &gradv) const
+	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &, Eigen::VectorXd &gradv) const
 	{
 		// REMEMBER -!!!!!
 		gradv = -current_rhs_;

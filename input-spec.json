@@ -1182,8 +1182,7 @@
             "CCD",
             "friction_iterations",
             "friction_convergence_tol",
-            "barrier_stiffness",
-            "lagged_regularization_weight"
+            "barrier_stiffness"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1255,12 +1254,6 @@
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
-        "pointer": "/solver/contact/lagged_regularization_weight",
-        "default": 0,
-        "type": "int",
-        "doc": "Weight used to regularize singular static problems."
-    },
-    {
         "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
@@ -1272,7 +1265,8 @@
         "type": "object",
         "optional": [
             "cache_size",
-            "lump_mass_matrix"
+            "lump_mass_matrix",
+            "lagged_regularization_weight"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1287,6 +1281,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
+    },
+    {
+        "pointer": "/solver/advanced/lagged_regularization_weight",
+        "default": 0,
+        "type": "float",
+        "doc": "Weight used to regularize singular static problems."
     },
     {
         "pointer": "/materials",
@@ -1606,7 +1606,7 @@
     },
     {
         "pointer": "/boundary_conditions/rhs",
-        "default": "[]",
+        "default": [],
         "type": "list",
         "doc": "Right-hand side of the system being solved for vector-valued PDEs."
     },

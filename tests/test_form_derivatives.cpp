@@ -244,7 +244,8 @@ TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][la
 	const auto state_ptr = get_state();
 
 	const double weight = 1e3;
-	LaggedRegForm form(weight);
+	LaggedRegForm form;
+	form.set_weight(weight);
 
 	test_form(form, *state_ptr);
 }
