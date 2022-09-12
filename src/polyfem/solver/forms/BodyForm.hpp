@@ -40,12 +40,12 @@ namespace polyfem::solver
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 		bool get_apply_DBC() { return apply_DBC_; }
-		void set_apply_DBC(const bool val)
+		void set_apply_DBC(const Eigen::VectorXd &x, const bool val)
 		{
 			if (val != apply_DBC_)
 			{
 				apply_DBC_ = val;
-				update_current_rhs();
+				update_current_rhs(x);
 			}
 		}
 
@@ -62,6 +62,6 @@ namespace polyfem::solver
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
 
 		/// @brief Update current_rhs
-		void update_current_rhs();
+		void update_current_rhs(const Eigen::VectorXd &x);
 	};
 } // namespace polyfem::solver

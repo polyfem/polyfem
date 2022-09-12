@@ -42,7 +42,7 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	void SolveData::set_al_weight(const double weight)
+	void SolveData::set_al_weight(const Eigen::VectorXd &x, const double weight)
 	{
 		if (al_form == nullptr)
 			return;
@@ -50,13 +50,13 @@ namespace polyfem
 		{
 			al_form->set_enabled(true);
 			al_form->set_weight(weight);
-			body_form->set_apply_DBC(false);
+			body_form->set_apply_DBC(x, false);
 			nl_problem->use_full_size();
 		}
 		else
 		{
 			al_form->set_enabled(false);
-			body_form->set_apply_DBC(true);
+			body_form->set_apply_DBC(x, true);
 			nl_problem->use_reduced_size();
 		}
 	}
@@ -332,7 +332,7 @@ namespace polyfem
 		{
 			force_al = false;
 			nl_problem.line_search_end();
-			solve_data.set_al_weight(al_weight);
+			solve_data.set_al_weight(tmp_sol_full, al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver<NLProblem>();
@@ -351,7 +351,7 @@ namespace polyfem
 				 {"info", alnl_solver_info}});
 
 			sol = tmp_sol;
-			solve_data.set_al_weight(-1);
+			solve_data.set_al_weight(sol, -1);
 			nl_problem.full_to_reduced(sol, tmp_sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 			nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);

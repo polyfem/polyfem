@@ -123,7 +123,7 @@ namespace polyfem
 				if (reduced_size != full_size)
 				{
 					// rhs_assembler.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, tmp, t_);
-					rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, t_);
+					rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
 				}
 				reduced_to_full_aux(state_, full_size, reduced_size, reduced, tmp, full);
 			}
