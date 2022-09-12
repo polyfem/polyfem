@@ -586,16 +586,12 @@ namespace polyfem
 			}
 
 			// Neumann
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat;
+			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, trafo;
 			Eigen::VectorXi global_primitive_ids;
 			Eigen::MatrixXd points, normals;
 			Eigen::VectorXd weights;
 
 			ElementAssemblyValues vals;
-			static int vbbbbb = 1;
-			std::ofstream asd("test" + std::to_string(vbbbbb) + ".obj");
-			vbbbbb++;
-			int asdasd = 1;
 
 			for (const auto &lb : local_neumann_boundary)
 			{
@@ -615,13 +611,13 @@ namespace polyfem
 					Eigen::MatrixXd ppp(1, size_);
 					ppp = vals.val.row(n);
 
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					trafo = vals.jac_it[n];
 
 					if (displacement.size() >= 0)
 					{
 						assert(size_ == 2 || size_ == 3);
 						deform_mat.resize(size_, size_);
-						deform_mat.setIdentity();
+						deform_mat.setZero();
 						for (const auto &b : vals.basis_values)
 						{
 							for (const auto &g : b.global)
@@ -635,23 +631,11 @@ namespace polyfem
 							}
 						}
 
-						normals.row(n) = normals.row(n) * deform_mat;
+						trafo += deform_mat;
 					}
 
+					normals.row(n) = normals.row(n) * trafo;
 					normals.row(n).normalize();
-
-					if (displacement.size() >= 0)
-					{
-						Eigen::MatrixXd xxx = ppp + 0.1 * normals.row(n);
-						asd << "v " << ppp(0) << " "
-							<< " " << ppp(1) << " "
-							<< (size_ == 3 ? ppp(2) : 0.0) << "\n";
-						asd << "v " << xxx(0) << " "
-							<< " " << xxx(1) << " "
-							<< (size_ == 3 ? xxx(2) : 0.0) << "\n";
-						asd << "l " << asdasd << " " << asdasd + 1 << "\n";
-						asdasd += 2;
-					}
 				}
 
 				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
