@@ -1,6 +1,6 @@
 #include <polyfem/utils/CompositeFunctional.hpp>
 
-#include <polyfem/utils/SplineParam.hpp>
+#include <polyfem/utils/CompositeSplineParam.hpp>
 
 namespace polyfem
 {
@@ -339,94 +339,25 @@ namespace polyfem
 
 	void SDFTrajectoryFunctional::compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad)
 	{
-		auto dot = [](const Eigen::MatrixXd &a, const Eigen::MatrixXd &b) {
-			assert(a.cols() == 1);
-			assert(b.cols() == 1);
-			return (a.transpose() * b)(0);
-		};
-
-		auto f = [&](const double t, const int segment) {
-			Eigen::MatrixXd val;
-			SplineParam::eval(control_points_.block(segment, 0, 2, dim), tangents_.block(segment, 0, 2, dim), t, val);
-			val.transposeInPlace();
-			return val;
-		};
-
-		auto f_ = [&](const double t, const int segment) {
-			Eigen::MatrixXd val;
-			SplineParam::deriv(control_points_.block(segment, 0, 2, dim), tangents_.block(segment, 0, 2, dim), t, val);
-			val.transposeInPlace();
-			return val;
-		};
-
-		auto f__ = [&](const double t, const int segment) {
-			Eigen::MatrixXd val;
-			SplineParam::second_deriv(control_points_.block(segment, 0, 2, dim), tangents_.block(segment, 0, 2, dim), t, val);
-			val.transposeInPlace();
-			return val;
-		};
-
-		auto g = [&](const double t, const int segment) {
-			auto val = f(t, segment);
-			return dot(val, val) - 2 * dot(point, val) + dot(point, point);
-		};
-
-		auto g_ = [&](const double t, const int segment) {
-			auto val = f(t, segment);
-			auto deriv = f_(t, segment);
-			return 2 * dot(deriv, val) - 2 * dot(point, deriv);
-		};
-
-		auto g__ = [&](const double t, const int segment) {
-			auto val = f(t, segment);
-			auto deriv = f_(t, segment);
-			auto sec_deriv = f__(t, segment);
-			return 2 * dot(sec_deriv, val - point) + 2 * dot(deriv, deriv);
-		};
-
-		Eigen::MatrixXd t = Eigen::MatrixXd::Ones(control_points_.rows() - 1, 1) / 2.;
-
-		for (int i = 0; i < t.rows(); ++i)
-		{
-			for (int iter = 0; iter < 50; ++iter)
-			{
-				t(i) -= g_(t(i), i) / g__(t(i), i);
-			}
-		}
-
-		int nearest = -1;
-		double t_optimal = -1;
-		distance = -1.;
-		for (int i = 0; i < t.rows(); ++i)
-		{
-			if ((t(i) < 0) || (t(i) > 1))
-				continue;
-			double func = g(t(i), i);
-			if ((nearest == -1) || (func < distance))
-			{
-				nearest = i;
-				t_optimal = t(i);
-				distance = func;
-			}
-		}
+		int nearest;
+		double t_optimal, distance_to_start, distance_to_end;
+		CompositeSplineParam::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
 
 		// If no nearest with t \in [0, 1] found, check the endpoints and assign one
 		if (nearest == -1)
 		{
-			double first = g(0, 0);
-			double last = g(1, t.rows() - 1);
-			if (first < last)
+			if (distance_to_start < distance_to_end)
 			{
 				nearest = 0;
 				t_optimal = 0;
-				distance = first;
+				distance = distance_to_start;
 			}
 			else
 			{
 
-				nearest = t.rows() - 1;
+				nearest = control_points_.rows() - 2;
 				t_optimal = 1;
-				distance = last;
+				distance = distance_to_end;
 			}
 		}
 		distance = pow(distance, 1. / 2.);
@@ -435,7 +366,7 @@ namespace polyfem
 		if (distance < 1e-8)
 			return;
 
-		grad.col(0).segment(0, 2) = (point - f(t_optimal, nearest)) / distance;
+		CompositeSplineParam::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
 		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
 	}
 

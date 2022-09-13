@@ -42,7 +42,6 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
-	SplineParam.hpp
 	CompositeSplineParam.hpp
 	StringUtils.cpp
 	StringUtils.hpp
