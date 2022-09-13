@@ -433,9 +433,15 @@ namespace polyfem
 				Eigen::MatrixXd clamped_point = keys.row(i).cwiseProduct(delta_).transpose();
 				corner_point.row(i) = clamped_point.transpose();
 				if (implicit_function_distance.count(keys_string[i]) == 0)
+				{
+					std::unique_lock lock(mutex_);
 					compute_distance(clamped_point, implicit_function_distance[keys_string[i]], implicit_function_grad[keys_string[i]]);
+				}
 			}
-			bicubic_interpolation(corner_point, keys_string, point, val, grad);
+			{
+				std::shared_lock lock(mutex_);
+				bicubic_interpolation(corner_point, keys_string, point, val, grad);
+			}
 		}
 		else
 		{
@@ -452,7 +458,6 @@ namespace polyfem
 
 	IntegrableFunctional SDFTrajectoryFunctional::get_trajectory_functional(const std::string &derivative_type)
 	{
-		// assert(transient_integral_type == "final");
 		IntegrableFunctional j(surface_integral);
 		j.set_transient_integral_type(transient_integral_type);
 		{
