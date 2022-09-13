@@ -1,5 +1,6 @@
 #pragma once
 #include <polyfem/State.hpp>
+#include <shared_mutex>
 
 namespace polyfem
 {
@@ -144,6 +145,8 @@ namespace polyfem
 
 		Eigen::MatrixXd control_points_;
 		Eigen::MatrixXd tangents_;
+
+		mutable std::shared_mutex mutex_;
 	};
 
 	class NodeTrajectoryFunctional : public CompositeFunctional

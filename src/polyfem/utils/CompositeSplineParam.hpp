@@ -25,76 +25,9 @@ namespace polyfem
 					Eigen::MatrixXd point = V.block(b, 0, 1, dim);
 					point.transposeInPlace();
 
-					auto dot = [](const Eigen::MatrixXd &a, const Eigen::MatrixXd &b) {
-						assert(a.cols() == 1);
-						assert(b.cols() == 1);
-						return (a.transpose() * b)(0);
-					};
-
-					auto f = [&](const double t, const int segment) {
-						Eigen::MatrixXd val;
-						eval(control_point.at(kv.first).block(segment, 0, 2, dim), tangent.at(kv.first).block(2 * segment, 0, 2, dim), t, val);
-						val.transposeInPlace();
-						return val;
-					};
-
-					auto f_ = [&](const double t, const int segment) {
-						Eigen::MatrixXd val;
-						deriv(control_point.at(kv.first).block(segment, 0, 2, dim), tangent.at(kv.first).block(2 * segment, 0, 2, dim), t, val);
-						val.transposeInPlace();
-						return val;
-					};
-
-					auto f__ = [&](const double t, const int segment) {
-						Eigen::MatrixXd val;
-						second_deriv(control_point.at(kv.first).block(segment, 0, 2, dim), tangent.at(kv.first).block(2 * segment, 0, 2, dim), t, val);
-						val.transposeInPlace();
-						return val;
-					};
-
-					auto g = [&](const double t, const int segment) {
-						auto val = f(t, segment);
-						return dot(val, val) - 2 * dot(point, val) + dot(point, point);
-					};
-
-					auto g_ = [&](const double t, const int segment) {
-						auto val = f(t, segment);
-						auto deriv = f_(t, segment);
-						return 2 * dot(deriv, val) - 2 * dot(point, deriv);
-					};
-
-					auto g__ = [&](const double t, const int segment) {
-						auto val = f(t, segment);
-						auto deriv = f_(t, segment);
-						auto sec_deriv = f__(t, segment);
-						return 2 * dot(sec_deriv, val - point) + 2 * dot(deriv, deriv);
-					};
-
-					Eigen::MatrixXd t = Eigen::MatrixXd::Ones(boundary_id_to_spline_count_.at(kv.first), 1) / 2.;
-
-					for (int i = 0; i < t.rows(); ++i)
-					{
-						for (int iter = 0; iter < 50; ++iter)
-						{
-							t(i) -= g_(t(i), i) / g__(t(i), i);
-						}
-					}
-
-					int nearest = -1;
-					double t_optimal = -1;
-					double distance = -1.;
-					for (int i = 0; i < t.rows(); ++i)
-					{
-						if ((t(i) < -tol) || (t(i) > 1 + tol))
-							continue;
-						double func = g(t(i), i);
-						if ((nearest == -1) || (func < distance))
-						{
-							nearest = i;
-							t_optimal = t(i);
-							distance = func;
-						}
-					}
+					int nearest;
+					double t_optimal, distance, distance_to_start, distance_to_end;
+					find_nearest_spline(point, control_point.at(kv.first), tangent.at(kv.first), nearest, t_optimal, distance, distance_to_start, distance_to_end);
 
 					if (nearest == -1 || distance > tol)
 					{
@@ -211,6 +144,100 @@ namespace polyfem
 					}
 				}
 			}
+		}
+
+		static void find_nearest_spline(const Eigen::MatrixXd &point, const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, int &nearest, double &t_optimal, double &distance, double &distance_to_start, double &distance_to_end, const double tol = 1e-4)
+		{
+			int dim = point.size();
+			int num_splines = control_point.rows() - 1;
+
+			auto dot = [](const Eigen::MatrixXd &a, const Eigen::MatrixXd &b) {
+				assert(a.cols() == 1);
+				assert(b.cols() == 1);
+				return (a.transpose() * b)(0);
+			};
+
+			auto f = [&](const double t, const int segment) {
+				Eigen::MatrixXd val;
+				eval(control_point.block(segment, 0, 2, dim), tangent.block(2 * segment, 0, 2, dim), t, val);
+				val.transposeInPlace();
+				return val;
+			};
+
+			auto f_ = [&](const double t, const int segment) {
+				Eigen::MatrixXd val;
+				deriv(control_point.block(segment, 0, 2, dim), tangent.block(2 * segment, 0, 2, dim), t, val);
+				val.transposeInPlace();
+				return val;
+			};
+
+			auto f__ = [&](const double t, const int segment) {
+				Eigen::MatrixXd val;
+				second_deriv(control_point.block(segment, 0, 2, dim), tangent.block(2 * segment, 0, 2, dim), t, val);
+				val.transposeInPlace();
+				return val;
+			};
+
+			auto g = [&](const double t, const int segment) {
+				auto val = f(t, segment);
+				return dot(val, val) - 2 * dot(point, val) + dot(point, point);
+			};
+
+			auto g_ = [&](const double t, const int segment) {
+				auto val = f(t, segment);
+				auto deriv = f_(t, segment);
+				return 2 * dot(deriv, val) - 2 * dot(point, deriv);
+			};
+
+			auto g__ = [&](const double t, const int segment) {
+				auto val = f(t, segment);
+				auto deriv = f_(t, segment);
+				auto sec_deriv = f__(t, segment);
+				return 2 * dot(sec_deriv, val - point) + 2 * dot(deriv, deriv);
+			};
+
+			Eigen::MatrixXd t = Eigen::MatrixXd::Ones(num_splines, 1) / 2.;
+
+			for (int i = 0; i < t.rows(); ++i)
+			{
+				for (int iter = 0; iter < 50; ++iter)
+				{
+					t(i) -= g_(t(i), i) / g__(t(i), i);
+				}
+			}
+
+			nearest = -1;
+			t_optimal = -1;
+			distance = -1.;
+			for (int i = 0; i < t.rows(); ++i)
+			{
+				if ((t(i) < -tol) || (t(i) > 1 + tol))
+					continue;
+				double func = g(t(i), i);
+				if ((nearest == -1) || (func < distance))
+				{
+					nearest = i;
+					t_optimal = t(i);
+					distance = func;
+				}
+			}
+
+			distance_to_start = g(0, 0);
+			distance_to_end = g(1, t.rows() - 1);
+		}
+
+		static void gradient(const Eigen::MatrixXd &point, const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const int spline, const double t_parameter, const double distance, Eigen::MatrixXd &grad)
+		{
+			int dim = point.size();
+
+			auto f = [&](const double t, const int segment) {
+				Eigen::MatrixXd val;
+				eval(control_point.block(segment, 0, 2, dim), tangent.block(2 * segment, 0, 2, dim), t, val);
+				val.transposeInPlace();
+				return val;
+			};
+
+			grad.col(0).segment(0, dim) = (point - f(t_parameter, spline)) / distance;
 		}
 
 		static void eval(const Eigen::MatrixXd &control_point, const Eigen::MatrixXd &tangent, const double t, Eigen::MatrixXd &val)
