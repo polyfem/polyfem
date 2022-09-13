@@ -142,6 +142,13 @@ namespace polyfem
 				weights.assign(n + 1, 0);
 				weights[n] = 1;
 			}
+			else if (transient_integral_type.find("step_") != std::string::npos)
+			{
+				weights.assign(n + 1, 0);
+				int step = std::stoi(transient_integral_type.substr(5));
+				assert(step > 0 && step < weights.size());
+				weights[step] = 1;
+			}
 			else
 				assert(false);
 		}
