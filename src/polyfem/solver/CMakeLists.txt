@@ -12,6 +12,8 @@ set(SOURCES
 	NLProblem.hpp
 	ALNLProblem.cpp
 	ALNLProblem.hpp
+	NLHomogenizationProblem.cpp
+	NLHomogenizationProblem.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	TransientNavierStokesSolver.cpp

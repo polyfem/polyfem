@@ -101,7 +101,7 @@ namespace polyfem
 		{
 			const int dim = mesh_.dimension();
 			int neq = 0;
-			if (formulation_ == "LinearElasticity")
+			if (formulation_ == "LinearElasticity" || formulation_ == "NeoHookean")
 				neq = (dim - 1) * 3;
 			else if (formulation_ == "Stokes")
 				neq = dim;

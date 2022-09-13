@@ -1029,6 +1029,7 @@
             "solver",
             "f_delta",
             "x_delta",
+            "max_step_size",
             "solver_info_log",
             "grad_norm",
             "max_iterations",
@@ -1078,6 +1079,12 @@
         "default": 1e-10,
         "type": "float",
         "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_step_size",
+        "default": 1,
+        "type": "float",
+        "doc": "The initial step size in the line search"
     },
     {
         "pointer": "/solver/nonlinear/x_delta",

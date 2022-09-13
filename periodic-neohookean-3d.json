@@ -1,0 +1,36 @@
+{
+    "geometry": [
+        {
+            "mesh": "cross.mesh",
+            "n_refs": 0
+        }
+    ],
+    "space": {
+        "discr_order": 2,
+        "advanced": {
+            "bc_method": "sample"
+        }
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        }
+    },
+    "boundary_conditions": {
+        "rhs": ["x-0.5", "2*(y-0.5)", "4*(z-0.5)"],
+        "periodic_boundary": true
+    },
+    "materials": {
+        "type": "NeoHookean",
+        "E": 5e-1,
+        "nu": 0.4
+    },
+    "output": {
+        "paraview": {
+            "file_name": "debug.vtu",
+            "options": {
+                "material": true
+            }
+        }
+    }
+}

@@ -20,7 +20,6 @@ namespace polyfem
 			using typename super::THessian;
 
 			ALNLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const double weight);
-			TVector initial_guess();
 			void set_weight(const double w) { weight_ = w; }
 
 			double value(const TVector &x) override { return super::value(x); }

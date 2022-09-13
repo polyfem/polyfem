@@ -286,8 +286,6 @@ namespace polyfem
 			solve_export_to_file = true;
 		}
 
-		void compute_homogenized_tensor(Eigen::MatrixXd &C);
-
 		/// timedependent stuff cached
 		SolveData solve_data;
 		/// initialize solver
@@ -1092,14 +1090,25 @@ namespace polyfem
 			solve_homogenization();
 			compute_homogenized_tensor(C_H);
 		}
+		void solve_linear_homogenization();
+		void solve_nonlinear_homogenization();
+
+		double assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &solution, const int i, const int j);
+		void   assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const int i, const int j);
+		void   assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, const Eigen::MatrixXd &solution, const int i, const int j);
+
+		void compute_homogenized_tensor(Eigen::MatrixXd &C);
+
 		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
+
 		void homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
 		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
 		void solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution);
-		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
 		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 
 		double min_solid_density = 0;
+		double nl_homogenization_scale = 1;
 
 	private:
 		/// splits the solution in solution and pressure for mixed problems
