@@ -2,6 +2,7 @@
 #include <polyfem/solver/NLHomogenizationProblem.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
@@ -18,7 +19,67 @@ using namespace solver;
 using namespace utils;
 using namespace quadrature;
 
-namespace {
+namespace
+{
+    class LocalThreadMatStorage
+    {
+    public:
+        SpareMatrixCache cache;
+        ElementAssemblyValues vals;
+
+        LocalThreadMatStorage()
+        {
+        }
+
+        LocalThreadMatStorage(const int buffer_size, const int rows, const int cols)
+        {
+            init(buffer_size, rows, cols);
+        }
+
+        LocalThreadMatStorage(const int buffer_size, const SpareMatrixCache &c)
+        {
+            init(buffer_size, c);
+        }
+
+        void init(const int buffer_size, const int rows, const int cols)
+        {
+            // assert(rows == cols);
+            cache.reserve(buffer_size);
+            cache.init(rows, cols);
+        }
+
+        void init(const int buffer_size, const SpareMatrixCache &c)
+        {
+            cache.reserve(buffer_size);
+            cache.init(c);
+        }
+    };
+
+    class LocalThreadVecStorage
+    {
+    public:
+        Eigen::MatrixXd vec;
+        ElementAssemblyValues vals;
+
+        LocalThreadVecStorage(const int size)
+        {
+            vec.resize(size, 1);
+            vec.setZero();
+        }
+    };
+
+    class LocalThreadScalarStorage
+    {
+    public:
+        double val;
+        ElementAssemblyValues vals;
+
+        LocalThreadScalarStorage()
+        {
+            val = 0;
+        }
+    };
+    
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_homo_solver(const json &solver_args)
 	{
@@ -157,7 +218,6 @@ double State::assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &s
 {
     const int dim = mesh->dimension();
     const auto &gbases = iso_parametric() ? bases : geom_bases;
-    double energy = 0;
 
     assert(solution.cols() == 1);
     assert(solution.rows() == n_bases * dim);
@@ -168,7 +228,14 @@ double State::assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &s
 
     const LameParameters &params = assembler.lame_params();
 
-    for (int e = 0; e < bases.size(); e++)
+    auto storage = create_thread_storage(LocalThreadScalarStorage());
+
+maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
+    LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+    ElementAssemblyValues &vals = local_storage.vals;
+
+    Eigen::MatrixXd sol_grad(dim, dim), diff_grad, def_grad;
+    for (int e = start; e < end; ++e)
     {
         ElementAssemblyValues vals;
         // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
@@ -176,7 +243,6 @@ double State::assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &s
 
         const Quadrature &quadrature = vals.quadrature;
 
-        Eigen::MatrixXd sol_grad(dim, dim);
         for (int q = 0; q < quadrature.weights.size(); q++)
         {
             double lambda, mu;
@@ -188,17 +254,20 @@ double State::assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &s
                     for (int d = 0; d < dim; d++)
                         sol_grad.row(d) += g.val * solution(g.index * dim + d) * v.grad_t_m.row(q);
 
-            Eigen::MatrixXd diff_grad = sol_grad - unit_grad;
-            Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(diff_grad.rows(), diff_grad.cols()) + diff_grad;
-            Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-            Eigen::MatrixXd stress = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
+            diff_grad = sol_grad - unit_grad;
+            def_grad = Eigen::MatrixXd::Identity(diff_grad.rows(), diff_grad.cols()) + diff_grad;
 
             const double value = mu / 2 * ((def_grad.transpose() * def_grad).trace() - dim - 2 * std::log(def_grad.determinant())) + lambda / 2 * pow(std::log(def_grad.determinant()), 2);
-            energy += quadrature.weights(q) * vals.det(q) * value;
+            local_storage.val += quadrature.weights(q) * vals.det(q) * value;
         }
     }
+});
 
-    return energy;
+    double res = 0;
+    // Serially merge local storages
+    for (const LocalThreadScalarStorage &local_storage : storage)
+        res += local_storage.val;
+    return res;
 }
 
 void State::assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const int i, const int j)
@@ -214,11 +283,15 @@ void State::assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, c
     unit_grad(i, j) = nl_homogenization_scale;
 
     const LameParameters &params = assembler.lame_params();
-
     grad.setZero(solution.rows(), 1);
-    for (int e = 0; e < bases.size(); e++)
+    auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
+
+maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
+    LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+    for (int e = start; e < end; ++e)
     {
-        ElementAssemblyValues vals;
+        ElementAssemblyValues &vals = local_storage.vals;
         // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
         ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
@@ -252,14 +325,17 @@ void State::assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, c
                     const double value = quadrature.weights(q) * vals.det(q) * stress.row(d).dot(v.grad_t_m.row(q)); // (stress.array() * basis_grad.array()).sum();
 
                     for (const auto &g : v.global)
-                        grad(g.index * dim + d) += value * g.val;
+                        local_storage.vec(g.index * dim + d) += value * g.val;
                 }
             }
         }
     }
+});
+    for (const LocalThreadVecStorage &local_storage : storage)
+        grad += local_storage.vec;
 }
 
-void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, const Eigen::MatrixXd &solution, const int i, const int j)
+void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const int i, const int j)
 {
     const int dim = mesh->dimension();
     const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -276,12 +352,23 @@ void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, co
     hess.resize(n_bases * dim, n_bases * dim);
     hess.setZero();
 
-    utils::SpareMatrixCache mat_cache;
-    mat_cache.init(n_bases * dim);
+    const int max_triplets_size = int(1e7);
+    const int buffer_size = std::min(long(max_triplets_size), long(n_bases) * dim);
 
-    for (int e = 0; e < bases.size(); e++)
+    mat_cache.init(n_bases * dim);
+    mat_cache.set_zero();
+
+    auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
+
+    igl::Timer timerg;
+    timerg.start();
+
+maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
+    LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+    for (int e = start; e < end; ++e)
     {
-        ElementAssemblyValues vals;
+        ElementAssemblyValues &vals = local_storage.vals;
         // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
         ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 
@@ -331,7 +418,13 @@ void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, co
                             {
                                 for (const auto &g2 : global_j)
                                 {
-                                    mat_cache.add_value(e, g1.index * dim + d1, g2.index * dim + d2, g1.val * g2.val * local_value);
+                                    local_storage.cache.add_value(e, g1.index * dim + d1, g2.index * dim + d2, g1.val * g2.val * local_value);
+
+                                    if (local_storage.cache.entries_size() >= max_triplets_size)
+                                    {
+                                        local_storage.cache.prune();
+                                        logger().debug("cleaning memory...");
+                                    }
                                 }
                             }
                         }
@@ -340,8 +433,22 @@ void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, co
             }
         }
     }
+});
 
+    timerg.stop();
+    logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+
+    timerg.start();
+    
+    for (LocalThreadMatStorage &local_storage : storage)
+    {
+        local_storage.cache.prune();
+        mat_cache += local_storage.cache;
+    }
     hess = mat_cache.get_matrix();
+
+    timerg.stop();
+    logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 }
 
 void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution)

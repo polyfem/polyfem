@@ -1095,7 +1095,7 @@ namespace polyfem
 
 		double assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &solution, const int i, const int j);
 		void   assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const int i, const int j);
-		void   assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, const Eigen::MatrixXd &solution, const int i, const int j);
+		void   assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const int i, const int j);
 
 		void compute_homogenized_tensor(Eigen::MatrixXd &C);
 

@@ -144,7 +144,7 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			state.assemble_neohookean_homogenization_hessian(hessian, full, index[0], index[1]);
+			state.assemble_neohookean_homogenization_hessian(hessian, mat_cache, full, index[0], index[1]);
 
 			assert(hessian.rows() == full_size);
 			assert(hessian.cols() == full_size);
