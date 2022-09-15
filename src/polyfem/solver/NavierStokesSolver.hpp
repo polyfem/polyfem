@@ -19,7 +19,7 @@ namespace polyfem
 			NavierStokesSolver(const json &solver_param);
 
 			void minimize(const State &state, const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
-			void getInfo(json &params)
+			void get_info(json &params)
 			{
 				params = solver_info;
 			}

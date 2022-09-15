@@ -40,7 +40,7 @@ namespace polyfem::solver
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 		bool get_apply_DBC() { return apply_DBC_; }
-		void set_apply_DBC(const Eigen::VectorXd &x, const bool val)
+		void set_apply_DBC(const Eigen::VectorXd &x, const bool val) override
 		{
 			if (val != apply_DBC_)
 			{

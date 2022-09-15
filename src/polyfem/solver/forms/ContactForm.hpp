@@ -83,7 +83,9 @@ namespace polyfem::solver
 		/// @return double the current barrier stifness
 		double barrier_stiffness() const { return weight_; }
 
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
+		/// @brief Checks if the step is collision free
+		/// @return True if the step is collision free else false
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
