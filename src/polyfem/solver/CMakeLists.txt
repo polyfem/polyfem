@@ -4,6 +4,7 @@ set(SOURCES
 	FullNLProblem.cpp
 	FullNLProblem.hpp
 	LBFGSSolver.hpp
+	LBFGSSolver.tpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	NLProblem.cpp
@@ -12,8 +13,6 @@ set(SOURCES
 	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
-	SolverInfo.cpp
-	SolverInfo.hpp
 	SparseNewtonDescentSolver.hpp
 	SparseNewtonDescentSolver.tpp
 	TransientNavierStokesSolver.cpp

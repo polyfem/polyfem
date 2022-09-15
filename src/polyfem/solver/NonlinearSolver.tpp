@@ -6,7 +6,6 @@ namespace cppoptlib
 {
 	template <typename ProblemType>
 	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params)
-		: solver_params(solver_params)
 	{
 		auto criteria = this->criteria();
 		criteria.fDelta = solver_params["f_delta"];
@@ -20,7 +19,7 @@ namespace cppoptlib
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 		this->setStopCriteria(criteria);
 
-		set_line_search("armijo");
+		set_line_search(solver_params["line_search"]["method"]);
 	}
 
 	template <typename ProblemType>
@@ -39,7 +38,7 @@ namespace cppoptlib
 		// Initialize the minimization
 		// ---------------------------
 
-		reset(objFunc, x); // place for children to initialize their fields
+		reset(x.size()); // place for children to initialize their fields
 
 		TVector grad = TVector::Zero(x.rows());
 		TVector delta_x = TVector::Zero(x.rows());
@@ -288,12 +287,17 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
-	 void NonlinearSolver<ProblemType>::reset(const ProblemType &objFunc, const TVector &x)
+	void NonlinearSolver<ProblemType>::reset(const int ndof)
 	{
 		this->m_current.reset();
-		reset_times();
-		m_error_code = ErrorCode::Success;
 		descent_strategy = default_descent_strategy();
+		m_error_code = ErrorCode::Success;
+
+		const std::string line_search_name = solver_info["line_search"];
+		solver_info = polyfem::json();
+		solver_info["line_search"] = line_search_name;
+
+		reset_times();
 	}
 
 	template <typename ProblemType>
@@ -313,7 +317,7 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
-	 void NonlinearSolver<ProblemType>::update_solver_info()
+	void NonlinearSolver<ProblemType>::update_solver_info()
 	{
 		solver_info["status"] = this->status();
 		solver_info["error_code"] = m_error_code;

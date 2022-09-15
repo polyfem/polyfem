@@ -7,13 +7,11 @@ namespace polyfem::solver
 
 	ALSolver::ALSolver(
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver,
-		std::shared_ptr<NLProblem> nl_problem,
 		std::shared_ptr<ALForm> al_form,
 		const double initial_al_weight,
 		const double max_al_weight,
 		const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness)
 		: nl_solver(nl_solver),
-		  nl_problem(nl_problem),
 		  al_form(al_form),
 		  initial_al_weight(initial_al_weight),
 		  max_al_weight(max_al_weight),
@@ -24,7 +22,6 @@ namespace polyfem::solver
 	void ALSolver::solve(
 		NLProblem &nl_problem,
 		Eigen::MatrixXd &sol,
-		json &solver_info,
 		bool force_al)
 	{
 		assert(sol.size() == nl_problem.full_size());
@@ -45,27 +42,16 @@ namespace polyfem::solver
 			force_al = false;
 			nl_problem.line_search_end();
 
-			set_al_weight(al_weight);
+			set_al_weight(nl_problem, sol, al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
-
-			// std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver();
-			// alnl_solver->set_line_search(line_search_method);
 
 			nl_problem.init(sol);
 			updated_barrier_stiffness(sol);
 			tmp_sol = sol;
-			alnl_solver->minimize(nl_problem, tmp_sol);
-			json alnl_solver_info;
-			alnl_solver->get_info(alnl_solver_info);
-
-			solver_info.push_back(
-				{{"type", "al"},
-				 {"t", t}, // TODO: null if static?
-				 {"weight", al_weight},
-				 {"info", alnl_solver_info}});
+			nl_solver->minimize(nl_problem, tmp_sol);
 
 			sol = tmp_sol;
-			set_al_weight(-1);
+			set_al_weight(nl_problem, sol, -1);
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
@@ -77,27 +63,38 @@ namespace polyfem::solver
 				break;
 			}
 
-			post_solve();
+			post_subsolve(al_weight);
 		}
 		nl_problem.line_search_end();
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver();
-		nl_solver->set_line_search(line_search_method);
 		nl_problem.init(sol);
 		updated_barrier_stiffness(sol);
 		nl_solver->minimize(nl_problem, tmp_sol);
-		json nl_solver_info;
-		nl_solver->get_info(nl_solver_info);
-		solver_info.push_back(
-			{{"type", "rc"},
-			 {"t", t}, // TODO: null if static?
-			 {"info", nl_solver_info}});
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
-		post_solve();
+		post_subsolve(0);
+	}
+
+	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
+	{
+		if (al_form == nullptr)
+			return;
+		if (weight > 0)
+		{
+			al_form->set_enabled(true);
+			al_form->set_weight(weight);
+			nl_problem.use_full_size();
+			nl_problem.set_apply_DBC(x, false);
+		}
+		else
+		{
+			al_form->set_enabled(false);
+			nl_problem.use_reduced_size();
+			nl_problem.set_apply_DBC(x, true);
+		}
 	}
 
 } // namespace polyfem::solver

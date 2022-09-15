@@ -1,15 +1,5 @@
 #include "FullNLProblem.hpp"
 
-// #include <polyfem/utils/Types.hpp>
-// #include <polyfem/utils/Timer.hpp>
-// #include <polyfem/utils/MatrixUtils.hpp>
-// #include <polyfem/utils/JSONUtils.hpp>
-
-// #include <ipc/ipc.hpp>
-// #include <ipc/barrier/barrier.hpp>
-// #include <ipc/barrier/adaptive_stiffness.hpp>
-// #include <ipc/utils/world_bbox_diagonal_length.hpp>
-
 namespace polyfem::solver
 {
 	FullNLProblem::FullNLProblem(std::vector<std::shared_ptr<Form>> &forms)
@@ -81,7 +71,7 @@ namespace polyfem::solver
 	{
 		double val = 0;
 		for (auto &f : forms_)
-			if (!f->enabled())
+			if (f->enabled())
 				val += f->value(x);
 		return val;
 	}

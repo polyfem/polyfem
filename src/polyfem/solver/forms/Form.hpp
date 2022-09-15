@@ -104,7 +104,7 @@ namespace polyfem::solver
 		/// @brief Set if the Dirichlet boundary conditions should be enforced.
 		/// @note This is specific to the body form.
 		/// @param apply_DBC If true, apply Dirichlet boundary conditions to the current RHS.
-		virtual void set_apply_DBC(bool apply_DBC) {}
+		virtual void set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC) {}
 
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false

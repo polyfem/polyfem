@@ -31,23 +31,14 @@ namespace polyfem::solver
 		void init_lagging(const TVector &x) override;
 		void update_lagging(const TVector &x) override;
 
-		// ---------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		void update_quantities(const double t, const TVector &x);
 
-		void use_full_size()
-		{
-			current_size_ = FULL_SIZE;
-			for (auto &form : forms_)
-				form->set_apply_DBC(false);
-		}
+		void use_full_size() { current_size_ = FULL_SIZE; }
+		void use_reduced_size() { current_size_ = REDUCED_SIZE; }
 
-		void use_reduced_size()
-		{
-			current_size_ = REDUCED_SIZE;
-			for (auto &form : forms_)
-				form->set_apply_DBC(true);
-		}
+		void set_apply_DBC(const TVector &x, const bool val);
 
 		// Templated to allow VectorX* or MatrixX* input, but the size of full
 		// will always be (fullsize, 1)
@@ -57,13 +48,16 @@ namespace polyfem::solver
 		// template <class FullVector>
 		TVector reduced_to_full(const TVector &reduced) const;
 
+		int full_size() const { return full_size_; }
+		int reduced_size() const { return reduced_size_; }
+
 	private:
 		const State &state_;
 		const assembler::RhsAssembler &rhs_assembler_;
 		double t_;
 
-		const int full_size;    ///< Size of the full problem
-		const int reduced_size; ///< Size of the reduced problem
+		const int full_size_;    ///< Size of the full problem
+		const int reduced_size_; ///< Size of the reduced problem
 
 		enum CurrentSize
 		{
@@ -73,7 +67,7 @@ namespace polyfem::solver
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
 		int current_size() const
 		{
-			return current_size_ == FULL_SIZE ? full_size : reduced_size;
+			return current_size_ == FULL_SIZE ? full_size() : reduced_size();
 		}
 
 		template <class FullMat, class ReducedMat>

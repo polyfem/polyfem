@@ -23,8 +23,8 @@ namespace polyfem::solver
 		  state_(state),
 		  rhs_assembler_(rhs_assembler),
 		  t_(t),
-		  full_size((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
-		  reduced_size(full_size - state.boundary_nodes.size())
+		  full_size_((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
+		  reduced_size_(full_size_ - state.boundary_nodes.size())
 	{
 		assert(!state.assembler.is_mixed(state.formulation()));
 		use_reduced_size();
@@ -85,9 +85,9 @@ namespace polyfem::solver
 	{
 		THessian full_hessian;
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
-		assert(full_hessian.rows() == full_size);
-		assert(full_hessian.cols() == full_size);
-		utils::full_to_reduced_matrix(full_size, current_size(), state_.boundary_nodes, full_hessian, hessian);
+		assert(full_hessian.rows() == full_size());
+		assert(full_hessian.cols() == full_size());
+		utils::full_to_reduced_matrix(full_size(), current_size(), state_.boundary_nodes, full_hessian, hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -100,24 +100,31 @@ namespace polyfem::solver
 		FullNLProblem::post_step(iter_num, reduced_to_full(x));
 	}
 
+	void NLProblem::set_apply_DBC(const TVector &x, const bool val)
+	{
+		TVector full = reduced_to_full(x);
+		for (auto &form : forms_)
+			form->set_apply_DBC(full, val);
+	}
+
 	NLProblem::TVector NLProblem::full_to_reduced(const TVector &full) const
 	{
 		TVector reduced;
-		full_to_reduced_aux(state_, full_size, current_size(), full, reduced);
+		full_to_reduced_aux(state_, full_size(), current_size(), full, reduced);
 		return reduced;
 	}
 
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		TVector full;
-		Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size, 1);
+		Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size(), 1);
 
-		if (current_size() != full_size)
+		if (current_size() != full_size())
 		{
 			// rhs_assembler.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, tmp, t_);
-			rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, t_);
+			rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
 		}
-		reduced_to_full_aux(state_, full_size, current_size(), reduced, tmp, full);
+		reduced_to_full_aux(state_, full_size(), current_size(), reduced, tmp, full);
 		return full;
 	}
 
