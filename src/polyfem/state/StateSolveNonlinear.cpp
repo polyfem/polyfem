@@ -12,6 +12,7 @@
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -41,25 +42,6 @@ namespace polyfem
 	using namespace solver;
 	using namespace io;
 	using namespace utils;
-
-	void SolveData::set_al_weight(const Eigen::VectorXd &x, const double weight)
-	{
-		if (al_form == nullptr)
-			return;
-		if (weight > 0)
-		{
-			al_form->set_enabled(true);
-			al_form->set_weight(weight);
-			body_form->set_apply_DBC(x, false);
-			nl_problem->use_full_size();
-		}
-		else
-		{
-			al_form->set_enabled(false);
-			body_form->set_apply_DBC(x, true);
-			nl_problem->use_reduced_size();
-		}
-	}
 
 	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
 	{
@@ -111,7 +93,7 @@ namespace polyfem
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+				args["solver"]["nonlinear"], args["solver"]["linear"]);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
@@ -281,19 +263,11 @@ namespace polyfem
 
 	void State::solve_tensor_nonlinear(const int t)
 	{
-		Eigen::VectorXd tmp_sol;
 
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
 
 		assert(sol.size() == rhs.size());
-
-		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		const double max_al_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
-
-		nl_problem.full_to_reduced(sol, tmp_sol);
-		assert(sol.size() == rhs.size());
-		assert(tmp_sol.size() <= rhs.size());
 
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
@@ -315,76 +289,41 @@ namespace polyfem
 		// 	alnl_problem.lagged_regularization_weight() = 0;
 		// }
 
+		// ---------------------------------------------------------------------
+
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
 		save_subsolve(subsolve_count, t);
 
-		///////////////////////////////////////////////////////////////////////
-
-		nl_problem.line_search_begin(sol, tmp_sol);
-		Eigen::VectorXd tmp_sol_full;
-		nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
-		bool force_al = args["solver"]["augmented_lagrangian"]["force"];
-		while (
-			force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
-			|| (solve_data.contact_form != nullptr && !solve_data.contact_form->is_step_collision_free(sol, tmp_sol_full)))
-		{
-			force_al = false;
-			nl_problem.line_search_end();
-			solve_data.set_al_weight(tmp_sol_full, al_weight);
-			logger().debug("Solving AL Problem with weight {}", al_weight);
-
-			std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver<NLProblem>();
-			alnl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
-			nl_problem.init(sol);
-			solve_data.updated_barrier_stiffness(sol);
-			tmp_sol = sol;
-			alnl_solver->minimize(nl_problem, tmp_sol);
-			json alnl_solver_info;
-			alnl_solver->getInfo(alnl_solver_info);
-
-			solver_info.push_back(
-				{{"type", "al"},
-				 {"t", t}, // TODO: null if static?
-				 {"weight", al_weight},
-				 {"info", alnl_solver_info}});
-
-			sol = tmp_sol;
-			solve_data.set_al_weight(sol, -1);
-			nl_problem.full_to_reduced(sol, tmp_sol);
-			nl_problem.line_search_begin(sol, tmp_sol);
-			nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
-
-			al_weight *= 2;
-
-			if (al_weight >= max_al_weight)
-			{
-				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
-				break;
-			}
-
-			save_subsolve(++subsolve_count, t);
-		}
-		nl_problem.line_search_end();
-
-		///////////////////////////////////////////////////////////////////////
+		// ---------------------------------------------------------------------
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
-		nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
-		nl_problem.init(sol);
-		solve_data.updated_barrier_stiffness(sol);
-		nl_solver->minimize(nl_problem, tmp_sol);
-		json nl_solver_info;
-		nl_solver->getInfo(nl_solver_info);
-		solver_info.push_back(
-			{{"type", "rc"},
-			 {"t", t}, // TODO: null if static?
-			 {"info", nl_solver_info}});
-		nl_problem.reduced_to_full(tmp_sol, sol);
 
-		save_subsolve(++subsolve_count, t);
+		ALSolver al_solver(
+			nl_solver, solve_data.al_form,
+			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			args["solver"]["augmented_lagrangian"]["max_weight"],
+			[&](const Eigen::VectorXd &x) {
+				this->solve_data.updated_barrier_stiffness(sol);
+			});
 
-		///////////////////////////////////////////////////////////////////////
+		al_solver.post_subsolve = [&](const double al_weight) {
+			json info;
+			nl_solver->get_info(info);
+			solver_info.push_back(
+				{{"type", al_weight > 0 ? "al" : "rc"},
+				 {"t", t}, // TODO: null if static?
+				 {"info", info}});
+			if (al_weight > 0)
+				solver_info.back()["weight"] = al_weight;
+			this->save_subsolve(++subsolve_count, t);
+		};
+
+		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
+
+		// ---------------------------------------------------------------------
+
+		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 		// TODO: fix this lagged damping
 		// nl_problem.lagged_regularization_weight() = 0;
@@ -406,14 +345,15 @@ namespace polyfem
 			// 	nl_problem.lagged_regularization_weight() = 0;
 			nl_solver->minimize(nl_problem, tmp_sol);
 
-			nl_solver->getInfo(nl_solver_info);
+			json info;
+			nl_solver->get_info(info);
 			solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
-				 {"info", nl_solver_info}});
+				 {"info", info}});
 
-			nl_problem.reduced_to_full(tmp_sol, sol);
+			sol = nl_problem.reduced_to_full(tmp_sol);
 			nl_problem.update_lagging(tmp_sol);
 			nl_problem.gradient(tmp_sol, tmp_grad);
 			lagging_converged = tmp_grad.norm() <= lagging_tol;
@@ -422,7 +362,7 @@ namespace polyfem
 			save_subsolve(++subsolve_count, t);
 		}
 
-		///////////////////////////////////////////////////////////////////////
+		// ---------------------------------------------------------------------
 
 		if (friction_iterations > 0)
 		{
