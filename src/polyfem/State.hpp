@@ -94,7 +94,6 @@ namespace polyfem
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
-		void set_al_weight(const double weight);
 		void updated_barrier_stiffness(const Eigen::VectorXd &x);
 		void update_dt();
 	};

@@ -91,8 +91,24 @@ namespace polyfem::solver
 		/// @brief Get if the form's second derivative is projected to psd
 		bool is_project_to_psd() const { return project_to_psd_; }
 
+		/// @brief Determine if the form is enabled
+		/// @return True if the form is enabled else false
 		virtual bool enabled() const { return true; }
-		void set_weight(const double val) { weight_ = val; }
+
+		/// @brief Set the form's multiplicative constant weight
+		/// @param weight New weight to use
+		void set_weight(const double weight) { weight_ = weight; }
+
+		// NOTE: The following functions are really specific to the different form and should be implemented in the derived class.
+
+		/// @brief Set if the Dirichlet boundary conditions should be enforced.
+		/// @note This is specific to the body form.
+		/// @param apply_DBC If true, apply Dirichlet boundary conditions to the current RHS.
+		virtual void set_apply_DBC(bool apply_DBC) {}
+
+		/// @brief Checks if the step is collision free
+		/// @return True if the step is collision free else false
+		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite

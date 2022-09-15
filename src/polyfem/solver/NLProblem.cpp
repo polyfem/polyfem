@@ -1,23 +1,5 @@
 #include "NLProblem.hpp"
 
-#include <polysolve/LinearSolver.hpp>
-#include <polysolve/FEMSolver.hpp>
-
-#include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/Timer.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/JSONUtils.hpp>
-
-#include <ipc/ipc.hpp>
-#include <ipc/barrier/barrier.hpp>
-#include <ipc/barrier/adaptive_stiffness.hpp>
-#include <ipc/utils/world_bbox_diagonal_length.hpp>
-
-#include <igl/write_triangle_mesh.h>
-
-static bool disable_collision = false;
-
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
@@ -32,184 +14,174 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // Root-finding form:
 // M(uₕᵗ⁺¹ - (uₕᵗ + Δtvₕᵗ)) - ½Δt²Auₕᵗ⁺¹ = 0
 
-namespace polyfem
+namespace polyfem::solver
 {
-	using namespace assembler;
-	using namespace io;
-	using namespace utils;
-	namespace solver
+	using namespace polysolve;
+
+	NLProblem::NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, std::vector<std::shared_ptr<Form>> &forms)
+		: FullNLProblem(forms),
+		  state_(state),
+		  rhs_assembler_(rhs_assembler),
+		  t_(t),
+		  full_size((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
+		  reduced_size(full_size - state.boundary_nodes.size())
 	{
-		using namespace polysolve;
+		assert(!state.assembler.is_mixed(state.formulation()));
+		use_reduced_size();
+	}
 
-		NLProblem::NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, std::vector<std::shared_ptr<Form>> &forms)
-			: state_(state), rhs_assembler_(rhs_assembler),
-			  full_size((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
-			  actual_reduced_size(full_size - state.boundary_nodes.size()),
-			  forms_(forms)
+	void NLProblem::init_lagging(const TVector &x)
+	{
+		FullNLProblem::init_lagging(reduced_to_full(x));
+	}
+
+	void NLProblem::update_lagging(const TVector &x)
+	{
+		FullNLProblem::update_lagging(reduced_to_full(x));
+	}
+
+	void NLProblem::update_quantities(const double t, const TVector &x)
+	{
+		t_ = t;
+		const TVector full = reduced_to_full(x);
+		for (auto &f : forms_)
+			f->update_quantities(t, full);
+	}
+
+	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
+	{
+		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
+	}
+
+	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
+	{
+		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+	}
+
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	{
+		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
+	}
+
+	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
+	{
+		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
+	}
+
+	double NLProblem::value(const TVector &x)
+	{
+		// TODO: removed fearure const bool only_elastic
+		return FullNLProblem::value(reduced_to_full(x));
+	}
+
+	void NLProblem::gradient(const TVector &x, TVector &grad)
+	{
+		TVector full_grad;
+		FullNLProblem::gradient(reduced_to_full(x), full_grad);
+		grad = full_to_reduced(full_grad);
+	}
+
+	void NLProblem::hessian(const TVector &x, THessian &hessian)
+	{
+		THessian full_hessian;
+		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
+		assert(full_hessian.rows() == full_size);
+		assert(full_hessian.cols() == full_size);
+		utils::full_to_reduced_matrix(full_size, current_size(), state_.boundary_nodes, full_hessian, hessian);
+	}
+
+	void NLProblem::solution_changed(const TVector &newX)
+	{
+		FullNLProblem::solution_changed(reduced_to_full(newX));
+	}
+
+	void NLProblem::post_step(const int iter_num, const TVector &x)
+	{
+		FullNLProblem::post_step(iter_num, reduced_to_full(x));
+	}
+
+	NLProblem::TVector NLProblem::full_to_reduced(const TVector &full) const
+	{
+		TVector reduced;
+		full_to_reduced_aux(state_, full_size, current_size(), full, reduced);
+		return reduced;
+	}
+
+	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
+	{
+		TVector full;
+		Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size, 1);
+
+		if (current_size() != full_size)
 		{
-			t_ = t;
-			assert(!state.assembler.is_mixed(state.formulation()));
-			use_reduced_size();
+			// rhs_assembler.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, tmp, t_);
+			rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, t_);
+		}
+		reduced_to_full_aux(state_, full_size, current_size(), reduced, tmp, full);
+		return full;
+	}
+
+	template <class FullMat, class ReducedMat>
+	void NLProblem::full_to_reduced_aux(const State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+	{
+		using namespace polyfem;
+
+		// Reduced is already at the full size
+		if (full_size == reduced_size || full.size() == reduced_size)
+		{
+			reduced = full;
+			return;
 		}
 
-		void NLProblem::init(const TVector &full)
+		assert(full.size() == full_size);
+		assert(full.cols() == 1);
+		reduced.resize(reduced_size, 1);
+
+		long j = 0;
+		size_t k = 0;
+		for (int i = 0; i < full.size(); ++i)
 		{
-			for (auto &f : forms_)
-				f->init(full);
-		}
-
-		void NLProblem::set_project_to_psd(bool val)
-		{
-			for (auto &f : forms_)
-				f->set_project_to_psd(val);
-		}
-
-		void NLProblem::init_lagging(const TVector &x)
-		{
-			TVector full;
-			reduced_to_full(x, full);
-			for (auto &f : forms_)
-				f->init_lagging(full);
-		}
-
-		void NLProblem::update_lagging(const TVector &x)
-		{
-			TVector full;
-			reduced_to_full(x, full);
-			for (auto &f : forms_)
-				f->update_lagging(full);
-		}
-
-		void NLProblem::update_quantities(const double t, const TVector &x)
-		{
-			t_ = t;
-			TVector full;
-			reduced_to_full(x, full);
-
-			for (auto &f : forms_)
-				f->update_quantities(t, full);
-		}
-
-		void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
-		{
-			Eigen::MatrixXd full0, full1;
-			reduced_to_full(x0, full0);
-			reduced_to_full(x1, full1);
-
-			for (auto &f : forms_)
-				f->line_search_begin(full0, full1);
-		}
-
-		void NLProblem::line_search_end()
-		{
-			for (auto &f : forms_)
-				f->line_search_end();
-		}
-
-		double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
-		{
-			Eigen::MatrixXd full0, full1;
-			reduced_to_full(x0, full0);
-			reduced_to_full(x1, full1);
-
-			double step = 1;
-			for (auto &f : forms_)
-				step = std::min(step, f->max_step_size(full0, full1));
-
-			return step;
-		}
-
-		bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
-		{
-			TVector full0, full1;
-			reduced_to_full(x0, full0);
-			reduced_to_full(x1, full1);
-			for (auto &f : forms_)
-				if (!f->is_step_valid(full0, full1))
-					return false;
-
-			return true;
-		}
-
-		double NLProblem::value(const TVector &x)
-		{
-			// TODO: removed fearure const bool only_elastic
-
-			TVector full;
-			reduced_to_full(x, full);
-
-			double fvalue = 0;
-			for (int i = 0; i < forms_.size(); ++i)
+			if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
 			{
-				const auto &f = forms_[i];
-				if (!f->enabled())
-					continue;
-				fvalue += f->value(full);
-			}
-			return fvalue;
-		}
-
-		void NLProblem::gradient(const TVector &x, TVector &gradv)
-		{
-			TVector full, tmp;
-			reduced_to_full(x, full);
-			TVector fgrad(full.size());
-			fgrad.setZero();
-			for (int i = 0; i < forms_.size(); ++i)
-			{
-				const auto &f = forms_[i];
-				if (!f->enabled())
-					continue;
-				f->first_derivative(full, tmp);
-				fgrad += tmp;
+				++k;
+				continue;
 			}
 
-			full_to_reduced(fgrad, gradv);
+			reduced(j++) = full(i);
+		}
+		assert(j == reduced.size());
+	}
+
+	template <class ReducedMat, class FullMat>
+	void NLProblem::reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
+	{
+		using namespace polyfem;
+
+		// Full is already at the reduced size
+		if (full_size == reduced_size || full_size == reduced.size())
+		{
+			full = reduced;
+			return;
 		}
 
-		void NLProblem::hessian(const TVector &x, THessian &hessian)
-		{
-			THessian full_hessian;
-			hessian_full(x, full_hessian);
-			full_to_reduced_matrix(full_size, reduced_size, state_.boundary_nodes, full_hessian, hessian);
-		}
+		assert(reduced.size() == reduced_size);
+		assert(reduced.cols() == 1);
+		full.resize(full_size, 1);
 
-		void NLProblem::hessian_full(const TVector &x, THessian &hessian)
+		long j = 0;
+		size_t k = 0;
+		for (int i = 0; i < full.size(); ++i)
 		{
-			TVector full;
-			reduced_to_full(x, full);
-
-			THessian tmp(full_size, full_size);
-			hessian.resize(full_size, full_size);
-			hessian.setZero();
-			for (int i = 0; i < forms_.size(); ++i)
+			if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
 			{
-				const auto &f = forms_[i];
-				if (!f->enabled())
-					continue;
-				f->second_derivative(full, tmp);
-				hessian += tmp;
+				++k;
+				full(i) = rhs(i);
+				continue;
 			}
-			assert(hessian.rows() == full_size);
-			assert(hessian.cols() == full_size);
+
+			full(i) = reduced(j++);
 		}
 
-		void NLProblem::solution_changed(const TVector &newX)
-		{
-			Eigen::MatrixXd newFull;
-			reduced_to_full(newX, newFull);
-
-			for (auto &f : forms_)
-				f->solution_changed(newFull);
-		}
-
-		void NLProblem::post_step(const int iter_num, const TVector &x)
-		{
-			TVector full;
-			reduced_to_full(x, full);
-
-			for (auto &f : forms_)
-				f->post_step(iter_num, full);
-		}
-	} // namespace solver
-} // namespace polyfem
+		assert(j == reduced.size());
+	}
+} // namespace polyfem::solver

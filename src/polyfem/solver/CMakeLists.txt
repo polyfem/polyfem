@@ -1,17 +1,23 @@
 set(SOURCES
 	ALSolver.cpp
 	ALSolver.hpp
-	NonlinearSolver.hpp
-	SparseNewtonDescentSolver.hpp
+	FullNLProblem.cpp
+	FullNLProblem.hpp
 	LBFGSSolver.hpp
-	NLProblem.cpp
-	NLProblem.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
-	TransientNavierStokesSolver.cpp
-	TransientNavierStokesSolver.hpp
+	NLProblem.cpp
+	NLProblem.hpp
+	NonlinearSolver.hpp
+	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
+	SolverInfo.cpp
+	SolverInfo.hpp
+	SparseNewtonDescentSolver.hpp
+	SparseNewtonDescentSolver.tpp
+	TransientNavierStokesSolver.cpp
+	TransientNavierStokesSolver.hpp
 )
 
 prepend_current_path(SOURCES)

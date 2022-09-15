@@ -143,10 +143,6 @@ polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Extra warnings
-target_link_libraries(polyfem PRIVATE polyfem::warnings)
-
-
 # Use C++17
 target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
 
@@ -246,6 +242,9 @@ target_link_libraries(polyfem PUBLIC mmg::mmg)
 
 include(polyclipper)
 target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
+
+# Extra warnings (link this here so it has top priority)
+target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
 ################################################################################
 # Optional libraries

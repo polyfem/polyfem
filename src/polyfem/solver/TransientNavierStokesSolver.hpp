@@ -22,7 +22,7 @@ namespace polyfem
 						  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 						  const StiffnessMatrix &velocity_mass,
 						  const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
-			void getInfo(json &params)
+			void get_info(json &params)
 			{
 				params = solver_info;
 			}

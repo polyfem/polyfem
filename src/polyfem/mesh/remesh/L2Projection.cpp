@@ -1,7 +1,10 @@
 #include "L2Projection.hpp"
 
-#include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
+#include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/forms/ALForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
@@ -26,6 +29,9 @@ namespace polyfem::mesh
 		const AssemblyValsCache &cache,
 		const Eigen::MatrixXd &y,
 		Eigen::MatrixXd &x,
+		const double t0,
+		const double dt,
+		const int t,
 		const bool lump_mass_matrix)
 	{
 		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
@@ -60,12 +66,91 @@ namespace polyfem::mesh
 		double al_weight = state.args["solver"]["augmented_lagrangian"]["initial_weight"];
 		const double max_al_weight = state.args["solver"]["augmented_lagrangian"]["max_weight"];
 
-		const double t = 0;
-
 		std::shared_ptr<L2ProjectionForm> l2_projection_form = std::make_shared<L2ProjectionForm>(M, A, y.col(0));
-		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(state, rhs_assembler, t);
-		std::vector<std::shared_ptr<Form>> forms = {l2_projection_form, al_form};
-		NLProblem problem(state, rhs_assembler, t, forms);
+		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(state, rhs_assembler, t0 + t * dt);
+		std::shared_ptr<ElasticForm> elastic_form = std::make_shared<ElasticForm>(state);
+		const bool use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
+		std::shared_ptr<ContactForm> contact_form = std::make_shared<ContactForm>(
+			state,
+			state.args["contact"]["dhat"],
+			use_adaptive_barrier_stiffness,
+			/*is_time_dependent=*/true,
+			state.args["solver"]["contact"]["CCD"]["broad_phase"],
+			state.args["solver"]["contact"]["CCD"]["tolerance"],
+			state.args["solver"]["contact"]["CCD"]["max_iterations"]);
+
+		if (use_adaptive_barrier_stiffness)
+		{
+			contact_form->set_weight(1);
+			logger().debug("Using adaptive barrier stiffness");
+		}
+		else
+		{
+			contact_form->set_weight(state.args["solver"]["contact"]["barrier_stiffness"]);
+			logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+		}
+
+		std::vector<std::shared_ptr<Form>> forms = {l2_projection_form, al_form, elastic_form, contact_form};
+		NLProblem problem(state, rhs_assembler, t0 + t * dt, forms);
+
+		Eigen::MatrixXd sol = Eigen::VectorXd::Zero(M.rows());
+		json solver_info;
+		auto is_step_collision_free = [&contact_form](const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) -> bool { //
+			return contact_form->is_step_collision_free(x0, x1);
+		};
+		auto set_al_weight = [&](const double weight) -> void {
+			if (weight > 0)
+			{
+				al_form->set_enabled(true);
+				al_form->set_weight(weight);
+				problem.use_full_size();
+			}
+			else
+			{
+				al_form->set_enabled(false);
+				problem.use_reduced_size();
+			}
+		};
+		auto make_solver = [&state]() {
+			json newton_args = state.args["solver"]["nonlinear"];
+			newton_args["f_delta"] = 1e-7;
+			newton_args["grad_norm"] = 1e-7;
+			newton_args["use_grad_norm"] = true;
+			// newton_args["relative_gradient"] = true;
+
+			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<NLProblem>>(
+				newton_args,
+				state.args["solver"]["linear"]["solver"],
+				state.args["solver"]["linear"]["precond"]);
+		};
+		auto updated_barrier_stiffness = [&elastic_form, &contact_form, &l2_projection_form](const Eigen::MatrixXd &x) {
+			if (!contact_form->use_adaptive_barrier_stiffness())
+				return;
+			Eigen::VectorXd grad_energy(x.size(), 1);
+			grad_energy.setZero();
+			elastic_form->first_derivative(x, grad_energy);
+			Eigen::VectorXd grad_L2(x.size());
+			l2_projection_form->first_derivative(x, grad_L2);
+			grad_energy += grad_L2;
+			contact_form->update_barrier_stiffness(x, grad_energy);
+		};
+		auto pose_step = []() {};
+
+		solve_al_nl_problem(
+			problem,
+			t,
+			al_weight,
+			max_al_weight,
+			is_step_collision_free,
+			set_al_weight,
+			make_solver,
+			state.args["solver"]["nonlinear"]["line_search"]["method"],
+			updated_barrier_stiffness,
+			sol,
+			solver_info,
+			pose_step,
+			// state.args["solver"]["augmented_lagrangian"]["force"]
+			true);
 
 		/*
 		Eigen::VectorXd sol = Eigen::VectorXd::Zero(M.rows());
@@ -95,7 +180,7 @@ namespace polyfem::mesh
 				newton_args,
 				state.args["solver"]["linear"]["solver"],
 				state.args["solver"]["linear"]["precond"]);
-			solver.setLineSearch(state.args["solver"]["nonlinear"]["line_search"]["method"]);
+			solver.set_line_search(state.args["solver"]["nonlinear"]["line_search"]["method"]);
 			problem.init(sol);
 			tmp_sol = sol;
 			solver.minimize(problem, tmp_sol);
@@ -117,18 +202,20 @@ namespace polyfem::mesh
 			newton_args,
 			state.args["solver"]["linear"]["solver"],
 			state.args["solver"]["linear"]["precond"]);
-		solver.setLineSearch(state.args["solver"]["nonlinear"]["line_search"]["method"]);
+		solver.set_line_search(state.args["solver"]["nonlinear"]["line_search"]["method"]);
 		problem.init(sol);
 		solver.minimize(problem, tmp_sol);
 
 		problem.reduced_to_full(tmp_sol, sol);
+		*/
 
 		// --------------------------------------------------------------------
 
 		// Construct a linear solver for M
 		Eigen::PardisoLU<decltype(M)> linear_solver;
 		// linear_solver->setParameters(solver_params);
-		const Eigen::SparseMatrix<double> &LHS = M; // NOTE: remove & if you want to have a more complicated LHS
+		// NOTE: remove & if you want to have a more complicated LHS
+		const Eigen::SparseMatrix<double> &LHS = M;
 		linear_solver.analyzePattern(LHS);
 		linear_solver.factorize(LHS);
 
@@ -141,7 +228,6 @@ namespace polyfem::mesh
 		// double residual_error = (LHS * x - rhs).norm();
 		logger().critical("residual error in L2 projection: {}", residual_error);
 		assert(residual_error < 1e-12);
-		*/
 	}
 
 	L2ProjectionForm::L2ProjectionForm(

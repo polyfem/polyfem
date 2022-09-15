@@ -46,25 +46,6 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	void SolveData::set_al_weight(const double weight)
-	{
-		if (al_form == nullptr)
-			return;
-		if (weight > 0)
-		{
-			al_form->set_enabled(true);
-			al_form->set_weight(weight);
-			body_form->set_apply_DBC(false);
-			nl_problem->use_full_size();
-		}
-		else
-		{
-			al_form->set_enabled(false);
-			body_form->set_apply_DBC(true);
-			nl_problem->use_reduced_size();
-		}
-	}
-
 	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
 	{
 		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
@@ -334,33 +315,33 @@ namespace polyfem
 		// assert(sol.size() == rhs.size());
 		// assert(tmp_sol.size() <= rhs.size());
 
-		solve_al_nl_problem(
-			nl_problem,
-			t,
-			al_weight,
-			max_al_weight,
-			[&](const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) -> bool {
-				assert(x0.size() == rhs.size());
-				assert(x0.size() == x1.size());
-				return this->solve_data.contact_form != nullptr
-					   && !this->solve_data.contact_form->is_step_collision_free(x0, x1);
-			},
-			[&](const double weight) -> void {
-				this->solve_data.set_al_weight(weight);
-			},
-			[&]() {
-				return this->make_nl_solver<NLProblem>();
-			},
-			args["solver"]["nonlinear"]["line_search"]["method"],
-			[&](const Eigen::MatrixXd &sol) {
-				this->solve_data.updated_barrier_stiffness(sol);
-			},
-			this->sol,
-			this->solver_info,
-			[&]() {
-				this->save_subsolve(++subsolve_count, t);
-			},
-			args["solver"]["augmented_lagrangian"]["force"]);
+		// solve_al_nl_problem(
+		// 	nl_problem,
+		// 	t,
+		// 	al_weight,
+		// 	max_al_weight,
+		// 	[&](const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) -> bool {
+		// 		assert(x0.size() == rhs.size());
+		// 		assert(x0.size() == x1.size());
+		// 		return this->solve_data.contact_form == nullptr
+		// 			   || this->solve_data.contact_form->is_step_collision_free(x0, x1);
+		// 	},
+		// 	[&](const double weight) -> void {
+		// 		this->solve_data.set_al_weight(weight);
+		// 	},
+		// 	[&]() {
+		// 		return this->make_nl_solver<NLProblem>();
+		// 	},
+		// 	args["solver"]["nonlinear"]["line_search"]["method"],
+		// 	[&](const Eigen::MatrixXd &sol) {
+		// 		this->solve_data.updated_barrier_stiffness(sol);
+		// 	},
+		// 	this->sol,
+		// 	this->solver_info,
+		// 	[&]() {
+		// 		this->save_subsolve(++subsolve_count, t);
+		// 	},
+		// 	args["solver"]["augmented_lagrangian"]["force"]);
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -378,13 +359,13 @@ namespace polyfem
 		// 	logger().debug("Solving AL Problem with weight {}", al_weight);
 
 		// 	std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver<NLProblem>();
-		// 	alnl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
+		// 	alnl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
 		// 	nl_problem.init(sol);
 		// 	solve_data.updated_barrier_stiffness(sol);
 		// 	tmp_sol = sol;
 		// 	alnl_solver->minimize(nl_problem, tmp_sol);
 		// 	json alnl_solver_info;
-		// 	alnl_solver->getInfo(alnl_solver_info);
+		// 	alnl_solver->get_info(alnl_solver_info);
 
 		// 	solver_info.push_back(
 		// 		{{"type", "al"},
@@ -413,12 +394,12 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 
 		// std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
-		// nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
+		// nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
 		// nl_problem.init(sol);
 		// solve_data.updated_barrier_stiffness(sol);
 		// nl_solver->minimize(nl_problem, tmp_sol);
 		// json nl_solver_info;
-		// nl_solver->getInfo(nl_solver_info);
+		// nl_solver->get_info(nl_solver_info);
 		// solver_info.push_back(
 		// 	{{"type", "rc"},
 		// 	 {"t", t}, // TODO: null if static?
@@ -430,10 +411,9 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
-		nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
+		nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
 
-		Eigen::VectorXd tmp_sol;
-		nl_problem.full_to_reduced(sol, tmp_sol);
+		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 		// TODO: fix this lagged damping
 		// nl_problem.lagged_regularization_weight() = 0;
@@ -456,14 +436,14 @@ namespace polyfem
 			nl_solver->minimize(nl_problem, tmp_sol);
 
 			json nl_solver_info;
-			nl_solver->getInfo(nl_solver_info);
+			nl_solver->get_info(nl_solver_info);
 			solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
 				 {"info", nl_solver_info}});
 
-			nl_problem.reduced_to_full(tmp_sol, sol);
+			sol = nl_problem.reduced_to_full(tmp_sol);
 			nl_problem.update_lagging(tmp_sol);
 			nl_problem.gradient(tmp_sol, tmp_grad);
 			lagging_converged = tmp_grad.norm() <= lagging_tol;

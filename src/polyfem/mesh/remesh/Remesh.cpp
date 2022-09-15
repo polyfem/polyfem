@@ -2,6 +2,8 @@
 
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/mesh/remesh/MMGRemesh.hpp>
+#include <polyfem/mesh/remesh/WildRemesh2D.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/PI.h>
@@ -15,6 +17,8 @@ namespace polyfem::mesh
 
 	void remesh(State &state, const double t0, const double dt, const int t)
 	{
+		const ImplicitTimeIntegrator &time_integrator = *state.solve_data.time_integrator;
+
 		Eigen::MatrixXd V(state.mesh->n_vertices(), state.mesh->dimension());
 		for (int i = 0; i < state.mesh->n_vertices(); ++i)
 			V.row(i) = state.mesh->point(i);
@@ -33,11 +37,12 @@ namespace polyfem::mesh
 			OBJWriter::write(state.resolve_output_path("rest.obj"), V, BF);
 		}
 
-		MmgOptions mmg_options;
-		mmg_options.hmin = 1e-4;
-
 		Eigen::MatrixXd V_new;
 		Eigen::MatrixXi F_new;
+
+#ifdef USE_MMG_REMESHING
+		MmgOptions mmg_options;
+		mmg_options.hmin = 1e-4;
 		if (!state.mesh->is_volume())
 		{
 			// TODO: What measure to use for remeshing?
@@ -70,10 +75,27 @@ namespace polyfem::mesh
 			remesh_adaptive_3d(V, F, SV, V_new, BF_new, F_new);
 			OBJWriter::write(state.resolve_output_path("remeshed.obj"), V_new, BF_new);
 		}
+#else
+		const int n_vertices = state.mesh->n_vertices();
+		const int dim = state.mesh->dimension();
+		Eigen::MatrixXd U = unflatten(state.sol, dim);
+		Eigen::MatrixXd Vel = unflatten(time_integrator.v_prev(), dim);
+		Eigen::MatrixXd Acc = unflatten(time_integrator.a_prev(), dim);
+		assert(!state.mesh->is_volume());
+		WildRemeshing2D remeshing;
+		remeshing.create_mesh(V, F, U, Vel, Acc);
+		// for(int i = 0; i < 10; ++i)
+		{
+			remeshing.smooth_all_vertices();
+			// remeshing.split_all_edges();
+		}
+		remeshing.export_mesh(V_new, F_new, U, Vel, Acc);
+		// TODO: use U, Vel, Acc
+		// state.sol = flatten(U);
+		// return;
+#endif
 
 		// --------------------------------------------------------------------
-
-		const ImplicitTimeIntegrator &time_integrator = *state.solve_data.time_integrator;
 
 		// Save old values
 		const int old_n_bases = state.n_bases;
@@ -106,7 +128,7 @@ namespace polyfem::mesh
 			state.mesh->is_volume(), state.mesh->is_volume() ? 3 : 2,
 			old_n_bases, old_bases, old_geom_bases,         // from
 			state.n_bases, state.bases, state.geom_bases(), // to
-			state.ass_vals_cache, y, x, /*lump_mass_matrix=*/false);
+			state.ass_vals_cache, y, x, t0, dt, t, /*lump_mass_matrix=*/false);
 
 		state.sol = x.col(0);
 		Eigen::VectorXd vel = x.col(1);
@@ -128,7 +150,7 @@ namespace polyfem::mesh
 				state.mesh->is_volume(), state.mesh->is_volume() ? 3 : 2,
 				state.n_bases, state.bases, state.geom_bases(), // from
 				old_n_bases, old_bases, old_geom_bases,         // to
-				ass_vals_cache, x, y2);
+				ass_vals_cache, x, y2, t0, dt, t);
 
 			auto error = [&old_mass](const Eigen::VectorXd &old_y, const Eigen::VectorXd &new_y) -> double {
 				const auto diff = new_y - old_y;
