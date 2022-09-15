@@ -22,10 +22,9 @@ namespace polyfem
 		if (assembler.is_mixed(formulation()))
 		{
 			pressure.resize(0, 0);
-			const int prev_size = sol.size();
 			sol.conservativeResize(rhs.size(), sol.cols());
 			// Zero initial pressure
-			sol.middleRows(prev_size, n_pressure_bases).setZero();
+			sol.middleRows(n_bases * mesh->dimension(), n_pressure_bases).setZero();
 			sol(sol.size() - 1) = 0;
 
 			sol_to_pressure();
