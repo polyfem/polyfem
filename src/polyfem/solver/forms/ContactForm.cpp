@@ -197,7 +197,7 @@ namespace polyfem::solver
 		prev_distance_ = curr_distance;
 	}
 
-	bool ContactForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	bool ContactForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		const auto displaced0 = compute_displaced_surface(x0);
 		const auto displaced1 = compute_displaced_surface(x1);
