@@ -2,6 +2,7 @@ var hierarchy =
 [
     [ "nlohmann::adl_serializer< RowVector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
     [ "nlohmann::adl_serializer< Vector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
+    [ "polyfem::solver::ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", null ],
     [ "polyfem::mesh::NCMesh2D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html", null ],
     [ "polyfem::mesh::NCMesh3D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html", null ],
     [ "polyfem::mesh::NCMesh3D::ArrayHasher3D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html", null ],
@@ -63,7 +64,7 @@ var hierarchy =
     [ "polyfem::assembler::FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", null ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
-    [ "std::hash< Eigen::Matrix< Scalar, Rows, Cols > >", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html", null ],
+    [ "polyfem::utils::HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", null ],
     [ "polyfem::utils::HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", null ],
     [ "polyfem::utils::HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", null ],
     [ "polyfem::assembler::Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", null ],
@@ -159,7 +160,9 @@ var hierarchy =
     [ "polyfem::quadrature::PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", null ],
     [ "polyfem::quadrature::PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ],
     [ "cppoptlib::Problem", null, [
-      [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", null ]
+      [ "polyfem::solver::FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", [
+        [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", null ]
+      ] ]
     ] ],
     [ "polyfem::assembler::Problem", "classpolyfem_1_1assembler_1_1_problem.html", [
       [ "polyfem::assembler::GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", null ],

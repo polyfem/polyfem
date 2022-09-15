@@ -5,7 +5,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52", null ],
     [ "init", "classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb", null ],
-    [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_contact_form.html#afb39918bf76b3a6316442e89b2a331ea", null ],
+    [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006", null ],
     [ "line_search_begin", "classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c", null ],
     [ "line_search_end", "classpolyfem_1_1solver_1_1_contact_form.html#a8987931f60f3ceaa4fd4d8d53346d00a", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820", null ],

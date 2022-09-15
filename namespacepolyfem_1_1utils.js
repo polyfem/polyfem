@@ -15,6 +15,7 @@ var namespacepolyfem_1_1utils =
     [ "EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
     [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
     [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
+    [ "HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", "structpolyfem_1_1utils_1_1_hash_matrix" ],
     [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
     [ "HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", "structpolyfem_1_1utils_1_1_hash_vector" ],
     [ "InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", "classpolyfem_1_1utils_1_1_interpolated_function2d" ],

@@ -12,12 +12,11 @@ var searchData=
   ['hash_5ftable_5fcell_5fnum_9',['hash_table_cell_num',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1f6822209689767027ba50199b933724',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['helmholtz_5f_10',['helmholtz_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#ac56ebfec4bdb53c19642d087c6a209cd',1,'polyfem::assembler::AssemblerUtils']]],
   ['hess_11',['hess',['../struct_d_scalar2.html#a15737f75543ecbaba980e825dee51bdb',1,'DScalar2']]],
-  ['hessian_12',['hessian',['../classcppoptlib_1_1_sparse_newton_descent_solver.html#a58f4cab63cd0956bfca813c777c5ea25',1,'cppoptlib::SparseNewtonDescentSolver']]],
-  ['hex_13',['hex',['../structpolyfem_1_1mesh_1_1_element.html#aa2790260d3b42914666de332abcab16f',1,'polyfem::mesh::Element']]],
-  ['hex_5fface_5ftable_14',['hex_face_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a1de1a2dd8709669d68f19f19b3510749',1,'polyfem::mesh::MeshProcessing3D']]],
-  ['hex_5ftetra_5ftable_15',['hex_tetra_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a973fa48488e4b472eefcfb966abaed2b',1,'polyfem::mesh::MeshProcessing3D']]],
-  ['hf_16',['HF',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['hooke_5flinear_5felasticity_5f_17',['hooke_linear_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a65ef38d3da5345b50cea93792ba583c4',1,'polyfem::assembler::AssemblerUtils']]],
-  ['hpp_18',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
-  ['hv_19',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]]
+  ['hex_12',['hex',['../structpolyfem_1_1mesh_1_1_element.html#aa2790260d3b42914666de332abcab16f',1,'polyfem::mesh::Element']]],
+  ['hex_5fface_5ftable_13',['hex_face_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a1de1a2dd8709669d68f19f19b3510749',1,'polyfem::mesh::MeshProcessing3D']]],
+  ['hex_5ftetra_5ftable_14',['hex_tetra_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a973fa48488e4b472eefcfb966abaed2b',1,'polyfem::mesh::MeshProcessing3D']]],
+  ['hf_15',['HF',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['hooke_5flinear_5felasticity_5f_16',['hooke_linear_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a65ef38d3da5345b50cea93792ba583c4',1,'polyfem::assembler::AssemblerUtils']]],
+  ['hpp_17',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
+  ['hv_18',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]]
 ];

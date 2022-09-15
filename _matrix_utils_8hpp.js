@@ -1,7 +1,6 @@
 var _matrix_utils_8hpp =
 [
     [ "polyfem::utils::SpareMatrixCache", "classpolyfem_1_1utils_1_1_spare_matrix_cache.html", "classpolyfem_1_1utils_1_1_spare_matrix_cache" ],
-    [ "std::hash< Eigen::Matrix< Scalar, Rows, Cols > >", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4" ],
     [ "determinant", "_matrix_utils_8hpp.html#abe6b8c4990a1c67602ca66d6d522d557", null ],
     [ "flatten", "_matrix_utils_8hpp.html#adac090350174847f46edfd397abd4ab4", null ],
     [ "full_to_reduced_matrix", "_matrix_utils_8hpp.html#af03329969960f2decea3c0752c243b2a", null ],

@@ -114,7 +114,6 @@ $(document).ready(function(){initNavTree('_types_8hpp.html',''); initResizable()
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">Types.hpp File Reference</div></div>
 </div><!--header-->
@@ -130,7 +129,7 @@ Include dependency graph for Types.hpp:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_types_8hpp__dep__incl.svg" width="4924" height="1020"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_types_8hpp__dep__incl.svg" width="4074" height="1020"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -141,11 +140,6 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a495bcd5d134917272807537c6797abae"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_types_8hpp.html#a495bcd5d134917272807537c6797abae">MAX_QUAD_POINTS</a>&#160;&#160;&#160;-1</td></tr>
-<tr class="separator:a495bcd5d134917272807537c6797abae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a5d46d4510849a3d306dc60d4f365dc2c"><td class="memItemLeft" align="right" valign="top">typedef Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">polyfem::VectorNd</a></td></tr>
@@ -154,28 +148,11 @@ Typedefs</h2></td></tr>
 <tr class="separator:abe6f92d10f655cb8c4ded3f58a6dc321"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b6c0c90bf84bff37213e17517526dd2"><td class="memItemLeft" align="right" valign="top">typedef Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">polyfem::MatrixNd</a></td></tr>
 <tr class="separator:a9b6c0c90bf84bff37213e17517526dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fa9b5aafa6c994633a25aa454efc18f"><td class="memItemLeft" align="right" valign="top">typedef Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, <a class="el" href="_types_8hpp.html#a495bcd5d134917272807537c6797abae">MAX_QUAD_POINTS</a>, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">polyfem::QuadratureVector</a></td></tr>
+<tr class="memitem:a6fa9b5aafa6c994633a25aa454efc18f"><td class="memItemLeft" align="right" valign="top">typedef Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">polyfem::QuadratureVector</a></td></tr>
 <tr class="separator:a6fa9b5aafa6c994633a25aa454efc18f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af952b2322cc7cfb3abcca5212e2f16d4"><td class="memItemLeft" align="right" valign="top">typedef Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></td></tr>
 <tr class="separator:af952b2322cc7cfb3abcca5212e2f16d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a495bcd5d134917272807537c6797abae" name="a495bcd5d134917272807537c6797abae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a495bcd5d134917272807537c6797abae">&#9670;&nbsp;</a></span>MAX_QUAD_POINTS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MAX_QUAD_POINTS&#160;&#160;&#160;-1</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_types_8hpp_source.html#l00003">3</a> of file <a class="el" href="_types_8hpp_source.html">Types.hpp</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

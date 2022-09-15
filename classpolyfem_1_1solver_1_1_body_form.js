@@ -4,7 +4,7 @@ var classpolyfem_1_1solver_1_1_body_form =
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1", null ],
     [ "get_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a479616172545ad47d9f20ffe0205287e", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a9db4bedebb1994874ca7294fc745a929", null ],
-    [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a564f9fe8e74073c982d82c56a32516f8", null ],
+    [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261", null ],
     [ "update_current_rhs", "classpolyfem_1_1solver_1_1_body_form.html#ac565e4b704690c5a47c2862ca09ce0a1", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0", null ],

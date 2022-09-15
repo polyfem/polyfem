@@ -18,5 +18,6 @@ var searchData=
   ['nlproblem_2ehpp_15',['NLProblem.hpp',['../_n_l_problem_8hpp.html',1,'']]],
   ['nodeproblem_2ecpp_16',['NodeProblem.cpp',['../_node_problem_8cpp.html',1,'']]],
   ['nodeproblem_2ehpp_17',['NodeProblem.hpp',['../_node_problem_8hpp.html',1,'']]],
-  ['nonlinearsolver_2ehpp_18',['NonlinearSolver.hpp',['../_nonlinear_solver_8hpp.html',1,'']]]
+  ['nonlinearsolver_2ehpp_18',['NonlinearSolver.hpp',['../_nonlinear_solver_8hpp.html',1,'']]],
+  ['nonlinearsolver_2etpp_19',['NonlinearSolver.tpp',['../_nonlinear_solver_8tpp.html',1,'']]]
 ];

@@ -1,6 +1,5 @@
 var classpolyfem_1_1_solve_data =
 [
-    [ "set_al_weight", "classpolyfem_1_1_solve_data.html#aa496e003378806be86399987812cd808", null ],
     [ "update_dt", "classpolyfem_1_1_solve_data.html#a22c789be0d51dc9b560d200593171295", null ],
     [ "updated_barrier_stiffness", "classpolyfem_1_1_solve_data.html#a20dcd85c7e65018d6d6cc12827124349", null ],
     [ "al_form", "classpolyfem_1_1_solve_data.html#a17ea2402b990cd3942b7f22a2af4e002", null ],

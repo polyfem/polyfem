@@ -132,7 +132,7 @@ Include dependency graph for MatrixUtils.hpp:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_matrix_utils_8hpp__dep__incl.svg" width="5430" height="678"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_matrix_utils_8hpp__dep__incl.svg" width="5946" height="678"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -142,16 +142,12 @@ This graph shows which files directly or indirectly include this file:</div>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_spare_matrix_cache.html">polyfem::utils::SpareMatrixCache</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html">std::hash&lt; Eigen::Matrix&lt; Scalar, Rows, Cols &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html">polyfem::utils</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacestd"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestd.html">std</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -164,8 +160,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a691a83ca0c9ab36d64ab2bd56eb394e0"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a691a83ca0c9ab36d64ab2bd56eb394e0">polyfem::utils::sparse_identity</a> (int rows, int cols)</td></tr>
 <tr class="separator:a691a83ca0c9ab36d64ab2bd56eb394e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adac090350174847f46edfd397abd4ab4"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">polyfem::utils::flatten</a> (const Eigen::MatrixXd &amp;X)</td></tr>
+<tr class="memdesc:adac090350174847f46edfd397abd4ab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flatten rowwises.  <a href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">More...</a><br /></td></tr>
 <tr class="separator:adac090350174847f46edfd397abd4ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafdbbff4a81a4fcba11129097b1109e5"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">polyfem::utils::unflatten</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int dim)</td></tr>
+<tr class="memdesc:aafdbbff4a81a4fcba11129097b1109e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unflatten rowwises, so every dim elements in x become a row.  <a href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">More...</a><br /></td></tr>
 <tr class="separator:aafdbbff4a81a4fcba11129097b1109e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fb8d51756a3b76bee0485fa58e65226"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">polyfem::utils::lump_matrix</a> (const Eigen::SparseMatrix&lt; double &gt; &amp;M)</td></tr>
 <tr class="memdesc:a2fb8d51756a3b76bee0485fa58e65226"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lump each row of a matrix into the diagonal.  <a href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">More...</a><br /></td></tr>

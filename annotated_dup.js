@@ -177,11 +177,13 @@ var annotated_dup =
           [ "MoreThuenteLineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search" ]
         ] ],
         [ "ALForm", "classpolyfem_1_1solver_1_1_a_l_form.html", "classpolyfem_1_1solver_1_1_a_l_form" ],
+        [ "ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", "classpolyfem_1_1solver_1_1_a_l_solver" ],
         [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", "classpolyfem_1_1solver_1_1_body_form" ],
         [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", "classpolyfem_1_1solver_1_1_contact_form" ],
         [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", "classpolyfem_1_1solver_1_1_elastic_form" ],
         [ "Form", "classpolyfem_1_1solver_1_1_form.html", "classpolyfem_1_1solver_1_1_form" ],
         [ "FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", "classpolyfem_1_1solver_1_1_friction_form" ],
+        [ "FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", "classpolyfem_1_1solver_1_1_full_n_l_problem" ],
         [ "InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", "classpolyfem_1_1solver_1_1_inertia_form" ],
         [ "LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", "classpolyfem_1_1solver_1_1_lagged_reg_form" ],
         [ "NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html", "classpolyfem_1_1solver_1_1_navier_stokes_solver" ],
@@ -203,6 +205,7 @@ var annotated_dup =
         [ "EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
         [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
         [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
+        [ "HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", "structpolyfem_1_1utils_1_1_hash_matrix" ],
         [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
         [ "HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", "structpolyfem_1_1utils_1_1_hash_vector" ],
         [ "InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", "classpolyfem_1_1utils_1_1_interpolated_function2d" ],
@@ -229,9 +232,6 @@ var annotated_dup =
     [ "q_bases", "namespaceq__bases.html", [
       [ "Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],
       [ "ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", "classq__bases_1_1_reference_simplex" ]
-    ] ],
-    [ "std", "namespacestd.html", [
-      [ "hash< Eigen::Matrix< Scalar, Rows, Cols > >", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4.html", "structstd_1_1hash_3_01_eigen_1_1_matrix_3_01_scalar_00_01_rows_00_01_cols_01_4_01_4" ]
     ] ],
     [ "DiffScalarBase", "struct_diff_scalar_base.html", null ],
     [ "DScalar1", "struct_d_scalar1.html", "struct_d_scalar1" ],

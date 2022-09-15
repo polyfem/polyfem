@@ -141,6 +141,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html">FileSelection</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_matrix.html">HashMatrix</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_pair.html">HashPair</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_vector.html">HashVector</a></td></tr>
@@ -187,8 +189,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a691a83ca0c9ab36d64ab2bd56eb394e0"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a691a83ca0c9ab36d64ab2bd56eb394e0">sparse_identity</a> (int rows, int cols)</td></tr>
 <tr class="separator:a691a83ca0c9ab36d64ab2bd56eb394e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adac090350174847f46edfd397abd4ab4"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">flatten</a> (const Eigen::MatrixXd &amp;X)</td></tr>
+<tr class="memdesc:adac090350174847f46edfd397abd4ab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flatten rowwises.  <a href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">More...</a><br /></td></tr>
 <tr class="separator:adac090350174847f46edfd397abd4ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafdbbff4a81a4fcba11129097b1109e5"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">unflatten</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int dim)</td></tr>
+<tr class="memdesc:aafdbbff4a81a4fcba11129097b1109e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unflatten rowwises, so every dim elements in x become a row.  <a href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">More...</a><br /></td></tr>
 <tr class="separator:aafdbbff4a81a4fcba11129097b1109e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fb8d51756a3b76bee0485fa58e65226"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">lump_matrix</a> (const Eigen::SparseMatrix&lt; double &gt; &amp;M)</td></tr>
 <tr class="memdesc:a2fb8d51756a3b76bee0485fa58e65226"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lump each row of a matrix into the diagonal.  <a href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">More...</a><br /></td></tr>
@@ -348,6 +352,8 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>Flatten rowwises. </p>
+
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00343">343</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00172">elasticity_rhs::X</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
@@ -412,9 +418,9 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00391">391</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="p__bases_8py_source.html#l00232">p_bases::indices</a>, and <a class="el" href="_timer_8hpp_source.html#l00005">POLYFEM_SCOPED_TIMER</a>.</p>
+<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00019">entries</a>, <a class="el" href="p__bases_8py_source.html#l00232">p_bases::indices</a>, and <a class="el" href="_timer_8hpp_source.html#l00007">POLYFEM_SCOPED_TIMER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00170">polyfem::solver::NLProblem::hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00084">polyfem::solver::NLProblem::hessian()</a>.</p>
 
 </div>
 </div>
@@ -879,7 +885,7 @@ template&lt;typename Storages &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00032">32</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00005">polyfem::solver::ALForm::ALForm()</a>, and <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00088">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;::compute_update_direction()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00005">polyfem::solver::ALForm::ALForm()</a>.</p>
 
 </div>
 </div>
@@ -941,11 +947,13 @@ template&lt;typename Storages &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>Unflatten rowwises, so every dim elements in x become a row. </p>
+
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00359">359</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="elasticity__rhs_8py_source.html#l00172">elasticity_rhs::X</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00047">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00026">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l00696">polyfem::State::export_data()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00158">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_output_8cpp_source.html#l01650">polyfem::State::save_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00047">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00026">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_state_output_8cpp_source.html#l00696">polyfem::State::export_data()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00140">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_output_8cpp_source.html#l01650">polyfem::State::save_surface()</a>.</p>
 
 </div>
 </div>

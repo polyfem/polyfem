@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['tet_0',['Tet',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa77501a193048c70975005a2a1dfc15d1',1,'polyfem::mesh']]],
-  ['tri_1',['Tri',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7',1,'polyfem::mesh::Tri()'],['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ab8c4c2cd6e0f11e2fbb894caeaeccef3',1,'polyfem::mesh::Tri()']]],
-  ['triline_2',['TriLine',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a9f4b55db1c20898d446a35bf7f99e856',1,'polyfem::mesh']]]
+  ['simplesingularboundarycube_0',['SimpleSingularBoundaryCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5',1,'polyfem::mesh']]],
+  ['simplesingularinteriorcube_1',['SimpleSingularInteriorCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf',1,'polyfem::mesh']]],
+  ['simplex_2',['Simplex',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789',1,'polyfem::mesh']]],
+  ['steptoosmall_3',['StepTooSmall',['../namespacecppoptlib.html#ab1c404594493c8607f2ad429a0c57040a2cf9518900cf219b1e12526c715d3865',1,'cppoptlib']]],
+  ['success_4',['Success',['../namespacecppoptlib.html#ab1c404594493c8607f2ad429a0c57040a505a83f220c02df2f85c3810cd9ceb38',1,'cppoptlib']]]
 ];

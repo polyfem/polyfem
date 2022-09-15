@@ -54,7 +54,6 @@ var namespaces_dup =
       [ "C99_print", "namespacepretty__print.html#a4c61a4500105714e7fea1f44029c7c64", null ]
     ] ],
     [ "q_bases", "namespaceq__bases.html", "namespaceq__bases" ],
-    [ "std", "namespacestd.html", "namespacestd" ],
     [ "tetrahedron", "namespacetetrahedron.html", [
       [ "generate_cpp", "namespacetetrahedron.html#a178443be14dbb93bf120d2baf6d61499", null ],
       [ "generate_monomials", "namespacetetrahedron.html#a06d630e86a5d3499521e2013f3325a95", null ],

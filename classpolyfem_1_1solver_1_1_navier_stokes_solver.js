@@ -2,7 +2,7 @@ var classpolyfem_1_1solver_1_1_navier_stokes_solver =
 [
     [ "NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ae54d75ce86f084072d6e7b8e81b8454c", null ],
     [ "error_code", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#afd8ab0b8c9f58d7d951a5a3dddd5830c", null ],
-    [ "getInfo", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#aeef166133f4267ff549d39cda638bbc3", null ],
+    [ "get_info", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a5e0dbade0c3bb633b749d9dcc3fa57a8", null ],
     [ "has_nans", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac2f048ba2e31b7481aa8dac656e5785e", null ],
     [ "minimize", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ab58a99278ee7f7d03d015a1fa5641513", null ],
     [ "minimize_aux", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4fe5c191d714ecae4e6aafd300976452", null ],

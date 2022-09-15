@@ -1116,7 +1116,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;tets,</div>
 <div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>    Eigen::MatrixXi &amp;faces)</div>
 <div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span>{</div>
-<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>    std::unordered_set&lt;Eigen::Vector3i&gt; tri_to_tet(4 * tets.rows());</div>
+<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>    std::unordered_set&lt;Eigen::Vector3i, HashMatrix&gt; tri_to_tet(4 * tets.rows());</div>
 <div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; tets.rows(); i++)</div>
 <div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span>    {</div>
 <div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span>        tri_to_tet.emplace(tets(i, 0), tets(i, 2), tets(i, 1));</div>

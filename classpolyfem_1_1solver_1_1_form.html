@@ -179,9 +179,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5480916379212a87367e3efce8c441f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get if the form's second derivative is projected to psd.  <a href="classpolyfem_1_1solver_1_1_form.html#a5480916379212a87367e3efce8c441f4">More...</a><br /></td></tr>
 <tr class="separator:a5480916379212a87367e3efce8c441f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff214a3de8103f43c54038e4916b6957"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aff214a3de8103f43c54038e4916b6957">enabled</a> () const</td></tr>
+<tr class="memdesc:aff214a3de8103f43c54038e4916b6957"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the form is enabled.  <a href="classpolyfem_1_1solver_1_1_form.html#aff214a3de8103f43c54038e4916b6957">More...</a><br /></td></tr>
 <tr class="separator:aff214a3de8103f43c54038e4916b6957"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a097471f0b37691a73a4c6fade599dfa9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a097471f0b37691a73a4c6fade599dfa9">set_weight</a> (const double <a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)</td></tr>
-<tr class="separator:a097471f0b37691a73a4c6fade599dfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d82bbde92a18b72b0630dd40ff59136"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136">set_weight</a> (const double weight)</td></tr>
+<tr class="memdesc:a6d82bbde92a18b72b0630dd40ff59136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the form's multiplicative constant weight.  <a href="classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136">More...</a><br /></td></tr>
+<tr class="separator:a6d82bbde92a18b72b0630dd40ff59136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3bc1982e0d2a817919eba357e1ccb16"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">set_apply_DBC</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, bool apply_DBC)</td></tr>
+<tr class="memdesc:aa3bc1982e0d2a817919eba357e1ccb16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set if the Dirichlet boundary conditions should be enforced.  <a href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">More...</a><br /></td></tr>
+<tr class="separator:aa3bc1982e0d2a817919eba357e1ccb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a657c152e9c1448c520c34bc443a3e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a52a657c152e9c1448c520c34bc443a3e">is_step_collision_free</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const</td></tr>
+<tr class="memdesc:a52a657c152e9c1448c520c34bc443a3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the step is collision free.  <a href="classpolyfem_1_1solver_1_1_form.html#a52a657c152e9c1448c520c34bc443a3e">More...</a><br /></td></tr>
+<tr class="separator:a52a657c152e9c1448c520c34bc443a3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -259,9 +267,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Determine if the form is enabled. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the form is enabled else false </dd></dl>
+
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#a332e10bd6b76ce69469966f368cd9eef">polyfem::solver::ALForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -310,7 +321,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00027">27</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">first_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00100">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">first_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00116">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00051">polyfem::solver::ElasticForm::is_step_valid()</a>.</p>
 
@@ -468,7 +479,50 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00092">92</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00098">project_to_psd_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00114">project_to_psd_</a>.</p>
+
+</div>
+</div>
+<a id="a52a657c152e9c1448c520c34bc443a3e" name="a52a657c152e9c1448c520c34bc443a3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52a657c152e9c1448c520c34bc443a3e">&#9670;&nbsp;</a></span>is_step_collision_free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool polyfem::solver::Form::is_step_collision_free </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the step is collision free. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the step is collision free else false </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006">polyfem::solver::ContactForm</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00111">111</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -747,7 +801,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00037">37</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b">second_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00100">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b">second_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00116">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -800,6 +854,55 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aa3bc1982e0d2a817919eba357e1ccb16" name="aa3bc1982e0d2a817919eba357e1ccb16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3bc1982e0d2a817919eba357e1ccb16">&#9670;&nbsp;</a></span>set_apply_DBC()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void polyfem::solver::Form::set_apply_DBC </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>apply_DBC</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set if the Dirichlet boundary conditions should be enforced. </p>
+<dl class="section note"><dt>Note</dt><dd>This is specific to the body form. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">apply_DBC</td><td>If true, apply Dirichlet boundary conditions to the current RHS. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261">polyfem::solver::BodyForm</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00107">107</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a2847474520e0c403400be6c64423d2e4" name="a2847474520e0c403400be6c64423d2e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2847474520e0c403400be6c64423d2e4">&#9670;&nbsp;</a></span>set_project_to_psd()</h2>
 
@@ -834,12 +937,12 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00098">project_to_psd_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00114">project_to_psd_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>.</p>
 
 </div>
 </div>
-<a id="a097471f0b37691a73a4c6fade599dfa9" name="a097471f0b37691a73a4c6fade599dfa9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a097471f0b37691a73a4c6fade599dfa9">&#9670;&nbsp;</a></span>set_weight()</h2>
+<a id="a6d82bbde92a18b72b0630dd40ff59136" name="a6d82bbde92a18b72b0630dd40ff59136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d82bbde92a18b72b0630dd40ff59136">&#9670;&nbsp;</a></span>set_weight()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -851,7 +954,7 @@ Protected Attributes</h2></td></tr>
           <td class="memname">void polyfem::solver::Form::set_weight </td>
           <td>(</td>
           <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -862,9 +965,17 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p>Set the form's multiplicative constant weight. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weight</td><td>New weight to use </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00087">val</a>, and <a class="el" href="_form_8hpp_source.html#l00100">weight_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00116">weight_</a>.</p>
 
 </div>
 </div>
@@ -1028,7 +1139,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00019">19</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">value_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00100">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">value_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00116">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00005">polyfem::solver::ALForm::ALForm()</a>.</p>
 
@@ -1096,7 +1207,7 @@ Protected Attributes</h2></td></tr>
 
 <p>If true, the form's second derivative is projected to be positive semidefinite. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00098">98</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00114">114</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00092">is_project_to_psd()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00096">polyfem::solver::ContactForm::second_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00031">polyfem::solver::ElasticForm::second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00046">polyfem::solver::FrictionForm::second_derivative_unweighted()</a>, and <a class="el" href="_form_8hpp_source.html#l00089">set_project_to_psd()</a>.</p>
 
@@ -1124,9 +1235,9 @@ Protected Attributes</h2></td></tr>
 
 <p>weight of the form, eg barrier stiffness, AL, d^2 </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00116">116</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00084">polyfem::solver::ContactForm::barrier_stiffness()</a>, <a class="el" href="_form_8hpp_source.html#l00027">first_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00161">polyfem::solver::ContactForm::post_step()</a>, <a class="el" href="_form_8hpp_source.html#l00037">second_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00095">set_weight()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00053">polyfem::solver::ContactForm::update_barrier_stiffness()</a>, and <a class="el" href="_form_8hpp_source.html#l00019">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00084">polyfem::solver::ContactForm::barrier_stiffness()</a>, <a class="el" href="_form_8hpp_source.html#l00027">first_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00161">polyfem::solver::ContactForm::post_step()</a>, <a class="el" href="_form_8hpp_source.html#l00037">second_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00100">set_weight()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00053">polyfem::solver::ContactForm::update_barrier_stiffness()</a>, and <a class="el" href="_form_8hpp_source.html#l00019">value()</a>.</p>
 
 </div>
 </div>
