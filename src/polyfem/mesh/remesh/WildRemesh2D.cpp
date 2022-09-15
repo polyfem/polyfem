@@ -165,9 +165,9 @@ namespace polyfem::mesh
 
 		// Use igl for checking orientation
 		igl::predicates::Orientation res = igl::predicates::orient2d(
-			vertex_attrs[vs[0].vid(*this)].position(),
-			vertex_attrs[vs[1].vid(*this)].position(),
-			vertex_attrs[vs[2].vid(*this)].position());
+			vertex_attrs[vs[0].vid(*this)].rest_position,
+			vertex_attrs[vs[1].vid(*this)].rest_position,
+			vertex_attrs[vs[2].vid(*this)].rest_position);
 
 		// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
 		return (res != igl::predicates::Orientation::POSITIVE);

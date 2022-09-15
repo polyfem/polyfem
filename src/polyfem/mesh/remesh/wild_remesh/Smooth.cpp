@@ -82,7 +82,7 @@ namespace polyfem::mesh
 				"relative_gradient": false,
 				"line_search": {
 					"method": "backtracking",
-					"use_grad_norm_tol": false
+					"use_grad_norm_tol": 0.0001
 				}
 			})"_json;
 		const json linear_solver_args = R"({

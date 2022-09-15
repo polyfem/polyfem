@@ -14,6 +14,8 @@ namespace polyfem
 				const Eigen::MatrixXd X_rest,
 				const Eigen::MatrixXd X);
 
+			bool is_step_valid(const Eigen::VectorXd &, const Eigen::VectorXd &x1) const override;
+
 			static double energy(
 				const Eigen::Vector2d &x0_rest,
 				const Eigen::Vector2d &x1_rest,

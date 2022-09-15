@@ -111,7 +111,7 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(t0 + dt);
 
-		save_timestep(t0, 0, t0, dt);
+		save_timestep(t0, 0, t0, dt / 2);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -128,12 +128,17 @@ namespace polyfem
 				solve_data.updated_barrier_stiffness(sol);
 			}
 
-			if (false)
+			save_timestep(t0 + dt / 2 * t, 2 * t - 1, t0, dt / 2);
+			if (true)
 			{
 				mesh::remesh(*this, t0, dt, t);
 			}
 
-			save_timestep(t0 + dt * t, t, t0, dt);
+			save_timestep(t0 + dt / 2 * t, 2 * t, t0, dt / 2);
+			if (t == 1)
+			{
+				exit(0);
+			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}

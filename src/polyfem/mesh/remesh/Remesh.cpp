@@ -84,7 +84,7 @@ namespace polyfem::mesh
 		assert(!state.mesh->is_volume());
 		WildRemeshing2D remeshing;
 		remeshing.create_mesh(V, F, U, Vel, Acc);
-		// for(int i = 0; i < 10; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			remeshing.smooth_all_vertices();
 			// remeshing.split_all_edges();
