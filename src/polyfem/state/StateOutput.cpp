@@ -1,4 +1,10 @@
 #include <polyfem/State.hpp>
+
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+
 #include <polyfem/utils/par_for.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
@@ -7,7 +13,6 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/ALNLProblem.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -163,7 +168,7 @@ namespace polyfem
 		std::vector<std::pair<int, int>> edges;
 		std::vector<std::tuple<int, int, int>> tris;
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
 		{
@@ -823,7 +828,7 @@ namespace polyfem
 
 		const auto &sampler = ref_element_sampler;
 
-		const auto &current_bases = iso_parametric() ? bases : geom_bases;
+		const auto &current_bases = geom_bases();
 		int tet_total_size = 0;
 		int pts_total_size = 0;
 
@@ -1298,12 +1303,16 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			bool is_time_integrator_valid = solve_data.nl_problem != nullptr && solve_data.nl_problem->time_integrator() != nullptr;
+			bool is_time_integrator_valid = solve_data.time_integrator != nullptr;
+			const Eigen::VectorXd zero_tmp = Eigen::VectorXd::Zero(sol.rows());
 			if (export_velocity)
 			{
-				Eigen::MatrixXd vel = is_time_integrator_valid
-										  ? solve_data.nl_problem->time_integrator()->v_prev()
-										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+				Eigen::VectorXd vel = zero_tmp;
+				if (is_time_integrator_valid)
+				{
+					const auto &tmp_ti = *static_cast<time_integrator::ImplicitTimeIntegrator *>(solve_data.time_integrator.get());
+					vel = tmp_ti.v_prev();
+				}
 
 				Eigen::MatrixXd interp_vel;
 				interpolate_function(points.rows(), vel, interp_vel, use_sampler, boundary_only);
@@ -1328,9 +1337,12 @@ namespace polyfem
 
 			if (export_acceleration)
 			{
-				Eigen::MatrixXd acc = is_time_integrator_valid
-										  ? solve_data.nl_problem->time_integrator()->a_prev()
-										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+				Eigen::VectorXd acc = zero_tmp;
+				if (is_time_integrator_valid)
+				{
+					const auto &tmp_ti = *static_cast<time_integrator::ImplicitTimeIntegrator *>(solve_data.time_integrator.get());
+					acc = tmp_ti.a_prev();
+				}
 
 				Eigen::MatrixXd interp_acc;
 				interpolate_function(points.rows(), acc, interp_acc, use_sampler, boundary_only);
@@ -1462,7 +1474,7 @@ namespace polyfem
 			Eigen::MatrixXd local_pts;
 			Eigen::MatrixXi vis_faces_poly;
 
-			const auto &gbases = iso_parametric() ? bases : geom_bases;
+			const auto &gbases = geom_bases();
 
 			int index = 0;
 			const auto &sampler = ref_element_sampler;
@@ -1694,7 +1706,7 @@ namespace polyfem
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
 				Eigen::MatrixXd tensor_flat;
-				const auto &gbases = iso_parametric() ? bases : geom_bases;
+				const auto &gbases = geom_bases();
 				const ElementBases &gbs = gbases[el_index];
 				const ElementBases &bs = bases[el_index];
 				assembler.compute_tensor_value(formulation(), el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
@@ -1722,7 +1734,7 @@ namespace polyfem
 				collision_mesh, displaced_surface, args["contact"]["dhat"], constraint_set,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
 
-			const double barrier_stiffness = solve_data.nl_problem != nullptr ? solve_data.nl_problem->barrier_stiffness() : 1;
+			const double barrier_stiffness = solve_data.contact_form != nullptr ? solve_data.contact_form->barrier_stiffness() : 1;
 
 			if (export_contact_forces)
 			{
@@ -1740,8 +1752,8 @@ namespace polyfem
 			if (export_friction_forces)
 			{
 				Eigen::MatrixXd displaced_surface_prev =
-					(solve_data.nl_problem != nullptr)
-						? collision_mesh.vertices(solve_data.nl_problem->displaced_prev())
+					(solve_data.friction_form != nullptr)
+						? solve_data.friction_form->displaced_surface_prev()
 						: displaced_surface;
 
 				ipc::FrictionConstraints friction_constraint_set;
@@ -1864,7 +1876,7 @@ namespace polyfem
 			return;
 		const auto &sampler = ref_element_sampler;
 
-		const auto &current_bases = iso_parametric() ? bases : geom_bases;
+		const auto &current_bases = geom_bases();
 		int seg_total_size = 0;
 		int pts_total_size = 0;
 		int faces_total_size = 0;

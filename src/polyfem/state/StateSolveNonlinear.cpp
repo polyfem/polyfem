@@ -1,21 +1,108 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
+#include <polyfem/solver/forms/ALForm.hpp>
+
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/ALNLProblem.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <ipc/ipc.hpp>
+
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+} // namespace ipc
 
 namespace polyfem
 {
 	using namespace solver;
 	using namespace io;
 	using namespace utils;
+
+	void SolveData::set_al_weight(const Eigen::VectorXd &x, const double weight)
+	{
+		if (al_form == nullptr)
+			return;
+		if (weight > 0)
+		{
+			al_form->set_enabled(true);
+			al_form->set_weight(weight);
+			body_form->set_apply_DBC(x, false);
+			nl_problem->use_full_size();
+		}
+		else
+		{
+			al_form->set_enabled(false);
+			body_form->set_apply_DBC(x, true);
+			nl_problem->use_reduced_size();
+		}
+	}
+
+	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
+	{
+		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
+		// if (inertia_form == nullptr)
+		// 	return;
+		if (contact_form == nullptr)
+			return;
+
+		if (!contact_form->use_adaptive_barrier_stiffness())
+			return;
+
+		Eigen::VectorXd grad_energy(x.size(), 1);
+		grad_energy.setZero();
+
+		elastic_form->first_derivative(x, grad_energy);
+
+		if (inertia_form)
+		{
+			Eigen::VectorXd grad_inertia(x.size());
+			inertia_form->first_derivative(x, grad_inertia);
+			grad_energy += grad_inertia;
+		}
+
+		Eigen::VectorXd body_energy(x.size());
+		body_form->first_derivative(x, body_energy);
+		grad_energy += body_energy;
+
+		contact_form->update_barrier_stiffness(x, grad_energy);
+	}
+
+	void SolveData::update_dt()
+	{
+		if (inertia_form)
+		{
+			elastic_form->set_weight(time_integrator->acceleration_scaling());
+			body_form->set_weight(time_integrator->acceleration_scaling());
+
+			// TODO: Determine if friction should be scaled by h²
+			// if (friction_form)
+			// 	friction_form->set_weight(time_integrator->acceleration_scaling());
+		}
+	}
 
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
@@ -48,8 +135,13 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
+
+				solve_data.time_integrator->update_quantities(sol);
+
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
-				solve_data.alnl_problem->update_quantities(t0 + (t + 1) * dt, sol);
+
+				solve_data.update_dt();
+				solve_data.updated_barrier_stiffness(sol);
 			}
 
 			save_timestep(t0 + dt * t, t, t0, dt);
@@ -57,7 +149,7 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
 
-		solve_data.nl_problem->save_raw(
+		solve_data.time_integrator->save_raw(
 			resolve_output_path(args["output"]["data"]["u_path"]),
 			resolve_output_path(args["output"]["data"]["v_path"]),
 			resolve_output_path(args["output"]["data"]["a_path"]));
@@ -87,15 +179,84 @@ namespace polyfem
 			}
 		}
 
+		assert(solve_data.rhs_assembler != nullptr);
+
+		std::vector<std::shared_ptr<Form>> forms;
+		solve_data.elastic_form = std::make_shared<ElasticForm>(*this);
+		forms.push_back(solve_data.elastic_form);
+		solve_data.body_form = std::make_shared<BodyForm>(*this, *solve_data.rhs_assembler, /*apply_DBC=*/true);
+		forms.push_back(solve_data.body_form);
+
+		solve_data.inertia_form = nullptr;
+		if (problem->is_time_dependent())
+		{
+			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+			solve_data.time_integrator->set_parameters(args["time"]);
+			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
+			forms.push_back(solve_data.inertia_form);
+		}
+		else
+		{
+			// FIXME:
+			// const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
+			// if (lagged_regularization_weight > 0)
+			// {
+			// 	forms.push_back(std::make_shared<LaggedRegForm>(lagged_damping_weight));
+			// 	forms.back()->set_weight(lagged_regularization_weight);
+			// }
+		}
+
+		solve_data.al_form = std::make_shared<ALForm>(*this, *solve_data.rhs_assembler, t);
+		forms.push_back(solve_data.al_form);
+
+		solve_data.contact_form = nullptr;
+		solve_data.friction_form = nullptr;
+		if (args["contact"]["enabled"])
+		{
+
+			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
+
+			solve_data.contact_form = std::make_shared<ContactForm>(
+				*this,
+				args["contact"]["dhat"],
+				use_adaptive_barrier_stiffness,
+				/*is_time_dependent=*/solve_data.time_integrator != nullptr,
+				args["solver"]["contact"]["CCD"]["broad_phase"],
+				args["solver"]["contact"]["CCD"]["tolerance"],
+				args["solver"]["contact"]["CCD"]["max_iterations"]);
+
+			if (use_adaptive_barrier_stiffness)
+			{
+				solve_data.contact_form->set_weight(1);
+				logger().debug("Using adaptive barrier stiffness");
+			}
+			else
+			{
+				solve_data.contact_form->set_weight(args["solver"]["contact"]["barrier_stiffness"]);
+				logger().debug("Using fixed barrier stiffness of {}", solve_data.contact_form->barrier_stiffness());
+			}
+
+			forms.push_back(solve_data.contact_form);
+
+			// ----------------------------------------------------------------
+
+			if (args["contact"]["friction_coefficient"].get<double>() != 0)
+			{
+				solve_data.friction_form = std::make_shared<FrictionForm>(
+					*this,
+					args["contact"]["epsv"],
+					args["contact"]["friction_coefficient"],
+					args["contact"]["dhat"],
+					args["solver"]["contact"]["CCD"]["broad_phase"],
+					args.value("/time/dt"_json_pointer, 1.0), // dt=1.0 if static
+					*solve_data.contact_form);
+				forms.push_back(solve_data.friction_form);
+			}
+		}
+
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
-		assert(solve_data.rhs_assembler != nullptr);
-		solve_data.nl_problem =
-			std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t, args["contact"]["dhat"]);
-
-		const double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		solve_data.alnl_problem =
-			std::make_shared<ALNLProblem>(*this, *solve_data.rhs_assembler, t, args["contact"]["dhat"], al_weight);
+		solve_data.nl_problem = std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t, forms);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
@@ -110,9 +271,9 @@ namespace polyfem
 			assert(acceleration.size() == sol.size());
 
 			const double dt = args["time"]["dt"];
-			solve_data.nl_problem->init_time_integrator(sol, velocity, acceleration, dt);
-			solve_data.alnl_problem->init_time_integrator(sol, velocity, acceleration, dt);
+			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 		}
+		solve_data.update_dt();
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -125,8 +286,6 @@ namespace polyfem
 
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
-		assert(solve_data.alnl_problem != nullptr);
-		ALNLProblem &alnl_problem = *(solve_data.alnl_problem);
 
 		assert(sol.size() == rhs.size());
 
@@ -140,7 +299,6 @@ namespace polyfem
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
 			nl_problem.init_lagging(sol);
-			alnl_problem.init_lagging(sol);
 		}
 
 		const int friction_iterations = args["solver"]["contact"]["friction_iterations"];
@@ -148,12 +306,15 @@ namespace polyfem
 		if (friction_iterations > 0)
 			logger().debug("Lagging iteration 1");
 
+		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
+
 		// Disable damping for the final lagged iteration
-		if (friction_iterations <= 1)
-		{
-			nl_problem.lagged_regularization_weight() = 0;
-			alnl_problem.lagged_regularization_weight() = 0;
-		}
+		// TODO: fix me lagged regularization
+		// if (friction_iterations <= 1)
+		// {
+		// 	nl_problem.lagged_regularization_weight() = 0;
+		// 	alnl_problem.lagged_regularization_weight() = 0;
+		// }
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
@@ -162,20 +323,24 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 
 		nl_problem.line_search_begin(sol, tmp_sol);
+		Eigen::VectorXd tmp_sol_full;
+		nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
 		bool force_al = args["solver"]["augmented_lagrangian"]["force"];
-		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
-			   || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		while (
+			force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
+			|| (solve_data.contact_form != nullptr && !solve_data.contact_form->is_step_collision_free(sol, tmp_sol_full)))
 		{
 			force_al = false;
 			nl_problem.line_search_end();
-			alnl_problem.set_weight(al_weight);
+			solve_data.set_al_weight(tmp_sol_full, al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnl_solver = make_nl_solver<ALNLProblem>();
+			std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver<NLProblem>();
 			alnl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
-			alnl_problem.init(sol);
+			nl_problem.init(sol);
+			solve_data.updated_barrier_stiffness(sol);
 			tmp_sol = sol;
-			alnl_solver->minimize(alnl_problem, tmp_sol);
+			alnl_solver->minimize(nl_problem, tmp_sol);
 			json alnl_solver_info;
 			alnl_solver->getInfo(alnl_solver_info);
 
@@ -186,17 +351,16 @@ namespace polyfem
 				 {"info", alnl_solver_info}});
 
 			sol = tmp_sol;
+			solve_data.set_al_weight(sol, -1);
 			nl_problem.full_to_reduced(sol, tmp_sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
+			nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
 
 			al_weight *= 2;
 
 			if (al_weight >= max_al_weight)
 			{
-				const std::string msg =
-					fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
-				logger().error(msg);
-				throw std::runtime_error(msg);
+				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
 				break;
 			}
 
@@ -209,6 +373,7 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
 		nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 		nl_problem.init(sol);
+		solve_data.updated_barrier_stiffness(sol);
 		nl_solver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
 		nl_solver->getInfo(nl_solver_info);
@@ -222,20 +387,24 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 
-		// TODO: fix this
-		nl_problem.lagged_regularization_weight() = 0;
+		// TODO: fix this lagged damping
+		// nl_problem.lagged_regularization_weight() = 0;
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
 		nl_problem.update_lagging(tmp_sol);
-		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
+		Eigen::VectorXd tmp_grad;
+		nl_problem.gradient(tmp_sol, tmp_grad);
+		bool lagging_converged = tmp_grad.norm() <= lagging_tol;
 		for (lag_i = 1; !lagging_converged && lag_i < friction_iterations; lag_i++)
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
+			solve_data.updated_barrier_stiffness(sol);
 			// Disable damping for the final lagged iteration
-			if (lag_i == friction_iterations - 1)
-				nl_problem.lagged_regularization_weight() = 0;
+			// TODO: fix this lagged damping
+			// if (lag_i == friction_iterations - 1)
+			// 	nl_problem.lagged_regularization_weight() = 0;
 			nl_solver->minimize(nl_problem, tmp_sol);
 
 			nl_solver->getInfo(nl_solver_info);
@@ -247,7 +416,9 @@ namespace polyfem
 
 			nl_problem.reduced_to_full(tmp_sol, sol);
 			nl_problem.update_lagging(tmp_sol);
-			lagging_converged = nl_problem.lagging_converged(tmp_sol);
+			nl_problem.gradient(tmp_sol, tmp_grad);
+			lagging_converged = tmp_grad.norm() <= lagging_tol;
+			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", tmp_grad.norm(), lagging_tol);
 
 			save_subsolve(++subsolve_count, t);
 		}
@@ -256,11 +427,12 @@ namespace polyfem
 
 		if (friction_iterations > 0)
 		{
+			nl_problem.gradient(tmp_sol, tmp_grad);
 			logger().log(
 				lagging_converged ? spdlog::level::info : spdlog::level::warn,
 				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
 				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at", lag_i,
-				nl_problem.compute_lagging_error(tmp_sol),
+				tmp_grad.norm(),
 				args["solver"]["contact"]["friction_convergence_tol"].get<double>());
 		}
 	}
@@ -268,5 +440,4 @@ namespace polyfem
 	////////////////////////////////////////////////////////////////////////
 	// Template instantiations
 	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver() const;
-	template std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> State::make_nl_solver() const;
 } // namespace polyfem

@@ -16,6 +16,7 @@ set(test_sources
 	test_solver.cpp
 	test_tbb.cpp
 	test_utils.cpp
+  test_form_derivatives.cpp
   verify_run.cpp
 )
 
@@ -31,6 +32,9 @@ target_link_libraries(unit_tests PUBLIC polyfem::warnings)
 
 include(catch2)
 target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
+
+include(finite_diff)
+target_link_libraries(unit_tests PUBLIC finitediff::finitediff)
 
 ################################################################################
 # Compiler options

@@ -17,7 +17,7 @@
             "initial_conditions",
             "output",
             "input",
-            "authen_t1"
+            "tests"
         ],
         "doc": "Root of the configuration file."
     },
@@ -37,7 +37,7 @@
         "doc": "Path for all relative paths, set automatically to the folder containing this json."
     },
     {
-        "pointer": "/authen_t1",
+        "pointer": "/tests",
         "default": null,
         "type": "object",
         "optional": [
@@ -47,51 +47,68 @@
             "err_linf",
             "err_linf_grad",
             "err_lp",
-            "margin"
+            "margin",
+            "time_steps"
         ],
         "doc": "Used to test to compare different norms of solutions."
     },
     {
-        "pointer": "/authen_t1/err_h1",
+        "pointer": "/tests/err_h1",
         "default": 0,
         "type": "float",
         "doc": "Reference h1 solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_h1_semi",
+        "pointer": "/tests/err_h1_semi",
         "default": 0,
         "type": "float",
         "doc": "Reference h1 seminorm solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_l2",
+        "pointer": "/tests/err_l2",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^2$ solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_linf",
+        "pointer": "/tests/err_linf",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^\\infty$ solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_linf_grad",
+        "pointer": "/tests/err_linf_grad",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^\\infty$ solution's gradient norm."
     },
     {
-        "pointer": "/authen_t1/err_lp",
+        "pointer": "/tests/err_lp",
         "default": 0,
         "type": "float",
         "doc": "Reference $L^8$ solution's gradient norm."
     },
     {
-        "pointer": "/authen_t1/margin",
-        "default": 0,
+        "pointer": "/tests/margin",
+        "default": 1e-5,
         "type": "float",
         "doc": "Reference tolerance used in tests."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Number of time steps to test."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "type": "string",
+        "options": [
+            "all",
+            "static"
+        ],
+        "doc": "Number of time steps to test."
     },
     {
         "pointer": "/geometry",
@@ -719,6 +736,7 @@
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
+            "mass_quadrature_order",
             "poly_bases",
             "integral_constraints",
             "n_harmonic_samples",
@@ -774,6 +792,12 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
+    },
+    {
+        "pointer": "/space/advanced/mass_quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
     },
     {
         "pointer": "/space/advanced/poly_bases",
@@ -1005,7 +1029,16 @@
         "type": "object",
         "optional": [
             "solver",
-            "precond"
+            "precond",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES",
+            "Pardiso",
+            "Hypre",
+            "AMGCL"
         ],
         "doc": "Settings for the linear solver."
     },
@@ -1047,6 +1080,355 @@
         ]
     },
     {
+        "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's Least Squares Conjugate Gradient solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::DGMRES",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's DGMRES solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::ConjugateGradient",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's Conjugate Gradient solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::BiCGSTAB",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's BiCGSTAB solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::GMRES",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's GMRES solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::MINRES",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's MINRES solver."
+    },
+    {
+        "pointer": "/solver/linear/Pardiso",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "mtype"
+        ],
+        "doc": "Settings for the Pardiso solver."
+    },
+    {
+        "pointer": "/solver/linear/Hypre",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "pre_max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Hypre solver."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solver",
+            "precond"
+        ],
+        "doc": "Settings for the AMGCL solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::DGMRES/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::DGMRES/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::ConjugateGradient/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::ConjugateGradient/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::BiCGSTAB/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::BiCGSTAB/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::GMRES/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::GMRES/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::MINRES/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::MINRES/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Pardiso/mtype",
+        "default": 11,
+        "type": "int",
+        "options": [1, 2, -2, 3, 4, -4, 6, 11, 13],
+        "doc": "Matrix type."
+    },
+    {
+        "pointer": "/solver/linear/Hypre/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Hypre/pre_max_iter",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of pre iterations."
+    },
+    {
+        "pointer": "/solver/linear/Hypre/tolerance",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "tol",
+            "maxiter",
+            "type"
+        ],
+        "doc": "Solver settings for the AMGCL."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "relax",
+            "class",
+            "max_levels",
+            "direct_coarse",
+            "ncycle",
+            "coarsening"
+        ],
+        "doc": "Preconditioner settings for the AMGCL."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver/maxiter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver/tol",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver/type",
+        "default": "cg",
+        "type": "string",
+        "doc": "Type of solver to use."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "degree",
+            "type",
+            "power_iters",
+            "higher",
+            "lower",
+            "scale"
+        ],
+        "doc": "Preconditioner settings for the AMGCL."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/class",
+        "default": "amg",
+        "type": "string",
+        "doc": "Type of preconditioner to use."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/max_levels",
+        "default": 6,
+        "type": "int",
+        "doc": "Maximum number of levels."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/direct_coarse",
+        "default": false,
+        "type": "bool",
+        "doc": "Use direct solver for the coarsest level."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/ncycle",
+        "default": 2,
+        "type": "int",
+        "doc": "Number of cycles."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "type",
+            "estimate_spectral_radius",
+            "relax",
+            "aggr"
+        ],
+        "doc": "Coarsening parameters."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/degree",
+        "default": 16,
+        "type": "int",
+        "doc": "Degree of the polynomial."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/type",
+        "default": "chebyshev",
+        "type": "string",
+        "doc": "Type of relaxation to use."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/power_iters",
+        "default": 100,
+        "type": "int",
+        "doc": "Number of power iterations."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/higher",
+        "default": 2,
+        "type": "float",
+        "doc": "Higher level relaxation."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/lower",
+        "default": 0.008333333333,
+        "type": "float",
+        "doc": "Lower level relaxation."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/scale",
+        "default": true,
+        "type": "bool",
+        "doc": "Scale."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/type",
+        "default": "smoothed_aggregation",
+        "type": "string",
+        "doc": "Coarsening type."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/estimate_spectral_radius",
+        "default": true,
+        "type": "bool",
+        "doc": "Should the spectral radius be estimated."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/relax",
+        "default": 1,
+        "type": "float",
+        "doc": "Coarsening relaxation."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/aggr",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "eps_strong"
+        ],
+        "doc": "Aggregation settings."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/aggr/eps_strong",
+        "default": 0,
+        "type": "float",
+        "doc": "Aggregation epsilon strong."
+    },
+    {
         "pointer": "/solver/nonlinear",
         "default": null,
         "type": "object",
@@ -1054,6 +1436,7 @@
             "solver",
             "f_delta",
             "grad_norm",
+            "first_grad_norm_tol",
             "max_iterations",
             "use_grad_norm",
             "relative_gradient",
@@ -1082,6 +1465,12 @@
         "default": 1e-08,
         "type": "float",
         "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue."
+    },
+    {
+        "pointer": "/solver/nonlinear/first_grad_norm_tol",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",
@@ -1167,8 +1556,7 @@
             "CCD",
             "friction_iterations",
             "friction_convergence_tol",
-            "barrier_stiffness",
-            "lagged_regularization_weight"
+            "barrier_stiffness"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1209,8 +1597,8 @@
     },
     {
         "pointer": "/solver/contact/CCD/max_iterations",
-        "default": 1000000.0,
-        "type": "float",
+        "default": 1000000,
+        "type": "int",
         "doc": "Maximum number of iterations for continuous collision detection"
     },
     {
@@ -1240,12 +1628,6 @@
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
-        "pointer": "/solver/contact/lagged_regularization_weight",
-        "default": 0,
-        "type": "int",
-        "doc": "Weight used to regularize singular static problems."
-    },
-    {
         "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
@@ -1257,7 +1639,8 @@
         "type": "object",
         "optional": [
             "cache_size",
-            "lump_mass_matrix"
+            "lump_mass_matrix",
+            "lagged_regularization_weight"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1272,6 +1655,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
+    },
+    {
+        "pointer": "/solver/advanced/lagged_regularization_weight",
+        "default": 0,
+        "type": "float",
+        "doc": "Weight used to regularize singular static problems."
     },
     {
         "pointer": "/materials",
