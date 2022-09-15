@@ -174,8 +174,7 @@ namespace polyfem
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
 					collision_mesh.edges(), collision_mesh.faces());
-				logger().error("Unable to solve, initial solution has intersections!");
-				throw std::runtime_error("Unable to solve, initial solution has intersections!");
+				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
 		}
 
