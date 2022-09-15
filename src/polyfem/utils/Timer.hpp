@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/utils/Logger.hpp>
+
 #include <igl/Timer.h>
 
 #define POLYFEM_SCOPED_TIMER(...) polyfem::utils::Timer __polyfem_timer(__VA_ARGS__)

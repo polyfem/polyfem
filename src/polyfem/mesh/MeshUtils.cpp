@@ -1019,7 +1019,7 @@ void find_triangle_surface_from_tets(
 	const Eigen::MatrixXi &tets,
 	Eigen::MatrixXi &faces)
 {
-	std::unordered_set<Eigen::Vector3i> tri_to_tet(4 * tets.rows());
+	std::unordered_set<Eigen::Vector3i, HashMatrix> tri_to_tet(4 * tets.rows());
 	for (int i = 0; i < tets.rows(); i++)
 	{
 		tri_to_tet.emplace(tets(i, 0), tets(i, 2), tets(i, 1));
