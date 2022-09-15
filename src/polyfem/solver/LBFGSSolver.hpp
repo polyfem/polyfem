@@ -35,7 +35,7 @@ namespace cppoptlib
 
 		void increase_descent_strategy() override;
 
-		void reset(const ProblemType &objFunc, const TVector &x) override;
+		void reset(const int ndof) override;
 
 		bool compute_update_direction(
 			ProblemType &objFunc,

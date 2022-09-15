@@ -38,13 +38,11 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
-	void LBFGSSolver<ProblemType>::reset(const ProblemType &objFunc, const TVector &x)
+	void LBFGSSolver<ProblemType>::reset(const int ndof)
 	{
-		Superclass::reset(objFunc, x);
+		Superclass::reset(ndof);
 
-		m_bfgs.reset(x.size(), m_history_size);
-		m_prev_x.resize(x.size());
-		m_prev_grad.resize(x.size());
+		m_bfgs.reset(ndof, m_history_size);
 
 		// Use gradient descent for first iteration
 		this->descent_strategy = 2;
@@ -67,6 +65,8 @@ namespace cppoptlib
 			// Update s and y
 			// s_{i+1} = x_{i+1} - x_i
 			// y_{i+1} = g_{i+1} - g_i
+			assert(m_prev_x.size() == x.size());
+			assert(m_prev_grad.size() == grad.size());
 			m_bfgs.add_correction(x - m_prev_x, grad - m_prev_grad);
 
 			// Recursive formula to compute d = -H * g
