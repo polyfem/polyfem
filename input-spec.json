@@ -1177,7 +1177,7 @@
     },
     {
         "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient/tolerance",
-        "default": 1e-6,
+        "default": 1e-12,
         "type": "float",
         "doc": "Convergence tolerance."
     },
@@ -1189,7 +1189,7 @@
     },
     {
         "pointer": "/solver/linear/Eigen::DGMRES/tolerance",
-        "default": 1e-6,
+        "default": 1e-12,
         "type": "float",
         "doc": "Convergence tolerance."
     },
@@ -1201,7 +1201,7 @@
     },
     {
         "pointer": "/solver/linear/Eigen::ConjugateGradient/tolerance",
-        "default": 1e-6,
+        "default": 1e-12,
         "type": "float",
         "doc": "Convergence tolerance."
     },
@@ -1213,7 +1213,7 @@
     },
     {
         "pointer": "/solver/linear/Eigen::BiCGSTAB/tolerance",
-        "default": 1e-6,
+        "default": 1e-12,
         "type": "float",
         "doc": "Convergence tolerance."
     },
@@ -1225,7 +1225,7 @@
     },
     {
         "pointer": "/solver/linear/Eigen::GMRES/tolerance",
-        "default": 1e-6,
+        "default": 1e-12,
         "type": "float",
         "doc": "Convergence tolerance."
     },
@@ -1237,15 +1237,15 @@
     },
     {
         "pointer": "/solver/linear/Eigen::MINRES/tolerance",
-        "default": 1e-6,
+        "default": 1e-12,
         "type": "float",
         "doc": "Convergence tolerance."
     },
     {
         "pointer": "/solver/linear/Pardiso/mtype",
-        "default": -1,
+        "default": 11,
         "type": "int",
-        "options": [-1, 1, 2, -2, 3, 4, -4, 6, 11, 13],
+        "options": [1, 2, -2, 3, 4, -4, 6, 11, 13],
         "doc": "Matrix type."
     },
     {
@@ -1256,13 +1256,13 @@
     },
     {
         "pointer": "/solver/linear/Hypre/pre_max_iter",
-        "default": 1000,
+        "default": 1,
         "type": "int",
         "doc": "Maximum number of pre iterations."
     },
     {
         "pointer": "/solver/linear/Hypre/tolerance",
-        "default": 1e-6,
+        "default": 1e-10,
         "type": "float",
         "doc": "Convergence tolerance."
     },
