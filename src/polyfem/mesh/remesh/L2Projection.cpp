@@ -49,11 +49,6 @@ namespace polyfem::mesh
 				n_from_basis, from_bases, from_gbases,
 				n_to_basis, to_bases, to_gbases,
 				cache, A);
-
-			// write_sparse_matrix_csv("M.csv", M);
-			// write_sparse_matrix_csv("A.csv", A);
-			// logger().critical("M =\n{}", Eigen::MatrixXd(M));
-			// logger().critical("A =\n{}", Eigen::MatrixXd(A));
 		}
 
 		if (lump_mass_matrix)
@@ -62,9 +57,6 @@ namespace polyfem::mesh
 		}
 
 		// --------------------------------------------------------------------
-
-		double al_weight = state.args["solver"]["augmented_lagrangian"]["initial_weight"];
-		const double max_al_weight = state.args["solver"]["augmented_lagrangian"]["max_weight"];
 
 		std::shared_ptr<L2ProjectionForm> l2_projection_form = std::make_shared<L2ProjectionForm>(M, A, y.col(0));
 		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(state, rhs_assembler, t0 + t * dt);
@@ -93,121 +85,49 @@ namespace polyfem::mesh
 		std::vector<std::shared_ptr<Form>> forms = {l2_projection_form, al_form, elastic_form, contact_form};
 		NLProblem problem(state, rhs_assembler, t0 + t * dt, forms);
 
-		Eigen::MatrixXd sol = Eigen::VectorXd::Zero(M.rows());
-		json solver_info;
-		auto is_step_collision_free = [&contact_form](const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) -> bool { //
-			return contact_form->is_step_collision_free(x0, x1);
-		};
-		auto set_al_weight = [&](const double weight) -> void {
-			if (weight > 0)
-			{
-				al_form->set_enabled(true);
-				al_form->set_weight(weight);
-				problem.use_full_size();
-			}
-			else
-			{
-				al_form->set_enabled(false);
-				problem.use_reduced_size();
-			}
-		};
-		auto make_solver = [&state]() {
+		// --------------------------------------------------------------------
+
+		// Create Newton solver
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver;
+		{
 			json newton_args = state.args["solver"]["nonlinear"];
 			newton_args["f_delta"] = 1e-7;
 			newton_args["grad_norm"] = 1e-7;
 			newton_args["use_grad_norm"] = true;
 			// newton_args["relative_gradient"] = true;
+			nl_solver = std::make_shared<cppoptlib::SparseNewtonDescentSolver<NLProblem>>(
+				newton_args, state.args["solver"]["linear"]);
+		}
 
-			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<NLProblem>>(
-				newton_args,
-				state.args["solver"]["linear"]["solver"],
-				state.args["solver"]["linear"]["precond"]);
-		};
-		auto updated_barrier_stiffness = [&elastic_form, &contact_form, &l2_projection_form](const Eigen::MatrixXd &x) {
+		// --------------------------------------------------------------------
+
+		// Create a lambda function to update the barrier stiffness
+		auto updated_barrier_stiffness = [&](const Eigen::MatrixXd &x) {
 			if (!contact_form->use_adaptive_barrier_stiffness())
 				return;
+
 			Eigen::VectorXd grad_energy(x.size(), 1);
 			grad_energy.setZero();
 			elastic_form->first_derivative(x, grad_energy);
+
 			Eigen::VectorXd grad_L2(x.size());
 			l2_projection_form->first_derivative(x, grad_L2);
 			grad_energy += grad_L2;
+
 			contact_form->update_barrier_stiffness(x, grad_energy);
 		};
-		auto pose_step = []() {};
 
-		solve_al_nl_problem(
-			problem,
-			t,
-			al_weight,
-			max_al_weight,
-			is_step_collision_free,
-			set_al_weight,
-			make_solver,
-			state.args["solver"]["nonlinear"]["line_search"]["method"],
-			updated_barrier_stiffness,
-			sol,
-			solver_info,
-			pose_step,
-			// state.args["solver"]["augmented_lagrangian"]["force"]
-			true);
+		// --------------------------------------------------------------------
 
-		/*
-		Eigen::VectorXd sol = Eigen::VectorXd::Zero(M.rows());
-		Eigen::VectorXd tmp_sol;
+		// Create augmented Lagrangian solver
+		ALSolver al_solver(
+			nl_solver, al_form,
+			state.args["solver"]["augmented_lagrangian"]["initial_weight"],
+			state.args["solver"]["augmented_lagrangian"]["max_weight"],
+			updated_barrier_stiffness);
 
-		problem.full_to_reduced(sol, tmp_sol);
-
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-		json newton_args = state.args["solver"]["nonlinear"];
-		newton_args["f_delta"] = 0;
-		newton_args["grad_norm"] = 1e-8;
-		newton_args["use_grad_norm"] = true;
-		// newton_args["relative_gradient"] = true;
-
-		problem.line_search_begin(sol, tmp_sol);
-		while (
-			!std::isfinite(problem.value(tmp_sol))
-			|| !problem.is_step_valid(sol, tmp_sol)
-			|| !problem.is_step_collision_free(sol, tmp_sol))
-		{
-			problem.line_search_end();
-			problem.set_weight(al_weight);
-			logger().debug("Solving L2 Projection with weight {}", al_weight);
-
-			cppoptlib::SparseNewtonDescentSolver<L2ProjectionOptimizationProblem> solver(
-				newton_args,
-				state.args["solver"]["linear"]["solver"],
-				state.args["solver"]["linear"]["precond"]);
-			solver.set_line_search(state.args["solver"]["nonlinear"]["line_search"]["method"]);
-			problem.init(sol);
-			tmp_sol = sol;
-			solver.minimize(problem, tmp_sol);
-
-			sol = tmp_sol;
-			problem.full_to_reduced(sol, tmp_sol);
-			problem.line_search_begin(sol, tmp_sol);
-
-			al_weight *= 2;
-
-			if (al_weight >= max_al_weight)
-				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
-		}
-		problem.line_search_end();
-
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-		cppoptlib::SparseNewtonDescentSolver<L2ProjectionOptimizationProblem> solver(
-			newton_args,
-			state.args["solver"]["linear"]["solver"],
-			state.args["solver"]["linear"]["precond"]);
-		solver.set_line_search(state.args["solver"]["nonlinear"]["line_search"]["method"]);
-		problem.init(sol);
-		solver.minimize(problem, tmp_sol);
-
-		problem.reduced_to_full(tmp_sol, sol);
-		*/
+		Eigen::MatrixXd sol = Eigen::VectorXd::Zero(M.rows());
+		al_solver.solve(problem, sol, state.args["solver"]["augmented_lagrangian"]["force"]);
 
 		// --------------------------------------------------------------------
 
