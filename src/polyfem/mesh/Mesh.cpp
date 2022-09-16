@@ -498,6 +498,8 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
+		if (orders_.size() == 0)
+			orders_.setOnes(n_elements(), 1);
 		assert(orders_.cols() == mesh.orders_.cols());
 		orders_.conservativeResize(orders_.rows() + mesh.orders_.rows(), orders_.cols());
 		orders_.bottomRows(mesh.orders_.rows()) = mesh.orders_;
