@@ -74,15 +74,16 @@ namespace polyfem::solver
 		/// @param x Current solution at time t
 		virtual void update_quantities(const double t, const Eigen::VectorXd &x) {}
 
-		// TODO: more than one step
-
 		/// @brief Initialize lagged fields
+		/// TODO: more than one step
 		/// @param x Current solution
 		virtual void init_lagging(const Eigen::VectorXd &x){};
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		virtual void update_lagging(const Eigen::VectorXd &x){};
+		/// @param iter_num Lagging iteration number
+		/// @return True able to update the lagged fields
+		virtual bool update_lagging(const Eigen::VectorXd &x, const int iter_num) { return true; };
 
 		/// @brief Set project to psd
 		/// @param val If true, the form's second derivative is projected to be positive semidefinite
@@ -91,13 +92,24 @@ namespace polyfem::solver
 		/// @brief Get if the form's second derivative is projected to psd
 		bool is_project_to_psd() const { return project_to_psd_; }
 
+		/// @brief Enable the form
+		void enable() { enabled_ = true; }
+		/// @brief Disable the form
+		void disable() { enabled_ = false; }
+		/// @brief Set if the form is enabled
+		void set_enabled(const bool enabled) { enabled_ = enabled; }
+
 		/// @brief Determine if the form is enabled
 		/// @return True if the form is enabled else false
-		virtual bool enabled() const { return true; }
+		bool enabled() const { return enabled_; }
 
 		/// @brief Set the form's multiplicative constant weight
 		/// @param weight New weight to use
 		void set_weight(const double weight) { weight_ = weight; }
+
+		/// @brief Does this form require lagging?
+		/// @return True if the form requires lagging
+		virtual bool uses_lagging() const { return false; }
 
 		// NOTE: The following functions are really specific to the different form and should be implemented in the derived class.
 
@@ -114,6 +126,8 @@ namespace polyfem::solver
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 
 		double weight_ = 1; ///< weight of the form, eg barrier stiffness, AL, d^2
+
+		bool enabled_ = true; ///< If true, the form is enabled
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution

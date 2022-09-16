@@ -178,13 +178,12 @@ namespace polyfem
 		}
 		else
 		{
-			// FIXME:
-			// const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
-			// if (lagged_regularization_weight > 0)
-			// {
-			// 	forms.push_back(std::make_shared<LaggedRegForm>(lagged_damping_weight));
-			// 	forms.back()->set_weight(lagged_regularization_weight);
-			// }
+			const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
+			if (lagged_regularization_weight > 0)
+			{
+				forms.push_back(std::make_shared<LaggedRegForm>(args["solver"]["advanced"]["lagged_regularization_iterations"]));
+				forms.back()->set_weight(lagged_regularization_weight);
+			}
 		}
 
 		solve_data.al_form = std::make_shared<ALForm>(*this, *solve_data.rhs_assembler, t);
@@ -230,7 +229,8 @@ namespace polyfem
 					args["contact"]["dhat"],
 					args["solver"]["contact"]["CCD"]["broad_phase"],
 					args.value("/time/dt"_json_pointer, 1.0), // dt=1.0 if static
-					*solve_data.contact_form);
+					*solve_data.contact_form,
+					args["solver"]["contact"]["friction_iterations"]);
 				forms.push_back(solve_data.friction_form);
 			}
 		}
@@ -274,20 +274,8 @@ namespace polyfem
 			nl_problem.init_lagging(sol);
 		}
 
-		const int friction_iterations = args["solver"]["contact"]["friction_iterations"];
-		assert(friction_iterations >= 0);
-		if (friction_iterations > 0)
-			logger().debug("Lagging iteration 1");
-
-		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
-
-		// Disable damping for the final lagged iteration
-		// TODO: fix me lagged regularization
-		// if (friction_iterations <= 1)
-		// {
-		// 	nl_problem.lagged_regularization_weight() = 0;
-		// 	alnl_problem.lagged_regularization_weight() = 0;
-		// }
+		int lag_i = 0;
+		logger().info("Lagging iteration {:d}:", lag_i + 1);
 
 		// ---------------------------------------------------------------------
 
@@ -323,28 +311,40 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 
-		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
-
-		// TODO: fix this lagged damping
-		// nl_problem.lagged_regularization_weight() = 0;
+		// TODO: Make this more general
+		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
 
 		// Lagging loop (start at 1 because we already did an iteration above)
-		int lag_i;
-		nl_problem.update_lagging(tmp_sol);
-		Eigen::VectorXd tmp_grad;
-		nl_problem.gradient(tmp_sol, tmp_grad);
-		bool lagging_converged = tmp_grad.norm() <= lagging_tol;
-		for (lag_i = 1; !lagging_converged && lag_i < friction_iterations; lag_i++)
+		bool lagging_converged = !nl_problem.uses_lagging();
+		for (lag_i = 1; !lagging_converged; lag_i++)
 		{
-			logger().debug("Lagging iteration {:d}", lag_i + 1);
+			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
+
+			// Update the lagging before checking for convergence
+			if (!nl_problem.update_lagging(tmp_sol, lag_i))
+			{
+				logger().warn("Failed to update lagging: max lagging iterations exceeded");
+				break;
+			}
+
+			// Check if lagging converged
+			Eigen::VectorXd grad;
+			nl_problem.gradient(tmp_sol, grad);
+			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
+			if (grad.norm() <= lagging_tol)
+			{
+				lagging_converged = true;
+				break;
+			}
+
+			// Solve the problem with the updated lagging
+			logger().info("Lagging iteration {:d}:", lag_i + 1);
 			nl_problem.init(sol);
 			solve_data.updated_barrier_stiffness(sol);
-			// Disable damping for the final lagged iteration
-			// TODO: fix this lagged damping
-			// if (lag_i == friction_iterations - 1)
-			// 	nl_problem.lagged_regularization_weight() = 0;
 			nl_solver->minimize(nl_problem, tmp_sol);
+			sol = nl_problem.reduced_to_full(tmp_sol);
 
+			// Save the subsolve sequence for debugging and info
 			json info;
 			nl_solver->get_info(info);
 			solver_info.push_back(
@@ -352,28 +352,19 @@ namespace polyfem
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
 				 {"info", info}});
-
-			sol = nl_problem.reduced_to_full(tmp_sol);
-			nl_problem.update_lagging(tmp_sol);
-			nl_problem.gradient(tmp_sol, tmp_grad);
-			lagging_converged = tmp_grad.norm() <= lagging_tol;
-			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", tmp_grad.norm(), lagging_tol);
-
 			save_subsolve(++subsolve_count, t);
 		}
 
 		// ---------------------------------------------------------------------
 
-		if (friction_iterations > 0)
-		{
-			nl_problem.gradient(tmp_sol, tmp_grad);
-			logger().log(
-				lagging_converged ? spdlog::level::info : spdlog::level::warn,
-				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
-				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at", lag_i,
-				tmp_grad.norm(),
-				args["solver"]["contact"]["friction_convergence_tol"].get<double>());
-		}
+		nl_problem.update_lagging(sol, -1); // -1 bypasses the max lagging iterations check
+		Eigen::VectorXd grad;
+		nl_problem.gradient(sol, grad);
+		logger().log(
+			lagging_converged ? spdlog::level::info : spdlog::level::warn,
+			"{} {:d} iteration(s) (grad_norm={:g} tol={:g})",
+			lagging_converged ? "Lagging converged in" : "Lagging failed to converge with",
+			lag_i, grad.norm(), lagging_tol);
 	}
 
 	////////////////////////////////////////////////////////////////////////

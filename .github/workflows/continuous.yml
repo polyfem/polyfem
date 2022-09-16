@@ -69,7 +69,7 @@ jobs:
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
-        run: cd build; ctest --verbose --output-on-failure
+        run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
 
   ####################
   # MacOS

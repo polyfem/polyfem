@@ -2,10 +2,15 @@
 
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem::solver
 {
-	LaggedRegForm::LaggedRegForm()
+	LaggedRegForm::LaggedRegForm(const int n_lagging_iters)
+		: n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters)
 	{
+		if (n_lagging_iters_ < 1)
+			disable();
 	}
 
 	double LaggedRegForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -26,11 +31,20 @@ namespace polyfem::solver
 
 	void LaggedRegForm::init_lagging(const Eigen::VectorXd &x)
 	{
-		update_lagging(x);
+		update_lagging(x, 0);
 	}
 
-	void LaggedRegForm::update_lagging(const Eigen::VectorXd &x)
+	bool LaggedRegForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
 		x_lagged_ = x;
+
+		const bool enabled_before = enabled();
+		set_enabled(iter_num >= 0 && iter_num < n_lagging_iters_);
+		if (!enabled_before && enabled())
+			logger().debug("Enabling lagged regularization");
+		else if (enabled_before && !enabled())
+			logger().debug("Disabling lagged regularization");
+
+		return true;
 	}
 } // namespace polyfem::solver

@@ -84,14 +84,14 @@ namespace polyfem::solver
 			return;
 		if (weight > 0)
 		{
-			al_form->set_enabled(true);
+			al_form->enable();
 			al_form->set_weight(weight);
 			nl_problem.use_full_size();
 			nl_problem.set_apply_DBC(x, false);
 		}
 		else
 		{
-			al_form->set_enabled(false);
+			al_form->disable();
 			nl_problem.use_reduced_size();
 			nl_problem.set_apply_DBC(x, true);
 		}
