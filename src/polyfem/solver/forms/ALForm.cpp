@@ -1,23 +1,39 @@
 #include "ALForm.hpp"
 
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem::solver
 {
-	ALForm::ALForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t)
-		: state_(state), rhs_assembler_(rhs_assembler), enabled_(true)
+	ALForm::ALForm(const int ndof,
+				   const std::vector<int> &boundary_nodes,
+				   const std::vector<mesh::LocalBoundary> &local_boundary,
+				   const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				   const int n_boundary_samples,
+				   const StiffnessMatrix &mass,
+				   const assembler::RhsAssembler &rhs_assembler,
+				   const mesh::Obstacle &obstacle,
+				   const bool is_time_dependent,
+				   const double t)
+		: boundary_nodes_(boundary_nodes),
+		  local_boundary_(local_boundary),
+		  local_neumann_boundary_(local_neumann_boundary),
+		  n_boundary_samples_(n_boundary_samples),
+		  rhs_assembler_(rhs_assembler),
+		  is_time_dependent_(is_time_dependent),
+		  enabled_(true)
 	{
-		const int ndof = state.n_bases * state.mesh->dimension();
 
 		std::vector<bool> is_boundary_dof(ndof, true);
-		for (const auto bn : state.boundary_nodes)
+		for (const auto bn : boundary_nodes_)
 			is_boundary_dof[bn] = false;
 
-		masked_lumped_mass_ = state.mass.size() == 0 ? polyfem::utils::sparse_identity(ndof, ndof) : polyfem::utils::lump_matrix(state.mass);
+		masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(ndof, ndof) : polyfem::utils::lump_matrix(mass);
 		assert(ndof == masked_lumped_mass_.rows() && ndof == masked_lumped_mass_.cols());
 
 		// Give the collision obstacles a entry in the lumped mass matrix
-		if (state.obstacle.n_vertices() != 0)
+		if (obstacle.n_vertices() != 0)
 		{
-			const int n_fe_dof = ndof - state.obstacle.ndof();
+			const int n_fe_dof = ndof - obstacle.ndof();
 			const double avg_mass = masked_lumped_mass_.diagonal().head(n_fe_dof).mean();
 			for (int i = n_fe_dof; i < ndof; ++i)
 			{
@@ -61,13 +77,13 @@ namespace polyfem::solver
 
 	void ALForm::update_quantities(const double t, const Eigen::VectorXd &)
 	{
-		if (state_.problem->is_time_dependent())
+		if (is_time_dependent_)
 			update_target(t);
 	}
 
 	void ALForm::update_target(const double t)
 	{
 		target_x_.setZero(masked_lumped_mass_.rows(), 1);
-		rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, target_x_, Eigen::MatrixXd(), t);
+		rhs_assembler_.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, target_x_, Eigen::MatrixXd(), t);
 	}
 } // namespace polyfem::solver

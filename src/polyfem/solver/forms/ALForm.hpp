@@ -2,7 +2,10 @@
 
 #include "Form.hpp"
 
-#include <polyfem/State.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
+
+#include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/utils/Types.hpp>
 
@@ -16,7 +19,16 @@ namespace polyfem::solver
 		/// @param state Reference to the simulation state
 		/// @param rhs_assembler Reference to the right hand side assembler
 		/// @param t current time
-		ALForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t);
+		ALForm(const int ndof,
+			   const std::vector<int> &boundary_nodes,
+			   const std::vector<mesh::LocalBoundary> &local_boundary,
+			   const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+			   const int n_boundary_samples,
+			   const StiffnessMatrix &mass,
+			   const assembler::RhsAssembler &rhs_assembler,
+			   const mesh::Obstacle &obstacle,
+			   const bool is_time_dependent,
+			   const double t);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -44,8 +56,13 @@ namespace polyfem::solver
 		bool enabled() const override { return enabled_; }
 
 	private:
-		const State &state_;                           ///< Reference to the simulation state
+		const std::vector<int> &boundary_nodes_;
+		const std::vector<mesh::LocalBoundary> &local_boundary_;
+		const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;
+		const int n_boundary_samples_;
+
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
+		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_; ///< mass matrix masked by the AL dofs
 		Eigen::MatrixXd target_x_;           ///< actually a vector with the same size as x with target nodal positions

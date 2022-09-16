@@ -2,10 +2,10 @@
 
 #include "Form.hpp"
 
-#include <polyfem/State.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
+#include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 
 namespace polyfem::solver
@@ -22,8 +22,11 @@ namespace polyfem::solver
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		ContactForm(const State &state,
+		ContactForm(const ipc::CollisionMesh &collision_mesh,
+					const Eigen::MatrixXd &boundary_nodes_pos,
+					const int dim,
 					const double dhat,
+					const double avg_mass,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const ipc::BroadPhaseMethod broad_phase_method,
@@ -94,9 +97,13 @@ namespace polyfem::solver
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 
 	private:
-		const State &state_; ///< Reference to the simulation state
+		const ipc::CollisionMesh &collision_mesh_;
+		const Eigen::MatrixXd &boundary_nodes_pos_;
+		const int dim_;
 
 		const double dhat_; ///< Barrier activation distance
+
+		const double avg_mass_;
 
 		const bool use_adaptive_barrier_stiffness_; ///< If true, use an adaptive barrier stiffness
 		double max_barrier_stiffness_;              ///< Maximum barrier stiffness to use when using adaptive barrier stiffness

@@ -2,8 +2,6 @@
 
 #include "Form.hpp"
 
-#include <polyfem/State.hpp>
-
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
@@ -28,7 +26,9 @@ namespace polyfem::solver
 		/// @param dt Time step size
 		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
 		FrictionForm(
-			const State &state,
+			const ipc::CollisionMesh &collision_mesh,
+			const Eigen::MatrixXd &boundary_nodes_pos,
+			const int dim,
 			const double epsv,
 			const double mu,
 			const double dhat,
@@ -64,7 +64,9 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &displaced_surface_prev() const { return displaced_surface_prev_; }
 
 	private:
-		const State &state_; ///< Reference to the simulation state
+		const ipc::CollisionMesh &collision_mesh_;
+		const Eigen::MatrixXd &boundary_nodes_pos_;
+		const int dim_;
 
 		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction

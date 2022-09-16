@@ -1,7 +1,9 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
@@ -18,9 +20,20 @@ namespace polyfem
 		public:
 			TransientNavierStokesSolver(const json &solver_param);
 
-			void minimize(const State &state, const double beta_dt, const Eigen::VectorXd &prev_sol,
+			void minimize(const int n_bases,
+						  const int n_pressure_bases,
+						  const std::vector<basis::ElementBases> &bases,
+						  const std::vector<basis::ElementBases> &gbases,
+						  const assembler::AssemblerUtils &assembler,
+						  const assembler::AssemblyValsCache &ass_vals_cache,
+						  const std::vector<int> &boundary_nodes,
+						  const bool use_avg_pressure,
+						  const std::string &formulation,
+						  const int problem_dim,
+						  const bool is_volume,
+						  const double beta_dt, const Eigen::VectorXd &prev_sol,
 						  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
-						  const StiffnessMatrix &velocity_mass,
+						  const StiffnessMatrix &velocity_mass1,
 						  const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
 			void get_info(json &params)
 			{
@@ -30,7 +43,18 @@ namespace polyfem
 			int error_code() const { return 0; }
 
 		private:
-			int minimize_aux(const std::string &formulation, const std::vector<int> &skipping, const State &state,
+			int minimize_aux(const std::string &formulation,
+							 const std::vector<int> &skipping,
+							 const int n_bases,
+							 const int n_pressure_bases,
+							 const std::vector<basis::ElementBases> &bases,
+							 const std::vector<basis::ElementBases> &gbases,
+							 const assembler::AssemblerUtils &assembler,
+							 const assembler::AssemblyValsCache &ass_vals_cache,
+							 const std::vector<int> &boundary_nodes,
+							 const bool use_avg_pressure,
+							 const int problem_dim,
+							 const bool is_volume,
 							 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 							 const StiffnessMatrix &velocity_mass,
 							 const Eigen::VectorXd &rhs, const double grad_norm,

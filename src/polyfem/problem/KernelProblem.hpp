@@ -9,8 +9,6 @@
 
 namespace polyfem
 {
-
-	class State;
 	namespace problem
 	{
 
@@ -32,7 +30,7 @@ namespace polyfem
 			void set_parameters(const json &params) override;
 			bool is_scalar() const override;
 
-			State *state;
+			assembler::AssemblerUtils *assembler;
 
 		private:
 			std::string formulation_ = "Laplacian";

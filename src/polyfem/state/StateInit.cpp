@@ -259,7 +259,7 @@ namespace polyfem
 			if (args["preset_problem"]["type"] == "Kernel")
 			{
 				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
-				kprob.state = this;
+				kprob.assembler = &assembler;
 			}
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);

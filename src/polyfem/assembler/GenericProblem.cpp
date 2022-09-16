@@ -1,6 +1,6 @@
 #include "GenericProblem.hpp"
-#include <polyfem/State.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <iostream>
 

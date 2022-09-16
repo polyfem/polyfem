@@ -16,17 +16,23 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 
 namespace polyfem::solver
 {
-	using namespace polysolve;
-
-	NLProblem::NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, std::vector<std::shared_ptr<Form>> &forms)
+	NLProblem::NLProblem(const int full_size,
+						 const std::string &formulation,
+						 const std::vector<int> &boundary_nodes,
+						 const std::vector<mesh::LocalBoundary> &local_boundary,
+						 const int n_boundary_samples,
+						 const assembler::RhsAssembler &rhs_assembler,
+						 const double t, std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
-		  state_(state),
+		  boundary_nodes_(boundary_nodes),
+		  local_boundary_(local_boundary),
+		  n_boundary_samples_(n_boundary_samples),
 		  rhs_assembler_(rhs_assembler),
 		  t_(t),
-		  full_size_((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
-		  reduced_size_(full_size_ - state.boundary_nodes.size())
+		  full_size_(full_size),
+		  reduced_size_(full_size_ - boundary_nodes.size())
 	{
-		assert(!state.assembler.is_mixed(state.formulation()));
+		// assert(!state.assembler.is_mixed(formulation));
 		use_reduced_size();
 	}
 
@@ -87,7 +93,7 @@ namespace polyfem::solver
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
 		assert(full_hessian.rows() == full_size());
 		assert(full_hessian.cols() == full_size());
-		utils::full_to_reduced_matrix(full_size(), current_size(), state_.boundary_nodes, full_hessian, hessian);
+		utils::full_to_reduced_matrix(full_size(), current_size(), boundary_nodes_, full_hessian, hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -110,7 +116,7 @@ namespace polyfem::solver
 	NLProblem::TVector NLProblem::full_to_reduced(const TVector &full) const
 	{
 		TVector reduced;
-		full_to_reduced_aux(state_, full_size(), current_size(), full, reduced);
+		full_to_reduced_aux(boundary_nodes_, full_size(), current_size(), full, reduced);
 		return reduced;
 	}
 
@@ -121,15 +127,15 @@ namespace polyfem::solver
 
 		if (current_size() != full_size())
 		{
-			// rhs_assembler.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), state_.local_neumann_boundary, tmp, t_);
-			rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
+			// rhs_assembler.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, tmp, t_);
+			rhs_assembler_.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
 		}
-		reduced_to_full_aux(state_, full_size(), current_size(), reduced, tmp, full);
+		reduced_to_full_aux(boundary_nodes_, full_size(), current_size(), reduced, tmp, full);
 		return full;
 	}
 
 	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux(const State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 	{
 		using namespace polyfem;
 
@@ -148,7 +154,7 @@ namespace polyfem::solver
 		size_t k = 0;
 		for (int i = 0; i < full.size(); ++i)
 		{
-			if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
+			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
 				++k;
 				continue;
@@ -160,7 +166,7 @@ namespace polyfem::solver
 	}
 
 	template <class ReducedMat, class FullMat>
-	void NLProblem::reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
+	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
 	{
 		using namespace polyfem;
 
@@ -179,7 +185,7 @@ namespace polyfem::solver
 		size_t k = 0;
 		for (int i = 0; i < full.size(); ++i)
 		{
-			if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
+			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
 				++k;
 				full(i) = rhs(i);
