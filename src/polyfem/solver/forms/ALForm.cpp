@@ -19,8 +19,7 @@ namespace polyfem::solver
 		  local_neumann_boundary_(local_neumann_boundary),
 		  n_boundary_samples_(n_boundary_samples),
 		  rhs_assembler_(rhs_assembler),
-		  is_time_dependent_(is_time_dependent),
-		  enabled_(true)
+		  is_time_dependent_(is_time_dependent)
 	{
 
 		std::vector<bool> is_boundary_dof(ndof, true);

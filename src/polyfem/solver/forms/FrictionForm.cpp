@@ -14,7 +14,8 @@ namespace polyfem::solver
 							   const double dhat,
 							   const ipc::BroadPhaseMethod broad_phase_method,
 							   const double dt,
-							   const ContactForm &contact_form)
+							   const ContactForm &contact_form,
+							   const int n_lagging_iters)
 		: collision_mesh_(collision_mesh),
 		  boundary_nodes_pos_(boundary_nodes_pos),
 		  dim_(dim),
@@ -23,7 +24,8 @@ namespace polyfem::solver
 		  dt_(dt),
 		  dhat_(dhat),
 		  broad_phase_method_(broad_phase_method),
-		  contact_form_(contact_form)
+		  contact_form_(contact_form),
+		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters)
 	{
 		assert(epsv_ > 0);
 	}
@@ -62,15 +64,19 @@ namespace polyfem::solver
 	void FrictionForm::init_lagging(const Eigen::VectorXd &x)
 	{
 		displaced_surface_prev_ = compute_displaced_surface(x);
-		update_lagging(x);
+		bool update_success = update_lagging(x, 0);
+		assert(update_success);
 	}
 
-	void FrictionForm::update_lagging(const Eigen::VectorXd &x)
+	bool FrictionForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
+		// Only update the friction constraints if we are not out of lagging iterations
+		if (iter_num >= n_lagging_iters_)
+			return false;
+
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::Constraints constraint_set;
-
 		ipc::construct_constraint_set(
 			collision_mesh_, displaced_surface, dhat_,
 			constraint_set, /*dmin=*/0, broad_phase_method_);
@@ -78,5 +84,7 @@ namespace polyfem::solver
 		ipc::construct_friction_constraint_set(
 			collision_mesh_, displaced_surface, constraint_set,
 			dhat_, contact_form_.barrier_stiffness(), mu_, friction_constraint_set_);
+
+		return true;
 	}
 } // namespace polyfem::solver

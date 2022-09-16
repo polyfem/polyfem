@@ -52,9 +52,6 @@ namespace polyfem::solver
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		void set_enabled(const bool val) { enabled_ = val; }
-		bool enabled() const override { return enabled_; }
-
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
@@ -66,8 +63,6 @@ namespace polyfem::solver
 
 		StiffnessMatrix masked_lumped_mass_; ///< mass matrix masked by the AL dofs
 		Eigen::MatrixXd target_x_;           ///< actually a vector with the same size as x with target nodal positions
-
-		bool enabled_; ///< enable/disable the AL
 
 		void update_target(const double t);
 	};

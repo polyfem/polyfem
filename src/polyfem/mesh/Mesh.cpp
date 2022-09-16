@@ -498,9 +498,14 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		assert(orders_.cols() == mesh.orders_.cols());
-		orders_.conservativeResize(orders_.rows() + mesh.orders_.rows(), orders_.cols());
-		orders_.bottomRows(mesh.orders_.rows()) = mesh.orders_;
+		if (orders_.size() == 0)
+			orders_.setOnes(n_elements(), 1);
+		Eigen::MatrixXi mesh_orders = mesh.orders_;
+		if (mesh_orders.size() == 0)
+			mesh_orders.setOnes(mesh.n_elements(), 1);
+		assert(orders_.cols() == mesh_orders.cols());
+		orders_.conservativeResize(orders_.rows() + mesh_orders.rows(), orders_.cols());
+		orders_.bottomRows(mesh_orders.rows()) = mesh_orders;
 
 		is_rational_ = is_rational_ || mesh.is_rational_;
 
