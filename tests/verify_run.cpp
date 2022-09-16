@@ -133,8 +133,8 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		double margin = authen.value("margin", 1e-5);
 		for (const std::string &key : test_keys)
 		{
-			const double prev_val = out[key];
-			const double curr_val = authen[key];
+			const double prev_val = authen[key];
+			const double curr_val = out[key];
 			const double relerr = std::abs((curr_val - prev_val) / std::max(std::abs(curr_val), 1e-5));
 			if (relerr > margin)
 			{
