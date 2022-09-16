@@ -82,7 +82,8 @@ namespace polyfem::solver
 		/// @brief Update lagged fields
 		/// @param x Current solution
 		/// @param iter_num Lagging iteration number
-		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num){};
+		/// @return True able to update the lagged fields
+		virtual bool update_lagging(const Eigen::VectorXd &x, const int iter_num) { return true; };
 
 		/// @brief Set project to psd
 		/// @param val If true, the form's second derivative is projected to be positive semidefinite

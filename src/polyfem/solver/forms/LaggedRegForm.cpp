@@ -34,7 +34,7 @@ namespace polyfem::solver
 		update_lagging(x, 0);
 	}
 
-	void LaggedRegForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
+	bool LaggedRegForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
 		x_lagged_ = x;
 
@@ -44,5 +44,7 @@ namespace polyfem::solver
 			logger().debug("Enabling lagged regularization");
 		else if (enabled_before && !enabled())
 			logger().debug("Disabling lagged regularization");
+
+		return true;
 	}
 } // namespace polyfem::solver

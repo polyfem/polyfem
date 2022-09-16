@@ -321,13 +321,9 @@ namespace polyfem
 			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 			// Update the lagging before checking for convergence
-			try
+			if (!nl_problem.update_lagging(tmp_sol, lag_i))
 			{
-				nl_problem.update_lagging(tmp_sol, lag_i);
-			}
-			catch (const std::exception &e)
-			{
-				logger().warn("Failed to update lagging: {}", e.what());
+				logger().warn("Failed to update lagging: max lagging iterations exceeded");
 				break;
 			}
 

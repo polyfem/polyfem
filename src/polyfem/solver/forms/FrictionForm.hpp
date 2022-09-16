@@ -61,7 +61,8 @@ namespace polyfem::solver
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+		/// @return True able to update the lagged fields
+		bool update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
 
 		/// @brief Does this form require lagging?
 		/// @return True if the form requires lagging

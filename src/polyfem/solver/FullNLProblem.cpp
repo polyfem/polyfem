@@ -25,10 +25,12 @@ namespace polyfem::solver
 			f->init_lagging(x);
 	}
 
-	void FullNLProblem::update_lagging(const TVector &x, const int iter_num)
+	bool FullNLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
 		for (auto &f : forms_)
-			f->update_lagging(x, iter_num);
+			if (!f->update_lagging(x, iter_num))
+				return false;
+		return true;
 	}
 
 	bool FullNLProblem::uses_lagging() const
