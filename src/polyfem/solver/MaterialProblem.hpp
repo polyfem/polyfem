@@ -38,7 +38,7 @@ namespace polyfem
 			{
 				for (int i = 0; i < x.size(); i++)
 				{
-					if (i % 2)
+					if (i % 2 == 0)
 						min(i) = min_lambda;
 					else
 						min(i) = min_mu;
@@ -48,7 +48,7 @@ namespace polyfem
 			{
 				for (int i = 0; i < x.size(); i++)
 				{
-					if (i % 2)
+					if (i % 2 == 0)
 						min(i) = min_E;
 					else
 						min(i) = min_nu;
@@ -64,7 +64,7 @@ namespace polyfem
 			{
 				for (int i = 0; i < x.size(); i++)
 				{
-					if (i % 2)
+					if (i % 2 == 0)
 						max(i) = max_lambda;
 					else
 						max(i) = max_mu;
@@ -74,7 +74,7 @@ namespace polyfem
 			{
 				for (int i = 0; i < x.size(); i++)
 				{
-					if (i % 2)
+					if (i % 2 == 0)
 						max(i) = max_E;
 					else
 						max(i) = max_nu;

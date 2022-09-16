@@ -53,13 +53,13 @@ namespace polyfem
 			}
 		}
 
-		min_mu = material_params.value("min_mu", 0);
+		min_mu = material_params.value("min_mu", 0.0);
 		max_mu = material_params.value("max_mu", std::numeric_limits<double>::max());
 
-		min_lambda = material_params.value("min_lambda", 0);
+		min_lambda = material_params.value("min_lambda", 0.0);
 		max_lambda = material_params.value("max_lambda", std::numeric_limits<double>::max());
 
-		min_E = material_params.value("min_E", 0);
+		min_E = material_params.value("min_E", 0.0);
 		max_E = material_params.value("max_E", std::numeric_limits<double>::max());
 
 		min_nu = material_params.value("min_nu", std::numeric_limits<double>::min());
