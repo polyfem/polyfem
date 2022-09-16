@@ -3167,6 +3167,12 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/preset_problem/viscosity",
+        "type": "float",
+        "default": 1,
+        "doc": "TODO"
+    },
+    {
         "pointer": "/preset_problem",
         "type_name": "SimpleStokeProblemExact",
         "type": "object",
@@ -3208,7 +3214,6 @@
             "type"
         ],
         "optional": [
-            "time_dependent",
             "viscosity"
         ],
         "doc": "TODO"
