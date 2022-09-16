@@ -30,6 +30,59 @@ namespace polyfem
 
 		bool solution_changed_pre(const TVector &newX) override;
 
+		TVector get_lower_bound(const TVector &x) const override
+		{
+			TVector min(x.size());
+			// min.setConstant(std::numeric_limits<double>::min());
+			if (design_variable_name == "lambda_mu")
+			{
+				for (int i = 0; i < x.size(); i++)
+				{
+					if (i % 2)
+						min(i) = min_lambda;
+					else
+						min(i) = min_mu;
+				}
+			}
+			else if (design_variable_name == "E_nu")
+			{
+				for (int i = 0; i < x.size(); i++)
+				{
+					if (i % 2)
+						min(i) = min_E;
+					else
+						min(i) = min_nu;
+				}
+			}
+			return min;
+		}
+		TVector get_upper_bound(const TVector &x) const override
+		{
+			TVector max(x.size());
+			// max.setConstant(std::numeric_limits<double>::max());
+			if (design_variable_name == "lambda_mu")
+			{
+				for (int i = 0; i < x.size(); i++)
+				{
+					if (i % 2)
+						max(i) = max_lambda;
+					else
+						max(i) = max_mu;
+				}
+			}
+			else if (design_variable_name == "E_nu")
+			{
+				for (int i = 0; i < x.size(); i++)
+				{
+					if (i % 2)
+						max(i) = max_E;
+					else
+						max(i) = max_nu;
+				}
+			}
+			return max;
+		}
+
 		// map x (optimization variables) to parameters (lambda, mu, friction, damping)
 		std::function<void(const TVector &x, State &state)> x_to_param;
 		// map parameters to x
@@ -37,9 +90,13 @@ namespace polyfem
 		// compute gradient wrt. x given: gradient wrt. parameters, values of parameters
 		std::function<void(TVector &dx, const Eigen::VectorXd &dparams, State &state)> dparam_to_dx;
 
+		std::string design_variable_name = "lambda_mu";
+
 	private:
 		double min_mu, min_lambda;
 		double max_mu, max_lambda;
+		double min_E, min_nu;
+		double max_E, max_nu;
 
 		bool has_material_smoothing = false;
 		json material_params;

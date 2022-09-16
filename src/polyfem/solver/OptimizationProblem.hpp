@@ -48,13 +48,13 @@ namespace polyfem
 			cur_val = std::nan("");
 		}
 
-		virtual TVector get_lower_bound(const TVector &x)
+		virtual TVector get_lower_bound(const TVector &x) const
 		{
 			TVector min(x.size());
 			min.setConstant(std::numeric_limits<double>::min());
 			return min;
 		}
-		virtual TVector get_upper_bound(const TVector &x)
+		virtual TVector get_upper_bound(const TVector &x) const
 		{
 			TVector max(x.size());
 			max.setConstant(std::numeric_limits<double>::max());

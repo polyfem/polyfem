@@ -470,10 +470,59 @@ namespace polyfem
 					dx.head(dof) = dx.head(dof).array() * cur_lambdas.array();
 				};
 			}
+			else if (material_params["restriction"].get<std::string>() == "E_nu")
+			{
+				material_problem->design_variable_name = "E_nu";
+				material_problem->x_to_param = [dof](const MaterialProblem::TVector &x, State &state) {
+					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
+					auto cur_mus = state.assembler.lame_params().mu_mat_;
+
+					for (int e = 0; e < dof; e++)
+					{
+						const double E = x(e * 2 + 0);
+						const double nu = x(e * 2 + 1);
+
+						cur_lambdas(e) = convert_to_lambda(state.mesh->is_volume(), E, nu);
+						cur_mus(e) = convert_to_mu(E, nu);
+					}
+					state.assembler.update_lame_params(cur_lambdas, cur_mus);
+				};
+				material_problem->param_to_x = [dof, dim](MaterialProblem::TVector &x, State &state) {
+					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
+					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
+					x.setZero(dof * 2);
+					for (int e = 0; e < dof; e++)
+					{
+						x(e * 2 + 0) = convert_to_E(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+						x(e * 2 + 1) = convert_to_nu(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+					}
+				};
+				material_problem->dparam_to_dx = [dof, dim](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
+					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
+					dx.setZero(dof * 2);
+
+					for (int e = 0; e < dof; e++)
+					{
+						const double E = convert_to_E(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+						const double nu = convert_to_nu(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+						// const double dlambda_dnu = E * (1 + 2 * nu * nu) / pow(2 * nu * nu + nu - 1, 2);
+						// const double dmu_dnu = -E / 2 / pow(1 + nu, 2);
+						// const double dlambda_dE = nu / (2 * nu * nu + nu - 1);
+						// const double dmu_dE = 1 / 2 / (1 + nu);
+
+						Eigen::Matrix2d jacobian = d_lambda_mu_d_E_nu(state.mesh->is_volume(), E, nu);
+
+						dx(e * 2 + 0) += dparams(e) * jacobian(0, 0) + dparams(e + dof) * jacobian(1, 0);
+						dx(e * 2 + 1) += dparams(e) * jacobian(0, 1) + dparams(e + dof) * jacobian(1, 1);
+					}
+				};
+			}
 			else if (material_params["restriction"].get<std::string>() == "constant_E_nu")
 			{
 				logger().info("{} objects found, each object has constant material parameter nu...", body_id_map.size());
 
+				material_problem->design_variable_name = "E_nu";
 				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
@@ -488,8 +537,8 @@ namespace polyfem
 						const double E = x(body_id_map.at(body_id)[1] * 2 + 0);
 						const double nu = x(body_id_map.at(body_id)[1] * 2 + 1);
 
-						cur_lambdas(e) = E * nu / ((1 + nu) * (1 - 2 * nu));
-						cur_mus(e) = E / 2 / (1 + nu);
+						cur_lambdas(e) = convert_to_lambda(state.mesh->is_volume(), E, nu);
+						cur_mus(e) = convert_to_mu(E, nu);
 					}
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 					logger().debug("material E nu: {}", x.transpose());
@@ -500,8 +549,8 @@ namespace polyfem
 					x.setZero(body_id_map.size() * 2);
 					for (auto i : body_id_map)
 					{
-						x(i.second[1] * 2 + 0) = cur_mus(i.second[0]) * (3 * cur_lambdas(i.second[0]) + 2 * cur_mus(i.second[0])) / (cur_lambdas(i.second[0]) + cur_mus(i.second[0]));
-						x(i.second[1] * 2 + 1) = cur_lambdas(i.second[0]) / (2 * (cur_lambdas(i.second[0]) + cur_mus(i.second[0])));
+						x(i.second[1] * 2 + 0) = convert_to_E(state.mesh->is_volume(), cur_lambdas(i.second[0]), cur_mus(i.second[0]));
+						x(i.second[1] * 2 + 1) = convert_to_nu(state.mesh->is_volume(), cur_lambdas(i.second[0]), cur_mus(i.second[0]));
 					}
 					logger().debug("material E nu: {}", x.transpose());
 				};
@@ -513,17 +562,18 @@ namespace polyfem
 					for (int e = 0; e < dof; e++)
 					{
 						const int body_id = state.mesh->get_body_id(e);
-						const double E = cur_mus(e) * (3 * cur_lambdas(e) + 2 * cur_mus(e)) / (cur_lambdas(e) + cur_mus(e));
-						const double nu = cur_lambdas(e) / (2 * (cur_lambdas(e) + cur_mus(e)));
-						const double dlambda_dnu = E * (1 + 2 * nu * nu) / pow(2 * nu * nu + nu - 1, 2);
-						const double dmu_dnu = -E / 2 / pow(1 + nu, 2);
-						const double dlambda_dE = nu / (2 * nu * nu + nu - 1);
-						const double dmu_dE = 1 / 2 / (1 + nu);
+						const double E = convert_to_E(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+						const double nu = convert_to_nu(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+						// const double dlambda_dnu = E * (1 + 2 * nu * nu) / pow(2 * nu * nu + nu - 1, 2);
+						// const double dmu_dnu = -E / 2 / pow(1 + nu, 2);
+						// const double dlambda_dE = nu / (2 * nu * nu + nu - 1);
+						// const double dmu_dE = 1 / 2 / (1 + nu);
+						Eigen::Matrix2d jacobian = d_lambda_mu_d_E_nu(state.mesh->is_volume(), E, nu);
 
 						if (!body_id_map.count(body_id))
 							continue;
-						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * dlambda_dE + dparams(e + dof) * dmu_dE;
-						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e) * dlambda_dnu + dparams(e + dof) * dmu_dnu;
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * jacobian(0,0) + dparams(e + dof) * jacobian(1,0);
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e) * jacobian(0,1) + dparams(e + dof) * jacobian(1,1);
 					}
 				};
 			}

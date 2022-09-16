@@ -54,10 +54,16 @@ namespace polyfem
 		}
 
 		min_mu = material_params.value("min_mu", 0);
-		max_mu = material_params.value("max_mu", 1e15);
+		max_mu = material_params.value("max_mu", std::numeric_limits<double>::max());
 
 		min_lambda = material_params.value("min_lambda", 0);
-		max_lambda = material_params.value("max_lambda", 1e15);
+		max_lambda = material_params.value("max_lambda", std::numeric_limits<double>::max());
+
+		min_E = material_params.value("min_E", 0);
+		max_E = material_params.value("max_E", std::numeric_limits<double>::max());
+
+		min_nu = material_params.value("min_nu", std::numeric_limits<double>::min());
+		max_nu = material_params.value("max_nu", std::numeric_limits<double>::max());
 
 		has_material_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
@@ -238,6 +244,15 @@ namespace polyfem
 			flag = false;
 		if (material_params.contains("max_fric") && material_params["max_fric"].get<double>() < mu)
 			flag = false;
+
+		for (int e = 0; e < cur_lambdas.size(); e++)
+		{
+			const double E = cur_mus(e) * (3 * cur_lambdas(e) + 2 * cur_mus(e)) / (cur_lambdas(e) + cur_mus(e));
+			const double nu = cur_lambdas(e) / (2 * (cur_lambdas(e) + cur_mus(e)));
+
+			if (E < min_E || E > max_E || nu < min_nu || E > max_E)
+				flag = false;
+		}
 
 		solution_changed_pre(x0);
 

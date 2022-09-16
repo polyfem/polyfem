@@ -25,7 +25,7 @@ namespace polyfem
 
 		int optimization_dim() override { return 0; }
 
-		TVector get_lower_bound(const TVector &x) override
+		TVector get_lower_bound(const TVector &x) const override
 		{
 			TVector min(x.size());
 			min.setConstant(min_density);
@@ -36,7 +36,7 @@ namespace polyfem
 			}
 			return min;
 		}
-		TVector get_upper_bound(const TVector &x) override
+		TVector get_upper_bound(const TVector &x) const override
 		{
 			TVector max(x.size());
 			max.setConstant(max_density);

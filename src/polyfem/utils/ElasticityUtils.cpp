@@ -9,6 +9,54 @@ namespace polyfem
 	using namespace basis;
 	using namespace utils;
 
+	double convert_to_lambda(const bool is_volume, const double E, const double nu)
+	{
+		if (is_volume)
+			return (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
+
+		return (nu * E) / (1.0 - nu * nu);
+	}
+
+	double convert_to_mu(const double E, const double nu)
+	{
+		return E / (2.0 * (1.0 + nu));
+	}
+
+	Eigen::Matrix2d d_lambda_mu_d_E_nu(const bool is_volume, const double E, const double nu)
+	{
+		Eigen::Matrix2d A;
+		if (is_volume)
+		{
+			A(0, 0) = nu / ((1.0 + nu) * (1.0 - 2.0 * nu));
+			A(0, 1) = (E*(0.5*nu*nu + 0.25))/(pow(nu + 1., 2)*pow(0.5 - nu, 2));
+		}
+		else
+		{
+			A(0, 0) = nu / (1.0 - nu * nu);
+			A(0, 1) = (E*(1. + nu*nu))/pow(-1. + nu*nu, 2);
+		}
+		A(1, 0) = 1 / (2 * (1 + nu));
+		A(1, 1) = -E / 2 * pow(1 + nu, -2);
+
+		return A;
+	}
+
+	double convert_to_E(const bool is_volume, const double lambda, const double mu)
+	{
+		if (is_volume)
+			return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+		
+		return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+	}
+
+	double convert_to_nu(const bool is_volume, const double lambda, const double mu)
+	{
+		if (is_volume)
+			return lambda / (2.0 * (lambda + mu));
+		
+		return lambda / (lambda + 2.0 * mu);
+	}
+
 	Eigen::VectorXd gradient_from_energy(const int size, const int n_bases, const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da,
 										 const std::function<DScalar1<double, Eigen::Matrix<double, 6, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun6,
 										 const std::function<DScalar1<double, Eigen::Matrix<double, 8, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun8,
@@ -198,19 +246,6 @@ namespace polyfem
 		// std::cout << "-- hessian: " << time.getElapsedTime() << std::endl;
 
 		return hessian;
-	}
-
-	double convert_to_lambda(const bool is_volume, const double E, const double nu)
-	{
-		if (is_volume)
-			return (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
-
-		return (nu * E) / (1.0 - nu * nu);
-	}
-
-	double convert_to_mu(const double E, const double nu)
-	{
-		return E / (2.0 * (1.0 + nu));
 	}
 
 	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
