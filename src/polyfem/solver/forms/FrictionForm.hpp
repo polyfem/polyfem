@@ -27,6 +27,7 @@ namespace polyfem::solver
 		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
 		/// @param dt Time step size
 		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
+		/// @param n_lagging_iters Number of lagging iterations
 		FrictionForm(
 			const State &state,
 			const double epsv,
@@ -34,7 +35,8 @@ namespace polyfem::solver
 			const double dhat,
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const double dt,
-			const ContactForm &contact_form);
+			const ContactForm &contact_form,
+			const int n_lagging_iters);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -59,7 +61,11 @@ namespace polyfem::solver
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		void update_lagging(const Eigen::VectorXd &x) override;
+		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+
+		/// @brief Does this form require lagging?
+		/// @return True if the form requires lagging
+		bool uses_lagging() const override { return true; }
 
 		const Eigen::MatrixXd &displaced_surface_prev() const { return displaced_surface_prev_; }
 
@@ -71,6 +77,7 @@ namespace polyfem::solver
 		const double dt_;                                ///< Time step size
 		const double dhat_;                              ///< Barrier activation distance
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
+		const int n_lagging_iters_;                      ///< Number of lagging iterations
 
 		ipc::FrictionConstraints friction_constraint_set_; ///< Lagged friction constraint set
 		Eigen::MatrixXd displaced_surface_prev_;           ///< Displaced vertices at the start of the time-step.
@@ -78,6 +85,6 @@ namespace polyfem::solver
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
-		const ContactForm &contact_form_; ///> necessary to have the barrier stiffnes, maybe clean me
+		const ContactForm &contact_form_; ///< necessary to have the barrier stiffnes, maybe clean me
 	};
 } // namespace polyfem::solver

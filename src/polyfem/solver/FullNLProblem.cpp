@@ -25,10 +25,18 @@ namespace polyfem::solver
 			f->init_lagging(x);
 	}
 
-	void FullNLProblem::update_lagging(const TVector &x)
+	void FullNLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
 		for (auto &f : forms_)
-			f->update_lagging(x);
+			f->update_lagging(x, iter_num);
+	}
+
+	bool FullNLProblem::uses_lagging() const
+	{
+		for (auto &f : forms_)
+			if (f->uses_lagging())
+				return true;
+		return false;
 	}
 
 	void FullNLProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -43,26 +51,27 @@ namespace polyfem::solver
 			f->line_search_end();
 	}
 
-	double FullNLProblem::max_step_size(const TVector &x0, const TVector &x1)
+	double FullNLProblem::max_step_size(const TVector &x0, const TVector &x1) const
 	{
 		double step = 1;
 		for (auto &f : forms_)
-			step = std::min(step, f->max_step_size(x0, x1));
+			if (f->enabled())
+				step = std::min(step, f->max_step_size(x0, x1));
 		return step;
 	}
 
-	bool FullNLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	bool FullNLProblem::is_step_valid(const TVector &x0, const TVector &x1) const
 	{
 		for (auto &f : forms_)
-			if (!f->is_step_valid(x0, x1))
+			if (f->enabled() && !f->is_step_valid(x0, x1))
 				return false;
 		return true;
 	}
 
-	bool FullNLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
+	bool FullNLProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
 	{
 		for (auto &f : forms_)
-			if (!f->is_step_collision_free(x0, x1))
+			if (f->enabled() && !f->is_step_collision_free(x0, x1))
 				return false;
 		return true;
 	}

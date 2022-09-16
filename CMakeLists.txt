@@ -143,10 +143,6 @@ polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Extra warnings
-target_link_libraries(polyfem PRIVATE polyfem::warnings)
-
-
 # Use C++17
 target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
 
@@ -240,6 +236,9 @@ target_link_libraries(polyfem PUBLIC hdf5::hdf5)
 
 include(high_five)
 target_link_libraries(polyfem PUBLIC HighFive::HighFive)
+
+# Extra warnings (include this at the end to have highest priority)
+target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
 ################################################################################
 # Optional libraries

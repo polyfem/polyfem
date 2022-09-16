@@ -35,9 +35,9 @@ namespace polyfem::solver
 		FullNLProblem::init_lagging(reduced_to_full(x));
 	}
 
-	void NLProblem::update_lagging(const TVector &x)
+	void NLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
-		FullNLProblem::update_lagging(reduced_to_full(x));
+		FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
@@ -53,17 +53,17 @@ namespace polyfem::solver
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
+	double NLProblem::max_step_size(const TVector &x0, const TVector &x1) const
 	{
 		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1) const
 	{
 		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
+	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
 	{
 		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
 	}

@@ -1640,7 +1640,8 @@
         "optional": [
             "cache_size",
             "lump_mass_matrix",
-            "lagged_regularization_weight"
+            "lagged_regularization_weight",
+            "lagged_regularization_iterations"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1661,6 +1662,12 @@
         "default": 0,
         "type": "float",
         "doc": "Weight used to regularize singular static problems."
+    },
+    {
+        "pointer": "/solver/advanced/lagged_regularization_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Number of regularize singular static problems."
     },
     {
         "pointer": "/materials",
