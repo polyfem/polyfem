@@ -97,15 +97,15 @@ var NAVTREEINDEX =
 "classpolyfem_1_1problem_1_1_node_problem.html#a0c96b9f95639dfba3fbeab2ebf30f3f5",
 "classpolyfem_1_1problem_1_1_stokes_law_problem.html#a7d34103f628d61eae01a6f2a08b3363c",
 "classpolyfem_1_1quadrature_1_1_tet_quadrature.html#a808092d0512b96cb368edea456574261",
-"classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a",
-"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4a1d135e1c9e9060855874c29ae9944c",
-"classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12",
-"classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a080b7035dd3535eba216133e9e08afc8",
-"elasticity__rhs_8py.html#a7da2b62e54e8b30ff93de1396c5429c8",
-"namespacep__bases.html#ab68186280e491151e5558132210dc1be",
-"namespacepolyfem_1_1utils.html",
-"struct_d_scalar1.html#aeb8af2533209850e51cfd669438171fa",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a5c1e79cbbfbdf02585d082a9e3289d38"
+"classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4",
+"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1f6822209689767027ba50199b933724",
+"classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b",
+"classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7",
+"elasticity__rhs_8py.html",
+"namespacep__bases.html#a5d5895607c20f1fd03b3879b6e9b1879",
+"namespacepolyfem_1_1problem.html#a542151afb4d6a156d38fd195ee17873e",
+"struct_d_scalar1.html#ab47f13cbffdaff53d8d630a9abba26b0",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ac044e71440c2bb165bccbae9c0362fcc"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

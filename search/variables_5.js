@@ -17,7 +17,7 @@ var searchData=
   ['elementadj_14',['elementAdj',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#af3f58f13f7173d9f7daf122c1bc4f77c',1,'polyfem::mesh::NCMesh2D::elementAdj()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ada73ce92b73d88a4146c637a0b0f02be',1,'polyfem::mesh::NCMesh3D::elementAdj()']]],
   ['elements_15',['elements',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a1c0a30867f9c9060f547f7436579b7f2',1,'polyfem::mesh::Mesh3DStorage::elements()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ab4104a775dd4f53df4dca1cba727ca3f',1,'polyfem::mesh::NCMesh3D::elements()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a5a602fc86b0705aab7943db1cf4fa106',1,'polyfem::mesh::NCMesh2D::elements()']]],
   ['elements_5ftag_5f_16',['elements_tag_',['../classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c',1,'polyfem::mesh::Mesh']]],
-  ['enabled_5f_17',['enabled_',['../classpolyfem_1_1solver_1_1_a_l_form.html#aaf2c86b6b57d3fe301c59b632da0ff96',1,'polyfem::solver::ALForm']]],
+  ['enabled_5f_17',['enabled_',['../classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae',1,'polyfem::solver::Form']]],
   ['endings_5f_18',['endings_',['../classpolyfem_1_1mesh_1_1_obstacle.html#ad2cd9c7a670deec1fb861da3aa6559ca',1,'polyfem::mesh::Obstacle']]],
   ['entries_19',['entries',['../_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2',1,'MassMatrixAssembler.cpp']]],
   ['entries_5f_20',['entries_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#aeb6938c000317a94cf575d9a7216823f',1,'polyfem::utils::SpareMatrixCache']]],

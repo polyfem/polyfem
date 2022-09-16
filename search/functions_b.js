@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['laggedregform_0',['LaggedRegForm',['../classpolyfem_1_1solver_1_1_lagged_reg_form.html#aa1dc3ff41901401933f591d9200ae25a',1,'polyfem::solver::LaggedRegForm']]],
+  ['laggedregform_0',['LaggedRegForm',['../classpolyfem_1_1solver_1_1_lagged_reg_form.html#a593881be6751075c2be76aa227fc3e57',1,'polyfem::solver::LaggedRegForm']]],
   ['lambda_5fmu_1',['lambda_mu',['../classpolyfem_1_1_lame_parameters.html#adbe7284ebd8d24b11a16df2235931afd',1,'polyfem::LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &amp;lambda, double &amp;mu) const'],['../classpolyfem_1_1_lame_parameters.html#a9c34e8ec3c5b27e806417fc643065f74',1,'polyfem::LameParameters::lambda_mu(const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id, double &amp;lambda, double &amp;mu) const']]],
   ['lame_5fparams_2',['lame_params',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13',1,'polyfem::assembler::AssemblerUtils::lame_params()'],['../classpolyfem_1_1assembler_1_1_linear_elasticity.html#a8688b72c40c17e4f2043cf1d392f0b9e',1,'polyfem::assembler::LinearElasticity::lame_params()'],['../classpolyfem_1_1assembler_1_1_multi_model.html#a8c1f78e24b4fca369a46d75da33ed2cf',1,'polyfem::assembler::MultiModel::lame_params()']]],
   ['lameparameters_3',['LameParameters',['../classpolyfem_1_1_lame_parameters.html#a7a8072d472d64e99f4ce803d3ef56714',1,'polyfem::LameParameters']]],
