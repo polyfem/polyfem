@@ -1,6 +1,5 @@
 set(SOURCES
 	StateInit.cpp
-	StateInterpolation.cpp
 	StateLoad.cpp
 	StateOutput.cpp
 	StatePref.cpp

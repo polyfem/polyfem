@@ -94,7 +94,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
+		out_geom.init_sampler();
 	}
 
 	void State::load_mesh(bool non_conforming,
@@ -144,7 +144,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
+		out_geom.init_sampler();
 
 		timer.start();
 		logger().info("Loading obstacles...");
@@ -168,98 +168,4 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
-
-	void State::compute_mesh_stats()
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		bases.clear();
-		pressure_bases.clear();
-		geom_bases_.clear();
-		boundary_nodes.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		polys.clear();
-		poly_edge_to_data.clear();
-
-		stiffness.resize(0, 0);
-		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
-
-		n_bases = 0;
-		n_pressure_bases = 0;
-
-		simplex_count = 0;
-		regular_count = 0;
-		regular_boundary_count = 0;
-		simple_singular_count = 0;
-		multi_singular_count = 0;
-		boundary_count = 0;
-		non_regular_boundary_count = 0;
-		non_regular_count = 0;
-		undefined_count = 0;
-		multi_singular_boundary_count = 0;
-
-		const auto &els_tag = mesh->elements_tag();
-
-		mesh->prepare_mesh();
-
-		for (size_t i = 0; i < els_tag.size(); ++i)
-		{
-			const ElementType type = els_tag[i];
-
-			switch (type)
-			{
-			case ElementType::Simplex:
-				simplex_count++;
-				break;
-			case ElementType::RegularInteriorCube:
-				regular_count++;
-				break;
-			case ElementType::RegularBoundaryCube:
-				regular_boundary_count++;
-				break;
-			case ElementType::SimpleSingularInteriorCube:
-				simple_singular_count++;
-				break;
-			case ElementType::MultiSingularInteriorCube:
-				multi_singular_count++;
-				break;
-			case ElementType::SimpleSingularBoundaryCube:
-				boundary_count++;
-				break;
-			case ElementType::InterfaceCube:
-			case ElementType::MultiSingularBoundaryCube:
-				multi_singular_boundary_count++;
-				break;
-			case ElementType::BoundaryPolytope:
-				non_regular_boundary_count++;
-				break;
-			case ElementType::InteriorPolytope:
-				non_regular_count++;
-				break;
-			case ElementType::Undefined:
-				undefined_count++;
-				break;
-			}
-		}
-
-		logger().info("simplex_count: \t{}", simplex_count);
-		logger().info("regular_count: \t{}", regular_count);
-		logger().info("regular_boundary_count: \t{}", regular_boundary_count);
-		logger().info("simple_singular_count: \t{}", simple_singular_count);
-		logger().info("multi_singular_count: \t{}", multi_singular_count);
-		logger().info("boundary_count: \t{}", boundary_count);
-		logger().info("multi_singular_boundary_count: \t{}", multi_singular_boundary_count);
-		logger().info("non_regular_count: \t{}", non_regular_count);
-		logger().info("non_regular_boundary_count: \t{}", non_regular_boundary_count);
-		logger().info("undefined_count: \t{}", undefined_count);
-		logger().info("total count:\t {}", mesh->n_elements());
-	}
-
 } // namespace polyfem
