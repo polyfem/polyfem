@@ -67,6 +67,7 @@ namespace polyfem
 
 		class ContactForm;
 		class FrictionForm;
+		class DampingForm;
 		class BodyForm;
 		class ALForm;
 		class InertiaForm;
@@ -88,6 +89,7 @@ namespace polyfem
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ALForm> al_form;
+		std::shared_ptr<solver::DampingForm> damping_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
@@ -185,6 +187,8 @@ namespace polyfem
 
 		/// assembler, it dispatches call to the differnt assembers based on the formulation
 		assembler::AssemblerUtils assembler;
+		// viscous dissipation assembler
+		assembler::ViscousDampingAssembler damping_assembler;
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 

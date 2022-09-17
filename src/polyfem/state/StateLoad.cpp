@@ -64,6 +64,7 @@ namespace polyfem
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
+		damping_assembler.local_assembler().set_size(mesh->dimension());
 
 		// TODO: renable this
 		// int n_refs = args["n_refs"];
@@ -138,7 +139,8 @@ namespace polyfem
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
-
+		damping_assembler.local_assembler().set_size(mesh->dimension());
+		
 		set_materials();
 
 		timer.stop();

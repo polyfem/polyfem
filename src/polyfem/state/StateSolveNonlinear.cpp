@@ -4,6 +4,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/DampingForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/ALForm.hpp>
@@ -79,6 +80,7 @@ namespace polyfem
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
+			damping_form->set_weight(time_integrator->acceleration_scaling());
 
 			// TODO: Determine if friction should be scaled by h²
 			// if (friction_form)
@@ -166,15 +168,19 @@ namespace polyfem
 		solve_data.elastic_form = std::make_shared<ElasticForm>(*this);
 		forms.push_back(solve_data.elastic_form);
 		solve_data.body_form = std::make_shared<BodyForm>(*this, *solve_data.rhs_assembler, /*apply_DBC=*/true);
+		solve_data.body_form->update_quantities(t, sol);
 		forms.push_back(solve_data.body_form);
 
 		solve_data.inertia_form = nullptr;
+		solve_data.damping_form = nullptr;
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			solve_data.time_integrator->set_parameters(args["time"]);
 			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 			forms.push_back(solve_data.inertia_form);
+			solve_data.damping_form = std::make_shared<DampingForm>(*this, args["time"]["dt"]);
+			forms.push_back(solve_data.damping_form);
 		}
 		else
 		{

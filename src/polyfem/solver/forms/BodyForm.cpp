@@ -12,7 +12,8 @@ namespace polyfem::solver
 			ndof_ += state.n_pressure_bases; // Pressure is a scalar
 
 		t_ = 0;
-		update_current_rhs(Eigen::VectorXd());
+		if (!state.problem->is_time_dependent())
+			update_current_rhs(Eigen::VectorXd());
 	}
 
 	double BodyForm::value_unweighted(const Eigen::VectorXd &x) const
