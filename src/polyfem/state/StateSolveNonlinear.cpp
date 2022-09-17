@@ -219,7 +219,6 @@ namespace polyfem
 
 			solve_data.contact_form = std::make_shared<ContactForm>(
 				collision_mesh, boundary_nodes_pos,
-				mesh->dimension(),
 				args["contact"]["dhat"],
 				avg_mass,
 				use_adaptive_barrier_stiffness,
@@ -248,7 +247,6 @@ namespace polyfem
 				solve_data.friction_form = std::make_shared<FrictionForm>(
 					collision_mesh,
 					boundary_nodes_pos,
-					mesh->dimension(),
 					args["contact"]["epsv"],
 					args["contact"]["friction_coefficient"],
 					args["contact"]["dhat"],

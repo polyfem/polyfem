@@ -254,13 +254,16 @@ namespace polyfem
 		}
 		else
 		{
-			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
-
-			problem->clear();
 			if (args["preset_problem"]["type"] == "Kernel")
 			{
+				problem = std::make_shared<KernelProblem>("Kernel", assembler);
+				problem->clear();
 				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
-				kprob.assembler = &assembler;
+			}
+			else
+			{
+				problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
+				problem->clear();
 			}
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);

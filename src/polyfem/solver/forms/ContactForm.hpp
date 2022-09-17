@@ -24,7 +24,6 @@ namespace polyfem::solver
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
 					const Eigen::MatrixXd &boundary_nodes_pos,
-					const int dim,
 					const double dhat,
 					const double avg_mass,
 					const bool use_adaptive_barrier_stiffness,
@@ -99,7 +98,6 @@ namespace polyfem::solver
 	private:
 		const ipc::CollisionMesh &collision_mesh_;
 		const Eigen::MatrixXd &boundary_nodes_pos_;
-		const int dim_;
 
 		const double dhat_; ///< Barrier activation distance
 

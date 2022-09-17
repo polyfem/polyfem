@@ -14,7 +14,6 @@ namespace polyfem::solver
 {
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
 							 const Eigen::MatrixXd &boundary_nodes_pos,
-							 const int dim,
 							 const double dhat,
 							 const double avg_mass,
 							 const bool use_adaptive_barrier_stiffness,
@@ -24,7 +23,6 @@ namespace polyfem::solver
 							 const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
 		  boundary_nodes_pos_(boundary_nodes_pos),
-		  dim_(dim),
 		  dhat_(dhat),
 		  avg_mass_(avg_mass),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
@@ -53,7 +51,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return collision_mesh_.vertices(boundary_nodes_pos_ + utils::unflatten(x, dim_));
+		return collision_mesh_.vertices(boundary_nodes_pos_ + utils::unflatten(x, boundary_nodes_pos_.cols()));
 	}
 
 	void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)

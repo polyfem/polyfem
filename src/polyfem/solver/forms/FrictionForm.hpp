@@ -29,7 +29,6 @@ namespace polyfem::solver
 		FrictionForm(
 			const ipc::CollisionMesh &collision_mesh,
 			const Eigen::MatrixXd &boundary_nodes_pos,
-			const int dim,
 			const double epsv,
 			const double mu,
 			const double dhat,
@@ -73,7 +72,6 @@ namespace polyfem::solver
 	private:
 		const ipc::CollisionMesh &collision_mesh_;
 		const Eigen::MatrixXd &boundary_nodes_pos_;
-		const int dim_;
 
 		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction
