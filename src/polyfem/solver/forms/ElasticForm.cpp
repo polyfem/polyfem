@@ -36,7 +36,7 @@ namespace polyfem::solver
 
 		if (assembler_.is_linear(formulation()))
 		{
-			assert(cached_stiffness_.rows() != x.size() && cached_stiffness_.cols() != x.size());
+			assert(cached_stiffness_.rows() == x.size() && cached_stiffness_.cols() == x.size());
 			hessian = cached_stiffness_;
 		}
 		else
