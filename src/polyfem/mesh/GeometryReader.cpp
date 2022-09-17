@@ -68,8 +68,16 @@ namespace polyfem::mesh
 		// }
 		if (n_refs > 0)
 		{
+			// Check if the stored volume selection is uniform.
+			assert(mesh->n_elements() > 0);
+			const int uniform_value = mesh->get_body_id(0);
+			for (int i = 1; i < mesh->n_elements(); ++i)
+				if (mesh->get_body_id(i) != uniform_value)
+					log_and_throw_error(fmt::format("Unable to apply stored nonuniform volume_selection because n_refs={} > 0!", n_refs));
+
 			logger().info("Performing global h-refinement with {} refinements", n_refs);
 			mesh->refine(n_refs, refinement_location);
+			mesh->set_body_ids(std::vector<int>(mesh->n_elements(), uniform_value));
 		}
 
 		// --------------------------------------------------------------------

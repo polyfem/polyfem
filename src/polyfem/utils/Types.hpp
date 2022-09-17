@@ -1,7 +1,5 @@
 #pragma once
 
-#define MAX_QUAD_POINTS -1
-
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -12,6 +10,7 @@ namespace polyfem
 	typedef Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3> RowVectorNd;
 	typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3> MatrixNd;
 
+	static constexpr int MAX_QUAD_POINTS = -1;
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1> QuadratureVector;
 
 #ifdef POLYSOLVE_LARGE_INDEX

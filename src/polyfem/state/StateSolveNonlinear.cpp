@@ -12,6 +12,7 @@
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -41,25 +42,6 @@ namespace polyfem
 	using namespace solver;
 	using namespace io;
 	using namespace utils;
-
-	void SolveData::set_al_weight(const Eigen::VectorXd &x, const double weight)
-	{
-		if (al_form == nullptr)
-			return;
-		if (weight > 0)
-		{
-			al_form->set_enabled(true);
-			al_form->set_weight(weight);
-			body_form->set_apply_DBC(x, false);
-			nl_problem->use_full_size();
-		}
-		else
-		{
-			al_form->set_enabled(false);
-			body_form->set_apply_DBC(x, true);
-			nl_problem->use_reduced_size();
-		}
-	}
 
 	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
 	{
@@ -111,7 +93,7 @@ namespace polyfem
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+				args["solver"]["nonlinear"], args["solver"]["linear"]);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
@@ -174,8 +156,7 @@ namespace polyfem
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
 					collision_mesh.edges(), collision_mesh.faces());
-				logger().error("Unable to solve, initial solution has intersections!");
-				throw std::runtime_error("Unable to solve, initial solution has intersections!");
+				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
 		}
 
@@ -197,13 +178,12 @@ namespace polyfem
 		}
 		else
 		{
-			// FIXME:
-			// const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
-			// if (lagged_regularization_weight > 0)
-			// {
-			// 	forms.push_back(std::make_shared<LaggedRegForm>(lagged_damping_weight));
-			// 	forms.back()->set_weight(lagged_regularization_weight);
-			// }
+			const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
+			if (lagged_regularization_weight > 0)
+			{
+				forms.push_back(std::make_shared<LaggedRegForm>(args["solver"]["advanced"]["lagged_regularization_iterations"]));
+				forms.back()->set_weight(lagged_regularization_weight);
+			}
 		}
 
 		solve_data.al_form = std::make_shared<ALForm>(*this, *solve_data.rhs_assembler, t);
@@ -249,7 +229,8 @@ namespace polyfem
 					args["contact"]["dhat"],
 					args["solver"]["contact"]["CCD"]["broad_phase"],
 					args.value("/time/dt"_json_pointer, 1.0), // dt=1.0 if static
-					*solve_data.contact_form);
+					*solve_data.contact_form,
+					args["solver"]["contact"]["friction_iterations"]);
 				forms.push_back(solve_data.friction_form);
 			}
 		}
@@ -282,159 +263,108 @@ namespace polyfem
 
 	void State::solve_tensor_nonlinear(const int t)
 	{
-		Eigen::VectorXd tmp_sol;
 
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
 
 		assert(sol.size() == rhs.size());
 
-		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		const double max_al_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
-
-		nl_problem.full_to_reduced(sol, tmp_sol);
-		assert(sol.size() == rhs.size());
-		assert(tmp_sol.size() <= rhs.size());
-
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
 			nl_problem.init_lagging(sol);
 		}
 
-		const int friction_iterations = args["solver"]["contact"]["friction_iterations"];
-		assert(friction_iterations >= 0);
-		if (friction_iterations > 0)
-			logger().debug("Lagging iteration 1");
+		int lag_i = 0;
+		logger().info("Lagging iteration {:d}:", lag_i + 1);
 
-		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
-
-		// Disable damping for the final lagged iteration
-		// TODO: fix me lagged regularization
-		// if (friction_iterations <= 1)
-		// {
-		// 	nl_problem.lagged_regularization_weight() = 0;
-		// 	alnl_problem.lagged_regularization_weight() = 0;
-		// }
+		// ---------------------------------------------------------------------
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
 		save_subsolve(subsolve_count, t);
 
-		///////////////////////////////////////////////////////////////////////
+		// ---------------------------------------------------------------------
 
-		nl_problem.line_search_begin(sol, tmp_sol);
-		Eigen::VectorXd tmp_sol_full;
-		nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
-		bool force_al = args["solver"]["augmented_lagrangian"]["force"];
-		while (
-			force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
-			|| (solve_data.contact_form != nullptr && !solve_data.contact_form->is_step_collision_free(sol, tmp_sol_full)))
-		{
-			force_al = false;
-			nl_problem.line_search_end();
-			solve_data.set_al_weight(tmp_sol_full, al_weight);
-			logger().debug("Solving AL Problem with weight {}", al_weight);
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
 
-			std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> alnl_solver = make_nl_solver<NLProblem>();
-			alnl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
-			nl_problem.init(sol);
-			solve_data.updated_barrier_stiffness(sol);
-			tmp_sol = sol;
-			alnl_solver->minimize(nl_problem, tmp_sol);
-			json alnl_solver_info;
-			alnl_solver->getInfo(alnl_solver_info);
+		ALSolver al_solver(
+			nl_solver, solve_data.al_form,
+			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			args["solver"]["augmented_lagrangian"]["max_weight"],
+			[&](const Eigen::VectorXd &x) {
+				this->solve_data.updated_barrier_stiffness(sol);
+			});
 
+		al_solver.post_subsolve = [&](const double al_weight) {
+			json info;
+			nl_solver->get_info(info);
 			solver_info.push_back(
-				{{"type", "al"},
+				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
-				 {"weight", al_weight},
-				 {"info", alnl_solver_info}});
+				 {"info", info}});
+			if (al_weight > 0)
+				solver_info.back()["weight"] = al_weight;
+			this->save_subsolve(++subsolve_count, t);
+		};
 
-			sol = tmp_sol;
-			solve_data.set_al_weight(sol, -1);
-			nl_problem.full_to_reduced(sol, tmp_sol);
-			nl_problem.line_search_begin(sol, tmp_sol);
-			nl_problem.reduced_to_full(tmp_sol, tmp_sol_full);
+		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
 
-			al_weight *= 2;
+		// ---------------------------------------------------------------------
 
-			if (al_weight >= max_al_weight)
+		// TODO: Make this more general
+		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
+
+		// Lagging loop (start at 1 because we already did an iteration above)
+		bool lagging_converged = !nl_problem.uses_lagging();
+		for (lag_i = 1; !lagging_converged; lag_i++)
+		{
+			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
+
+			// Update the lagging before checking for convergence
+			if (!nl_problem.update_lagging(tmp_sol, lag_i))
 			{
-				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
+				logger().warn("Failed to update lagging: max lagging iterations exceeded");
 				break;
 			}
 
-			save_subsolve(++subsolve_count, t);
-		}
-		nl_problem.line_search_end();
+			// Check if lagging converged
+			Eigen::VectorXd grad;
+			nl_problem.gradient(tmp_sol, grad);
+			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
+			if (grad.norm() <= lagging_tol)
+			{
+				lagging_converged = true;
+				break;
+			}
 
-		///////////////////////////////////////////////////////////////////////
-
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
-		nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
-		nl_problem.init(sol);
-		solve_data.updated_barrier_stiffness(sol);
-		nl_solver->minimize(nl_problem, tmp_sol);
-		json nl_solver_info;
-		nl_solver->getInfo(nl_solver_info);
-		solver_info.push_back(
-			{{"type", "rc"},
-			 {"t", t}, // TODO: null if static?
-			 {"info", nl_solver_info}});
-		nl_problem.reduced_to_full(tmp_sol, sol);
-
-		save_subsolve(++subsolve_count, t);
-
-		///////////////////////////////////////////////////////////////////////
-
-		// TODO: fix this lagged damping
-		// nl_problem.lagged_regularization_weight() = 0;
-
-		// Lagging loop (start at 1 because we already did an iteration above)
-		int lag_i;
-		nl_problem.update_lagging(tmp_sol);
-		Eigen::VectorXd tmp_grad;
-		nl_problem.gradient(tmp_sol, tmp_grad);
-		bool lagging_converged = tmp_grad.norm() <= lagging_tol;
-		for (lag_i = 1; !lagging_converged && lag_i < friction_iterations; lag_i++)
-		{
-			logger().debug("Lagging iteration {:d}", lag_i + 1);
+			// Solve the problem with the updated lagging
+			logger().info("Lagging iteration {:d}:", lag_i + 1);
 			nl_problem.init(sol);
 			solve_data.updated_barrier_stiffness(sol);
-			// Disable damping for the final lagged iteration
-			// TODO: fix this lagged damping
-			// if (lag_i == friction_iterations - 1)
-			// 	nl_problem.lagged_regularization_weight() = 0;
 			nl_solver->minimize(nl_problem, tmp_sol);
+			sol = nl_problem.reduced_to_full(tmp_sol);
 
-			nl_solver->getInfo(nl_solver_info);
+			// Save the subsolve sequence for debugging and info
+			json info;
+			nl_solver->get_info(info);
 			solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
-				 {"info", nl_solver_info}});
-
-			nl_problem.reduced_to_full(tmp_sol, sol);
-			nl_problem.update_lagging(tmp_sol);
-			nl_problem.gradient(tmp_sol, tmp_grad);
-			lagging_converged = tmp_grad.norm() <= lagging_tol;
-			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", tmp_grad.norm(), lagging_tol);
-
+				 {"info", info}});
 			save_subsolve(++subsolve_count, t);
 		}
 
-		///////////////////////////////////////////////////////////////////////
+		// ---------------------------------------------------------------------
 
-		if (friction_iterations > 0)
-		{
-			nl_problem.gradient(tmp_sol, tmp_grad);
-			logger().log(
-				lagging_converged ? spdlog::level::info : spdlog::level::warn,
-				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
-				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at", lag_i,
-				tmp_grad.norm(),
-				args["solver"]["contact"]["friction_convergence_tol"].get<double>());
-		}
+		nl_problem.update_lagging(sol, -1); // -1 bypasses the max lagging iterations check
+		Eigen::VectorXd grad;
+		nl_problem.gradient(sol, grad);
+		logger().log(
+			lagging_converged ? spdlog::level::info : spdlog::level::warn,
+			"{} {:d} iteration(s) (grad_norm={:g} tol={:g})",
+			lagging_converged ? "Lagging converged in" : "Lagging failed to converge with",
+			lag_i, grad.norm(), lagging_tol);
 	}
 
 	////////////////////////////////////////////////////////////////////////

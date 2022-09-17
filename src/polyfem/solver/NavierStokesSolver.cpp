@@ -65,7 +65,7 @@ namespace polyfem
 
 			Eigen::VectorXd b = rhs;
 			dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num, "", false, true, state.use_avg_pressure);
-			// solver->getInfo(solver_info);
+			// solver->get_info(solver_info);
 			time.stop();
 			stokes_solve_time = time.getElapsedTimeInSec();
 			logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());

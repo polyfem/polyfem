@@ -199,7 +199,7 @@ namespace polyfem
 				*this, sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
 				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
 			sol = tmp_sol;
-			time_integrator.update_quantities(sol);
+			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));
 			sol_to_pressure();
 
 			save_timestep(time, t, t0, dt);
