@@ -1,58 +1,63 @@
-name: Docs
+# name: Docs
 
-on:
-  push:
-    branches:
-      - main
-      - docs
+# on:
+#   push:
+#     branches:
+#       - main
+#       - docs
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  docs:
-    runs-on: ubuntu-latest
-    steps:
+# jobs:
+#   docs:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v2.4.2
 
-      # - name: Checkout Repository
-      #   uses: actions/checkout@v2.4.2
+#       - name: Install Dependencies
+#         run: |
+#           wget --quiet https://www.doxygen.nl/files/doxygen-1.9.4.linux.bin.tar.gz
+#           tar -xzf doxygen-1.9.4.linux.bin.tar.gz
+#           cd doxygen-1.9.4
+#           sudo make install
+#           sudo apt-get install graphviz
 
-      # - name: Install Dependencies
-      #   run: |
-      #     wget --quiet https://www.doxygen.nl/files/doxygen-1.9.4.linux.bin.tar.gz
-      #     tar -xzf doxygen-1.9.4.linux.bin.tar.gz
-      #     cd doxygen-1.9.4
-      #     sudo make install
-      #     sudo apt-get install graphviz
+#       - name: Setup Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.10'
 
-      # - name: Setup Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.10'
+#       - name: Generate Doxygen Documentation
+#         run: doxygen Doxyfile
 
-      # - name: Generate Doxygen Documentation
-      #   run: doxygen Doxyfile
+#       - name: Launch JSON Spec Documentation Runner
+#         uses: actions/github-script@v6
+#         with:
+#           github-token: ${{ secrets.PAT_TOKEN }}
+#           script: |
+#             await github.rest.actions.createWorkflowDispatch({
+#               owner: 'polyfem',
+#               repo: 'polyfem.github.io',
+#               workflow_id: 'build.yml',
+#               ref: 'docs'
+#             })
 
-      # - name: Generate JSON Spec Documentation
-      #   run: |
-      #     git clone https://github.com/geometryprocessing/json-spec-engine.git
-      #     pip install mako
-      #     python ./json-spec-engine/docs/spec2html.py -i ./input-spec.json -o ./docs/html/json-spec.html
+#       - name: Create .nojekyll
+#         run: touch docs/html/.nojekyll
 
-      # - name: Create .nojekyll
-      #   run: touch docs/html/.nojekyll
+#       - name: Deploy to GitHub Pages
+#         uses: JamesIves/github-pages-deploy-action@v4.3.3
+#         with:
+#           branch: gh-pages
+#           folder: docs/html
 
-      # - name: Deploy to GitHub Pages
-      #   uses: JamesIves/github-pages-deploy-action@v4.3.3
-      #   with:
-      #     branch: gh-pages
-      #     folder: docs/html
-
-      # - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: gh-pages
-      #     folder: docs/html
-      #     config_file: Doxyfile
+#       # - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+#       #   with:
+#       #     github_token: ${{ secrets.GITHUB_TOKEN }}
+#       #     branch: gh-pages
+#       #     folder: docs/html
+#       #     config_file: Doxyfile
 
 

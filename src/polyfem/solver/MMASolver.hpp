@@ -51,9 +51,9 @@ namespace cppoptlib
 	protected:
 		std::shared_ptr<MMASolverAux> mma;
 
-		void reset(const ProblemType &objFunc, const TVector &x) override
+		void reset(const int ndof) override
 		{
-			Superclass::reset(objFunc, x);
+			Superclass::reset(ndof);
             mma.reset();
 		}
 

@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "MeshUtils.hpp"
 
+#include <polyfem/io/OBJReader.hpp>
+#include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/MshReader.hpp>
-#include <polyfem/utils/OBJ_IO.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/HashUtils.hpp>
 
@@ -25,6 +25,7 @@
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
+using namespace polyfem::io;
 using namespace polyfem::utils;
 
 bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
@@ -262,8 +263,8 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 		}
 	}
 
-	//TODO what happens at the neighs?
-	//Override for simplices
+	// TODO what happens at the neighs?
+	// Override for simplices
 	for (index_t f = 0; f < M.facets.nb(); ++f)
 	{
 		if (M.facets.nb_vertices(f) == 3)
@@ -1018,7 +1019,7 @@ void find_triangle_surface_from_tets(
 	const Eigen::MatrixXi &tets,
 	Eigen::MatrixXi &faces)
 {
-	std::unordered_set<Eigen::Vector3i> tri_to_tet(4 * tets.rows());
+	std::unordered_set<Eigen::Vector3i, HashMatrix> tri_to_tet(4 * tets.rows());
 	for (int i = 0; i < tets.rows(); i++)
 	{
 		tri_to_tet.emplace(tets(i, 0), tets(i, 2), tets(i, 1));
@@ -1131,7 +1132,7 @@ bool polyfem::mesh::read_surface_mesh(
 	}
 	else if (StringUtils::endswith(lowername, ".obj")) // Use specialized OBJ reader function with polyline support
 	{
-		if (!OBJReader::load(mesh_path, vertices, codim_edges, faces))
+		if (!OBJReader::read(mesh_path, vertices, codim_edges, faces))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return false;

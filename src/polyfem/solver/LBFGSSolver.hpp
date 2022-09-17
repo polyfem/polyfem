@@ -23,10 +23,7 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		LBFGSSolver(const json &solver_params)
-			: Superclass(solver_params)
-		{
-		}
+		LBFGSSolver(const json &solver_params);
 
 		std::string name() const override { return "L-BFGS"; }
 
@@ -34,30 +31,18 @@ namespace cppoptlib
 		virtual int default_descent_strategy() override { return 1; }
 
 		using Superclass::descent_strategy_name;
-		std::string descent_strategy_name(int descent_strategy) const override
-		{
-			switch (descent_strategy)
-			{
-			case 1:
-				return "L-BFGS";
-			case 2:
-				return "gradient descent";
-			default:
-				throw std::invalid_argument("invalid descent strategy");
-			}
-		}
+		std::string descent_strategy_name(int descent_strategy) const override;
 
-		void increase_descent_strategy() override
-		{
-			if (this->descent_strategy == 1)
-				this->descent_strategy++;
+		void increase_descent_strategy() override;
 
-			m_bfgs.reset(m_prev_x.size(), m_history_size);
+		void reset(const int ndof) override;
 
-			assert(this->descent_strategy <= 2);
-		}
+		bool compute_update_direction(
+			ProblemType &objFunc,
+			const TVector &x,
+			const TVector &grad,
+			TVector &direction) override;
 
-	protected:
 		LBFGSpp::BFGSMat<Scalar> m_bfgs; // Approximation to the Hessian matrix
 
 		/// The number of corrections to approximate the inverse Hessian matrix.
@@ -70,84 +55,7 @@ namespace cppoptlib
 
 		TVector m_prev_x;    // Previous x
 		TVector m_prev_grad; // Previous gradient
-
-		void reset(const ProblemType &objFunc, const TVector &x) override
-		{
-			Superclass::reset(objFunc, x);
-
-			if (x.size() < m_history_size)
-			{
-				m_history_size = x.size();
-				polyfem::logger().warn("LBFGS history size larger than parameter dimension! Reduce it to parameter dimension!");
-			}
-
-			reset_history(objFunc, x);
-		}
-
-		void reset_history(const ProblemType &objFunc, const TVector &x)
-		{
-			m_bfgs.reset(x.size(), m_history_size);
-			m_prev_x.resize(x.size());
-			m_prev_grad.resize(x.size());
-
-			// Use gradient descent for first iteration
-			this->descent_strategy = 2;
-		}
-
-		void remesh_reset(const ProblemType &objFunc, const TVector &x) override
-		{
-			Superclass::remesh_reset(objFunc, x);
-
-			reset_history(objFunc, x);
-		}
-
-		virtual bool compute_update_direction(
-			ProblemType &objFunc,
-			const TVector &x,
-			const TVector &grad,
-			TVector &direction) override
-		{
-			if (this->descent_strategy == 2)
-			{
-				// Use gradient descent in the first iteration or if the previous iteration failed
-				direction = -grad;
-			}
-			else
-			{
-				// Update s and y
-				// s_{i+1} = x_{i+1} - x_i
-				// y_{i+1} = g_{i+1} - g_i
-				m_bfgs.add_correction(x - m_prev_x, grad - m_prev_grad);
-
-				// Recursive formula to compute d = -H * g
-				m_bfgs.apply_Hv(grad, -Scalar(1), direction);
-			}
-
-			m_prev_x = x;
-			m_prev_grad = grad;
-
-			if (std::isnan(direction.squaredNorm()))
-			{
-				reset_history(objFunc, x);
-				increase_descent_strategy();
-				polyfem::logger().log(
-					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
-					"nan in direction {} (||∇f||={}); reverting to {}",
-					direction.dot(grad), this->descent_strategy_name());
-				return compute_update_direction(objFunc, x, grad, direction);
-			}
-			else if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
-			{
-				reset_history(objFunc, x);
-				increase_descent_strategy();
-				polyfem::logger().log(
-					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
-					"L-BFGS direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-					direction.dot(grad), this->descent_strategy_name());
-				return compute_update_direction(objFunc, x, grad, direction);
-			}
-
-			return true;
-		}
 	};
 } // namespace cppoptlib
+
+#include "LBFGSSolver.tpp"

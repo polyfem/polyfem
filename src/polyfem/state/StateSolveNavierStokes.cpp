@@ -34,7 +34,7 @@ namespace polyfem
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
 
 		Eigen::MatrixXd local_pts;
-		auto &gbases = iso_parametric() ? bases : geom_bases;
+		auto &gbases = geom_bases();
 		if (mesh->dimension() == 2)
 		{
 			if (gbases[0].bases.size() == 3)
@@ -111,7 +111,7 @@ namespace polyfem
 
 			/* apply boundary condition */
 			solve_data.rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, time);
+				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* viscosity */
 			logger().info("Solving diffusion...");
@@ -134,7 +134,7 @@ namespace polyfem
 
 			/* apply boundary condition */
 			solve_data.rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, time);
+				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* export to vtu */
 			save_timestep(time, t, 0, dt);
@@ -145,7 +145,7 @@ namespace polyfem
 	{
 		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		Eigen::MatrixXd current_rhs = rhs;
 
 		StiffnessMatrix velocity_mass;
@@ -185,7 +185,7 @@ namespace polyfem
 			solve_data.rhs_assembler->compute_energy_grad(
 				local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			solve_data.rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
+				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, Eigen::MatrixXd(), time);
 
 			const int prev_size = current_rhs.size();
 			if (prev_size != rhs.size())
@@ -199,7 +199,7 @@ namespace polyfem
 				*this, sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
 				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
 			sol = tmp_sol;
-			time_integrator.update_quantities(sol);
+			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));
 			sol_to_pressure();
 
 			save_timestep(time, t, t0, dt);

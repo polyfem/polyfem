@@ -144,7 +144,7 @@ polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Extra warnings
-target_link_libraries(polyfem PRIVATE warnings::all)
+target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
 
 # Use C++17
@@ -298,7 +298,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     target_link_libraries(${PROJECT_NAME}_bin
         PUBLIC
             polyfem::polyfem
-            warnings::all
+            polyfem::warnings
             CLI11::CLI11
     )
 
@@ -306,7 +306,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     target_link_libraries(shape_optimization
         PUBLIC
             polyfem::polyfem
-            warnings::all
+            polyfem::warnings
             CLI11::CLI11
     )
 
@@ -314,7 +314,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     target_link_libraries(trajectory_optimization
         PUBLIC
             polyfem::polyfem
-            warnings::all
+            polyfem::warnings
             CLI11::CLI11
     )
 
@@ -322,7 +322,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     target_link_libraries(topology_optimization
         PUBLIC
             polyfem::polyfem
-            warnings::all
+            polyfem::warnings
             CLI11::CLI11
     )
 

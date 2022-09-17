@@ -151,12 +151,6 @@ namespace polyfem
 
 			bool stop(const TVector &x) { return false; }
 
-			double heuristic_max_step(const TVector &dx)
-			{
-				assert(state.args["solver"]["nonlinear"].contains("max_step_size"));
-				return state.args["solver"]["nonlinear"]["max_step_size"];
-			};
-
 			void set_project_to_psd(bool val) { project_to_psd = val; }
 			bool is_project_to_psd() const { return project_to_psd; }
 

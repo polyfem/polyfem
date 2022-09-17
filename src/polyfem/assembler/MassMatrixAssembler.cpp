@@ -21,6 +21,7 @@ namespace polyfem
 				StiffnessMatrix mass_mat;
 				ElementAssemblyValues vals;
 				QuadratureVector da;
+				Quadrature quadrature;
 
 				LocalThreadMatStorage()
 				{
@@ -66,10 +67,9 @@ namespace polyfem
 				for (int e = start; e < end; ++e)
 				{
 					ElementAssemblyValues &vals = local_storage.vals;
-					// vals.compute(e, is_volume, bases[e], gbases[e]);
-					cache.compute(e, is_volume, bases[e], gbases[e], vals);
-
-					const Quadrature &quadrature = vals.quadrature;
+					bases[e].compute_mass_quadrature(vals.quadrature);
+					const auto &quadrature = vals.quadrature;
+					vals.compute(e, is_volume, quadrature.points, bases[e], gbases[e]);
 
 					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 					local_storage.da = vals.det.array() * quadrature.weights.array();

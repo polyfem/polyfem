@@ -364,7 +364,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
     in_args["geometry"][0]["mesh"] = path + "/../cross2d.msh";
 
 	State state1(16);
-	state1.init_logger("", spdlog::level::level_enum::info, false);
+	state1.init_logger("", spdlog::level::level_enum::debug, false);
 	state1.init(in_args, false);
 
 	state1.load_mesh();
@@ -380,7 +380,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
 
     in_args["materials"]["type"] = "LinearElasticity";
 	State state2(16);
-	state2.init_logger("", spdlog::level::level_enum::err, false);
+	state2.init_logger("", spdlog::level::level_enum::debug, false);
 	state2.init(in_args, false);
 
 	state2.load_mesh();

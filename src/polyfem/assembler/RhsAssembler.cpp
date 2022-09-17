@@ -649,7 +649,10 @@ namespace polyfem
 		void RhsAssembler::set_bc(
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
-			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs) const
+			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes,
+			const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary,
+			const Eigen::MatrixXd &displacement,
+			Eigen::MatrixXd &rhs) const
 		{
 			if (bc_method_ == "sample")
 				sample_bc(df, local_boundary, bounday_nodes, rhs);
@@ -676,7 +679,7 @@ namespace polyfem
 			}
 
 			// Neumann
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
+			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, trafo;
 			Eigen::VectorXi global_primitive_ids;
 			Eigen::MatrixXd points, normals;
 			Eigen::VectorXd weights;
@@ -698,9 +701,36 @@ namespace polyfem
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					Eigen::MatrixXd ppp(1, size_);
+					ppp = vals.val.row(n);
+
+					trafo = vals.jac_it[n];
+
+					if (displacement.size() >= 0)
+					{
+						assert(size_ == 2 || size_ == 3);
+						deform_mat.resize(size_, size_);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < size_; ++d)
+								{
+									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad_t_m.row(n);
+
+									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+
+					normals.row(n) = normals.row(n) * trafo;
 					normals.row(n).normalize();
 				}
+
 				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 				nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
 
@@ -738,7 +768,7 @@ namespace polyfem
 			}
 		}
 
-		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
+		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const Eigen::MatrixXd &displacement, const double t) const
 		{
 			set_bc(
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
@@ -747,7 +777,7 @@ namespace polyfem
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
 					problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
 				},
-				local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+				local_boundary, bounday_nodes, resolution, local_neumann_boundary, displacement, rhs);
 
 			obstacle_.update_displacement(t, rhs);
 		}
@@ -845,7 +875,7 @@ namespace polyfem
 
 			ElementAssemblyValues vals;
 			// Neumann
-			Eigen::MatrixXd points, uv, normals;
+			Eigen::MatrixXd points, uv, normals, deform_mat;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_primitive_ids;
 			for (const auto &lb : local_neumann_boundary)

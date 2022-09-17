@@ -61,19 +61,19 @@ namespace cppoptlib
 
         Eigen::MatrixXd hess;
 
-		void reset(const ProblemType &objFunc, const TVector &x) override
+		void reset(const int ndof) override
 		{
-			Superclass::reset(objFunc, x);
+			Superclass::reset(ndof);
 
-			reset_history(objFunc, x);
+			reset_history(ndof);
 		}
 
-		void reset_history(const ProblemType &objFunc, const TVector &x)
+		void reset_history(const int ndof)
 		{
-			m_prev_x.resize(x.size());
-			m_prev_grad.resize(x.size());
+			m_prev_x.resize(ndof);
+			m_prev_grad.resize(ndof);
 
-            hess.setIdentity(x.size(), x.size());
+            hess.setIdentity(ndof, ndof);
 
 			// Use gradient descent for first iteration
 			this->descent_strategy = 2;
@@ -83,7 +83,7 @@ namespace cppoptlib
 		{
 			Superclass::remesh_reset(objFunc, x);
 
-			reset_history(objFunc, x);
+			reset_history(x.size());
 		}
 
 		virtual bool compute_update_direction(
@@ -115,7 +115,7 @@ namespace cppoptlib
 
 			if (std::isnan(direction.squaredNorm()))
 			{
-				reset_history(objFunc, x);
+				reset_history(x.size());
 				increase_descent_strategy();
 				polyfem::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
@@ -125,7 +125,7 @@ namespace cppoptlib
 			}
 			else if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
 			{
-				reset_history(objFunc, x);
+				reset_history(x.size());
 				increase_descent_strategy();
 				polyfem::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,

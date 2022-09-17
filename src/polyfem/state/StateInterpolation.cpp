@@ -48,7 +48,7 @@ namespace polyfem
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		result.resize(faces.rows(), actual_dim);
 		result.setConstant(std::numeric_limits<double>::quiet_NaN());
 
@@ -146,7 +146,7 @@ namespace polyfem
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		result.resize(pts.rows(), actual_dim);
 		result.setZero();
 
@@ -267,7 +267,7 @@ namespace polyfem
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		result.resize(faces.rows(), actual_dim);
 		result.setConstant(std::numeric_limits<double>::quiet_NaN());
@@ -425,7 +425,7 @@ namespace polyfem
 		areas.setZero();
 
 		Eigen::MatrixXd local_val;
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		ElementAssemblyValues vals;
 		for (int i = 0; i < int(bases.size()); ++i)
@@ -536,7 +536,7 @@ namespace polyfem
 				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
 				vertices.assign(vtx.begin(), vtx.end());
 			}
-			//TODO poly?
+			// TODO poly?
 			assert((int)vertices.size() == (int)local_pts.rows());
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
@@ -616,7 +616,7 @@ namespace polyfem
 		assert(!problem->is_scalar());
 
 		Eigen::MatrixXd local_val, local_stress, local_mises;
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		int num_quadr_pts = 0;
 		result.resize(disc_orders.sum(), actual_dim == 2 ? 3 : 6);
@@ -800,7 +800,7 @@ namespace polyfem
 		assert(local_pts.cols() == mesh->dimension());
 		assert(fun.cols() == 1);
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const ElementBases &gbs = gbases[el_index];
 		const ElementBases &bs = bases[el_index];
 
@@ -887,7 +887,7 @@ namespace polyfem
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
@@ -964,7 +964,7 @@ namespace polyfem
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
@@ -1040,7 +1040,7 @@ namespace polyfem
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{

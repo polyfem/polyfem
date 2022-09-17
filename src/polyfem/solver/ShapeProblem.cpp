@@ -188,7 +188,7 @@ namespace polyfem
 	ShapeProblem::ShapeProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
 	{
 		optimization_name = "shape";
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const auto &gbases = state.geom_bases();
 
 		// volume constraint
 		has_volume_constraint = false;
@@ -718,7 +718,7 @@ namespace polyfem
 
 		// logger().info("Remeshing ...");
 
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const auto &gbases = state.geom_bases();
 
 		if (V.cols() < 3)
 		{
@@ -945,7 +945,7 @@ namespace polyfem
 		Eigen::VectorXi global_primitive_ids;
 		Eigen::MatrixXd points, normals;
 		Eigen::VectorXd weights;
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const auto &gbases = state.geom_bases();
 
 		Eigen::VectorXd vertex_perturbation;
 		vertex_perturbation.setZero(state.n_geom_bases * dim, 1);
@@ -998,7 +998,7 @@ namespace polyfem
 	void ShapeProblem::build_fixed_nodes()
 	{
 		fixed_nodes.clear();
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const auto &gbases = state.geom_bases();
 
 		Eigen::MatrixXd V;
 		state.get_vf(V, elements);

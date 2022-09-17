@@ -7,7 +7,7 @@
 
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/utils/MshReader.hpp>
+#include <polyfem/io/MshReader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -26,6 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace polyfem::mesh
 {
+	using namespace polyfem::io;
 	using namespace polyfem::utils;
 
 	namespace
@@ -184,7 +185,7 @@ namespace polyfem::mesh
 			std::unique_ptr<Mesh> mesh = create(3, non_conforming);
 			if (mesh->load(path))
 			{
-				//TODO add in_ordered_vertices_, in_ordered_edges_, in_ordered_faces_
+				// TODO add in_ordered_vertices_, in_ordered_edges_, in_ordered_faces_
 				return mesh;
 			}
 		}

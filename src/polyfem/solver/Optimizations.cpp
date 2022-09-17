@@ -112,7 +112,7 @@ namespace polyfem
 
 		// to get the initial velocity
 		{
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			const auto &gbases = state.geom_bases();
 			json rhs_solver_params = state.args["solver"]["linear"];
 			if (!rhs_solver_params.contains("Pardiso"))
 				rhs_solver_params["Pardiso"] = {};
@@ -1045,7 +1045,7 @@ namespace polyfem
 
 		std::shared_ptr<ControlProblem> control_problem = std::make_shared<ControlProblem>(state, j);
 		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		x.setZero(control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() * state.args["time"]["time_steps"].get<int>());
@@ -1068,7 +1068,7 @@ namespace polyfem
 	{
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		auto initial_problem = setup_initial_condition_optimization(state, j, x);
@@ -1076,7 +1076,7 @@ namespace polyfem
 		nlsolver->minimize(*initial_problem, x);
 
 		json solver_info;
-		nlsolver->getInfo(solver_info);
+		nlsolver->get_info(solver_info);
 		std::cout << solver_info << std::endl;
 	}
 
@@ -1084,7 +1084,7 @@ namespace polyfem
 	{
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		auto material_problem = setup_material_optimization(state, j, x);
@@ -1092,7 +1092,7 @@ namespace polyfem
 		nlsolver->minimize(*material_problem, x);
 
 		json solver_info;
-		nlsolver->getInfo(solver_info);
+		nlsolver->get_info(solver_info);
 		std::cout << solver_info << std::endl;
 	}
 
@@ -1100,7 +1100,7 @@ namespace polyfem
 	{
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		auto shape_problem = setup_shape_optimization(state, j, x);
@@ -1108,7 +1108,7 @@ namespace polyfem
 		nlsolver->minimize(*shape_problem, x);
 
 		json solver_info;
-		nlsolver->getInfo(solver_info);
+		nlsolver->get_info(solver_info);
 		std::cout << solver_info << std::endl;
 	}
 
@@ -1116,7 +1116,7 @@ namespace polyfem
 	{
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		auto top_opt = setup_topology_optimization(state, j, x);
@@ -1124,7 +1124,7 @@ namespace polyfem
 		nlsolver->minimize(*top_opt, x);
 
 		json solver_info;
-		nlsolver->getInfo(solver_info);
+		nlsolver->get_info(solver_info);
 		std::cout << solver_info << std::endl;
 	}
 
@@ -1133,14 +1133,14 @@ namespace polyfem
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		auto control_problem = setup_control_optimization(state, j, x);
 		nlsolver->minimize(*control_problem, x);
 
 		json solver_info;
-		nlsolver->getInfo(solver_info);
+		nlsolver->get_info(solver_info);
 		std::cout << solver_info << std::endl;
 	}
 
@@ -1192,14 +1192,14 @@ namespace polyfem
 	{
 		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<GeneralOptimizationProblem>> nlsolver = make_nl_solver<GeneralOptimizationProblem>(opt_nl_params);
-		nlsolver->setLineSearch(opt_nl_params["line_search"]["method"]);
+		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
 		Eigen::VectorXd x;
 		auto general_optimization_problem = setup_general_optimization(state, j, x);
 		nlsolver->minimize(*general_optimization_problem, x);
 
 		json solver_info;
-		nlsolver->getInfo(solver_info);
+		nlsolver->get_info(solver_info);
 		std::cout << solver_info << std::endl;
 	}
 } // namespace polyfem

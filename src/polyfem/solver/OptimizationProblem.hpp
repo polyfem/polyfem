@@ -75,12 +75,6 @@ namespace polyfem
 
 		virtual TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 
-		virtual double heuristic_max_step(const TVector &dx)
-		{
-			assert(opt_nonlinear_params.contains("max_step_size"));
-			return opt_nonlinear_params["max_step_size"];
-		};
-
 		virtual double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 

@@ -179,12 +179,9 @@ namespace polyfem
 	{
 		state_ref_ = state_ref;
 
-		const int ref_n_bases = state_ref_->iso_parametric() ? state_ref_->bases.size() : state_ref_->geom_bases.size();
-		const int n_bases = state.iso_parametric() ? state.bases.size() : state.geom_bases.size();
-
 		std::map<int, std::vector<int>> ref_interested_body_id_to_e;
 		int ref_count = 0;
-		for (int e = 0; e < ref_n_bases; ++e)
+		for (int e = 0; e < state_ref_->bases.size(); ++e)
 		{
 			int body_id = state_ref_->mesh->get_body_id(e);
 			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
@@ -198,7 +195,7 @@ namespace polyfem
 
 		std::map<int, std::vector<int>> interested_body_id_to_e;
 		int count = 0;
-		for (int e = 0; e < n_bases; ++e)
+		for (int e = 0; e < state.bases.size(); ++e)
 		{
 			int body_id = state.mesh->get_body_id(e);
 			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
@@ -237,7 +234,7 @@ namespace polyfem
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
-				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
+				const auto &gbase_ref = state_ref_->geom_bases()[e_ref];
 
 				Eigen::MatrixXd pts_ref;
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
@@ -261,7 +258,7 @@ namespace polyfem
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
-				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
+				const auto &gbase_ref = state_ref_->geom_bases()[e_ref];
 
 				Eigen::MatrixXd pts_ref;
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
@@ -286,7 +283,7 @@ namespace polyfem
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
-				const auto &gbase_ref = state_ref_->iso_parametric() ? state_ref_->bases[e_ref] : state_ref_->geom_bases[e_ref];
+				const auto &gbase_ref = state_ref_->geom_bases()[e_ref];
 
 				Eigen::MatrixXd pts_ref;
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);

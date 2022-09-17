@@ -12,6 +12,14 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
 
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/DampingForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
+
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
@@ -294,9 +302,9 @@ namespace polyfem
 
 	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric)
 	{
-		const auto &cur_bases = (iso_parametric() || !geometric) ? bases : geom_bases;
+		const auto &cur_bases = geometric ? geom_bases() : bases;
 		const int n_elements = int(cur_bases.size());
-		vertices = Eigen::MatrixXd::Zero((iso_parametric() || !geometric) ? n_bases : n_geom_bases, 3);
+		vertices = Eigen::MatrixXd::Zero(geometric ? n_geom_bases : n_bases, 3);
 		faces = Eigen::MatrixXi::Zero(cur_bases.size(), cur_bases[0].bases.size());
 		assembler::ElementAssemblyValues vals;
 		for (int e = 0; e < n_elements; ++e)
@@ -315,7 +323,7 @@ namespace polyfem
 
 	void State::set_v(const Eigen::MatrixXd &vertices)
 	{
-		auto &gbases = iso_parametric() ? bases : geom_bases;
+		auto &gbases = geom_bases();
 		const int n_elements = int(gbases.size());
 		for (int e = 0; e < n_elements; ++e)
 		{
@@ -375,7 +383,7 @@ namespace polyfem
 	 */
 	double State::J_static(const IntegrableFunctional &j)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		double result = 0;
@@ -434,7 +442,7 @@ namespace polyfem
 
 	double State::J_transient_step(const IntegrableFunctional &j, const int step)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const double dt = args["time"]["dt"];
 
 		double result = 0;
@@ -504,7 +512,7 @@ namespace polyfem
 
 	void State::cache_transient_adjoint_quantities(const int current_step)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		int bdf_order = -1;
 		if (args["time"]["integrator"] == "ImplicitEuler")
@@ -524,14 +532,9 @@ namespace polyfem
 
 		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());
 
-		if (is_contact_enabled())
-		{
-			if (diff_cached.size() > 0)
-				diff_cached.back().gradu_h_next = gradu_h_prev;
-			diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, solve_data.nl_problem->get_constraint_set(), solve_data.nl_problem->get_friction_constraint_set()});
-		}
-		else
-			diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, ipc::Constraints(), ipc::FrictionConstraints()});
+		if (diff_cached.size() > 0)
+			diff_cached.back().gradu_h_next = gradu_h_prev;
+		diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints(), solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints()});
 	}
 
 	void State::compute_force_hessian(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
@@ -543,65 +546,24 @@ namespace polyfem
 		}
 		else
 		{
-			if (solve_data.nl_problem)
-			{
-				solve_data.nl_problem->solution_changed(sol);
-				compute_force_hessian_nonlinear(solve_data.nl_problem, hessian, hessian_prev, bdf_order);
-			}
+			solve_data.nl_problem->FullNLProblem::solution_changed(sol);
+			compute_force_hessian_nonlinear(hessian, hessian_prev, bdf_order);
 		}
 	}
 
-	void State::compute_force_hessian_nonlinear(std::shared_ptr<solver::NLProblem> nl, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
+	void State::compute_force_hessian_nonlinear(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
 	{
-		int full_size = nl->get_full_size();
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
-
-		Eigen::VectorXd full;
+		solve_data.nl_problem->FullNLProblem::hessian(sol, hessian);
+		if (problem->is_time_dependent())
 		{
-			if (sol.size() == nl->get_reduced_size())
-				nl->reduced_to_full(sol, full);
-			else
-				full = sol;
-		}
-		assert(full.size() == full_size);
-
-		hessian_prev = StiffnessMatrix(full_size, full_size);
-
-		StiffnessMatrix energy_hessian(full_size, full_size);
-		{
-			if (assembler.is_linear(nl->rhs_assembler.formulation()))
-			{
-				nl->compute_cached_stiffness();
-				energy_hessian = nl->cached_stiffness;
-			}
-			else
-			{
-				assembler.assemble_energy_hessian(nl->rhs_assembler.formulation(), mesh->is_volume(), n_bases, false, bases, gbases, ass_vals_cache, full, nl->mat_cache, energy_hessian);
-			}
-
-			if (problem->is_time_dependent() && damping_assembler.local_assembler().is_valid() && diff_cached.size() > 0)
-			{
-				StiffnessMatrix damping_hessian(full_size, full_size);
-				damping_assembler.assemble_hessian(mesh->is_volume(), n_bases, nl->dt(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian);
-
-				energy_hessian += damping_hessian;
-			}
+			hessian -= mass;
+			hessian /= solve_data.time_integrator->acceleration_scaling();
 		}
 
-		StiffnessMatrix barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-		if (is_contact_enabled())
+		hessian_prev = StiffnessMatrix(sol.size(), sol.size());
+		if (solve_data.friction_form)
 		{
-			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(full, mesh->dimension());
-			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
-
-			const double mu = nl->mu();
-			const double kappa = nl->barrier_stiffness();
-			const double dhat = nl->dhat();
-			const double epsv = nl->epsv_dt();
-
-			barrier_hessian = ipc::compute_barrier_potential_hessian(
-				collision_mesh, displaced_surface, nl->get_constraint_set(), dhat, false);
-			barrier_hessian = collision_mesh.to_full_dof(barrier_hessian);
+			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(sol, mesh->dimension());
 
 			Eigen::MatrixXd displaced_prev;
 			if (diff_cached.size())
@@ -612,54 +574,36 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(displaced_prev - boundary_nodes_pos);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(displaced - boundary_nodes_pos);
 
-			// ipc::FrictionConstraints friction_constraint_set;
-			// ipc::construct_friction_constraint_set(collision_mesh, collision_mesh.vertices(displaced_prev), _constraint_set, dhat, kappa, mu, friction_constraint_set);
-
-			friction_hessian = -ipc::compute_friction_force_jacobian(
-				collision_mesh,
-				collision_mesh.vertices_at_rest(),
-				surface_solution_prev,
-				surface_solution,
-				nl->get_friction_constraint_set(),
-				dhat, kappa, epsv,
-				ipc::FrictionConstraint::DiffWRT::U);
-			friction_hessian = collision_mesh.to_full_dof(friction_hessian);
-
 			hessian_prev = -ipc::compute_friction_force_jacobian(
 				collision_mesh,
 				collision_mesh.vertices_at_rest(),
 				surface_solution_prev,
 				surface_solution,
-				nl->get_friction_constraint_set(),
-				dhat, kappa, epsv,
+				solve_data.friction_form->get_friction_constraint_set(),
+				solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt(),
 				ipc::FrictionConstraint::DiffWRT::Ut);
 			hessian_prev = collision_mesh.to_full_dof(hessian_prev);
 
-			if (nl->get_is_time_dependent())
+			if (problem->is_time_dependent())
 			{
-				double beta = bdf_order < 1 ? std::nan("") : time_integrator::BDF::betas(bdf_order - 1);
-				double acceleration_scaling = beta * beta * nl->dt() * nl->dt();
-				barrier_hessian /= acceleration_scaling;
-				friction_hessian /= acceleration_scaling;
-				hessian_prev /= acceleration_scaling;
+				hessian_prev /= solve_data.time_integrator->acceleration_scaling();
 			}
 		}
 
 		if (problem->is_time_dependent() && damping_assembler.local_assembler().is_valid() && diff_cached.size() > 0)
 		{
-			StiffnessMatrix damping_hessian_prev(full_size, full_size);
-			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, nl->dt(), false, bases, gbases, ass_vals_cache, full, diff_cached.back().u, nl->mat_cache, damping_hessian_prev);
+			utils::SpareMatrixCache mat_cache;
+			StiffnessMatrix damping_hessian_prev(sol.size(), sol.size());
+			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, solve_data.time_integrator->dt(), false, bases, geom_bases(), ass_vals_cache, sol, diff_cached.back().u, mat_cache, damping_hessian_prev);
 
 			hessian_prev += damping_hessian_prev;
 		}
-
-		hessian = energy_hessian + nl->barrier_stiffness() * barrier_hessian + friction_hessian;
 	}
 
 	double State::J_static(const SummableFunctional &j)
 	{
 		std::vector<bool> traversed(n_bases, false);
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		json param;
 		double energy = 0;
 		Eigen::MatrixXd solution = utils::unflatten(sol, mesh->dimension());
@@ -692,7 +636,7 @@ namespace polyfem
 		if (!j.depend_on_u())
 			return;
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		std::vector<bool> traversed(n_bases, false);
 
 		json param;
@@ -740,7 +684,7 @@ namespace polyfem
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		b = Eigen::MatrixXd::Zero(n_bases * actual_dim, 1);
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		const int n_elements = int(bases.size());
 		if (!only_surface)
@@ -942,7 +886,7 @@ namespace polyfem
 
 	void State::compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int dim = mesh->dimension();
 
 		term.setZero(bases.size());
@@ -1002,7 +946,7 @@ namespace polyfem
 
 	void State::compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
@@ -1244,7 +1188,7 @@ namespace polyfem
 	// assumes constant rhs over time
 	void State::compute_shape_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
@@ -1321,13 +1265,13 @@ namespace polyfem
 
 	void State::compute_shape_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
 
-		if (problem->is_scalar())
+		if (!solve_data.damping_form)
 			return;
 
 		const auto params = args["materials"];
@@ -1408,7 +1352,7 @@ namespace polyfem
 
 	void State::compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
@@ -1460,7 +1404,7 @@ namespace polyfem
 
 	void State::compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
@@ -1507,7 +1451,7 @@ namespace polyfem
 
 	void State::compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
@@ -1554,7 +1498,7 @@ namespace polyfem
 
 	void State::compute_mass_derivative_term(const Eigen::MatrixXd &adjoint_sol, const Eigen::MatrixXd &velocity, Eigen::VectorXd &term)
 	{
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		const int n_elements = int(bases.size());
@@ -1610,12 +1554,12 @@ namespace polyfem
 		if (!is_contact_enabled())
 			return;
 
-		const double dhat = solve_data.nl_problem->dhat();
+		const double dhat = solve_data.contact_form->dhat();
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
 		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
-		term = -solve_data.nl_problem->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
+		term = -solve_data.contact_form->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
 
 		// const double eps = 1e-6;
 		// Eigen::MatrixXd target = dq_h;
@@ -1650,16 +1594,16 @@ namespace polyfem
 	void State::compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraint_set, Eigen::VectorXd &term)
 	{
 		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!is_contact_enabled() || args["contact"]["friction_coefficient"].get<double>() == 0)
+		if (!solve_data.friction_form)
 			return;
 
 		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
 		Eigen::MatrixXd U_prev = collision_mesh.vertices(utils::unflatten(prev_solution, mesh->dimension()));
 		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
 
-		const double kappa = solve_data.nl_problem->barrier_stiffness();
-		const double dhat = solve_data.nl_problem->dhat();
-		const double epsv = solve_data.nl_problem->epsv_dt();
+		const double kappa = solve_data.contact_form->barrier_stiffness();
+		const double dhat = solve_data.contact_form->dhat();
+		const double epsv = solve_data.friction_form->epsv_dt();
 
 		StiffnessMatrix hess = ipc::compute_friction_force_jacobian(
 			collision_mesh,
@@ -1686,7 +1630,7 @@ namespace polyfem
 		Eigen::VectorXd &one_form)
 	{
 		assert(!problem->is_time_dependent());
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		Eigen::MatrixXd adjoint_sol;
 		solve_adjoint(j, adjoint_sol);
@@ -1699,8 +1643,11 @@ namespace polyfem
 		if (j.depend_on_u() || j.depend_on_gradu())
 		{
 			compute_shape_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
-			compute_derivative_contact_term(solve_data.nl_problem->get_constraint_set(), sol, adjoint_sol, contact_term);
-			// compute_derivative_friction_term(sol, sol, adjoint_sol, solve_data.nl_problem->get_friction_constraint_set(), friction_term);
+			if (is_contact_enabled())
+				compute_derivative_contact_term(solve_data.contact_form->get_constraint_set(), sol, adjoint_sol, contact_term);
+			else
+				contact_term.setZero(elasticity_term.size());
+			// compute_derivative_friction_term(sol, sol, adjoint_sol, solve_data.friction_form->get_friction_constraint_set(), friction_term);
 			one_form += elasticity_term + contact_term; // + friction_term;
 		}
 	}
@@ -1755,7 +1702,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(prev_solution, problem_dim));
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(solution, problem_dim));
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt(), 0, true);
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt(), 0, true);
 
 			one_form += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * dt);
 		}
@@ -1796,7 +1743,7 @@ namespace polyfem
 	void State::dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(!problem->is_time_dependent());
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		Eigen::MatrixXd adjoint_sol;
 		solve_adjoint(j, adjoint_sol);
@@ -1811,7 +1758,7 @@ namespace polyfem
 	void State::dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(!problem->is_time_dependent());
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		Eigen::MatrixXd adjoint_sol;
 		solve_adjoint(j, adjoint_sol);
@@ -1837,8 +1784,8 @@ namespace polyfem
 		if (order >= 1)
 		{
 			const bool use_bases = order > 1;
-			const int n_current_bases = (iso_parametric() || use_bases) ? n_bases : n_geom_bases;
-			const auto &current_bases = (iso_parametric() || use_bases) ? bases : geom_bases;
+			const int n_current_bases = use_bases ? n_bases : n_geom_bases;
+			const auto &current_bases = use_bases ? bases : geom_bases();
 			discrete_field.setZero(n_current_bases * actual_dim, 1);
 
 			for (int e = 0; e < bases.size(); e++)
@@ -1889,7 +1836,7 @@ namespace polyfem
 
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
 		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
@@ -2006,7 +1953,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			Eigen::VectorXd force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
+			Eigen::VectorXd force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt());
 			Eigen::VectorXd full_force = collision_mesh.to_full_dof(force);
 			one_form(2 * bases.size()) += (adjoint_p[t].array() * full_force.array()).sum() / (beta_dt * mu);
 
@@ -2094,7 +2041,10 @@ namespace polyfem
 				compute_mass_derivative_term(adjoint_nu[i], velocity, mass_term);
 				compute_shape_derivative_elasticity_term(diff_cached[i].u, -adjoint_p[i], elasticity_term);
 				compute_shape_derivative_damping_term(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
-				compute_derivative_contact_term(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+				if (is_contact_enabled())
+					compute_derivative_contact_term(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+				else
+					contact_term.setZero(mass_term.size());
 				compute_derivative_friction_term(diff_cached[i - 1].u, diff_cached[i].u, -adjoint_p[i], diff_cached[i].friction_constraint_set, friction_term);
 
 				contact_term /= beta_dt * beta_dt;
@@ -2146,7 +2096,7 @@ namespace polyfem
 
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
 		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
@@ -2251,7 +2201,7 @@ namespace polyfem
 
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		const auto &gbases = geom_bases();
 
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
 		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
@@ -2398,7 +2348,7 @@ namespace polyfem
 			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
+			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt());
 
 			one_form(2 * bases.size()) += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta_dt * mu);
 
@@ -2489,7 +2439,7 @@ namespace polyfem
 				Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
 				Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
 
-				auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.nl_problem->dhat(), solve_data.nl_problem->barrier_stiffness(), solve_data.nl_problem->epsv_dt());
+				auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt());
 
 				local_storage.val += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta * mu * dt);
 			}
@@ -2603,7 +2553,10 @@ namespace polyfem
 			compute_mass_derivative_term(adjoint_nu[i], velocity, mass_term);
 			compute_shape_derivative_elasticity_term(diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			compute_shape_derivative_damping_term(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
-			compute_derivative_contact_term(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+			if (is_contact_enabled())
+				compute_derivative_contact_term(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+			else
+				contact_term.setZero(mass_term.size());
 			compute_derivative_friction_term(diff_cached[i - 1].u, diff_cached[i].u, -adjoint_p[i], friction_constraint_set, friction_term);
 
 			contact_term /= beta_dt * beta_dt;

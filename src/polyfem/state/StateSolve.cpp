@@ -1,38 +1,30 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace io;
 	using namespace utils;
 
 	void State::init_solve()
 	{
 		POLYFEM_SCOPED_TIMER("Setup RHS");
 
-		json rhs_solver_params = args["solver"]["linear"];
-		if (!rhs_solver_params.contains("Pardiso"))
-			rhs_solver_params["Pardiso"] = {};
-		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+		logger().info("Solve using {} linear solver", args["solver"]["linear"]["solver"].get<std::string>());
 
-		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
-
-		solve_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, gbases, ass_vals_cache, formulation(),
-			*problem, args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"],
-			args["solver"]["linear"]["precond"], rhs_solver_params);
+		solve_data.rhs_assembler = build_rhs_assembler();
 
 		initial_solution(sol);
 
 		if (assembler.is_mixed(formulation()))
 		{
 			pressure.resize(0, 0);
-			const int prev_size = sol.size();
 			sol.conservativeResize(rhs.size(), sol.cols());
 			// Zero initial pressure
-			sol.middleRows(prev_size, n_pressure_bases).setZero();
+			sol.middleRows(n_bases * mesh->dimension(), n_pressure_bases).setZero();
 			sol(sol.size() - 1) = 0;
 
 			sol_to_pressure();
@@ -83,7 +75,7 @@ namespace polyfem
 	int State::remove_pure_neumann_singularity(StiffnessMatrix &A) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const auto& gbases = iso_parametric() ? bases : geom_bases;
+		const auto& gbases = geom_bases();
 		if (formulation() == "Laplacian")
 		{
 			Eigen::VectorXd coeffs(n_bases);
@@ -316,18 +308,16 @@ namespace polyfem
 			return 0;
 	}
 
-	int State::remove_pure_periodic_singularity(StiffnessMatrix &A) const
+	void State::pure_periodic_lagrange_multiplier(Eigen::MatrixXd &multipliers) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const auto& gbases = iso_parametric() ? bases : geom_bases;
 		if (formulation() == "Laplacian")
 		{
-			Eigen::VectorXd coeffs(n_bases);
-			coeffs.setZero();
+			multipliers.setZero(n_bases, 1);
 			for (int e = 0; e < bases.size(); e++)
 			{
 				ElementAssemblyValues vals;
-				vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], geom_bases()[e], vals);
 
 				const int n_loc_bases = int(vals.basis_values.size());
 				for (int i = 0; i < n_loc_bases; ++i) 
@@ -336,47 +326,18 @@ namespace polyfem
 					for (size_t ii = 0; ii < val.global.size(); ++ii) 
 					{
 						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-						coeffs(val.global[ii].index) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+						multipliers(val.global[ii].index) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 					}
 				}
 			}
-			// Eigen::VectorXd test_func;
-			// test_func.setOnes(n_bases, 1);
-			// Eigen::VectorXd coeffs = mass * test_func;
-
-			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(A.nonZeros() + coeffs.size() * 2);
-			for (int k = 0; k < A.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(A, k); it; ++it)
-				{
-					entries.emplace_back(it.row(), it.col(), it.value());
-				}
-			}
-
-			for (int k = 0; k < coeffs.size(); k++)
-			{
-				entries.emplace_back(k, A.cols(), coeffs(k));
-				entries.emplace_back(A.rows(), k, coeffs(k));
-			}
-
-			StiffnessMatrix A_extended(A.rows()+1, A.cols()+1);
-			A_extended.setFromTriplets(entries.begin(), entries.end());
-			std::swap(A, A_extended);
-
-			return 1;
 		}
 		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean" || formulation() == "Stokes")
 		{
-			Eigen::MatrixXd coeffs(n_bases * problem_dim, mesh->dimension());
-			coeffs.setZero();
-
-			// coeffs = mass * test_func;
-
+			multipliers.setZero(n_bases * problem_dim, problem_dim);
 			for (int e = 0; e < bases.size(); e++)
 			{
 				ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
+				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], geom_bases()[e], vals);
 
 				const int n_loc_bases = int(vals.basis_values.size());
 				for (int i = 0; i < n_loc_bases; ++i) 
@@ -385,38 +346,44 @@ namespace polyfem
 					for (size_t ii = 0; ii < val.global.size(); ++ii) 
 					{
 						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-						for (int k = 0; k < mesh->dimension(); k++)
-							coeffs(val.global[ii].index * problem_dim + k, k) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+						for (int k = 0; k < problem_dim; k++)
+							multipliers(val.global[ii].index * problem_dim + k, k) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 					}
 				}
 			}
-			
-			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(A.nonZeros() + coeffs.size() * 2);
-			for (int k = 0; k < A.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(A, k); it; ++it)
-				{
-					entries.emplace_back(it.row(), it.col(), it.value());
-				}
-			}
-
-			for (int i = 0; i < coeffs.rows(); i++)
-			{
-				for (int j = 0; j < coeffs.cols(); j++)
-				{
-					entries.emplace_back(i, A.cols() + j, coeffs(i, j));
-					entries.emplace_back(A.rows() + j, i, coeffs(i, j));
-				}
-			}
-
-			StiffnessMatrix A_extended(A.rows()+coeffs.cols(), A.cols()+coeffs.cols());
-			A_extended.setFromTriplets(entries.begin(), entries.end());
-			std::swap(A, A_extended);
-
-			return problem_dim;
 		}
 		else
-			return 0;
+			multipliers.resize(0, 0);
+	}
+
+	int State::remove_pure_periodic_singularity(StiffnessMatrix &A) const
+	{
+		Eigen::MatrixXd coeffs;
+		pure_periodic_lagrange_multiplier(coeffs);
+
+		std::vector<Eigen::Triplet<double>> entries;
+		entries.reserve(A.nonZeros() + coeffs.size() * 2);
+		for (int k = 0; k < A.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(A, k); it; ++it)
+			{
+				entries.emplace_back(it.row(), it.col(), it.value());
+			}
+		}
+
+		for (int k = 0; k < coeffs.rows(); k++)
+		{
+			for (int j = 0; j < coeffs.cols(); j++)
+			{
+				entries.emplace_back(k, A.cols() + j, coeffs(k, j));
+				entries.emplace_back(A.rows() + j, k, coeffs(k, j));
+			}
+		}
+
+		StiffnessMatrix A_extended(A.rows()+coeffs.cols(), A.cols()+coeffs.cols());
+		A_extended.setFromTriplets(entries.begin(), entries.end());
+		std::swap(A, A_extended);
+
+		return coeffs.cols();
 	}
 } // namespace polyfem

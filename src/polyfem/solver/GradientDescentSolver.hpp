@@ -49,9 +49,9 @@ namespace cppoptlib
 		}
 
 	protected:
-		void reset(const ProblemType &objFunc, const TVector &x) override
+		void reset(const int ndof) override
 		{
-			Superclass::reset(objFunc, x);
+			Superclass::reset(ndof);
 			this->descent_strategy = 1;
 		}
 

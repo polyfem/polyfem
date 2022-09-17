@@ -87,7 +87,7 @@ namespace
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				solver_args["nonlinear"], solver_args["linear"]["solver"], solver_args["linear"]["precond"]);
+				solver_args["nonlinear"], solver_args["linear"]);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
@@ -129,12 +129,12 @@ void State::solve_nonlinear_homogenization()
             homo_problem->full_to_reduced(sol.col(i * dim + j), tmp_sol);
 
             std::shared_ptr<cppoptlib::NonlinearSolver<NLHomogenizationProblem>> nl_solver = make_nl_homo_solver<NLHomogenizationProblem>(args["solver"]);
-            nl_solver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
+            nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
             homo_problem->init(tmp_sol);
             nl_solver->minimize(*homo_problem, tmp_sol);
 
             json nl_solver_info;
-            nl_solver->getInfo(nl_solver_info);
+            nl_solver->get_info(nl_solver_info);
             solver_info.push_back(
                 {{"type", "rc"},
                  {"info", nl_solver_info}});
@@ -217,7 +217,7 @@ void State::solve_linear_homogenization()
 double State::assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &solution, const int i, const int j)
 {
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
 
     assert(solution.cols() == 1);
     assert(solution.rows() == n_bases * dim);
@@ -273,7 +273,7 @@ maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
 void State::assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const int i, const int j)
 {
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
 
     assert(solution.cols() == 1);
     assert(solution.rows() == n_bases * dim);
@@ -338,7 +338,7 @@ maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
 void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const int i, const int j)
 {
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
 
     assert(solution.cols() == 1);
     assert(solution.rows() == n_bases * dim);
@@ -454,7 +454,7 @@ maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
 void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution)
 {
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
     const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
     int precond_num = problem_dim * n_bases;
 
@@ -581,7 +581,7 @@ void State::compute_homogenized_tensor(Eigen::MatrixXd &C_H)
     }
 
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
     RowVectorNd min, max;
     mesh->bounding_box(min, max);
     double volume = 1;
@@ -749,7 +749,7 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     assemble_stiffness_mat();
     
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
     
     std::vector<std::pair<int, int>> unit_disp_ids;
     if (dim == 2)
@@ -981,7 +981,7 @@ void State::homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen:
     Eigen::MatrixXd adjoint;
     solve_adjoint_homogenize_linear_elasticity(sol, adjoint);
 
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
 
     grad.setZero(dim * n_geom_bases, C_H.size());
 
@@ -1109,7 +1109,7 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
     assemble_stiffness_mat();
     
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
     
     std::vector<std::pair<int, int>> unit_disp_ids;
     if (dim == 2)
@@ -1384,7 +1384,7 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     }
     
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
 
     // assemble stiffness
     {
@@ -1399,11 +1399,11 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
         fluid_density.init_multimaterial(fluid_density_mat);
 
         StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, fluid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
-        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
+        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, fluid_density, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
+        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
 
-        assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
+        assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, geom_bases(), ass_vals_cache, mass);
 
         AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / args["materials"]["solid_permeability"].get<double>(), mixed_stiffness, pressure_stiffness, stiffness);
     }
@@ -1541,7 +1541,7 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     }
     
     const int dim = mesh->dimension();
-    const auto &gbases = iso_parametric() ? bases : geom_bases;
+    const auto &gbases = geom_bases();
 
     // assemble stiffness
     {
@@ -1556,11 +1556,11 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
         fluid_density.init_multimaterial(fluid_density_mat);
 
         StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, fluid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
-        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
+        assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, fluid_density, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
+        assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+        assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
 
-        assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
+        assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, solid_density, bases, geom_bases(), ass_vals_cache, mass);
 
         AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, dim, use_avg_pressure ? assembler.is_fluid(formulation()) : false, velocity_stiffness + mass / args["materials"]["solid_permeability"].get<double>(), mixed_stiffness, pressure_stiffness, stiffness);
     }

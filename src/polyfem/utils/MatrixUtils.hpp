@@ -36,31 +36,6 @@ namespace polyfem
 			return I;
 		}
 
-		/// Reads a matrix from a file. Determines the file format based on the path's extension.
-		template <typename T>
-		bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
-		/// Writes a matrix to a file. Determines the file format based on the path's extension.
-		template <typename Mat>
-		bool write_matrix(const std::string &path, const Mat &mat);
-
-		template <typename T>
-		bool read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
-		template <typename Mat>
-		bool write_matrix_ascii(const std::string &path, const Mat &mat);
-
-		template <typename T>
-		bool read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
-		template <typename Mat>
-		bool write_matrix_binary(const std::string &path, const Mat &mat);
-
-		bool write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat);
-
-		template <typename T>
-		bool import_matrix(const std::string &path, const json &import, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
-
 		class SpareMatrixCache
 		{
 		public:
@@ -117,36 +92,28 @@ namespace polyfem
 			}
 		};
 
-		// Flatten rowwises
+		/// Flatten rowwises
 		Eigen::VectorXd flatten(const Eigen::MatrixXd &X);
 
-		// Unflatten rowwises, so every dim elements in x become a row.
+		/// Unflatten rowwises, so every dim elements in x become a row.
 		Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim);
 
 		/// @brief Lump each row of a matrix into the diagonal.
 		/// @param M Matrix to lump.
 		/// @return Lumped matrix.
 		Eigen::SparseMatrix<double> lump_matrix(const Eigen::SparseMatrix<double> &M);
+
+		/// @brief Map a full size matrix to a reduced one by dropping rows and columns.
+		/// @param[in] full_size Number of variables in the full system.
+		/// @param[in] reduced_size Number of variables in the reduced system.
+		/// @param[in] removed_vars Indices of the variables (rows and columns of full) to remove.
+		/// @param[in] full Full size matrix.
+		/// @param[out] reduced Output reduced size matrix.
+		void full_to_reduced_matrix(
+			const int full_size,
+			const int reduced_size,
+			const std::vector<int> &removed_vars,
+			const StiffnessMatrix &full,
+			StiffnessMatrix &reduced);
 	} // namespace utils
 } // namespace polyfem
-
-namespace std
-{
-	// https://github.com/ethz-asl/map_api/blob/master/map-api-common/include/map-api-common/eigen-hash.h
-	template <typename Scalar, int Rows, int Cols>
-	struct hash<Eigen::Matrix<Scalar, Rows, Cols>>
-	{
-		// https://wjngkoh.wordpress.com/2015/03/04/c-hash-function-for-eigen-matrix-and-vector/
-		size_t operator()(const Eigen::Matrix<Scalar, Rows, Cols> &matrix) const
-		{
-			size_t seed = 0;
-			for (size_t i = 0; i < matrix.size(); ++i)
-			{
-				Scalar elem = *(matrix.data() + i);
-				seed ^=
-					std::hash<Scalar>()(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-			}
-			return seed;
-		}
-	};
-} // namespace std

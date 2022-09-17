@@ -1,6 +1,7 @@
 #include "ExpressionValue.hpp"
+
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/PI.h>
 
@@ -9,6 +10,8 @@
 
 namespace polyfem
 {
+	using namespace io;
+
 	namespace utils
 	{
 		static double min(double a, double b) { return a < b ? a : b; }

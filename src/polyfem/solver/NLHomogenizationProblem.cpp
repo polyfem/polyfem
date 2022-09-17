@@ -7,7 +7,6 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
-#include <polyfem/utils/OBJ_IO.hpp>
 
 #include <igl/write_triangle_mesh.h>
 
@@ -114,7 +113,7 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			// const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			// const auto &gbases = state.geom_bases();
 			// assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
 			state.assemble_neohookean_homogenization_gradient(grad, full, index[0], index[1]);
 

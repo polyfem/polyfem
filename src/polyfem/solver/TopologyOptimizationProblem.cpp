@@ -190,7 +190,7 @@ namespace polyfem
 	{
 		double val = 0;
 		auto filtered_x = apply_filter(x);
-		auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		auto &gbases = state.geom_bases();
 		for (int e = 0; e < state.bases.size(); e++)
 		{
             assembler::ElementAssemblyValues vals;

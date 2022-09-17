@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -19,7 +18,7 @@
             "initial_conditions",
             "output",
             "input",
-            "authen_t1"
+            "tests"
         ],
         "doc": "Root of the configuration file."
     },
@@ -30,16 +29,16 @@
         "extensions": [
             ".json"
         ],
-        "doc": "Path to common settings will patch the current file"
+        "doc": "Path to common settings will patch the current file."
     },
     {
         "pointer": "/root_path",
         "default": "",
         "type": "string",
-        "doc": "path for all relative paths, set automatically to the folder containing this json"
+        "doc": "Path for all relative paths, set automatically to the folder containing this json."
     },
     {
-        "pointer": "/authen_t1",
+        "pointer": "/tests",
         "default": null,
         "type": "object",
         "optional": [
@@ -49,57 +48,74 @@
             "err_linf",
             "err_linf_grad",
             "err_lp",
-            "margin"
+            "margin",
+            "time_steps"
         ],
-        "doc": "use to test to compare different norms of solutions"
+        "doc": "Used to test to compare different norms of solutions."
     },
     {
-        "pointer": "/authen_t1/err_h1",
+        "pointer": "/tests/err_h1",
         "default": 0,
         "type": "float",
-        "doc": "reference h1 solution's norm"
+        "doc": "Reference h1 solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_h1_semi",
+        "pointer": "/tests/err_h1_semi",
         "default": 0,
         "type": "float",
-        "doc": "reference h1 seminorm solution's norm"
+        "doc": "Reference h1 seminorm solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_l2",
+        "pointer": "/tests/err_l2",
         "default": 0,
         "type": "float",
-        "doc": "reference l2 solution's norm"
+        "doc": "Reference $L^2$ solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_linf",
+        "pointer": "/tests/err_linf",
         "default": 0,
         "type": "float",
-        "doc": "reference linf solution's norm"
+        "doc": "Reference $L^\\infty$ solution's norm."
     },
     {
-        "pointer": "/authen_t1/err_linf_grad",
+        "pointer": "/tests/err_linf_grad",
         "default": 0,
         "type": "float",
-        "doc": "reference linf solution's gradient norm"
+        "doc": "Reference $L^\\infty$ solution's gradient norm."
     },
     {
-        "pointer": "/authen_t1/err_lp",
+        "pointer": "/tests/err_lp",
         "default": 0,
         "type": "float",
-        "doc": "reference l8 solution's gradient norm"
+        "doc": "Reference $L^8$ solution's gradient norm."
     },
     {
-        "pointer": "/authen_t1/margin",
-        "default": 0,
+        "pointer": "/tests/margin",
+        "default": 1e-5,
         "type": "float",
-        "doc": "reference tolerance used in tests"
+        "doc": "Reference tolerance used in tests."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Number of time steps to test."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "type": "string",
+        "options": [
+            "all",
+            "static"
+        ],
+        "doc": "Number of time steps to test."
     },
     {
         "pointer": "/geometry",
         "type": "list",
         "min": 1,
-        "doc": "List of /geometry objects."
+        "doc": "List of geometry objects."
     },
     {
         "pointer": "/geometry/*",
@@ -128,7 +144,9 @@
         "extensions": [
             ".obj",
             ".msh",
-            ".stl"
+            ".stl",
+            ".ply",
+            ".mesh"
         ],
         "doc": "Path of the mesh file to load."
     },
@@ -139,7 +157,7 @@
             "mesh"
         ],
         "default": "mesh",
-        "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc"
+        "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
     },
     {
         "pointer": "/geometry/*/extract",
@@ -151,7 +169,7 @@
             "surface"
         ],
         "default": "volume",
-        "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh"
+        "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh."
     },
     {
         "pointer": "/geometry/*/transformation",
@@ -170,36 +188,36 @@
         "pointer": "/geometry/*/transformation/rotation_mode",
         "type": "string",
         "default": "xyz",
-        "doc": "Type of rotation, supported are any permutation of (x[0-1]|y[0-1]|z[0-1), axis_angle, quaternion, or rotation_vector"
+        "doc": "Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector."
     },
     {
         "pointer": "/geometry/*/transformation/translation",
         "type": "list",
         "default": [],
-        "doc": "Translate, 2 entries for 2D problems, 3 entries for 3D problems."
+        "doc": "Translate (two entries for 2D problems or three entries for 3D problems)."
     },
     {
         "pointer": "/geometry/*/transformation/rotation",
         "type": "list",
         "default": [],
-        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode"
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D, three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode."
     },
     {
         "pointer": "/geometry/*/transformation/scale",
         "type": "list",
         "default": [],
-        "doc": "Scale by specified factors along axes, 2 entries for 2D problems, 3 entries for 3D problems."
+        "doc": "Scale by specified factors along axes (two entries for 2D problems or three entries for 3D problems)."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions",
         "type": "float",
         "default": 1,
-        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions",
         "type": "list",
-        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions/*",
@@ -225,7 +243,7 @@
         "pointer": "/geometry/*/volume_selection",
         "type": "int",
         "default": -1,
-        "doc": "Assign specified id to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0))."
+        "doc": "Assign specified ID to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0))."
     },
     {
         "pointer": "/geometry/*/volume_selection",
@@ -245,7 +263,7 @@
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "list",
-        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/volume_selection",
@@ -253,7 +271,7 @@
         "extensions": [
             ".txt"
         ],
-        "doc": "Load ids from a file; the file is required to have one id per volume element of the geometry"
+        "doc": "Load ids from a file; the file is required to have one ID per volume element of the geometry"
     },
     {
         "pointer": "/geometry/*/volume_selection/*",
@@ -267,7 +285,7 @@
         ],
         "default": null,
         "typename": "box",
-        "doc": "Assign the id to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/volume_selection/*",
@@ -282,7 +300,7 @@
         ],
         "default": null,
         "typename": "sphere",
-        "doc": "Assign the id to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+        "doc": "Assign the ID to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
         "pointer": "/geometry/*/volume_selection/*",
@@ -298,7 +316,7 @@
         ],
         "default": null,
         "typename": "plane",
-        "doc": "Assign the id to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/volume_selection/*",
@@ -408,7 +426,7 @@
         "pointer": "/geometry/*/surface_selection",
         "type": "int",
         "default": null,
-        "doc": "Assign specified id to all surface elements of the geometry"
+        "doc": "Assign specified ID to all surface elements of the geometry"
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -433,7 +451,7 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "list",
-        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/surface_selection",
@@ -441,7 +459,7 @@
         "extensions": [
             ".txt"
         ],
-        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one id for each; each triple must correspond to a surface element"
+        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one ID for each; each triple must correspond to a surface element"
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -455,7 +473,7 @@
         ],
         "default": null,
         "typename": "box",
-        "doc": "Assign the id to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -470,7 +488,7 @@
         ],
         "default": null,
         "typename": "sphere",
-        "doc": "Assign the id to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+        "doc": "Assign the ID to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -486,7 +504,7 @@
         ],
         "default": null,
         "typename": "plane",
-        "doc": "Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -719,6 +737,7 @@
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
+            "mass_quadrature_order",
             "poly_bases",
             "integral_constraints",
             "n_harmonic_samples",
@@ -774,6 +793,12 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
+    },
+    {
+        "pointer": "/space/advanced/mass_quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
     },
     {
         "pointer": "/space/advanced/poly_bases",
@@ -835,7 +860,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "The time parameters: start time t0, end time tend, time step dt. "
+        "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
     {
         "pointer": "/time",
@@ -850,7 +875,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "The time parameters: start time t0, time step dt, number of time steps. "
+        "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
     {
         "pointer": "/time",
@@ -865,7 +890,7 @@
             "newmark",
             "BDF"
         ],
-        "doc": "The time parameters: start time t0, end time tend, number of time steps. "
+        "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
     {
         "pointer": "/time/t0",
@@ -884,7 +909,7 @@
         "pointer": "/time/dt",
         "type": "float",
         "min": 0,
-        "doc": "Delta t"
+        "doc": "Time step size $\\Delta t$"
     },
     {
         "pointer": "/time/time_steps",
@@ -957,31 +982,33 @@
         "pointer": "/contact/enabled",
         "default": false,
         "type": "bool",
-        "doc": "True if contact handling is enabled"
+        "doc": "True if contact handling is enabled."
     },
     {
         "pointer": "/contact/dhat",
         "default": 0.001,
+        "min": 0,
         "type": "float",
-        "doc": "IPC barrier function parameter (see IPC paper)"
+        "doc": "Contact barrier activation distance."
     },
     {
         "pointer": "/contact/dhat_percentage",
         "default": 0.8,
         "type": "float",
-        "doc": "dhat as percentage of the diagonal of the bounding box"
+        "doc": "$\\hat{d}$ as percentage of the diagonal of the bounding box"
     },
     {
         "pointer": "/contact/epsv",
         "default": 0.001,
+        "min": 0,
         "type": "float",
-        "doc": "IPC friction smoothing parameter (see IPC paper) "
+        "doc": "Friction smoothing parameter."
     },
     {
         "pointer": "/contact/friction_coefficient",
         "default": 0,
         "type": "float",
-        "doc": "Friction Coefficient"
+        "doc": "Coefficient of friction (global)"
     },
     {
         "pointer": "/solver",
@@ -997,7 +1024,7 @@
             "ignore_inertia",
             "advanced"
         ],
-        "doc": "The settings for the solver including Linear solver, nonlinear solver, and some advanced options"
+        "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
     {
         "pointer": "/solver/linear",
@@ -1005,21 +1032,404 @@
         "type": "object",
         "optional": [
             "solver",
-            "precond"
+            "precond",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES",
+            "Pardiso",
+            "Hypre",
+            "AMGCL"
         ],
-        "doc": "Settings for linear solver"
+        "doc": "Settings for the linear solver."
     },
     {
         "pointer": "/solver/linear/solver",
         "default": "",
         "type": "string",
-        "doc": "Linear solver type"
+        "doc": "Linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
     },
     {
         "pointer": "/solver/linear/precond",
         "default": "",
         "type": "string",
-        "doc": "Preconditioner for iterative linear solver"
+        "doc": "Preconditioner used if using an iterative linear solver.",
+        "options": [
+            "Eigen::IdentityPreconditioner",
+            "Eigen::DiagonalPreconditioner",
+            "Eigen::IncompleteCholesky",
+            "Eigen::LeastSquareDiagonalPreconditioner",
+            "Eigen::IncompleteLUT"
+        ]
+    },
+    {
+        "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's Least Squares Conjugate Gradient solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::DGMRES",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's DGMRES solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::ConjugateGradient",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's Conjugate Gradient solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::BiCGSTAB",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's BiCGSTAB solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::GMRES",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's GMRES solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::MINRES",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Eigen's MINRES solver."
+    },
+    {
+        "pointer": "/solver/linear/Pardiso",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "mtype"
+        ],
+        "doc": "Settings for the Pardiso solver."
+    },
+    {
+        "pointer": "/solver/linear/Hypre",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_iter",
+            "pre_max_iter",
+            "tolerance"
+        ],
+        "doc": "Settings for the Hypre solver."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solver",
+            "precond"
+        ],
+        "doc": "Settings for the AMGCL solver."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::LeastSquaresConjugateGradient/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::DGMRES/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::DGMRES/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::ConjugateGradient/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::ConjugateGradient/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::BiCGSTAB/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::BiCGSTAB/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::GMRES/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::GMRES/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::MINRES/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Eigen::MINRES/tolerance",
+        "default": 1e-12,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/Pardiso/mtype",
+        "default": 11,
+        "type": "int",
+        "options": [1, 2, -2, 3, 4, -4, 6, 11, 13],
+        "doc": "Matrix type."
+    },
+    {
+        "pointer": "/solver/linear/Hypre/max_iter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/Hypre/pre_max_iter",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of pre iterations."
+    },
+    {
+        "pointer": "/solver/linear/Hypre/tolerance",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "tol",
+            "maxiter",
+            "type"
+        ],
+        "doc": "Solver settings for the AMGCL."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "relax",
+            "class",
+            "max_levels",
+            "direct_coarse",
+            "ncycle",
+            "coarsening"
+        ],
+        "doc": "Preconditioner settings for the AMGCL."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver/maxiter",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver/tol",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Convergence tolerance."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/solver/type",
+        "default": "cg",
+        "type": "string",
+        "doc": "Type of solver to use."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "degree",
+            "type",
+            "power_iters",
+            "higher",
+            "lower",
+            "scale"
+        ],
+        "doc": "Preconditioner settings for the AMGCL."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/class",
+        "default": "amg",
+        "type": "string",
+        "doc": "Type of preconditioner to use."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/max_levels",
+        "default": 6,
+        "type": "int",
+        "doc": "Maximum number of levels."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/direct_coarse",
+        "default": false,
+        "type": "bool",
+        "doc": "Use direct solver for the coarsest level."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/ncycle",
+        "default": 2,
+        "type": "int",
+        "doc": "Number of cycles."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "type",
+            "estimate_spectral_radius",
+            "relax",
+            "aggr"
+        ],
+        "doc": "Coarsening parameters."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/degree",
+        "default": 16,
+        "type": "int",
+        "doc": "Degree of the polynomial."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/type",
+        "default": "chebyshev",
+        "type": "string",
+        "doc": "Type of relaxation to use."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/power_iters",
+        "default": 100,
+        "type": "int",
+        "doc": "Number of power iterations."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/higher",
+        "default": 2,
+        "type": "float",
+        "doc": "Higher level relaxation."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/lower",
+        "default": 0.008333333333,
+        "type": "float",
+        "doc": "Lower level relaxation."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/relax/scale",
+        "default": true,
+        "type": "bool",
+        "doc": "Scale."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/type",
+        "default": "smoothed_aggregation",
+        "type": "string",
+        "doc": "Coarsening type."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/estimate_spectral_radius",
+        "default": true,
+        "type": "bool",
+        "doc": "Should the spectral radius be estimated."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/relax",
+        "default": 1,
+        "type": "float",
+        "doc": "Coarsening relaxation."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/aggr",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "eps_strong"
+        ],
+        "doc": "Aggregation settings."
+    },
+    {
+        "pointer": "/solver/linear/AMGCL/precond/coarsening/aggr/eps_strong",
+        "default": 0,
+        "type": "float",
+        "doc": "Aggregation epsilon strong."
     },
     {
         "pointer": "/solver/nonlinear",
@@ -1029,17 +1439,18 @@
             "solver",
             "f_delta",
             "x_delta",
-            "max_step_size",
-            "solver_info_log",
             "grad_norm",
+            "first_grad_norm_tol",
             "max_iterations",
-            "min_step_size",
             "use_grad_norm",
             "relative_gradient",
             "line_search",
-            "export_energy"
+            "export_energy",
+            "solver_info_log",
+            "max_step_size",
+            "min_step_size"
         ],
-        "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+        "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
     {
         "pointer": "/solver/optimization_nonlinear",
@@ -1063,105 +1474,6 @@
             "export_energy"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
-    },
-    {
-        "pointer": "/solver/nonlinear/solver",
-        "default": "newton",
-        "type": "string",
-        "options": [
-            "newton",
-            "lbfgs"
-        ],
-        "doc": "Nonlinear solver type"
-    },
-    {
-        "pointer": "/solver/nonlinear/f_delta",
-        "default": 1e-10,
-        "type": "float",
-        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
-    },
-    {
-        "pointer": "/solver/nonlinear/max_step_size",
-        "default": 1,
-        "type": "float",
-        "doc": "The initial step size in the line search"
-    },
-    {
-        "pointer": "/solver/nonlinear/x_delta",
-        "default": 0,
-        "type": "float",
-        "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
-    },
-    {
-        "pointer": "/solver/nonlinear/solver_info_log",
-        "default": false,
-        "type": "bool",
-        "doc": "Print nonlinear solver statistics to log in json format at every iter"
-    },
-    {
-        "pointer": "/solver/nonlinear/grad_norm",
-        "default": 1e-08,
-        "type": "float",
-        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
-    },
-    {
-        "pointer": "/solver/nonlinear/min_step_size",
-        "default": 0,
-        "type": "float",
-        "doc": "Minimum step size in line search"
-    },
-    {
-        "pointer": "/solver/nonlinear/max_iterations",
-        "default": 1000,
-        "type": "int",
-        "doc": "Maximum number of iterations for a non-linear solve."
-    },
-    {
-        "pointer": "/solver/nonlinear/use_grad_norm",
-        "default": true,
-        "type": "bool",
-        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
-    },
-    {
-        "pointer": "/solver/nonlinear/export_energy",
-        "default": "",
-        "type": "string",
-        "doc": "Save energy and gradient in optimizations to file"
-    },
-    {
-        "pointer": "/solver/nonlinear/relative_gradient",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
-    },
-    {
-        "pointer": "/solver/nonlinear/line_search",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "method",
-            "use_grad_norm_tol"
-        ],
-        "doc": "Settings for line search in the nonlinear solver"
-    },
-    {
-        "pointer": "/solver/nonlinear/line_search/method",
-        "default": "backtracking",
-        "type": "string",
-        "options": [
-            "armijo",
-            "armijo_alt",
-            "backtracking",
-            "more_thuente",
-            "none"
-        ],
-        "doc": "line search type"
-    },
-    {
-        "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
-        "default": 0.0001,
-        "type": "float",
-        "doc": "When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy"
     },
     {
         "pointer": "/solver/optimization_nonlinear/solver",
@@ -1262,10 +1574,112 @@
             "method",
             "use_grad_norm_tol"
         ],
-        "doc": "Settings for line search in the optimization nonlinear solver"
+        "doc": "Settings for line-search in the nonlinear solver"
     },
     {
         "pointer": "/solver/optimization_nonlinear/line_search/method",
+        "default": "backtracking",
+        "type": "string",
+        "options": [
+            "armijo",
+            "backtracking"
+        ],
+        "doc": "Line-search type"
+    },
+    {
+        "pointer": "/solver/optimization_nonlinear/line_search/use_grad_norm_tol",
+        "default": 0,
+        "type": "float",
+        "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_step_size",
+        "default": 1,
+        "type": "float",
+        "doc": "Max step size in line search"
+    },
+    {
+        "pointer": "/solver/nonlinear/solver_info_log",
+        "default": false,
+        "type": "bool",
+        "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
+    },
+    {
+        "pointer": "/solver/nonlinear/min_step_size",
+        "default": 0,
+        "type": "float",
+        "doc": "Minimum step size in line search"
+    },
+    {
+        "pointer": "/solver/nonlinear/export_energy",
+        "default": "",
+        "type": "string",
+        "doc": "Save energy and gradient in optimizations to file"
+    },
+    {
+        "pointer": "/solver/nonlinear/solver",
+        "default": "newton",
+        "type": "string",
+        "options": [
+            "newton",
+            "lbfgs"
+        ],
+        "doc": "Nonlinear solver type"
+    },
+    {
+        "pointer": "/solver/nonlinear/f_delta",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue."
+    },
+    {
+        "pointer": "/solver/nonlinear/x_delta",
+        "default": 0,
+        "type": "float",
+        "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/nonlinear/grad_norm",
+        "default": 1e-08,
+        "type": "float",
+        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue."
+    },
+    {
+        "pointer": "/solver/nonlinear/first_grad_norm_tol",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
+    },
+    {
+        "pointer": "/solver/nonlinear/max_iterations",
+        "default": 1000,
+        "type": "int",
+        "doc": "Maximum number of iterations for a nonlinear solve."
+    },
+    {
+        "pointer": "/solver/nonlinear/use_grad_norm",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
+    },
+    {
+        "pointer": "/solver/nonlinear/relative_gradient",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "method",
+            "use_grad_norm_tol"
+        ],
+        "doc": "Settings for line-search in the nonlinear solver"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search/method",
         "default": "backtracking",
         "type": "string",
         "options": [
@@ -1275,13 +1689,13 @@
             "more_thuente",
             "none"
         ],
-        "doc": "line search type"
+        "doc": "Line-search type"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/line_search/use_grad_norm_tol",
-        "default": 0,
+        "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
+        "default": 0.0001,
         "type": "float",
-        "doc": "When the energy is smaller than use_grad_norm_tol, line search uses norm of gradient instead of energy"
+        "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -1292,7 +1706,7 @@
             "max_weight",
             "force"
         ],
-        "doc": "Parameters for the AL for imposing Dirichlet bc. If the bc are not imposable, we add w*||u - bc||^2 to the energy (u is the solution at the Dirichlet nodes and bc are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double w until max_weight."
+        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double $w$ until `max_weight`."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
@@ -1320,8 +1734,7 @@
             "CCD",
             "friction_iterations",
             "friction_convergence_tol",
-            "barrier_stiffness",
-            "lagged_damping_weight"
+            "barrier_stiffness"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1362,8 +1775,8 @@
     },
     {
         "pointer": "/solver/contact/CCD/max_iterations",
-        "default": 1000000.0,
-        "type": "float",
+        "default": 1000000,
+        "type": "int",
         "doc": "Maximum number of iterations for continuous collision detection"
     },
     {
@@ -1391,12 +1804,6 @@
         "pointer": "/solver/contact/barrier_stiffness",
         "type": "float",
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
-    },
-    {
-        "pointer": "/solver/contact/lagged_damping_weight",
-        "default": 0,
-        "type": "int",
-        "doc": "TODO"
     },
     {
         "pointer": "/solver/optimization_contact",
@@ -1474,7 +1881,8 @@
         "type": "object",
         "optional": [
             "cache_size",
-            "lump_mass_matrix"
+            "lump_mass_matrix",
+            "lagged_regularization_weight"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1491,9 +1899,15 @@
         "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
     },
     {
+        "pointer": "/solver/advanced/lagged_regularization_weight",
+        "default": 0,
+        "type": "float",
+        "doc": "Weight used to regularize singular static problems."
+    },
+    {
         "pointer": "/materials",
         "type": "list",
-        "doc": "Material Parameters lists including id pointing to volume selection, Young's modulus(E), Poisson ratio(nu), Density(rho),or Lame constants lambda/mu,  type()"
+        "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
     },
     {
         "pointer": "/materials/*",
@@ -1510,7 +1924,7 @@
             "phi",
             "psi"
         ],
-        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1527,7 +1941,7 @@
             "phi",
             "psi"
         ],
-        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1542,7 +1956,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1557,7 +1971,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1572,7 +1986,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1586,7 +2000,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1601,7 +2015,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1615,7 +2029,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, E, nu, Density(rho), type()"
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1629,7 +2043,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, viscosity, Density(rho), type()"
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1643,7 +2057,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, viscosity, Density(rho), type()"
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1658,7 +2072,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1673,7 +2087,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Lame first(lambda), Lame second(mu), Density(rho), type()"
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1686,7 +2100,7 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Density(rho), type()"
+        "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1700,7 +2114,7 @@
             "rho",
             "k"
         ],
-        "doc": "Material Parameters including id, k, Density(rho), type()"
+        "doc": "Material Parameters including ID, k, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
@@ -1713,13 +2127,13 @@
             "id",
             "rho"
         ],
-        "doc": "Material Parameters including id, Density(rho), type()"
+        "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
-        "doc": "id"
+        "doc": "Volume selection ID"
     },
     {
         "pointer": "/materials/*/E",
@@ -1729,7 +2143,7 @@
     {
         "pointer": "/materials/*/nu",
         "type": "float",
-        "doc": "Poisson ratio"
+        "doc": "Poisson's ratio"
     },
     {
         "pointer": "/materials/*/viscosity",
@@ -1740,7 +2154,7 @@
         "pointer": "/materials/*/elasticity_tensor",
         "type": "list",
         "default": [],
-        "doc": "Simmetric elasticity tensor"
+        "doc": "Symmetric elasticity tensor"
     },
     {
         "pointer": "/materials/*/elasticity_tensor/*",
@@ -1792,12 +2206,12 @@
     {
         "pointer": "/materials/*/mu",
         "type": "float",
-        "doc": "First lame parameters"
+        "doc": "First Lamé parameters"
     },
     {
         "pointer": "/materials/*/lambda",
         "type": "float",
-        "doc": "Second lame parameter"
+        "doc": "Second Lamé parameter"
     },
     {
         "pointer": "/boundary_conditions",
@@ -1811,34 +2225,34 @@
             "pressure_boundary",
             "obstacle_displacements"
         ],
-        "doc": "The settings for boundary conditions. "
+        "doc": "The settings for boundary conditions."
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "float",
-        "doc": "Right-hand side of the system being solved for scalar-valued pdes"
+        "doc": "Right-hand side of the system being solved for scalar-valued PDEs"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "string",
-        "doc": "Right-hand side of the system being solved as a function of x,y,z,t"
+        "doc": "Right-hand side of the system being solved as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/rhs",
-        "default": "[]",
+        "default": [],
         "type": "list",
-        "doc": "Right-hand side of the system being solved for vector-valued pdes"
+        "doc": "Right-hand side of the system being solved for vector-valued PDEs."
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
         "default": 0,
         "type": "float",
-        "doc": "Right-hand side of the system being solved, value"
+        "doc": "Right-hand side of the system being solved, value."
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
         "type": "string",
-        "doc": "Right-hand side of the system being solved as a function of x,y,z,t"
+        "doc": "Right-hand side of the system being solved as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary",
@@ -1869,12 +2283,12 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
-        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension"
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
         "type": "int",
-        "doc": "id of Dirichlet boundary condition from surface selection"
+        "doc": "ID of Dirichlet boundary condition from surface selection."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
@@ -1882,17 +2296,17 @@
         "options": [
             "all"
         ],
-        "doc": "select all ids"
+        "doc": "select all ids."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value",
         "type": "list",
-        "doc": "Values of Dirichlet boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued pdes depending on the dimension"
+        "doc": "Values of Dirichlet boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued PDEs depending on the dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "string",
-        "doc": "Values of Dirichlet boundary condition for each dimension as a function of x,y,z,t"
+        "doc": "Values of Dirichlet boundary condition for each dimension as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
@@ -1917,7 +2331,7 @@
             true,
             true
         ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
@@ -1940,7 +2354,7 @@
         "pointer": "/boundary_conditions/neumann_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of Neumann boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection. "
+        "doc": "The list of Neumann boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*",
@@ -1956,7 +2370,7 @@
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
         "default": 1,
-        "doc": "id of Neumann boundary condition"
+        "doc": "ID of Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value",
@@ -1968,7 +2382,7 @@
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
         "type": "string",
         "default": "",
-        "doc": "Values of Neumann boundary condition for each dimension as function of x,y,z,t"
+        "doc": "Values of Neumann boundary condition for each dimension as function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
@@ -1980,7 +2394,7 @@
         "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
-        "doc": "Dirichlet boundary condition for normal * value for vector-valued pdes."
+        "doc": "Dirichlet boundary condition for normal * value for vector-valued PDEs."
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*",
@@ -1998,7 +2412,7 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/id",
         "type": "int",
-        "doc": "id for the pressure Neumann boundary condition"
+        "doc": "ID for the pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
@@ -2008,7 +2422,7 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "string",
-        "doc": "Values of pressure Neumann boundary condition as a function of x,y,z,t"
+        "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
@@ -2019,7 +2433,7 @@
         "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
-        "doc": "The list of obstacle displacements. Each entry is an (id, value) pair, where ids are set by selection."
+        "doc": "The list of obstacle displacements. Each entry is an (ID, value) pair, where ids are set by selection."
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*",
@@ -2034,7 +2448,7 @@
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/id",
         "type": "int",
-        "doc": "id of Obstacle displacements"
+        "doc": "ID of Obstacle displacements"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value",
@@ -2044,7 +2458,7 @@
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
         "type": "string",
-        "doc": "Values of Obstacle displacements for each dimension as a function of x,y,z,t"
+        "doc": "Values of Obstacle displacements for each dimension as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
@@ -2076,12 +2490,12 @@
             "id",
             "value"
         ],
-        "doc": "A list of (id, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
+        "doc": "A list of (ID, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
     },
     {
         "pointer": "/initial_conditions/solution/*/id",
         "type": "int",
-        "doc": "id from volume selections"
+        "doc": "ID from volume selections"
     },
     {
         "pointer": "/initial_conditions/solution/*/value",
@@ -2096,7 +2510,7 @@
     {
         "pointer": "/initial_conditions/solution/*/value/*",
         "type": "string",
-        "doc": "as a function of x,y,z,t"
+        "doc": "as a function of $x,y,z,t$"
     },
     {
         "pointer": "/initial_conditions/velocity",
@@ -2112,12 +2526,12 @@
             "id",
             "value"
         ],
-        "doc": "A list of (id, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
+        "doc": "A list of (ID, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
     },
     {
         "pointer": "/initial_conditions/velocity/*/id",
         "type": "int",
-        "doc": "id from volume selections"
+        "doc": "ID from volume selections"
     },
     {
         "pointer": "/initial_conditions/velocity/*/value",
@@ -2134,7 +2548,7 @@
     {
         "pointer": "/initial_conditions/velocity/*/value/*",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/initial_conditions/acceleration",
@@ -2155,7 +2569,7 @@
     {
         "pointer": "/initial_conditions/acceleration/*/id",
         "type": "int",
-        "doc": "id from volume selections"
+        "doc": "ID from volume selections"
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value",
@@ -2173,7 +2587,7 @@
     {
         "pointer": "/initial_conditions/acceleration/*/value/*",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/differentiable",
@@ -2366,13 +2780,13 @@
         "pointer": "/output/data/full_mat",
         "default": "",
         "type": "string",
-        "doc": "System matrix without boundary conditions. Doesn't work for non-linear problems"
+        "doc": "System matrix without boundary conditions. Doesn't work for nonlinear problems"
     },
     {
         "pointer": "/output/data/stiffness_mat",
         "default": "",
         "type": "string",
-        "doc": "System matrix with boundary conditions. Doesn't work for non-linear problems"
+        "doc": "System matrix with boundary conditions. Doesn't work for nonlinear problems"
     },
     {
         "pointer": "/output/data/stress_mat",
@@ -2445,7 +2859,7 @@
         "pointer": "/output/reference/solution/*",
         "default": "",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/output/reference/gradient",
@@ -2457,7 +2871,7 @@
         "pointer": "/output/reference/gradient/*",
         "default": "",
         "type": "string",
-        "doc": "value as a function of x,y,z,t"
+        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/output/advanced",
@@ -2529,7 +2943,7 @@
         "pointer": "/output/advanced/save_nl_solve_sequence",
         "default": false,
         "type": "bool",
-        "doc": "saves obj after every non-linear iteration, for debugging"
+        "doc": "saves obj after every nonlinear iteration, for debugging"
     },
     {
         "pointer": "/output/advanced/spectrum",
@@ -3069,6 +3483,12 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/preset_problem/viscosity",
+        "type": "float",
+        "default": 1,
+        "doc": "TODO"
+    },
+    {
         "pointer": "/preset_problem",
         "type_name": "SimpleStokeProblemExact",
         "type": "object",
@@ -3110,7 +3530,6 @@
             "type"
         ],
         "optional": [
-            "time_dependent",
             "viscosity"
         ],
         "doc": "TODO"
@@ -3161,7 +3580,7 @@
     {
         "pointer": "/preset_problem/type",
         "type": "string",
-        "doc": "TODO",
+        "doc": "Type of preset problem to use.",
         "options": [
             "Linear",
             "Quadratic",

@@ -1,253 +1,81 @@
 #pragma once
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/State.hpp>
-#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
-
-#include <ipc/broad_phase/broad_phase.hpp>
-#include <ipc/friction/friction_constraint.hpp>
-
-#include <cppoptlib/problem.h>
-
-namespace polyfem
+namespace polyfem::solver
 {
-	namespace solver
+	class NLProblem : public FullNLProblem
 	{
-		class NLProblem : public cppoptlib::Problem<double>
+	public:
+		using typename FullNLProblem::Scalar;
+		using typename FullNLProblem::THessian;
+		using typename FullNLProblem::TVector;
+
+		NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, std::vector<std::shared_ptr<Form>> &forms);
+
+		double value(const TVector &x) override;
+		void gradient(const TVector &x, TVector &gradv) override;
+		void hessian(const TVector &x, THessian &hessian) override;
+
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
+		double max_step_size(const TVector &x0, const TVector &x1) override;
+
+		void line_search_begin(const TVector &x0, const TVector &x1) override;
+		void post_step(const int iter_num, const TVector &x) override;
+
+		void solution_changed(const TVector &newX) override;
+
+		void init_lagging(const TVector &x) override;
+		void update_lagging(const TVector &x) override;
+
+		// --------------------------------------------------------------------
+
+		void update_quantities(const double t, const TVector &x);
+
+		void use_full_size() { current_size_ = FULL_SIZE; }
+		void use_reduced_size() { current_size_ = REDUCED_SIZE; }
+
+		void set_apply_DBC(const TVector &x, const bool val);
+
+		// Templated to allow VectorX* or MatrixX* input, but the size of full
+		// will always be (fullsize, 1)
+		// template <class FullVector>
+		TVector full_to_reduced(const TVector &full) const;
+
+		// template <class FullVector>
+		TVector reduced_to_full(const TVector &reduced) const;
+
+		int full_size() const { return full_size_; }
+		int reduced_size() const { return reduced_size_; }
+
+	private:
+		const State &state_;
+		const assembler::RhsAssembler &rhs_assembler_;
+		double t_;
+
+		const int full_size_;    ///< Size of the full problem
+		const int reduced_size_; ///< Size of the reduced problem
+
+		enum CurrentSize
 		{
-		public:
-			using typename cppoptlib::Problem<double>::Scalar;
-			using typename cppoptlib::Problem<double>::TVector;
-			typedef StiffnessMatrix THessian;
-
-			NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool no_reduced = false);
-			void init(const TVector &displacement);
-			void init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
-
-			virtual double value(const TVector &x) override;
-			virtual double target_value(const TVector &x) { return value(x); }
-			virtual void gradient(const TVector &x, TVector &gradv) override;
-			virtual void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
-			virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false);
-
-			virtual double value(const TVector &x, const bool only_elastic);
-			void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
-
-			void smoothing(const TVector &x, TVector &new_x){};
-			bool is_step_valid(const TVector &x0, const TVector &x1);
-			TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
-			bool is_step_collision_free(const TVector &x0, const TVector &x1);
-			double max_step_size(const TVector &x0, const TVector &x1);
-			bool is_intersection_free(const TVector &x);
-
-			int n_inequality_constraints() { return 0; }
-			double inequality_constraint_val(const TVector &x, const int index) { assert(false); return std::nan(""); }
-			TVector inequality_constraint_grad(const TVector &x, const int index) { assert(false); return TVector(); }
-
-			TVector get_lower_bound(const TVector& x) 
-			{
-				TVector min(x.size());
-				min.setConstant(std::numeric_limits<double>::min());
-				return min; 
-			}
-			TVector get_upper_bound(const TVector& x) 
-			{
-				TVector max(x.size());
-				max.setConstant(std::numeric_limits<double>::max());
-				return max; 
-			}
-
-			void line_search_begin(const TVector &x0, const TVector &x1);
-			void line_search_end(bool failed);
-			void post_step(const int iter_num, const TVector &x);
-			void save_to_file(const TVector &x0){};
-			bool remesh(TVector &x) { return false; };
-
-#include <polyfem/utils/DisableWarnings.hpp>
-			virtual void hessian(const TVector &x, THessian &hessian);
-			virtual void hessian_full(const TVector &x, THessian &gradv);
-#include <polyfem/utils/EnableWarnings.hpp>
-
-			template <class FullMat, class ReducedMat>
-			static void full_to_reduced_aux(const State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
-			{
-				using namespace polyfem;
-
-				// Reduced is already at the full size
-				if (full_size == reduced_size || full.size() == reduced_size)
-				{
-					reduced = full;
-					return;
-				}
-
-				assert(full.size() == full_size);
-				assert(full.cols() == 1);
-				reduced.resize(reduced_size, 1);
-
-				long j = 0;
-				size_t k = 0;
-				for (int i = 0; i < full.size(); ++i)
-				{
-					if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
-					{
-						++k;
-						continue;
-					}
-
-					reduced(j++) = full(i);
-				}
-				assert(j == reduced.size());
-			}
-
-			template <class ReducedMat, class FullMat>
-			static void reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
-			{
-				using namespace polyfem;
-
-				// Full is already at the reduced size
-				if (full_size == reduced_size || full_size == reduced.size())
-				{
-					full = reduced;
-					return;
-				}
-
-				assert(reduced.size() == reduced_size);
-				assert(reduced.cols() == 1);
-				full.resize(full_size, 1);
-
-				long j = 0;
-				size_t k = 0;
-				for (int i = 0; i < full.size(); ++i)
-				{
-					if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
-					{
-						++k;
-						full(i) = rhs(i);
-						continue;
-					}
-
-					full(i) = reduced(j++);
-				}
-
-				assert(j == reduced.size());
-			}
-
-			// Templated to allow VectorX* or MatrixX* input, but the size of full
-			// will always be (fullsize, 1)
-			template <class FullVector>
-			void full_to_reduced(const FullVector &full, TVector &reduced) const
-			{
-				full_to_reduced_aux(state, full_size, reduced_size, full, reduced);
-			}
-			template <class FullVector>
-			void reduced_to_full(const TVector &reduced, FullVector &full)
-			{
-				reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
-			}
-
-			void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
-
-			virtual void update_quantities(const double t, const TVector &x);
-			void substepping(const double t);
-			void solution_changed(const TVector &newX);
-
-			void init_lagging(const TVector &x);
-			void update_lagging(const TVector &x);
-			double compute_lagging_error(const TVector &x);
-			bool lagging_converged(const TVector &x);
-
-			const Eigen::MatrixXd &current_rhs();
-
-			virtual bool stop(const TVector &x) { return false; }
-
-			void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
-
-			double heuristic_max_step(const TVector &dx);
-
-			inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
-
-			void set_project_to_psd(bool val) { project_to_psd = val; }
-			bool is_project_to_psd() const { return project_to_psd; }
-
-			double &lagged_damping_weight() { return _lagged_damping_weight; }
-
-			void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
-			void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
-
-			inline double barrier_stiffness() const { return _barrier_stiffness; }
-			inline double dhat() const { return _dhat; }
-			inline double epsv_dt() const { return _epsv * dt(); }
-			inline double mu() const { return _mu; }
-			inline bool get_is_time_dependent() const { return is_time_dependent; }
-			inline double get_full_size() const { return full_size; }
-			inline double get_reduced_size() const { return reduced_size; }
-			const ipc::Constraints &get_constraint_set() const { return _constraint_set; }
-			const ipc::FrictionConstraints& get_friction_constraint_set() const { return _friction_constraint_set; }
-			const Eigen::MatrixXd &displaced_prev() const { return _displaced_prev; }
-			const std::shared_ptr<const time_integrator::ImplicitTimeIntegrator> time_integrator() const { return _time_integrator; }
-
-			void compute_cached_stiffness();
-
-			utils::SpareMatrixCache mat_cache;
-
-			StiffnessMatrix cached_stiffness;
-			const assembler::RhsAssembler &rhs_assembler;
-
-			double dt() const
-			{
-				if (_time_integrator)
-				{
-					assert(time_integrator()->dt() > 0);
-					return time_integrator()->dt();
-				}
-				else
-					return 1;
-			}
-			
-		protected:
-			const State &state;
-			bool use_adaptive_barrier_stiffness;
-			double _barrier_stiffness;
-			bool is_time_dependent;
-
-		private:
-			const assembler::AssemblerUtils &assembler;
-			Eigen::MatrixXd _current_rhs;
-
-			bool ignore_inertia;
-
-			const int full_size, reduced_size;
-			double t;
-			bool rhs_computed;
-			bool project_to_psd;
-
-			double _dhat;
-			double _prev_distance;
-			double max_barrier_stiffness_;
-
-			// friction variables
-			double _epsv;                    ///< @brief The boundary between static and dynamic friction.
-			double _mu;                      ///< @brief Coefficient of friction.
-			Eigen::MatrixXd _displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
-			double _lagged_damping_weight;   ///< @brief Weight for lagged damping (static solve).
-			TVector x_lagged;                ///< @brief The full variables from the previous lagging solve.
-
-			ipc::BroadPhaseMethod _broad_phase_method;
-			double _ccd_tolerance;
-			int _ccd_max_iterations;
-
-			ipc::Constraints _constraint_set;
-			ipc::FrictionConstraints _friction_constraint_set;
-			ipc::Candidates _candidates;
-			bool _use_cached_candidates = false;
-
-			std::shared_ptr<time_integrator::ImplicitTimeIntegrator> _time_integrator;
-
-			void update_barrier_stiffness(const TVector &full);
-			void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
+			FULL_SIZE,
+			REDUCED_SIZE
 		};
-	} // namespace solver
-} // namespace polyfem
+		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
+		int current_size() const
+		{
+			return current_size_ == FULL_SIZE ? full_size() : reduced_size();
+		}
+
+		template <class FullMat, class ReducedMat>
+		static void full_to_reduced_aux(const State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);
+
+		template <class ReducedMat, class FullMat>
+		static void reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full);
+
+		Eigen::MatrixXd lagrange_multipliers;
+	};
+} // namespace polyfem::solver
