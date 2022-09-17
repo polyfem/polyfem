@@ -32,9 +32,10 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 	public:
-		/// @brief Initialize lagged fields
-		/// @param x Current solution
-		void init_lagging(const Eigen::VectorXd &x) override;
+		/// @brief Update time-dependent fields
+		/// @param t Current time
+		/// @param x Current solution at time t
+		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev = x; }
 
 	private:
 		const State &state_;                                  ///< Reference to the simulation state

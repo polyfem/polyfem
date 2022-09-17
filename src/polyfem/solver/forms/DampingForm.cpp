@@ -40,9 +40,4 @@ namespace polyfem::solver
         if (x_prev.size() == x.size())
 		    assembler_.assemble_hessian(state_.mesh->is_volume(), state_.n_bases, dt_, false, state_.bases, state_.geom_bases(), state_.ass_vals_cache, x, x_prev, mat_cache_, hessian);
 	}
-
-	void DampingForm::init_lagging(const Eigen::VectorXd &x)
-	{
-		x_prev = x;
-	}
 } // namespace polyfem::solver
