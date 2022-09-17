@@ -44,6 +44,7 @@ namespace polyfem
 
 		private:
 			int minimize_aux(const std::string &formulation,
+							 const bool is_picard,
 							 const std::vector<int> &skipping,
 							 const int n_bases,
 							 const int n_pressure_bases,

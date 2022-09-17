@@ -107,7 +107,7 @@ namespace polyfem
 			int it = 0;
 			double nlres_norm = 0;
 			b = rhs;
-			it += minimize_aux(formulation + "Picard", skipping,
+			it += minimize_aux(formulation, true, skipping,
 							   n_bases,
 							   n_pressure_bases,
 							   bases,
@@ -119,7 +119,7 @@ namespace polyfem
 							   problem_dim,
 							   is_volume,
 							   velocity_stiffness, mixed_stiffness, pressure_stiffness, b, 1e-3, solver, nlres_norm, x);
-			it += minimize_aux(formulation, skipping,
+			it += minimize_aux(formulation, false, skipping,
 							   n_bases,
 							   n_pressure_bases,
 							   bases,
@@ -146,6 +146,7 @@ namespace polyfem
 
 		int NavierStokesSolver::minimize_aux(
 			const std::string &formulation,
+			bool is_picard,
 			const std::vector<int> &skipping,
 			const int n_bases,
 			const int n_pressure_bases,
@@ -195,7 +196,7 @@ namespace polyfem
 				++it;
 
 				time.start();
-				if (formulation != formulation + "Picard")
+				if (!is_picard)
 				{
 					assembler.assemble_energy_hessian(formulation, is_volume, n_bases, false, bases, gbases, ass_vals_cache, x, mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
