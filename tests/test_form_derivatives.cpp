@@ -139,6 +139,7 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 	const bool apply_DBC = false; // GENERATE(true, false);
 
 	BodyForm form(*state_ptr, *rhs_assembler_ptr, apply_DBC);
+	form.update_quantities(0, Eigen::VectorXd());
 
 	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);

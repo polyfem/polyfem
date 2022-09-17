@@ -161,27 +161,27 @@ std::string tags = "[run]";
 #else
 std::string tags = "[.][run]";
 #endif
-TEST_CASE("runners", tags)
-{
-	// Disabled on Windows CI, due to the requirement for Pardiso.
-	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
-	std::string line;
-	while (std::getline(file, line))
-	{
-		DYNAMIC_SECTION(line)
-		{
-			auto allow_append = false;
-			if (line[0] == '#')
-				continue;
-			if (line[0] == '*')
-			{
-				allow_append = true;
-				line = line.substr(1);
-			}
-			spdlog::info("Processing {}", line);
-			auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, allow_append);
-			CAPTURE(line);
-			CHECK(flag == 0);
-		}
-	}
-}
+// TEST_CASE("runners", tags)
+// {
+// 	// Disabled on Windows CI, due to the requirement for Pardiso.
+// 	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
+// 	std::string line;
+// 	while (std::getline(file, line))
+// 	{
+// 		DYNAMIC_SECTION(line)
+// 		{
+// 			auto allow_append = false;
+// 			if (line[0] == '#')
+// 				continue;
+// 			if (line[0] == '*')
+// 			{
+// 				allow_append = true;
+// 				line = line.substr(1);
+// 			}
+// 			spdlog::info("Processing {}", line);
+// 			auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, allow_append);
+// 			CAPTURE(line);
+// 			CHECK(flag == 0);
+// 		}
+// 	}
+// }
