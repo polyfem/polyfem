@@ -855,9 +855,7 @@
         ],
         "optional": [
             "t0",
-            "integrator",
-            "newmark",
-            "BDF"
+            "integrator"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
@@ -870,9 +868,7 @@
         ],
         "optional": [
             "t0",
-            "integrator",
-            "newmark",
-            "BDF"
+            "integrator"
         ],
         "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
@@ -885,9 +881,7 @@
         ],
         "optional": [
             "t0",
-            "integrator",
-            "newmark",
-            "BDF"
+            "integrator"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
@@ -928,40 +922,71 @@
         "doc": "Time integrator"
     },
     {
-        "pointer": "/time/newmark",
+        "pointer": "/time/integrator",
         "type": "object",
-        "default": null,
+        "type_name": "ImplicitEuler",
+        "required": [
+            "type"
+        ],
+        "doc": "Implicit Euler time integration"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "BDF",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "steps"
+        ],
+        "doc": "Backwards differentiation formula time integration"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "ImplicitNewmark",
+        "required": [
+            "type"
+        ],
         "optional": [
             "gamma",
             "beta"
         ],
-        "doc": "Options for Newmark"
+        "doc": "Implicit Newmark time integration"
     },
     {
-        "pointer": "/time/newmark/gamma",
+        "pointer": "/time/integrator/type",
+        "type": "string",
+        "options": [
+            "ImplicitEuler",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "doc": "Type of time integrator to use"
+    },
+    {
+        "pointer": "/time/integrator/gamma",
         "type": "float",
         "default": 0.5,
+        "min": 0,
+        "max": 1,
         "doc": "Newmark gamma"
     },
     {
-        "pointer": "/time/newmark/beta",
+        "pointer": "/time/integrator/beta",
         "type": "float",
         "default": 0.25,
+        "min": 0,
+        "max": 0.5,
         "doc": "Newmark beta"
     },
     {
-        "pointer": "/time/BDF",
-        "type": "object",
-        "default": null,
-        "optional": [
-            "steps"
-        ],
-        "doc": "Options for BDF"
-    },
-    {
-        "pointer": "/time/BDF/steps",
+        "pointer": "/time/integrator/steps",
         "type": "int",
         "default": 1,
+        "min": 1,
+        "max": 6,
         "doc": "BDF order"
     },
     {

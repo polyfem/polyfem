@@ -4,23 +4,33 @@ namespace polyfem::time_integrator
 {
 	void ImplicitNewmark::set_parameters(const nlohmann::json &params)
 	{
-		assert(params.contains("newmark"));
-		m_gamma = params["newmark"].value("gamma", 0.5);
-		m_beta = params["newmark"].value("beta", 0.25);
+		m_gamma = params.at("gamma");
+		m_beta = params.at("beta");
 	}
 
 	void ImplicitNewmark::update_quantities(const Eigen::VectorXd &x)
 	{
-		Eigen::VectorXd tmp = x_prev() + dt() * (v_prev() + dt() * (0.5 - beta()) * a_prev());
-		v_prev() += dt() * (1 - gamma()) * a_prev();   // vᵗ + h(1 - γ)aᵗ
-		a_prev() = (x - tmp) / (beta() * dt() * dt()); // aᵗ⁺¹ = ...
-		v_prev() += dt() * gamma() * a_prev();         // hγaᵗ⁺¹
+		const Eigen::VectorXd v = compute_velocity(x);
+		a_prev() = compute_acceleration(v);
+		v_prev() = v;
 		x_prev() = x;
 	}
 
 	Eigen::VectorXd ImplicitNewmark::x_tilde() const
 	{
 		return x_prev() + dt() * (v_prev() + dt() * (0.5 - beta()) * a_prev());
+	}
+
+	Eigen::VectorXd ImplicitNewmark::compute_velocity(const Eigen::VectorXd &x) const
+	{
+		const Eigen::VectorXd tmp = x_prev() + dt() * (v_prev() + dt() * (0.5 - beta()) * a_prev());
+		const Eigen::VectorXd a = (x - tmp) / (beta() * dt() * dt());
+		return v_prev() + dt() * ((1 - gamma()) * a_prev() + gamma() * a);
+	}
+
+	Eigen::VectorXd ImplicitNewmark::compute_acceleration(const Eigen::VectorXd &v) const
+	{
+		return (v - v_prev() - (1 - gamma()) * dt() * a_prev()) / (gamma() * dt());
 	}
 
 	double ImplicitNewmark::acceleration_scaling() const

@@ -632,7 +632,9 @@ namespace polyfem
 
 		const auto &tmp_json = args["space"]["discr_order"];
 		if (tmp_json.is_number_integer())
+		{
 			disc_orders.setConstant(tmp_json);
+		}
 		else if (tmp_json.is_string())
 		{
 			const std::string discr_orders_path = tmp_json;
@@ -670,8 +672,15 @@ namespace polyfem
 				const int bid = mesh->get_body_id(e);
 				const auto order = b_orders.find(bid);
 				if (order == b_orders.end())
-					log_and_throw_error(fmt::format("Missing discretization order for body {}", bid));
-				disc_orders[e] = order->second;
+				{
+					logger().debug("Missing discretization order for body {}; using 1", bid);
+					b_orders[bid] = 1;
+					disc_orders[e] = 1;
+				}
+				else
+				{
+					disc_orders[e] = order->second;
+				}
 			}
 		}
 		else
