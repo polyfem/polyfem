@@ -2791,7 +2791,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 	Eigen::VectorXd one_form = func.gradient(state, "dirichlet");
 	// std::cout << "one form " << one_form << std::endl;
 
-	srand(time(0));
+	// srand(time(0));
 
 	double derivative;
 	double finite_difference;
@@ -3138,7 +3138,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 	Eigen::VectorXd one_form = func.gradient(state, "dirichlet");
 	// std::cout << "one form " << one_form << std::endl;
 
-	srand(time(0));
+	// srand(time(0));
 
 	double derivative;
 	double finite_difference;
