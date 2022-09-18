@@ -1,20 +1,32 @@
 #include "OutData.hpp"
 
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+
+#include <polyfem/basis/ElementBases.hpp>
+
+#include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <BVH.hpp>
+
+#include <igl/Timer.h>
 namespace polyfem::output
 {
 
-	void OutGeometryData::init_sampler()
+	// args["output"]["paraview"]["vismesh_rel_area"]
+	void OutGeometryData::init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area)
 	{
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
+		ref_element_sampler.init(mesh.is_volume(), mesh.n_elements(), vismesh_rel_area);
 	}
 
-	void OutGeometryData::build_grid()
+	// const double spacing = args["output"]["advanced"]["sol_on_grid"];
+	void OutGeometryData::build_grid(const polyfem::mesh::Mesh &mesh, const double spacing)
 	{
-		const double spacing = args["output"]["advanced"]["sol_on_grid"];
+		if (spacing <= 0)
+			return;
+
 		RowVectorNd min, max;
-		mesh->bounding_box(min, max);
+		mesh.bounding_box(min, max);
 		const RowVectorNd delta = max - min;
 		const int nx = delta[0] / spacing + 1;
 		const int ny = delta[1] / spacing + 1;
@@ -49,7 +61,7 @@ namespace polyfem::output
 		assert(index == n);
 
 		std::vector<std::array<Eigen::Vector3d, 2>> boxes;
-		mesh->elements_boxes(boxes);
+		mesh.elements_boxes(boxes);
 
 		BVH::BVH bvh;
 		bvh.init(boxes);
@@ -59,19 +71,19 @@ namespace polyfem::output
 		grid_points_to_elements.resize(grid_points.rows(), 1);
 		grid_points_to_elements.setConstant(-1);
 
-		grid_points_bc.resize(grid_points.rows(), mesh->is_volume() ? 4 : 3);
+		grid_points_bc.resize(grid_points.rows(), mesh.is_volume() ? 4 : 3);
 
 		for (int i = 0; i < grid_points.rows(); ++i)
 		{
 			const Eigen::Vector3d min(
 				grid_points(i, 0) - eps,
 				grid_points(i, 1) - eps,
-				(mesh->is_volume() ? grid_points(i, 2) : 0) - eps);
+				(mesh.is_volume() ? grid_points(i, 2) : 0) - eps);
 
 			const Eigen::Vector3d max(
 				grid_points(i, 0) + eps,
 				grid_points(i, 1) + eps,
-				(mesh->is_volume() ? grid_points(i, 2) : 0) + eps);
+				(mesh.is_volume() ? grid_points(i, 2) : 0) + eps);
 
 			std::vector<unsigned int> candidates;
 
@@ -79,14 +91,14 @@ namespace polyfem::output
 
 			for (const auto cand : candidates)
 			{
-				if (!mesh->is_simplex(cand))
+				if (!mesh.is_simplex(cand))
 				{
 					logger().warn("Element {} is not simplex, skipping", cand);
 					continue;
 				}
 
 				Eigen::MatrixXd coords;
-				mesh->barycentric_coords(grid_points.row(i), cand, coords);
+				mesh.barycentric_coords(grid_points.row(i), cand, coords);
 
 				for (int d = 0; d < coords.size(); ++d)
 				{
@@ -106,7 +118,8 @@ namespace polyfem::output
 		}
 	}
 
-	void OutStatsData::compute_mesh_size(const Mesh &mesh_in, const std::vector<ElementBases> &bases_in, const int n_samples)
+	// args["output"]["advanced"]["curved_mesh_size"]
+	void OutStatsData::compute_mesh_size(const polyfem::mesh::Mesh &mesh_in, const std::vector<polyfem::basis::ElementBases> &bases_in, const int n_samples, const bool use_curved_mesh_size)
 	{
 		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1, p;
 
@@ -114,7 +127,7 @@ namespace polyfem::output
 		average_edge_length = 0;
 		min_edge_length = std::numeric_limits<double>::max();
 
-		if (!args["output"]["advanced"]["curved_mesh_size"])
+		if (!use_curved_mesh_size)
 		{
 			mesh_in.get_edges(p0, p1);
 			p = p0 - p1;
@@ -131,13 +144,13 @@ namespace polyfem::output
 
 		if (mesh_in.is_volume())
 		{
-			EdgeSampler::sample_3d_simplex(n_samples, samples_simplex);
-			EdgeSampler::sample_3d_cube(n_samples, samples_cube);
+			utils::EdgeSampler::sample_3d_simplex(n_samples, samples_simplex);
+			utils::EdgeSampler::sample_3d_cube(n_samples, samples_cube);
 		}
 		else
 		{
-			EdgeSampler::sample_2d_simplex(n_samples, samples_simplex);
-			EdgeSampler::sample_2d_cube(n_samples, samples_cube);
+			utils::EdgeSampler::sample_2d_simplex(n_samples, samples_simplex);
+			utils::EdgeSampler::sample_2d_cube(n_samples, samples_cube);
 		}
 
 		int n = 0;
@@ -193,19 +206,21 @@ namespace polyfem::output
 		n_flipped = 0;
 	}
 
-	void OutStatsData::count_flipped_elements()
+	void OutStatsData::count_flipped_elements(const polyfem::mesh::Mesh &mesh, const std::vector<polyfem::basis::ElementBases> &gbases)
 	{
+		using namespace mesh;
+
 		logger().info("Counting flipped elements...");
-		const auto &els_tag = mesh->elements_tag();
+		const auto &els_tag = mesh.elements_tag();
 
 		// flipped_elements.clear();
 		for (size_t i = 0; i < gbases.size(); ++i)
 		{
-			if (mesh->is_polytope(i))
+			if (mesh.is_polytope(i))
 				continue;
 
-			ElementAssemblyValues vals;
-			if (!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
+			polyfem::assembler::ElementAssemblyValues vals;
+			if (!vals.is_geom_mapping_positive(mesh.is_volume(), gbases[i]))
 			{
 				++n_flipped;
 
@@ -261,36 +276,40 @@ namespace polyfem::output
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 	}
 
-	void OutStatsData::compute_errors()
+	void OutStatsData::compute_errors(
+		const int n_bases,
+		const std::vector<polyfem::basis::ElementBases> &bases,
+		const std::vector<polyfem::basis::ElementBases> &gbases,
+		const polyfem::mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const double tend,
+		const Eigen::MatrixXd &sol)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (n_bases <= 0)
 		{
 			logger().error("Build the bases first!");
 			return;
 		}
 		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
 
-		if (!args["output"]["advanced"]["compute_error"])
-			return;
-
 		int actual_dim = 1;
-		if (!problem->is_scalar())
-			actual_dim = mesh->dimension();
+		if (!problem.is_scalar())
+			actual_dim = mesh.dimension();
 
 		igl::Timer timer;
 		timer.start();
@@ -299,8 +318,8 @@ namespace polyfem::output
 
 		const int n_el = int(bases.size());
 
-		MatrixXd v_exact, v_approx;
-		MatrixXd v_exact_grad(0, 0), v_approx_grad;
+		Eigen::MatrixXd v_exact, v_approx;
+		Eigen::MatrixXd v_exact_grad(0, 0), v_approx_grad;
 
 		l2_err = 0;
 		h1_err = 0;
@@ -313,38 +332,22 @@ namespace polyfem::output
 		static const int p = 8;
 
 		// Eigen::MatrixXd err_per_el(n_el, 5);
-		ElementAssemblyValues vals;
-
-		double tend;
-		if (!args["time"].is_null())
-		{
-			tend = args["time"].value("tend", 1.0);
-			if (tend <= 0)
-				tend = 1;
-		}
-		else
-			tend = 0;
+		polyfem::assembler::ElementAssemblyValues vals;
 
 		for (int e = 0; e < n_el; ++e)
 		{
-			// const auto &vals    = values[e];
-			// const auto &gvalues = iso_parametric() ? values[e] : geom_values[e];
+			vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
-			if (iso_parametric())
-				vals.compute(e, mesh->is_volume(), bases[e], bases[e]);
-			else
-				vals.compute(e, mesh->is_volume(), bases[e], geom_bases_[e]);
-
-			if (problem->has_exact_sol())
+			if (problem.has_exact_sol())
 			{
-				problem->exact(vals.val, tend, v_exact);
-				problem->exact_grad(vals.val, tend, v_exact_grad);
+				problem.exact(vals.val, tend, v_exact);
+				problem.exact_grad(vals.val, tend, v_exact_grad);
 			}
 
 			v_approx.resize(vals.val.rows(), actual_dim);
 			v_approx.setZero();
 
-			v_approx_grad.resize(vals.val.rows(), mesh->dimension() * actual_dim);
+			v_approx_grad.resize(vals.val.rows(), mesh.dimension() * actual_dim);
 			v_approx_grad.setZero();
 
 			const int n_loc_bases = int(vals.basis_values.size());
@@ -363,14 +366,14 @@ namespace polyfem::output
 				}
 			}
 
-			const auto err = problem->has_exact_sol() ? (v_exact - v_approx).eval().rowwise().norm().eval() : (v_approx).eval().rowwise().norm().eval();
-			const auto err_grad = problem->has_exact_sol() ? (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval() : (v_approx_grad).eval().rowwise().norm().eval();
+			const auto err = problem.has_exact_sol() ? (v_exact - v_approx).eval().rowwise().norm().eval() : (v_approx).eval().rowwise().norm().eval();
+			const auto err_grad = problem.has_exact_sol() ? (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval() : (v_approx_grad).eval().rowwise().norm().eval();
 
 			// for(long i = 0; i < err.size(); ++i)
 			// errors.push_back(err(i));
 
-			linf_err = max(linf_err, err.maxCoeff());
-			grad_max_err = max(linf_err, err_grad.maxCoeff());
+			linf_err = std::max(linf_err, err.maxCoeff());
+			grad_max_err = std::max(linf_err, err_grad.maxCoeff());
 
 			// {
 			// 	const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -426,7 +429,7 @@ namespace polyfem::output
 		// pred_norm = pow(fabs(pred_norm), 1./p);
 
 		timer.stop();
-		computing_errors_time = timer.getElapsedTime();
+		const double computing_errors_time = timer.getElapsedTime();
 		logger().info(" took {}s", computing_errors_time);
 
 		logger().info("-- L2 error: {}", l2_err);
@@ -438,8 +441,6 @@ namespace polyfem::output
 		logger().info("-- Linf error: {}", linf_err);
 		logger().info("-- grad max error: {}", grad_max_err);
 
-		logger().info("total time: {}s", (building_basis_time + assembling_stiffness_mat_time + solving_time));
-
 		// {
 		// 	std::ofstream out("errs.txt");
 		// 	out<<err_per_el;
@@ -447,30 +448,9 @@ namespace polyfem::output
 		// }
 	}
 
-	void OutStatsData::compute_mesh_stats()
+	void OutStatsData::compute_mesh_stats(const polyfem::mesh::Mesh &mesh)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		bases.clear();
-		pressure_bases.clear();
-		geom_bases_.clear();
-		boundary_nodes.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		polys.clear();
-		poly_edge_to_data.clear();
-
-		stiffness.resize(0, 0);
-		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
-
-		n_bases = 0;
-		n_pressure_bases = 0;
+		using namespace polyfem::mesh;
 
 		simplex_count = 0;
 		regular_count = 0;
@@ -483,9 +463,7 @@ namespace polyfem::output
 		undefined_count = 0;
 		multi_singular_boundary_count = 0;
 
-		const auto &els_tag = mesh->elements_tag();
-
-		mesh->prepare_mesh();
+		const auto &els_tag = mesh.elements_tag();
 
 		for (size_t i = 0; i < els_tag.size(); ++i)
 		{
@@ -537,6 +515,6 @@ namespace polyfem::output
 		logger().info("non_regular_count: \t{}", non_regular_count);
 		logger().info("non_regular_boundary_count: \t{}", non_regular_boundary_count);
 		logger().info("undefined_count: \t{}", undefined_count);
-		logger().info("total count:\t {}", mesh->n_elements());
+		logger().info("total count:\t {}", mesh.n_elements());
 	}
 } // namespace polyfem::output

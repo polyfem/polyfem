@@ -109,7 +109,7 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(t0 + dt);
 
-		save_timestep(t0, 0, t0, dt);
+		out_geom.save_timestep(t0, 0, t0, dt);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -126,7 +126,7 @@ namespace polyfem
 				solve_data.updated_barrier_stiffness(sol);
 			}
 
-			save_timestep(t0 + dt * t, t, t0, dt);
+			out_geom.save_timestep(t0 + dt * t, t, t0, dt);
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
@@ -287,7 +287,7 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 
-		solver_info = json::array();
+		stats.solver_info = json::array();
 	}
 
 	void State::solve_tensor_nonlinear(const int t)
@@ -310,7 +310,7 @@ namespace polyfem
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
-		save_subsolve(subsolve_count, t);
+		out_geom.save_subsolve(subsolve_count, t);
 
 		// ---------------------------------------------------------------------
 
@@ -327,13 +327,13 @@ namespace polyfem
 		al_solver.post_subsolve = [&](const double al_weight) {
 			json info;
 			nl_solver->get_info(info);
-			solver_info.push_back(
+			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"info", info}});
 			if (al_weight > 0)
-				solver_info.back()["weight"] = al_weight;
-			this->save_subsolve(++subsolve_count, t);
+				stats.solver_info.back()["weight"] = al_weight;
+			out_geom.save_subsolve(++subsolve_count, t);
 		};
 
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
@@ -376,12 +376,12 @@ namespace polyfem
 			// Save the subsolve sequence for debugging and info
 			json info;
 			nl_solver->get_info(info);
-			solver_info.push_back(
+			stats.solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
 				 {"info", info}});
-			save_subsolve(++subsolve_count, t);
+			out_geom.save_subsolve(++subsolve_count, t);
 		}
 
 		// ---------------------------------------------------------------------

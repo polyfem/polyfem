@@ -24,12 +24,12 @@ namespace polyfem
 		const int precond_num = problem_dim * n_bases;
 
 		Eigen::VectorXd x;
-		spectrum = dirichlet_solve(
+		stats.spectrum = dirichlet_solve(
 			*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 			assembler.is_fluid(formulation()), use_avg_pressure);
 		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
-		solver->getInfo(solver_info);
+		solver->getInfo(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
 		if (error > 1e-4)
@@ -172,7 +172,7 @@ namespace polyfem
 
 			time_integrator->update_quantities(sol);
 
-			save_timestep(time, t, t0, dt);
+			out_geom.save_timestep(time, t, t0, dt);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 

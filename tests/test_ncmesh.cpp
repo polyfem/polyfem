@@ -82,7 +82,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	}
 	ncmesh.prepare_mesh();
 
-	state.compute_mesh_stats();
+	// state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();
@@ -163,7 +163,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	}
 	ncmesh.prepare_mesh();
 
-	state.compute_mesh_stats();
+	// state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();

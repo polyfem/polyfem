@@ -1,6 +1,16 @@
 #pragma once
 
-#include <Eigen/Core>
+#include <polyfem/Common.hpp>
+
+#include <polyfem/assembler/Problem.hpp>
+
+#include <polyfem/basis/ElementBases.hpp>
+
+#include <polyfem/mesh/Mesh.hpp>
+
+#include <polyfem/utils/RefElementSampler.hpp>
+
+#include <Eigen/Dense>
 
 namespace polyfem::output
 {
@@ -48,8 +58,8 @@ namespace polyfem::output
 		/// extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();
 
-		void build_grid();
-		void init_sampler();
+		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
+		void init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area);
 
 		/// builds visualzation mesh, upsampled mesh used for visualization
 		/// the visualization mesh is a dense mesh per element all disconnected
@@ -120,8 +130,11 @@ namespace polyfem::output
 		double assigning_rhs_time;
 		/// time to solve
 		double solving_time;
-		/// time to compute error
-		double computing_errors_time;
+
+		double total_time()
+		{
+			return building_basis_time + assembling_stiffness_mat_time + solving_time;
+		}
 	};
 
 	class OutStatsData
@@ -178,10 +191,16 @@ namespace polyfem::output
 		int multi_singular_boundary_count;
 
 		/// compute the errors, not part of solve
-		void compute_errors();
+		void compute_errors(const int n_bases,
+							const std::vector<polyfem::basis::ElementBases> &bases,
+							const std::vector<polyfem::basis::ElementBases> &gbases,
+							const polyfem::mesh::Mesh &mesh,
+							const assembler::Problem &problem,
+							const double tend,
+							const Eigen::MatrixXd &sol);
 
 		/// compute stats (counts els type, mesh lenght, etc), step 1 of solve
-		void compute_mesh_stats();
+		void compute_mesh_stats(const polyfem::mesh::Mesh &mesh);
 
 		/// computes the mesh size, it samples every edges n_samples times
 		/// uses curved_mesh_size (false by default) to compute the size of
@@ -189,10 +208,10 @@ namespace polyfem::output
 		/// @param[in] mesh to compute stats
 		/// @param[in] bases geom bases
 		/// @param[in] n_samples used for curved meshes
-		void compute_mesh_size(const mesh::Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
+		void compute_mesh_size(const polyfem::mesh::Mesh &mesh_in, const std::vector<polyfem::basis::ElementBases> &bases_in, const int n_samples, const bool use_curved_mesh_size);
 
 		void reset();
 
-		void count_flipped_elements();
+		void count_flipped_elements(const polyfem::mesh::Mesh &mesh, const std::vector<polyfem::basis::ElementBases> &gbases);
 	};
 } // namespace polyfem::output

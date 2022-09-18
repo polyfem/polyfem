@@ -3,8 +3,10 @@
 
 #include <polyfem/io/MatrixIO.hpp>
 
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
@@ -19,8 +21,6 @@
 #include <polyfem/basis/PolygonalBasis2d.hpp>
 #include <polyfem/basis/PolygonalBasis3d.hpp>
 
-#include <polyfem/utils/EdgeSampler.hpp>
-
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -33,8 +33,6 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <igl/Timer.h>
-
-#include <BVH.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
 
@@ -521,6 +519,8 @@ namespace polyfem
 			return;
 		}
 
+		mesh->prepare_mesh();
+
 		bases.clear();
 		pressure_bases.clear();
 		geom_bases_.clear();
@@ -716,7 +716,7 @@ namespace polyfem
 			total_local_boundary.emplace_back(lb);
 
 		if (args["space"]["advanced"]["count_flipped_els"])
-			stats.count_flipped_elements();
+			stats.count_flipped_elements(*mesh, geom_bases());
 
 		const int prev_bases = n_bases;
 		n_bases += obstacle.n_vertices();
@@ -771,7 +771,7 @@ namespace polyfem
 
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
-		stats.compute_mesh_size(*mesh, curret_bases, n_samples);
+		stats.compute_mesh_size(*mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
 
 		if (is_contact_enabled())
 		{
@@ -809,8 +809,7 @@ namespace polyfem
 			logger().info(" took {}s", timer.getElapsedTime());
 		}
 
-		if (args["output"]["advanced"]["sol_on_grid"] > 0)
-			out_geom.build_grid();
+		out_geom.build_grid(*mesh, args["output"]["advanced"]["sol_on_grid"]);
 
 		if (!problem->is_time_dependent() && boundary_nodes.empty())
 		{

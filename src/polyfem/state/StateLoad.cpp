@@ -94,7 +94,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		out_geom.init_sampler();
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
 	}
 
 	void State::load_mesh(bool non_conforming,
@@ -144,7 +144,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		out_geom.init_sampler();
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
 
 		timer.start();
 		logger().info("Loading obstacles...");

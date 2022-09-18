@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	state.compute_mesh_stats();
+	state.stats.compute_mesh_stats(*state.mesh);
 
 	state.build_basis();
 
@@ -146,6 +146,8 @@ int main(int argc, char **argv)
 	state.solve_problem();
 
 	state.compute_errors();
+
+	logger().info("total time: {}s", state.runtime.total_time());
 
 	state.save_json();
 	state.export_data();

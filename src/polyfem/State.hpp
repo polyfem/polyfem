@@ -1,26 +1,24 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
+
 #include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
+
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
-#include <polyfem/utils/RefElementSampler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-#include <polyfem/basis/InterfaceData.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-#include <polyfem/Common.hpp>
-#include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
-#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh/mesh3D/CMesh3D.hpp>
-#include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/output/OutData.hpp>
 
@@ -48,6 +46,12 @@ namespace cppoptlib
 
 namespace polyfem
 {
+	namespace mesh
+	{
+		class Mesh2D;
+		class Mesh3D;
+	} // namespace mesh
+
 	namespace solver
 	{
 		class NLProblem;
@@ -279,7 +283,12 @@ namespace polyfem
 		/// solves the problem, call other methods
 		void solve()
 		{
-			stats.compute_mesh_stats();
+			if (!mesh)
+			{
+				logger().error("Load the mesh first!");
+				return;
+			}
+			stats.compute_mesh_stats(*mesh);
 
 			build_basis();
 
@@ -530,6 +539,23 @@ namespace polyfem
 		/// @param[in] path path to resolve
 		/// @return resolvedpath
 		std::string resolve_output_path(const std::string &path) const;
+
+		void compute_errors()
+		{
+			if (!args["output"]["advanced"]["compute_error"])
+				return;
+
+			double tend = 0;
+			// TODO fix me
+			if (!args["time"].is_null())
+			{
+				tend = args["time"].value("tend", 1.0);
+				if (tend <= 0)
+					tend = 1;
+			}
+
+			stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
+		}
 
 #ifdef POLYFEM_WITH_TBB
 		/// limits the number of used threads

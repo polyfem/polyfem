@@ -1,7 +1,6 @@
 set(SOURCES
 	StateInit.cpp
 	StateLoad.cpp
-	StateOutput.cpp
 	StatePref.cpp
 	StateSolve.cpp
 	StateSolveLinear.cpp

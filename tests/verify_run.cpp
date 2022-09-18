@@ -102,7 +102,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		return 1;
 	}
 
-	state.compute_mesh_stats();
+	// state.compute_mesh_stats();
 
 	state.build_basis();
 
