@@ -23,9 +23,8 @@ namespace polyfem::time_integrator
 
 	Eigen::VectorXd ImplicitNewmark::compute_velocity(const Eigen::VectorXd &x) const
 	{
-		const Eigen::VectorXd tmp = x_prev() + dt() * (v_prev() + dt() * (0.5 - beta()) * a_prev());
-		const Eigen::VectorXd a = (x - tmp) / (beta() * dt() * dt());
-		return v_prev() + dt() * ((1 - gamma()) * a_prev() + gamma() * a);
+		const double c = gamma() / beta();
+		return c / dt() * (x - x_prev()) + (1 - c) * v_prev() + (1 - c / 2) * dt() * a_prev();
 	}
 
 	Eigen::VectorXd ImplicitNewmark::compute_acceleration(const Eigen::VectorXd &v) const
