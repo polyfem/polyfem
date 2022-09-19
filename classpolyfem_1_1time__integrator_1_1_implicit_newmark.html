@@ -150,6 +150,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a97d855c75a16cbf65ad5d6ae70f5b2c7"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7">x_tilde</a> () const override</td></tr>
 <tr class="memdesc:a97d855c75a16cbf65ad5d6ae70f5b2c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the predicted solution to be used in the inertia term \((x-\tilde{x})^TM(x-\tilde{x})\).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7">More...</a><br /></td></tr>
 <tr class="separator:a97d855c75a16cbf65ad5d6ae70f5b2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6911b1bb8c36954c05c857d8f797e55"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55">compute_velocity</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:ab6911b1bb8c36954c05c857d8f797e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the current velocity given the current solution and using the stored previous solution(s).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55">More...</a><br /></td></tr>
+<tr class="separator:ab6911b1bb8c36954c05c857d8f797e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac87bd5ebd8b67344363864afffba1d6c"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c">compute_acceleration</a> (const Eigen::VectorXd &amp;v) const override</td></tr>
+<tr class="memdesc:ac87bd5ebd8b67344363864afffba1d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the current acceleration given the current velocity and using the stored previous velocity(s).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c">More...</a><br /></td></tr>
+<tr class="separator:ac87bd5ebd8b67344363864afffba1d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19009346a86585458fb56c159c37dc12"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12">acceleration_scaling</a> () const override</td></tr>
 <tr class="memdesc:a19009346a86585458fb56c159c37dc12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the acceleration scaling used to scale forces when integrating a second order ODE.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12">More...</a><br /></td></tr>
 <tr class="separator:a19009346a86585458fb56c159c37dc12"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,9 +170,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab7167f5a3ddbf2372da4c4e624ed3693 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74403eb9fc355ac9c5231e8bc7f6c46c inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a74403eb9fc355ac9c5231e8bc7f6c46c">~ImplicitTimeIntegrator</a> ()=default</td></tr>
 <tr class="separator:a74403eb9fc355ac9c5231e8bc7f6c46c inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8ff8c31ac09bb424aaf80d59c234fbf inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">set_parameters</a> (const nlohmann::json &amp;params)</td></tr>
-<tr class="memdesc:ac8ff8c31ac09bb424aaf80d59c234fbf inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the time integrator parameters from a json object.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">More...</a><br /></td></tr>
-<tr class="separator:ac8ff8c31ac09bb424aaf80d59c234fbf inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e20f2aecb6481cdd3caec60fda5ecde inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a9e20f2aecb6481cdd3caec60fda5ecde">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="memdesc:a9e20f2aecb6481cdd3caec60fda5ecde inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the time integrator parameters from a json object.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a9e20f2aecb6481cdd3caec60fda5ecde">More...</a><br /></td></tr>
+<tr class="separator:a9e20f2aecb6481cdd3caec60fda5ecde inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa19b9d1885d166f24557a23e1612b2af inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">init</a> (const Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0">x_prev</a>, const Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81">v_prev</a>, const Eigen::VectorXd &amp;<a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e">a_prev</a>, double <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932">dt</a>)</td></tr>
 <tr class="memdesc:aa19b9d1885d166f24557a23e1612b2af inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the time integrator with the previous values for \(x\), \(v\), and \(a\).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af">More...</a><br /></td></tr>
 <tr class="separator:aa19b9d1885d166f24557a23e1612b2af inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,6 +182,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af69b612efd4bd4ceee5b8c05a8b023cc inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">x_tilde</a> () const =0</td></tr>
 <tr class="memdesc:af69b612efd4bd4ceee5b8c05a8b023cc inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the predicted solution to be used in the inertia term \((x-\tilde{x})^TM(x-\tilde{x})\).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">More...</a><br /></td></tr>
 <tr class="separator:af69b612efd4bd4ceee5b8c05a8b023cc inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a989602df205d37bdd86de6d8fc70e88b inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">compute_velocity</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
+<tr class="memdesc:a989602df205d37bdd86de6d8fc70e88b inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the current velocity given the current solution and using the stored previous solution(s).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">More...</a><br /></td></tr>
+<tr class="separator:a989602df205d37bdd86de6d8fc70e88b inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bd3509695a4928c041bfaded22e4b58 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3bd3509695a4928c041bfaded22e4b58">compute_acceleration</a> (const Eigen::VectorXd &amp;v) const =0</td></tr>
+<tr class="memdesc:a3bd3509695a4928c041bfaded22e4b58 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the current acceleration given the current velocity and using the stored previous velocity(s).  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3bd3509695a4928c041bfaded22e4b58">More...</a><br /></td></tr>
+<tr class="separator:a3bd3509695a4928c041bfaded22e4b58 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed3a8c4dec0c01f69caefae756cb2999 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">acceleration_scaling</a> () const =0</td></tr>
 <tr class="memdesc:aed3a8c4dec0c01f69caefae756cb2999 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the acceleration scaling used to scale forces when integrating a second order ODE.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">More...</a><br /></td></tr>
 <tr class="separator:aed3a8c4dec0c01f69caefae756cb2999 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,9 +232,9 @@ Protected Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">polyfem::time_integrator::ImplicitTimeIntegrator</a></td></tr>
-<tr class="memitem:aa497c8d40d82387396ea901dcaa5c5e8 inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">ImplicitTimeIntegrator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa497c8d40d82387396ea901dcaa5c5e8">construct_time_integrator</a> (const std::string &amp;name)</td></tr>
-<tr class="memdesc:aa497c8d40d82387396ea901dcaa5c5e8 inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory method for constructing implicit time integrators from the name of the integrator.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa497c8d40d82387396ea901dcaa5c5e8">More...</a><br /></td></tr>
-<tr class="separator:aa497c8d40d82387396ea901dcaa5c5e8 inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f90eeb189f31e345957c60aed5e30cc inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">ImplicitTimeIntegrator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2f90eeb189f31e345957c60aed5e30cc">construct_time_integrator</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="memdesc:a2f90eeb189f31e345957c60aed5e30cc inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory method for constructing implicit time integrators from the name of the integrator.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2f90eeb189f31e345957c60aed5e30cc">More...</a><br /></td></tr>
+<tr class="separator:a2f90eeb189f31e345957c60aed5e30cc inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed403206a56f26109dc703c811a471b2 inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">static const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed403206a56f26109dc703c811a471b2">get_time_integrator_names</a> ()</td></tr>
 <tr class="memdesc:aed403206a56f26109dc703c811a471b2 inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a vector of the names of possible ImplicitTimeIntegrators.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed403206a56f26109dc703c811a471b2">More...</a><br /></td></tr>
 <tr class="separator:aed403206a56f26109dc703c811a471b2 inherit pub_static_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -309,9 +321,9 @@ Additional Inherited Members</h2></td></tr>
  
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00026">26</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00035">35</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00040">beta()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00057">beta()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00054">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
 
 </div>
 </div>
@@ -340,11 +352,108 @@ Additional Inherited Members</h2></td></tr>
 
 <p>\(\beta\) parameter for blending accelerations in the solution update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00040">40</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00057">57</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00046">m_beta</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00063">m_beta</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00026">acceleration_scaling()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00012">update_quantities()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00021">x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00035">acceleration_scaling()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">x_tilde()</a>.</p>
+
+</div>
+</div>
+<a id="ac87bd5ebd8b67344363864afffba1d6c" name="ac87bd5ebd8b67344363864afffba1d6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87bd5ebd8b67344363864afffba1d6c">&#9670;&nbsp;</a></span>compute_acceleration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::time_integrator::ImplicitNewmark::compute_acceleration </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the current acceleration given the current velocity and using the stored previous velocity(s). </p>
+<p class="formulaDsp">
+\[
+    a = \frac{v - v^t - (1 - \gamma) \Delta t a^t)}{\gamma \Delta t}
+\]
+</p>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>current velocity </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>value for \(a\) </dd></dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3bd3509695a4928c041bfaded22e4b58">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">30</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00078">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00054">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00059">gamma()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00076">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">update_quantities()</a>.</p>
+
+</div>
+</div>
+<a id="ab6911b1bb8c36954c05c857d8f797e55" name="ab6911b1bb8c36954c05c857d8f797e55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6911b1bb8c36954c05c857d8f797e55">&#9670;&nbsp;</a></span>compute_velocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::time_integrator::ImplicitNewmark::compute_velocity </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the current velocity given the current solution and using the stored previous solution(s). </p>
+<p class="formulaDsp">
+\[
+    a^{t+1} = \frac{x - (x^t + \Delta t v^t + \Delta t^2 (0.5 - \beta) a^t)}{\beta \Delta t^2}\newline
+    v = v^t + \Delta t (1 - \gamma) a^t + \gamma a^{t+1}
+\]
+</p>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>current solution vector </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>value for \(v\) </dd></dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">24</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00078">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00057">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00054">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00059">gamma()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00076">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00074">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -373,11 +482,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>\(\gamma\) parameter for blending accelerations in the velocity update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00042">42</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00059">59</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00048">m_gamma</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00065">m_gamma</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00012">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">compute_acceleration()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>.</p>
 
 </div>
 </div>
@@ -408,16 +517,16 @@ Additional Inherited Members</h2></td></tr>
 <p>Set the <code>gamma</code> and <code>beta</code> parameters from a json object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">params</td><td>json containing <code>{"newmark": {"gamma": 0.5, "beta": 0.25}}</code> </td></tr>
+    <tr><td class="paramname">params</td><td>json containing <code>{"gamma": 0.5, "beta": 0.25}</code> </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac8ff8c31ac09bb424aaf80d59c234fbf">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a9e20f2aecb6481cdd3caec60fda5ecde">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">5</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00046">m_beta</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00048">m_gamma</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00063">m_beta</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00065">m_gamma</a>.</p>
 
 </div>
 </div>
@@ -455,9 +564,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a7d653f4e96217b478314dbabd3fd3d1c">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00012">12</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">11</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00067">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00040">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00042">gamma()</a>, <a class="el" href="p__bases_8py_source.html#l00339">p_bases::tmp</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00078">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00076">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00074">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
 </div>
 </div>
@@ -494,9 +603,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#af69b612efd4bd4ceee5b8c05a8b023cc">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00021">21</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">19</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00067">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00040">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00043">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00065">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00063">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00078">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00057">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00054">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00076">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00074">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
 </div>
 </div>
@@ -523,9 +632,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>\(\beta\) parameter for blending accelerations in the solution update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00046">46</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00063">63</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00040">beta()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00057">beta()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -551,9 +660,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>\(\gamma\) parameter for blending accelerations in the velocity update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00048">48</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00065">65</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00042">gamma()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00059">gamma()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
 
 </div>
 </div>

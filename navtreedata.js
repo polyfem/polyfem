@@ -99,13 +99,13 @@ var NAVTREEINDEX =
 "classpolyfem_1_1quadrature_1_1_tet_quadrature.html#a808092d0512b96cb368edea456574261",
 "classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4",
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a1f6822209689767027ba50199b933724",
-"classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b",
-"classpolyfem_1_1utils_1_1_selection.html#a8b5e11bad5215f5f08b23b7c551c75a7",
-"elasticity__rhs_8py.html",
-"namespacep__bases.html#a5d5895607c20f1fd03b3879b6e9b1879",
-"namespacepolyfem_1_1problem.html#a542151afb4d6a156d38fd195ee17873e",
-"struct_d_scalar1.html#ab47f13cbffdaff53d8d630a9abba26b0",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ac044e71440c2bb165bccbae9c0362fcc"
+"classpolyfem_1_1time__integrator_1_1_implicit_euler.html",
+"classpolyfem_1_1utils_1_1_ref_element_sampler.html#addcf58f566630d35744cec51f1a9ac10",
+"eigs_8py.html#a1cb62336f71a067a062cca9e82f830f2",
+"namespacemembers_vars.html",
+"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#aa975a13eb914b8249046475137f6ffd5",
+"struct_d_scalar1.html#a79c1d1b7842a4f27c37c39e1dddb7911",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a64b0d93cbfbc8d68f13f3c791cc347b3"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
