@@ -191,6 +191,8 @@ namespace polyfem
 			//checks if it is a fluid simulation
 			static bool is_fluid(const std::string &assembler);
 
+			bool has_damping() const;
+
 			//gets the names of all assemblers
 			static std::vector<std::string> scalar_assemblers();
 			static std::vector<std::string> tensor_assemblers();

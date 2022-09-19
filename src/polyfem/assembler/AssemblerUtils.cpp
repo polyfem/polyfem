@@ -94,6 +94,11 @@ namespace polyfem
 			return formulation_properties.at(assembler).is_linear;
 		}
 
+		bool AssemblerUtils::has_damping() const
+		{
+			return damping_.local_assembler().is_valid();
+		}
+
 		void AssemblerUtils::assemble_problem(const std::string &assembler,
 											  const bool is_volume,
 											  const int n_basis,

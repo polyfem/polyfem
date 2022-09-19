@@ -33,7 +33,7 @@ namespace polyfem::solver
 
 	void DampingForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		POLYFEM_SCOPED_TIMER("\telastic hessian");
+		POLYFEM_SCOPED_TIMER("\tdamping hessian");
 
 		hessian.resize(x.size(), x.size());
 

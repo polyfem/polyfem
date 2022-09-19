@@ -80,7 +80,8 @@ namespace polyfem
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
-			damping_form->set_weight(time_integrator->acceleration_scaling());
+			if (damping_form)
+				damping_form->set_weight(time_integrator->acceleration_scaling());
 
 			// TODO: Determine if friction should be scaled by h²
 			// if (friction_form)
@@ -179,8 +180,11 @@ namespace polyfem
 			solve_data.time_integrator->set_parameters(args["time"]);
 			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 			forms.push_back(solve_data.inertia_form);
-			solve_data.damping_form = std::make_shared<DampingForm>(*this, args["time"]["dt"]);
-			forms.push_back(solve_data.damping_form);
+			if (assembler.has_damping())
+			{
+				solve_data.damping_form = std::make_shared<DampingForm>(*this, args["time"]["dt"]);
+				forms.push_back(solve_data.damping_form);
+			}
 		}
 		else
 		{
