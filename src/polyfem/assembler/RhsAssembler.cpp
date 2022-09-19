@@ -613,7 +613,7 @@ namespace polyfem
 
 					trafo = vals.jac_it[n];
 
-					if (displacement.size() >= 0)
+					if (displacement.size() > 0)
 					{
 						assert(size_ == 2 || size_ == 3);
 						deform_mat.resize(size_, size_);
