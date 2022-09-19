@@ -163,11 +163,11 @@ namespace polyfem
 		std::shared_ptr<assembler::Problem> problem;
 
 		/// FE bases, the size is #elements
-		std::vector<ElementBases> bases;
+		std::vector<basis::ElementBases> bases;
 		/// FE pressure bases for mixed elements, the size is #elements
-		std::vector<ElementBases> pressure_bases;
+		std::vector<basis::ElementBases> pressure_bases;
 		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
-		std::vector<ElementBases> geom_bases_;
+		std::vector<basis::ElementBases> geom_bases_;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -222,7 +222,7 @@ namespace polyfem
 
 		/// @brief Get a constant reference to the geometry mapping bases.
 		/// @return A constant reference to the geometry mapping bases.
-		const std::vector<ElementBases> &geom_bases() const
+		const std::vector<basis::ElementBases> &geom_bases() const
 		{
 			return iso_parametric() ? bases : geom_bases_;
 		}
@@ -237,7 +237,7 @@ namespace polyfem
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
 			const int n_bases,
-			const std::vector<ElementBases> &bases,
+			const std::vector<basis::ElementBases> &bases,
 			const assembler::AssemblyValsCache &ass_vals_cache) const;
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
@@ -378,7 +378,7 @@ namespace polyfem
 		/// mapping from elements to nodes for neumann boundary conditions
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
-		std::map<int, InterfaceData> poly_edge_to_data;
+		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		/// Matrices containing the input per node dirichelt
 		std::vector<Eigen::MatrixXd> input_dirichlet;
 
@@ -477,7 +477,7 @@ namespace polyfem
 		/// @param[out] boundary_edges edges
 		/// @param[out] boundary_triangles triangles
 		void extract_boundary_mesh(
-			const std::vector<ElementBases> &bases,
+			const std::vector<basis::ElementBases> &bases,
 			Eigen::MatrixXd &boundary_nodes_pos,
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles) const;
@@ -517,28 +517,23 @@ namespace polyfem
 		/// saves all data on the disk according to the input params
 		void export_data();
 
+		/// saves a timestep
+		/// @param[in] time time in secs
+		/// @param[in] t time index
+		/// @param[in] t0 initial time
+		/// @param[in] dt delta t
+		void save_timestep(const double time, const int t, const double t0, const double dt);
+
+		/// saves a subsolve when save_solve_sequence_debug is true
+		/// @param[in] i sub solve index
+		/// @param[in] t time index
+		void save_subsolve(const int i, const int t);
+
 		/// saves the output statistic to a stream
 		/// @param[in] out stream to write output
 		void save_json(std::ostream &out);
-		/// saves the output statistic to a json object
-		/// @param[in] j output json
-		void save_json(nlohmann::json &j);
 		/// saves the output statistic to disc accoding to params
 		void save_json();
-
-		//-----------PATH management
-		/// Get the root path for the state (e.g., args["root_path"] or ".")
-		/// @return root path
-		std::string root_path() const;
-		/// Resolve input path relative to root_path() if the path is not absolute.
-		/// @param[in] path path to resolve
-		/// @param[in] only_if_exists resolve only if relative path exists
-		/// @return path
-		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
-		/// Resolve output path relative to output_dir if the path is not absolute
-		/// @param[in] path path to resolve
-		/// @return resolvedpath
-		std::string resolve_output_path(const std::string &path) const;
 
 		void compute_errors()
 		{
@@ -556,6 +551,20 @@ namespace polyfem
 
 			stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
 		}
+
+		//-----------PATH management
+		/// Get the root path for the state (e.g., args["root_path"] or ".")
+		/// @return root path
+		std::string root_path() const;
+		/// Resolve input path relative to root_path() if the path is not absolute.
+		/// @param[in] path path to resolve
+		/// @param[in] only_if_exists resolve only if relative path exists
+		/// @return path
+		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
+		/// Resolve output path relative to output_dir if the path is not absolute
+		/// @param[in] path path to resolve
+		/// @return resolvedpath
+		std::string resolve_output_path(const std::string &path) const;
 
 #ifdef POLYFEM_WITH_TBB
 		/// limits the number of used threads

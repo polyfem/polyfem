@@ -109,7 +109,7 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(t0 + dt);
 
-		out_geom.save_timestep(t0, 0, t0, dt);
+		save_timestep(t0, 0, t0, dt);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -126,7 +126,7 @@ namespace polyfem
 				solve_data.updated_barrier_stiffness(sol);
 			}
 
-			out_geom.save_timestep(t0 + dt * t, t, t0, dt);
+			save_timestep(t0 + dt * t, t, t0, dt);
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
@@ -310,7 +310,7 @@ namespace polyfem
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
-		out_geom.save_subsolve(subsolve_count, t);
+		save_subsolve(subsolve_count, t);
 
 		// ---------------------------------------------------------------------
 
@@ -333,7 +333,7 @@ namespace polyfem
 				 {"info", info}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			out_geom.save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t);
 		};
 
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
@@ -381,7 +381,7 @@ namespace polyfem
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
 				 {"info", info}});
-			out_geom.save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t);
 		}
 
 		// ---------------------------------------------------------------------

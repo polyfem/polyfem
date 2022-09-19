@@ -148,7 +148,7 @@ namespace polyfem
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* export to vtu */
-			out_geom.save_timestep(time, t, 0, dt);
+			save_timestep(time, t, 0, dt);
 		}
 	}
 
@@ -221,7 +221,7 @@ namespace polyfem
 			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));
 			sol_to_pressure();
 
-			out_geom.save_timestep(time, t, t0, dt);
+			save_timestep(time, t, t0, dt);
 		}
 	}
 } // namespace polyfem

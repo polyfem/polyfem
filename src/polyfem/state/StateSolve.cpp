@@ -31,7 +31,7 @@ namespace polyfem
 		}
 
 		if (problem->is_time_dependent())
-			out_geom.save_timestep(0, 0, 0, 0);
+			save_timestep(0, 0, 0, 0);
 	}
 
 	void State::initial_solution(Eigen::MatrixXd &solution) const

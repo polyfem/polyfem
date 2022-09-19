@@ -172,7 +172,7 @@ namespace polyfem
 
 			time_integrator->update_quantities(sol);
 
-			out_geom.save_timestep(time, t, t0, dt);
+			save_timestep(time, t, t0, dt);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 

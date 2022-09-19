@@ -103,16 +103,6 @@ namespace polyfem::output
 		/// @param[in] dt delta t
 		/// @param[in] skip_frame every which frame to skip
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
-		/// saves a timestep
-		/// @param[in] time time in secs
-		/// @param[in] t time index
-		/// @param[in] t0 initial time
-		/// @param[in] dt delta t
-		void save_timestep(const double time, const int t, const double t0, const double dt);
-		/// saves a subsolve when save_solve_sequence_debug is true
-		/// @param[in] i sub solve index
-		/// @param[in] t time index
-		void save_subsolve(const int i, const int t);
 	};
 
 	class OutRuntimeData
@@ -213,5 +203,9 @@ namespace polyfem::output
 		void reset();
 
 		void count_flipped_elements(const polyfem::mesh::Mesh &mesh, const std::vector<polyfem::basis::ElementBases> &gbases);
+
+		/// saves the output statistic to a json object
+		/// @param[in] j output json
+		void save_json(nlohmann::json &j);
 	};
 } // namespace polyfem::output

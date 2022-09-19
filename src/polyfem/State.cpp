@@ -31,6 +31,7 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 #include <igl/Timer.h>
 
@@ -405,8 +406,8 @@ namespace polyfem
 	void compute_integral_constraints(
 		const Mesh3D &mesh,
 		const int n_bases,
-		const std::vector<ElementBases> &bases,
-		const std::vector<ElementBases> &gbases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
 		Eigen::MatrixXd &basis_integrals)
 	{
 		if (!mesh.is_volume())
@@ -551,7 +552,7 @@ namespace polyfem
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
-		std::map<int, InterfaceData> poly_edge_to_data_geom; // temp dummy variable
+		std::map<int, basis::InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const auto &tmp_json = args["space"]["discr_order"];
 		if (tmp_json.is_number_integer())
@@ -655,7 +656,7 @@ namespace polyfem
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -663,15 +664,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		else
@@ -687,7 +688,7 @@ namespace polyfem
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -695,15 +696,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		timer.stop();
@@ -852,16 +853,16 @@ namespace polyfem
 			{
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
 					logger().error("MeanValue bases not supported in 3D");
-				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
+				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
 				{
-					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
+					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
 				}
 				else
-					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
 			}
 		}
 		else
@@ -873,14 +874,14 @@ namespace polyfem
 					logger().error("MeanValue bases not supported in 3D");
 					throw "not implemented";
 				}
-				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
+				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
-					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
+					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
 				else
-					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
+					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
 			}
 		}
 
@@ -1049,7 +1050,7 @@ namespace polyfem
 
 	std::shared_ptr<RhsAssembler> State::build_rhs_assembler(
 		const int n_bases,
-		const std::vector<ElementBases> &bases,
+		const std::vector<basis::ElementBases> &bases,
 		const assembler::AssemblyValsCache &ass_vals_cache) const
 	{
 		json rhs_solver_params = args["solver"]["linear"];
@@ -1247,6 +1248,74 @@ namespace polyfem
 			return path;
 		}
 		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
+	}
+
+	void State::save_timestep(const double time, const int t, const double t0, const double dt)
+	{
+		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
+		{
+			logger().trace("Saving VTU...");
+			POLYFEM_SCOPED_TIMER("Saving VTU");
+			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+
+			out_geom.save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
+
+			out_geom.save_pvd(
+				resolve_output_path(args["output"]["paraview"]["file_name"]),
+				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
+				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
+		}
+	}
+
+	void State::save_json()
+	{
+		const std::string out_path = resolve_output_path(args["output"]["json"]);
+		if (!out_path.empty())
+		{
+			std::ofstream out(out_path);
+			if (!out.is_open())
+			{
+				logger().error("Unable to save simulation JSON to {}", out_path);
+				return;
+			}
+			save_json(out);
+			out.close();
+		}
+	}
+
+	void State::save_json(std::ostream &out)
+	{
+		if (!mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (sol.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		logger().info("Saving json...");
+
+		using json = nlohmann::json;
+		json j;
+		stats.save_json(j);
+		out << j.dump(4) << std::endl;
+	}
+
+	void State::save_subsolve(const int i, const int t)
+	{
+		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
+			return;
+
+		if (!solve_export_to_file)
+			solution_frames.emplace_back();
+
+		out_geom.save_vtu(resolve_output_path(fmt::format("solve_{:d}.vtu", i)), t);
 	}
 
 } // namespace polyfem
