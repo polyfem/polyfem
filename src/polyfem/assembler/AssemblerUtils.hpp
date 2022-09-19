@@ -44,14 +44,6 @@ namespace polyfem
 								  const std::vector<basis::ElementBases> &gbases,
 								  const AssemblyValsCache &cache,
 								  StiffnessMatrix &stiffness) const;
-			void assemble_problem(const std::string &assembler,
-								  const bool is_volume,
-								  const int n_basis,
-								  const Density &density,
-								  const std::vector<basis::ElementBases> &bases,
-								  const std::vector<basis::ElementBases> &gbases,
-								  const AssemblyValsCache &cache,
-								  StiffnessMatrix &stiffness) const;
 			//mass matrix assembler, assembler is the name of the formulation
 			void assemble_mass_matrix(const std::string &assembler,
 									  const bool is_volume,
@@ -73,29 +65,10 @@ namespace polyfem
 										const AssemblyValsCache &psi_cache,
 										const AssemblyValsCache &phi_cache,
 										StiffnessMatrix &stiffness) const;
-			void assemble_mixed_problem(const std::string &assembler,
-										const bool is_volume,
-										const int n_psi_basis,
-										const int n_phi_basis,
-										const Density &density,
-										const std::vector<basis::ElementBases> &psi_bases,
-										const std::vector<basis::ElementBases> &phi_bases,
-										const std::vector<basis::ElementBases> &gbases,
-										const AssemblyValsCache &psi_cache,
-										const AssemblyValsCache &phi_cache,
-										StiffnessMatrix &stiffness) const;
 			//pressure pressure assembler, assembler is the name of the formulation
 			void assemble_pressure_problem(const std::string &assembler,
 										   const bool is_volume,
 										   const int n_basis,
-										   const std::vector<basis::ElementBases> &bases,
-										   const std::vector<basis::ElementBases> &gbases,
-										   const AssemblyValsCache &cache,
-										   StiffnessMatrix &stiffness) const;
-			void assemble_pressure_problem(const std::string &assembler,
-										   const bool is_volume,
-										   const int n_basis,
-										   const Density &density,
 										   const std::vector<basis::ElementBases> &bases,
 										   const std::vector<basis::ElementBases> &gbases,
 										   const AssemblyValsCache &cache,
