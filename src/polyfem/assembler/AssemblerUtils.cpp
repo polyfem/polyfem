@@ -314,7 +314,7 @@ namespace polyfem
 		{
 			if (assembler == "Damping")
 			{
-				damping_.assemble_grad(is_volume, dt, n_basis, bases, gbases, cache, displacement, prev_displacement, grad);
+				damping_.assemble_grad(is_volume, n_basis, dt, bases, gbases, cache, displacement, prev_displacement, grad);
 			}
 		}
 		//non-linear transient hessian, assembler is the name of the formulation
@@ -333,7 +333,7 @@ namespace polyfem
 		{
 			if (assembler == "Damping")
 			{
-				damping_.assemble_hessian(is_volume, dt, project_to_psd, n_basis, bases, gbases, cache, displacement, prev_displacement, mat_cache, hessian);
+				damping_.assemble_hessian(is_volume, n_basis, dt, project_to_psd, bases, gbases, cache, displacement, prev_displacement, mat_cache, hessian);
 			}
 		}
 

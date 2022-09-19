@@ -26,7 +26,7 @@ namespace polyfem::solver
         else
         {
             Eigen::MatrixXd grad;
-            assembler_.assemble_transient_energy_gradient("Damping", state_.mesh->is_volume(), state_.n_bases, dt_, state_.bases, state_.geom_bases(), state_.ass_vals_cache, x, x_prev, grad);
+            assembler_.assemble_transient_energy_gradient("Damping", state_.mesh->is_volume(), dt_, state_.n_bases, state_.bases, state_.geom_bases(), state_.ass_vals_cache, x, x_prev, grad);
             gradv = grad;
         }
 	}
@@ -38,6 +38,6 @@ namespace polyfem::solver
 		hessian.resize(x.size(), x.size());
 
         if (x_prev.size() == x.size())
-		    assembler_.assemble_transient_energy_hessian("Damping", state_.mesh->is_volume(), state_.n_bases, dt_, false, state_.bases, state_.geom_bases(), state_.ass_vals_cache, x, x_prev, mat_cache_, hessian);
+		    assembler_.assemble_transient_energy_hessian("Damping", state_.mesh->is_volume(), dt_, state_.n_bases, false, state_.bases, state_.geom_bases(), state_.ass_vals_cache, x, x_prev, mat_cache_, hessian);
 	}
 } // namespace polyfem::solver

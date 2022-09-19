@@ -283,82 +283,6 @@ namespace polyfem
 			return hessian;
 		}
 
-		// Compute \int grad phi_i : dStress / dF^{n-1} : grad phi_j dx
-		Eigen::MatrixXd
-		ViscousDamping::assemble_stress_prev_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &prev_displacement, const QuadratureVector &da, const double dt) const
-		{
-			Eigen::MatrixXd stress_grad_Ut;
-			stress_grad_Ut.setZero(vals.basis_values.size() * size(), vals.basis_values.size() * size());
-
-			Eigen::MatrixXd local_disp;
-			local_disp.setZero(vals.basis_values.size(), size());
-			Eigen::MatrixXd local_prev_disp = local_disp;
-			for (size_t i = 0; i < vals.basis_values.size(); ++i)
-			{
-				const auto &bs = vals.basis_values[i];
-				for (size_t ii = 0; ii < bs.global.size(); ++ii)
-				{
-					for (int d = 0; d < size(); ++d)
-					{
-						local_disp(i, d) += bs.global[ii].val * displacement(bs.global[ii].index * size() + d);
-						local_prev_disp(i, d) += bs.global[ii].val * prev_displacement(bs.global[ii].index * size() + d);
-					}
-				}
-			}
-
-			const int n_pts = da.size();
-
-			Eigen::MatrixXd def_grad(size(), size()), prev_def_grad(size(), size());
-			for (long p = 0; p < n_pts; ++p)
-			{
-				def_grad.setZero();
-				prev_def_grad.setZero();
-
-				Eigen::MatrixXd grad(vals.basis_values.size(), size());
-
-				for (size_t i = 0; i < vals.basis_values.size(); ++i)
-				{
-					grad.row(i) = vals.basis_values[i].grad.row(p);
-				}
-
-				Eigen::MatrixXd jac_it = vals.jac_it[p];
-				
-				def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-				prev_def_grad = local_prev_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-
-				Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
-				Eigen::MatrixXd dFdt = (def_grad - prev_def_grad) / dt;
-				compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
-
-				Eigen::MatrixXd stress_grad_Ut_temp = - (1. / dt) * d2RdFdFdot - (1. / dt / dt) * d2RdFdot2;
-				Eigen::MatrixXd stress_grad_Ut_temp2 = stress_grad_Ut_temp;
-				for (int i = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-				for (int k = 0; k < size(); k++)
-				for (int l = 0; l < size(); l++)
-					stress_grad_Ut_temp(i + j * size(), k + l * size()) = stress_grad_Ut_temp2(i * size() + j, k * size() + l);
-
-				Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
-
-				for (size_t i = 0; i < local_disp.rows(); ++i)
-				{
-					for (size_t j = 0; j < local_disp.cols(); ++j)
-					{
-						Eigen::MatrixXd temp;
-						temp.setZero(size(), size());
-						temp.row(j) = grad.row(i);
-						temp = temp * jac_it;
-						Eigen::VectorXd temp_flattened(Eigen::Map<Eigen::VectorXd>(temp.data(), temp.size()));
-						delF_delU_tensor.col(i * size() + j) = temp_flattened;
-					}
-				}
-
-				stress_grad_Ut += delF_delU_tensor.transpose() * stress_grad_Ut_temp * delF_delU_tensor * da(p);
-			}
-
-			return stress_grad_Ut;
-		}
-
 		// E := 0.5(F^T F - I), Compute Energy = \int \psi \| \frac{\partial E}{\partial t} \|^2 + 0.5 \phi (Tr(\frac{\partial E}{\partial t}))^2 du
 		double ViscousDamping::compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &prev_displacement, const QuadratureVector &da, const double dt) const
 		{
@@ -432,28 +356,6 @@ namespace polyfem
 
 			compute_stress_grad_aux(F, Fdot, d2RdF2, d2RdFdFdot, d2RdFdot2);
 			result = d2RdF2 + (1. / dt) * (d2RdFdFdot + d2RdFdFdot.transpose()) + (1. / dt / dt) * d2RdFdot2;
-		}
-
-		void ViscousDamping::compute_stress_prev_grad(const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &prev_grad_u_i, Eigen::MatrixXd &result) const
-		{
-			Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + grad_u_i;
-			Eigen::MatrixXd def_grad_fd = (grad_u_i - prev_grad_u_i) / dt;
-			Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
-
-			compute_stress_grad_aux(def_grad, def_grad_fd, d2RdF2, d2RdFdFdot, d2RdFdot2);
-			result = - (1. / dt) * d2RdFdFdot - (1. / dt / dt) * d2RdFdot2;
-		}
-
-		void ViscousDamping::compute_dstress_dpsi_dphi(const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &prev_grad_u_i, Eigen::MatrixXd &dstress_dpsi, Eigen::MatrixXd &dstress_dphi) const
-		{
-			Eigen::MatrixXd F = Eigen::MatrixXd::Identity(size(), size()) + grad_u_i;
-			Eigen::MatrixXd prev_F = Eigen::MatrixXd::Identity(size(), size()) + prev_grad_u_i;
-
-			Eigen::MatrixXd dFdt = (F - prev_F) / dt;
-			Eigen::MatrixXd dEdt = 0.5 * (dFdt.transpose() * F + F.transpose() * dFdt);
-
-			dstress_dpsi = 2 * (dFdt + F / dt) * dEdt;
-			dstress_dphi = dEdt.trace() * (dFdt + F / dt);
 		}
 	}
 } // namespace polyfem

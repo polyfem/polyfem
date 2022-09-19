@@ -138,20 +138,6 @@ namespace polyfem
 				utils::SpareMatrixCache &mat_cache,
 				StiffnessMatrix &grad) const;
 
-			//assemble grad prev_displacement of "grad displacement of energy"
-			void assemble_stress_prev_grad(
-				const bool is_volume,
-				const int n_basis,
-				const double dt,
-				const bool project_to_psd,
-				const std::vector<basis::ElementBases> &bases,
-				const std::vector<basis::ElementBases> &gbases,
-				const AssemblyValsCache &cache,
-				const Eigen::MatrixXd &displacement,
-				const Eigen::MatrixXd &prev_displacement,
-				utils::SpareMatrixCache &mat_cache,
-				StiffnessMatrix &grad) const;
-
 			//assemble energy
 			double assemble(
 				const bool is_volume,
