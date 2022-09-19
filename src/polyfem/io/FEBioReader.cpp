@@ -754,7 +754,6 @@ namespace polyfem
 			{
 				json params = state.args["params"];
 				state.assembler.set_size(3);
-				state.damping_assembler.local_assembler().set_size(3);
 				// state.assembler.set_parameters(params);
 				// state.assembler.init_multimaterial(true, Es, nus);
 				state.assembler.init_multimodels(mats);

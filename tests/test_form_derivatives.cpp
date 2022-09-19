@@ -32,7 +32,9 @@ namespace
                 "type": "NeoHookean",
                 "E": 20000,
                 "nu": 0.3,
-                "rho": 1000
+                "rho": 1000,
+				"phi": 1,
+				"psi": 1
             },
 
 			"geometry": [{

@@ -103,6 +103,41 @@ namespace polyfem
 										 utils::SpareMatrixCache &mat_cache,
 										 StiffnessMatrix &hessian) const;
 
+			//Non linear transient energy, assembler is the name of the formulation
+			double assemble_transient_energy(const std::string &assembler,
+											const bool is_volume,
+											const double dt,
+											const std::vector<basis::ElementBases> &bases,
+											const std::vector<basis::ElementBases> &gbases,
+											const AssemblyValsCache &cache,
+											const Eigen::MatrixXd &displacement,
+											const Eigen::MatrixXd &prev_displacement) const;
+
+			//non linear transient gradient, assembler is the name of the formulation
+			void assemble_transient_energy_gradient(const std::string &assembler,
+											const bool is_volume,
+											const double dt,
+											const int n_basis,
+											const std::vector<basis::ElementBases> &bases,
+											const std::vector<basis::ElementBases> &gbases,
+											const AssemblyValsCache &cache,
+											const Eigen::MatrixXd &displacement,
+											const Eigen::MatrixXd &prev_displacement,
+											Eigen::MatrixXd &grad) const;
+			//non-linear transient hessian, assembler is the name of the formulation
+			void assemble_transient_energy_hessian(const std::string &assembler,
+											const bool is_volume,
+											const double dt,
+											const int n_basis,
+											const bool project_to_psd,
+											const std::vector<basis::ElementBases> &bases,
+											const std::vector<basis::ElementBases> &gbases,
+											const AssemblyValsCache &cache,
+											const Eigen::MatrixXd &displacement,
+											const Eigen::MatrixXd &prev_displacement,
+											utils::SpareMatrixCache &mat_cache,
+											StiffnessMatrix &hessian) const;
+
 			//plotting (eg von mises), assembler is the name of the formulation
 			void compute_scalar_value(const std::string &assembler,
 									  const int el_id,
@@ -188,6 +223,8 @@ namespace polyfem
 			NLAssembler<MultiModel> multi_models_elasticity_;
 			// NLAssembler<OgdenElasticity> ogden_elasticity_;
 
+			TransientNLAssembler<ViscousDamping> damping_;
+
 			Assembler<StokesVelocity> stokes_velocity_;
 			MixedAssembler<StokesMixed> stokes_mixed_;
 			Assembler<StokesPressure> stokes_pressure_;
@@ -199,7 +236,5 @@ namespace polyfem
 			MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
 			Assembler<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
 		};
-
-		typedef TransientNLAssembler<ViscousDamping> ViscousDampingAssembler;
 	} // namespace assembler
 } // namespace polyfem

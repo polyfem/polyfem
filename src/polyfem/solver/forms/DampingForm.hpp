@@ -39,7 +39,7 @@ namespace polyfem::solver
 
 	private:
 		const State &state_;                                  ///< Reference to the simulation state
-		const assembler::ViscousDampingAssembler &assembler_; ///< Reference to the assembler
+		const assembler::AssemblerUtils &assembler_; ///< Reference to the assembler
 		utils::SpareMatrixCache mat_cache_;                   ///< Matrix cache
         
         const double dt_;

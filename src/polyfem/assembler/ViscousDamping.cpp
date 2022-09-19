@@ -76,13 +76,10 @@ namespace polyfem
 		// 	d2RdFdFprev.setZero(size * size, size * size);
 		// }
 
-		ViscousDamping::ViscousDamping()
+		void ViscousDamping::add_multimaterial(const int index, const json &params)
 		{
-			set_size(size_);
-		}
+			assert(size_ == 2 || size_ == 3);
 
-		void ViscousDamping::set_parameters(const json &params)
-		{
 			if (params.contains("psi"))
 				psi_ = params["psi"];
 			if (params.contains("phi"))

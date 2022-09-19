@@ -187,8 +187,6 @@ namespace polyfem
 
 		/// assembler, it dispatches call to the differnt assembers based on the formulation
 		assembler::AssemblerUtils assembler;
-		// viscous dissipation assembler
-		assembler::ViscousDampingAssembler damping_assembler;
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 

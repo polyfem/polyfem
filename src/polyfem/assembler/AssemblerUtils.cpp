@@ -283,6 +283,60 @@ namespace polyfem
 				return;
 		}
 
+		//Non linear transient energy, assembler is the name of the formulation
+		double AssemblerUtils::assemble_transient_energy(const std::string &assembler,
+										const bool is_volume,
+										const double dt,
+										const std::vector<basis::ElementBases> &bases,
+										const std::vector<basis::ElementBases> &gbases,
+										const AssemblyValsCache &cache,
+										const Eigen::MatrixXd &displacement,
+										const Eigen::MatrixXd &prev_displacement) const
+		{
+			if (assembler == "Damping")
+			{
+				return damping_.assemble(is_volume, dt, bases, gbases, cache, displacement, prev_displacement);
+			}
+			return 0.;
+		}
+
+		//non linear transient gradient, assembler is the name of the formulation
+		void AssemblerUtils::assemble_transient_energy_gradient(const std::string &assembler,
+										const bool is_volume,
+										const double dt,
+										const int n_basis,
+										const std::vector<basis::ElementBases> &bases,
+										const std::vector<basis::ElementBases> &gbases,
+										const AssemblyValsCache &cache,
+										const Eigen::MatrixXd &displacement,
+										const Eigen::MatrixXd &prev_displacement,
+										Eigen::MatrixXd &grad) const
+		{
+			if (assembler == "Damping")
+			{
+				damping_.assemble_grad(is_volume, dt, n_basis, bases, gbases, cache, displacement, prev_displacement, grad);
+			}
+		}
+		//non-linear transient hessian, assembler is the name of the formulation
+		void AssemblerUtils::assemble_transient_energy_hessian(const std::string &assembler,
+										const bool is_volume,
+										const double dt,
+										const int n_basis,
+										const bool project_to_psd,
+										const std::vector<basis::ElementBases> &bases,
+										const std::vector<basis::ElementBases> &gbases,
+										const AssemblyValsCache &cache,
+										const Eigen::MatrixXd &displacement,
+										const Eigen::MatrixXd &prev_displacement,
+										utils::SpareMatrixCache &mat_cache,
+										StiffnessMatrix &hessian) const
+		{
+			if (assembler == "Damping")
+			{
+				damping_.assemble_hessian(is_volume, dt, project_to_psd, n_basis, bases, gbases, cache, displacement, prev_displacement, mat_cache, hessian);
+			}
+		}
+
 		void AssemblerUtils::compute_scalar_value(const std::string &assembler,
 												  const int el_id,
 												  const ElementBases &bs,
@@ -481,6 +535,8 @@ namespace polyfem
 			multi_models_elasticity_.local_assembler().set_size(dim);
 			// ogden_elasticity_.local_assembler().set_size(dim);
 
+			damping_.local_assembler().set_size(dim);
+
 			incompressible_lin_elast_displacement_.local_assembler().set_size(dim);
 			incompressible_lin_elast_mixed_.local_assembler().set_size(dim);
 			incompressible_lin_elast_pressure_.local_assembler().set_size(dim);
@@ -531,6 +587,8 @@ namespace polyfem
 			neo_hookean_elasticity_.local_assembler().add_multimaterial(index, params);
 			multi_models_elasticity_.local_assembler().add_multimaterial(index, params);
 			// ogden_elasticity_.local_assembler().add_multimaterial(index, params);
+
+			damping_.local_assembler().add_multimaterial(index, params);
 
 			stokes_velocity_.local_assembler().add_multimaterial(index, params);
 			stokes_mixed_.local_assembler().add_multimaterial(index, params);

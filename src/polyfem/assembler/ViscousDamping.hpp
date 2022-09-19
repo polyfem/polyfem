@@ -19,7 +19,7 @@ namespace polyfem
 		class ViscousDamping
 		{
 		public:
-			ViscousDamping();
+			ViscousDamping() = default;
 
 			//energy, gradient, and hessian used in newton method
 			Eigen::MatrixXd assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &prev_displacement, const QuadratureVector &da, const double dt) const;
@@ -34,7 +34,7 @@ namespace polyfem
 			void compute_dstress_dpsi_dphi(const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &prev_grad_u_i, Eigen::MatrixXd &dstress_dpsi, Eigen::MatrixXd &dstress_dphi) const;
 
 			//sets material params
-			void set_parameters(const json &params);
+			void add_multimaterial(const int index, const json &params);
 			void set_params(const double psi, const double phi) { psi_ = psi; phi_ = phi; }
 			double get_psi() const { return psi_; }
 			double get_phi() const { return phi_; }
