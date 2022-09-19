@@ -157,7 +157,8 @@ namespace polyfem
 		Eigen::VectorXd prev_sol;
 
 		BDF time_integrator;
-		time_integrator.set_parameters(args["time"]);
+		if (args["time"]["integrator"].is_object())
+			time_integrator.set_parameters(args["time"]["integrator"]);
 		time_integrator.init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 
 		assembler.assemble_problem(
@@ -199,7 +200,7 @@ namespace polyfem
 				*this, sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
 				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
 			sol = tmp_sol;
-			time_integrator.update_quantities(sol);
+			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));
 			sol_to_pressure();
 
 			save_timestep(time, t, t0, dt);

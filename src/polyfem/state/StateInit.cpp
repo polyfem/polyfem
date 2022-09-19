@@ -94,6 +94,7 @@ namespace polyfem
 #ifdef POLYFEM_WITH_TBB
 		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
 #endif
+		Eigen::setNbThreads(num_threads);
 
 		// Import standard command line arguments, and custom ones
 		GEO::CmdLine::import_arg_group("standard");

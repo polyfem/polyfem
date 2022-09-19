@@ -1,11 +1,12 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
+
+#include <Eigen/Core>
+
 #include <map>
 #include <vector>
 #include <deque>
-
-#include <Eigen/Core>
-#include <nlohmann/json.hpp>
 
 namespace polyfem::time_integrator
 {
@@ -18,7 +19,7 @@ namespace polyfem::time_integrator
 
 		/// @brief Set the time integrator parameters from a json object.
 		/// @param params json containing parameters specific to each time integrator
-		virtual void set_parameters(const nlohmann::json &params) {}
+		virtual void set_parameters(const json &params) {}
 
 		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
 		/// @param x_prev previous value for the solution
@@ -34,6 +35,16 @@ namespace polyfem::time_integrator
 		/// @brief Compute the predicted solution to be used in the inertia term \f$(x-\tilde{x})^TM(x-\tilde{x})\f$.
 		/// @return value for \f$\tilde{x}\f$
 		virtual Eigen::VectorXd x_tilde() const = 0;
+
+		/// @brief Compute the current velocity given the current solution and using the stored previous solution(s).
+		/// @param x current solution
+		/// @return value for \f$v\f$
+		virtual Eigen::VectorXd compute_velocity(const Eigen::VectorXd &x) const = 0;
+
+		/// @brief Compute the current acceleration given the current velocity and using the stored previous velocity(s).
+		/// @param v current velocity
+		/// @return value for \f$a\f$
+		virtual Eigen::VectorXd compute_acceleration(const Eigen::VectorXd &v) const = 0;
 
 		/// @brief Compute the acceleration scaling used to scale forces when integrating a second order ODE.
 		/// @return value of the acceleration scaling
@@ -53,7 +64,7 @@ namespace polyfem::time_integrator
 		/// @brief Factory method for constructing implicit time integrators from the name of the integrator.
 		/// @param name name of the type of ImplicitTimeIntegrator to construct
 		/// @return new implicit time integrator of type specfied by name
-		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const std::string &name);
+		static std::shared_ptr<ImplicitTimeIntegrator> construct_time_integrator(const json &params);
 
 		/// @brief Get a vector of the names of possible ImplicitTimeIntegrators
 		/// @return names in no particular order

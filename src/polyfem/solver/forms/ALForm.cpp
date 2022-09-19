@@ -3,7 +3,7 @@
 namespace polyfem::solver
 {
 	ALForm::ALForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t)
-		: state_(state), rhs_assembler_(rhs_assembler), enabled_(true)
+		: state_(state), rhs_assembler_(rhs_assembler)
 	{
 		const int ndof = state.n_bases * state.mesh->dimension();
 
