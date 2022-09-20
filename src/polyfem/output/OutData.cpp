@@ -2,6 +2,8 @@
 
 #include "Evaluator.hpp"
 
+#include <polyfem/State.hpp>
+
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
@@ -578,13 +580,7 @@ namespace polyfem::output
 	// double tend = args.value("tend", 1.0); // default=1
 	// is_time_dependent = args["time"].is_null()
 	void OutGeometryData::export_data(
-		const int n_bases,
-		const std::vector<basis::ElementBases> &bases,
-		const mesh::Mesh &mesh,
-		const Eigen::VectorXi &in_node_to_node,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &rhs,
-		const assembler::Problem &problem,
+		const State &state,
 		const bool is_time_dependent,
 		const double tend_in,
 		const std::string &vis_mesh_path,
@@ -594,11 +590,19 @@ namespace polyfem::output
 		const std::string &mises_path,
 		const bool reorder_output)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
+		if (!state.mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		const int n_bases = state.n_bases;
+		const std::vector<basis::ElementBases> &bases = state.bases;
+		const mesh::Mesh &mesh = *state.mesh;
+		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
+		const Eigen::MatrixXd &sol = state.sol;
+		const Eigen::MatrixXd &rhs = state.rhs;
+		const assembler::Problem &problem = *state.problem;
+
 		if (n_bases <= 0)
 		{
 			logger().error("Build the bases first!");
@@ -985,9 +989,7 @@ namespace polyfem::output
 	// const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();
 	void OutGeometryData::save_vtu(
 		const std::string &path,
-		const mesh::Mesh &mesh,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &rhs,
+		const State &state,
 		const double t,
 		const bool export_volume,
 		const bool export_surface,
@@ -996,16 +998,20 @@ namespace polyfem::output
 		const bool export_friction_forces,
 		const bool solve_export_to_file)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
-		// if (n_bases <= 0)
-		// {
-		// 	logger().error("Build the bases first!");
-		// 	return;
-		// }
+		if (!state.mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		const mesh::Mesh &mesh = *state.mesh;
+		const Eigen::MatrixXd &sol = state.sol;
+		const Eigen::MatrixXd &rhs = state.rhs;
+
+		if (state.n_bases <= 0)
+		{
+			logger().error("Build the bases first!");
+			return;
+		}
 		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0)
 		{
@@ -1105,21 +1111,7 @@ namespace polyfem::output
 	// args["space"]["advanced"]["use_spline"]
 	void OutGeometryData::save_volume(
 		const std::string &path,
-		const Eigen::VectorXi &disc_orders,
-		const Density &density,
-		const std::vector<basis::ElementBases> &bases,
-		const std::vector<basis::ElementBases> &pressure_bases,
-		const std::vector<basis::ElementBases> &gbases,
-		const std::map<int, Eigen::MatrixXd> &polys,
-		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-		const assembler::AssemblerUtils &assembler,
-		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &time_integrator,
-		const std::string &formulation,
-		const mesh::Mesh &mesh,
-		const mesh::Obstacle &obstacle,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const assembler::Problem &problem,
+		const State &state,
 		const double t,
 		const bool boundary_only,
 		const bool material_params,
@@ -1132,6 +1124,22 @@ namespace polyfem::output
 		const bool solve_export_to_file,
 		std::vector<output::SolutionFrame> &solution_frames)
 	{
+		const Eigen::VectorXi &disc_orders = state.disc_orders;
+		const Density &density = state.density;
+		const std::vector<basis::ElementBases> &bases = state.bases;
+		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
+		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
+		const std::map<int, Eigen::MatrixXd> &polys = state.polys;
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = state.polys_3d;
+		const assembler::AssemblerUtils &assembler = state.assembler;
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &time_integrator = state.solve_data.time_integrator;
+		const std::string &formulation = state.formulation();
+		const mesh::Mesh &mesh = *state.mesh;
+		const mesh::Obstacle &obstacle = state.obstacle;
+		const Eigen::MatrixXd &sol = state.sol;
+		const Eigen::MatrixXd &pressure = state.pressure;
+		const assembler::Problem &problem = *state.problem;
+
 		Eigen::MatrixXd points;
 		Eigen::MatrixXi tets;
 		Eigen::MatrixXi el_id;
@@ -1593,30 +1601,10 @@ namespace polyfem::output
 	// const bool export_contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !problem->is_scalar();
 	// const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();
 	// is_contact_enabled()
-	// args["contact"]["dhat"]
-	// args["contact"]["friction_coefficient"]
 	// is_time_dependent = !args["time"].is_null()
-	// args["contact"]["epsv"].get<double>()
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
-		const Eigen::VectorXi &disc_orders,
-		const Density &density,
-		const std::vector<basis::ElementBases> &bases,
-		const std::vector<basis::ElementBases> &pressure_bases,
-		const std::vector<basis::ElementBases> &gbases,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
-		const mesh::Mesh &mesh,
-		const ipc::CollisionMesh &collision_mesh,
-		const Eigen::MatrixXd &boundary_nodes_pos,
-		const double dhat,
-		const double friction_coefficient,
-		const double epsv,
-		const std::shared_ptr<solver::ContactForm> &contact_form,
-		const std::shared_ptr<solver::FrictionForm> &friction_form,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const assembler::Problem &problem,
+		const State &state,
 		const double dt_in,
 		const bool material_params,
 		const bool body_ids,
@@ -1626,6 +1614,25 @@ namespace polyfem::output
 		const bool solve_export_to_file,
 		std::vector<output::SolutionFrame> &solution_frames)
 	{
+
+		const Eigen::VectorXi &disc_orders = state.disc_orders;
+		const Density &density = state.density;
+		const std::vector<basis::ElementBases> &bases = state.bases;
+		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
+		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
+		const assembler::AssemblerUtils &assembler = state.assembler;
+		const std::string &formulation = state.formulation();
+		const mesh::Mesh &mesh = *state.mesh;
+		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
+		const Eigen::MatrixXd &boundary_nodes_pos = state.boundary_nodes_pos;
+		const double dhat = state.args["contact"]["dhat"];
+		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
+		const double epsv = state.args["contact"]["epsv"];
+		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
+		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
+		const Eigen::MatrixXd &sol = state.sol;
+		const Eigen::MatrixXd &pressure = state.pressure;
+		const assembler::Problem &problem = *state.problem;
 
 		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
@@ -1841,13 +1848,15 @@ namespace polyfem::output
 
 	void OutGeometryData::save_wire(
 		const std::string &name,
-		const std::vector<basis::ElementBases> &gbases,
-		const mesh::Mesh &mesh,
-		const Eigen::MatrixXd &sol,
-		const assembler::Problem &problem,
+		const State &state,
 		const double t,
 		const bool solve_export_to_file)
 	{
+		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
+		const mesh::Mesh &mesh = *state.mesh;
+		const Eigen::MatrixXd &sol = state.sol;
+		const assembler::Problem &problem = *state.problem;
+
 		if (!solve_export_to_file) // TODO?
 			return;
 		const auto &sampler = ref_element_sampler;
