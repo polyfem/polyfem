@@ -571,142 +571,6 @@ namespace polyfem::output
 		logger().info("done");
 	}
 
-	// const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
-	// const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
-	// const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
-	// const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
-	// const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
-	// const bool reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
-	// double tend = args.value("tend", 1.0); // default=1
-	// is_time_dependent = args["time"].is_null()
-	void OutGeometryData::export_data(
-		const State &state,
-		const bool is_time_dependent,
-		const double tend_in,
-		const std::string &vis_mesh_path,
-		const std::string &nodes_path,
-		const std::string &solution_path,
-		const std::string &stress_path,
-		const std::string &mises_path,
-		const bool reorder_output)
-	{
-		if (!state.mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-		const int n_bases = state.n_bases;
-		const std::vector<basis::ElementBases> &bases = state.bases;
-		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
-		const Eigen::MatrixXd &sol = state.sol;
-		const Eigen::MatrixXd &rhs = state.rhs;
-		const assembler::Problem &problem = *state.problem;
-
-		if (n_bases <= 0)
-		{
-			logger().error("Build the bases first!");
-			return;
-		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
-		if (sol.size() <= 0)
-		{
-			logger().error("Solve the problem first!");
-			return;
-		}
-
-		if (!solution_path.empty())
-		{
-			std::ofstream out(solution_path);
-			out.precision(100);
-			out << std::scientific;
-			if (reorder_output)
-			{
-				int problem_dim = (problem.is_scalar() ? 1 : mesh.dimension());
-				Eigen::VectorXi reordering(n_bases);
-				reordering.setConstant(-1);
-
-				for (int i = 0; i < in_node_to_node.size(); ++i)
-				{
-					reordering[in_node_to_node[i]] = i;
-				}
-				Eigen::MatrixXd tmp_sol = utils::unflatten(sol, problem_dim);
-				Eigen::MatrixXd tmp(tmp_sol.rows(), tmp_sol.cols());
-
-				for (int i = 0; i < reordering.size(); ++i)
-				{
-					if (reordering[i] < 0)
-						continue;
-
-					tmp.row(reordering[i]) = tmp_sol.row(i);
-				}
-
-				for (int i = 0; i < tmp.rows(); ++i)
-				{
-					for (int j = 0; j < tmp.cols(); ++j)
-						out << tmp(i, j) << " ";
-
-					out << std::endl;
-				}
-			}
-			else
-				out << sol << std::endl;
-			out.close();
-		}
-
-		double tend = tend_in;
-		if (tend <= 0)
-			tend = 1;
-
-		if (!vis_mesh_path.empty() && is_time_dependent)
-		{
-			save_vtu(vis_mesh_path, tend);
-		}
-		if (!nodes_path.empty())
-		{
-			Eigen::MatrixXd nodes(n_bases, mesh.dimension());
-			for (const basis::ElementBases &eb : bases)
-			{
-				for (const basis::Basis &b : eb.bases)
-				{
-					// for(const auto &lg : b.global())
-					for (size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						const auto &lg = b.global()[ii];
-						nodes.row(lg.index) = lg.node;
-					}
-				}
-			}
-			std::ofstream out(nodes_path);
-			out.precision(100);
-			out << nodes;
-			out.close();
-		}
-		if (!stress_path.empty())
-		{
-			Eigen::MatrixXd result;
-			Eigen::VectorXd mises;
-			Evaluator::compute_stress_at_quadrature_points(sol, result, mises);
-			std::ofstream out(stress_path);
-			out.precision(20);
-			out << result;
-		}
-		if (!mises_path.empty())
-		{
-			Eigen::MatrixXd result;
-			Eigen::VectorXd mises;
-			Evaluator::compute_stress_at_quadrature_points(sol, result, mises);
-			std::ofstream out(mises_path);
-			out.precision(20);
-			out << mises;
-		}
-	}
-
 	// args["output"]["advanced"]["vis_boundary_only"]
 	void OutGeometryData::build_vis_mesh(
 		const mesh::Mesh &mesh,
@@ -980,6 +844,142 @@ namespace polyfem::output
 			logger().warn(error_msg);
 
 		assert(pts_index == points.rows());
+	}
+
+	// const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
+	// const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
+	// const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
+	// const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
+	// const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
+	// const bool reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
+	// double tend = args.value("tend", 1.0); // default=1
+	// is_time_dependent = args["time"].is_null()
+	void OutGeometryData::export_data(
+		const State &state,
+		const bool is_time_dependent,
+		const double tend_in,
+		const std::string &vis_mesh_path,
+		const std::string &nodes_path,
+		const std::string &solution_path,
+		const std::string &stress_path,
+		const std::string &mises_path,
+		const bool reorder_output)
+	{
+		if (!state.mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		const int n_bases = state.n_bases;
+		const std::vector<basis::ElementBases> &bases = state.bases;
+		const mesh::Mesh &mesh = *state.mesh;
+		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
+		const Eigen::MatrixXd &sol = state.sol;
+		const Eigen::MatrixXd &rhs = state.rhs;
+		const assembler::Problem &problem = *state.problem;
+
+		if (n_bases <= 0)
+		{
+			logger().error("Build the bases first!");
+			return;
+		}
+		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		if (rhs.size() <= 0)
+		{
+			logger().error("Assemble the rhs first!");
+			return;
+		}
+		if (sol.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		if (!solution_path.empty())
+		{
+			std::ofstream out(solution_path);
+			out.precision(100);
+			out << std::scientific;
+			if (reorder_output)
+			{
+				int problem_dim = (problem.is_scalar() ? 1 : mesh.dimension());
+				Eigen::VectorXi reordering(n_bases);
+				reordering.setConstant(-1);
+
+				for (int i = 0; i < in_node_to_node.size(); ++i)
+				{
+					reordering[in_node_to_node[i]] = i;
+				}
+				Eigen::MatrixXd tmp_sol = utils::unflatten(sol, problem_dim);
+				Eigen::MatrixXd tmp(tmp_sol.rows(), tmp_sol.cols());
+
+				for (int i = 0; i < reordering.size(); ++i)
+				{
+					if (reordering[i] < 0)
+						continue;
+
+					tmp.row(reordering[i]) = tmp_sol.row(i);
+				}
+
+				for (int i = 0; i < tmp.rows(); ++i)
+				{
+					for (int j = 0; j < tmp.cols(); ++j)
+						out << tmp(i, j) << " ";
+
+					out << std::endl;
+				}
+			}
+			else
+				out << sol << std::endl;
+			out.close();
+		}
+
+		double tend = tend_in;
+		if (tend <= 0)
+			tend = 1;
+
+		if (!vis_mesh_path.empty() && is_time_dependent)
+		{
+			save_vtu(vis_mesh_path, tend);
+		}
+		if (!nodes_path.empty())
+		{
+			Eigen::MatrixXd nodes(n_bases, mesh.dimension());
+			for (const basis::ElementBases &eb : bases)
+			{
+				for (const basis::Basis &b : eb.bases)
+				{
+					// for(const auto &lg : b.global())
+					for (size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						const auto &lg = b.global()[ii];
+						nodes.row(lg.index) = lg.node;
+					}
+				}
+			}
+			std::ofstream out(nodes_path);
+			out.precision(100);
+			out << nodes;
+			out.close();
+		}
+		if (!stress_path.empty())
+		{
+			Eigen::MatrixXd result;
+			Eigen::VectorXd mises;
+			Evaluator::compute_stress_at_quadrature_points(sol, result, mises);
+			std::ofstream out(stress_path);
+			out.precision(20);
+			out << result;
+		}
+		if (!mises_path.empty())
+		{
+			Eigen::MatrixXd result;
+			Eigen::VectorXd mises;
+			Evaluator::compute_stress_at_quadrature_points(sol, result, mises);
+			std::ofstream out(mises_path);
+			out.precision(20);
+			out << mises;
+		}
 	}
 
 	// const bool export_volume = args["output"]["paraview"]["volume"];
