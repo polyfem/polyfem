@@ -722,9 +722,8 @@ namespace polyfem
 		const int prev_bases = n_bases;
 		n_bases += obstacle.n_vertices();
 
-		logger().info("Extracting boundary mesh...");
+		logger().info("Building boundary mesh...");
 		build_collision_mesh();
-		out_geom.extract_vis_boundary_mesh();
 		logger().info("Done!");
 
 		logger().debug("Building node mapping...");
@@ -894,8 +893,8 @@ namespace polyfem
 
 	void State::build_collision_mesh()
 	{
-		extract_boundary_mesh(
-			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+		output::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
+													   boundary_nodes_pos, boundary_edges, boundary_triangles);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
@@ -1227,95 +1226,6 @@ namespace polyfem
 		timer.stop();
 		runtime.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", runtime.solving_time);
-	}
-
-	std::string State::root_path() const
-	{
-		if (is_param_valid(args, "root_path"))
-			return args["root_path"].get<std::string>();
-		return "";
-	}
-
-	std::string State::resolve_input_path(const std::string &path, const bool only_if_exists) const
-	{
-		return utils::resolve_path(path, root_path(), only_if_exists);
-	}
-
-	std::string State::resolve_output_path(const std::string &path) const
-	{
-		if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
-		{
-			return path;
-		}
-		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
-	}
-
-	void State::save_timestep(const double time, const int t, const double t0, const double dt)
-	{
-		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
-		{
-			logger().trace("Saving VTU...");
-			POLYFEM_SCOPED_TIMER("Saving VTU");
-			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
-
-			if (!solve_export_to_file)
-				solution_frames.emplace_back();
-
-			out_geom.save_vtu(resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)), time);
-
-			out_geom.save_pvd(
-				resolve_output_path(args["output"]["paraview"]["file_name"]),
-				[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
-				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
-		}
-	}
-
-	void State::save_json()
-	{
-		const std::string out_path = resolve_output_path(args["output"]["json"]);
-		if (!out_path.empty())
-		{
-			std::ofstream out(out_path);
-			if (!out.is_open())
-			{
-				logger().error("Unable to save simulation JSON to {}", out_path);
-				return;
-			}
-			save_json(out);
-			out.close();
-		}
-	}
-
-	void State::save_json(std::ostream &out)
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-		if (sol.size() <= 0)
-		{
-			logger().error("Solve the problem first!");
-			return;
-		}
-
-		logger().info("Saving json...");
-
-		using json = nlohmann::json;
-		json j;
-		stats.save_json(j);
-		out << j.dump(4) << std::endl;
-	}
-
-	void State::save_subsolve(const int i, const int t)
-	{
-		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
-			return;
-
-		if (!solve_export_to_file)
-			solution_frames.emplace_back();
-
-		out_geom.save_vtu(resolve_output_path(fmt::format("solve_{:d}.vtu", i)), t);
 	}
 
 } // namespace polyfem

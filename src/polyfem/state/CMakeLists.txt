@@ -6,6 +6,7 @@ set(SOURCES
 	StateSolveLinear.cpp
 	StateSolveNavierStokes.cpp
 	StateSolveNonlinear.cpp
+	StateOutput.cpp
 )
 
 prepend_current_path(SOURCES)

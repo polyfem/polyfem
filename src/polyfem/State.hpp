@@ -471,17 +471,6 @@ namespace polyfem
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
 
-		/// extracts the boundary mesh
-		/// @param[in] bases geom bases
-		/// @param[out] boundary_nodes_pos nodes positions
-		/// @param[out] boundary_edges edges
-		/// @param[out] boundary_triangles triangles
-		void extract_boundary_mesh(
-			const std::vector<basis::ElementBases> &bases,
-			Eigen::MatrixXd &boundary_nodes_pos,
-			Eigen::MatrixXi &boundary_edges,
-			Eigen::MatrixXi &boundary_triangles) const;
-
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
 		/// @return if vertex is obstalce

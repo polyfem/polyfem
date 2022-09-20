@@ -48,11 +48,198 @@ extern "C" size_t getPeakRSS();
 namespace polyfem::output
 {
 
-	void OutGeometryData::extract_vis_boundary_mesh(
+	void OutGeometryData::extract_boundary_mesh(
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &boundary_nodes_pos,
+		Eigen::MatrixXi &boundary_edges,
+		Eigen::MatrixXi &boundary_triangles)
+	{
+		using namespace polyfem::mesh;
+
+		if (mesh.is_volume())
+		{
+			boundary_nodes_pos.resize(n_bases, 3);
+			boundary_nodes_pos.setZero();
+			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+
+			std::vector<std::tuple<int, int, int>> tris;
+
+			std::stringstream print_warning;
+
+			for (const LocalBoundary &lb : total_local_boundary)
+			{
+				const basis::ElementBases &b = bases[lb.element_id()];
+
+				for (int j = 0; j < lb.size(); ++j)
+				{
+					const int eid = lb.global_primitive_id(j);
+					const int lid = lb[j];
+					const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
+
+					if (!mesh.is_simplex(lb.element_id()))
+					{
+						logger().trace("skipping element {} since it is not a simplex", eid);
+						continue;
+					}
+
+					std::vector<int> loc_nodes;
+
+					bool is_follower = false;
+					if (!mesh3d.is_conforming())
+					{
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+							{
+								is_follower = true;
+								break;
+							}
+						}
+					}
+
+					if (is_follower)
+						continue;
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						auto &bs = b.bases[nodes(n)];
+						const auto &glob = bs.global();
+						if (glob.size() != 1)
+							continue;
+
+						int gindex = glob.front().index;
+						boundary_nodes_pos.row(gindex) = glob.front().node;
+						loc_nodes.push_back(gindex);
+					}
+
+					if (loc_nodes.size() == 3)
+					{
+						tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+					}
+					else if (loc_nodes.size() == 6)
+					{
+						tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+						tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+						tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+						tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+					}
+					else if (loc_nodes.size() == 10)
+					{
+						tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+						tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+						tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+						tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+						tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+						tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+						tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+						tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+						tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+					}
+					else if (loc_nodes.size() == 15)
+					{
+						tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
+						tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
+						tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
+						tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
+						tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
+						tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
+						tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
+						tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
+						tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
+						tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
+						tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
+						tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
+						tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
+						tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
+						tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
+						tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
+					}
+					else
+					{
+
+						print_warning << loc_nodes.size() << " ";
+						// assert(false);
+					}
+				}
+			}
+
+			if (print_warning.str().size() > 0)
+				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
+
+			boundary_triangles.resize(tris.size(), 3);
+			for (int i = 0; i < tris.size(); ++i)
+			{
+				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
+			}
+
+			if (boundary_triangles.rows() > 0)
+			{
+				igl::edges(boundary_triangles, boundary_edges);
+			}
+		}
+		else
+		{
+			boundary_nodes_pos.resize(n_bases, 2);
+			boundary_nodes_pos.setZero();
+			const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+
+			std::vector<std::pair<int, int>> edges;
+
+			for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
+			{
+				const auto &lb = *it;
+				const basis::ElementBases &b = bases[lb.element_id()];
+
+				for (int j = 0; j < lb.size(); ++j)
+				{
+					const int eid = lb.global_primitive_id(j);
+					const int lid = lb[j];
+					const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
+
+					int prev_node = -1;
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						auto &bs = b.bases[nodes(n)];
+						const auto &glob = bs.global();
+						if (glob.size() != 1)
+							continue;
+
+						int gindex = glob.front().index;
+						boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1);
+
+						if (prev_node >= 0)
+							edges.emplace_back(prev_node, gindex);
+						prev_node = gindex;
+					}
+				}
+			}
+
+			boundary_triangles.resize(0, 0);
+			boundary_edges.resize(edges.size(), 2);
+			for (int i = 0; i < edges.size(); ++i)
+			{
+				boundary_edges.row(i) << edges[i].first, edges[i].second;
+			}
+		}
+	}
+
+	void OutGeometryData::build_vis_boundary_mesh(
 		const mesh::Mesh &mesh,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
-		const std::vector<mesh::LocalBoundary> &total_local_boundary)
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &boundary_vis_vertices,
+		Eigen::MatrixXd &boundary_vis_local_vertices,
+		Eigen::MatrixXi &boundary_vis_elements,
+		Eigen::MatrixXi &boundary_vis_elements_ids,
+		Eigen::MatrixXi &boundary_vis_primitive_ids,
+		Eigen::MatrixXd &boundary_vis_normals) const
 	{
 		using namespace polyfem::mesh;
 
@@ -256,322 +443,6 @@ namespace polyfem::output
 		}
 	}
 
-	void OutGeometryData::extract_boundary_mesh(
-		const mesh::Mesh &mesh,
-		const int n_bases,
-		const std::vector<basis::ElementBases> &bases,
-		std::vector<mesh::LocalBoundary> &total_local_boundary,
-		Eigen::MatrixXd &boundary_nodes_pos,
-		Eigen::MatrixXi &boundary_edges,
-		Eigen::MatrixXi &boundary_triangles) const
-	{
-		using namespace polyfem::mesh;
-
-		if (mesh.is_volume())
-		{
-			boundary_nodes_pos.resize(n_bases, 3);
-			boundary_nodes_pos.setZero();
-			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
-
-			std::vector<std::tuple<int, int, int>> tris;
-
-			std::stringstream print_warning;
-
-			for (const LocalBoundary &lb : total_local_boundary)
-			{
-				const basis::ElementBases &b = bases[lb.element_id()];
-
-				for (int j = 0; j < lb.size(); ++j)
-				{
-					const int eid = lb.global_primitive_id(j);
-					const int lid = lb[j];
-					const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
-
-					if (!mesh.is_simplex(lb.element_id()))
-					{
-						logger().trace("skipping element {} since it is not a simplex", eid);
-						continue;
-					}
-
-					std::vector<int> loc_nodes;
-
-					bool is_follower = false;
-					if (!mesh3d.is_conforming())
-					{
-						for (long n = 0; n < nodes.size(); ++n)
-						{
-							auto &bs = b.bases[nodes(n)];
-							const auto &glob = bs.global();
-							if (glob.size() != 1)
-							{
-								is_follower = true;
-								break;
-							}
-						}
-					}
-
-					if (is_follower)
-						continue;
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						auto &bs = b.bases[nodes(n)];
-						const auto &glob = bs.global();
-						if (glob.size() != 1)
-							continue;
-
-						int gindex = glob.front().index;
-						boundary_nodes_pos.row(gindex) = glob.front().node;
-						loc_nodes.push_back(gindex);
-					}
-
-					if (loc_nodes.size() == 3)
-					{
-						tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-					}
-					else if (loc_nodes.size() == 6)
-					{
-						tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
-						tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
-						tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
-						tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
-					}
-					else if (loc_nodes.size() == 10)
-					{
-						tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
-						tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
-						tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
-						tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
-						tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
-						tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
-						tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
-						tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
-						tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
-					}
-					else if (loc_nodes.size() == 15)
-					{
-						tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
-						tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
-						tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
-						tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
-						tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
-						tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
-						tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
-						tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
-						tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
-						tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
-						tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
-						tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
-						tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
-						tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
-						tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
-						tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
-					}
-					else
-					{
-
-						print_warning << loc_nodes.size() << " ";
-						// assert(false);
-					}
-				}
-			}
-
-			if (print_warning.str().size() > 0)
-				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
-
-			boundary_triangles.resize(tris.size(), 3);
-			for (int i = 0; i < tris.size(); ++i)
-			{
-				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
-			}
-
-			if (boundary_triangles.rows() > 0)
-			{
-				igl::edges(boundary_triangles, boundary_edges);
-			}
-		}
-		else
-		{
-			boundary_nodes_pos.resize(n_bases, 2);
-			boundary_nodes_pos.setZero();
-			const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
-
-			std::vector<std::pair<int, int>> edges;
-
-			for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
-			{
-				const auto &lb = *it;
-				const basis::ElementBases &b = bases[lb.element_id()];
-
-				for (int j = 0; j < lb.size(); ++j)
-				{
-					const int eid = lb.global_primitive_id(j);
-					const int lid = lb[j];
-					const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
-
-					int prev_node = -1;
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						auto &bs = b.bases[nodes(n)];
-						const auto &glob = bs.global();
-						if (glob.size() != 1)
-							continue;
-
-						int gindex = glob.front().index;
-						boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1);
-
-						if (prev_node >= 0)
-							edges.emplace_back(prev_node, gindex);
-						prev_node = gindex;
-					}
-				}
-			}
-
-			boundary_triangles.resize(0, 0);
-			boundary_edges.resize(edges.size(), 2);
-			for (int i = 0; i < edges.size(); ++i)
-			{
-				boundary_edges.row(i) << edges[i].first, edges[i].second;
-			}
-		}
-	}
-
-	// args["output"]["advanced"]["sol_at_node"]  iso_parametric() formulation()
-	void OutStatsData::save_json(
-		const nlohmann::json &args,
-		const int n_bases, const int n_pressure_bases,
-		const Eigen::MatrixXd &sol,
-		const mesh::Mesh &mesh,
-		const Eigen::VectorXi &disc_orders,
-		const assembler::Problem &problem,
-		const output::OutRuntimeData &runtime,
-		const std::string &formulation,
-		const bool isoparametric,
-		const int sol_at_node_id,
-		nlohmann::json &j)
-	{
-
-		j["args"] = args;
-
-		j["geom_order"] = mesh.orders().size() > 0 ? mesh.orders().maxCoeff() : 1;
-		j["geom_order_min"] = mesh.orders().size() > 0 ? mesh.orders().minCoeff() : 1;
-		j["discr_order_min"] = disc_orders.minCoeff();
-		j["discr_order_max"] = disc_orders.maxCoeff();
-		j["iso_parametric"] = isoparametric;
-		j["problem"] = problem.name();
-		j["mat_size"] = mat_size;
-		j["num_bases"] = n_bases;
-		j["num_pressure_bases"] = n_pressure_bases;
-		j["num_non_zero"] = nn_zero;
-		j["num_flipped"] = n_flipped;
-		j["num_dofs"] = num_dofs;
-		j["num_vertices"] = mesh.n_vertices();
-		j["num_elements"] = mesh.n_elements();
-
-		j["num_p1"] = (disc_orders.array() == 1).count();
-		j["num_p2"] = (disc_orders.array() == 2).count();
-		j["num_p3"] = (disc_orders.array() == 3).count();
-		j["num_p4"] = (disc_orders.array() == 4).count();
-		j["num_p5"] = (disc_orders.array() == 5).count();
-
-		j["mesh_size"] = mesh_size;
-		j["max_angle"] = max_angle;
-
-		j["sigma_max"] = sigma_max;
-		j["sigma_min"] = sigma_min;
-		j["sigma_avg"] = sigma_avg;
-
-		j["min_edge_length"] = min_edge_length;
-		j["average_edge_length"] = average_edge_length;
-
-		j["err_l2"] = l2_err;
-		j["err_h1"] = h1_err;
-		j["err_h1_semi"] = h1_semi_err;
-		j["err_linf"] = linf_err;
-		j["err_linf_grad"] = grad_max_err;
-		j["err_lp"] = lp_err;
-
-		j["spectrum"] = {spectrum(0), spectrum(1), spectrum(2), spectrum(3)};
-		j["spectrum_condest"] = std::abs(spectrum(3)) / std::abs(spectrum(0));
-
-		// j["errors"] = errors;
-
-		j["time_building_basis"] = runtime.building_basis_time;
-		j["time_loading_mesh"] = runtime.loading_mesh_time;
-		j["time_computing_poly_basis"] = runtime.computing_poly_basis_time;
-		j["time_assembling_stiffness_mat"] = runtime.assembling_stiffness_mat_time;
-		j["time_assigning_rhs"] = runtime.assigning_rhs_time;
-		j["time_solving"] = runtime.solving_time;
-		// j["time_computing_errors"] = runtime.computing_errors_time;
-
-		j["solver_info"] = solver_info;
-
-		j["count_simplex"] = simplex_count;
-		j["count_regular"] = regular_count;
-		j["count_regular_boundary"] = regular_boundary_count;
-		j["count_simple_singular"] = simple_singular_count;
-		j["count_multi_singular"] = multi_singular_count;
-		j["count_boundary"] = boundary_count;
-		j["count_non_regular_boundary"] = non_regular_boundary_count;
-		j["count_non_regular"] = non_regular_count;
-		j["count_undefined"] = undefined_count;
-		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
-
-		j["is_simplicial"] = mesh.n_elements() == simplex_count;
-
-		j["peak_memory"] = getPeakRSS() / (1024 * 1024);
-
-		const int actual_dim = problem.is_scalar() ? 1 : mesh.dimension();
-
-		std::vector<double> mmin(actual_dim);
-		std::vector<double> mmax(actual_dim);
-
-		for (int d = 0; d < actual_dim; ++d)
-		{
-			mmin[d] = std::numeric_limits<double>::max();
-			mmax[d] = -std::numeric_limits<double>::max();
-		}
-
-		for (int i = 0; i < sol.size(); i += actual_dim)
-		{
-			for (int d = 0; d < actual_dim; ++d)
-			{
-				mmin[d] = std::min(mmin[d], sol(i + d));
-				mmax[d] = std::max(mmax[d], sol(i + d));
-			}
-		}
-
-		std::vector<double> sol_at_node(actual_dim);
-
-		if (sol_at_node_id >= 0)
-		{
-			const int node_id = sol_at_node_id;
-
-			for (int d = 0; d < actual_dim; ++d)
-			{
-				sol_at_node[d] = sol(node_id * actual_dim + d);
-			}
-		}
-
-		j["sol_at_node"] = sol_at_node;
-		j["sol_min"] = mmin;
-		j["sol_max"] = mmax;
-
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		j["num_threads"] = utils::get_n_threads();
-#elif defined(POLYFEM_WITH_TBB)
-		j["num_threads"] = utils::get_n_threads();
-#else
-		j["num_threads"] = 1;
-#endif
-
-		j["formulation"] = formulation;
-
-		logger().info("done");
-	}
-
-	// args["output"]["advanced"]["vis_boundary_only"]
 	void OutGeometryData::build_vis_mesh(
 		const mesh::Mesh &mesh,
 		const Eigen::VectorXi &disc_orders,
@@ -582,7 +453,7 @@ namespace polyfem::output
 		Eigen::MatrixXd &points,
 		Eigen::MatrixXi &tets,
 		Eigen::MatrixXi &el_id,
-		Eigen::MatrixXd &discr)
+		Eigen::MatrixXd &discr) const
 	{
 		// if (!mesh)
 		// {
@@ -722,7 +593,7 @@ namespace polyfem::output
 		Eigen::MatrixXd &points,
 		std::vector<std::vector<int>> &elements,
 		Eigen::MatrixXi &el_id,
-		Eigen::MatrixXd &discr)
+		Eigen::MatrixXd &discr) const
 	{
 		// if (!mesh)
 		// {
@@ -846,24 +717,19 @@ namespace polyfem::output
 		assert(pts_index == points.rows());
 	}
 
-	// const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
-	// const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
-	// const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
-	// const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
-	// const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
-	// const bool reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
-	// double tend = args.value("tend", 1.0); // default=1
-	// is_time_dependent = args["time"].is_null()
 	void OutGeometryData::export_data(
 		const State &state,
 		const bool is_time_dependent,
 		const double tend_in,
+		const double dt,
+		const ExportOptions &opts,
 		const std::string &vis_mesh_path,
 		const std::string &nodes_path,
 		const std::string &solution_path,
 		const std::string &stress_path,
 		const std::string &mises_path,
-		const bool reorder_output)
+		const bool is_contact_enabled,
+		std::vector<output::SolutionFrame> &solution_frames) const
 	{
 		if (!state.mesh)
 		{
@@ -900,7 +766,7 @@ namespace polyfem::output
 			std::ofstream out(solution_path);
 			out.precision(100);
 			out << std::scientific;
-			if (reorder_output)
+			if (opts.reorder_output)
 			{
 				int problem_dim = (problem.is_scalar() ? 1 : mesh.dimension());
 				Eigen::VectorXi reordering(n_bases);
@@ -940,7 +806,10 @@ namespace polyfem::output
 
 		if (!vis_mesh_path.empty() && is_time_dependent)
 		{
-			save_vtu(vis_mesh_path, tend);
+			save_vtu(
+				vis_mesh_path, state,
+				tend, dt, opts,
+				is_contact_enabled, solution_frames);
 		}
 		if (!nodes_path.empty())
 		{
@@ -982,21 +851,37 @@ namespace polyfem::output
 		}
 	}
 
-	// const bool export_volume = args["output"]["paraview"]["volume"];
-	// const bool export_surface = args["output"]["paraview"]["surface"];
-	// const bool export_wire = args["output"]["paraview"]["wireframe"];
-	// const bool export_contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !problem->is_scalar();
-	// const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();
+	OutGeometryData::ExportOptions::ExportOptions(const json &args, const bool is_mesh_linear, const bool is_problem_scalar, const bool solve_export_to_file)
+	{
+		volume = args["output"]["paraview"]["volume"];
+		surface = args["output"]["paraview"]["surface"];
+		wire = args["output"]["paraview"]["wireframe"];
+		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
+		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
+
+		use_sampler = !(is_mesh_linear && solve_export_to_file && args["output"]["paraview"]["high_order_mesh"]);
+		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
+		material_params = args["output"]["paraview"]["options"]["material"];
+		body_ids = args["output"]["paraview"]["options"]["body_ids"];
+		sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
+		velocity = args["output"]["paraview"]["options"]["velocity"];
+		acceleration = args["output"]["paraview"]["options"]["acceleration"];
+
+		use_spline = args["space"]["advanced"]["use_spline"];
+
+		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
+
+		this->solve_export_to_file = solve_export_to_file;
+	}
+
 	void OutGeometryData::save_vtu(
 		const std::string &path,
 		const State &state,
 		const double t,
-		const bool export_volume,
-		const bool export_surface,
-		const bool export_wire,
-		const bool export_contact_forces,
-		const bool export_friction_forces,
-		const bool solve_export_to_file)
+		const double dt,
+		const ExportOptions &opts,
+		const bool is_contact_enabled,
+		std::vector<output::SolutionFrame> &solution_frames) const
 	{
 		if (!state.mesh)
 		{
@@ -1028,22 +913,23 @@ namespace polyfem::output
 		const std::string path_stem = fs_path.stem().string();
 		const std::string base_path = (fs_path.parent_path() / path_stem).string();
 
-		if (export_volume)
+		if (opts.volume)
 		{
-			save_volume(path, t);
+			save_volume(path, state, t, opts, solution_frames);
 		}
 
-		if (export_surface)
+		if (opts.surface)
 		{
-			save_surface(base_path + "_surf.vtu");
+			save_surface(base_path + "_surf.vtu", state, dt, opts,
+						 is_contact_enabled, solution_frames);
 		}
 
-		if (export_wire)
+		if (opts.wire)
 		{
-			save_wire(base_path + "_wire.vtu", t);
+			save_wire(base_path + "_wire.vtu", state, t, opts, solution_frames);
 		}
 
-		if (!solve_export_to_file)
+		if (!opts.solve_export_to_file)
 			return;
 
 		tinyxml2::XMLDocument vtm;
@@ -1056,7 +942,7 @@ namespace polyfem::output
 
 		tinyxml2::XMLElement *multiblock = root->InsertNewChildElement("vtkMultiBlockDataSet");
 
-		if (export_volume)
+		if (opts.volume)
 		{
 			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
 			block->SetAttribute("name", "Volume");
@@ -1066,7 +952,7 @@ namespace polyfem::output
 			dataset->SetAttribute("file", tmp.c_str());
 		}
 
-		if (export_surface)
+		if (opts.surface)
 		{
 			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
 			block->SetAttribute("name", "Surface");
@@ -1075,7 +961,7 @@ namespace polyfem::output
 			dataset->SetAttribute("name", "surface");
 			dataset->SetAttribute("file", (path_stem + "_surf.vtu").c_str());
 
-			if (export_contact_forces || export_friction_forces)
+			if (opts.contact_forces || opts.friction_forces)
 			{
 				tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
 				dataset->SetAttribute("name", "contact");
@@ -1083,7 +969,7 @@ namespace polyfem::output
 			}
 		}
 
-		if (export_wire)
+		if (opts.wire)
 		{
 			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
 			block->SetAttribute("name", "Wireframe");
@@ -1101,28 +987,12 @@ namespace polyfem::output
 		vtm.SaveFile((base_path + ".vtm").c_str());
 	}
 
-	//		const bool use_sampler = !(mesh->is_linear() && solve_export_to_file && args["output"]["paraview"]["high_order_mesh"]);
-	// const bool boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
-	// const bool material_params = args["output"]["paraview"]["options"]["material"];
-	// const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
-	// const bool sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
-	// const bool export_velocity = args["output"]["paraview"]["options"]["velocity"];
-	// const bool export_acceleration = args["output"]["paraview"]["options"]["acceleration"];
-	// args["space"]["advanced"]["use_spline"]
 	void OutGeometryData::save_volume(
 		const std::string &path,
 		const State &state,
 		const double t,
-		const bool boundary_only,
-		const bool material_params,
-		const bool body_ids,
-		const bool sol_on_grid,
-		const bool export_velocity,
-		const bool export_acceleration,
-		const bool use_sampler,
-		const bool use_spline,
-		const bool solve_export_to_file,
-		std::vector<output::SolutionFrame> &solution_frames)
+		const ExportOptions &opts,
+		std::vector<output::SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
 		const Density &density = state.density;
@@ -1146,14 +1016,17 @@ namespace polyfem::output
 		Eigen::MatrixXd discr;
 		std::vector<std::vector<int>> elements;
 
-		if (use_sampler)
-			build_vis_mesh(points, tets, el_id, discr);
+		if (opts.use_sampler)
+			build_vis_mesh(mesh, disc_orders, gbases,
+						   state.polys, state.polys_3d, opts.boundary_only,
+						   points, tets, el_id, discr);
 		else
-			build_high_oder_vis_mesh(points, elements, el_id, discr);
+			build_high_oder_vis_mesh(mesh, disc_orders, bases,
+									 points, elements, el_id, discr);
 
 		Eigen::MatrixXd fun, exact_fun, err;
 
-		if (sol_on_grid)
+		if (opts.sol_on_grid)
 		{
 			const int problem_dim = problem.is_scalar() ? 1 : mesh.dimension();
 			Eigen::MatrixXd tmp, tmp_grad;
@@ -1210,7 +1083,7 @@ namespace polyfem::output
 			}
 		}
 
-		Evaluator::interpolate_function(points.rows(), sol, fun, use_sampler, boundary_only);
+		Evaluator::interpolate_function(points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
 
 		if (obstacle.n_vertices() > 0)
 		{
@@ -1235,7 +1108,7 @@ namespace polyfem::output
 
 		io::VTUWriter writer;
 
-		if (solve_export_to_file && fun.cols() != 1 && !mesh.is_volume())
+		if (opts.solve_export_to_file && fun.cols() != 1 && !mesh.is_volume())
 		{
 			fun.conservativeResize(fun.rows(), 3);
 			fun.col(2).setZero();
@@ -1247,7 +1120,7 @@ namespace polyfem::output
 			}
 		}
 
-		if (solve_export_to_file)
+		if (opts.solve_export_to_file)
 			writer.add_field("solution", fun);
 		else
 			solution_frames.back().solution = fun;
@@ -1256,7 +1129,7 @@ namespace polyfem::output
 		{
 			bool is_time_integrator_valid = time_integrator != nullptr;
 			const Eigen::VectorXd zero_tmp = Eigen::VectorXd::Zero(sol.rows());
-			if (export_velocity)
+			if (opts.velocity)
 			{
 				Eigen::VectorXd vel = zero_tmp;
 				if (is_time_integrator_valid)
@@ -1266,27 +1139,27 @@ namespace polyfem::output
 				}
 
 				Eigen::MatrixXd interp_vel;
-				Evaluator::interpolate_function(points.rows(), vel, interp_vel, use_sampler, boundary_only);
+				Evaluator::interpolate_function(points.rows(), vel, interp_vel, opts.use_sampler, opts.boundary_only);
 				if (obstacle.n_vertices() > 0)
 				{
 					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
 					obstacle.set_zero(interp_vel); // TODO
 				}
 
-				if (solve_export_to_file && interp_vel.cols() == 2)
+				if (opts.solve_export_to_file && interp_vel.cols() == 2)
 				{
 					interp_vel.conservativeResize(interp_vel.rows(), 3);
 					interp_vel.col(2).setZero();
 				}
 
-				if (solve_export_to_file)
+				if (opts.solve_export_to_file)
 				{
 					writer.add_field("velocity", interp_vel);
 				}
 				// TODO: else save to solution frames
 			}
 
-			if (export_acceleration)
+			if (opts.acceleration)
 			{
 				Eigen::VectorXd acc = zero_tmp;
 				if (is_time_integrator_valid)
@@ -1296,20 +1169,20 @@ namespace polyfem::output
 				}
 
 				Eigen::MatrixXd interp_acc;
-				Evaluator::interpolate_function(points.rows(), acc, interp_acc, use_sampler, boundary_only);
+				Evaluator::interpolate_function(points.rows(), acc, interp_acc, opts.use_sampler, opts.boundary_only);
 				if (obstacle.n_vertices() > 0)
 				{
 					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
 					obstacle.set_zero(interp_acc); // TODO
 				}
 
-				if (solve_export_to_file && interp_acc.cols() == 2)
+				if (opts.solve_export_to_file && interp_acc.cols() == 2)
 				{
 					interp_acc.conservativeResize(interp_acc.rows(), 3);
 					interp_acc.col(2).setZero();
 				}
 
-				if (solve_export_to_file)
+				if (opts.solve_export_to_file)
 				{
 					writer.add_field("acceleration", interp_acc);
 				}
@@ -1321,7 +1194,7 @@ namespace polyfem::output
 		if (assembler.is_mixed(formulation))
 		{
 			Eigen::MatrixXd interp_p;
-			Evaluator::interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, use_sampler, boundary_only);
+			Evaluator::interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, opts.use_sampler, opts.boundary_only);
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1329,7 +1202,7 @@ namespace polyfem::output
 				interp_p.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			if (solve_export_to_file)
+			if (opts.solve_export_to_file)
 				writer.add_field("pressure", interp_p);
 			else
 				solution_frames.back().pressure = interp_p;
@@ -1341,11 +1214,11 @@ namespace polyfem::output
 			discr.bottomRows(obstacle.n_vertices()).setZero();
 		}
 
-		if (solve_export_to_file)
+		if (opts.solve_export_to_file)
 			writer.add_field("discr", discr);
 		if (problem.has_exact_sol())
 		{
-			if (solve_export_to_file)
+			if (opts.solve_export_to_file)
 			{
 				writer.add_field("exact", exact_fun);
 				writer.add_field("error", err);
@@ -1360,7 +1233,7 @@ namespace polyfem::output
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd vals, tvals;
-			Evaluator::compute_scalar_value(points.rows(), sol, vals, use_sampler, boundary_only);
+			Evaluator::compute_scalar_value(points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1368,14 +1241,14 @@ namespace polyfem::output
 				vals.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			if (solve_export_to_file)
+			if (opts.solve_export_to_file)
 				writer.add_field("scalar_value", vals);
 			else
 				solution_frames.back().scalar_value = vals;
 
-			if (solve_export_to_file)
+			if (opts.solve_export_to_file)
 			{
-				Evaluator::compute_tensor_value(points.rows(), sol, tvals, use_sampler, boundary_only);
+				Evaluator::compute_tensor_value(points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
 				for (int i = 0; i < tvals.cols(); ++i)
 				{
 					Eigen::MatrixXd tmp = tvals.col(i);
@@ -1391,16 +1264,16 @@ namespace polyfem::output
 				}
 			}
 
-			if (!use_spline)
+			if (!opts.use_spline)
 			{
-				Evaluator::average_grad_based_function(points.rows(), sol, vals, tvals, use_sampler, boundary_only);
+				Evaluator::average_grad_based_function(points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
 				if (obstacle.n_vertices() > 0)
 				{
 					vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
 					vals.bottomRows(obstacle.n_vertices()).setZero();
 				}
 
-				if (solve_export_to_file)
+				if (opts.solve_export_to_file)
 					writer.add_field("scalar_value_avg", vals);
 				else
 					solution_frames.back().scalar_value_avg = vals;
@@ -1412,7 +1285,7 @@ namespace polyfem::output
 			}
 		}
 
-		if (material_params)
+		if (opts.material_params)
 		{
 			const LameParameters &params = assembler.lame_params();
 
@@ -1432,7 +1305,7 @@ namespace polyfem::output
 				const basis::ElementBases &gbs = gbases[e];
 				const basis::ElementBases &bs = bases[e];
 
-				if (use_sampler)
+				if (opts.use_sampler)
 				{
 					if (mesh.is_simplex(e))
 						local_pts = sampler.simplex_points();
@@ -1523,7 +1396,7 @@ namespace polyfem::output
 			writer.add_field("rho", rhos);
 		}
 
-		if (body_ids)
+		if (opts.body_ids)
 		{
 
 			Eigen::MatrixXd ids(points.rows(), 1);
@@ -1542,9 +1415,9 @@ namespace polyfem::output
 			writer.add_field("body_ids", ids);
 		}
 
-		// interpolate_function(pts_index, rhs, fun, boundary_only);
+		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
-		if (solve_export_to_file)
+		if (opts.solve_export_to_file)
 		{
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1596,23 +1469,13 @@ namespace polyfem::output
 		}
 	}
 
-	// const bool material_params = args["output"]["paraview"]["options"]["material"];
-	// const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
-	// const bool export_contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !problem->is_scalar();
-	// const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();
-	// is_contact_enabled()
-	// is_time_dependent = !args["time"].is_null()
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
 		const State &state,
 		const double dt_in,
-		const bool material_params,
-		const bool body_ids,
-		const bool export_contact_forces,
-		const bool export_friction_forces,
+		const ExportOptions &opts,
 		const bool is_contact_enabled,
-		const bool solve_export_to_file,
-		std::vector<output::SolutionFrame> &solution_frames)
+		std::vector<output::SolutionFrame> &solution_frames) const
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
@@ -1633,6 +1496,17 @@ namespace polyfem::output
 		const Eigen::MatrixXd &sol = state.sol;
 		const Eigen::MatrixXd &pressure = state.pressure;
 		const assembler::Problem &problem = *state.problem;
+
+		Eigen::MatrixXd boundary_vis_vertices;
+		Eigen::MatrixXd boundary_vis_local_vertices;
+		Eigen::MatrixXi boundary_vis_elements;
+		Eigen::MatrixXi boundary_vis_elements_ids;
+		Eigen::MatrixXi boundary_vis_primitive_ids;
+		Eigen::MatrixXd boundary_vis_normals;
+
+		build_vis_boundary_mesh(mesh, bases, gbases, state.total_local_boundary,
+								boundary_vis_vertices, boundary_vis_local_vertices, boundary_vis_elements,
+								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals);
 
 		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
@@ -1695,7 +1569,7 @@ namespace polyfem::output
 			}
 		}
 
-		if (is_contact_enabled && (export_contact_forces || export_friction_forces) && solve_export_to_file)
+		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces) && opts.solve_export_to_file)
 		{
 			io::VTUWriter writer;
 
@@ -1715,7 +1589,7 @@ namespace polyfem::output
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
-			if (export_contact_forces)
+			if (opts.contact_forces)
 			{
 				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, dhat);
 				// forces = collision_mesh.to_full_dof(forces);
@@ -1728,7 +1602,7 @@ namespace polyfem::output
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
-			if (export_friction_forces)
+			if (opts.friction_forces)
 			{
 				Eigen::MatrixXd displaced_surface_prev = (friction_form != nullptr) ? friction_form->displaced_surface_prev() : displaced_surface;
 
@@ -1765,7 +1639,7 @@ namespace polyfem::output
 
 		io::VTUWriter writer;
 
-		if (solve_export_to_file)
+		if (opts.solve_export_to_file)
 		{
 
 			writer.add_field("normals", boundary_vis_normals);
@@ -1787,7 +1661,7 @@ namespace polyfem::output
 				solution_frames.back().pressure = interp_p;
 		}
 
-		if (material_params)
+		if (opts.material_params)
 		{
 			const LameParameters &params = assembler.lame_params();
 
@@ -1824,7 +1698,7 @@ namespace polyfem::output
 			writer.add_field("rho", rhos);
 		}
 
-		if (body_ids)
+		if (opts.body_ids)
 		{
 
 			Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
@@ -1836,7 +1710,7 @@ namespace polyfem::output
 
 			writer.add_field("body_ids", ids);
 		}
-		if (solve_export_to_file)
+		if (opts.solve_export_to_file)
 			writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
 		else
 		{
@@ -1850,14 +1724,15 @@ namespace polyfem::output
 		const std::string &name,
 		const State &state,
 		const double t,
-		const bool solve_export_to_file)
+		const ExportOptions &opts,
+		std::vector<output::SolutionFrame> &solution_frames) const
 	{
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
 		const Eigen::MatrixXd &sol = state.sol;
 		const assembler::Problem &problem = *state.problem;
 
-		if (!solve_export_to_file) // TODO?
+		if (!opts.solve_export_to_file) // TODO?
 			return;
 		const auto &sampler = ref_element_sampler;
 
@@ -2000,7 +1875,10 @@ namespace polyfem::output
 		writer.write_mesh(name, points, edges);
 	}
 
-	void OutGeometryData::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame)
+	void OutGeometryData::save_pvd(
+		const std::string &name,
+		const std::function<std::string(int)> &vtu_names,
+		int time_steps, double t0, double dt, int skip_frame) const
 	{
 		// https://www.paraview.org/Wiki/ParaView/Data_formats#PVD_File_Format
 
@@ -2028,13 +1906,11 @@ namespace polyfem::output
 		pvd.SaveFile(name.c_str());
 	}
 
-	// args["output"]["paraview"]["vismesh_rel_area"]
 	void OutGeometryData::init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area)
 	{
 		ref_element_sampler.init(mesh.is_volume(), mesh.n_elements(), vismesh_rel_area);
 	}
 
-	// const double spacing = args["output"]["advanced"]["sol_on_grid"];
 	void OutGeometryData::build_grid(const polyfem::mesh::Mesh &mesh, const double spacing)
 	{
 		if (spacing <= 0)
@@ -2133,7 +2009,6 @@ namespace polyfem::output
 		}
 	}
 
-	// args["output"]["advanced"]["curved_mesh_size"]
 	void OutStatsData::compute_mesh_size(const polyfem::mesh::Mesh &mesh_in, const std::vector<polyfem::basis::ElementBases> &bases_in, const int n_samples, const bool use_curved_mesh_size)
 	{
 		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1, p;
@@ -2532,4 +2407,139 @@ namespace polyfem::output
 		logger().info("undefined_count: \t{}", undefined_count);
 		logger().info("total count:\t {}", mesh.n_elements());
 	}
+
+	// args["output"]["advanced"]["sol_at_node"]  iso_parametric() formulation()
+	void OutStatsData::save_json(
+		const nlohmann::json &args,
+		const int n_bases, const int n_pressure_bases,
+		const Eigen::MatrixXd &sol,
+		const mesh::Mesh &mesh,
+		const Eigen::VectorXi &disc_orders,
+		const assembler::Problem &problem,
+		const output::OutRuntimeData &runtime,
+		const std::string &formulation,
+		const bool isoparametric,
+		const int sol_at_node_id,
+		nlohmann::json &j)
+	{
+
+		j["args"] = args;
+
+		j["geom_order"] = mesh.orders().size() > 0 ? mesh.orders().maxCoeff() : 1;
+		j["geom_order_min"] = mesh.orders().size() > 0 ? mesh.orders().minCoeff() : 1;
+		j["discr_order_min"] = disc_orders.minCoeff();
+		j["discr_order_max"] = disc_orders.maxCoeff();
+		j["iso_parametric"] = isoparametric;
+		j["problem"] = problem.name();
+		j["mat_size"] = mat_size;
+		j["num_bases"] = n_bases;
+		j["num_pressure_bases"] = n_pressure_bases;
+		j["num_non_zero"] = nn_zero;
+		j["num_flipped"] = n_flipped;
+		j["num_dofs"] = num_dofs;
+		j["num_vertices"] = mesh.n_vertices();
+		j["num_elements"] = mesh.n_elements();
+
+		j["num_p1"] = (disc_orders.array() == 1).count();
+		j["num_p2"] = (disc_orders.array() == 2).count();
+		j["num_p3"] = (disc_orders.array() == 3).count();
+		j["num_p4"] = (disc_orders.array() == 4).count();
+		j["num_p5"] = (disc_orders.array() == 5).count();
+
+		j["mesh_size"] = mesh_size;
+		j["max_angle"] = max_angle;
+
+		j["sigma_max"] = sigma_max;
+		j["sigma_min"] = sigma_min;
+		j["sigma_avg"] = sigma_avg;
+
+		j["min_edge_length"] = min_edge_length;
+		j["average_edge_length"] = average_edge_length;
+
+		j["err_l2"] = l2_err;
+		j["err_h1"] = h1_err;
+		j["err_h1_semi"] = h1_semi_err;
+		j["err_linf"] = linf_err;
+		j["err_linf_grad"] = grad_max_err;
+		j["err_lp"] = lp_err;
+
+		j["spectrum"] = {spectrum(0), spectrum(1), spectrum(2), spectrum(3)};
+		j["spectrum_condest"] = std::abs(spectrum(3)) / std::abs(spectrum(0));
+
+		// j["errors"] = errors;
+
+		j["time_building_basis"] = runtime.building_basis_time;
+		j["time_loading_mesh"] = runtime.loading_mesh_time;
+		j["time_computing_poly_basis"] = runtime.computing_poly_basis_time;
+		j["time_assembling_stiffness_mat"] = runtime.assembling_stiffness_mat_time;
+		j["time_assigning_rhs"] = runtime.assigning_rhs_time;
+		j["time_solving"] = runtime.solving_time;
+		// j["time_computing_errors"] = runtime.computing_errors_time;
+
+		j["solver_info"] = solver_info;
+
+		j["count_simplex"] = simplex_count;
+		j["count_regular"] = regular_count;
+		j["count_regular_boundary"] = regular_boundary_count;
+		j["count_simple_singular"] = simple_singular_count;
+		j["count_multi_singular"] = multi_singular_count;
+		j["count_boundary"] = boundary_count;
+		j["count_non_regular_boundary"] = non_regular_boundary_count;
+		j["count_non_regular"] = non_regular_count;
+		j["count_undefined"] = undefined_count;
+		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
+
+		j["is_simplicial"] = mesh.n_elements() == simplex_count;
+
+		j["peak_memory"] = getPeakRSS() / (1024 * 1024);
+
+		const int actual_dim = problem.is_scalar() ? 1 : mesh.dimension();
+
+		std::vector<double> mmin(actual_dim);
+		std::vector<double> mmax(actual_dim);
+
+		for (int d = 0; d < actual_dim; ++d)
+		{
+			mmin[d] = std::numeric_limits<double>::max();
+			mmax[d] = -std::numeric_limits<double>::max();
+		}
+
+		for (int i = 0; i < sol.size(); i += actual_dim)
+		{
+			for (int d = 0; d < actual_dim; ++d)
+			{
+				mmin[d] = std::min(mmin[d], sol(i + d));
+				mmax[d] = std::max(mmax[d], sol(i + d));
+			}
+		}
+
+		std::vector<double> sol_at_node(actual_dim);
+
+		if (sol_at_node_id >= 0)
+		{
+			const int node_id = sol_at_node_id;
+
+			for (int d = 0; d < actual_dim; ++d)
+			{
+				sol_at_node[d] = sol(node_id * actual_dim + d);
+			}
+		}
+
+		j["sol_at_node"] = sol_at_node;
+		j["sol_min"] = mmin;
+		j["sol_max"] = mmax;
+
+#if defined(POLYFEM_WITH_CPP_THREADS)
+		j["num_threads"] = utils::get_n_threads();
+#elif defined(POLYFEM_WITH_TBB)
+		j["num_threads"] = utils::get_n_threads();
+#else
+		j["num_threads"] = 1;
+#endif
+
+		j["formulation"] = formulation;
+
+		logger().info("done");
+	}
+
 } // namespace polyfem::output

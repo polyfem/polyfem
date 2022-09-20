@@ -12,6 +12,11 @@
 
 #include <Eigen/Dense>
 
+namespace polyfem
+{
+	class State;
+}
+
 namespace polyfem::output
 {
 	/// class used to save the solution of time dependent problems in code instead of saving it to the disc
@@ -32,21 +37,117 @@ namespace polyfem::output
 	class OutGeometryData
 	{
 	public:
+		struct ExportOptions
+		{
+			bool volume;
+			bool surface;
+			bool wire;
+			bool contact_forces;
+			bool friction_forces;
+
+			bool use_sampler;
+			bool boundary_only;
+			bool material_params;
+			bool body_ids;
+			bool sol_on_grid;
+			bool velocity;
+			bool acceleration;
+
+			bool use_spline;
+			bool reorder_output;
+
+			bool solve_export_to_file;
+
+			ExportOptions(const json &args,
+						  const bool is_mesh_linear,
+						  const bool is_problem_scalar,
+						  const bool solve_export_to_file);
+		};
+
+		/// extracts the boundary mesh
+		/// @param[in] bases geom bases
+		/// @param[out] boundary_nodes_pos nodes positions
+		/// @param[out] boundary_edges edges
+		/// @param[out] boundary_triangles triangles
+		static void extract_boundary_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			std::vector<mesh::LocalBoundary> &total_local_boundary,
+			Eigen::MatrixXd &boundary_nodes_pos,
+			Eigen::MatrixXi &boundary_edges,
+			Eigen::MatrixXi &boundary_triangles);
+
+		void init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area);
+
+		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
+
+		void export_data(
+			const State &state,
+			const bool is_time_dependent,
+			const double tend_in,
+			const double dt,
+			const ExportOptions &opts,
+			const std::string &vis_mesh_path,
+			const std::string &nodes_path,
+			const std::string &solution_path,
+			const std::string &stress_path,
+			const std::string &mises_path,
+			const bool is_contact_enabled,
+			std::vector<output::SolutionFrame> &solution_frames) const;
+
+		/// saves the vtu file for time t
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_vtu(const std::string &path,
+					  const State &state,
+					  const double t,
+					  const double dt,
+					  const ExportOptions &opts,
+					  const bool is_contact_enabled,
+					  std::vector<output::SolutionFrame> &solution_frames) const;
+
+		/// saves the volume vtu file
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_volume(const std::string &path,
+						 const State &state,
+						 const double t,
+						 const ExportOptions &opts,
+						 std::vector<output::SolutionFrame> &solution_frames) const;
+
+		/// saves the surface vtu file for for surface quantites, eg traction forces
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_surface(const std::string &export_surface,
+						  const State &state,
+						  const double dt_in,
+						  const ExportOptions &opts,
+						  const bool is_contact_enabled,
+						  std::vector<output::SolutionFrame> &solution_frames) const;
+
+		/// saves the wireframe
+		/// @param[in] name filename
+		/// @param[in] t time
+		void save_wire(const std::string &name,
+					   const State &state,
+					   const double t,
+					   const ExportOptions &opts,
+					   std::vector<output::SolutionFrame> &solution_frames) const;
+
+		/// save a PVD of a time dependent simulation
+		/// @param[in] name filename
+		/// @param[in] vtu_names names of the vtu files
+		/// @param[in] time_steps total time stesp
+		/// @param[in] t0 initial time
+		/// @param[in] dt delta t
+		/// @param[in] skip_frame every which frame to skip
+		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names,
+					  int time_steps, double t0, double dt, int skip_frame = 1) const;
+
+	private:
 		/// used to sample the solution
 		utils::RefElementSampler ref_element_sampler;
-
-		/// boundary visualization mesh vertices
-		Eigen::MatrixXd boundary_vis_vertices;
-		/// boundary visualization mesh vertices pre image in ref element
-		Eigen::MatrixXd boundary_vis_local_vertices;
-		/// boundary visualization mesh connectivity
-		Eigen::MatrixXi boundary_vis_elements;
-		/// boundary visualization mesh elements ids
-		Eigen::MatrixXi boundary_vis_elements_ids;
-		/// boundary visualization mesh edge/face id
-		Eigen::MatrixXi boundary_vis_primitive_ids;
-		/// boundary visualization mesh normals
-		Eigen::MatrixXd boundary_vis_normals;
 
 		/// grid mesh points to export solution sampled on a grid
 		Eigen::MatrixXd grid_points;
@@ -55,11 +156,24 @@ namespace polyfem::output
 		/// grid mesh boundaries
 		Eigen::MatrixXd grid_points_bc;
 
-		/// extracts the boundary mesh for visualization, called in build_basis
-		void extract_vis_boundary_mesh();
-
-		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
-		void init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area);
+		/// builds the boundary mesh for visualization, called in build_basis
+		/// boundary visualization mesh vertices
+		/// boundary visualization mesh vertices pre image in ref element
+		/// boundary visualization mesh connectivity
+		/// boundary visualization mesh elements ids
+		/// boundary visualization mesh edge/face id
+		/// boundary visualization mesh normals
+		void build_vis_boundary_mesh(
+			const mesh::Mesh &mesh,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			Eigen::MatrixXd &boundary_vis_vertices,
+			Eigen::MatrixXd &boundary_vis_local_vertices,
+			Eigen::MatrixXi &boundary_vis_elements,
+			Eigen::MatrixXi &boundary_vis_elements_ids,
+			Eigen::MatrixXi &boundary_vis_primitive_ids,
+			Eigen::MatrixXd &boundary_vis_normals) const;
 
 		/// builds visualzation mesh, upsampled mesh used for visualization
 		/// the visualization mesh is a dense mesh per element all disconnected
@@ -69,7 +183,18 @@ namespace polyfem::output
 		/// @param[out] tets mesh cells
 		/// @param[out] el_id mapping from points to elements id
 		/// @param[out] discr mapping from points to discretization order
-		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
+		void build_vis_mesh(
+			const mesh::Mesh &mesh,
+			const Eigen::VectorXi &disc_orders,
+			const std::vector<basis::ElementBases> &gbases,
+			const std::map<int, Eigen::MatrixXd> &polys,
+			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+			const bool boundary_only,
+			Eigen::MatrixXd &points,
+			Eigen::MatrixXi &tets,
+			Eigen::MatrixXi &el_id,
+			Eigen::MatrixXd &discr) const;
+
 		/// builds high-der visualzation mesh per element all disconnected
 		/// it also retuns the mapping to element id and discretization of every elment
 		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
@@ -77,32 +202,14 @@ namespace polyfem::output
 		/// @param[out] elements mesh high-order cells
 		/// @param[out] el_id mapping from points to elements id
 		/// @param[out] discr mapping from points to discretization order
-		void build_high_oder_vis_mesh(Eigen::MatrixXd &points, std::vector<std::vector<int>> &elements, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
-
-		/// saves the vtu file for time t
-		/// @param[in] name filename
-		/// @param[in] t time
-		void save_vtu(const std::string &name, const double t);
-		/// saves the volume vtu file
-		/// @param[in] name filename
-		/// @param[in] t time
-		void save_volume(const std::string &path, const double t);
-		/// saves the surface vtu file for for surface quantites, eg traction forces
-		/// @param[in] name filename
-		/// @param[in] t time
-		void save_surface(const std::string &name);
-		/// saves the wireframe
-		/// @param[in] name filename
-		/// @param[in] t time
-		void save_wire(const std::string &name, const double t);
-		/// save a PVD of a time dependent simulation
-		/// @param[in] name filename
-		/// @param[in] vtu_names names of the vtu files
-		/// @param[in] time_steps total time stesp
-		/// @param[in] t0 initial time
-		/// @param[in] dt delta t
-		/// @param[in] skip_frame every which frame to skip
-		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
+		void build_high_oder_vis_mesh(
+			const mesh::Mesh &mesh,
+			const Eigen::VectorXi &disc_orders,
+			const std::vector<basis::ElementBases> &bases,
+			Eigen::MatrixXd &points,
+			std::vector<std::vector<int>> &elements,
+			Eigen::MatrixXi &el_id,
+			Eigen::MatrixXd &discr) const;
 	};
 
 	class OutRuntimeData
@@ -206,6 +313,16 @@ namespace polyfem::output
 
 		/// saves the output statistic to a json object
 		/// @param[in] j output json
-		void save_json(nlohmann::json &j);
+		void save_json(const nlohmann::json &args,
+					   const int n_bases, const int n_pressure_bases,
+					   const Eigen::MatrixXd &sol,
+					   const mesh::Mesh &mesh,
+					   const Eigen::VectorXi &disc_orders,
+					   const assembler::Problem &problem,
+					   const output::OutRuntimeData &runtime,
+					   const std::string &formulation,
+					   const bool isoparametric,
+					   const int sol_at_node_id,
+					   nlohmann::json &j);
 	};
 } // namespace polyfem::output
