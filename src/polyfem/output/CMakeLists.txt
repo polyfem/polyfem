@@ -1,5 +1,5 @@
 set(SOURCES
-	# Evaluator.cpp
+	Evaluator.cpp
 	OutData.cpp
 )
 

@@ -1,11 +1,18 @@
-#include <polyfem/State.hpp>
+#include "Evaluator.hpp"
 
-#include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+
+#include <polyfem/assembler/Problem.hpp>
 
 #include <polyfem/quadrature/HexQuadrature.hpp>
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
+
+#include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/utils/RefElementSampler.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -15,24 +22,56 @@
 #include <igl/AABB.h>
 #include <igl/per_face_normals.h>
 
-namespace polyfem
+namespace polyfem::output
 {
-	using namespace assembler;
-	using namespace quadrature;
 	using namespace mesh;
-	using namespace utils;
+	using namespace assembler;
+	using namespace basis;
 
-	void OutGeometryData::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
+	namespace
 	{
-		if (!mesh)
+		void flattened_tensor_coeffs(const Eigen::MatrixXd &S, Eigen::MatrixXd &X)
 		{
-			logger().error("Load the mesh first!");
-			return;
+			if (S.cols() == 4)
+			{
+				X.resize(S.rows(), 3);
+				X.col(0) = S.col(0);
+				X.col(1) = S.col(3);
+				X.col(2) = S.col(1);
+			}
+			else if (S.cols() == 9)
+			{
+				// [S11, S22, S33, S12, S13, S23]
+				X.resize(S.rows(), 6);
+				X.col(0) = S.col(0);
+				X.col(1) = S.col(4);
+				X.col(2) = S.col(8);
+				X.col(3) = S.col(1);
+				X.col(4) = S.col(2);
+				X.col(5) = S.col(5);
+			}
+			else
+			{
+				logger().error("Invalid tensor dimensions.");
+			}
 		}
+	} // namespace
 
-		if (mesh->is_volume())
+	void Evaluator::get_sidesets(
+		const mesh::Mesh &mesh,
+		Eigen::MatrixXd &pts,
+		Eigen::MatrixXi &faces,
+		Eigen::MatrixXd &sidesets)
+	{
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
+
+		if (mesh.is_volume())
 		{
-			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
+			const Mesh3D &tmp_mesh = dynamic_cast<const Mesh3D &>(mesh);
 			int n_pts = 0;
 			int n_faces = 0;
 			for (int f = 0; f < tmp_mesh.n_faces(); ++f)
@@ -82,7 +121,7 @@ namespace polyfem
 		}
 		else
 		{
-			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
+			const Mesh2D &tmp_mesh = dynamic_cast<const Mesh2D &>(mesh);
 			int n_siteset = 0;
 			for (int e = 0; e < tmp_mesh.n_edges(); ++e)
 			{
@@ -113,33 +152,41 @@ namespace polyfem
 		}
 	}
 
-	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
+	void Evaluator::interpolate_boundary_function(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::MatrixXd &pts,
+		const Eigen::MatrixXi &faces,
+		const Eigen::MatrixXd &fun,
+		const bool compute_avg,
+		Eigen::MatrixXd &result)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
-		assert(mesh->is_volume());
+		assert(mesh.is_volume());
 
-		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 		Eigen::MatrixXd points, uv;
 		Eigen::VectorXd weights;
 
 		int actual_dim = 1;
-		if (!problem->is_scalar())
+		if (!problem.is_scalar())
 			actual_dim = 3;
 
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
 
-		const auto &gbases = geom_bases();
 		result.resize(faces.rows(), actual_dim);
 		result.setConstant(std::numeric_limits<double>::quiet_NaN());
 
@@ -147,8 +194,8 @@ namespace polyfem
 
 		for (int e = 0; e < mesh3d.n_elements(); ++e)
 		{
-			const ElementBases &gbs = gbases[e];
-			const ElementBases &bs = bases[e];
+			const basis::ElementBases &gbs = gbases[e];
+			const basis::ElementBases &bs = bases[e];
 
 			for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
 			{
@@ -168,7 +215,7 @@ namespace polyfem
 				RowVectorNd loc_val(actual_dim);
 				loc_val.setZero();
 
-				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+				// UIEvaluator::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 				// const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
 
@@ -206,38 +253,45 @@ namespace polyfem
 		assert(counter == result.rows());
 	}
 
-	void State::interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	void Evaluator::interpolate_boundary_function_at_vertices(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::MatrixXd &pts,
+		const Eigen::MatrixXi &faces,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (!mesh->is_volume())
+		if (!mesh.is_volume())
 		{
 			logger().error("This function works only on volumetric meshes!");
 			return;
 		}
 
-		assert(mesh->is_volume());
+		assert(mesh.is_volume());
 
-		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 		Eigen::MatrixXd points;
 
 		int actual_dim = 1;
-		if (!problem->is_scalar())
+		if (!problem.is_scalar())
 			actual_dim = 3;
 
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
 
-		const auto &gbases = geom_bases();
 		result.resize(pts.rows(), actual_dim);
 		result.setZero();
 
@@ -268,10 +322,10 @@ namespace polyfem
 
 				ElementAssemblyValues vals;
 				vals.compute(e, true, points, bs, gbs);
-				MatrixXd loc_val(points.rows(), actual_dim);
+				Eigen::MatrixXd loc_val(points.rows(), actual_dim);
 				loc_val.setZero();
 
-				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+				// UIEvaluator::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 				for (size_t j = 0; j < bs.bases.size(); ++j)
 				{
@@ -309,18 +363,41 @@ namespace polyfem
 		}
 	}
 
-	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, const bool skip_orientation)
+	void Evaluator::interpolate_boundary_tensor_function(
+		const Eigen::MatrixXd &pts,
+		const Eigen::MatrixXi &faces,
+		const Eigen::MatrixXd &fun,
+		const bool compute_avg,
+		Eigen::MatrixXd &result,
+		Eigen::MatrixXd &stresses,
+		Eigen::MatrixXd &mises,
+		const bool skip_orientation)
 	{
 		interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result, stresses, mises, skip_orientation);
 	}
 
-	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, bool skip_orientation)
+	void Evaluator::interpolate_boundary_tensor_function(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
+		const Eigen::MatrixXd &pts,
+		const Eigen::MatrixXi &faces,
+		const Eigen::MatrixXd &fun,
+		const Eigen::MatrixXd &disp,
+		const bool compute_avg,
+		Eigen::MatrixXd &result,
+		Eigen::MatrixXd &stresses,
+		Eigen::MatrixXd &mises,
+		bool skip_orientation)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -331,23 +408,23 @@ namespace polyfem
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (!mesh->is_volume())
+		if (!mesh.is_volume())
 		{
 			logger().error("This function works only on volumetric meshes!");
 			return;
 		}
-		if (problem->is_scalar())
+		if (problem.is_scalar())
 		{
 			logger().error("Define a tensor problem!");
 			return;
 		}
 
-		assert(mesh->is_volume());
-		assert(!problem->is_scalar());
+		assert(mesh.is_volume());
+		assert(!problem.is_scalar());
 
-		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
-		MatrixXd normals;
+		Eigen::MatrixXd normals;
 		igl::per_face_normals((pts + disp).eval(), faces, normals);
 
 		Eigen::MatrixXd points, uv, tmp_n, loc_v;
@@ -357,8 +434,6 @@ namespace polyfem
 
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
-
-		const auto &gbases = geom_bases();
 
 		result.resize(faces.rows(), actual_dim);
 		result.setConstant(std::numeric_limits<double>::quiet_NaN());
@@ -393,9 +468,9 @@ namespace polyfem
 				int lfid = 0;
 				for (; lfid < mesh3d.n_cell_faces(e); ++lfid)
 				{
-					if (mesh->is_simplex(e))
+					if (mesh.is_simplex(e))
 						loc_v = utils::BoundarySampler::tet_local_node_coordinates_from_face(lfid);
-					else if (mesh->is_cube(e))
+					else if (mesh.is_cube(e))
 						loc_v = utils::BoundarySampler::hex_local_node_coordinates_from_face(lfid);
 					else
 						assert(false);
@@ -427,12 +502,12 @@ namespace polyfem
 				}
 				assert(lfid < mesh3d.n_cell_faces(e));
 
-				if (mesh->is_simplex(e))
+				if (mesh.is_simplex(e))
 				{
 					utils::BoundarySampler::quadrature_for_tri_face(lfid, 4, face_id, mesh3d, uv, points, weights);
 					utils::BoundarySampler::normal_for_tri_face(lfid, tmp_n);
 				}
-				else if (mesh->is_cube(e))
+				else if (mesh.is_cube(e))
 				{
 					utils::BoundarySampler::quadrature_for_quad_face(lfid, 4, face_id, mesh3d, uv, points, weights);
 					utils::BoundarySampler::normal_for_quad_face(lfid, tmp_n);
@@ -452,8 +527,8 @@ namespace polyfem
 				}
 
 				Eigen::MatrixXd loc_val, local_mises;
-				assembler.compute_tensor_value(formulation(), e, bs, gbs, points, fun, loc_val);
-				assembler.compute_scalar_value(formulation(), e, bs, gbs, points, fun, local_mises);
+				assembler.compute_tensor_value(formulation, e, bs, gbs, points, fun, loc_val);
+				assembler.compute_scalar_value(formulation, e, bs, gbs, points, fun, local_mises);
 				Eigen::VectorXd tmp(loc_val.cols());
 				const double tmp_mises = (local_mises.array() * weights.array()).sum();
 
@@ -487,36 +562,45 @@ namespace polyfem
 		assert(counter == result.rows());
 	}
 
-	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool use_sampler, const bool boundary_only)
+	void Evaluator::average_grad_based_function(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
+		const int n_points,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result_scalar,
+		Eigen::MatrixXd &result_tensor,
+		const bool use_sampler,
+		const bool boundary_only)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (problem->is_scalar())
+		if (problem.is_scalar())
 		{
 			logger().error("Define a tensor problem!");
 			return;
 		}
 
-		assert(!problem->is_scalar());
-		const int actual_dim = mesh->dimension();
+		assert(!problem.is_scalar());
+		const int actual_dim = mesh.dimension();
 
-		MatrixXd avg_scalar(n_bases, 1);
+		Eigen::MatrixXd avg_scalar(n_bases, 1);
 		// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
-		MatrixXd areas(n_bases, 1);
+		Eigen::MatrixXd areas(n_bases, 1);
 		avg_scalar.setZero();
 		// avg_tensor.setZero();
 		areas.setZero();
 
 		Eigen::MatrixXd local_val;
-		const auto &gbases = geom_bases();
 
 		ElementAssemblyValues vals;
 		for (int i = 0; i < int(bases.size()); ++i)
@@ -525,31 +609,31 @@ namespace polyfem
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
-			if (mesh->is_simplex(i))
+			if (mesh.is_simplex(i))
 			{
-				if (mesh->dimension() == 3)
+				if (mesh.dimension() == 3)
 					autogen::p_nodes_3d(disc_orders(i), local_pts);
 				else
 					autogen::p_nodes_2d(disc_orders(i), local_pts);
 			}
 			else
 			{
-				if (mesh->dimension() == 3)
+				if (mesh.dimension() == 3)
 					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
 					autogen::q_nodes_2d(disc_orders(i), local_pts);
 			}
-			// else if(mesh->is_cube(i))
+			// else if(mesh.is_cube(i))
 			// 	local_pts = sampler.cube_points();
 			// // else
 			// 	// local_pts = vis_pts_poly[i];
 
 			vals.compute(i, actual_dim == 3, bases[i], gbases[i]);
-			const Quadrature &quadrature = vals.quadrature;
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
-			assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
-			// assembler.compute_tensor_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			// assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, local_val);
 
 			for (size_t j = 0; j < bs.bases.size(); ++j)
 			{
@@ -569,36 +653,32 @@ namespace polyfem
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
 	}
 
-	void State::compute_vertex_values(int actual_dim,
-									  const std::vector<ElementBases> &basis,
-									  const MatrixXd &fun,
-									  Eigen::MatrixXd &result)
+	void Evaluator::compute_vertex_values(
+		const mesh::Mesh &mesh,
+		const std::vector<basis::ElementBases> &bases,
+		const utils::RefElementSampler &sampler,
+		int actual_dim,
+		const std::vector<basis::ElementBases> &basis,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (!mesh->is_volume())
+		if (!mesh.is_volume())
 		{
 			logger().error("This function works only on volumetric meshes!");
 			return;
 		}
 
-		if (!mesh)
-		{
-			return;
-		}
-		if (!mesh->is_volume())
-		{
-			return;
-		}
-		const Mesh3D &mesh3d = *dynamic_cast<const Mesh3D *>(mesh.get());
+		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 		result.resize(mesh3d.n_vertices(), actual_dim);
 		result.setZero();
@@ -606,22 +686,21 @@ namespace polyfem
 		// std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
 		// std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
 
-		const auto &sampler = ref_element_sampler;
 		std::vector<AssemblyValues> tmp;
 		std::vector<bool> marked(mesh3d.n_vertices(), false);
 		for (int i = 0; i < int(basis.size()); ++i)
 		{
 			const ElementBases &bs = basis[i];
-			MatrixXd local_pts;
+			Eigen::MatrixXd local_pts;
 			std::vector<int> vertices;
 
-			if (mesh->is_simplex(i))
+			if (mesh.is_simplex(i))
 			{
 				local_pts = sampler.simplex_corners();
 				auto vtx = mesh3d.get_ordered_vertices_from_tet(i);
 				vertices.assign(vtx.begin(), vtx.end());
 			}
-			else if (mesh->is_cube(i))
+			else if (mesh.is_cube(i))
 			{
 				local_pts = sampler.cube_corners();
 				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
@@ -630,7 +709,7 @@ namespace polyfem
 			// TODO poly?
 			assert((int)vertices.size() == (int)local_pts.rows());
 
-			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
+			Eigen::MatrixXd local_res = Eigen::MatrixXd::Zero(local_pts.rows(), actual_dim);
 			bs.evaluate_bases(local_pts, tmp);
 			for (size_t j = 0; j < bs.bases.size(); ++j)
 			{
@@ -659,88 +738,71 @@ namespace polyfem
 		}
 	}
 
-	void flattened_tensor_coeffs(const MatrixXd &S, MatrixXd &X)
+	void Evaluator::compute_stress_at_quadrature_points(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		Eigen::VectorXd &von_mises)
 	{
-		if (S.cols() == 4)
-		{
-			X.resize(S.rows(), 3);
-			X.col(0) = S.col(0);
-			X.col(1) = S.col(3);
-			X.col(2) = S.col(1);
-		}
-		else if (S.cols() == 9)
-		{
-			// [S11, S22, S33, S12, S13, S23]
-			X.resize(S.rows(), 6);
-			X.col(0) = S.col(0);
-			X.col(1) = S.col(4);
-			X.col(2) = S.col(8);
-			X.col(3) = S.col(1);
-			X.col(4) = S.col(2);
-			X.col(5) = S.col(5);
-		}
-		else
-		{
-			logger().error("Invalid tensor dimensions.");
-		}
-	}
-
-	void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises)
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (problem->is_scalar())
+		if (problem.is_scalar())
 		{
 			logger().error("Define a tensor problem!");
 			return;
 		}
 
-		const int actual_dim = mesh->dimension();
-		assert(!problem->is_scalar());
+		const int actual_dim = mesh.dimension();
+		assert(!problem.is_scalar());
 
 		Eigen::MatrixXd local_val, local_stress, local_mises;
-		const auto &gbases = geom_bases();
 
 		int num_quadr_pts = 0;
 		result.resize(disc_orders.sum(), actual_dim == 2 ? 3 : 6);
 		result.setZero();
 		von_mises.resize(disc_orders.sum(), 1);
 		von_mises.setZero();
-		for (int e = 0; e < mesh->n_elements(); ++e)
+		for (int e = 0; e < mesh.n_elements(); ++e)
 		{
 			// Compute quadrature points for element
-			Quadrature quadr;
-			if (mesh->is_simplex(e))
+			quadrature::Quadrature quadr;
+			if (mesh.is_simplex(e))
 			{
-				if (mesh->is_volume())
+				if (mesh.is_volume())
 				{
-					TetQuadrature f;
+					quadrature::TetQuadrature f;
 					f.get_quadrature(disc_orders(e), quadr);
 				}
 				else
 				{
-					TriQuadrature f;
+					quadrature::TriQuadrature f;
 					f.get_quadrature(disc_orders(e), quadr);
 				}
 			}
-			else if (mesh->is_cube(e))
+			else if (mesh.is_cube(e))
 			{
-				if (mesh->is_volume())
+				if (mesh.is_volume())
 				{
-					HexQuadrature f;
+					quadrature::HexQuadrature f;
 					f.get_quadrature(disc_orders(e), quadr);
 				}
 				else
 				{
-					QuadQuadrature f;
+					quadrature::QuadQuadrature f;
 					f.get_quadrature(disc_orders(e), quadr);
 				}
 			}
@@ -749,9 +811,9 @@ namespace polyfem
 				continue;
 			}
 
-			assembler.compute_scalar_value(formulation(), e, bases[e], gbases[e],
+			assembler.compute_scalar_value(formulation, e, bases[e], gbases[e],
 										   quadr.points, fun, local_mises);
-			assembler.compute_tensor_value(formulation(), e, bases[e], gbases[e],
+			assembler.compute_tensor_value(formulation, e, bases[e], gbases[e],
 										   quadr.points, fun, local_val);
 
 			if (num_quadr_pts + local_val.rows() >= result.rows())
@@ -770,21 +832,42 @@ namespace polyfem
 		von_mises.conservativeResize(num_quadr_pts, von_mises.cols());
 	}
 
-	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only)
+	void Evaluator::interpolate_function(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const int n_points,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		const bool use_sampler,
+		const bool boundary_only)
 	{
 		int actual_dim = 1;
-		if (!problem->is_scalar())
-			actual_dim = mesh->dimension();
+		if (!problem.is_scalar())
+			actual_dim = mesh.dimension();
 		interpolate_function(n_points, actual_dim, bases, fun, result, use_sampler, boundary_only);
 	}
 
-	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only)
+	void Evaluator::interpolate_function(
+		const mesh::Mesh &mesh,
+		const int n_points,
+		const int actual_dim,
+		const std::vector<basis::ElementBases> &basis,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const utils::RefElementSampler &sampler,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		const bool use_sampler,
+		const bool boundary_only)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -796,55 +879,54 @@ namespace polyfem
 		result.resize(n_points, actual_dim);
 
 		int index = 0;
-		const auto &sampler = ref_element_sampler;
 
 		Eigen::MatrixXi vis_faces_poly;
 
 		for (int i = 0; i < int(basis.size()); ++i)
 		{
 			const ElementBases &bs = basis[i];
-			MatrixXd local_pts;
+			Eigen::MatrixXd local_pts;
 
-			if (boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
 				continue;
 
 			if (use_sampler)
 			{
-				if (mesh->is_simplex(i))
+				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
-				else if (mesh->is_cube(i))
+				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
 				else
 				{
-					if (mesh->is_volume())
-						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					if (mesh.is_volume())
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
 					else
-						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
 				}
 			}
 			else
 			{
-				if (mesh->is_volume())
+				if (mesh.is_volume())
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 				else
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_2d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_2d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 			}
 
-			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
+			Eigen::MatrixXd local_res = Eigen::MatrixXd::Zero(local_pts.rows(), actual_dim);
 			bs.evaluate_bases(local_pts, tmp);
 			for (size_t j = 0; j < bs.bases.size(); ++j)
 			{
@@ -862,46 +944,57 @@ namespace polyfem
 		}
 	}
 
-	void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad)
-	{
-		interpolate_at_local_vals(el_index, local_pts, sol, result, result_grad);
-	}
-
-	void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+	void Evaluator::interpolate_at_local_vals(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const int el_index,
+		const Eigen::MatrixXd &local_pts,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		Eigen::MatrixXd &result_grad)
 	{
 		int actual_dim = 1;
-		if (!problem->is_scalar())
-			actual_dim = mesh->dimension();
+		if (!problem.is_scalar())
+			actual_dim = mesh.dimension();
 		interpolate_at_local_vals(el_index, actual_dim, bases, local_pts, fun, result, result_grad);
 	}
 
-	void State::interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+	void Evaluator::interpolate_at_local_vals(
+		const mesh::Mesh &mesh,
+		const int el_index,
+		const int actual_dim,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::MatrixXd &local_pts,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		Eigen::MatrixXd &result_grad)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
 
-		assert(local_pts.cols() == mesh->dimension());
+		assert(local_pts.cols() == mesh.dimension());
 		assert(fun.cols() == 1);
 
-		const auto &gbases = geom_bases();
 		const ElementBases &gbs = gbases[el_index];
 		const ElementBases &bs = bases[el_index];
 
 		ElementAssemblyValues vals;
-		vals.compute(el_index, mesh->is_volume(), local_pts, bs, gbs);
+		vals.compute(el_index, mesh.is_volume(), local_pts, bs, gbs);
 
 		result.resize(vals.val.rows(), actual_dim);
 		result.setZero();
 
-		result_grad.resize(vals.val.rows(), mesh->dimension() * actual_dim);
+		result_grad.resize(vals.val.rows(), mesh.dimension() * actual_dim);
 		result_grad.setZero();
 
 		const int n_loc_bases = int(vals.basis_values.size());
@@ -921,30 +1014,40 @@ namespace polyfem
 		}
 	}
 
-	bool State::check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only)
+	bool Evaluator::check_scalar_value(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
+		const utils::RefElementSampler &sampler,
+		const Eigen::MatrixXd &fun,
+		const bool use_sampler,
+		const bool boundary_only)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return true;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return true;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return true;
 		}
 
-		assert(!problem->is_scalar());
-
-		const auto &sampler = ref_element_sampler;
+		assert(!problem.is_scalar());
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
-		const auto &gbases = geom_bases();
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
-			if (boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
 				continue;
 
 			const ElementBases &bs = bases[i];
@@ -953,41 +1056,41 @@ namespace polyfem
 
 			if (use_sampler)
 			{
-				if (mesh->is_simplex(i))
+				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
-				else if (mesh->is_cube(i))
+				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
 				else
 				{
-					if (mesh->is_volume())
-						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					if (mesh.is_volume())
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
 					else
-						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
 				}
 			}
 			else
 			{
-				if (mesh->is_volume())
+				if (mesh.is_volume())
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 				else
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_2d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_2d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 			}
 
-			assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, local_val);
 
 			if (std::isnan(local_val.norm()))
 				return false;
@@ -996,13 +1099,28 @@ namespace polyfem
 		return true;
 	}
 
-	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only)
+	void Evaluator::compute_scalar_value(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
+		const int n_points,
+		const utils::RefElementSampler &sampler,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		const bool use_sampler,
+		const bool boundary_only)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1010,18 +1128,16 @@ namespace polyfem
 		}
 
 		result.resize(n_points, 1);
-		assert(!problem->is_scalar());
+		assert(!problem.is_scalar());
 
 		int index = 0;
-		const auto &sampler = ref_element_sampler;
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
-		const auto &gbases = geom_bases();
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
-			if (boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
 				continue;
 
 			const ElementBases &bs = bases[i];
@@ -1030,74 +1146,87 @@ namespace polyfem
 
 			if (use_sampler)
 			{
-				if (mesh->is_simplex(i))
+				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
-				else if (mesh->is_cube(i))
+				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
 				else
 				{
-					if (mesh->is_volume())
-						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					if (mesh.is_volume())
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
 					else
-						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
 				}
 			}
 			else
 			{
-				if (mesh->is_volume())
+				if (mesh.is_volume())
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 				else
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_2d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_2d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 			}
 
-			assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, local_val);
 
 			result.block(index, 0, local_val.rows(), 1) = local_val;
 			index += local_val.rows();
 		}
 	}
 
-	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only)
+	void Evaluator::compute_tensor_value(
+		const mesh::Mesh &mesh,
+		const assembler::Problem &problem,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
+		const int n_points,
+		const utils::RefElementSampler &sampler,
+		const Eigen::MatrixXd &fun,
+		Eigen::MatrixXd &result,
+		const bool use_sampler,
+		const bool boundary_only)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
+		// if (!mesh)
+		// {
+		// 	logger().error("Load the mesh first!");
+		// 	return;
+		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
 
-		const int actual_dim = mesh->dimension();
+		const int actual_dim = mesh.dimension();
 		result.resize(n_points, actual_dim * actual_dim);
-		assert(!problem->is_scalar());
+		assert(!problem.is_scalar());
 
 		int index = 0;
-		const auto &sampler = ref_element_sampler;
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
-		const auto &gbases = geom_bases();
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
-			if (boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
 				continue;
 
 			const ElementBases &bs = bases[i];
@@ -1106,44 +1235,44 @@ namespace polyfem
 
 			if (use_sampler)
 			{
-				if (mesh->is_simplex(i))
+				if (mesh.is_simplex(i))
 					local_pts = sampler.simplex_points();
-				else if (mesh->is_cube(i))
+				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
 				else
 				{
-					if (mesh->is_volume())
-						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					if (mesh.is_volume())
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
 					else
-						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
 				}
 			}
 			else
 			{
-				if (mesh->is_volume())
+				if (mesh.is_volume())
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 				else
 				{
-					if (mesh->is_simplex(i))
+					if (mesh.is_simplex(i))
 						autogen::p_nodes_2d(disc_orders(i), local_pts);
-					else if (mesh->is_cube(i))
+					else if (mesh.is_cube(i))
 						autogen::q_nodes_2d(disc_orders(i), local_pts);
 					else
 						continue;
 				}
 			}
 
-			assembler.compute_tensor_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, local_val);
 
 			result.block(index, 0, local_val.rows(), local_val.cols()) = local_val;
 			index += local_val.rows();
 		}
 	}
-} // namespace polyfem
+} // namespace polyfem::output

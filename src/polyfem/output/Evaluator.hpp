@@ -2,6 +2,8 @@
 
 #include <Eigen/Core>
 
+#include <polyfem/basis/ElementBases.hpp>
+
 namespace polyfem::output
 {
 	class Evaluator
