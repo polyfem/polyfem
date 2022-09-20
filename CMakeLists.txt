@@ -162,6 +162,10 @@ target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR
 # Required libraries
 ################################################################################
 
+# Eigen
+include(eigen)
+target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+
 # polysolve
 include(polysolver)
 target_link_libraries(polyfem PUBLIC polysolve)

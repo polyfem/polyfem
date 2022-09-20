@@ -149,12 +149,13 @@ namespace polyfem
 		{
 			POLYFEM_SCOPED_TIMER("Check for initial intersections");
 
-			Eigen::MatrixXd displaced = boundary_nodes_pos + unflatten(sol, mesh->dimension());
+			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
+				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
+			if (ipc::has_intersections(collision_mesh, displaced))
 			{
 				OBJWriter::write(
-					resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced),
+					resolve_output_path("intersection.obj"), displaced,
 					collision_mesh.edges(), collision_mesh.faces());
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
