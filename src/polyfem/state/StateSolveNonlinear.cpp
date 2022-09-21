@@ -135,10 +135,6 @@ namespace polyfem
 			}
 
 			save_timestep(t0 + dt / 2 * t, 2 * t, t0, dt / 2);
-			if (t == 1)
-			{
-				exit(0);
-			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}

@@ -16,92 +16,92 @@
 namespace polyfem::mesh
 {
 	void WildRemeshing2D::create_mesh(
-		const Eigen::MatrixXd &V,
-		const Eigen::MatrixXi &F,
-		const Eigen::MatrixXd &displacements,
-		const Eigen::MatrixXd &velocities,
-		const Eigen::MatrixXd &accelerations)
+		const Eigen::MatrixXd &rest_positions,
+		const Eigen::MatrixXd &positions,
+		const Eigen::MatrixXi &triangles)
 	{
-		Eigen::MatrixXi BE;
-		igl::boundary_facets(F, BE);
+		Eigen::MatrixXi boundary_edges;
+		igl::boundary_facets(triangles, boundary_edges);
 
-		std::vector<bool> is_boundary_vertex(V.rows(), false);
-		for (int i = 0; i < BE.rows(); ++i)
+		std::vector<bool> is_boundary_vertex(positions.rows(), false);
+		for (int i = 0; i < boundary_edges.rows(); ++i)
 		{
-			is_boundary_vertex[BE(i, 0)] = true;
-			is_boundary_vertex[BE(i, 1)] = true;
+			is_boundary_vertex[boundary_edges(i, 0)] = true;
+			is_boundary_vertex[boundary_edges(i, 1)] = true;
 		}
 
 		// Register attributes
 		p_vertex_attrs = &vertex_attrs;
 
 		// Convert from eigen to internal representation (TODO: move to utils and remove it from all app)
-		std::vector<std::array<size_t, 3>> tri(F.rows());
+		std::vector<std::array<size_t, 3>> tri(triangles.rows());
 
-		for (int i = 0; i < F.rows(); i++)
+		for (int i = 0; i < triangles.rows(); i++)
 			for (int j = 0; j < 3; j++)
-				tri[i][j] = (size_t)F(i, j);
+				tri[i][j] = (size_t)triangles(i, j);
 
 		// Initialize the trimesh class which handles connectivity
-		wmtk::TriMesh::create_mesh(V.rows(), tri);
+		wmtk::TriMesh::create_mesh(positions.rows(), tri);
 
 		// Save the vertex position in the vertex attributes
-		for (unsigned i = 0; i < V.rows(); ++i)
+		for (unsigned i = 0; i < positions.rows(); ++i)
 		{
-			vertex_attrs[i].rest_position = V.row(i).head<2>();
-			vertex_attrs[i].displacement = displacements.row(i).head<2>();
-			vertex_attrs[i].velocity = velocities.row(i).head<2>();
-			vertex_attrs[i].acceleration = accelerations.row(i).head<2>();
+			vertex_attrs[i].rest_position = rest_positions.row(i).head<2>();
+			vertex_attrs[i].position = positions.row(i).head<2>();
 			vertex_attrs[i].frozen = is_boundary_vertex[i];
 		}
 	}
 
 	void WildRemeshing2D::export_mesh(
-		Eigen::MatrixXd &V,
-		Eigen::MatrixXi &F,
-		Eigen::MatrixXd &displacements,
-		Eigen::MatrixXd &velocities,
-		Eigen::MatrixXd &accelerations)
+		Eigen::MatrixXd &rest_positions,
+		Eigen::MatrixXd &positions,
+		Eigen::MatrixXi &triangles)
 	{
-		V = Eigen::MatrixXd::Zero(vert_capacity(), 2);
-		displacements = Eigen::MatrixXd::Zero(vert_capacity(), 2);
-		velocities = Eigen::MatrixXd::Zero(vert_capacity(), 2);
-		accelerations = Eigen::MatrixXd::Zero(vert_capacity(), 2);
+		rest_positions = Eigen::MatrixXd::Zero(vert_capacity(), 2);
+		positions = Eigen::MatrixXd::Zero(vert_capacity(), 2);
 		for (const Tuple &t : get_vertices())
 		{
 			const size_t i = t.vid(*this);
-			V.row(i) = vertex_attrs[i].rest_position;
-			displacements.row(i) = vertex_attrs[i].displacement;
-			velocities.row(i) = vertex_attrs[i].velocity;
-			accelerations.row(i) = vertex_attrs[i].acceleration;
+			rest_positions.row(i) = vertex_attrs[i].rest_position;
+			positions.row(i) = vertex_attrs[i].position;
 		}
 
-		F = Eigen::MatrixXi::Constant(tri_capacity(), 3, -1);
+		triangles = Eigen::MatrixXi::Constant(tri_capacity(), 3, -1);
 		for (const Tuple &t : get_faces())
 		{
 			const size_t i = t.fid(*this);
 			const std::array<Tuple, 3> vs = oriented_tri_vertices(t);
 			for (int j = 0; j < 3; j++)
 			{
-				F(i, j) = vs[j].vid(*this);
+				triangles(i, j) = vs[j].vid(*this);
 			}
 		}
 	}
 
-	void WildRemeshing2D::write_obj(const std::string &path)
+	void WildRemeshing2D::write_rest_obj(const std::string &path)
 	{
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		Eigen::MatrixXd displacements;
-		Eigen::MatrixXd velocities;
-		Eigen::MatrixXd accelerations;
+		Eigen::MatrixXd rest_positions;
+		Eigen::MatrixXd _;
+		Eigen::MatrixXi triangles;
+		export_mesh(rest_positions, _, triangles);
 
-		export_mesh(V, F, displacements, velocities, accelerations);
+		rest_positions.conservativeResize(rest_positions.rows(), 3);
+		rest_positions.col(2).setZero();
 
-		Eigen::MatrixXd V3 = Eigen::MatrixXd::Zero(V.rows(), 3);
-		V3.leftCols(2) = V;
+		igl::writeOBJ(path, rest_positions, triangles);
+	}
 
-		igl::writeOBJ(path, V3, F);
+	void WildRemeshing2D::write_deformed_obj(const std::string &path)
+	{
+		Eigen::MatrixXd _;
+		Eigen::MatrixXd positions;
+		Eigen::MatrixXi triangles;
+		export_mesh(_, positions, triangles);
+
+		positions.conservativeResize(positions.rows(), 3);
+		positions.col(2).setZero();
+
+		igl::writeOBJ(path, positions, triangles);
 	}
 
 	// void WildRemeshing2D::freeze_vertex(TriMesh::Tuple &v)
@@ -126,9 +126,9 @@ namespace polyfem::mesh
 			vertex_attrs[its[0]].rest_position,
 			vertex_attrs[its[1]].rest_position,
 			vertex_attrs[its[2]].rest_position,
-			vertex_attrs[its[0]].position(),
-			vertex_attrs[its[1]].position(),
-			vertex_attrs[its[2]].position());
+			vertex_attrs[its[0]].position,
+			vertex_attrs[its[1]].position,
+			vertex_attrs[its[2]].position);
 
 		// Filter for numerical issues
 		if (!std::isfinite(energy))
@@ -173,7 +173,17 @@ namespace polyfem::mesh
 		return (res != igl::predicates::Orientation::POSITIVE);
 	}
 
-	// TODO define invariants function
+	bool WildRemeshing2D::invariants(const std::vector<Tuple> &new_tris)
+	{
+		for (auto &t : new_tris)
+		{
+			if (is_inverted(t))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 
 	// bool WildRemeshing2D::collapse_edge_before(const Tuple &t)
 	// {

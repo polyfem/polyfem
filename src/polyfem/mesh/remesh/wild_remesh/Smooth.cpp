@@ -54,14 +54,14 @@ namespace polyfem::mesh
 			}
 			local_verts = wmtk::orient_preserve_tri_reorder(local_verts, vid);
 
-			Eigen::MatrixXd X_rest(3, 2), X(3, 2);
+			Eigen::MatrixXd rest_positions(3, 2), positions(3, 2);
 			for (int i = 0; i < 3; ++i)
 			{
-				X_rest.row(i) = vertex_attrs[local_verts[i]].rest_position;
-				X.row(i) = vertex_attrs[local_verts[i]].position();
+				rest_positions.row(i) = vertex_attrs[local_verts[i]].rest_position;
+				positions.row(i) = vertex_attrs[local_verts[i]].position;
 			}
 
-			forms.push_back(std::make_shared<AMIPSForm>(X_rest, X));
+			forms.push_back(std::make_shared<AMIPSForm>(rest_positions, positions));
 		}
 
 		FullNLProblem problem(forms);
@@ -92,16 +92,22 @@ namespace polyfem::mesh
 		cppoptlib::SparseNewtonDescentSolver<FullNLProblem> solver(newton_args, linear_solver_args);
 
 		Eigen::VectorXd new_rest_pos = old_rest_pos;
-		solver.minimize(problem, new_rest_pos);
+		try
+		{
+			solver.minimize(problem, new_rest_pos);
+		}
+		catch (const std::exception &e)
+		{
+			logger().warn("Newton solver failed: {}", e.what());
+			return false;
+		}
 
 		logger().critical("old pos {} -> new pos {}", old_rest_pos.transpose(), new_rest_pos.transpose());
 
 		// ---------------------------------------------------------------------
 
 		vertex_attrs[vid].rest_position = new_rest_pos;
-		// vertex_attrs[vid].displacement =
-		// vertex_attrs[vid].velocity =
-		// vertex_attrs[vid].acceleration =
+		// vertex_attrs[vid].position =
 
 		return true; // TODO: check for inversion
 	}

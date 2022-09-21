@@ -17,16 +17,17 @@ namespace polyfem::mesh
 
 	void remesh(State &state, const double t0, const double dt, const int t)
 	{
+		assert(state.in_node_to_node.size() == state.mesh->n_vertices());
 		const ImplicitTimeIntegrator &time_integrator = *state.solve_data.time_integrator;
 
 		Eigen::MatrixXd V(state.mesh->n_vertices(), state.mesh->dimension());
 		for (int i = 0; i < state.mesh->n_vertices(); ++i)
-			V.row(i) = state.mesh->point(i);
+			V.row(state.in_node_to_node[i]) = state.mesh->point(i);
 
 		Eigen::MatrixXi F(state.mesh->n_elements(), state.mesh->dimension() + 1);
 		for (int i = 0; i < F.rows(); ++i)
 			for (int j = 0; j < F.cols(); ++j)
-				F(i, j) = state.mesh->element_vertex(i, j);
+				F(i, j) = state.in_node_to_node[state.mesh->element_vertex(i, j)];
 
 		if (!state.mesh->is_volume())
 			OBJWriter::write(state.resolve_output_path("rest.obj"), V, F);
@@ -79,18 +80,17 @@ namespace polyfem::mesh
 		const int n_vertices = state.mesh->n_vertices();
 		const int dim = state.mesh->dimension();
 		Eigen::MatrixXd U = unflatten(state.sol, dim);
-		Eigen::MatrixXd Vel = unflatten(time_integrator.v_prev(), dim);
-		Eigen::MatrixXd Acc = unflatten(time_integrator.a_prev(), dim);
 		assert(!state.mesh->is_volume());
 		WildRemeshing2D remeshing;
-		remeshing.create_mesh(V, F, U, Vel, Acc);
+		remeshing.create_mesh(V, V + U, F);
 		for (int i = 0; i < 1; ++i)
 		{
 			remeshing.smooth_all_vertices();
 			// remeshing.split_all_edges();
 		}
-		remeshing.export_mesh(V_new, F_new, U, Vel, Acc);
-		// TODO: use U, Vel, Acc
+		Eigen::MatrixXd _;
+		remeshing.export_mesh(V_new, _, F_new);
+		// TODO: use U_new = positions - rest_positions
 		// state.sol = flatten(U);
 		// return;
 #endif
@@ -122,13 +122,13 @@ namespace polyfem::mesh
 
 		// L2 Projection
 		state.ass_vals_cache.clear(); // Clear this because the mass matrix needs to be recomputed
-		Eigen::MatrixXd x;
-		L2_projection(
-			state, *state.solve_data.rhs_assembler,
-			state.mesh->is_volume(), state.mesh->is_volume() ? 3 : 2,
-			old_n_bases, old_bases, old_geom_bases,         // from
-			state.n_bases, state.bases, state.geom_bases(), // to
-			state.ass_vals_cache, y, x, t0, dt, t, /*lump_mass_matrix=*/false);
+		Eigen::MatrixXd x = y;
+		// L2_projection(
+		// 	state, *state.solve_data.rhs_assembler,
+		// 	state.mesh->is_volume(), state.mesh->is_volume() ? 3 : 2,
+		// 	old_n_bases, old_bases, old_geom_bases,         // from
+		// 	state.n_bases, state.bases, state.geom_bases(), // to
+		// 	state.ass_vals_cache, y, x, t0, dt, t, /*lump_mass_matrix=*/false);
 
 		state.sol = x.col(0);
 		Eigen::VectorXd vel = x.col(1);

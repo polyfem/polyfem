@@ -15,22 +15,19 @@ namespace polyfem::mesh
 
 		// Initializes the mesh
 		void create_mesh(
-			const Eigen::MatrixXd &V,
-			const Eigen::MatrixXi &F,
-			const Eigen::MatrixXd &displacements,
-			const Eigen::MatrixXd &velocities,
-			const Eigen::MatrixXd &accelerations);
+			const Eigen::MatrixXd &rest_positions,
+			const Eigen::MatrixXd &positions,
+			const Eigen::MatrixXi &triangles);
 
-		// Exports V and F of the stored mesh
+		// Exports positions and triangles of the stored mesh
 		void export_mesh(
-			Eigen::MatrixXd &V,
-			Eigen::MatrixXi &F,
-			Eigen::MatrixXd &displacements,
-			Eigen::MatrixXd &velocities,
-			Eigen::MatrixXd &accelerations);
+			Eigen::MatrixXd &rest_positions,
+			Eigen::MatrixXd &positions,
+			Eigen::MatrixXi &triangles);
 
 		// Writes a triangle mesh in OBJ format
-		void write_obj(const std::string &path);
+		void write_rest_obj(const std::string &path);
+		void write_deformed_obj(const std::string &path);
 
 		// Computes the quality of a triangle
 		double get_quality(const Tuple &loc) const;
@@ -40,6 +37,8 @@ namespace polyfem::mesh
 
 		// Check if a triangle is inverted
 		bool is_inverted(const Tuple &loc) const;
+
+		bool invariants(const std::vector<Tuple> &new_tris) override;
 
 		// Smoothing
 		void smooth_all_vertices();
@@ -55,7 +54,7 @@ namespace polyfem::mesh
 		// bool collapse_shortest(int target_vertex_count);
 		// bool invariants(const std::vector<Tuple> &new_tris) override;
 
-		// void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
+		// void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &triangles);
 
 		// bool is_vertex_frozen(const Tuple &v) const
 		// {
@@ -64,15 +63,9 @@ namespace polyfem::mesh
 
 		struct VertexAttributes
 		{
-			Eigen::Vector2d position() const
-			{
-				return rest_position + displacement;
-			}
 
 			Eigen::Vector2d rest_position;
-			Eigen::Vector2d displacement;
-			Eigen::Vector2d velocity;
-			Eigen::Vector2d acceleration;
+			Eigen::Vector2d position;
 			size_t partition_id = 0; // Vertices marked as fixed cannot be modified by any local operation
 			bool frozen = false;
 		};
