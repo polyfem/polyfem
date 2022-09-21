@@ -1215,7 +1215,7 @@ namespace polyfem::output
 		{
 			Eigen::MatrixXd interp_p;
 			Evaluator::interpolate_function(
-				mesh, 1,
+				mesh, 1, // FIXME: state.disc_orders should use pressure discr orders, works only with sampler
 				pressure_bases, state.disc_orders, state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), pressure, interp_p, opts.use_sampler, opts.boundary_only);
 
