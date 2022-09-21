@@ -41,25 +41,33 @@ namespace polyfem
 				write_matrix(a_path, a_prev());
 		}
 
-		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const std::string &name)
+		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const json &params)
 		{
-			if (name == "implict_euler" || name == "ImplicitEuler")
+			const std::string type = params.is_object() ? params["type"] : params;
+
+			std::shared_ptr<ImplicitTimeIntegrator> integrator;
+			if (type == "implict_euler" || type == "ImplicitEuler")
 			{
-				return std::make_shared<ImplicitEuler>();
+				integrator = std::make_shared<ImplicitEuler>();
 			}
-			else if (name == "implict_newmark" || name == "ImplicitNewmark")
+			else if (type == "implict_newmark" || type == "ImplicitNewmark")
 			{
-				return std::make_shared<ImplicitNewmark>();
+				integrator = std::make_shared<ImplicitNewmark>();
 			}
-			else if (name == "BDF")
+			else if (type == "BDF")
 			{
-				return std::make_shared<BDF>();
+				integrator = std::make_shared<BDF>();
 			}
 			else
 			{
-				logger().error("Unknown time integrator ({})", name);
-				throw std::runtime_error(fmt::format("Unknown time integrator ({})", name));
+				logger().error("Unknown time integrator ({})", type);
+				throw std::runtime_error(fmt::format("Unknown time integrator ({})", type));
 			}
+
+			if (params.is_object())
+				integrator->set_parameters(params);
+
+			return integrator;
 		}
 
 		const std::vector<std::string> &ImplicitTimeIntegrator::get_time_integrator_names()

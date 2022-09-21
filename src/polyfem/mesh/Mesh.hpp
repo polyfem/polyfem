@@ -405,6 +405,11 @@ namespace polyfem
 			virtual void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) = 0;
 			/// @brief computes boundary selections based on a function
 			///
+			/// @param[in] marker lambda function that takes the id, the list of vertices, the barycenter, and true/false if the element is on the boundary and returns an integer
+			virtual void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) = 0;
+
+			/// @brief computes boundary selections based on a function
+			///
 			/// @param[in] marker lambda function that takes the id and barycenter and returns an integer
 			virtual void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) = 0;
 			/// @brief Set the boundary selection from a vector

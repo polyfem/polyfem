@@ -30,6 +30,22 @@ namespace polyfem::time_integrator
 		/// @return value for \f$\tilde{x}\f$
 		Eigen::VectorXd x_tilde() const override;
 
+		/// @brief Compute the current velocity given the current solution and using the stored previous solution(s).
+		/// \f[
+		/// 	v = \frac{x - x^t}{\Delta t}
+		/// \f]
+		/// @param x current solution vector
+		/// @return value for \f$v\f$
+		Eigen::VectorXd compute_velocity(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the current acceleration given the current velocity and using the stored previous velocity(s).
+		/// \f[
+		/// 	a = \frac{v - v^t}{\Delta t}
+		/// \f]
+		/// @param v current velocity
+		/// @return value for \f$a\f$
+		Eigen::VectorXd compute_acceleration(const Eigen::VectorXd &v) const override;
+
 		/// @brief Compute the acceleration scaling used to scale forces when integrating a second order ODE.
 		/// \f[
 		/// 	\Delta t^2

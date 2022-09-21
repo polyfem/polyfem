@@ -1198,6 +1198,24 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_faces());
+
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const bool is_boundary = is_boundary_face(f);
+				std::vector<int> vs(n_face_vertices(f));
+				for (int vid = 0; vid < vs.size(); ++vid)
+					vs[vid] = face_vertex(f, vid);
+
+				const auto p = face_barycenter(f);
+
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[f] = marker(f, vs, p, is_boundary);
+			}
+		}
+
 		void CMesh3D::compute_boundary_ids(const double eps)
 		{
 			boundary_ids_.resize(n_faces());
