@@ -1471,7 +1471,8 @@
             "use_grad_norm",
             "relative_gradient",
             "line_search",
-            "export_energy"
+            "export_energy",
+            "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
     },
