@@ -311,55 +311,39 @@ namespace polyfem
 	void State::pure_periodic_lagrange_multiplier(Eigen::MatrixXd &multipliers) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		if (formulation() == "Laplacian")
+		multipliers.setZero(n_bases * problem_dim, problem_dim);
+		for (int e = 0; e < bases.size(); e++)
 		{
-			multipliers.setZero(n_bases, 1);
-			for (int e = 0; e < bases.size(); e++)
-			{
-				ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], geom_bases()[e], vals);
+			ElementAssemblyValues vals;
+			ass_vals_cache.compute(e, mesh->is_volume(), bases[e], geom_bases()[e], vals);
 
-				const int n_loc_bases = int(vals.basis_values.size());
-				for (int i = 0; i < n_loc_bases; ++i) 
+			const int n_loc_bases = int(vals.basis_values.size());
+			for (int i = 0; i < n_loc_bases; ++i) 
+			{
+				const auto &val = vals.basis_values[i];
+				for (size_t ii = 0; ii < val.global.size(); ++ii) 
 				{
-					const auto &val = vals.basis_values[i];
-					for (size_t ii = 0; ii < val.global.size(); ++ii) 
-					{
-						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-						multipliers(val.global[ii].index) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-					}
+					Eigen::MatrixXd tmp = val.global[ii].val * val.val;
+					const double value = (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+					for (int k = 0; k < problem_dim; k++)
+						multipliers(val.global[ii].index * problem_dim + k, k) += value;
 				}
 			}
 		}
-		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean" || formulation() == "Stokes")
-		{
-			multipliers.setZero(n_bases * problem_dim, problem_dim);
-			for (int e = 0; e < bases.size(); e++)
-			{
-				ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], geom_bases()[e], vals);
-
-				const int n_loc_bases = int(vals.basis_values.size());
-				for (int i = 0; i < n_loc_bases; ++i) 
-				{
-					const auto &val = vals.basis_values[i];
-					for (size_t ii = 0; ii < val.global.size(); ++ii) 
-					{
-						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-						for (int k = 0; k < problem_dim; k++)
-							multipliers(val.global[ii].index * problem_dim + k, k) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-					}
-				}
-			}
-		}
-		else
-			multipliers.resize(0, 0);
 	}
 
 	int State::remove_pure_periodic_singularity(StiffnessMatrix &A) const
 	{
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
 		Eigen::MatrixXd coeffs;
 		pure_periodic_lagrange_multiplier(coeffs);
+
+		if (!args["space"]["advanced"]["periodic_basis"])
+		{
+			std::vector<int> tmp;
+			full_to_periodic(coeffs, tmp);
+		}
 
 		std::vector<Eigen::Triplet<double>> entries;
 		entries.reserve(A.nonZeros() + coeffs.size() * 2);
@@ -385,5 +369,97 @@ namespace polyfem
 		std::swap(A, A_extended);
 
 		return coeffs.cols();
+	}
+
+	int State::full_to_periodic(StiffnessMatrix &A) const
+	{
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
+		
+		// account for potential pressure block
+		auto index_map = [&](int id){
+			if (id < periodic_reduce_map.size())
+				return periodic_reduce_map(id);
+			else
+				return (int)(id + independent_dof - n_bases * problem_dim);
+		};
+
+		StiffnessMatrix A_periodic(index_map(A.rows()), index_map(A.cols()));
+		std::vector<Eigen::Triplet<double>> entries;
+		entries.reserve(A.nonZeros());
+		for (int k = 0; k < A.outerSize(); k++)
+		{
+			for (StiffnessMatrix::InnerIterator it(A,k); it; ++it)
+			{
+				entries.emplace_back(index_map(it.row()), index_map(it.col()), it.value());
+			}
+		}
+		A_periodic.setFromTriplets(entries.begin(),entries.end());
+
+		std::swap(A_periodic, A);
+
+		return independent_dof;
+	}
+
+	int State::full_to_periodic(Eigen::MatrixXd &b, std::vector<int> &nodes) const
+	{
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		// new index for boundary_nodes
+		std::vector<int> nodes_periodic = nodes;
+		{
+			for (int i = 0; i < nodes_periodic.size(); i++)
+			{
+				nodes_periodic[i] = periodic_reduce_map(nodes_periodic[i]);
+			}
+
+			std::sort(nodes_periodic.begin(), nodes_periodic.end());
+			auto it = std::unique(nodes_periodic.begin(), nodes_periodic.end());
+			nodes_periodic.resize(std::distance(nodes_periodic.begin(), it));
+		}
+
+		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
+		
+		// account for potential pressure block
+		auto index_map = [&](int id){
+			if (id < periodic_reduce_map.size())
+				return periodic_reduce_map(id);
+			else
+				return (int)(id + independent_dof - n_bases * problem_dim);
+		};
+
+		// rhs under periodic basis
+		Eigen::MatrixXd b_periodic;
+		b_periodic.setZero(index_map(b.rows()), b.cols());
+		for (int d = 0; d < b_periodic.cols(); d++)
+		{
+			for (int k = 0; k < b.rows(); k++)
+				b_periodic(index_map(k), d) += b(k, d);
+
+			for (int k : nodes)
+				b_periodic(index_map(k), d) = b(k, d);
+		}
+
+		nodes = nodes_periodic;
+		b = b_periodic;
+
+		return independent_dof;
+	}
+
+	void State::periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic, Eigen::MatrixXd &x_full) const
+	{
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
+		
+		auto index_map = [&](int id){
+			if (id < periodic_reduce_map.size())
+				return periodic_reduce_map(id);
+			else
+				return (int)(id + independent_dof - n_bases * problem_dim);
+		};
+
+		x_full.resize(ndofs, x_periodic.cols());
+		for (int i = 0; i < x_full.rows(); i++)
+			for (int j = 0; j < x_full.cols(); j++)
+				x_full(i, j) = x_periodic(index_map(i), j);
 	}
 } // namespace polyfem

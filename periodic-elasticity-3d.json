@@ -1,7 +1,7 @@
 {
     "geometry": [
         {
-            "mesh": "cross.mesh",
+            "mesh": "cross.msh",
             "n_refs": 0
         }
     ],
@@ -41,7 +41,7 @@
         },
         "reference": {
             "solution": ["sin(2*pi*x)", "cos(2*pi*y)", "sin(2*pi*z)"],
-            "gradient": ["2*pi*cos(2*pi*x)", 0, 0, 0, "-2*pi*sin(2*pi*y)", 0, 0, 0, "2*pi*cos(2*pi*z)"]
+            "gradient": ["2*pi*cos(2*pi*x)", "0", "0", "0", "-2*pi*sin(2*pi*y)", "0", "0", "0", "2*pi*cos(2*pi*z)"]
         }
     }
 }

@@ -21,36 +21,39 @@ namespace polyfem
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int precond_num = problem_dim * n_bases;
+		const int full_size = A.rows();
+		int precond_num = problem_dim * n_bases;
+
+		std::vector<int> boundary_nodes_tmp = boundary_nodes;
+		if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
+		{
+			precond_num = full_to_periodic(A);
+			Eigen::MatrixXd tmp = b;
+			full_to_periodic(tmp, boundary_nodes_tmp);
+			b = tmp;
+		}
 
 		int n_lagrange_multiplier = 0;
-		if (boundary_nodes.size() == 0)
+		if (boundary_nodes_tmp.size() == 0 && !problem->is_time_dependent())
 		{
+			logger().info("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
 			if (args["boundary_conditions"]["periodic_boundary"])
-			{
-				logger().info("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
-				
 				n_lagrange_multiplier = remove_pure_periodic_singularity(A);
-				b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
-			}
 			else
-			{
-				logger().info("Pure Neumann boundary condition, use Lagrange multiplier to find unique solution...");
 				n_lagrange_multiplier = remove_pure_neumann_singularity(A);
-				b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
-			}
+			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 		}
 
 		Eigen::VectorXd x;
 		if (args["differentiable"])
 		{
-			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
+			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
+			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes_tmp, x);
 		}
 		else
 		{
 			spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
+				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler.is_fluid(formulation()), use_avg_pressure);
 		}
 
@@ -63,7 +66,12 @@ namespace polyfem
 			logger().debug("Solver error: {}", error);
 
 		x.conservativeResize(x.size() - n_lagrange_multiplier);
-		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
+		if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
+		{
+			periodic_to_full(full_size, x, sol);
+		}
+		else
+			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
 		if (assembler.is_mixed(formulation()))
 			sol_to_pressure();

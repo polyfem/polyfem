@@ -1,12 +1,15 @@
 {
     "geometry": [
         {
-            "mesh": "square2.msh",
-            "n_refs": 0
+            "mesh": "square3.msh",
+            "n_refs": 2
         }
     ],
     "space": {
-        "discr_order": 3
+        "advanced": {
+            "periodic_basis": true
+        },
+        "discr_order": 2
     },
     "solver": {
         "linear": {
@@ -31,16 +34,12 @@
     },
     "materials": {
         "type": "LinearElasticity",
-        "lambda": 10,
-        "mu": 11
+        "E": 10,
+        "nu": 0.2
     },
     "output": {
         "paraview": {
-            "file_name": "debug.vtu",
-            "surface": true,
-            "options": {
-                "material": true
-            }
+            "file_name": "debug.vtu"
         },
         "reference": {
             "solution": [

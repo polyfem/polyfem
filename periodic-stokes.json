@@ -1,7 +1,7 @@
 {
     "geometry": [
         {
-            "mesh": "square3.msh",
+            "mesh": "square4.msh",
             "n_refs": 0
         }
     ],
@@ -9,6 +9,7 @@
         "discr_order": 2,
         "pressure_discr_order": 1,
         "advanced": {
+            "periodic_basis": true,
             "quadrature_order": 8
         }
     },
@@ -26,13 +27,11 @@
     },
     "materials": {
         "type": "Stokes",
-        "viscosity": 1,
-        "delta2": 1e-2
+        "viscosity": 1
     },
     "output": {
         "paraview": {
-            "file_name": "debug.vtu",
-            "surface": true
+            "file_name": "debug.vtu"
         },
         "reference": {
             "solution": [
@@ -40,10 +39,10 @@
                 "(exp(-0.8000*pi^2)*(cos(pi)*sin(pi)^3 - cos(2*y*pi)*sin(2*x*pi)*pi^2))/pi^2"
             ],
             "gradient": [
-                0,
-                0,
-                0,
-                0
+                "0",
+                "0",
+                "0",
+                "0"
             ]
         }
     }

@@ -846,12 +846,16 @@ namespace polyfem
 			const int n_bases_,
 			const std::vector<ElementBases> &bases_) const;
 
+		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
+		Eigen::VectorXi periodic_reduce_map;
+
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
 		int remove_pure_neumann_singularity(StiffnessMatrix &A) const;
 		int remove_pure_periodic_singularity(StiffnessMatrix &A) const;
-		
-		// void pure_neumann_lagrange_multiplier(Eigen::MatrixXd &multipliers) const;
 		void pure_periodic_lagrange_multiplier(Eigen::MatrixXd &multipliers) const;
+		int full_to_periodic(StiffnessMatrix &A) const;
+		int full_to_periodic(Eigen::MatrixXd &b, std::vector<int> &nodes) const;
+		void periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic, Eigen::MatrixXd &x_full) const;
 
 		/// compute the errors, not part of solve
 		void compute_errors();
@@ -1136,16 +1140,15 @@ namespace polyfem
 		void homogenization(Eigen::MatrixXd &C_H)
 		{
 			assemble_stiffness_mat();
-			assemble_rhs();
 			solve_homogenization();
 			compute_homogenized_tensor(C_H);
 		}
 		void solve_linear_homogenization();
 		void solve_nonlinear_homogenization();
 
-		double assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &solution, const int i, const int j);
-		void   assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const int i, const int j);
-		void   assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const int i, const int j);
+		double assemble_homogenization_energy(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &test_strain);
+		void   assemble_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &test_strain);
+		void   assemble_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &test_strain);
 
 		void compute_homogenized_tensor(Eigen::MatrixXd &C);
 

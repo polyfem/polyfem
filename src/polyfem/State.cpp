@@ -919,11 +919,9 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-		if (args["boundary_conditions"]["periodic_boundary"])
+		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
 		{
-			Eigen::VectorXi periodic_reduce_map;
-			periodic_reduce_map.setConstant(n_bases, 1, -1);
-			bool no_dirichlet = boundary_nodes.size() == 0;
+			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
 
 			Eigen::VectorXi dependent_map(n_bases);
 			dependent_map.setConstant(-1);
@@ -991,24 +989,30 @@ namespace polyfem
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) < 0)
 				{
-					periodic_reduce_map(i) = independent_dof;
+					for (int d = 0; d < problem_dim; d++)
+						periodic_reduce_map(i * problem_dim + d) = independent_dof * problem_dim + d;
 					independent_dof++;
 					dependent_map(i) = i;
 				}
 
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) >= 0)
-					periodic_reduce_map(i) = periodic_reduce_map(dependent_map(i));
+					for (int d = 0; d < problem_dim; d++)
+						periodic_reduce_map(i * problem_dim + d) = periodic_reduce_map(dependent_map(i) * problem_dim + d);
 
-			for (auto &bs : bases)
-				for (auto &b : bs.bases)
-					for (auto &g : b.global())
-						if (periodic_reduce_map(g.index) != g.index)
+			if (args["space"]["advanced"]["periodic_basis"].get<bool>())
+			{
+				for (auto &bs : bases)
+					for (auto &b : bs.bases)
+						for (auto &g : b.global())
 						{
-							g.index = periodic_reduce_map(g.index);
+							int idx = periodic_reduce_map(g.index * problem_dim) / problem_dim;
+							if (idx != g.index)
+								g.index = idx;
 						}
 
-			n_bases = independent_dof;
+				n_bases = independent_dof;
+			}
 		}
 
 		n_flipped = 0;
@@ -1573,15 +1577,8 @@ void State::build_collision_mesh(
 		logger().info("Assigning rhs...");
 
 		solve_data.rhs_assembler = build_rhs_assembler();
-		if (assembler.is_linear(formulation()) && args["materials"].contains("homogenization") && args["materials"]["homogenization"].get<bool>())
-		{
-			solve_data.rhs_assembler->assemble_homogenization(rhs);
-		}
-		else
-		{
-			solve_data.rhs_assembler->assemble(density, rhs);
-			rhs *= -1;
-		}
+		solve_data.rhs_assembler->assemble(density, rhs);
+		rhs *= -1;
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
