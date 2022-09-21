@@ -1543,6 +1543,12 @@
         "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
     },
     {
+        "pointer": "/solver/optimization_nonlinear/first_grad_norm_tol",
+        "default": 1e-8,
+        "type": "float",
+        "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
+    },
+    {
         "pointer": "/solver/optimization_nonlinear/min_step_size",
         "default": 0,
         "type": "float",

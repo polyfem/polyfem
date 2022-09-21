@@ -349,6 +349,10 @@ namespace polyfem
 				 {"info", info}});
 			if (al_weight > 0)
 				solver_info.back()["weight"] = al_weight;
+			
+			n_linear_solves += info["iterations"].get<int>();
+			n_nonlinear_solves += 1;
+
 			this->save_subsolve(++subsolve_count, t);
 		};
 

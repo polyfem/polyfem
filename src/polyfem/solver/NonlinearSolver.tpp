@@ -76,6 +76,7 @@ namespace cppoptlib
 		}
 		this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 		this->m_current.fDelta = old_energy;
+		this->m_current.xDelta = std::nan("");
 
 		const auto current_g_norm = this->m_stop.gradNorm;
 		this->m_stop.gradNorm = first_grad_norm_tol;
