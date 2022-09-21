@@ -738,6 +738,7 @@ namespace polyfem::output
 		}
 		const int n_bases = state.n_bases;
 		const std::vector<basis::ElementBases> &bases = state.bases;
+		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
 		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
 		const Eigen::MatrixXd &sol = state.sol;
@@ -835,7 +836,10 @@ namespace polyfem::output
 		{
 			Eigen::MatrixXd result;
 			Eigen::VectorXd mises;
-			Evaluator::compute_stress_at_quadrature_points(sol, result, mises);
+			Evaluator::compute_stress_at_quadrature_points(
+				mesh, problem.is_scalar(),
+				bases, gbases, state.disc_orders, state.assembler, state.formulation(),
+				sol, result, mises);
 			std::ofstream out(stress_path);
 			out.precision(20);
 			out << result;
@@ -844,7 +848,10 @@ namespace polyfem::output
 		{
 			Eigen::MatrixXd result;
 			Eigen::VectorXd mises;
-			Evaluator::compute_stress_at_quadrature_points(sol, result, mises);
+			Evaluator::compute_stress_at_quadrature_points(
+				mesh, problem.is_scalar(),
+				bases, gbases, state.disc_orders, state.assembler, state.formulation(),
+				sol, result, mises);
 			std::ofstream out(mises_path);
 			out.precision(20);
 			out << mises;
@@ -1051,14 +1058,18 @@ namespace polyfem::output
 				Eigen::MatrixXd pt(1, bc.cols() - 1);
 				for (int d = 1; d < bc.cols(); ++d)
 					pt(d - 1) = bc(d);
-				Evaluator::interpolate_at_local_vals(el_id, pt, tmp, tmp_grad);
+				Evaluator::interpolate_at_local_vals(
+					mesh, problem.is_scalar(), bases, gbases,
+					el_id, pt, sol, tmp, tmp_grad);
 
 				res.row(i) = tmp;
 				res_grad.row(i) = tmp_grad;
 
 				if (assembler.is_mixed(formulation))
 				{
-					Evaluator::interpolate_at_local_vals(el_id, 1, pressure_bases, pt, pressure, tmp_p, tmp_grad_p);
+					Evaluator::interpolate_at_local_vals(
+						mesh, 1, pressure_bases, gbases,
+						el_id, pt, pressure, tmp_p, tmp_grad_p);
 					res_p.row(i) = tmp_p;
 					res_grad_p.row(i) = tmp_grad_p;
 				}
@@ -1083,7 +1094,10 @@ namespace polyfem::output
 			}
 		}
 
-		Evaluator::interpolate_function(points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
+		Evaluator::interpolate_function(
+			mesh, problem.is_scalar(), bases, state.disc_orders,
+			state.polys, state.polys_3d, ref_element_sampler,
+			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
 
 		if (obstacle.n_vertices() > 0)
 		{
@@ -1139,7 +1153,10 @@ namespace polyfem::output
 				}
 
 				Eigen::MatrixXd interp_vel;
-				Evaluator::interpolate_function(points.rows(), vel, interp_vel, opts.use_sampler, opts.boundary_only);
+				Evaluator::interpolate_function(
+					mesh, problem.is_scalar(), bases, state.disc_orders,
+					state.polys, state.polys_3d, ref_element_sampler,
+					points.rows(), vel, interp_vel, opts.use_sampler, opts.boundary_only);
 				if (obstacle.n_vertices() > 0)
 				{
 					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
@@ -1169,7 +1186,10 @@ namespace polyfem::output
 				}
 
 				Eigen::MatrixXd interp_acc;
-				Evaluator::interpolate_function(points.rows(), acc, interp_acc, opts.use_sampler, opts.boundary_only);
+				Evaluator::interpolate_function(
+					mesh, problem.is_scalar(), bases, state.disc_orders,
+					state.polys, state.polys_3d, ref_element_sampler,
+					points.rows(), acc, interp_acc, opts.use_sampler, opts.boundary_only);
 				if (obstacle.n_vertices() > 0)
 				{
 					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
@@ -1194,7 +1214,10 @@ namespace polyfem::output
 		if (assembler.is_mixed(formulation))
 		{
 			Eigen::MatrixXd interp_p;
-			Evaluator::interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, opts.use_sampler, opts.boundary_only);
+			Evaluator::interpolate_function(
+				mesh, 1,
+				pressure_bases, state.disc_orders, state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), pressure, interp_p, opts.use_sampler, opts.boundary_only);
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1233,7 +1256,11 @@ namespace polyfem::output
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd vals, tvals;
-			Evaluator::compute_scalar_value(points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
+			Evaluator::compute_scalar_value(
+				mesh, problem.is_scalar(), bases, gbases,
+				state.disc_orders, state.polys, state.polys_3d,
+				state.assembler, state.formulation(),
+				ref_element_sampler, points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1248,7 +1275,11 @@ namespace polyfem::output
 
 			if (opts.solve_export_to_file)
 			{
-				Evaluator::compute_tensor_value(points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
+				Evaluator::compute_tensor_value(
+					mesh, problem.is_scalar(), bases, gbases,
+					state.disc_orders, state.polys, state.polys_3d,
+					state.assembler, state.formulation(),
+					ref_element_sampler, points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
 				for (int i = 0; i < tvals.cols(); ++i)
 				{
 					Eigen::MatrixXd tmp = tvals.col(i);
@@ -1266,7 +1297,11 @@ namespace polyfem::output
 
 			if (!opts.use_spline)
 			{
-				Evaluator::average_grad_based_function(points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
+				Evaluator::average_grad_based_function(
+					mesh, problem.is_scalar(), bases, gbases,
+					state.disc_orders, state.polys, state.polys_3d,
+					state.assembler, state.formulation(),
+					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
 				if (obstacle.n_vertices() > 0)
 				{
 					vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
@@ -1533,11 +1568,15 @@ namespace polyfem::output
 			}
 
 			const int el_index = boundary_vis_elements_ids(i);
-			Evaluator::interpolate_at_local_vals(el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
+			Evaluator::interpolate_at_local_vals(
+				mesh, problem.is_scalar(), bases, gbases,
+				el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
 			assert(lsol.size() == actual_dim);
 			if (assembler.is_mixed(formulation))
 			{
-				Evaluator::interpolate_at_local_vals(el_index, 1, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
+				Evaluator::interpolate_at_local_vals(
+					mesh, 1, pressure_bases, gbases,
+					el_index, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
 				assert(lp.size() == 1);
 				interp_p(i) = lp(0);
 			}
@@ -1832,7 +1871,10 @@ namespace polyfem::output
 		}
 
 		Eigen::MatrixXd fun;
-		Evaluator::interpolate_function(pts_index, sol, fun, /*use_sampler*/ true, false);
+		Evaluator::interpolate_function(
+			mesh, problem.is_scalar(), state.bases, state.disc_orders,
+			state.polys, state.polys_3d, ref_element_sampler,
+			pts_index, sol, fun, /*use_sampler*/ true, false);
 
 		Eigen::MatrixXd exact_fun, err;
 
@@ -1868,7 +1910,11 @@ namespace polyfem::output
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd scalar_val;
-			Evaluator::compute_scalar_value(pts_index, sol, scalar_val, /*use_sampler*/ true, false);
+			Evaluator::compute_scalar_value(
+				mesh, problem.is_scalar(), state.bases, gbases,
+				state.disc_orders, state.polys, state.polys_3d,
+				state.assembler, state.formulation(),
+				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
 			writer.add_field("scalar_value", scalar_val);
 		}
 

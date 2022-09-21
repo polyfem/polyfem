@@ -1,10 +1,7 @@
 #include "Evaluator.hpp"
 
-#include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
-
-#include <polyfem/assembler/Problem.hpp>
 
 #include <polyfem/quadrature/HexQuadrature.hpp>
 #include <polyfem/quadrature/QuadQuadrature.hpp>
@@ -12,7 +9,6 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/utils/RefElementSampler.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -154,7 +150,7 @@ namespace polyfem::output
 
 	void Evaluator::interpolate_boundary_function(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::MatrixXd &pts,
@@ -181,7 +177,7 @@ namespace polyfem::output
 		Eigen::VectorXd weights;
 
 		int actual_dim = 1;
-		if (!problem.is_scalar())
+		if (!is_problem_scalar)
 			actual_dim = 3;
 
 		igl::AABB<Eigen::MatrixXd, 3> tree;
@@ -255,7 +251,7 @@ namespace polyfem::output
 
 	void Evaluator::interpolate_boundary_function_at_vertices(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::MatrixXd &pts,
@@ -286,7 +282,7 @@ namespace polyfem::output
 		Eigen::MatrixXd points;
 
 		int actual_dim = 1;
-		if (!problem.is_scalar())
+		if (!is_problem_scalar)
 			actual_dim = 3;
 
 		igl::AABB<Eigen::MatrixXd, 3> tree;
@@ -364,6 +360,12 @@ namespace polyfem::output
 	}
 
 	void Evaluator::interpolate_boundary_tensor_function(
+		const mesh::Mesh &mesh,
+		const bool is_problem_scalar,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const assembler::AssemblerUtils &assembler,
+		const std::string &formulation,
 		const Eigen::MatrixXd &pts,
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
@@ -373,12 +375,16 @@ namespace polyfem::output
 		Eigen::MatrixXd &mises,
 		const bool skip_orientation)
 	{
-		interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result, stresses, mises, skip_orientation);
+		interpolate_boundary_tensor_function(
+			mesh, is_problem_scalar, bases, gbases,
+			assembler, formulation,
+			pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()),
+			compute_avg, result, stresses, mises, skip_orientation);
 	}
 
 	void Evaluator::interpolate_boundary_tensor_function(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const assembler::AssemblerUtils &assembler,
@@ -413,14 +419,14 @@ namespace polyfem::output
 			logger().error("This function works only on volumetric meshes!");
 			return;
 		}
-		if (problem.is_scalar())
+		if (is_problem_scalar)
 		{
 			logger().error("Define a tensor problem!");
 			return;
 		}
 
 		assert(mesh.is_volume());
-		assert(!problem.is_scalar());
+		assert(!is_problem_scalar);
 
 		const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
@@ -564,13 +570,15 @@ namespace polyfem::output
 
 	void Evaluator::average_grad_based_function(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
-		const int n_bases,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::AssemblerUtils &assembler,
 		const std::string &formulation,
+		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result_scalar,
@@ -584,14 +592,15 @@ namespace polyfem::output
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (problem.is_scalar())
+		if (is_problem_scalar)
 		{
 			logger().error("Define a tensor problem!");
 			return;
 		}
 
-		assert(!problem.is_scalar());
+		assert(!is_problem_scalar);
 		const int actual_dim = mesh.dimension();
+		const int n_bases = bases.size(); // TODO: check me
 
 		Eigen::MatrixXd avg_scalar(n_bases, 1);
 		// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
@@ -649,16 +658,16 @@ namespace polyfem::output
 
 		avg_scalar.array() /= areas.array();
 
-		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar, use_sampler, boundary_only);
+		interpolate_function(mesh, 1, bases, disc_orders, polys, polys_3d, sampler, n_points,
+							 avg_scalar, result_scalar, use_sampler, boundary_only);
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
 	}
 
 	void Evaluator::compute_vertex_values(
 		const mesh::Mesh &mesh,
-		const std::vector<basis::ElementBases> &bases,
-		const utils::RefElementSampler &sampler,
 		int actual_dim,
 		const std::vector<basis::ElementBases> &basis,
+		const utils::RefElementSampler &sampler,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result)
 	{
@@ -740,7 +749,7 @@ namespace polyfem::output
 
 	void Evaluator::compute_stress_at_quadrature_points(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
@@ -760,14 +769,14 @@ namespace polyfem::output
 			logger().error("Solve the problem first!");
 			return;
 		}
-		if (problem.is_scalar())
+		if (is_problem_scalar)
 		{
 			logger().error("Define a tensor problem!");
 			return;
 		}
 
 		const int actual_dim = mesh.dimension();
-		assert(!problem.is_scalar());
+		assert(!is_problem_scalar);
 
 		Eigen::MatrixXd local_val, local_stress, local_mises;
 
@@ -834,9 +843,12 @@ namespace polyfem::output
 
 	void Evaluator::interpolate_function(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
-		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
@@ -844,20 +856,22 @@ namespace polyfem::output
 		const bool boundary_only)
 	{
 		int actual_dim = 1;
-		if (!problem.is_scalar())
+		if (!is_problem_scalar)
 			actual_dim = mesh.dimension();
-		interpolate_function(n_points, actual_dim, bases, fun, result, use_sampler, boundary_only);
+		interpolate_function(mesh, actual_dim, bases, disc_orders,
+							 polys, polys_3d, sampler, n_points,
+							 fun, result, use_sampler, boundary_only);
 	}
 
 	void Evaluator::interpolate_function(
 		const mesh::Mesh &mesh,
-		const int n_points,
 		const int actual_dim,
 		const std::vector<basis::ElementBases> &basis,
 		const Eigen::VectorXi &disc_orders,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const utils::RefElementSampler &sampler,
+		const int n_points,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
 		const bool use_sampler,
@@ -946,8 +960,9 @@ namespace polyfem::output
 
 	void Evaluator::interpolate_at_local_vals(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
 		const int el_index,
 		const Eigen::MatrixXd &local_pts,
 		const Eigen::MatrixXd &fun,
@@ -955,17 +970,18 @@ namespace polyfem::output
 		Eigen::MatrixXd &result_grad)
 	{
 		int actual_dim = 1;
-		if (!problem.is_scalar())
+		if (!is_problem_scalar)
 			actual_dim = mesh.dimension();
-		interpolate_at_local_vals(el_index, actual_dim, bases, local_pts, fun, result, result_grad);
+		interpolate_at_local_vals(mesh, actual_dim, bases, gbases, el_index,
+								  local_pts, fun, result, result_grad);
 	}
 
 	void Evaluator::interpolate_at_local_vals(
 		const mesh::Mesh &mesh,
-		const int el_index,
 		const int actual_dim,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
+		const int el_index,
 		const Eigen::MatrixXd &local_pts,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
@@ -1016,7 +1032,7 @@ namespace polyfem::output
 
 	bool Evaluator::check_scalar_value(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
@@ -1040,7 +1056,7 @@ namespace polyfem::output
 			return true;
 		}
 
-		assert(!problem.is_scalar());
+		assert(!is_problem_scalar);
 
 		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
@@ -1101,7 +1117,7 @@ namespace polyfem::output
 
 	void Evaluator::compute_scalar_value(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
@@ -1109,8 +1125,8 @@ namespace polyfem::output
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::AssemblerUtils &assembler,
 		const std::string &formulation,
-		const int n_points,
 		const utils::RefElementSampler &sampler,
+		const int n_points,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
 		const bool use_sampler,
@@ -1128,7 +1144,7 @@ namespace polyfem::output
 		}
 
 		result.resize(n_points, 1);
-		assert(!problem.is_scalar());
+		assert(!is_problem_scalar);
 
 		int index = 0;
 
@@ -1189,7 +1205,7 @@ namespace polyfem::output
 
 	void Evaluator::compute_tensor_value(
 		const mesh::Mesh &mesh,
-		const assembler::Problem &problem,
+		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
@@ -1197,8 +1213,8 @@ namespace polyfem::output
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::AssemblerUtils &assembler,
 		const std::string &formulation,
-		const int n_points,
 		const utils::RefElementSampler &sampler,
+		const int n_points,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
 		const bool use_sampler,
@@ -1217,7 +1233,7 @@ namespace polyfem::output
 
 		const int actual_dim = mesh.dimension();
 		result.resize(n_points, actual_dim * actual_dim);
-		assert(!problem.is_scalar());
+		assert(!is_problem_scalar);
 
 		int index = 0;
 
