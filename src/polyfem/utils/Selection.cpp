@@ -271,9 +271,6 @@ namespace polyfem::utils
 		if (data_.empty())
 			return SpecifiedSelection::inside(p_id, vs, p);
 
-		if (std::find(vs.begin(), vs.end(), 418) != vs.end())
-			std::cout << p << std::endl;
-
 		std::vector<int> tmp;
 		for (const auto &t : data_)
 		{
