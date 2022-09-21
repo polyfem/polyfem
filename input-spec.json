@@ -2175,6 +2175,18 @@
         "doc": "Values of pressure Neumann boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
+        "type": "list",
+        "default": [true, true, true],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": "value"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",

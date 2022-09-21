@@ -420,9 +420,6 @@ namespace polyfem
 					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
 
-		/// loads a febio file, uses args_in for default, [DEPRECATED]
-		void load_febio(const std::string &path, const json &args_in);
-
 		/// loads the mesh from a geogram mesh
 		/// @param[in] meshin geo mesh
 		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id

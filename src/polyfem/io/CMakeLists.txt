@@ -1,6 +1,4 @@
 set(SOURCES
-	FEBioReader.cpp
-	FEBioReader.hpp
 	MatrixIO.cpp
 	MatrixIO.hpp
 	MshReader.cpp
