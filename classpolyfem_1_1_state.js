@@ -54,7 +54,6 @@ var classpolyfem_1_1_state =
     [ "is_contact_enabled", "classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee", null ],
     [ "is_obstacle_vertex", "classpolyfem_1_1_state.html#acd8e8dc2e05969c2e9901ba03bfcb48d", null ],
     [ "iso_parametric", "classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f", null ],
-    [ "load_febio", "classpolyfem_1_1_state.html#a9c5014836e7b662f7ec64eb8c844d7f0", null ],
     [ "load_mesh", "classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f", null ],
     [ "load_mesh", "classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497", null ],
     [ "load_mesh", "classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9", null ],

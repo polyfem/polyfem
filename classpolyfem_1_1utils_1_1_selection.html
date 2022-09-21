@@ -138,14 +138,14 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2960580490c072a4815a6a3fc2942570"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a2960580490c072a4815a6a3fc2942570">Selection</a> (const int <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a>)</td></tr>
+<tr class="memitem:a2960580490c072a4815a6a3fc2942570"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a2960580490c072a4815a6a3fc2942570">Selection</a> (const int <a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a1a3f720e26ab2acc77b21f2bd8918e00">id</a>)</td></tr>
 <tr class="separator:a2960580490c072a4815a6a3fc2942570"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb6aaafa0f609198f966c6bce2442894"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894">~Selection</a> ()</td></tr>
 <tr class="separator:afb6aaafa0f609198f966c6bce2442894"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82d13d43d8672fdc8ef6c0d8d234884a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a82d13d43d8672fdc8ef6c0d8d234884a">inside</a> (const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) const =0</td></tr>
-<tr class="separator:a82d13d43d8672fdc8ef6c0d8d234884a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd627ad856653ef2b453bc69fdc25c0f"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#abd627ad856653ef2b453bc69fdc25c0f">id</a> (const size_t element_id) const</td></tr>
-<tr class="separator:abd627ad856653ef2b453bc69fdc25c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9872fc697b3a7377f3b73ac0e761a6da"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a9872fc697b3a7377f3b73ac0e761a6da">inside</a> (const size_t p_id, const std::vector&lt; int &gt; &amp;vs, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p) const =0</td></tr>
+<tr class="separator:a9872fc697b3a7377f3b73ac0e761a6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3f720e26ab2acc77b21f2bd8918e00"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_selection.html#a1a3f720e26ab2acc77b21f2bd8918e00">id</a> (const size_t element_id, const std::vector&lt; int &gt; &amp;vs) const</td></tr>
+<tr class="separator:a1a3f720e26ab2acc77b21f2bd8918e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -321,11 +321,11 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Shared pointer to selection object. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00014">14</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00016">16</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00045">build_selections()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_selection_8cpp_source.html#l00047">build_selections()</a>.</p>
 
 </div>
 </div>
@@ -380,16 +380,16 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Vector of selection objects. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00045">45</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_selection_8cpp_source.html#l00047">47</a> of file <a class="el" href="_selection_8cpp_source.html">Selection.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00014">build()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00016">build()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00021">polyfem::mesh::read_fem_mesh()</a>.</p>
 
 </div>
 </div>
-<a id="abd627ad856653ef2b453bc69fdc25c0f" name="abd627ad856653ef2b453bc69fdc25c0f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd627ad856653ef2b453bc69fdc25c0f">&#9670;&nbsp;</a></span>id()</h2>
+<a id="a1a3f720e26ab2acc77b21f2bd8918e00" name="a1a3f720e26ab2acc77b21f2bd8918e00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3f720e26ab2acc77b21f2bd8918e00">&#9670;&nbsp;</a></span>id()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -401,8 +401,18 @@ Protected Attributes</h2></td></tr>
           <td class="memname">virtual int polyfem::utils::Selection::id </td>
           <td>(</td>
           <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>element_id</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>element_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -412,7 +422,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a227e40188af18bd7f9c2cca7d566b604">polyfem::utils::SpecifiedSelection</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a83240367d7045dc5c665896d950d2be9">polyfem::utils::SpecifiedSelection</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html#a4392e43b81706b477113ae290750d433">polyfem::utils::FileSelection</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00021">21</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
@@ -420,8 +430,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a82d13d43d8672fdc8ef6c0d8d234884a" name="a82d13d43d8672fdc8ef6c0d8d234884a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82d13d43d8672fdc8ef6c0d8d234884a">&#9670;&nbsp;</a></span>inside()</h2>
+<a id="a9872fc697b3a7377f3b73ac0e761a6da" name="a9872fc697b3a7377f3b73ac0e761a6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9872fc697b3a7377f3b73ac0e761a6da">&#9670;&nbsp;</a></span>inside()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -432,9 +442,25 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">virtual bool polyfem::utils::Selection::inside </td>
           <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>p_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
-          <td class="paramname"><em>p</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -444,7 +470,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1utils_1_1_box_selection.html#a73ae87b59ff91f533ae3b1a2cc14f4bf">polyfem::utils::BoxSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a50cf1b2de9921c91b8ff6f473678b7eb">polyfem::utils::SphereSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#a0f6aae133a3232163eef53fda49dcb92">polyfem::utils::AxisPlaneSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_plane_selection.html#ac5020fe4c1e9b4346072c9975eb7fee2">polyfem::utils::PlaneSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_uniform_selection.html#ac56d4f0438e1eaaf7472d11c2c81ae7d">polyfem::utils::UniformSelection</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a335cab61e5a5ba718c667f54561ff975">polyfem::utils::SpecifiedSelection</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1utils_1_1_box_selection.html#a16440b3b1be2a8eb899add7f33e73f8a">polyfem::utils::BoxSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_sphere_selection.html#a555a01f948b10be918c6a9b249473dd4">polyfem::utils::SphereSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html#afab3b78d624e721221cc4114fb4fdac1">polyfem::utils::AxisPlaneSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_plane_selection.html#a83192d9c6957680676eb247402ddd2a6">polyfem::utils::PlaneSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_uniform_selection.html#ad20004a6a95544fa6de8c29c490441ed">polyfem::utils::UniformSelection</a>, <a class="el" href="classpolyfem_1_1utils_1_1_specified_selection.html#a2384e4784df027e11d893a55e618949a">polyfem::utils::SpecifiedSelection</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html#abfb36ed9c86e2a7f1b1da35ef1579eda">polyfem::utils::FileSelection</a>.</p>
 
 </div>
 </div>
@@ -471,7 +497,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_selection_8hpp_source.html#l00046">46</a> of file <a class="el" href="_selection_8hpp_source.html">Selection.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_selection_8hpp_source.html#l00021">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00122">polyfem::utils::SphereSelection::SphereSelection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_selection_8hpp_source.html#l00021">id()</a>, and <a class="el" href="_selection_8cpp_source.html#l00124">polyfem::utils::SphereSelection::SphereSelection()</a>.</p>
 
 </div>
 </div>

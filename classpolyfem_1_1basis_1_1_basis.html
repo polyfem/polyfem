@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_basis.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ad2c9c00a959d15e6aad620274e04dfeb"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a></td></tr>
+<tr class="memitem:ad2c9c00a959d15e6aad620274e04dfeb"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">Fun</a></td></tr>
 <tr class="separator:ad2c9c00a959d15e6aad620274e04dfeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -142,10 +142,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a148dcc769638cbc1331703378776efe8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8">is_complete</a> () const</td></tr>
 <tr class="memdesc:a148dcc769638cbc1331703378776efe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if global is empty or not.  <a href="classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8">More...</a><br /></td></tr>
 <tr class="separator:a148dcc769638cbc1331703378776efe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a426fd294702d85350db2bdaab6536bef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">eval_basis</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
+<tr class="memitem:a426fd294702d85350db2bdaab6536bef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">eval_basis</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="memdesc:a426fd294702d85350db2bdaab6536bef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates the basis function over a set of uv parameters.  <a href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">More...</a><br /></td></tr>
 <tr class="separator:a426fd294702d85350db2bdaab6536bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">eval_grad</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>) const</td></tr>
+<tr class="memitem:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">eval_grad</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="memdesc:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the gradient of the basis function.  <a href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">More...</a><br /></td></tr>
 <tr class="separator:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88b90af0c63d52f2c91fe97a63c540ce"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_local2_global.html">Local2Global</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a88b90af0c63d52f2c91fe97a63c540ce">global</a> () const</td></tr>
@@ -194,7 +194,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::function&lt;void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&gt; <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">polyfem::basis::Basis::Fun</a></td>
+          <td class="memname">typedef std::function&lt;void(const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&gt; <a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad2c9c00a959d15e6aad620274e04dfeb">polyfem::basis::Basis::Fun</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

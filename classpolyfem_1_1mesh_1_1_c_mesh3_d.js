@@ -18,6 +18,7 @@ var classpolyfem_1_1mesh_1_1_c_mesh3_d =
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a626ac6f8128ec4c7cf2f504690d92fa0", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a4fbd95de6515c541ec5772e705b99306", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9aec0f93c9198a676982a968fe25a75a", null ],
+    [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a5cbcebd5f099b06f64077417e38c71d1", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#abcd05d7fc8bb6f557ed3d7e4aca99bf5", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ae6ea04faec176d822e71c9a5ad7e6048", null ],
     [ "edge_barycenter", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a100dda92f0537ef1d0b97d0d6f602468", null ],

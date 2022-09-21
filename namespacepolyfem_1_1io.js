@@ -1,6 +1,5 @@
 var namespacepolyfem_1_1io =
 [
-    [ "FEBioReader", "classpolyfem_1_1io_1_1_f_e_bio_reader.html", null ],
     [ "MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", "classpolyfem_1_1io_1_1_o_b_j_reader" ],
     [ "OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", "classpolyfem_1_1io_1_1_o_b_j_writer" ],

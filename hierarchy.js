@@ -47,7 +47,6 @@ var hierarchy =
     [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", null ],
     [ "polyfem::basis::FEBasis2d", "classpolyfem_1_1basis_1_1_f_e_basis2d.html", null ],
     [ "polyfem::basis::FEBasis3d", "classpolyfem_1_1basis_1_1_f_e_basis3d.html", null ],
-    [ "polyfem::io::FEBioReader", "classpolyfem_1_1io_1_1_f_e_bio_reader.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],

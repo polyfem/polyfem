@@ -154,11 +154,11 @@ Variables</h2></td></tr>
 <tr class="separator:a5d0406ad9fe83a8dda0fff37204faf2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0049f6e47cc2d7c900d43b6630ae21d1"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a0049f6e47cc2d7c900d43b6630ae21d1">suffix</a> = 2 else &quot;_3d&quot;</td></tr>
 <tr class="separator:a0049f6e47cc2d7c900d43b6630ae21d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53832db9881fbd26bde33ee31c8f36da"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a53832db9881fbd26bde33ee31c8f36da">unique_nodes</a> = &quot;void q_nodes&quot; + suffix + &quot;(const int q, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td></tr>
+<tr class="memitem:a53832db9881fbd26bde33ee31c8f36da"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a53832db9881fbd26bde33ee31c8f36da">unique_nodes</a> = &quot;void q_nodes&quot; + suffix + &quot;(const int q, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td></tr>
 <tr class="separator:a53832db9881fbd26bde33ee31c8f36da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab70be99749abd7ca478d05e36c1966c1"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#ab70be99749abd7ca478d05e36c1966c1">unique_fun</a> = &quot;void q_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td></tr>
+<tr class="memitem:ab70be99749abd7ca478d05e36c1966c1"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#ab70be99749abd7ca478d05e36c1966c1">unique_fun</a> = &quot;void q_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td></tr>
 <tr class="separator:ab70be99749abd7ca478d05e36c1966c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f3e448e91dbbe58030ded86640c3f44"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a1f3e448e91dbbe58030ded86640c3f44">dunique_fun</a> = &quot;void q_grad_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td></tr>
+<tr class="memitem:a1f3e448e91dbbe58030ded86640c3f44"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a1f3e448e91dbbe58030ded86640c3f44">dunique_fun</a> = &quot;void q_grad_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td></tr>
 <tr class="separator:a1f3e448e91dbbe58030ded86640c3f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abaec2637600b32655edb27cb3a3d103d"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#abaec2637600b32655edb27cb3a3d103d">vertices</a> = [[0, 0], [1, 0], [1, 1], [0, 1]]</td></tr>
 <tr class="separator:abaec2637600b32655edb27cb3a3d103d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,7 +192,7 @@ Variables</h2></td></tr>
 <tr class="separator:a461c4f7d0b94ac6bafc442a056269dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a282a463b5587ae6454d1062fea47d298"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a282a463b5587ae6454d1062fea47d298">func</a> = &quot;void q_&quot; + orderN + &quot;_basis_value&quot; + suffix + &quot;(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;result_0)&quot;</td></tr>
 <tr class="separator:a282a463b5587ae6454d1062fea47d298"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c6e457665fa6100009eadea43892cd9"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a3c6e457665fa6100009eadea43892cd9">dfunc</a> = &quot;void q_&quot; + orderN + &quot;_basis_grad_value&quot; + suffix + &quot;(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td></tr>
+<tr class="memitem:a3c6e457665fa6100009eadea43892cd9"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a3c6e457665fa6100009eadea43892cd9">dfunc</a> = &quot;void q_&quot; + orderN + &quot;_basis_grad_value&quot; + suffix + &quot;(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td></tr>
 <tr class="separator:a3c6e457665fa6100009eadea43892cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afee1ddc28f4ec93a9aff452e3570b6b4"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#afee1ddc28f4ec93a9aff452e3570b6b4">base</a> = &quot;auto <a class="el" href="namespaceq__bases.html#a2dfc98241b69f9635bb163daa417e7a7">x</a>=uv.col(0).array();\nauto <a class="el" href="namespaceq__bases.html#a1f45e69c4bb133f825d26bce9f5b92b2">y</a>=uv.col(1).array();&quot;</td></tr>
 <tr class="separator:afee1ddc28f4ec93a9aff452e3570b6b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -343,7 +343,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string q_bases.dfunc = &quot;void q_&quot; + orderN + &quot;_basis_grad_value&quot; + suffix + &quot;(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td>
+          <td class="memname">string q_bases.dfunc = &quot;void q_&quot; + orderN + &quot;_basis_grad_value&quot; + suffix + &quot;(const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -375,7 +375,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string q_bases.dunique_fun = &quot;void q_grad_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td>
+          <td class="memname">string q_bases.dunique_fun = &quot;void q_grad_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -679,7 +679,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string q_bases.unique_fun = &quot;void q_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td>
+          <td class="memname">string q_bases.unique_fun = &quot;void q_basis_value&quot; + suffix + &quot;(const int q, const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -695,7 +695,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string q_bases.unique_nodes = &quot;void q_nodes&quot; + suffix + &quot;(const int q, Eigen::MatrixXd &amp;<a class="el" href="_f_e_bio_reader_8cpp.html#ab7fcab8d7927b94649cc1c4214669785">val</a>)&quot;</td>
+          <td class="memname">string q_bases.unique_nodes = &quot;void q_nodes&quot; + suffix + &quot;(const int q, Eigen::MatrixXd &amp;<a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
