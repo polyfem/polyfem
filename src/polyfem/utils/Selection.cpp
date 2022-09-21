@@ -5,6 +5,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
+
 #include <memory>
 
 namespace polyfem::utils
@@ -99,7 +101,7 @@ namespace polyfem::utils
 		}
 	}
 
-	bool BoxSelection::inside(const RowVectorNd &p) const
+	bool BoxSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(bbox_[0].size() == p.size());
 		assert(bbox_[1].size() == p.size());
@@ -139,7 +141,7 @@ namespace polyfem::utils
 		id_ = selection["id"];
 	}
 
-	bool SphereSelection::inside(const RowVectorNd &p) const
+	bool SphereSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(center_.size() == p.size());
 
@@ -177,7 +179,7 @@ namespace polyfem::utils
 		}
 	}
 
-	bool AxisPlaneSelection::inside(const RowVectorNd &p) const
+	bool AxisPlaneSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		const double v = p[std::abs(axis_) - 1];
 
@@ -206,7 +208,7 @@ namespace polyfem::utils
 			point_ = normal_ * selection.value("offset", 0.0);
 	}
 
-	bool PlaneSelection::inside(const RowVectorNd &p) const
+	bool PlaneSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(p.size() == normal_.size());
 		const RowVectorNd pp = p - point_;
@@ -222,7 +224,7 @@ namespace polyfem::utils
 	{
 	}
 
-	int SpecifiedSelection::id(const size_t element_id) const
+	int SpecifiedSelection::id(const size_t element_id, const std::vector<int> &vs) const
 	{
 		return ids_.at(element_id);
 	}
@@ -233,21 +235,65 @@ namespace polyfem::utils
 		const std::string &file_path,
 		const int id_offset)
 	{
-		std::ifstream file(file_path);
-		if (!file.is_open())
+		Eigen::MatrixXi mat;
+		const auto ok = io::read_matrix(file_path, mat);
+		if (!ok)
 		{
 			logger().error("Unable to open selection file \"{}\"!", file_path);
 			return;
 		}
 
-		std::string line;
-		while (std::getline(file, line))
+		if (mat.cols() == 1)
 		{
-			if (line.empty())
-				continue;
-			int id;
-			std::istringstream(line) >> id;
-			this->ids_.push_back(id + id_offset);
+			for (int k = 0; k < mat.size(); ++k)
+				this->ids_.push_back(mat(k) + id_offset);
 		}
+		else
+		{
+			data_.resize(mat.rows());
+
+			for (int i = 0; i < mat.rows(); ++i)
+			{
+				data_[i].first = mat(i, 0) + id_offset;
+
+				for (int j = 1; j < mat.cols(); ++j)
+				{
+					data_[i].second.push_back(mat(i, j));
+				}
+
+				std::sort(data_[i].second.begin(), data_[i].second.end());
+			}
+		}
+	}
+
+	bool FileSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
+	{
+		if (data_.empty())
+			return SpecifiedSelection::inside(p_id, vs, p);
+
+		if (std::find(vs.begin(), vs.end(), 418) != vs.end())
+			std::cout << p << std::endl;
+
+		std::vector<int> tmp;
+		for (const auto &t : data_)
+		{
+			if (t.second == vs)
+				return true;
+		}
+		return false;
+	}
+
+	int FileSelection::id(const size_t element_id, const std::vector<int> &vs) const
+	{
+		if (data_.empty())
+			return SpecifiedSelection::id(element_id, vs);
+
+		std::vector<int> tmp;
+		for (const auto &t : data_)
+		{
+			if (t.second == vs)
+				return t.first;
+		}
+		return -1;
 	}
 } // namespace polyfem::utils

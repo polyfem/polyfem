@@ -143,13 +143,15 @@ namespace polyfem::mesh
 		std::vector<std::shared_ptr<Selection>> surface_selections =
 			Selection::build_selections(j_mesh["surface_selection"], bbox, root_path);
 
-		mesh->compute_boundary_ids([&](const size_t face_id, const RowVectorNd &p, bool is_boundary) {
+		mesh->compute_boundary_ids([&](const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p, bool is_boundary) {
 			if (!is_boundary)
 				return -1;
 
 			for (const auto &selection : surface_selections)
-				if (selection->inside(p))
-					return selection->id(face_id);
+			{
+				if (selection->inside(p_id, vs, p))
+					return selection->id(p_id, vs);
+			}
 			return std::numeric_limits<int>::max(); // default for no selected boundary
 		});
 
@@ -181,8 +183,11 @@ namespace polyfem::mesh
 
 			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
 				for (const auto &selection : volume_selections)
-					if (selection->inside(p))
-						return selection->id(cell_id);
+				{
+					// TODO add vs to compute_body_ids
+					if (selection->inside(cell_id, {}, p))
+						return selection->id(cell_id, {});
+				}
 				return 0;
 			});
 		}
