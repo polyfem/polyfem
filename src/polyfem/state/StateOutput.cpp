@@ -3,6 +3,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
+#include <filesystem>
+
 namespace polyfem
 {
 	std::string State::root_path() const
