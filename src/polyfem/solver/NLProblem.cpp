@@ -1,5 +1,7 @@
 #include "NLProblem.hpp"
 
+#include <polyfem/io/OBJWriter.hpp>
+
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
@@ -98,6 +100,15 @@ namespace polyfem::solver
 	void NLProblem::post_step(const int iter_num, const TVector &x)
 	{
 		FullNLProblem::post_step(iter_num, reduced_to_full(x));
+
+		if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
+		{
+			const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(x), state_.mesh->dimension());
+			io::OBJWriter::write(
+				state_.resolve_output_path(fmt::format("nonlinear_solve_iter{:03d}.obj", iter_num)),
+				state_.collision_mesh.displace_vertices(displacements),
+				state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		}
 	}
 
 	void NLProblem::set_apply_DBC(const TVector &x, const bool val)
