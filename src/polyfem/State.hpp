@@ -85,7 +85,11 @@ namespace polyfem
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
+		/// @brief update the barrier stiffness for the forms
+		/// @param x current solution
 		void updated_barrier_stiffness(const Eigen::VectorXd &x);
+
+		/// @brief updates the dt inside the different forms
 		void update_dt();
 	};
 
@@ -278,7 +282,7 @@ namespace polyfem
 		//---------------------------------------------------
 
 	public:
-		/// solves the proble, step 5
+		/// solves the problems
 		void solve_problem();
 		/// solves the problem, call other methods
 		void solve()
@@ -433,12 +437,14 @@ namespace polyfem
 		{
 			mesh->compute_boundary_ids(boundary_marker);
 		}
+
 		/// set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		/// @param[in] boundary_marker function from face/edge barycenter and a flag if the face/edge is boundary that returns the sideset id
 		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker)
 		{
 			mesh->compute_boundary_ids(boundary_marker);
 		}
+
 		/// set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		/// @param[in] boundary_marker function from face/edge vertices and a flag if the face/edge is boundary that returns the sideset id
 		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker)
@@ -476,6 +482,9 @@ namespace polyfem
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
 		}
 
+		/// @brief does the simulation has contact
+		///
+		/// @return true/false
 		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
 
 		/// stores if input json contains dhat
@@ -518,35 +527,24 @@ namespace polyfem
 		/// saves the output statistic to a stream
 		/// @param[in] out stream to write output
 		void save_json(std::ostream &out);
+
 		/// saves the output statistic to disc accoding to params
 		void save_json();
 
-		void compute_errors()
-		{
-			if (!args["output"]["advanced"]["compute_error"])
-				return;
-
-			double tend = 0;
-			// TODO fix me
-			if (!args["time"].is_null())
-			{
-				tend = args["time"].value("tend", 1.0);
-				if (tend <= 0)
-					tend = 1;
-			}
-
-			stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
-		}
+		/// @brief computes all errors
+		void compute_errors();
 
 		//-----------PATH management
 		/// Get the root path for the state (e.g., args["root_path"] or ".")
 		/// @return root path
 		std::string root_path() const;
+
 		/// Resolve input path relative to root_path() if the path is not absolute.
 		/// @param[in] path path to resolve
 		/// @param[in] only_if_exists resolve only if relative path exists
 		/// @return path
 		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
+
 		/// Resolve output path relative to output_dir if the path is not absolute
 		/// @param[in] path path to resolve
 		/// @return resolvedpath

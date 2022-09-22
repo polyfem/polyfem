@@ -34,9 +34,11 @@ namespace polyfem::output
 		Eigen::MatrixXd scalar_value_avg;
 	};
 
+	/// Utilies related to export of geometry
 	class OutGeometryData
 	{
 	public:
+		/// @brief different export flags
 		struct ExportOptions
 		{
 			bool volume;
@@ -58,6 +60,11 @@ namespace polyfem::output
 
 			bool solve_export_to_file;
 
+			/// @brief initialize the flags based on the input args
+			/// @param args input arguments used to set most of the flags
+			/// @param is_mesh_linear if the mesh is linear
+			/// @param is_problem_scalar if the problem is scalar
+			/// @param solve_export_to_file if export to file or save in the frames
 			ExportOptions(const json &args,
 						  const bool is_mesh_linear,
 						  const bool is_problem_scalar,
@@ -65,7 +72,10 @@ namespace polyfem::output
 		};
 
 		/// extracts the boundary mesh
-		/// @param[in] bases geom bases
+		/// @param[in] mesh mesh
+		/// @param[in] n_bases number of bases
+		/// @param[in] bases bases
+		/// @param[in] total_local_boundary mesh boundaries
 		/// @param[out] boundary_nodes_pos nodes positions
 		/// @param[out] boundary_edges edges
 		/// @param[out] boundary_triangles triangles
@@ -73,13 +83,19 @@ namespace polyfem::output
 			const mesh::Mesh &mesh,
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
-			std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
 			Eigen::MatrixXd &boundary_nodes_pos,
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles);
 
+		/// @brief unitalize the ref element sampler
+		/// @param mesh mesh
+		/// @param vismesh_rel_area relative sampling size
 		void init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area);
 
+		/// @brief builds the grid to export the solution
+		/// @param mesh mesh
+		/// @param spacing grid spacing, <=0 mean no grid
 		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
 
 		void export_data(

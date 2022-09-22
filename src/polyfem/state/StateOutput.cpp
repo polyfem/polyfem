@@ -7,6 +7,23 @@
 
 namespace polyfem
 {
+	void tate::compute_errors()
+	{
+		if (!args["output"]["advanced"]["compute_error"])
+			return;
+
+		double tend = 0;
+		// TODO fix me
+		if (!args["time"].is_null())
+		{
+			tend = args["time"].value("tend", 1.0);
+			if (tend <= 0)
+				tend = 1;
+		}
+
+		stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
+	}
+
 	std::string State::root_path() const
 	{
 		if (utils::is_param_valid(args, "root_path"))

@@ -52,7 +52,7 @@ namespace polyfem::output
 		const mesh::Mesh &mesh,
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
-		std::vector<mesh::LocalBoundary> &total_local_boundary,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
 		Eigen::MatrixXd &boundary_nodes_pos,
 		Eigen::MatrixXi &boundary_edges,
 		Eigen::MatrixXi &boundary_triangles)
