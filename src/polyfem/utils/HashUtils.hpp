@@ -19,6 +19,15 @@ namespace polyfem::utils
 		}
 	};
 
+	template <>
+	inline size_t HashPair::operator()<int, int>(const std::pair<int, int> &p) const noexcept
+	{
+		size_t h = (size_t(p.first) << 32) + size_t(p.second);
+		h *= 1231231557ull; // "random" uneven integer
+		h ^= (h >> 32);
+		return h;
+	}
+
 	struct HashVector
 	{
 		template <typename T>
