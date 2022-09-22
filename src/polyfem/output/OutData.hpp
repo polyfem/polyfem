@@ -61,10 +61,10 @@ namespace polyfem::output
 			bool solve_export_to_file;
 
 			/// @brief initialize the flags based on the input args
-			/// @param args input arguments used to set most of the flags
-			/// @param is_mesh_linear if the mesh is linear
-			/// @param is_problem_scalar if the problem is scalar
-			/// @param solve_export_to_file if export to file or save in the frames
+			/// @param[in] args input arguments used to set most of the flags
+			/// @param[in] is_mesh_linear if the mesh is linear
+			/// @param[in] is_problem_scalar if the problem is scalar
+			/// @param[in] solve_export_to_file if export to file or save in the frames
 			ExportOptions(const json &args,
 						  const bool is_mesh_linear,
 						  const bool is_problem_scalar,
@@ -89,15 +89,28 @@ namespace polyfem::output
 			Eigen::MatrixXi &boundary_triangles);
 
 		/// @brief unitalize the ref element sampler
-		/// @param mesh mesh
-		/// @param vismesh_rel_area relative sampling size
+		/// @param[in] mesh mesh
+		/// @param[in] vismesh_rel_area relative sampling size
 		void init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area);
 
 		/// @brief builds the grid to export the solution
-		/// @param mesh mesh
-		/// @param spacing grid spacing, <=0 mean no grid
+		/// @param[in] mesh mesh
+		/// @param[in] spacing grid spacing, <=0 mean no grid
 		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
 
+		/// @brief exports everytihng, txt, vtu, etc
+		/// @param[in] state state to get the data
+		/// @param[in] is_time_dependent if the sim is time dependent
+		/// @param[in] tend_in end time
+		/// @param[in] dt delta t
+		/// @param[in] opts export options
+		/// @param[in] vis_mesh_path vtu path
+		/// @param[in] nodes_path path to save nodes
+		/// @param[in] solution_path path to save solution
+		/// @param[in] stress_path path to save stress tensor
+		/// @param[in] mises_path path to save von mises stresses
+		/// @param[in] is_contact_enabled if contact is enabled
+		/// @param[out] solution_frames saves the output here instead of vtu
 		void export_data(
 			const State &state,
 			const bool is_time_dependent,
@@ -113,8 +126,13 @@ namespace polyfem::output
 			std::vector<output::SolutionFrame> &solution_frames) const;
 
 		/// saves the vtu file for time t
-		/// @param[in] name filename
+		/// @param[in] path filename
+		/// @param[in] state state to get the data
 		/// @param[in] t time
+		/// @param[in] dt delta t
+		/// @param[in] opts export options
+		/// @param[in] is_contact_enabled if contact is enabled
+		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_vtu(const std::string &path,
 					  const State &state,
 					  const double t,
@@ -124,8 +142,11 @@ namespace polyfem::output
 					  std::vector<output::SolutionFrame> &solution_frames) const;
 
 		/// saves the volume vtu file
-		/// @param[in] name filename
+		/// @param[in] path filename
+		/// @param[in] state state to get the data
 		/// @param[in] t time
+		/// @param[in] opts export options
+		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_volume(const std::string &path,
 						 const State &state,
 						 const double t,
@@ -133,8 +154,12 @@ namespace polyfem::output
 						 std::vector<output::SolutionFrame> &solution_frames) const;
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
-		/// @param[in] name filename
-		/// @param[in] t time
+		/// @param[in] export_surface filename
+		/// @param[in] state state to get the data
+		/// @param[in] dt_in delta_t
+		/// @param[in] opts export options
+		/// @param[in] is_contact_enabled if contact is enabled
+		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_surface(const std::string &export_surface,
 						  const State &state,
 						  const double dt_in,
@@ -144,7 +169,10 @@ namespace polyfem::output
 
 		/// saves the wireframe
 		/// @param[in] name filename
+		/// @param[in] state state to get the data
 		/// @param[in] t time
+		/// @param[in] opts export options
+		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_wire(const std::string &name,
 					   const State &state,
 					   const double t,
@@ -172,13 +200,17 @@ namespace polyfem::output
 		/// grid mesh boundaries
 		Eigen::MatrixXd grid_points_bc;
 
-		/// builds the boundary mesh for visualization, called in build_basis
-		/// boundary visualization mesh vertices
-		/// boundary visualization mesh vertices pre image in ref element
-		/// boundary visualization mesh connectivity
-		/// boundary visualization mesh elements ids
-		/// boundary visualization mesh edge/face id
-		/// boundary visualization mesh normals
+		/// @brief builds the boundary mesh for visualization
+		/// @param[in] mesh mesh
+		/// @param[in] bases bases
+		/// @param[in] gbases geometric bases
+		/// @param[in] total_local_boundary boundaries
+		/// @param[out] boundary_vis_vertices boundary visualization mesh vertices
+		/// @param[out] boundary_vis_local_vertices boundary visualization mesh vertices pre image in ref element
+		/// @param[out] boundary_vis_elements boundary visualization mesh connectivity
+		/// @param[out] boundary_vis_elements_ids boundary visualization mesh elements ids
+		/// @param[out] boundary_vis_primitive_ids boundary visualization mesh edge/face id
+		/// @param[out] boundary_vis_normals boundary visualization mesh normals
 		void build_vis_boundary_mesh(
 			const mesh::Mesh &mesh,
 			const std::vector<basis::ElementBases> &bases,
@@ -195,6 +227,12 @@ namespace polyfem::output
 		/// the visualization mesh is a dense mesh per element all disconnected
 		/// it also retuns the mapping to element id and discretization of every elment
 		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// @param[in] mesh mesh
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] gbases geometric bases
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] boundary_only is build only elements touching the boundary
 		/// @param[out] points mesh points
 		/// @param[out] tets mesh cells
 		/// @param[out] el_id mapping from points to elements id
@@ -214,6 +252,9 @@ namespace polyfem::output
 		/// builds high-der visualzation mesh per element all disconnected
 		/// it also retuns the mapping to element id and discretization of every elment
 		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
+		/// @param[in] mesh mesh
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] bases bases
 		/// @param[out] points mesh points
 		/// @param[out] elements mesh high-order cells
 		/// @param[out] el_id mapping from points to elements id
@@ -228,6 +269,7 @@ namespace polyfem::output
 			Eigen::MatrixXd &discr) const;
 	};
 
+	/// @brief stores all runtime data
 	class OutRuntimeData
 	{
 	public:
@@ -244,12 +286,15 @@ namespace polyfem::output
 		/// time to solve
 		double solving_time;
 
+		/// @brief computes total time
+		/// @return total time
 		double total_time()
 		{
 			return building_basis_time + assembling_stiffness_mat_time + solving_time;
 		}
 	};
 
+	/// @brief all stats from polyfem
 	class OutStatsData
 	{
 	public:
@@ -303,7 +348,14 @@ namespace polyfem::output
 		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
 		int multi_singular_boundary_count;
 
-		/// compute the errors, not part of solve
+		/// @brief compute errors
+		/// @param[in] n_bases number of base
+		/// @param[in] bases bases
+		/// @param[in] gbases geometric bases
+		/// @param[in] mesh mesh
+		/// @param[in] problem problem
+		/// @param[in] tend end time step
+		/// @param[in] sol solution
 		void compute_errors(const int n_bases,
 							const std::vector<polyfem::basis::ElementBases> &bases,
 							const std::vector<polyfem::basis::ElementBases> &gbases,
@@ -312,7 +364,8 @@ namespace polyfem::output
 							const double tend,
 							const Eigen::MatrixXd &sol);
 
-		/// compute stats (counts els type, mesh lenght, etc), step 1 of solve
+		/// @brief compute stats (counts els type, mesh lenght, etc), step 1 of solve
+		/// @param mesh mesh
 		void compute_mesh_stats(const polyfem::mesh::Mesh &mesh);
 
 		/// computes the mesh size, it samples every edges n_samples times
@@ -321,14 +374,33 @@ namespace polyfem::output
 		/// @param[in] mesh to compute stats
 		/// @param[in] bases geom bases
 		/// @param[in] n_samples used for curved meshes
+		/// @param[in] use_curved_mesh_size use curved edges to compute mesh size
 		void compute_mesh_size(const polyfem::mesh::Mesh &mesh_in, const std::vector<polyfem::basis::ElementBases> &bases_in, const int n_samples, const bool use_curved_mesh_size);
 
+		/// @brief clears all stats
 		void reset();
 
+		/// @brief counts the number of flipped elements
+		/// @param[in] mesh mesh
+		/// @param[in] gbases geometric bases
 		void count_flipped_elements(const polyfem::mesh::Mesh &mesh, const std::vector<polyfem::basis::ElementBases> &gbases);
 
 		/// saves the output statistic to a json object
 		/// @param[in] j output json
+
+		/// @brief save json
+		/// @param[in] args input argumeents
+		/// @param[in] n_bases number of bases
+		/// @param[in] n_pressure_bases number fo pressure bases
+		/// @param[in] sol solution
+		/// @param[in] mesh mesh
+		/// @param[in] disc_orders discretization order
+		/// @param[in] problem problem
+		/// @param[in] runtime rumtime
+		/// @param[in] formulation formulation
+		/// @param[in] isoparametric if isoparametric
+		/// @param[in] sol_at_node_id export solution at node
+		/// @param[out] j output json
 		void save_json(const nlohmann::json &args,
 					   const int n_bases, const int n_pressure_bases,
 					   const Eigen::MatrixXd &sol,

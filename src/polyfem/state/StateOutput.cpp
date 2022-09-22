@@ -7,7 +7,7 @@
 
 namespace polyfem
 {
-	void tate::compute_errors()
+	void State::compute_errors()
 	{
 		if (!args["output"]["advanced"]["compute_error"])
 			return;

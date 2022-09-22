@@ -173,6 +173,11 @@ namespace polyfem
 		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<basis::ElementBases> geom_bases_;
 
+		/// number of bases
+		int n_bases;
+		/// number of pressure bases
+		int n_pressure_bases;
+
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
 		/// polyhedra, used since poly have no geom mapping
@@ -211,12 +216,7 @@ namespace polyfem
 		/// if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
 
-		/// number of bases
-		int n_bases;
-		/// number of pressure bases
-		int n_pressure_bases;
-
-		/// return the formulation (checks if the problem is scalar or not and delas wih multiphisics)
+		/// return the formulation (checks if the problem is scalar or not and delas with multiphisics)
 		/// @return fomulation
 		std::string formulation() const;
 
