@@ -1291,9 +1291,9 @@ namespace polyfem
 			}
 		}
 
-		if (!problem->is_time_dependent() && boundary_nodes.empty() && !args["boundary_conditions"]["periodic_boundary"].get<bool>())
+		if (!problem->is_time_dependent() && boundary_nodes.empty())
 		{
-			log_and_throw_error("Static problem need to have some Dirichlet nodes!");
+			logger().warn("Static problem without Dirichlet nodes, will use Lagrange multipliers to find a unique solution!");
 		}
 	}
 

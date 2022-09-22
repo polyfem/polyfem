@@ -75,7 +75,5 @@ namespace polyfem::solver
 
 		template <class ReducedMat, class FullMat>
 		static void reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full);
-
-		Eigen::MatrixXd lagrange_multipliers;
 	};
 } // namespace polyfem::solver

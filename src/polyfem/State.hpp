@@ -856,13 +856,13 @@ namespace polyfem
 			if (boundary_nodes.size() > 0 || problem->is_time_dependent())
 				return 0;
 			
-			if (args["boundary_conditions"]["periodic_boundary"])
-			{
-				if (problem->is_scalar())
-					return 1;
-				else
-					return mesh->dimension();
-			}
+			// if (args["boundary_conditions"]["periodic_boundary"])
+			// {
+			// 	if (problem->is_scalar())
+			// 		return 1;
+			// 	else
+			// 		return mesh->dimension();
+			// }
 			
 			if (formulation() == "Stokes" || formulation() == "NavierStokes")
 				return mesh->dimension();
@@ -876,21 +876,8 @@ namespace polyfem
 				return 0;
 			}
 		}
-		void apply_lagrange_multipliers(StiffnessMatrix &A) const
-		{
-			if (n_lagrange_multipliers() == 0)
-				return;
-
-			logger().info("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
-			if (args["boundary_conditions"]["periodic_boundary"])
-				remove_pure_periodic_singularity(A);
-			else
-				remove_pure_neumann_singularity(A);
-		}
+		void apply_lagrange_multipliers(StiffnessMatrix &A) const;
 		void apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const;
-		int remove_pure_neumann_singularity(StiffnessMatrix &A) const;
-		void pure_periodic_lagrange_multiplier(Eigen::MatrixXd &multipliers) const;
-		int remove_pure_periodic_singularity(StiffnessMatrix &A) const;
 		
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;

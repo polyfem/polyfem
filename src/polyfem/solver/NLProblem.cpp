@@ -28,11 +28,6 @@ namespace polyfem::solver
 	{
 		assert(!state.assembler.is_mixed(state.formulation()));
 		use_reduced_size();
-
-		if (state.args["boundary_conditions"]["periodic_boundary"])
-		{
-			state.pure_periodic_lagrange_multiplier(lagrange_multipliers);
-		}
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -92,35 +87,8 @@ namespace polyfem::solver
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
 		assert(full_hessian.rows() == full_size());
 		assert(full_hessian.cols() == full_size());
-		utils::full_to_reduced_matrix(full_size(), current_size(), state_.boundary_nodes, full_hessian, hessian);
-		
-		// lagrange multiplier for periodic bc
-		if (lagrange_multipliers.size() > 0)
-		{
-			THessian hessian_extended(hessian.rows() + lagrange_multipliers.cols(), hessian.cols() + lagrange_multipliers.cols());
-
-			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(hessian.nonZeros() + lagrange_multipliers.size() * 2);
-			for (int k = 0; k < hessian.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(hessian, k); it; ++it)
-				{
-					entries.emplace_back(it.row(), it.col(), it.value());
-				}
-			}
-
-			for (int k = 0; k < lagrange_multipliers.rows(); k++)
-			{
-				for (int j = 0; j < lagrange_multipliers.cols(); j++)
-				{
-					entries.emplace_back(k, hessian.cols() + j, lagrange_multipliers(k, j));
-					entries.emplace_back(hessian.rows() + j, k, lagrange_multipliers(k, j));
-				}
-			}
-
-			hessian_extended.setFromTriplets(entries.begin(), entries.end());
-			std::swap(hessian, hessian_extended);
-		}
+		state_.apply_lagrange_multipliers(full_hessian);
+		utils::full_to_reduced_matrix(full_size() + state_.n_lagrange_multipliers(), current_size() + state_.n_lagrange_multipliers(), state_.boundary_nodes, full_hessian, hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)

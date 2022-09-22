@@ -72,10 +72,16 @@ namespace polyfem
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 
-	int State::remove_pure_neumann_singularity(StiffnessMatrix &A) const
+	void State::apply_lagrange_multipliers(StiffnessMatrix &A) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const auto& gbases = geom_bases();
+
+		if (n_lagrange_multipliers() == 0)
+			return;
+
+		logger().debug("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
+
 		if (formulation() == "Laplacian")
 		{
 			Eigen::VectorXd coeffs(n_bases);
@@ -96,9 +102,6 @@ namespace polyfem
 					}
 				}
 			}
-			// Eigen::VectorXd test_func;
-			// test_func.setOnes(n_bases, 1);
-			// Eigen::VectorXd coeffs = mass * test_func;
 
 			std::vector<Eigen::Triplet<double>> entries;
 			entries.reserve(A.nonZeros() + coeffs.size() * 2);
@@ -119,8 +122,6 @@ namespace polyfem
 			StiffnessMatrix A_extended(A.rows()+1, A.cols()+1);
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
-
-			return 1;
 		}
 		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean")
 		{
@@ -247,8 +248,6 @@ namespace polyfem
 			StiffnessMatrix A_extended(A.rows()+coeffs.cols(), A.cols()+coeffs.cols());
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
-
-			return 3 * (problem_dim - 1);
 		}
 		else if (formulation() == "Stokes" || formulation() == "NavierStokes")
 		{
@@ -272,15 +271,6 @@ namespace polyfem
 				}
 			}
 
-			// Eigen::MatrixXd test_func;
-			// test_func.setZero(n_bases * problem_dim, problem_dim);
-			// for (int i = 0; i < n_bases; i++)
-			// 	for (int d = 0; d < problem_dim; d++)
-			// 	{
-			// 		test_func(i * problem_dim + d, d) = 1;
-			// 	}
-			// Eigen::MatrixXd coeffs = mass.topLeftCorner(test_func.rows(), test_func.rows()) * test_func;
-
 			std::vector<Eigen::Triplet<double>> entries;
 			entries.reserve(A.nonZeros() + coeffs.size() * 2 * problem_dim);
 			for (int k = 0; k < A.outerSize(); ++k)
@@ -301,50 +291,9 @@ namespace polyfem
 			StiffnessMatrix A_extended(A.rows() + problem_dim, A.cols() + problem_dim);
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
-
-			return problem_dim;
 		}
 		else
-			return 0;
-	}
-
-	void State::pure_periodic_lagrange_multiplier(Eigen::MatrixXd &multipliers) const
-	{
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		multipliers.setZero(n_bases * problem_dim, problem_dim);
-		for (int e = 0; e < bases.size(); e++)
-		{
-			ElementAssemblyValues vals;
-			ass_vals_cache.compute(e, mesh->is_volume(), bases[e], geom_bases()[e], vals);
-
-			const int n_loc_bases = int(vals.basis_values.size());
-			for (int i = 0; i < n_loc_bases; ++i) 
-			{
-				const auto &val = vals.basis_values[i];
-				for (size_t ii = 0; ii < val.global.size(); ++ii) 
-				{
-					Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-					const double value = (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-					for (int k = 0; k < problem_dim; k++)
-						multipliers(val.global[ii].index * problem_dim + k, k) += value;
-				}
-			}
-		}
-	}
-
-	int State::remove_pure_periodic_singularity(StiffnessMatrix &A) const
-	{
-		Eigen::MatrixXd coeffs;
-		pure_periodic_lagrange_multiplier(coeffs);
-
-		// if (!args["space"]["advanced"]["periodic_basis"])
-		// {
-		// 	full_to_periodic(coeffs, false);
-		// }
-
-		apply_lagrange_multipliers(A, coeffs);
-
-		return coeffs.cols();
+			assert(false);
 	}
 
 	void State::apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const

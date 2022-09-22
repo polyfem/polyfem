@@ -37,7 +37,7 @@ namespace polyfem
 
 		NLHomogenizationProblem::NLHomogenizationProblem(State &state, const bool no_reduced)
 			: state(state), assembler(state.assembler),
-			  full_size(state.n_bases * state.mesh->dimension()),
+			  full_size((state.assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 			  reduced_size(((state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"]) ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - state.boundary_nodes.size()),
 			  project_to_psd(false)
 		{

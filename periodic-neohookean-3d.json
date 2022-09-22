@@ -2,12 +2,13 @@
     "geometry": [
         {
             "mesh": "cross.msh",
-            "n_refs": 0
+            "n_refs": 2
         }
     ],
     "space": {
         "discr_order": 2,
         "advanced": {
+            "periodic_basis": true,
             "bc_method": "sample"
         }
     },
@@ -17,12 +18,12 @@
         }
     },
     "boundary_conditions": {
-        "rhs": ["x-0.5", "2*(y-0.5)", "4*(z-0.5)"],
+        "rhs": ["z-0.5", "2*(x-0.5)", "4*(y-0.5)"],
         "periodic_boundary": true
     },
     "materials": {
         "type": "NeoHookean",
-        "E": 5e-1,
+        "E": 2,
         "nu": 0.4
     },
     "output": {

@@ -151,20 +151,10 @@ namespace cppoptlib
 		b.segment(grad.size(), b.size() - grad.size()).setZero();
 		direction.conservativeResize(b.size());
 		linear_solver->solve(b, direction); // H Δx = -g
+		
+		const double residual = (hessian * direction - b).norm(); // H Δx + g = 0
 		direction.conservativeResizeLike(grad);
-
-		return true;
-	}
-
-	// =======================================================================
-
-	template <typename ProblemType>
-	bool SparseNewtonDescentSolver<ProblemType>::check_direction(
-		const polyfem::StiffnessMatrix &hessian, const TVector &grad, const TVector &direction)
-	{
-		// gradient descent, check descent direction
-		const double residual = (hessian.topLeftCorner(grad.size(), grad.size()) * direction + grad).norm(); // H Δx + g = 0
-		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5))
+		if (std::isnan(residual) || residual > std::max(1e-8 * b.norm(), 1e-5))
 		{
 			increase_descent_strategy();
 
@@ -177,9 +167,18 @@ namespace cppoptlib
 		}
 		else
 		{
-			polyfem::logger().trace("linear solve residual {}", residual);
+			polyfem::logger().trace("relative linear solve residual {}", residual / b.norm());
 		}
 
+		return true;
+	}
+
+	// =======================================================================
+
+	template <typename ProblemType>
+	bool SparseNewtonDescentSolver<ProblemType>::check_direction(
+		const polyfem::StiffnessMatrix &hessian, const TVector &grad, const TVector &direction)
+	{
 		// do this check here because we need to repeat the solve without resetting reg_weight
 		if (grad.dot(direction) >= 0)
 		{
