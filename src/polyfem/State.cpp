@@ -1140,8 +1140,8 @@ namespace polyfem
 
 	void State::build_collision_mesh()
 	{
-		extract_boundary_mesh(
-			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+		Eigen::MatrixXi boundary_edges, boundary_triangles;
+		extract_boundary_mesh(bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
