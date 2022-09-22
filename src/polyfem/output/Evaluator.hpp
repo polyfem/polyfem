@@ -17,8 +17,10 @@ namespace polyfem::output
 
 	public:
 		/// evaluates the function fun at the vertices on the mesh
+		/// @param[in] mesh mesh
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		/// @param[in] basis basis function
+		/// @param[in] sampler sampler for the local element
 		/// @param[in] fun function to interpolate
 		/// @param[out] result output
 		static void compute_vertex_values(
@@ -30,7 +32,14 @@ namespace polyfem::output
 			Eigen::MatrixXd &result);
 
 		/// compute von mises stress at quadrature points for the function fun, also compute the interpolated function
-		/// @param[in] fun function to used
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
+		/// @param[in] fun function to use
 		/// @param[out] result output displacement
 		/// @param[out] von_mises output von mises
 		static void compute_stress_at_quadrature_points(
@@ -46,6 +55,13 @@ namespace polyfem::output
 			Eigen::VectorXd &von_mises);
 
 		/// interpolate the function fun.
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
 		/// @param[out] result output
@@ -66,9 +82,14 @@ namespace polyfem::output
 			const bool boundary_only);
 
 		/// interpolate the function fun.
-		/// @param[in] n_points is the size of the output.
+		/// @param[in] mesh mesh
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		/// @param[in] basis basis function
+		/// @param[in] bases bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] sampler sampler for the local element
+		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
 		/// @param[out] result output
 		/// @param[in] use_sampler uses the sampler or not
@@ -88,8 +109,13 @@ namespace polyfem::output
 			const bool boundary_only);
 
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
 		/// @param[in] el_index element index
 		/// @param[in] local_pts points in the reference element
+		/// @param[in] fun function to use
 		/// @param[out] result output
 		/// @param[out] result_grad output gradients
 		static void interpolate_at_local_vals(
@@ -105,9 +131,11 @@ namespace polyfem::output
 
 		/// interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
 		/// interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)
-		/// @param[in] el_index element index
+		/// @param[in] mesh mesh
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		/// @param[in] bases basis function
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] el_index element index
 		/// @param[in] local_pts points in the reference element
 		/// @param[in] fun function to used
 		/// @param[out] result output
@@ -124,6 +152,16 @@ namespace polyfem::output
 			Eigen::MatrixXd &result_grad);
 
 		/// checks if mises are not nan
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
+		/// @param[in] sampler sampler for the local element
 		/// @param[in] fun function to used
 		/// @param[in] use_sampler uses the sampler or not
 		/// @param[in] boundary_only interpolates only at boundary elements
@@ -144,6 +182,16 @@ namespace polyfem::output
 			const bool boundary_only);
 
 		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
+		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
 		/// @param[out] result scalar value
@@ -168,6 +216,16 @@ namespace polyfem::output
 
 		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
 		/// the scalar value is averaged around every node to make it continuos
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
+		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
 		/// @param[out] result_scalar scalar value
@@ -193,6 +251,16 @@ namespace polyfem::output
 			const bool boundary_only);
 
 		/// compute tensor quantity (ie stress tensor or velocy)
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] disc_orders discretization orders
+		/// @param[in] polys polygons
+		/// @param[in] polys_3d polyhedra
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
+		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
 		/// @param[out] result resulting tensor
@@ -216,6 +284,10 @@ namespace polyfem::output
 			const bool boundary_only);
 
 		/// computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
@@ -233,6 +305,10 @@ namespace polyfem::output
 			Eigen::MatrixXd &result);
 
 		/// computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
@@ -249,6 +325,12 @@ namespace polyfem::output
 
 		/// computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
 		/// disp is the displacement of the surface vertices
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
@@ -276,6 +358,12 @@ namespace polyfem::output
 			bool skip_orientation = false);
 
 		/// same as interpolate_boundary_tensor_function with disp=0
+		/// @param[in] mesh mesh
+		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] bases bases
+		/// @param[in] gbases geom bases
+		/// @param[in] assembler assembler
+		/// @param[in] formulation formulation
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
@@ -301,8 +389,9 @@ namespace polyfem::output
 			const bool skip_orientation = false);
 
 		/// returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
-		/// @param[in] pts boundary points
-		/// @param[in] faces boundary faces
+		/// @param[in] mesh mesh
+		/// @param[out] pts boundary points
+		/// @param[out] faces boundary faces
 		/// @param[out] sidesets resulting sidesets
 		static void get_sidesets(
 			const mesh::Mesh &mesh,
