@@ -282,6 +282,25 @@ namespace polyfem
 			return compute_energy_aux<double>(vals, displacement, da);
 		}
 
+		double NeoHookeanElasticity::compute_energy(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) const
+		{
+			assert(grad_disp.rows() == size() && grad_disp.cols() == size());
+
+			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + grad_disp;
+			const double log_det_j = std::log(def_grad.determinant());
+
+			return mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
+		}
+		void NeoHookeanElasticity::compute_energy_gradient(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu, Eigen::MatrixXd &grad) const
+		{
+			assert(grad_disp.rows() == size() && grad_disp.cols() == size());
+
+			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + grad_disp;
+			const double log_det_j = std::log(def_grad.determinant());
+			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+
+			grad = mu * (def_grad - FmT) + lambda * log_det_j * FmT;
+		}
 		// Compute ∫ ½μ (tr(FᵀF) - 3 - 2ln(J)) + ½λ ln²(J) du
 		template <typename T>
 		T NeoHookeanElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const

@@ -171,6 +171,8 @@ namespace polyfem
 			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
 			void update_lame_params_density(const Eigen::MatrixXd& density, const double power = -1);
 
+			std::function<double(const Eigen::MatrixXd &, const double, const double)> get_elastic_energy_function(const std::string& assembler) const;
+			std::function<void(const Eigen::MatrixXd &, const double, const double, Eigen::MatrixXd &)> get_elastic_energy_grad_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_multiply_mat_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_dstress_dmu_dlambda_function(const std::string& assembler) const;
 

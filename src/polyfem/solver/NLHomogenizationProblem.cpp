@@ -35,15 +35,16 @@ namespace polyfem
 	{
 		using namespace polysolve;
 
-		NLHomogenizationProblem::NLHomogenizationProblem(State &state, const RhsAssembler &rhs_assembler, const bool no_reduced)
-			: state(state), assembler(state.assembler), rhs_assembler(rhs_assembler),
+		NLHomogenizationProblem::NLHomogenizationProblem(State &state, const bool no_reduced)
+			: state(state), assembler(state.assembler),
 			  full_size(state.n_bases * state.mesh->dimension()),
-			  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),
+			  reduced_size(((state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"]) ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - state.boundary_nodes.size()),
 			  project_to_psd(false)
 		{
 			assert(!assembler.is_mixed(state.formulation()));
-			index[0] = 0;
-			index[1] = 0;
+
+			test_strain_.setZero(state.mesh->dimension(), state.mesh->dimension());
+			test_strain_(0, 0) = 1;
 		}
 
 		const Eigen::MatrixXd &NLHomogenizationProblem::current_rhs()
@@ -57,7 +58,7 @@ namespace polyfem
 				assert(_current_rhs.size() == full_size);
 				// rhs_assembler.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
 
-				if (reduced_size != full_size)
+				if (state.boundary_nodes.size() > 0)
 				{
 					logger().error("Homogenization doesn't support Dirichlet BC!");
 					throw std::runtime_error("Homogenization doesn't support Dirichlet BC!");
@@ -90,9 +91,14 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			const double elastic_energy = state.assemble_neohookean_homogenization_energy(full, index[0], index[1]);
+			// const double elastic_energy = state.assemble_homogenization_energy(full, test_strain_);
 
-			return elastic_energy;
+			// return elastic_energy;
+
+			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
+			Eigen::MatrixXd diff_field = full - test_field;
+
+			return assembler.assemble_energy(state.formulation(), state.mesh->is_volume(), state.bases, state.geom_bases(), state.ass_vals_cache, diff_field);
 		}
 
 		void NLHomogenizationProblem::gradient(const TVector &x, TVector &gradv)
@@ -113,9 +119,12 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			// const auto &gbases = state.geom_bases();
-			// assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
-			state.assemble_neohookean_homogenization_gradient(grad, full, index[0], index[1]);
+			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
+			Eigen::MatrixXd diff_field = full - test_field;
+			
+			assembler.assemble_energy_gradient(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, state.geom_bases(), state.ass_vals_cache, diff_field, grad);
+
+			// state.assemble_homogenization_gradient(grad, full, test_strain_);
 
 			assert(grad.size() == full_size);
 		}
@@ -124,16 +133,9 @@ namespace polyfem
 		{
 			THessian full_hessian;
 			hessian_full(x, full_hessian);
-			full_hessian_to_reduced_hessian(full_hessian, hessian);
 
-			// lagrange multiplier for periodic bc
-			if (reduced_size == full_size && !state.problem->is_time_dependent())
-			{
-				if (state.args["boundary_conditions"]["periodic_boundary"].get<bool>())
-					state.remove_pure_periodic_singularity(hessian);
-				else
-					state.remove_pure_neumann_singularity(hessian);
-			}
+			state.apply_lagrange_multipliers(full_hessian);
+			full_hessian_to_reduced_hessian(full_hessian, hessian);
 		}
 
 		void NLHomogenizationProblem::hessian_full(const TVector &x, THessian &hessian)
@@ -143,7 +145,12 @@ namespace polyfem
 			TVector full;
 			reduced_to_full(x, full);
 
-			state.assemble_neohookean_homogenization_hessian(hessian, mat_cache, full, index[0], index[1]);
+			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
+			Eigen::MatrixXd diff_field = full - test_field;
+
+			assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, false, state.bases, state.geom_bases(), state.ass_vals_cache, diff_field, mat_cache, hessian);
+			
+			// state.assemble_homogenization_hessian(hessian, mat_cache, full, test_strain_);
 
 			assert(hessian.rows() == full_size);
 			assert(hessian.cols() == full_size);
@@ -153,17 +160,14 @@ namespace polyfem
 		{
 			POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
 
-			if (reduced_size == full_size || reduced_size == full.rows())
-			{
-				assert(reduced_size == full.rows() && reduced_size == full.cols());
-				reduced = full;
-				return;
-			}
+			THessian tmp = full;
+			if (state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"])
+				state.full_to_periodic(tmp);
 
-			Eigen::VectorXi indices(full_size);
+			Eigen::VectorXi indices(tmp.rows());
 			int index = 0;
 			size_t kk = 0;
-			for (int i = 0; i < full_size; ++i)
+			for (int i = 0; i < tmp.rows(); ++i)
 			{
 				if (kk < state.boundary_nodes.size() && state.boundary_nodes[kk] == i)
 				{
@@ -175,16 +179,15 @@ namespace polyfem
 					indices(i) = index++;
 				}
 			}
-			assert(index == reduced_size);
 
 			std::vector<Eigen::Triplet<double>> entries;
-			entries.reserve(full.nonZeros()); // Conservative estimate
-			for (int k = 0; k < full.outerSize(); ++k)
+			entries.reserve(tmp.nonZeros()); // Conservative estimate
+			for (int k = 0; k < tmp.outerSize(); ++k)
 			{
 				if (indices(k) < 0)
 					continue;
 
-				for (THessian::InnerIterator it(full, k); it; ++it)
+				for (THessian::InnerIterator it(tmp, k); it; ++it)
 				{
 					assert(it.col() == k);
 					if (indices(it.row()) < 0 || indices(it.col()) < 0)
@@ -197,7 +200,7 @@ namespace polyfem
 				}
 			}
 
-			reduced.resize(reduced_size, reduced_size);
+			reduced.resize(tmp.rows() - state.boundary_nodes.size(), tmp.rows() - state.boundary_nodes.size());
 			reduced.setFromTriplets(entries.begin(), entries.end());
 			reduced.makeCompressed();
 		}

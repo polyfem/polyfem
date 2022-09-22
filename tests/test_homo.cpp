@@ -92,6 +92,9 @@ TEST_CASE("density_elastic_homo", "[homogenization]")
             }
         ],
         "space": {
+            "advanced": {
+                "periodic_basis": true
+            },
             "discr_order": 1
         },
         "solver": {
@@ -161,6 +164,9 @@ TEST_CASE("density_elastic_homo_grad", "[homogenization]")
             }
         ],
         "space": {
+            "advanced": {
+                "periodic_basis": true
+            },
             "discr_order": 1
         },
         "solver": {
@@ -380,7 +386,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
 
     in_args["materials"]["type"] = "LinearElasticity";
 	State state2(16);
-	state2.init_logger("", spdlog::level::level_enum::debug, false);
+	state2.init_logger("", spdlog::level::level_enum::err, false);
 	state2.init(in_args, false);
 
 	state2.load_mesh();
@@ -427,6 +433,7 @@ TEST_CASE("density_stokes_homo", "[homogenization]")
             "discr_order": 1,
             "pressure_discr_order": 1,
             "advanced": {
+                "periodic_basis": true,
                 "quadrature_order": 2
             }
         },
@@ -502,6 +509,7 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
             "discr_order": 2,
             "pressure_discr_order": 1,
             "advanced": {
+                "periodic_basis": true,
                 "quadrature_order": 5
             }
         },

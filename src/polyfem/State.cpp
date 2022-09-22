@@ -986,6 +986,7 @@ namespace polyfem
 			
 			// new indexing for independent dof
 			int independent_dof = 0;
+			n_periodic_dependent_dofs = 0;
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) < 0)
 				{
@@ -994,6 +995,8 @@ namespace polyfem
 					independent_dof++;
 					dependent_map(i) = i;
 				}
+				else
+					n_periodic_dependent_dofs += problem_dim;
 
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) >= 0)
@@ -1013,6 +1016,16 @@ namespace polyfem
 
 				n_bases = independent_dof;
 			}
+
+			// new index for boundary_nodes
+			std::vector<int> nodes_periodic = boundary_nodes;
+			for (int i = 0; i < nodes_periodic.size(); i++)
+				nodes_periodic[i] = periodic_reduce_map(boundary_nodes[i]);
+
+			std::sort(nodes_periodic.begin(), nodes_periodic.end());
+			auto it = std::unique(nodes_periodic.begin(), nodes_periodic.end());
+			nodes_periodic.resize(std::distance(nodes_periodic.begin(), it));
+			std::swap(nodes_periodic, boundary_nodes);
 		}
 
 		n_flipped = 0;
@@ -1624,11 +1637,6 @@ void State::build_collision_mesh(
 		if (n_bases <= 0)
 		{
 			logger().error("Build the bases first!");
-			return;
-		}
-		if (!args["boundary_conditions"]["periodic_boundary"])
-		{
-			logger().error("No periodicity!");
 			return;
 		}
 

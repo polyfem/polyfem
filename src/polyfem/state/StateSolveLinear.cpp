@@ -24,36 +24,27 @@ namespace polyfem
 		const int full_size = A.rows();
 		int precond_num = problem_dim * n_bases;
 
-		std::vector<int> boundary_nodes_tmp = boundary_nodes;
+		apply_lagrange_multipliers(A);
+		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
+
 		if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
 		{
 			precond_num = full_to_periodic(A);
 			Eigen::MatrixXd tmp = b;
-			full_to_periodic(tmp, boundary_nodes_tmp);
+			full_to_periodic(tmp);
 			b = tmp;
-		}
-
-		int n_lagrange_multiplier = 0;
-		if (boundary_nodes_tmp.size() == 0 && !problem->is_time_dependent())
-		{
-			logger().info("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
-			if (args["boundary_conditions"]["periodic_boundary"])
-				n_lagrange_multiplier = remove_pure_periodic_singularity(A);
-			else
-				n_lagrange_multiplier = remove_pure_neumann_singularity(A);
-			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 		}
 
 		Eigen::VectorXd x;
 		if (args["differentiable"])
 		{
-			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes_tmp, x);
+			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
 		}
 		else
 		{
 			spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
+				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler.is_fluid(formulation()), use_avg_pressure);
 		}
 
@@ -65,10 +56,10 @@ namespace polyfem
 		else
 			logger().debug("Solver error: {}", error);
 
-		x.conservativeResize(x.size() - n_lagrange_multiplier);
+		x.conservativeResize(x.size() - n_lagrange_multipliers());
 		if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
 		{
-			periodic_to_full(full_size, x, sol);
+			sol = periodic_to_full(full_size, x);
 		}
 		else
 			sol = x; // Explicit copy because sol is a MatrixXd (with one column)

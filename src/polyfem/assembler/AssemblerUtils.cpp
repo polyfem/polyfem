@@ -654,6 +654,44 @@ namespace polyfem
 			}
 		}
 
+		std::function<double(const Eigen::MatrixXd &, const double, const double)> AssemblerUtils::get_elastic_energy_function(const std::string& assembler) const
+		{
+			if (assembler == "LinearElasticity")
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
+					return linear_elasticity_.local_assembler().compute_energy(grad_disp, lambda, mu);
+				};
+			else if (assembler == "NeoHookean")
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
+					return neo_hookean_elasticity_.local_assembler().compute_energy(grad_disp, lambda, mu);
+				};
+			else
+			{
+				assert(false);
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
+					return linear_elasticity_.local_assembler().compute_energy(grad_disp, lambda, mu);
+				};
+			}
+		}
+
+		std::function<void(const Eigen::MatrixXd &, const double, const double, Eigen::MatrixXd &)> AssemblerUtils::get_elastic_energy_grad_function(const std::string& assembler) const
+		{
+			if (assembler == "LinearElasticity")
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu, Eigen::MatrixXd &grad) {
+					return linear_elasticity_.local_assembler().compute_energy_gradient(grad_disp, lambda, mu, grad);
+				};
+			else if (assembler == "NeoHookean")
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu, Eigen::MatrixXd &grad) {
+					return neo_hookean_elasticity_.local_assembler().compute_energy_gradient(grad_disp, lambda, mu, grad);
+				};
+			else
+			{
+				assert(false);
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu, Eigen::MatrixXd &grad) {
+					return linear_elasticity_.local_assembler().compute_energy_gradient(grad_disp, lambda, mu, grad);
+				};
+			}
+		}
+
 		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_dstress_dmu_dlambda_function(const std::string& assembler) const
 		{
 			if (assembler == "LinearElasticity")

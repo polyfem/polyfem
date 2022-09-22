@@ -19,7 +19,7 @@ namespace polyfem
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef StiffnessMatrix THessian;
 
-			NLHomogenizationProblem(State &state, const assembler::RhsAssembler &rhs_assembler, const bool no_reduced = false);
+			NLHomogenizationProblem(State &state, const bool no_reduced = false);
 			void init(const TVector &displacement) {}
 
 			double value(const TVector &x) override;
@@ -82,9 +82,13 @@ namespace polyfem
 				assert(full.cols() == 1);
 				reduced.resize(reduced_size, 1);
 
+				Eigen::MatrixXd tmp = full;
+				if (state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"])
+					state.full_to_periodic(tmp);
+				
 				long j = 0;
 				size_t k = 0;
-				for (int i = 0; i < full.size(); ++i)
+				for (int i = 0; i < tmp.size(); ++i)
 				{
 					if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
 					{
@@ -92,9 +96,8 @@ namespace polyfem
 						continue;
 					}
 
-					reduced(j++) = full(i);
+					reduced(j++) = tmp(i);
 				}
-				assert(j == reduced.size());
 			}
 
 			template <class ReducedMat, class FullMat>
@@ -115,19 +118,23 @@ namespace polyfem
 
 				long j = 0;
 				size_t k = 0;
-				for (int i = 0; i < full.size(); ++i)
+				Eigen::MatrixXd tmp(reduced_size + state.boundary_nodes.size(), 1);
+				for (int i = 0; i < tmp.size(); ++i)
 				{
 					if (k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
 					{
 						++k;
-						full(i) = rhs(i);
+						tmp(i) = rhs(i);
 						continue;
 					}
 
-					full(i) = reduced(j++);
+					tmp(i) = reduced(j++);
 				}
 
-				assert(j == reduced.size());
+				if (state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"])
+					full = state.periodic_to_full(full_size, tmp);
+				else
+					full = tmp;
 			}
 
 			// Templated to allow VectorX* or MatrixX* input, but the size of full
@@ -159,12 +166,11 @@ namespace polyfem
 
 			void compute_cached_stiffness() {}
 
-			void set_index(int i, int j) { index[0] = i; index[1] = j; }
+			void set_test_strain(const Eigen::MatrixXd &test_strain) { test_strain_ = test_strain; }
 
 			utils::SpareMatrixCache mat_cache;
 
 			StiffnessMatrix cached_stiffness;
-			const assembler::RhsAssembler &rhs_assembler;
 			
 		protected:
 			State &state;
@@ -177,7 +183,7 @@ namespace polyfem
 			bool rhs_computed;
 			bool project_to_psd;
 
-			std::array<int, 2> index;
+			Eigen::MatrixXd test_strain_;
 		};
 	} // namespace solver
 } // namespace polyfem

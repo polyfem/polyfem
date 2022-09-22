@@ -61,6 +61,9 @@ namespace polyfem
 			const LameParameters &lame_params() const { return params_; }
 			void set_params(const LameParameters &params) { params_ = params; }
 
+			double compute_energy(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) const;
+			void compute_energy_gradient(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu, Eigen::MatrixXd &grad) const;
+
 		private:
 			int size_ = -1;
 			//class that stores and compute lame parameters per point

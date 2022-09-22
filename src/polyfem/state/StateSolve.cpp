@@ -334,17 +334,22 @@ namespace polyfem
 
 	int State::remove_pure_periodic_singularity(StiffnessMatrix &A) const
 	{
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
 		Eigen::MatrixXd coeffs;
 		pure_periodic_lagrange_multiplier(coeffs);
 
-		if (!args["space"]["advanced"]["periodic_basis"])
-		{
-			std::vector<int> tmp;
-			full_to_periodic(coeffs, tmp);
-		}
+		// if (!args["space"]["advanced"]["periodic_basis"])
+		// {
+		// 	full_to_periodic(coeffs, false);
+		// }
 
+		apply_lagrange_multipliers(A, coeffs);
+
+		return coeffs.cols();
+	}
+
+	void State::apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const
+	{
+		assert(coeffs.rows() <= A.rows());
 		std::vector<Eigen::Triplet<double>> entries;
 		entries.reserve(A.nonZeros() + coeffs.size() * 2);
 		for (int k = 0; k < A.outerSize(); ++k)
@@ -367,8 +372,6 @@ namespace polyfem
 		StiffnessMatrix A_extended(A.rows()+coeffs.cols(), A.cols()+coeffs.cols());
 		A_extended.setFromTriplets(entries.begin(), entries.end());
 		std::swap(A, A_extended);
-
-		return coeffs.cols();
 	}
 
 	int State::full_to_periodic(StiffnessMatrix &A) const
@@ -401,21 +404,9 @@ namespace polyfem
 		return independent_dof;
 	}
 
-	int State::full_to_periodic(Eigen::MatrixXd &b, std::vector<int> &nodes) const
+	int State::full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		// new index for boundary_nodes
-		std::vector<int> nodes_periodic = nodes;
-		{
-			for (int i = 0; i < nodes_periodic.size(); i++)
-			{
-				nodes_periodic[i] = periodic_reduce_map(nodes_periodic[i]);
-			}
-
-			std::sort(nodes_periodic.begin(), nodes_periodic.end());
-			auto it = std::unique(nodes_periodic.begin(), nodes_periodic.end());
-			nodes_periodic.resize(std::distance(nodes_periodic.begin(), it));
-		}
 
 		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
 		
@@ -435,17 +426,17 @@ namespace polyfem
 			for (int k = 0; k < b.rows(); k++)
 				b_periodic(index_map(k), d) += b(k, d);
 
-			for (int k : nodes)
-				b_periodic(index_map(k), d) = b(k, d);
+			if (force_dirichlet)
+				for (int k : boundary_nodes)
+					b_periodic(index_map(k), d) = b(k, d);
 		}
 
-		nodes = nodes_periodic;
 		b = b_periodic;
 
 		return independent_dof;
 	}
 
-	void State::periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic, Eigen::MatrixXd &x_full) const
+	Eigen::MatrixXd State::periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
@@ -457,9 +448,12 @@ namespace polyfem
 				return (int)(id + independent_dof - n_bases * problem_dim);
 		};
 
+		Eigen::MatrixXd x_full;
 		x_full.resize(ndofs, x_periodic.cols());
 		for (int i = 0; i < x_full.rows(); i++)
 			for (int j = 0; j < x_full.cols(); j++)
 				x_full(i, j) = x_periodic(index_map(i), j);
+
+		return x_full;
 	}
 } // namespace polyfem

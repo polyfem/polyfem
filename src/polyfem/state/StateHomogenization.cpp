@@ -100,6 +100,23 @@ namespace
 	}
 }
 
+Eigen::MatrixXd State::generate_linear_field(const Eigen::MatrixXd &grad)
+{
+    const int problem_dim = grad.rows();
+    const int dim = mesh->dimension();
+    assert(dim == grad.cols());
+
+    Eigen::MatrixXd func(n_bases * problem_dim, 1);
+    func.setZero();
+
+    for (int i = 0; i < n_bases; i++)
+    {
+        func.block(i * problem_dim, 0, problem_dim, 1) = grad * mesh_nodes->node_position(i).transpose();
+    }
+
+    return func;
+}
+
 void State::solve_nonlinear_homogenization()
 {
     assert(!assembler.is_linear(formulation())); // non-linear
@@ -112,8 +129,7 @@ void State::solve_nonlinear_homogenization()
         return;
     }
 
-    assert(solve_data.rhs_assembler != nullptr);
-    auto homo_problem = std::make_shared<NLHomogenizationProblem>(*this, *solve_data.rhs_assembler);
+    auto homo_problem = std::make_shared<NLHomogenizationProblem>(*this);
     
     const int dim = mesh->dimension();
     solver_info = json::array();
@@ -124,9 +140,14 @@ void State::solve_nonlinear_homogenization()
         for (int j = 0; j < dim; j++)
         {
             logger().info("Solve NeoHookean Homogenization index ({},{}) ...", i, j);
-            homo_problem->set_index(i, j);
             Eigen::VectorXd tmp_sol;
             homo_problem->full_to_reduced(sol.col(i * dim + j), tmp_sol);
+
+            Eigen::MatrixXd unit_grad;
+            unit_grad.setZero(dim, dim);
+            unit_grad(i, j) = nl_homogenization_scale;
+
+            homo_problem->set_test_strain(unit_grad);
 
             std::shared_ptr<cppoptlib::NonlinearSolver<NLHomogenizationProblem>> nl_solver = make_nl_homo_solver<NLHomogenizationProblem>(args["solver"]);
             nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
@@ -152,9 +173,42 @@ void State::solve_linear_homogenization()
         logger().error("Assemble the stiffness matrix first!");
         return;
     }
-    if (rhs.size() <= 0)
+    if (args["space"]["advanced"]["periodic_basis"])
     {
-        logger().error("Assemble the rhs first!");
+        logger().error("Homogenization doesn't support periodic basis!");
+        return;
+    }
+
+    const int dim = mesh->dimension();
+    const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+    if (formulation() == "LinearElasticity")
+    {
+        std::vector<std::pair<int, int>> unit_disp_ids;
+        if (dim == 2)
+            unit_disp_ids = {{0, 0}, {1, 1}, {0, 1}};
+        else
+            unit_disp_ids = {{0, 0}, {1, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}};
+        
+        Eigen::MatrixXd unit_grad(dim, dim);
+        rhs.setZero(stiffness.rows(), unit_disp_ids.size());
+        Eigen::MatrixXd tmp_rhs;
+        for (int i = 0; i < unit_disp_ids.size(); i++)
+        {
+            const auto &pair = unit_disp_ids[i];
+            unit_grad.setZero();
+            unit_grad(pair.first, pair.second) = 1;
+            
+            // assemble_homogenization_gradient(tmp_rhs, Eigen::MatrixXd::Zero(n_bases * problem_dim, 1), unit_grad);
+			Eigen::MatrixXd test_field = generate_linear_field(unit_grad);
+			
+			assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, test_field, tmp_rhs);
+
+            rhs.col(i) = tmp_rhs;
+        }
+    }
+    else
+    {
+        logger().error("Assembler not implemented for {}!", formulation());
         return;
     }
 
@@ -167,25 +221,26 @@ void State::solve_linear_homogenization()
     auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
     solver->setParameters(args["solver"]["linear"]);
     StiffnessMatrix A = stiffness;
+    const int full_size = A.rows();
     Eigen::VectorXd b;
     logger().info("{}...", solver->name());
     for (int b : boundary_nodes)
     {
         rhs.row(b).setZero();
     }
-    const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
     int precond_num = problem_dim * n_bases;
 
     Eigen::VectorXd x;
-    
-    int n_lagrange_multiplier = 0;
-    if (boundary_nodes.size() == 0)
+
+    apply_lagrange_multipliers(A);
+    rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
+
+    if (args["boundary_conditions"]["periodic_boundary"])
     {
-        logger().debug("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
-        
-        n_lagrange_multiplier = remove_pure_periodic_singularity(A);
-        rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
+        precond_num = full_to_periodic(A);
+        full_to_periodic(rhs);
     }
+
     sol.setZero(rhs.rows(), rhs.cols());
     
     StiffnessMatrix A_tmp = A;
@@ -205,250 +260,19 @@ void State::solve_linear_homogenization()
     else
         logger().debug("Solver error: {}", error);
 
-    sol.conservativeResize(sol.rows() - n_lagrange_multiplier, sol.cols());
-    rhs.conservativeResize(rhs.rows() - n_lagrange_multiplier, rhs.cols());
+    sol.conservativeResize(sol.rows() - n_lagrange_multipliers(), sol.cols());
+    rhs.conservativeResize(rhs.rows() - n_lagrange_multipliers(), rhs.cols());
+
+    if (args["boundary_conditions"]["periodic_boundary"])
+    {
+        sol = periodic_to_full(full_size, sol);
+        rhs = periodic_to_full(full_size, rhs);
+    }
 
     if (assembler.is_mixed(formulation()))
     {
         sol_to_pressure();
     }
-}
-
-double State::assemble_neohookean_homogenization_energy(const Eigen::MatrixXd &solution, const int i, const int j)
-{
-    const int dim = mesh->dimension();
-    const auto &gbases = geom_bases();
-
-    assert(solution.cols() == 1);
-    assert(solution.rows() == n_bases * dim);
-
-    Eigen::MatrixXd unit_grad;
-    unit_grad.setZero(dim, dim);
-    unit_grad(i, j) = nl_homogenization_scale;
-
-    const LameParameters &params = assembler.lame_params();
-
-    auto storage = create_thread_storage(LocalThreadScalarStorage());
-
-maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
-    LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-    ElementAssemblyValues &vals = local_storage.vals;
-
-    Eigen::MatrixXd sol_grad(dim, dim), diff_grad, def_grad;
-    for (int e = start; e < end; ++e)
-    {
-        ElementAssemblyValues vals;
-        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-        const Quadrature &quadrature = vals.quadrature;
-
-        for (int q = 0; q < quadrature.weights.size(); q++)
-        {
-            double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-
-            sol_grad.setZero();
-            for (const auto &v : vals.basis_values)
-                for (const auto &g : v.global)
-                    for (int d = 0; d < dim; d++)
-                        sol_grad.row(d) += g.val * solution(g.index * dim + d) * v.grad_t_m.row(q);
-
-            diff_grad = sol_grad - unit_grad;
-            def_grad = Eigen::MatrixXd::Identity(diff_grad.rows(), diff_grad.cols()) + diff_grad;
-
-            const double value = mu / 2 * ((def_grad.transpose() * def_grad).trace() - dim - 2 * std::log(def_grad.determinant())) + lambda / 2 * pow(std::log(def_grad.determinant()), 2);
-            local_storage.val += quadrature.weights(q) * vals.det(q) * value;
-        }
-    }
-});
-
-    double res = 0;
-    // Serially merge local storages
-    for (const LocalThreadScalarStorage &local_storage : storage)
-        res += local_storage.val;
-    return res;
-}
-
-void State::assemble_neohookean_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const int i, const int j)
-{
-    const int dim = mesh->dimension();
-    const auto &gbases = geom_bases();
-
-    assert(solution.cols() == 1);
-    assert(solution.rows() == n_bases * dim);
-
-    Eigen::MatrixXd unit_grad;
-    unit_grad.setZero(dim, dim);
-    unit_grad(i, j) = nl_homogenization_scale;
-
-    const LameParameters &params = assembler.lame_params();
-    grad.setZero(solution.rows(), 1);
-    auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
-
-maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
-    LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
-
-    for (int e = start; e < end; ++e)
-    {
-        ElementAssemblyValues &vals = local_storage.vals;
-        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-        const Quadrature &quadrature = vals.quadrature;
-
-        Eigen::MatrixXd sol_grad(dim, dim);
-        for (int q = 0; q < quadrature.weights.size(); q++)
-        {
-            double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-
-            sol_grad.setZero();
-            for (const auto &v : vals.basis_values)
-                for (const auto &g : v.global)
-                    for (int d = 0; d < dim; d++)
-                    sol_grad.row(d) += g.val * solution(g.index * dim + d) * v.grad_t_m.row(q);
-
-            Eigen::MatrixXd diff_grad = sol_grad - unit_grad;
-            Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(diff_grad.rows(), diff_grad.cols()) + diff_grad;
-            Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-            Eigen::MatrixXd stress = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
-
-            for (const auto &v : vals.basis_values)
-            {
-                for (int d = 0; d < dim; d++)
-                {
-                    // Eigen::MatrixXd basis_grad;
-                    // basis_grad.setZero(dim, dim);
-                    // basis_grad.row(d) = v.grad_t_m.row(q);
-
-                    const double value = quadrature.weights(q) * vals.det(q) * stress.row(d).dot(v.grad_t_m.row(q)); // (stress.array() * basis_grad.array()).sum();
-
-                    for (const auto &g : v.global)
-                        local_storage.vec(g.index * dim + d) += value * g.val;
-                }
-            }
-        }
-    }
-});
-    for (const LocalThreadVecStorage &local_storage : storage)
-        grad += local_storage.vec;
-}
-
-void State::assemble_neohookean_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const int i, const int j)
-{
-    const int dim = mesh->dimension();
-    const auto &gbases = geom_bases();
-
-    assert(solution.cols() == 1);
-    assert(solution.rows() == n_bases * dim);
-
-    Eigen::MatrixXd unit_grad;
-    unit_grad.setZero(dim, dim);
-    unit_grad(i, j) = nl_homogenization_scale;
-
-    const LameParameters &params = assembler.lame_params();
-
-    hess.resize(n_bases * dim, n_bases * dim);
-    hess.setZero();
-
-    const int max_triplets_size = int(1e7);
-    const int buffer_size = std::min(long(max_triplets_size), long(n_bases) * dim);
-
-    mat_cache.init(n_bases * dim);
-    mat_cache.set_zero();
-
-    auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
-
-    igl::Timer timerg;
-    timerg.start();
-
-maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
-    LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
-
-    for (int e = start; e < end; ++e)
-    {
-        ElementAssemblyValues &vals = local_storage.vals;
-        // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-        ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-        const Quadrature &quadrature = vals.quadrature;
-
-        Eigen::MatrixXd sol_grad(dim, dim);
-        for (int q = 0; q < quadrature.weights.size(); q++)
-        {
-            double lambda, mu;
-            params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-
-            sol_grad.setZero();
-            for (const auto &v : vals.basis_values)
-                for (const auto &g : v.global)
-                for (int d = 0; d < dim; d++)
-                    sol_grad.row(d) += g.val * solution(g.index * dim + d) * v.grad_t_m.row(q);
-
-            Eigen::MatrixXd diff_grad = sol_grad - unit_grad;
-            Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(diff_grad.rows(), diff_grad.cols()) + diff_grad;
-            Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-            // Eigen::MatrixXd stress = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
-            // Eigen::MatrixXd result = mu * mat + FmT * mat.transpose() * FmT * (mu - lambda * std::log(def_grad.determinant())) + lambda * (FmT.array() * mat.array()).sum() * FmT;
-
-            auto hess_value = [FmT, def_grad, mu, lambda](const Eigen::MatrixXd &A, const Eigen::MatrixXd &B)
-            {
-                return mu * (A.array() * B.array()).sum() + ((FmT * A.transpose() * FmT).array() * B.array()).sum() * (mu - lambda * std::log(def_grad.determinant())) + lambda * (FmT.array() * A.array()).sum() * (FmT.array() * B.array()).sum();
-            };
-
-            for (const auto &v1 : vals.basis_values)
-            {
-                const auto &global_i = v1.global;
-                for (const auto &v2 : vals.basis_values)
-                {
-                    const auto &global_j = v2.global;
-                    for (int d1 = 0; d1 < dim; d1++)
-                    {
-                        for (int d2 = 0; d2 < dim; d2++)
-                        {
-                            Eigen::MatrixXd basis_grad1, basis_grad2;
-                            basis_grad1.setZero(dim, dim);
-                            basis_grad2.setZero(dim, dim);
-                            basis_grad1.row(d1) = v1.grad_t_m.row(q);
-                            basis_grad2.row(d2) = v2.grad_t_m.row(q);
-
-                            const double local_value = hess_value(basis_grad1, basis_grad2);
-                            for (const auto &g1 : global_i)
-                            {
-                                for (const auto &g2 : global_j)
-                                {
-                                    local_storage.cache.add_value(e, g1.index * dim + d1, g2.index * dim + d2, g1.val * g2.val * local_value);
-
-                                    if (local_storage.cache.entries_size() >= max_triplets_size)
-                                    {
-                                        local_storage.cache.prune();
-                                        logger().debug("cleaning memory...");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-});
-
-    timerg.stop();
-    logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
-
-    timerg.start();
-    
-    for (LocalThreadMatStorage &local_storage : storage)
-    {
-        local_storage.cache.prune();
-        mat_cache += local_storage.cache;
-    }
-    hess = mat_cache.get_matrix();
-
-    timerg.stop();
-    logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 }
 
 void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution)
@@ -479,12 +303,8 @@ void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_so
     }
 
     StiffnessMatrix A = stiffness;
-    auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-    solver->setParameters(args["solver"]["linear"]);
-    {
-        prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
-    }
-
+    const int full_size = A.rows();
+    
     Eigen::MatrixXd adjoint_rhs;
     adjoint_rhs.setZero(stiffness.rows(), unit_disp_ids.size());
     for (int e = 0; e < bases.size(); e++)
@@ -542,14 +362,28 @@ void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_so
         }
     }
 
+    apply_lagrange_multipliers(A);
     adjoint_rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), adjoint_rhs.cols()));
-    
+
+    if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
+    {
+        precond_num = full_to_periodic(A);
+        full_to_periodic(adjoint_rhs);
+    }
+
+    auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+    solver->setParameters(args["solver"]["linear"]);
+    {
+        auto A_tmp = A;
+        prefactorize(*solver, A_tmp, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+    }
+
     adjoint_solution.setZero(adjoint_rhs.rows(), adjoint_rhs.cols());
     for (int k = 0; k < adjoint_rhs.cols(); k++)
     {
         Eigen::VectorXd b = adjoint_rhs.col(k);
         Eigen::VectorXd x = adjoint_solution.col(k);
-        dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
+        dirichlet_solve_prefactorized(*solver, A, b, boundary_nodes, x);
         adjoint_solution.col(k) = x;
     }
 
@@ -559,16 +393,14 @@ void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_so
     else
         logger().debug("Solver error: {}", error);
     
-    adjoint_solution.conservativeResize(n_bases * problem_dim, adjoint_solution.cols());
+    adjoint_solution.conservativeResize(adjoint_solution.rows() - n_lagrange_multipliers(), adjoint_solution.cols());
+
+    if (args["boundary_conditions"]["periodic_boundary"])
+        adjoint_solution = periodic_to_full(full_size, adjoint_solution);
 }
 
 void State::compute_homogenized_tensor(Eigen::MatrixXd &C_H)
 {
-    if (rhs.size() <= 0 && assembler.is_linear(formulation()))
-    {
-        logger().error("Assemble the rhs first!");
-        return;
-    }
     if (stiffness.size() <= 0 && assembler.is_linear(formulation()))
     {
         logger().error("Assemble the matrix first!");
@@ -577,6 +409,11 @@ void State::compute_homogenized_tensor(Eigen::MatrixXd &C_H)
     if (sol.size() <= 0)
     {
         logger().error("Solve the problem first!");
+        return;
+    }
+    if (args["space"]["advanced"]["periodic_basis"])
+    {
+        logger().error("This homogenization doesn't support periodic basis!");
         return;
     }
 
@@ -595,67 +432,24 @@ void State::compute_homogenized_tensor(Eigen::MatrixXd &C_H)
         else
             unit_disp_ids = {{0, 0}, {1, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}};
 
-        std::vector<Eigen::MatrixXd> unit_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
+        C_H.setZero(unit_disp_ids.size(), unit_disp_ids.size());
+
+        Eigen::MatrixXd test_fields(sol.rows(), unit_disp_ids.size());
         for (int id = 0; id < unit_disp_ids.size(); id++)
         {
             const auto &pair = unit_disp_ids[id];
-            auto &unit_strain = unit_strains[id];
 
             Eigen::MatrixXd unit_grad(dim, dim);
             unit_grad.setZero();
             unit_grad(pair.first, pair.second) = 1;
-            unit_strain = (unit_grad + unit_grad.transpose()) / 2;
+
+            test_fields.col(id) = generate_linear_field(unit_grad);
         }
 
-        C_H.setZero(unit_disp_ids.size(), unit_disp_ids.size());
-
-        const LameParameters &params = assembler.lame_params();
-
-        for (int e = 0; e < bases.size(); e++)
-        {
-            ElementAssemblyValues vals;
-            // vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-            ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-            const Quadrature &quadrature = vals.quadrature;
-
-            for (int q = 0; q < quadrature.weights.size(); q++)
-            {
-                double lambda, mu;
-                params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
-
-                std::vector<Eigen::MatrixXd> react_strains(unit_disp_ids.size(), Eigen::MatrixXd::Zero(dim, dim));
-
-                for (int id = 0; id < unit_disp_ids.size(); id++)
-                {
-                    Eigen::MatrixXd grad(dim, dim);
-                    grad.setZero();
-                    for (const auto &v : vals.basis_values)
-                        for (int d = 0; d < dim; d++)
-                        {
-                            double coeff = 0;
-                            for (const auto &g : v.global)
-                                coeff += sol(g.index * dim + d, id) * g.val;
-                            grad.row(d) += v.grad_t_m.row(q) * coeff;
-                        }
-                    
-                    react_strains[id] = (grad + grad.transpose()) / 2;
-                }
-
-                for (int row_id = 0; row_id < unit_disp_ids.size(); row_id++)
-                {
-                    Eigen::MatrixXd strain_diff_ij = unit_strains[row_id] - react_strains[row_id];
-
-                    for (int col_id = 0; col_id < unit_disp_ids.size(); col_id++)
-                    {
-                        Eigen::MatrixXd strain_diff_kl = unit_strains[col_id] - react_strains[col_id];
-
-                        const double value = 2 * mu * (strain_diff_ij.array() * strain_diff_kl.array()).sum() + lambda * strain_diff_ij.trace() * strain_diff_kl.trace();
-                        C_H(row_id, col_id) += quadrature.weights(q) * vals.det(q) * value;
-                    }
-                }
-            }
-        }
+        Eigen::MatrixXd diff_fields = test_fields - sol;
+        for (int i = 0; i < C_H.rows(); i++)
+            for (int j = 0; j < C_H.cols(); j++)
+                C_H(i, j) = diff_fields.col(i).transpose() * stiffness * diff_fields.col(j);
     }
     else if (formulation() == "NeoHookean")
     {
@@ -743,6 +537,11 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     if (formulation() != "LinearElasticity")
     {
         logger().error("Wrong formulation!");
+        return;
+    }
+    if (!args["space"]["advanced"]["periodic_basis"])
+    {
+        logger().error("This homogenization only supports periodic basis!");
         return;
     }
 
@@ -833,14 +632,8 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
         return;
     }
 
-    // fix translations
-    int n_lagrange_multiplier = 0;
-    {
-        logger().info("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
-        
-        n_lagrange_multiplier = remove_pure_periodic_singularity(A);
-        rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
-    }
+    apply_lagrange_multipliers(A);
+    rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 
     Eigen::MatrixXd w;
     w.setZero(rhs.rows(), rhs.cols());
@@ -957,9 +750,9 @@ void State::homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen:
     const int dim = mesh->dimension();
 
     assemble_stiffness_mat();
-    assemble_rhs();
     solve_homogenization();
     compute_homogenized_tensor(C_H);
+    std::cout << "\n" << C_H << "\n";
 
     std::vector<std::pair<int, int>> unit_disp_ids;
     if (dim == 2)
@@ -1105,6 +898,11 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         logger().error("Wrong formulation!");
         return;
     }
+    if (!args["space"]["advanced"]["periodic_basis"])
+    {
+        logger().error("This homogenization only supports periodic basis!");
+        return;
+    }
 
     assemble_stiffness_mat();
     
@@ -1184,14 +982,8 @@ void State::homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eig
         return;
     }
 
-    // fix translations
-    int n_lagrange_multiplier = 0;
-    {
-        logger().info("Pure periodic boundary condition, use Lagrange multiplier to find unique solution...");
-        
-        n_lagrange_multiplier = remove_pure_periodic_singularity(A);
-        rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
-    }
+    apply_lagrange_multipliers(A);
+    rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 
     Eigen::MatrixXd w;
     w.setZero(rhs.rows(), rhs.cols());

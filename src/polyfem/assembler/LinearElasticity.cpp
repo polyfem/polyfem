@@ -281,6 +281,23 @@ namespace polyfem
 			return res;
 		}
 
+		double LinearElasticity::compute_energy(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) const
+		{
+			assert(grad_disp.rows() == size() && grad_disp.cols() == size());
+
+			const Eigen::MatrixXd strain = (grad_disp + grad_disp.transpose()) / 2;
+
+			return mu * (strain.transpose() * strain).trace() + lambda / 2 * strain.trace() * strain.trace();
+		}
+		void LinearElasticity::compute_energy_gradient(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu, Eigen::MatrixXd &grad) const
+		{
+			assert(grad_disp.rows() == size() && grad_disp.cols() == size());
+
+			const Eigen::MatrixXd strain = (grad_disp + grad_disp.transpose()) / 2;
+
+			grad = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
+		}
+
 		void LinearElasticity::compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
 		{
 			double lambda, mu;

@@ -848,14 +848,55 @@ namespace polyfem
 
 		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
 		Eigen::VectorXi periodic_reduce_map;
+		int n_periodic_dependent_dofs;
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
+		int n_lagrange_multipliers() const
+		{
+			if (boundary_nodes.size() > 0 || problem->is_time_dependent())
+				return 0;
+			
+			if (args["boundary_conditions"]["periodic_boundary"])
+			{
+				if (problem->is_scalar())
+					return 1;
+				else
+					return mesh->dimension();
+			}
+			
+			if (formulation() == "Stokes" || formulation() == "NavierStokes")
+				return mesh->dimension();
+			else if (formulation() == "Laplacian")
+				return 1;
+			else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean")
+				return 3 * (mesh->dimension() - 1);
+			else
+			{
+				assert(false);
+				return 0;
+			}
+		}
+		void apply_lagrange_multipliers(StiffnessMatrix &A) const
+		{
+			if (n_lagrange_multipliers() == 0)
+				return;
+
+			logger().info("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
+			if (args["boundary_conditions"]["periodic_boundary"])
+				remove_pure_periodic_singularity(A);
+			else
+				remove_pure_neumann_singularity(A);
+		}
+		void apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const;
 		int remove_pure_neumann_singularity(StiffnessMatrix &A) const;
-		int remove_pure_periodic_singularity(StiffnessMatrix &A) const;
 		void pure_periodic_lagrange_multiplier(Eigen::MatrixXd &multipliers) const;
+		int remove_pure_periodic_singularity(StiffnessMatrix &A) const;
+		
+		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;
-		int full_to_periodic(Eigen::MatrixXd &b, std::vector<int> &nodes) const;
-		void periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic, Eigen::MatrixXd &x_full) const;
+		int full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet = true) const;
+
+		Eigen::MatrixXd periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const;
 
 		/// compute the errors, not part of solve
 		void compute_errors();
@@ -1146,9 +1187,8 @@ namespace polyfem
 		void solve_linear_homogenization();
 		void solve_nonlinear_homogenization();
 
-		double assemble_homogenization_energy(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &test_strain);
-		void   assemble_homogenization_gradient(Eigen::MatrixXd &grad, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &test_strain);
-		void   assemble_homogenization_hessian(StiffnessMatrix &hess, utils::SpareMatrixCache &mat_cache, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &test_strain);
+		// create a linear FE function with gradient equal to a constant matrix `grad`
+		Eigen::MatrixXd generate_linear_field(const Eigen::MatrixXd &grad);
 
 		void compute_homogenized_tensor(Eigen::MatrixXd &C);
 
