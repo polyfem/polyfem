@@ -18,15 +18,11 @@ namespace polyfem::utils
 		const Selection::BBox &mesh_bbox,
 		const std::string &root_path)
 	{
-		if (!selection.contains("id"))
-		{
-			logger().error("Selection does not contain an id field: {}", selection.dump());
-			throw std::runtime_error("Selection id not found");
-		}
-
 		std::shared_ptr<Selection> res = nullptr;
 		if (selection.contains("box"))
 			res = std::make_shared<BoxSelection>(selection, mesh_bbox);
+		else if (selection.contains("threshold"))
+			res = std::make_shared<BoxSideSelection>(selection, mesh_bbox);
 		else if (selection.contains("center"))
 			res = std::make_shared<SphereSelection>(selection, mesh_bbox);
 		else if (selection.contains("axis"))
@@ -60,9 +56,7 @@ namespace polyfem::utils
 		}
 		else if (j_selections.is_object())
 		{
-			// TODO clean me
-			if (!j_selections.contains("threshold"))
-				selections.push_back(build(j_selections, mesh_bbox));
+			selections.push_back(build(j_selections, mesh_bbox));
 		}
 		else if (j_selections.is_array())
 		{
@@ -78,7 +72,7 @@ namespace polyfem::utils
 		return selections;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	BoxSelection::BoxSelection(
 		const json &selection,
@@ -119,7 +113,43 @@ namespace polyfem::utils
 		return inside;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
+
+	BoxSideSelection::BoxSideSelection(
+		const json &selection,
+		const Selection::BBox &mesh_bbox)
+		: Selection(0), mesh_bbox_(mesh_bbox)
+	{
+		tolerance_ = selection.at("threshold");
+		if (tolerance_ < 0)
+			tolerance_ = mesh_bbox.size() == 3 ? 1e-2 : 1e-7;
+		id_offset_ = selection.at("id_offset");
+	}
+
+	int BoxSideSelection::id(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
+	{
+		assert(p.size() == 2 || p.size() == 3);
+		assert(mesh_bbox_[0].size() == p.size());
+		assert(mesh_bbox_[1].size() == p.size());
+		const auto &[min_corner, max_corner] = mesh_bbox_;
+
+		if (std::abs(p(0) - min_corner(0)) < tolerance_)
+			return 1 + id_offset_; // left
+		else if (std::abs(p(1) - min_corner(1)) < tolerance_)
+			return 2 + id_offset_; // bottom
+		else if (std::abs(p(0) - max_corner(0)) < tolerance_)
+			return 3 + id_offset_; // right
+		else if (std::abs(p(1) - max_corner(1)) < tolerance_)
+			return 4 + id_offset_; // top
+		else if (p.size() == 3 && std::abs(p(2) - min_corner(2)) < tolerance_)
+			return 5 + id_offset_; // back
+		else if (p.size() == 3 && std::abs(p(2) - max_corner(2)) < tolerance_)
+			return 6 + id_offset_; // front
+		else
+			return 7 + id_offset_; // all other sides
+	}
+
+	// ------------------------------------------------------------------------
 
 	SphereSelection::SphereSelection(
 		const json &selection,
@@ -148,7 +178,7 @@ namespace polyfem::utils
 		return (p - center_).squaredNorm() <= radius2_;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	AxisPlaneSelection::AxisPlaneSelection(
 		const json &selection,
@@ -189,7 +219,7 @@ namespace polyfem::utils
 			return v <= position_;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	PlaneSelection::PlaneSelection(
 		const json &selection,
@@ -215,7 +245,7 @@ namespace polyfem::utils
 		return pp.dot(normal_) >= 0;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	SpecifiedSelection::SpecifiedSelection(
 		const std::vector<int> &ids)
@@ -224,12 +254,12 @@ namespace polyfem::utils
 	{
 	}
 
-	int SpecifiedSelection::id(const size_t element_id, const std::vector<int> &vs) const
+	int SpecifiedSelection::id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		return ids_.at(element_id);
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	FileSelection::FileSelection(
 		const std::string &file_path,
@@ -280,10 +310,10 @@ namespace polyfem::utils
 		return false;
 	}
 
-	int FileSelection::id(const size_t element_id, const std::vector<int> &vs) const
+	int FileSelection::id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		if (data_.empty())
-			return SpecifiedSelection::id(element_id, vs);
+			return SpecifiedSelection::id(element_id, vs, p);
 
 		std::vector<int> tmp;
 		for (const auto &t : data_)
