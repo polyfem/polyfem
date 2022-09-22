@@ -11,5 +11,6 @@ var searchData=
   ['bilaplacianproblemwithsolution_8',['BilaplacianProblemWithSolution',['../classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html',1,'polyfem::problem']]],
   ['bodyform_9',['BodyForm',['../classpolyfem_1_1solver_1_1_body_form.html',1,'polyfem::solver']]],
   ['boundarysampler_10',['BoundarySampler',['../classpolyfem_1_1utils_1_1_boundary_sampler.html',1,'polyfem::utils']]],
-  ['boxselection_11',['BoxSelection',['../classpolyfem_1_1utils_1_1_box_selection.html',1,'polyfem::utils']]]
+  ['boxselection_11',['BoxSelection',['../classpolyfem_1_1utils_1_1_box_selection.html',1,'polyfem::utils']]],
+  ['boxsideselection_12',['BoxSideSelection',['../classpolyfem_1_1utils_1_1_box_side_selection.html',1,'polyfem::utils']]]
 ];

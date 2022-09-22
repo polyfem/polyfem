@@ -233,6 +233,7 @@ var hierarchy =
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [
       [ "polyfem::utils::AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", null ],
       [ "polyfem::utils::BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", null ],
+      [ "polyfem::utils::BoxSideSelection", "classpolyfem_1_1utils_1_1_box_side_selection.html", null ],
       [ "polyfem::utils::PlaneSelection", "classpolyfem_1_1utils_1_1_plane_selection.html", null ],
       [ "polyfem::utils::SpecifiedSelection", "classpolyfem_1_1utils_1_1_specified_selection.html", [
         [ "polyfem::utils::FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", null ]

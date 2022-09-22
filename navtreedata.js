@@ -100,12 +100,13 @@ var NAVTREEINDEX =
 "classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a",
 "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a2f21291a6b2b725554ce956b62a2d595",
 "classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a0a1cbc1f511599091c4743a7ce089b94",
-"classpolyfem_1_1utils_1_1_ref_element_sampler.html#ad5fce053a14c3a7fcc6e3e8eab1b9310",
-"dir_d0a37fccf9a2cf369fc4713384d4cf61.html",
-"namespacemembers_t.html",
-"namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a51ba1bb8ce325cc20213ffe364f87ab8",
-"struct_d_scalar1.html#a5fc77d3ec5f33e932e56c2ec7598d808",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a2599e4a0ec914718eb1d7aa4167c8fa7"
+"classpolyfem_1_1utils_1_1_ref_element_sampler.html#a8f05b7bdcd349b5f817b3480bb98a868",
+"dir_13510bfc8d6c882cc83f48e81fc78b9e.html",
+"namespacemembers_func_v.html",
+"namespacepolyfem_1_1mesh_1_1_navigation.html",
+"struct_d_scalar1.html#a0ec55a0176a94ea5e4121ce77df3847c",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ac97ef9198566e6dbda507c1e2ad22243",
+"tetrahedron_8py_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
