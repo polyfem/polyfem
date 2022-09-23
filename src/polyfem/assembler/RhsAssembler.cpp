@@ -578,6 +578,8 @@ namespace polyfem
 						const int n_id = m(n, 0);
 						for (int d = 0; d < size_; ++d)
 						{
+							if (std::isnan(m(n, d + 1)))
+								continue;
 							const int g_index = n_id * size_ + d;
 							rhs(g_index) = m(n, d + 1);
 						}

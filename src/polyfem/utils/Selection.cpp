@@ -5,6 +5,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
+
 #include <memory>
 
 namespace polyfem::utils
@@ -16,15 +18,11 @@ namespace polyfem::utils
 		const Selection::BBox &mesh_bbox,
 		const std::string &root_path)
 	{
-		if (!selection.contains("id"))
-		{
-			logger().error("Selection does not contain an id field: {}", selection.dump());
-			throw std::runtime_error("Selection id not found");
-		}
-
 		std::shared_ptr<Selection> res = nullptr;
 		if (selection.contains("box"))
 			res = std::make_shared<BoxSelection>(selection, mesh_bbox);
+		else if (selection.contains("threshold"))
+			res = std::make_shared<BoxSideSelection>(selection, mesh_bbox);
 		else if (selection.contains("center"))
 			res = std::make_shared<SphereSelection>(selection, mesh_bbox);
 		else if (selection.contains("axis"))
@@ -58,9 +56,7 @@ namespace polyfem::utils
 		}
 		else if (j_selections.is_object())
 		{
-			// TODO clean me
-			if (!j_selections.contains("threshold"))
-				selections.push_back(build(j_selections, mesh_bbox));
+			selections.push_back(build(j_selections, mesh_bbox));
 		}
 		else if (j_selections.is_array())
 		{
@@ -76,7 +72,7 @@ namespace polyfem::utils
 		return selections;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	BoxSelection::BoxSelection(
 		const json &selection,
@@ -99,7 +95,7 @@ namespace polyfem::utils
 		}
 	}
 
-	bool BoxSelection::inside(const RowVectorNd &p) const
+	bool BoxSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(bbox_[0].size() == p.size());
 		assert(bbox_[1].size() == p.size());
@@ -117,7 +113,43 @@ namespace polyfem::utils
 		return inside;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
+
+	BoxSideSelection::BoxSideSelection(
+		const json &selection,
+		const Selection::BBox &mesh_bbox)
+		: Selection(0), mesh_bbox_(mesh_bbox)
+	{
+		tolerance_ = selection.at("threshold");
+		if (tolerance_ < 0)
+			tolerance_ = mesh_bbox.size() == 3 ? 1e-2 : 1e-7;
+		id_offset_ = selection.at("id_offset");
+	}
+
+	int BoxSideSelection::id(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
+	{
+		assert(p.size() == 2 || p.size() == 3);
+		assert(mesh_bbox_[0].size() == p.size());
+		assert(mesh_bbox_[1].size() == p.size());
+		const auto &[min_corner, max_corner] = mesh_bbox_;
+
+		if (std::abs(p(0) - min_corner(0)) < tolerance_)
+			return 1 + id_offset_; // left
+		else if (std::abs(p(1) - min_corner(1)) < tolerance_)
+			return 2 + id_offset_; // bottom
+		else if (std::abs(p(0) - max_corner(0)) < tolerance_)
+			return 3 + id_offset_; // right
+		else if (std::abs(p(1) - max_corner(1)) < tolerance_)
+			return 4 + id_offset_; // top
+		else if (p.size() == 3 && std::abs(p(2) - min_corner(2)) < tolerance_)
+			return 5 + id_offset_; // back
+		else if (p.size() == 3 && std::abs(p(2) - max_corner(2)) < tolerance_)
+			return 6 + id_offset_; // front
+		else
+			return 7 + id_offset_; // all other sides
+	}
+
+	// ------------------------------------------------------------------------
 
 	SphereSelection::SphereSelection(
 		const json &selection,
@@ -139,14 +171,14 @@ namespace polyfem::utils
 		id_ = selection["id"];
 	}
 
-	bool SphereSelection::inside(const RowVectorNd &p) const
+	bool SphereSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(center_.size() == p.size());
 
 		return (p - center_).squaredNorm() <= radius2_;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	AxisPlaneSelection::AxisPlaneSelection(
 		const json &selection,
@@ -177,7 +209,7 @@ namespace polyfem::utils
 		}
 	}
 
-	bool AxisPlaneSelection::inside(const RowVectorNd &p) const
+	bool AxisPlaneSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		const double v = p[std::abs(axis_) - 1];
 
@@ -187,7 +219,7 @@ namespace polyfem::utils
 			return v <= position_;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	PlaneSelection::PlaneSelection(
 		const json &selection,
@@ -206,14 +238,14 @@ namespace polyfem::utils
 			point_ = normal_ * selection.value("offset", 0.0);
 	}
 
-	bool PlaneSelection::inside(const RowVectorNd &p) const
+	bool PlaneSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		assert(p.size() == normal_.size());
 		const RowVectorNd pp = p - point_;
 		return pp.dot(normal_) >= 0;
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	SpecifiedSelection::SpecifiedSelection(
 		const std::vector<int> &ids)
@@ -222,32 +254,73 @@ namespace polyfem::utils
 	{
 	}
 
-	int SpecifiedSelection::id(const size_t element_id) const
+	int SpecifiedSelection::id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const
 	{
 		return ids_.at(element_id);
 	}
 
-	///////////////////////////////////////////////////////////////////////
+	// ------------------------------------------------------------------------
 
 	FileSelection::FileSelection(
 		const std::string &file_path,
 		const int id_offset)
 	{
-		std::ifstream file(file_path);
-		if (!file.is_open())
+		Eigen::MatrixXi mat;
+		const auto ok = io::read_matrix(file_path, mat);
+		if (!ok)
 		{
 			logger().error("Unable to open selection file \"{}\"!", file_path);
 			return;
 		}
 
-		std::string line;
-		while (std::getline(file, line))
+		if (mat.cols() == 1)
 		{
-			if (line.empty())
-				continue;
-			int id;
-			std::istringstream(line) >> id;
-			this->ids_.push_back(id + id_offset);
+			for (int k = 0; k < mat.size(); ++k)
+				this->ids_.push_back(mat(k) + id_offset);
 		}
+		else
+		{
+			data_.resize(mat.rows());
+
+			for (int i = 0; i < mat.rows(); ++i)
+			{
+				data_[i].first = mat(i, 0) + id_offset;
+
+				for (int j = 1; j < mat.cols(); ++j)
+				{
+					data_[i].second.push_back(mat(i, j));
+				}
+
+				std::sort(data_[i].second.begin(), data_[i].second.end());
+			}
+		}
+	}
+
+	bool FileSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
+	{
+		if (data_.empty())
+			return SpecifiedSelection::inside(p_id, vs, p);
+
+		std::vector<int> tmp;
+		for (const auto &t : data_)
+		{
+			if (t.second == vs)
+				return true;
+		}
+		return false;
+	}
+
+	int FileSelection::id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const
+	{
+		if (data_.empty())
+			return SpecifiedSelection::id(element_id, vs, p);
+
+		std::vector<int> tmp;
+		for (const auto &t : data_)
+		{
+			if (t.second == vs)
+				return t.first;
+		}
+		return -1;
 	}
 } // namespace polyfem::utils

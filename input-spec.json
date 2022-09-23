@@ -241,16 +241,16 @@
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "int",
-        "default": -1,
-        "doc": "Assign specified ID to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0))."
+        "doc": "Assign specified ID to all volume elements of the geometry."
     },
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "object",
-        "required": [
+        "optional": [
             "id_offset"
         ],
         "typename": "id_offset",
+        "default": null,
         "doc": "Offsets the volume IDs loaded from the mesh."
     },
     {
@@ -429,36 +429,16 @@
     },
     {
         "pointer": "/geometry/*/surface_selection",
-        "type": "object",
-        "optional": [
-            "threshold",
-            "offset"
-        ],
-        "typename": "bbox",
-        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
-    },
-    {
-        "pointer": "/geometry/*/surface_selection/threshold",
-        "type": "float",
-        "default": -1
-    },
-    {
-        "pointer": "/geometry/*/surface_selection/offset",
-        "type": "int",
-        "default": 0
-    },
-    {
-        "pointer": "/geometry/*/surface_selection",
-        "type": "list",
-        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
-    },
-    {
-        "pointer": "/geometry/*/surface_selection",
         "type": "file",
         "extensions": [
             ".txt"
         ],
         "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one ID for each; each triple must correspond to a surface element"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "list",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -519,6 +499,19 @@
         "default": null,
         "typename": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "threshold"
+        ],
+        "optional": [
+            "id_offset"
+        ],
+        "default": null,
+        "typename": "box_side",
+        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
@@ -596,6 +589,17 @@
         "pointer": "/geometry/*/surface_selection/*/box/*/*",
         "type": "float",
         "default": 0
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/threshold",
+        "type": "float",
+        "doc": "Threshold for box side selection."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "ID offset of box side selection."
     },
     {
         "pointer": "/geometry/*/n_refs",
