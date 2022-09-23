@@ -20,7 +20,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/output/OutData.hpp>
+#include <polyfem/io/OutData.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
@@ -496,13 +496,13 @@ namespace polyfem
 		/// or save it in the solution_frames array
 		bool solve_export_to_file = true;
 		/// saves the frames in a vector instead of VTU
-		std::vector<output::SolutionFrame> solution_frames;
+		std::vector<io::SolutionFrame> solution_frames;
 		/// visualization stuff
-		output::OutGeometryData out_geom;
+		io::OutGeometryData out_geom;
 		/// runtime statistics
-		output::OutRuntimeData runtime;
+		io::OutRuntimeData timings;
 		/// Other statistics
-		output::OutStatsData stats;
+		io::OutStatsData stats;
 
 		/// saves all data on the disk according to the input params
 		void export_data();

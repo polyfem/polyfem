@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 
 	state.compute_errors();
 
-	logger().info("total time: {}s", state.runtime.total_time());
+	logger().info("total time: {}s", state.timings.total_time());
 
 	state.save_json();
 	state.export_data();

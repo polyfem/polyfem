@@ -59,7 +59,7 @@ namespace polyfem
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
 				*this, time, dt,
-				output::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+				io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
 				is_contact_enabled(), solution_frames);
 
 			out_geom.save_pvd(
@@ -103,7 +103,7 @@ namespace polyfem
 		using json = nlohmann::json;
 		json j;
 		stats.save_json(args, n_bases, n_pressure_bases,
-						sol, *mesh, disc_orders, *problem, runtime,
+						sol, *mesh, disc_orders, *problem, timings,
 						formulation(), iso_parametric(), args["output"]["advanced"]["sol_at_node"],
 						j);
 		out << j.dump(4) << std::endl;
@@ -124,7 +124,7 @@ namespace polyfem
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			*this, t, dt,
-			output::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
 			is_contact_enabled(), solution_frames);
 	}
 
@@ -169,7 +169,7 @@ namespace polyfem
 			*this,
 			!args["time"].is_null(),
 			tend, dt,
-			output::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
 			vis_mesh_path,
 			nodes_path,
 			solution_path,

@@ -45,7 +45,7 @@
 
 extern "C" size_t getPeakRSS();
 
-namespace polyfem::output
+namespace polyfem::io
 {
 
 	void OutGeometryData::extract_boundary_mesh(
@@ -729,7 +729,7 @@ namespace polyfem::output
 		const std::string &stress_path,
 		const std::string &mises_path,
 		const bool is_contact_enabled,
-		std::vector<output::SolutionFrame> &solution_frames) const
+		std::vector<SolutionFrame> &solution_frames) const
 	{
 		if (!state.mesh)
 		{
@@ -888,7 +888,7 @@ namespace polyfem::output
 		const double dt,
 		const ExportOptions &opts,
 		const bool is_contact_enabled,
-		std::vector<output::SolutionFrame> &solution_frames) const
+		std::vector<SolutionFrame> &solution_frames) const
 	{
 		if (!state.mesh)
 		{
@@ -999,7 +999,7 @@ namespace polyfem::output
 		const State &state,
 		const double t,
 		const ExportOptions &opts,
-		std::vector<output::SolutionFrame> &solution_frames) const
+		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
 		const Density &density = state.density;
@@ -1510,7 +1510,7 @@ namespace polyfem::output
 		const double dt_in,
 		const ExportOptions &opts,
 		const bool is_contact_enabled,
-		std::vector<output::SolutionFrame> &solution_frames) const
+		std::vector<SolutionFrame> &solution_frames) const
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
@@ -1764,7 +1764,7 @@ namespace polyfem::output
 		const State &state,
 		const double t,
 		const ExportOptions &opts,
-		std::vector<output::SolutionFrame> &solution_frames) const
+		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
@@ -2462,7 +2462,7 @@ namespace polyfem::output
 		const mesh::Mesh &mesh,
 		const Eigen::VectorXi &disc_orders,
 		const assembler::Problem &problem,
-		const output::OutRuntimeData &runtime,
+		const OutRuntimeData &runtime,
 		const std::string &formulation,
 		const bool isoparametric,
 		const int sol_at_node_id,
@@ -2588,4 +2588,4 @@ namespace polyfem::output
 		logger().info("done");
 	}
 
-} // namespace polyfem::output
+} // namespace polyfem::io

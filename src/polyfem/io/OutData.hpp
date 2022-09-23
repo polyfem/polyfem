@@ -17,7 +17,7 @@ namespace polyfem
 	class State;
 }
 
-namespace polyfem::output
+namespace polyfem::io
 {
 	/// class used to save the solution of time dependent problems in code instead of saving it to the disc
 	class SolutionFrame
@@ -123,7 +123,7 @@ namespace polyfem::output
 			const std::string &stress_path,
 			const std::string &mises_path,
 			const bool is_contact_enabled,
-			std::vector<output::SolutionFrame> &solution_frames) const;
+			std::vector<SolutionFrame> &solution_frames) const;
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
@@ -139,7 +139,7 @@ namespace polyfem::output
 					  const double dt,
 					  const ExportOptions &opts,
 					  const bool is_contact_enabled,
-					  std::vector<output::SolutionFrame> &solution_frames) const;
+					  std::vector<SolutionFrame> &solution_frames) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
@@ -151,7 +151,7 @@ namespace polyfem::output
 						 const State &state,
 						 const double t,
 						 const ExportOptions &opts,
-						 std::vector<output::SolutionFrame> &solution_frames) const;
+						 std::vector<SolutionFrame> &solution_frames) const;
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
@@ -165,7 +165,7 @@ namespace polyfem::output
 						  const double dt_in,
 						  const ExportOptions &opts,
 						  const bool is_contact_enabled,
-						  std::vector<output::SolutionFrame> &solution_frames) const;
+						  std::vector<SolutionFrame> &solution_frames) const;
 
 		/// saves the wireframe
 		/// @param[in] name filename
@@ -177,7 +177,7 @@ namespace polyfem::output
 					   const State &state,
 					   const double t,
 					   const ExportOptions &opts,
-					   std::vector<output::SolutionFrame> &solution_frames) const;
+					   std::vector<SolutionFrame> &solution_frames) const;
 
 		/// save a PVD of a time dependent simulation
 		/// @param[in] name filename
@@ -407,10 +407,10 @@ namespace polyfem::output
 					   const mesh::Mesh &mesh,
 					   const Eigen::VectorXi &disc_orders,
 					   const assembler::Problem &problem,
-					   const output::OutRuntimeData &runtime,
+					   const OutRuntimeData &runtime,
 					   const std::string &formulation,
 					   const bool isoparametric,
 					   const int sol_at_node_id,
 					   nlohmann::json &j);
 	};
-} // namespace polyfem::output
+} // namespace polyfem::io

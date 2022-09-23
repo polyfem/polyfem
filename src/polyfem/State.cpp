@@ -785,7 +785,7 @@ namespace polyfem
 		const int prev_bases = n_bases;
 		n_bases += obstacle.n_vertices();
 
-		logger().info("Building boundary mesh...");
+		logger().info("Building collision mesh...");
 		build_collision_mesh();
 		logger().info("Done!");
 
@@ -860,8 +860,8 @@ namespace polyfem
 
 		logger().info("n_bases {}", n_bases);
 
-		runtime.building_basis_time = timer.getElapsedTime();
-		logger().info(" took {}s", runtime.building_basis_time);
+		timings.building_basis_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.building_basis_time);
 
 		logger().info("flipped elements {}", stats.n_flipped);
 		logger().info("h: {}", stats.mesh_size);
@@ -956,8 +956,8 @@ namespace polyfem
 		}
 
 		timer.stop();
-		runtime.computing_poly_basis_time = timer.getElapsedTime();
-		logger().info(" took {}s", runtime.computing_poly_basis_time);
+		timings.computing_poly_basis_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.computing_poly_basis_time);
 
 		n_bases += new_bases;
 	}
@@ -965,8 +965,8 @@ namespace polyfem
 	void State::build_collision_mesh()
 	{
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		output::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
-													   boundary_nodes_pos, boundary_edges, boundary_triangles);
+		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
+												   boundary_nodes_pos, boundary_edges, boundary_triangles);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
@@ -1026,7 +1026,7 @@ namespace polyfem
 		if (formulation() == "OperatorSplitting")
 		{
 			stiffness.resize(1, 1);
-			runtime.assembling_stiffness_mat_time = 0;
+			timings.assembling_stiffness_mat_time = 0;
 			return;
 		}
 
@@ -1110,8 +1110,8 @@ namespace polyfem
 		}
 
 		timer.stop();
-		runtime.assembling_stiffness_mat_time = timer.getElapsedTime();
-		logger().info(" took {}s", runtime.assembling_stiffness_mat_time);
+		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assembling_stiffness_mat_time);
 
 		stats.nn_zero = stiffness.nonZeros();
 		stats.num_dofs = stiffness.rows();
@@ -1187,7 +1187,7 @@ namespace polyfem
 			rhs.conservativeResize(prev_size + n_larger, rhs.cols());
 			if (formulation() == "OperatorSplitting")
 			{
-				runtime.assigning_rhs_time = 0;
+				timings.assigning_rhs_time = 0;
 				return;
 			}
 			// Divergence free rhs
@@ -1209,8 +1209,8 @@ namespace polyfem
 		}
 
 		timer.stop();
-		runtime.assigning_rhs_time = timer.getElapsedTime();
-		logger().info(" took {}s", runtime.assigning_rhs_time);
+		timings.assigning_rhs_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
 	void State::solve_problem()
@@ -1296,8 +1296,8 @@ namespace polyfem
 		}
 
 		timer.stop();
-		runtime.solving_time = timer.getElapsedTime();
-		logger().info(" took {}s", runtime.solving_time);
+		timings.solving_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.solving_time);
 	}
 
 } // namespace polyfem

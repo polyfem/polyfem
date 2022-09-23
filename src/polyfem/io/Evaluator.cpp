@@ -18,7 +18,7 @@
 #include <igl/AABB.h>
 #include <igl/per_face_normals.h>
 
-namespace polyfem::output
+namespace polyfem::io
 {
 	using namespace mesh;
 	using namespace assembler;
@@ -1291,4 +1291,4 @@ namespace polyfem::output
 			index += local_val.rows();
 		}
 	}
-} // namespace polyfem::output
+} // namespace polyfem::io

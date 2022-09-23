@@ -8,7 +8,7 @@
 
 #include <polyfem/utils/RefElementSampler.hpp>
 
-namespace polyfem::output
+namespace polyfem::io
 {
 	class Evaluator
 	{
@@ -399,4 +399,4 @@ namespace polyfem::output
 			Eigen::MatrixXi &faces,
 			Eigen::MatrixXd &sidesets);
 	};
-} // namespace polyfem::output
+} // namespace polyfem::io
