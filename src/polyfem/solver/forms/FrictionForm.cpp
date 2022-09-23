@@ -27,8 +27,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd FrictionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return state_.collision_mesh.vertices(
-			state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
+		return state_.collision_mesh.displace_vertices(utils::unflatten(x, state_.mesh->dimension()));
 	}
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -73,9 +72,9 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::Constraints constraint_set;
-		ipc::construct_constraint_set(
+		constraint_set.build(
 			state_.collision_mesh, displaced_surface, dhat_,
-			constraint_set, /*dmin=*/0, broad_phase_method_);
+			/*dmin=*/0, broad_phase_method_);
 
 		ipc::construct_friction_constraint_set(
 			state_.collision_mesh, displaced_surface, constraint_set,

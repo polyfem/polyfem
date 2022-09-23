@@ -137,10 +137,8 @@ namespace polyfem
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
 
-#ifdef IPC_TOOLKIT_WITH_LOGGER
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 		ipc::logger().set_level(log_level);
-#endif
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir, const bool fallback_solver)
