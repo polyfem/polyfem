@@ -18,7 +18,10 @@ namespace polyfem
 
 			virtual bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const = 0;
 
-			virtual int id(const size_t element_id, const std::vector<int> &vs) const { return id_; }
+			virtual int id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const
+			{
+				return id_;
+			}
 
 			/// @brief Build a selection objects from a JSON selection.
 			/// @param j_selections JSON object of selection(s).
@@ -46,7 +49,7 @@ namespace polyfem
 			size_t id_;
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		class BoxSelection : public Selection
 		{
@@ -61,7 +64,29 @@ namespace polyfem
 			BBox bbox_;
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
+
+		class BoxSideSelection : public Selection
+		{
+		public:
+			BoxSideSelection(
+				const json &selection,
+				const BBox &mesh_bbox);
+
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override
+			{
+				return true;
+			}
+
+			int id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
+
+		protected:
+			BBox mesh_bbox_;
+			double tolerance_;
+			int id_offset_;
+		};
+
+		// --------------------------------------------------------------------
 
 		class SphereSelection : public Selection
 		{
@@ -77,7 +102,7 @@ namespace polyfem
 			double radius2_;
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		class AxisPlaneSelection : public Selection
 		{
@@ -93,7 +118,7 @@ namespace polyfem
 			double position_;
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		class PlaneSelection : public Selection
 		{
@@ -109,7 +134,7 @@ namespace polyfem
 			RowVectorNd point_;
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		class UniformSelection : public Selection
 		{
@@ -120,7 +145,7 @@ namespace polyfem
 			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override { return true; }
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		class SpecifiedSelection : public Selection
 		{
@@ -130,7 +155,7 @@ namespace polyfem
 
 			virtual bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override { return true; }
 
-			virtual int id(const size_t element_id, const std::vector<int> &vs) const override;
+			virtual int id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
 
 		protected:
 			SpecifiedSelection() {}
@@ -138,7 +163,7 @@ namespace polyfem
 			std::vector<int> ids_;
 		};
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		class FileSelection : public SpecifiedSelection
 		{
@@ -148,7 +173,7 @@ namespace polyfem
 				const int id_offset = 0);
 
 			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
-			int id(const size_t element_id, const std::vector<int> &vs) const override;
+			int id(const size_t element_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
 
 		private:
 			std::vector<std::pair<int, std::vector<int>>> data_;

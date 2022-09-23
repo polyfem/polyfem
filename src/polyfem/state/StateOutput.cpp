@@ -1724,17 +1724,17 @@ namespace polyfem
 			VTUWriter writer;
 
 			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd displaced = unflatten(sol, problem_dim);
+			const Eigen::MatrixXd displacements = utils::unflatten(sol, problem_dim);
 
-			Eigen::MatrixXd real_vertices = collision_mesh.vertices(displaced);
-			writer.add_field("solution", real_vertices);
+			const Eigen::MatrixXd collision_mesh_displacements =
+				collision_mesh.map_displacements(displacements);
+			writer.add_field("solution", collision_mesh_displacements);
 
-			displaced += boundary_nodes_pos;
-			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
+			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(displacements);
 
 			ipc::Constraints constraint_set;
-			ipc::construct_constraint_set(
-				collision_mesh, displaced_surface, args["contact"]["dhat"], constraint_set,
+			constraint_set.build(
+				collision_mesh, displaced_surface, args["contact"]["dhat"],
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
 
 			const double barrier_stiffness = solve_data.contact_form != nullptr ? solve_data.contact_form->barrier_stiffness() : 1;
@@ -1747,8 +1747,8 @@ namespace polyfem
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
-				assert(forces_reshaped.rows() == real_vertices.rows());
-				assert(forces_reshaped.cols() == real_vertices.cols());
+				assert(forces_reshaped.rows() == collision_mesh_displacements.rows());
+				assert(forces_reshaped.cols() == collision_mesh_displacements.cols());
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
@@ -1762,7 +1762,9 @@ namespace polyfem
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
 					collision_mesh, displaced_surface, constraint_set,
-					args["contact"]["dhat"], barrier_stiffness, args["contact"]["friction_coefficient"],
+					args["contact"]["dhat"].get<double>(),
+					barrier_stiffness,
+					args["contact"]["friction_coefficient"].get<double>(),
 					friction_constraint_set);
 
 				double dt = 1;
@@ -1776,17 +1778,17 @@ namespace polyfem
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
-				assert(forces_reshaped.rows() == real_vertices.rows());
-				assert(forces_reshaped.cols() == real_vertices.cols());
+				assert(forces_reshaped.rows() == collision_mesh_displacements.rows());
+				assert(forces_reshaped.cols() == collision_mesh_displacements.cols());
 				writer.add_field("friction_forces", forces_reshaped);
 			}
 
-			assert(collision_mesh.vertices(boundary_nodes_pos).rows() == real_vertices.rows());
-			assert(collision_mesh.vertices(boundary_nodes_pos).cols() == real_vertices.cols());
+			assert(collision_mesh.num_vertices() == collision_mesh_displacements.rows());
+			assert(collision_mesh.dim() == collision_mesh_displacements.cols());
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
-				collision_mesh.vertices(boundary_nodes_pos),
+				collision_mesh.vertices_at_rest(),
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
