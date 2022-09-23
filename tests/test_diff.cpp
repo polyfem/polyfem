@@ -2593,7 +2593,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLU"
+				"solver": "Eigen::SparseLU"
 			},
 			"nonlinear": {
 				"f_delta": 1e-15,
@@ -2937,7 +2937,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLU"
+				"solver": "Eigen::SparseLU"
 			},
 			"nonlinear": {
 				"f_delta": 1e-15,
