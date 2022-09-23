@@ -126,6 +126,8 @@ namespace polyfem
 
 			in_primitive_to_primitive.setLinSpaced(num_in_primitives, 0, num_in_primitives - 1);
 
+			igl::Timer timer;
+
 			// ------------
 			// Map vertices
 			// ------------
@@ -139,9 +141,15 @@ namespace polyfem
 			// Map edges
 			// ---------
 
+			logger().trace("Building Mesh edges to IDs...");
+			timer.start();
 			const auto edges_to_ids = mesh.edges_to_ids();
 			assert(in_ordered_edges.rows() == edges_to_ids.size());
+			timer.stop();
+			logger().trace("Done (took {}s)", timer.getElapsedTime());
 
+			logger().trace("Building in-edge to edge mapping...");
+			timer.start();
 			for (int in_ei = 0; in_ei < in_ordered_edges.rows(); in_ei++)
 			{
 				const std::pair<int, int> in_edge(
@@ -150,6 +158,8 @@ namespace polyfem
 				in_primitive_to_primitive[in_offset + in_ei] =
 					offset + edges_to_ids.at(in_edge); // offset edge ids
 			}
+			timer.stop();
+			logger().trace("Done (took {}s)", timer.getElapsedTime());
 
 			in_offset += mesh.n_edges();
 			offset += mesh.n_edges();
@@ -157,11 +167,18 @@ namespace polyfem
 			// ---------
 			// Map faces
 			// ---------
+
 			if (mesh.is_volume())
 			{
+				logger().trace("Building Mesh faces to IDs...");
+				timer.start();
 				const auto faces_to_ids = mesh.faces_to_ids();
 				assert(in_ordered_faces.rows() == faces_to_ids.size());
+				timer.stop();
+				logger().trace("Done (took {}s)", timer.getElapsedTime());
 
+				logger().trace("Building in-face to face mapping...");
+				timer.start();
 				for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
 				{
 					std::vector<int> in_face(in_ordered_faces.cols());
@@ -172,6 +189,8 @@ namespace polyfem
 					in_primitive_to_primitive[in_offset + in_fi] =
 						offset + faces_to_ids.at(in_face); // offset face ids
 				}
+				timer.stop();
+				logger().trace("Done (took {}s)", timer.getElapsedTime());
 
 				in_offset += mesh.n_faces();
 				offset += mesh.n_faces();
@@ -212,16 +231,26 @@ namespace polyfem
 		const int num_in_primitives = n_vertices + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 		const int num_primitives = mesh->n_vertices() + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 
+		igl::Timer timer;
+
+		logger().trace("Building in-node to in-primitive mapping...");
+		timer.start();
 		Eigen::VectorXi in_node_to_in_primitive;
 		Eigen::VectorXi in_node_offset;
 		build_in_node_to_in_primitive(*mesh, *mesh_nodes, in_node_to_in_primitive, in_node_offset);
+		timer.stop();
+		logger().trace("Done (took {}s)", timer.getElapsedTime());
 
+		logger().trace("Building in-primitive to primitive mapping...");
+		timer.start();
 		build_in_primitive_to_primitive(
 			*mesh, *mesh_nodes,
 			mesh->in_ordered_vertices(),
 			mesh->in_ordered_edges(),
 			mesh->in_ordered_faces(),
 			in_primitive_to_primitive);
+		timer.stop();
+		logger().trace("Done (took {}s)", timer.getElapsedTime());
 
 		const auto primitive_offset = [&](int node) {
 			if (mesh_nodes->is_vertex_node(node))
@@ -235,6 +264,8 @@ namespace polyfem
 			throw std::runtime_error("Invalid node ID!");
 		};
 
+		logger().trace("Building primitive to node mapping...");
+		timer.start();
 		std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
 		const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
 		int node_count = 0;
@@ -251,7 +282,11 @@ namespace polyfem
 			}
 		}
 		assert(node_count == num_nodes);
+		timer.stop();
+		logger().trace("Done (took {}s)", timer.getElapsedTime());
 
+		logger().trace("Combining mappings...");
+		timer.start();
 		in_node_to_node.resize(num_nodes);
 		for (int i = 0; i < num_nodes; i++)
 		{
@@ -285,6 +320,8 @@ namespace polyfem
 			else
 				in_node_to_node[i] = possible_nodes[0];
 		}
+		timer.stop();
+		logger().trace("Done (took {}s)", timer.getElapsedTime());
 	}
 
 	std::string State::formulation() const
@@ -669,6 +706,23 @@ namespace polyfem
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
 
+		if (formulation() == "MultiModels")
+		{
+			assert(args["materials"].is_array());
+
+			std::vector<std::string> materials(mesh->n_elements());
+
+			std::map<int, std::string> mats;
+
+			for (const auto &m : args["materials"])
+				mats[m["id"].get<int>()] = m["type"];
+
+			for (int i = 0; i < materials.size(); ++i)
+				materials[i] = mats.at(mesh->get_body_id(i));
+
+			assembler.init_multimodels(materials);
+		}
+
 		n_bases = 0;
 		n_geom_bases = 0;
 		n_pressure_bases = 0;
@@ -689,7 +743,9 @@ namespace polyfem
 
 		const auto &tmp_json = args["space"]["discr_order"];
 		if (tmp_json.is_number_integer())
+		{
 			disc_orders.setConstant(tmp_json);
+		}
 		else if (tmp_json.is_string())
 		{
 			const std::string discr_orders_path = tmp_json;
@@ -727,8 +783,15 @@ namespace polyfem
 				const int bid = mesh->get_body_id(e);
 				const auto order = b_orders.find(bid);
 				if (order == b_orders.end())
-					log_and_throw_error(fmt::format("Missing discretization order for body {}", bid));
-				disc_orders[e] = order->second;
+				{
+					logger().debug("Missing discretization order for body {}; using 1", bid);
+					b_orders[bid] = 1;
+					disc_orders[e] = 1;
+				}
+				else
+				{
+					disc_orders[e] = order->second;
+				}
 			}
 		}
 		else
@@ -1102,13 +1165,19 @@ namespace polyfem
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Extracting boundary mesh...");
+		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, n_bases, bases);
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
-		// logger().debug("Building node mapping...");
-		// build_node_mapping();
-		// logger().debug(" done");
+		{
+			igl::Timer timer2;
+			logger().debug("Building node mapping...");
+			timer2.start();
+			build_node_mapping();
+			timer2.stop();
+			logger().debug("Done (took {}s)", timer2.getElapsedTime());
+		}
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, geom_bases(), pressure_bases, boundary_gnodes, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
@@ -1138,7 +1207,10 @@ namespace polyfem
 					const int node_id = in_node_to_node[nodes[n]];
 					tmp(n, 0) = node_id;
 					for (int d = 0; d < problem_dim; ++d)
-						boundary_nodes.push_back(node_id * problem_dim + d);
+					{
+						if (!std::isnan(tmp(n, d + 1)))
+							boundary_nodes.push_back(node_id * problem_dim + d);
+					}
 				}
 
 				input_dirichlet.emplace_back(tmp);

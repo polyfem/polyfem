@@ -6,12 +6,11 @@ namespace polyfem::time_integrator
 {
 	void BDF::set_parameters(const nlohmann::json &params)
 	{
-		assert(params.contains("BDF"));
-		num_steps = params["BDF"].value("steps", 1);
-		if (num_steps < 1 || num_steps > 6)
+		steps = params.at("steps");
+		if (steps < 1 || steps > 6)
 		{
-			logger().warn("BDF num_steps must be 1 ≤ n ≤ 6}; using default of 1");
-			num_steps = 1;
+			logger().warn("BDF steps must be 1 ≤ n ≤ 6}; using default of 1");
+			steps = 1;
 		}
 	}
 
@@ -28,7 +27,7 @@ namespace polyfem::time_integrator
 		this->v_prevs.clear();
 		this->a_prevs.clear();
 
-		const int n = std::min(int(x_prevs.size()), num_steps);
+		const int n = std::min(int(x_prevs.size()), steps);
 		for (int i = 0; i < n; i++)
 		{
 			this->x_prevs.push_back(x_prevs[i]);
@@ -93,21 +92,20 @@ namespace polyfem::time_integrator
 
 	void BDF::update_quantities(const Eigen::VectorXd &x)
 	{
-		const Eigen::VectorXd sum_x_prev = weighted_sum_x_prevs();
-		const Eigen::VectorXd sum_v_prev = weighted_sum_v_prevs();
-		const double beta = betas(x_prevs.size() - 1);
+		const Eigen::VectorXd v = compute_velocity(x);
+		const Eigen::VectorXd a = compute_acceleration(v);
 
-		x_prevs.push_front(x); // x_prev() = x
-		v_prevs.push_front((x_prev() - sum_x_prev) / (beta * dt()));
-		a_prevs.push_front((v_prev() - sum_v_prev) / (beta * dt()));
+		x_prevs.push_front(x);
+		v_prevs.push_front(v);
+		a_prevs.push_front(a);
 
-		if (x_prevs.size() > num_steps)
+		if (x_prevs.size() > steps)
 		{
 			x_prevs.pop_back();
 			v_prevs.pop_back();
 			a_prevs.pop_back();
 		}
-		assert(x_prevs.size() <= num_steps);
+		assert(x_prevs.size() <= steps);
 		assert(x_prevs.size() == v_prevs.size());
 		assert(x_prevs.size() == a_prevs.size());
 	}
@@ -116,6 +114,20 @@ namespace polyfem::time_integrator
 	{
 		const double beta = betas(x_prevs.size() - 1);
 		return weighted_sum_x_prevs() + beta * dt() * weighted_sum_v_prevs();
+	}
+
+	Eigen::VectorXd BDF::compute_velocity(const Eigen::VectorXd &x) const
+	{
+		const Eigen::VectorXd sum_x_prev = weighted_sum_x_prevs();
+		const double beta = betas(x_prevs.size() - 1);
+		return (x - sum_x_prev) / (beta * dt());
+	}
+
+	Eigen::VectorXd BDF::compute_acceleration(const Eigen::VectorXd &v) const
+	{
+		const Eigen::VectorXd sum_v_prev = weighted_sum_v_prevs();
+		const double beta = betas(x_prevs.size() - 1);
+		return (v - sum_v_prev) / (beta * dt());
 	}
 
 	double BDF::acceleration_scaling() const

@@ -37,12 +37,13 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 		{
 			"geometry": [
 				{
-					"mesh": "3rdparty/data/circle2.msh"
+					"mesh": "3rdparty/data/circle2.msh",
+					"surface_selection": 1
 				}
 			],
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				}
 			},
 			"space": {
@@ -52,7 +53,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 				"rhs": [-20],
 				"dirichlet_boundary": [
 					{
-						"id": "all",
+						"id": 1,
 						"value": 0
 					}
 				]
@@ -150,7 +151,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 			],
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				}
 			},
 			"space": {
@@ -274,6 +275,9 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 					"mesh": "",
 					"transformation": {
 						"translation": [0.5, 0.5]
+					},
+					"surface_selection": {
+						"threshold": 1e-4
 					}
 				}
 			],
@@ -286,7 +290,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				}
 			},
 			"boundary_conditions": {
@@ -405,7 +409,8 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	{
 		"geometry": [
 			{
-				"mesh": ""
+				"mesh": "",
+				"surface_selection": 1
 			}
 		],
 		"space": {
@@ -413,7 +418,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SimplicialLDLT"
+				"solver": "Eigen::PardisoLDLT"
 			}
 		},
 		"differentiable": true,
@@ -425,7 +430,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 			],
 			"dirichlet_boundary": [
 				{
-					"id": "all",
+					"id": 1,
 					"value": [
 						0.0,
 						0.0,
@@ -497,7 +502,8 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	{
 		"geometry": [
 			{
-				"mesh": ""
+				"mesh": "",
+				"surface_selection": 1
 			}
 		],
 		"space": {
@@ -505,7 +511,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SimplicialLDLT"
+				"solver": "Eigen::PardisoLDLT"
 			},
 			"nonlinear": {
 				"grad_norm": 1e-14,
@@ -521,7 +527,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 			],
 			"dirichlet_boundary": [
 				{
-					"id": "all",
+					"id": 1,
 					"value": [
 						0.0,
 						0.0,
@@ -641,7 +647,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SimplicialLDLT"
+				"solver": "Eigen::PardisoLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 20
@@ -757,7 +763,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 20
@@ -909,8 +915,8 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 			"time": {
 				"tend": 0.4,
 				"dt": 0.01,
-				"integrator": "BDF",
-				"BDF": {
+				"integrator": {
+					"type": "BDF",
 					"steps": 2
 				}
 			},
@@ -920,7 +926,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1073,8 +1079,8 @@ TEST_CASE("material-transient", "[adjoint_method]")
 			"time": {
 				"tend": 0.4,
 				"dt": 0.01,
-				"integrator": "BDF",
-				"BDF": {
+				"integrator": {
+					"type": "BDF",
 					"steps": 2
 				}
 			},
@@ -1084,7 +1090,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e5
@@ -1254,7 +1260,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1415,7 +1421,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1558,8 +1564,8 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			"time": {
 				"tend": 0.2,
 				"dt": 0.04,
-				"integrator": "BDF",
-				"BDF": {
+				"integrator": {
+					"type": "BDF",
 					"steps": 2
 				}
 			},
@@ -1569,7 +1575,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e4
@@ -2211,8 +2217,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 			"time": {
 				"tend": 0.2,
 				"dt": 0.02,
-				"integrator": "BDF",
-				"BDF": {
+				"integrator": {
+					"type": "BDF",
 					"steps": 2
 				}
 			},
@@ -2222,7 +2228,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e5
@@ -2379,8 +2385,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 			"time": {
 				"tend": 0.2,
 				"dt": 0.01,
-				"integrator": "BDF",
-				"BDF": {
+				"integrator": {
+					"type": "BDF",
 					"steps": 2
 				}
 			},
@@ -2390,7 +2396,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
+					"solver": "Eigen::PardisoLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 23216604
@@ -2582,8 +2588,8 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 		"time": {
 			"tend": 0.2,
 			"dt": 0.02,
-			"integrator": "BDF",
-			"BDF": {
+			"integrator": {
+				"type": "BDF",
 				"steps": 1
 			}
 		},
@@ -2926,8 +2932,8 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 		"time": {
 			"tend": 0.2,
 			"dt": 0.02,
-			"integrator": "BDF",
-			"BDF": {
+			"integrator": {
+				"type": "BDF",
 				"steps": 1
 			}
 		},

@@ -127,7 +127,6 @@ namespace polyfem
 			initial_acceleration(acceleration);
 
 			time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			time_integrator->set_parameters(args["time"]);
 			time_integrator->init(sol, velocity, acceleration, dt);
 		}
 

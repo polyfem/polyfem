@@ -94,6 +94,7 @@ namespace polyfem
 #ifdef POLYFEM_WITH_TBB
 		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
 #endif
+		Eigen::setNbThreads(num_threads);
 
 		// Import standard command line arguments, and custom ones
 		GEO::CmdLine::import_arg_group("standard");
@@ -136,10 +137,9 @@ namespace polyfem
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
 
-#ifdef IPC_TOOLKIT_WITH_LOGGER
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 		ipc::logger().set_level(log_level);
-#endif
+
 		current_log_level = log_level;
 	}
 

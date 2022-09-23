@@ -16,7 +16,7 @@ namespace polyfem::time_integrator
 		BDF() {}
 
 		/// @brief Set the number of steps parameters from a json object.
-		/// @param params json containing `{"BDF": {"steps": 1}}`
+		/// @param params json containing `{"steps": 1}`
 		void set_parameters(const nlohmann::json &params) override;
 
 		using ImplicitTimeIntegrator::init;
@@ -42,6 +42,22 @@ namespace polyfem::time_integrator
 		/// \f]
 		/// @return value for \f$\tilde{x}\f$
 		Eigen::VectorXd x_tilde() const override;
+
+		/// @brief Compute the current velocity given the current solution and using the stored previous solution(s).
+		/// \f[
+		/// 	v = \frac{x - \sum_{i=0}^{n-1} \alpha_i x^{t-i}}{\beta \Delta t}
+		/// \f]
+		/// @param x current solution vector
+		/// @return value for \f$v\f$
+		Eigen::VectorXd compute_velocity(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the current acceleration given the current velocity and using the stored previous velocity(s).
+		/// \f[
+		/// 	a = \frac{v - \sum_{i=0}^{n-1} \alpha_i v^{t-i}}{\beta \Delta t}
+		/// \f]
+		/// @param v current velocity
+		/// @return value for \f$a\f$
+		Eigen::VectorXd compute_acceleration(const Eigen::VectorXd &v) const override;
 
 		/// @brief Compute the acceleration scaling used to scale forces when integrating a second order ODE.
 		/// \f[
@@ -75,6 +91,6 @@ namespace polyfem::time_integrator
 		static double betas(const int i);
 
 	protected:
-		int num_steps = 1;
+		int steps = 1;
 	};
 } // namespace polyfem::time_integrator

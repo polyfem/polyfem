@@ -218,7 +218,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
-		*state_ptr, epsv, mu, dhat, broad_phase_method, dt, contact_form);
+		*state_ptr, epsv, mu, dhat, broad_phase_method, dt, contact_form, /*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
 }
@@ -245,7 +245,7 @@ TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][la
 	const auto state_ptr = get_state();
 
 	const double weight = 1e3;
-	LaggedRegForm form;
+	LaggedRegForm form(/*n_lagging_iters=*/-1);
 	form.set_weight(weight);
 
 	test_form(form, *state_ptr);

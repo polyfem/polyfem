@@ -25,9 +25,9 @@ namespace polyfem::solver
 		void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 		virtual void hessian(const TVector &x, THessian &hessian);
 
-		virtual bool is_step_valid(const TVector &x0, const TVector &x1);
-		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1);
-		virtual double max_step_size(const TVector &x0, const TVector &x1);
+		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;
+		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;
+		virtual double max_step_size(const TVector &x0, const TVector &x1) const;
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1);
 		virtual void line_search_end(bool failed);
@@ -35,10 +35,11 @@ namespace polyfem::solver
 
 		virtual void set_project_to_psd(bool val);
 
-		virtual void solution_changed(const TVector &newX);
+		virtual void solution_changed(const TVector &new_x);
 
 		virtual void init_lagging(const TVector &x);
-		virtual void update_lagging(const TVector &x);
+		virtual bool update_lagging(const TVector &x, const int iter_num);
+		bool uses_lagging() const;
 
 		TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 		int n_inequality_constraints() { return 0; }

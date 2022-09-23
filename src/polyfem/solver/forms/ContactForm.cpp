@@ -30,6 +30,9 @@ namespace polyfem::solver
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
+
+		constraint_set_.use_convergent_formulation = true;
+		constraint_set_.compute_shape_derivatives = true;
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
@@ -46,8 +49,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return state_.collision_mesh.vertices(
-			state_.boundary_nodes_pos + utils::unflatten(x, state_.mesh->dimension()));
+		return state_.collision_mesh.displace_vertices(utils::unflatten(x, state_.mesh->dimension()));
 	}
 
 	void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
@@ -73,12 +75,11 @@ namespace polyfem::solver
 			return;
 
 		if (use_cached_candidates_)
-			ipc::construct_constraint_set(
-				candidates_, state_.collision_mesh, displaced_surface, dhat_, constraint_set_);
+			constraint_set_.build(
+				candidates_, state_.collision_mesh, displaced_surface, dhat_);
 		else
-			ipc::construct_constraint_set(
-				state_.collision_mesh, displaced_surface, dhat_,
-				constraint_set_, /*dmin=*/0, broad_phase_method_);
+			constraint_set_.build(
+				state_.collision_mesh, displaced_surface, dhat_, /*dmin=*/0, broad_phase_method_);
 		cached_displaced_surface = displaced_surface;
 	}
 
@@ -162,12 +163,6 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		// TODO
-		//  if (state.args["output"]["advanced"]["save_nl_solve_sequence"])
-		//  {
-		//  	write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-		//  			  displaced_surface, state_.collision_mesh.edges(), state_.collision_mesh.faces());
-		//  }
 		const double curr_distance = ipc::compute_minimum_distance(state_.collision_mesh, displaced_surface, constraint_set_);
 
 		if (use_adaptive_barrier_stiffness_)

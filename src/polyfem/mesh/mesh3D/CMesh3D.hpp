@@ -73,7 +73,7 @@ namespace polyfem
 
 			void bounding_box(RowVectorNd &min, RowVectorNd &max) const override;
 
-			//navigation wrapper
+			// navigation wrapper
 			Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const override { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }
 			Navigation3D::Index get_index_from_element(int hi) const override { return Navigation3D::get_index_from_element_face(mesh_, hi); }
 
@@ -110,10 +110,11 @@ namespace polyfem
 			void compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker) override;
 			void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
 			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
+			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
 			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
-			//used for sweeping 2D mesh
+			// used for sweeping 2D mesh
 			Mesh3DStorage &mesh_storge()
 			{
 				std::cerr << "never user this function" << std::endl;

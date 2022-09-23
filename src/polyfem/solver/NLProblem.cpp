@@ -1,5 +1,7 @@
 #include "NLProblem.hpp"
 
+#include <polyfem/io/OBJWriter.hpp>
+
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
@@ -35,9 +37,9 @@ namespace polyfem::solver
 		FullNLProblem::init_lagging(reduced_to_full(x));
 	}
 
-	void NLProblem::update_lagging(const TVector &x)
+	bool NLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
-		FullNLProblem::update_lagging(reduced_to_full(x));
+		return FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
@@ -53,17 +55,17 @@ namespace polyfem::solver
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
+	double NLProblem::max_step_size(const TVector &x0, const TVector &x1) const
 	{
 		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1) const
 	{
 		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
+	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
 	{
 		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
 	}
@@ -99,6 +101,15 @@ namespace polyfem::solver
 	void NLProblem::post_step(const int iter_num, const TVector &x)
 	{
 		FullNLProblem::post_step(iter_num, reduced_to_full(x));
+
+		if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
+		{
+			const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(x), state_.mesh->dimension());
+			io::OBJWriter::write(
+				state_.resolve_output_path(fmt::format("nonlinear_solve_iter{:03d}.obj", iter_num)),
+				state_.collision_mesh.displace_vertices(displacements),
+				state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		}
 	}
 
 	void NLProblem::set_apply_DBC(const TVector &x, const bool val)

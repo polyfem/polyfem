@@ -317,13 +317,11 @@ namespace polyfem
 			return;
 
 		if (_use_cached_candidates)
-			ipc::construct_constraint_set(
-				_candidates, collision_mesh, displaced_surface, _dhat,
-				_constraint_set);
+			_constraint_set.build(
+				_candidates, collision_mesh, displaced_surface, _dhat);
 		else
-			ipc::construct_constraint_set(
-				collision_mesh, displaced_surface, _dhat,
-				_constraint_set, /*dmin=*/0, _broad_phase_method);
+			_constraint_set.build(
+				collision_mesh, displaced_surface, _dhat, /*dmin=*/0, _broad_phase_method);
 		cached_displaced_surface = displaced_surface;
 	}
 
@@ -1118,7 +1116,7 @@ namespace polyfem
 			logger().info("Fix position of boundary nodes in contact.");
 
 			ipc::Constraints contact_set;
-			ipc::construct_constraint_set(collision_mesh, collision_mesh.vertices(V), threshold, contact_set);
+			contact_set.build(collision_mesh, collision_mesh.vertices(V), threshold);
 
 			for (int c = 0; c < contact_set.ee_constraints.size(); c++)
 			{

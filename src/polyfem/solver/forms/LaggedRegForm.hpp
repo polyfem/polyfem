@@ -11,7 +11,7 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new Lagged Regularization Form object
-		LaggedRegForm();
+		LaggedRegForm(const int n_lagging_iters);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -36,9 +36,15 @@ namespace polyfem::solver
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		void update_lagging(const Eigen::VectorXd &x) override;
+		/// @return True if the lagged fields have been updated
+		bool update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+
+		/// @brief Does this form require lagging?
+		/// @return True if the form requires lagging
+		bool uses_lagging() const override { return true; }
 
 	private:
+		int n_lagging_iters_;      ///< Number of iterations to lag for
 		Eigen::VectorXd x_lagged_; ///< The full variables from the previous lagging solve.
 	};
 } // namespace polyfem::solver

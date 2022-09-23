@@ -91,7 +91,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	State state(/*max_threads=*/1);
-	state.init_logger("", spdlog::level::warn, false);
+	state.init_logger("", spdlog::level::err, false);
 	spdlog::set_level(spdlog::level::info);
 	state.init(args, "");
 	state.load_mesh();
@@ -133,9 +133,9 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		double margin = authen.value("margin", 1e-5);
 		for (const std::string &key : test_keys)
 		{
-			const double prev_val = out[key];
-			const double curr_val = authen[key];
-			const double relerr = std::abs((curr_val - prev_val) / std::max(std::abs(curr_val), 1e-5));
+			const double prev_val = authen[key];
+			const double curr_val = out[key];
+			const double relerr = std::abs((curr_val - prev_val) / std::max(std::abs(prev_val), 1e-5));
 			if (relerr > margin)
 			{
 				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2}", key, prev_val, curr_val);

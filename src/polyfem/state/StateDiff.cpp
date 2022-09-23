@@ -372,6 +372,7 @@ namespace polyfem
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, gbases);
 		}
 
+		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, n_bases, bases);
 		extract_vis_boundary_mesh();
 	}
@@ -514,16 +515,7 @@ namespace polyfem
 	{
 		const auto &gbases = geom_bases();
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-		{
-			logger().warn("Integrator type not supported for differentiability.");
-			return;
-		}
+		int bdf_order = get_bdf_order();
 
 		StiffnessMatrix gradu_h;
 		StiffnessMatrix gradu_h_prev;
@@ -1680,13 +1672,7 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		one_form = 0;
 
@@ -1719,13 +1705,7 @@ namespace polyfem
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd damping_term;
 		one_form.setZero(2);
@@ -1826,13 +1806,7 @@ namespace polyfem
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
@@ -1916,13 +1890,7 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd elasticity_term;
 		one_form.setZero(bases.size() * 2 + 3);
@@ -1975,13 +1943,7 @@ namespace polyfem
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd elasticity_term;
 		one_form.setZero(bases.size() * 2);
@@ -2007,13 +1969,7 @@ namespace polyfem
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd elasticity_term, damping_term, mass_term, contact_term, friction_term, functional_term;
 		one_form.setZero(n_geom_bases * mesh->dimension());
@@ -2086,13 +2042,7 @@ namespace polyfem
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
@@ -2160,13 +2110,7 @@ namespace polyfem
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 		solve_transient_adjoint_dirichlet(j, adjoint_nu, adjoint_p);
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		const double dt = args["time"]["dt"].get<double>();
 		const int time_steps = args["time"]["time_steps"].get<int>();
@@ -2191,13 +2135,7 @@ namespace polyfem
 		assert(!problem->is_scalar());
 		assert(js.size() > 0);
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
@@ -2311,13 +2249,7 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd elasticity_term;
 		one_form.setZero(bases.size() * 2 + 3);
@@ -2370,13 +2302,7 @@ namespace polyfem
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd elasticity_term;
 		one_form.setZero(bases.size() * 2);
@@ -2404,13 +2330,7 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 		const int problem_dim = mesh->dimension();
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		one_form = 0;
 
@@ -2459,13 +2379,7 @@ namespace polyfem
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd damping_term;
 		one_form.setZero(2);
@@ -2505,13 +2419,7 @@ namespace polyfem
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
-		int bdf_order = -1;
-		if (args["time"]["integrator"] == "ImplicitEuler")
-			bdf_order = 1;
-		else if (args["time"]["integrator"] == "BDF")
-			bdf_order = args["time"]["BDF"]["steps"].get<int>();
-		else
-			throw("Integrator type not supported for differentiability.");
+		int bdf_order = get_bdf_order();
 
 		Eigen::VectorXd elasticity_term, damping_term, mass_term, contact_term, friction_term, functional_term;
 		one_form.setZero(n_geom_bases * mesh->dimension());

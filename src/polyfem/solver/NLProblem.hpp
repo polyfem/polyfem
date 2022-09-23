@@ -19,37 +19,32 @@ namespace polyfem::solver
 		void gradient(const TVector &x, TVector &gradv) override;
 		void hessian(const TVector &x, THessian &hessian) override;
 
-		bool is_step_valid(const TVector &x0, const TVector &x1) override;
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
-		double max_step_size(const TVector &x0, const TVector &x1) override;
+		bool is_step_valid(const TVector &x0, const TVector &x1) const override;
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) const override;
+		double max_step_size(const TVector &x0, const TVector &x1) const override;
 
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		void post_step(const int iter_num, const TVector &x) override;
 
-		void solution_changed(const TVector &newX) override;
+		void solution_changed(const TVector &new_x) override;
 
 		void init_lagging(const TVector &x) override;
-		void update_lagging(const TVector &x) override;
+		bool update_lagging(const TVector &x, const int iter_num) override;
 
 		// --------------------------------------------------------------------
 
 		void update_quantities(const double t, const TVector &x);
 
+		int full_size() const { return full_size_; }
+		int reduced_size() const { return reduced_size_; }
+
 		void use_full_size() { current_size_ = FULL_SIZE; }
 		void use_reduced_size() { current_size_ = REDUCED_SIZE; }
 
-		void set_apply_DBC(const TVector &x, const bool val);
-
-		// Templated to allow VectorX* or MatrixX* input, but the size of full
-		// will always be (fullsize, 1)
-		// template <class FullVector>
 		TVector full_to_reduced(const TVector &full) const;
-
-		// template <class FullVector>
 		TVector reduced_to_full(const TVector &reduced) const;
 
-		int full_size() const { return full_size_; }
-		int reduced_size() const { return reduced_size_; }
+		void set_apply_DBC(const TVector &x, const bool val);
 
 	private:
 		const State &state_;

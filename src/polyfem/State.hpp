@@ -446,9 +446,6 @@ namespace polyfem
 					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
 					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
 
-		/// loads a febio file, uses args_in for default, [DEPRECATED]
-		void load_febio(const std::string &path, const json &args_in);
-
 		/// loads the mesh from a geogram mesh
 		/// @param[in] meshin geo mesh
 		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id
@@ -492,16 +489,11 @@ namespace polyfem
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
 
-		/// boundary mesh used for collision
-		/// boundary_nodes_pos contains the total number of nodes, the internal ones are zero
-		/// for high-order fem the faces are triangulated
-		/// this is currently supported only for tri and tet meshes
+		// boundary mesh used for collision
+		/// @brief Boundary_nodes_pos contains the total number of nodes, the internal ones are zero.
+		/// For high-order fem the faces are triangulated this is currently supported only for tri and tet meshes.
 		Eigen::MatrixXd boundary_nodes_pos;
-		/// edge indices into full vertices
-		Eigen::MatrixXi boundary_edges;
-		/// triangle indices into full vertices
-		Eigen::MatrixXi boundary_triangles;
-		/// ipc collision mesh into surface vertices
+		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
 		Eigen::MatrixXd geom_boundary_nodes_pos;
@@ -551,6 +543,18 @@ namespace polyfem
 		int n_linear_solves = 0;
 		int n_nonlinear_solves = 0;
 
+		int get_bdf_order() const
+		{
+			if (args["time"]["integrator"]["type"] == "ImplicitEuler")
+				return 1;
+			else if (args["time"]["integrator"]["type"] == "BDF")
+				return args["time"]["integrator"]["steps"].get<int>();
+			else
+			{
+				log_and_throw_error("Integrator type not supported for differentiability.");
+				return std::nan("");
+			}
+		}
 		// one_form, for export use
 		Eigen::VectorXd descent_direction;
 		// Aux functions for setting up adjoint equations
