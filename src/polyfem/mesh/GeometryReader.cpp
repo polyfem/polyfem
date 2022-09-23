@@ -136,10 +136,6 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		// TODO: renable this
-		// if (!skip_boundary_sideset)
-		// 	mesh->compute_boundary_ids(boundary_marker);
-
 		std::vector<std::shared_ptr<Selection>> surface_selections =
 			Selection::build_selections(j_mesh["surface_selection"], bbox, root_path);
 
@@ -150,7 +146,7 @@ namespace polyfem::mesh
 			for (const auto &selection : surface_selections)
 			{
 				if (selection->inside(p_id, vs, p))
-					return selection->id(p_id, vs);
+					return selection->id(p_id, vs, p);
 			}
 			return std::numeric_limits<int>::max(); // default for no selected boundary
 		});
@@ -164,14 +160,16 @@ namespace polyfem::mesh
 			&& volume_selection.contains("id_offset"))
 		{
 			const int id_offset = volume_selection["id_offset"].get<int>();
-			const int n_body_ids = mesh->n_elements();
-			std::vector<int> body_ids(n_body_ids);
-			for (int i = 0; i < n_body_ids; ++i)
-				body_ids[i] = mesh->get_body_id(i) + id_offset;
-			mesh->set_body_ids(body_ids);
+			if (id_offset != 0)
+			{
+				const int n_body_ids = mesh->n_elements();
+				std::vector<int> body_ids(n_body_ids);
+				for (int i = 0; i < n_body_ids; ++i)
+					body_ids[i] = mesh->get_body_id(i) + id_offset;
+				mesh->set_body_ids(body_ids);
+			}
 		}
-		// Specified negative volume selection are ignored and the default (0 (or MSH stored values) is used instead)
-		else if (!volume_selection.is_number_integer() || volume_selection.get<int>() >= 0)
+		else
 		{
 			// Specified volume selection has priority over mesh's stored ids
 			std::vector<std::shared_ptr<Selection>> volume_selections =
@@ -184,9 +182,9 @@ namespace polyfem::mesh
 			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
 				for (const auto &selection : volume_selections)
 				{
-					// TODO add vs to compute_body_ids
+					// TODO: add vs to compute_body_ids
 					if (selection->inside(cell_id, {}, p))
-						return selection->id(cell_id, {});
+						return selection->id(cell_id, {}, p);
 				}
 				return 0;
 			});
@@ -260,16 +258,6 @@ namespace polyfem::mesh
 				mesh = read_fem_mesh(geometry, root_path, non_conforming);
 			else
 				mesh->append(read_fem_mesh(geometry, root_path, non_conforming));
-		}
-
-		// --------------------------------------------------------------------
-
-		// If there where no surface selections, set default boundary ids to
-		// the side of the bounding box of the entire concatenated meshes.
-		if (!mesh->has_boundary_ids())
-		{
-			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
-			mesh->compute_boundary_ids(boundary_id_threshold);
 		}
 
 		// --------------------------------------------------------------------

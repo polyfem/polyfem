@@ -458,17 +458,12 @@ namespace polyfem
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
-	public:
-		/// boundary mesh used for collision
-		/// boundary_nodes_pos contains the total number of nodes, the internal ones are zero
-		/// for high-order fem the faces are triangulated
-		/// this is currently supported only for tri and tet meshes
+
+		// boundary mesh used for collision
+		/// @brief Boundary_nodes_pos contains the total number of nodes, the internal ones are zero.
+		/// For high-order fem the faces are triangulated this is currently supported only for tri and tet meshes.
 		Eigen::MatrixXd boundary_nodes_pos;
-		/// edge indices into full vertices
-		Eigen::MatrixXi boundary_edges;
-		/// triangle indices into full vertices
-		Eigen::MatrixXi boundary_triangles;
-		/// ipc collision mesh into surface vertices
+		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
 		/// extracts the boundary mesh for collision, called in build_basis

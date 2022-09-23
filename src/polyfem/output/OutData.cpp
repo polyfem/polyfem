@@ -1622,8 +1622,8 @@ namespace polyfem::output
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
 
 			ipc::Constraints constraint_set;
-			ipc::construct_constraint_set(
-				collision_mesh, displaced_surface, dhat, constraint_set,
+			constraint_set.build(
+				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;

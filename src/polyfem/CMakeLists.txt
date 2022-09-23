@@ -1,5 +1,6 @@
 set(SOURCES
 	Common.hpp
+	State.cpp
 	State.hpp
 )
 
