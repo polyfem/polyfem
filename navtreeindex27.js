@@ -1,9 +1,5 @@
 var NAVTREEINDEX27 =
 {
-"namespacepolyfem_1_1mesh_1_1_navigation.html":[3,0,6,4,1],
-"namespacepolyfem_1_1mesh_1_1_navigation.html#a1b9d2ef721df947c3827b416016918fd":[3,0,6,4,1,1],
-"namespacepolyfem_1_1mesh_1_1_navigation.html#a37f55e9dd505f28d098c115ce3cecfa7":[3,0,6,4,1,4],
-"namespacepolyfem_1_1mesh_1_1_navigation.html#a538e8c49434b0ee87dfbdf6870074c1c":[3,0,6,4,1,7],
 "namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba":[3,0,6,4,1,6],
 "namespacepolyfem_1_1mesh_1_1_navigation.html#a72b4f275520c3c228210d1e9a781e8fc":[3,0,6,4,1,5],
 "namespacepolyfem_1_1mesh_1_1_navigation.html#a7d6b7789d9155623da6a8ec00c3086ec":[3,0,6,4,1,3],
@@ -249,5 +245,9 @@ var NAVTREEINDEX27 =
 "raster_8hpp_source.html":[5,0,1,0,10,30],
 "struct_d_scalar1.html":[4,0,6],
 "struct_d_scalar1.html#a09f33bc10c398914a1deba226435c201":[4,0,6,49],
-"struct_d_scalar1.html#a0d8be015e1f3ce051b4a071bb9dccde5":[4,0,6,7]
+"struct_d_scalar1.html#a0d8be015e1f3ce051b4a071bb9dccde5":[4,0,6,7],
+"struct_d_scalar1.html#a0ec55a0176a94ea5e4121ce77df3847c":[4,0,6,16],
+"struct_d_scalar1.html#a13704096417428ba1d8e0651c80c6907":[4,0,6,30],
+"struct_d_scalar1.html#a1ad44c521878b5204bb1e38ee42b364c":[4,0,6,43],
+"struct_d_scalar1.html#a1df44cebe596309535d03dfc2530ecc8":[4,0,6,31]
 };
