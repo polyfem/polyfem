@@ -982,7 +982,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
-	State state_reference(8);
+	State state_reference;
 	auto in_args_ref = in_args;
 	in_args_ref["materials"]["phi"] = 1;
 	in_args_ref["materials"]["psi"] = 20;
@@ -991,7 +991,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -1146,7 +1146,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
-	State state_reference(8);
+	State state_reference;
 	auto in_args_ref = in_args;
 	in_args_ref["materials"]["E"] = 1e5;
 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
@@ -1154,7 +1154,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -1629,7 +1629,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
-	State state_reference(8);
+	State state_reference;
 	auto in_args_ref = in_args;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
@@ -1638,7 +1638,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	state_reference.load_mesh();
 	state_reference.solve();
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -1809,7 +1809,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 	in_args["geometry"][1]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
 // 	// compute reference solution
-// 	State state_reference(8);
+// 	State state_reference;
 // 	auto in_args_ref = in_args;
 // 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 0;
 // 	in_args_ref["initial_conditions"]["velocity"][0]["value"][2] = 0;
@@ -1818,7 +1818,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 	state_reference.load_mesh();
 // 	state_reference.solve();
 
-// 	State state(8);
+// 	State state;
 // 	state.init_logger("", spdlog::level::level_enum::err, false);
 // 	state.init(in_args, false);
 // 	state.load_mesh();
@@ -1979,14 +1979,14 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 	in_args["geometry"][2]["mesh"] = path + "/contact/meshes/3D/simple/sphere/sphere1K.msh";
 
 // 	// compute reference solution
-// 	State state_reference(8);
+// 	State state_reference;
 // 	state_reference.init_logger("", spdlog::level::level_enum::err, false);
 // 	state_reference.init(in_args, false);
 // 	state_reference.args["materials"]["E"] = 1e4;
 // 	state_reference.load_mesh();
 // 	state_reference.solve();
 
-// 	State state(8);
+// 	State state;
 // 	state.init_logger("", spdlog::level::level_enum::err, false);
 // 	state.init(in_args, false);
 // 	state.load_mesh();
@@ -2141,7 +2141,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 	StressFunctional func;
 // 	func.set_interested_ids({1}, {});
 
-// 	State state(8);
+// 	State state;
 // 	state.init_logger("", spdlog::level::level_enum::err, false);
 // 	state.init(in_args, false);
 // 	state.load_mesh();
@@ -2281,7 +2281,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
-	State state_reference(8);
+	State state_reference;
 	auto in_args_ref = in_args;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
@@ -2296,7 +2296,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	func.get_barycenter_series(state_reference, barycenters);
 	func.set_center_series(barycenters);
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -2451,7 +2451,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
 	// compute reference solution
-	State state_reference(8);
+	State state_reference;
 	auto in_args_ref = in_args;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
@@ -2469,7 +2469,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	func.set_interested_ids({1}, {});
 	func.set_center_series(barycenters);
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -2769,7 +2769,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 	in_args["geometry"][0]["mesh"] = path + "/../floor.msh";
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -2818,7 +2818,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 
 	const double step_size = 1e-7;
 
-	State state_fd(8);
+	State state_fd;
 	state_fd.init_logger("", spdlog::level::level_enum::err, false);
 	json temp_args = in_args;
 	for (int i = 0; i < 2; ++i)
@@ -3113,7 +3113,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 	in_args["geometry"][0]["mesh"] = path + "/../floor.msh";
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
-	State state(8);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -3121,7 +3121,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 
 	int time_steps = state.args["time"]["time_steps"].get<int>();
 
-	State state_ref(8);
+	State state_ref;
 	state_ref.init_logger("", spdlog::level::level_enum::err, false);
 	json ref_args = in_args;
 	for (int t = 0; t < time_steps; ++t)
@@ -3165,7 +3165,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 
 	const double step_size = 1e-7;
 
-	State state_fd(8);
+	State state_fd;
 	state_fd.init_logger("", spdlog::level::level_enum::err, false);
 	json temp_args = in_args;
 	for (int i = 0; i < 2; ++i)

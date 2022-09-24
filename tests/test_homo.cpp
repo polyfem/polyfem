@@ -113,7 +113,7 @@ TEST_CASE("density_elastic_homo", "[homogenization]")
     })"_json;
     in_args["geometry"][0]["mesh"] = path + "/../square5.msh";
 
-	State state(16);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 
@@ -185,7 +185,7 @@ TEST_CASE("density_elastic_homo_grad", "[homogenization]")
     })"_json;
     in_args["geometry"][0]["mesh"] = path + "/../square5.msh";
 
-	State state(16);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 
@@ -278,7 +278,7 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
     })"_json;
     in_args["geometry"][0]["mesh"] = path + "/../cross2d.msh";
 
-	State state(16);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 
@@ -369,7 +369,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
     })"_json;
     in_args["geometry"][0]["mesh"] = path + "/../cross2d.msh";
 
-	State state1(16);
+	State state1;
 	state1.init_logger("", spdlog::level::level_enum::debug, false);
 	state1.init(in_args, false);
 
@@ -385,7 +385,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
     std::cout << "Nonlinear Homogenized Tensor:\n" << homogenized_tensor1 << "\n";
 
     in_args["materials"]["type"] = "LinearElasticity";
-	State state2(16);
+	State state2;
 	state2.init_logger("", spdlog::level::level_enum::err, false);
 	state2.init(in_args, false);
 
@@ -455,7 +455,7 @@ TEST_CASE("density_stokes_homo", "[homogenization]")
     })"_json;
     in_args["geometry"][0]["mesh"] = path + "/../2D.msh";
 
-	State state(16);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 
@@ -531,7 +531,7 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
     })"_json;
     in_args["geometry"][0]["mesh"] = path + "/../square6.msh";
 
-	State state(16);
+	State state;
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 
