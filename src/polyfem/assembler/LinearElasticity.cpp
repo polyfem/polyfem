@@ -19,11 +19,11 @@ namespace polyfem
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		LinearElasticity::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
+		LinearElasticity::assemble(const LinearAssemblerData &data) const
 		{
 			// mu ((gradi' gradj) Id + ((gradi gradj')') + lambda gradi *gradj';
-			const Eigen::MatrixXd &gradi = vals.basis_values[i].grad_t_m;
-			const Eigen::MatrixXd &gradj = vals.basis_values[j].grad_t_m;
+			const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
+			const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
 
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size());
 			res.setZero();
@@ -36,7 +36,7 @@ namespace polyfem
 				const double dot = gradi.row(k).dot(gradj.row(k));
 
 				double lambda, mu;
-				params_.lambda_mu(vals.quadrature.points.row(k), vals.val.row(k), vals.element_id, lambda, mu);
+				params_.lambda_mu(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.vals.element_id, lambda, mu);
 
 				for (int ii = 0; ii < size(); ++ii)
 				{
@@ -47,73 +47,73 @@ namespace polyfem
 							res_k(jj * size() + ii) += mu * dot;
 					}
 				}
-				res += res_k * da(k);
+				res += res_k * data.da(k);
 			}
 
 			return res;
 		}
 
-		double LinearElasticity::compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+		double LinearElasticity::compute_energy(const NonLinearAssemblerData &data) const
 		{
-			return compute_energy_aux<double>(vals, displacement, da);
+			return compute_energy_aux<double>(data);
 		}
 
-		Eigen::VectorXd LinearElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+		Eigen::VectorXd LinearElasticity::assemble_grad(const NonLinearAssemblerData &data) const
 		{
-			const int n_bases = vals.basis_values.size();
+			const int n_bases = data.vals.basis_values.size();
 			return polyfem::gradient_from_energy(
-				size(), n_bases, vals, displacement, da,
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 18, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 24, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 30, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 60, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(vals, displacement, da); });
+				size(), n_bases, data,
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 18, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 24, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 30, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 60, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
 		}
 
-		Eigen::MatrixXd LinearElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+		Eigen::MatrixXd LinearElasticity::assemble_hessian(const NonLinearAssemblerData &data) const
 		{
-			const int n_bases = vals.basis_values.size();
+			const int n_bases = data.vals.basis_values.size();
 			return polyfem::hessian_from_energy(
-				size(), n_bases, vals, displacement, da,
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(vals, displacement, da); },
-				[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); });
+				size(), n_bases, data,
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(data); },
+				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
 		}
 
-		//Compute \int mu eps : eps + lambda/2 tr(eps)^2 = \int mu tr(eps^2) + lambda/2 tr(eps)^2
+		// Compute \int mu eps : eps + lambda/2 tr(eps)^2 = \int mu tr(eps^2) + lambda/2 tr(eps)^2
 		template <typename T>
-		T LinearElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+		T LinearElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
 		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
-			assert(displacement.cols() == 1);
+			assert(data.x.cols() == 1);
 
-			const int n_pts = da.size();
+			const int n_pts = data.da.size();
 
-			Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(vals.basis_values.size() * size(), 1);
+			Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(data.vals.basis_values.size() * size(), 1);
 			local_dispv.setZero();
-			for (size_t i = 0; i < vals.basis_values.size(); ++i)
+			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 			{
-				const auto &bs = vals.basis_values[i];
+				const auto &bs = data.vals.basis_values[i];
 				for (size_t ii = 0; ii < bs.global.size(); ++ii)
 				{
 					for (int d = 0; d < size(); ++d)
 					{
-						local_dispv(i * size() + d) += bs.global[ii].val * displacement(bs.global[ii].index * size() + d);
+						local_dispv(i * size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
 					}
 				}
 			}
@@ -136,9 +136,9 @@ namespace polyfem
 				for (long k = 0; k < def_grad.size(); ++k)
 					def_grad(k) = T(0);
 
-				for (size_t i = 0; i < vals.basis_values.size(); ++i)
+				for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 				{
-					const auto &bs = vals.basis_values[i];
+					const auto &bs = data.vals.basis_values[i];
 					const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
 					assert(grad.size() == size());
 
@@ -153,17 +153,17 @@ namespace polyfem
 
 				AutoDiffGradMat jac_it(size(), size());
 				for (long k = 0; k < jac_it.size(); ++k)
-					jac_it(k) = T(vals.jac_it[p](k));
+					jac_it(k) = T(data.vals.jac_it[p](k));
 				def_grad = def_grad * jac_it;
 
 				const AutoDiffGradMat strain = (def_grad + def_grad.transpose()) / T(2);
 
 				double lambda, mu;
-				params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.vals.element_id, lambda, mu);
 
 				const T val = mu * (strain.transpose() * strain).trace() + lambda / 2 * strain.trace() * strain.trace();
 
-				energy += val * da(p);
+				energy += val * data.da(p);
 			}
 			return energy;
 		}
@@ -175,7 +175,7 @@ namespace polyfem
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
 
 			double lambda, mu;
-			//TODO!
+			// TODO!
 			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 			if (size() == 2)
@@ -258,7 +258,7 @@ namespace polyfem
 			assert(r.size() == dim);
 
 			double mu, nu, lambda;
-			//per body lame parameter dont work here!
+			// per body lame parameter dont work here!
 			params_.lambda_mu(0, 0, 0, 0, 0, 0, 0, lambda, mu);
 
 			// convert to nu!

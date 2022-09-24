@@ -149,7 +149,7 @@ namespace polyfem
 								// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 								const auto &global_j = vals.basis_values[j].global;
 
-								const auto stiffness_val = local_assembler_.assemble(vals, i, j, local_storage.da);
+								const auto stiffness_val = local_assembler_.assemble(LinearAssemblerData(vals, i, j, local_storage.da));
 								assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
 
 								// igl::Timer t1; t1.start();
@@ -295,7 +295,7 @@ namespace polyfem
 					logger().debug("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
 				}
 
-				//exit(0);
+				// exit(0);
 			}
 			catch (std::bad_alloc &ba)
 			{
@@ -360,7 +360,7 @@ namespace polyfem
 						{
 							const auto &global_j = phi_vals.basis_values[j].global;
 
-							const auto stiffness_val = local_assembler_.assemble(psi_vals, phi_vals, i, j, local_storage.da);
+							const auto stiffness_val = local_assembler_.assemble(MixedAssemblerData(psi_vals, phi_vals, i, j, local_storage.da));
 							assert(stiffness_val.size() == local_assembler_.rows() * local_assembler_.cols());
 
 							// igl::Timer t1; t1.start();
@@ -449,7 +449,7 @@ namespace polyfem
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 					const int n_loc_bases = int(vals.basis_values.size());
 
-					const auto val = local_assembler_.assemble_grad(vals, displacement, local_storage.da);
+					const auto val = local_assembler_.assemble_grad(NonLinearAssemblerData(vals, displacement, local_storage.da));
 					assert(val.size() == n_loc_bases * local_assembler_.size());
 
 					for (int j = 0; j < n_loc_bases; ++j)
@@ -530,7 +530,7 @@ namespace polyfem
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 					const int n_loc_bases = int(vals.basis_values.size());
 
-					auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, local_storage.da);
+					auto stiffness_val = local_assembler_.assemble_hessian(NonLinearAssemblerData(vals, displacement, local_storage.da));
 					assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 					assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
@@ -642,7 +642,7 @@ namespace polyfem
 					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					const double val = local_assembler_.compute_energy(vals, displacement, local_storage.da);
+					const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, displacement, local_storage.da));
 					local_storage.val += val;
 				}
 			});
@@ -654,7 +654,7 @@ namespace polyfem
 			return res;
 		}
 
-		//template instantiation
+		// template instantiation
 		template class Assembler<Laplacian>;
 		template class Assembler<Helmholtz>;
 
