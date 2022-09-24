@@ -86,6 +86,9 @@ TEST_CASE("density_elastic_homo", "[homogenization]")
             {
                 "mesh": "square5.msh",
                 "n_refs": 0,
+                "surface_selection": {
+                    "threshold": 1e-6
+                },
                 "transformation": {
                     "scale": 1
                 }
@@ -158,6 +161,9 @@ TEST_CASE("density_elastic_homo_grad", "[homogenization]")
             {
                 "mesh": "square5.msh",
                 "n_refs": 0,
+                "surface_selection": {
+                    "threshold": 1e-6
+                },
                 "transformation": {
                     "scale": 1
                 }
@@ -252,7 +258,10 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
         "geometry": [
             {
                 "mesh": "",
-                "n_refs": 0
+                "n_refs": 0,
+                "surface_selection": {
+                    "threshold": 1e-6
+                }
             }
         ],
         "space": {
@@ -338,7 +347,10 @@ TEST_CASE("neohookean_homo", "[homogenization]")
         "geometry": [
             {
                 "mesh": "",
-                "n_refs": 0
+                "n_refs": 0,
+                "surface_selection": {
+                    "threshold": 1e-6
+                }
             }
         ],
         "space": {
@@ -426,7 +438,10 @@ TEST_CASE("density_stokes_homo", "[homogenization]")
 	json in_args = R"({
         "geometry": [
             {
-                "mesh": ""
+                "mesh": "",
+                "surface_selection": {
+                    "threshold": 1e-6
+                }
             }
         ],
         "space": {
@@ -500,6 +515,9 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
             {
                 "mesh": "square6.msh",
                 "n_refs": 0,
+                "surface_selection": {
+                    "threshold": 1e-6
+                },
                 "transformation": {
                     "scale": 1
                 }

@@ -552,7 +552,7 @@ namespace polyfem
 			else
 			{
 				log_and_throw_error("Integrator type not supported for differentiability.");
-				return std::nan("");
+				return -1;
 			}
 		}
 		// one_form, for export use
