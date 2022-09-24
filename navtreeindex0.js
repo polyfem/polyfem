@@ -29,8 +29,6 @@ var NAVTREEINDEX0 =
 "_assembly_vals_cache_8hpp_source.html":[5,0,1,0,0,5],
 "_assembly_values_8hpp.html":[5,0,1,0,0,6],
 "_assembly_values_8hpp_source.html":[5,0,1,0,0,6],
-"_attic_8cpp.html":[5,0,1,0,8,0],
-"_attic_8cpp_source.html":[5,0,1,0,8,0],
 "_autodiff_types_8hpp.html":[5,0,1,0,10,1],
 "_autodiff_types_8hpp.html#a5a418fe12634f0003c7e52fe47cdf99c":[5,0,1,0,10,1,3],
 "_autodiff_types_8hpp.html#a6521c58d4a828e40157cb2671a4a63ce":[5,0,1,0,10,1,5],
@@ -120,6 +118,10 @@ var NAVTREEINDEX0 =
 "_element_bases_8hpp_source.html":[5,0,1,0,2,4],
 "_enable_warnings_8hpp.html":[5,0,1,0,10,12],
 "_enable_warnings_8hpp_source.html":[5,0,1,0,10,12],
+"_evaluator_8cpp.html":[5,0,1,0,3,0],
+"_evaluator_8cpp_source.html":[5,0,1,0,3,0],
+"_evaluator_8hpp.html":[5,0,1,0,3,1],
+"_evaluator_8hpp_source.html":[5,0,1,0,3,1],
 "_expression_value_8cpp.html":[5,0,1,0,10,13],
 "_expression_value_8cpp_source.html":[5,0,1,0,10,13],
 "_expression_value_8hpp.html":[5,0,1,0,10,14],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "_linear_elasticity_8hpp_source.html":[5,0,1,0,0,22],
 "_local_boundary_8hpp.html":[5,0,1,0,4,4],
 "_local_boundary_8hpp.html#ac25a28c10b676e06e484d9e1f496f826":[5,0,1,0,4,4,1],
-"_local_boundary_8hpp.html#ac25a28c10b676e06e484d9e1f496f826a3d217ee3a015efcd968eff5f36a5f671":[5,0,1,0,4,4,1,5],
-"_local_boundary_8hpp.html#ac25a28c10b676e06e484d9e1f496f826a4bbb8f967da6d1a610596d7257179c2b":[5,0,1,0,4,4,1,6],
-"_local_boundary_8hpp.html#ac25a28c10b676e06e484d9e1f496f826a4c0a11247d92f73fb84baa51e37a3263":[5,0,1,0,4,4,1,4]
+"_local_boundary_8hpp.html#ac25a28c10b676e06e484d9e1f496f826a3d217ee3a015efcd968eff5f36a5f671":[5,0,1,0,4,4,1,5]
 };

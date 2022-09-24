@@ -135,15 +135,15 @@ Inheritance diagram for polyfem::solver::ALForm:</div>
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::ALForm:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_a_l_form__coll__graph.svg" width="2259" height="1602"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_a_l_form__coll__graph.svg" width="2580" height="1567"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac5128a6cfaea6bb888844bdd198b7597"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#ac5128a6cfaea6bb888844bdd198b7597">ALForm</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, const double t)</td></tr>
-<tr class="memdesc:ac5128a6cfaea6bb888844bdd198b7597"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new AL <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <a href="classpolyfem_1_1solver_1_1_a_l_form.html#ac5128a6cfaea6bb888844bdd198b7597">More...</a><br /></td></tr>
-<tr class="separator:ac5128a6cfaea6bb888844bdd198b7597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae73c504ace426cedd4cd839312c18241"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#ae73c504ace426cedd4cd839312c18241">ALForm</a> (const int ndof, const std::vector&lt; int &gt; &amp;boundary_nodes, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const int n_boundary_samples, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;obstacle, const bool is_time_dependent, const double t)</td></tr>
+<tr class="memdesc:ae73c504ace426cedd4cd839312c18241"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new AL <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <a href="classpolyfem_1_1solver_1_1_a_l_form.html#ae73c504ace426cedd4cd839312c18241">More...</a><br /></td></tr>
+<tr class="separator:ae73c504ace426cedd4cd839312c18241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33ff034c7307e516775d5063d3215877"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#a33ff034c7307e516775d5063d3215877">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a33ff034c7307e516775d5063d3215877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time dependent quantities.  <a href="classpolyfem_1_1solver_1_1_a_l_form.html#a33ff034c7307e516775d5063d3215877">More...</a><br /></td></tr>
 <tr class="separator:a33ff034c7307e516775d5063d3215877"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -248,12 +248,19 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:aaad12bf174ee20f41c34f910663810fe"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#aaad12bf174ee20f41c34f910663810fe">state_</a></td></tr>
-<tr class="memdesc:aaad12bf174ee20f41c34f910663810fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the simulation state.  <a href="classpolyfem_1_1solver_1_1_a_l_form.html#aaad12bf174ee20f41c34f910663810fe">More...</a><br /></td></tr>
-<tr class="separator:aaad12bf174ee20f41c34f910663810fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed630e1021eba54946bfe85127dc9854"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#aed630e1021eba54946bfe85127dc9854">boundary_nodes_</a></td></tr>
+<tr class="separator:aed630e1021eba54946bfe85127dc9854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6012c91e8cbfd09423938001231d5d09"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#a6012c91e8cbfd09423938001231d5d09">local_boundary_</a></td></tr>
+<tr class="separator:a6012c91e8cbfd09423938001231d5d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafbebc8e5c7828be46bc01cf8a3ae067"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#aafbebc8e5c7828be46bc01cf8a3ae067">local_neumann_boundary_</a></td></tr>
+<tr class="separator:aafbebc8e5c7828be46bc01cf8a3ae067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac80b39e1ed1bbc543c1b1fff2ffdcf81"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#ac80b39e1ed1bbc543c1b1fff2ffdcf81">n_boundary_samples_</a></td></tr>
+<tr class="separator:ac80b39e1ed1bbc543c1b1fff2ffdcf81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72ecf37f03d8e388aaed7fa8190b1ef9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#a72ecf37f03d8e388aaed7fa8190b1ef9">rhs_assembler_</a></td></tr>
 <tr class="memdesc:a72ecf37f03d8e388aaed7fa8190b1ef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the RHS assembler.  <a href="classpolyfem_1_1solver_1_1_a_l_form.html#a72ecf37f03d8e388aaed7fa8190b1ef9">More...</a><br /></td></tr>
 <tr class="separator:a72ecf37f03d8e388aaed7fa8190b1ef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7136cf5effbb747b6a252677f27590ba"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#a7136cf5effbb747b6a252677f27590ba">is_time_dependent_</a></td></tr>
+<tr class="separator:a7136cf5effbb747b6a252677f27590ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab56c7693eaf604e80362bacd472b3bf0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html#ab56c7693eaf604e80362bacd472b3bf0">masked_lumped_mass_</a></td></tr>
 <tr class="memdesc:ab56c7693eaf604e80362bacd472b3bf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">mass matrix masked by the AL dofs  <a href="classpolyfem_1_1solver_1_1_a_l_form.html#ab56c7693eaf604e80362bacd472b3bf0">More...</a><br /></td></tr>
 <tr class="separator:ab56c7693eaf604e80362bacd472b3bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -277,10 +284,10 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p ><a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> of the augmented lagrangian. </p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00012">12</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00015">15</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac5128a6cfaea6bb888844bdd198b7597" name="ac5128a6cfaea6bb888844bdd198b7597"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5128a6cfaea6bb888844bdd198b7597">&#9670;&nbsp;</a></span>ALForm()</h2>
+<a id="ae73c504ace426cedd4cd839312c18241" name="ae73c504ace426cedd4cd839312c18241"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae73c504ace426cedd4cd839312c18241">&#9670;&nbsp;</a></span>ALForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,14 +295,56 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">polyfem::solver::ALForm::ALForm </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>ndof</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>boundary_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_neumann_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_boundary_samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;&#160;</td>
           <td class="paramname"><em>rhs_assembler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;&#160;</td>
+          <td class="paramname"><em>obstacle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_time_dependent</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -321,9 +370,9 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00005">5</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00007">7</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00377">polyfem::State::boundary_nodes</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00372">polyfem::utils::lump_matrix()</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00047">masked_lumped_mass_</a>, <a class="el" href="_state_8hpp_source.html#l00218">polyfem::State::mass</a>, <a class="el" href="_state_8hpp_source.html#l00399">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00232">polyfem::State::n_bases</a>, <a class="el" href="_obstacle_8hpp_source.html#l00027">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00029">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_state_8hpp_source.html#l00401">polyfem::State::obstacle</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00032">polyfem::utils::sparse_identity()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00068">update_target()</a>, and <a class="el" href="_form_8hpp_source.html#l00019">polyfem::solver::Form::value()</a>.</p>
+<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00056">boundary_nodes_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00372">polyfem::utils::lump_matrix()</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00064">masked_lumped_mass_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00027">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00029">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00032">polyfem::utils::sparse_identity()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>, and <a class="el" href="_form_8hpp_source.html#l00019">polyfem::solver::Form::value()</a>.</p>
 
 </div>
 </div>
@@ -373,9 +422,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00052">52</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00067">67</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00047">masked_lumped_mass_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00048">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00064">masked_lumped_mass_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00065">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -424,9 +473,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00057">57</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00072">72</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00047">masked_lumped_mass_</a>.</p>
+<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00064">masked_lumped_mass_</a>.</p>
 
 </div>
 </div>
@@ -475,9 +524,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00062">62</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00077">77</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00189">polyfem::State::problem</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00044">state_</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00068">update_target()</a>.</p>
+<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00062">is_time_dependent_</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>.</p>
 
 </div>
 </div>
@@ -505,11 +554,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00068">68</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00083">83</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00377">polyfem::State::boundary_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00383">polyfem::State::local_boundary</a>, <a class="el" href="_state_8hpp_source.html#l00385">polyfem::State::local_neumann_boundary</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00047">masked_lumped_mass_</a>, <a class="el" href="_state_8hpp_source.html#l00271">polyfem::State::n_boundary_samples()</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00045">rhs_assembler_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">polyfem::assembler::RhsAssembler::set_bc()</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00044">state_</a>, and <a class="el" href="_a_l_form_8hpp_source.html#l00048">target_x_</a>.</p>
+<p class="reference">References <a class="el" href="_a_l_form_8hpp_source.html#l00056">boundary_nodes_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00057">local_boundary_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00058">local_neumann_boundary_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00064">masked_lumped_mass_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00059">n_boundary_samples_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00061">rhs_assembler_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">polyfem::assembler::RhsAssembler::set_bc()</a>, and <a class="el" href="_a_l_form_8hpp_source.html#l00065">target_x_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00005">ALForm()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00062">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">ALForm()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00077">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -548,13 +597,117 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00037">37</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8cpp_source.html#l00052">52</a> of file <a class="el" href="_a_l_form_8cpp_source.html">ALForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00047">masked_lumped_mass_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00048">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00064">masked_lumped_mass_</a>, <a class="el" href="_a_l_form_8hpp_source.html#l00065">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="aed630e1021eba54946bfe85127dc9854" name="aed630e1021eba54946bfe85127dc9854"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed630e1021eba54946bfe85127dc9854">&#9670;&nbsp;</a></span>boundary_nodes_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;int&gt;&amp; polyfem::solver::ALForm::boundary_nodes_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00056">56</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">ALForm()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>.</p>
+
+</div>
+</div>
+<a id="a7136cf5effbb747b6a252677f27590ba" name="a7136cf5effbb747b6a252677f27590ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7136cf5effbb747b6a252677f27590ba">&#9670;&nbsp;</a></span>is_time_dependent_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const bool polyfem::solver::ALForm::is_time_dependent_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00062">62</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00077">update_quantities()</a>.</p>
+
+</div>
+</div>
+<a id="a6012c91e8cbfd09423938001231d5d09" name="a6012c91e8cbfd09423938001231d5d09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6012c91e8cbfd09423938001231d5d09">&#9670;&nbsp;</a></span>local_boundary_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a>&gt;&amp; polyfem::solver::ALForm::local_boundary_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00057">57</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>.</p>
+
+</div>
+</div>
+<a id="aafbebc8e5c7828be46bc01cf8a3ae067" name="aafbebc8e5c7828be46bc01cf8a3ae067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafbebc8e5c7828be46bc01cf8a3ae067">&#9670;&nbsp;</a></span>local_neumann_boundary_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a>&gt;&amp; polyfem::solver::ALForm::local_neumann_boundary_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00058">58</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>.</p>
+
+</div>
+</div>
 <a id="ab56c7693eaf604e80362bacd472b3bf0" name="ab56c7693eaf604e80362bacd472b3bf0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab56c7693eaf604e80362bacd472b3bf0">&#9670;&nbsp;</a></span>masked_lumped_mass_</h2>
 
@@ -577,9 +730,35 @@ Additional Inherited Members</h2></td></tr>
 
 <p>mass matrix masked by the AL dofs </p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00047">47</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00064">64</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00005">ALForm()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00052">first_derivative_unweighted()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00057">second_derivative_unweighted()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00068">update_target()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00037">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">ALForm()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00067">first_derivative_unweighted()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00072">second_derivative_unweighted()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00052">value_unweighted()</a>.</p>
+
+</div>
+</div>
+<a id="ac80b39e1ed1bbc543c1b1fff2ffdcf81" name="ac80b39e1ed1bbc543c1b1fff2ffdcf81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac80b39e1ed1bbc543c1b1fff2ffdcf81">&#9670;&nbsp;</a></span>n_boundary_samples_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int polyfem::solver::ALForm::n_boundary_samples_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>.</p>
 
 </div>
 </div>
@@ -605,37 +784,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reference to the RHS assembler. </p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00045">45</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00061">61</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00068">update_target()</a>.</p>
-
-</div>
-</div>
-<a id="aaad12bf174ee20f41c34f910663810fe" name="aaad12bf174ee20f41c34f910663810fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaad12bf174ee20f41c34f910663810fe">&#9670;&nbsp;</a></span>state_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classpolyfem_1_1_state.html">State</a>&amp; polyfem::solver::ALForm::state_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reference to the simulation state. </p>
-
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00044">44</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00062">update_quantities()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00068">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>.</p>
 
 </div>
 </div>
@@ -661,9 +812,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>actually a vector with the same size as x with target nodal positions </p>
 
-<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_form_8hpp_source.html#l00065">65</a> of file <a class="el" href="_a_l_form_8hpp_source.html">ALForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00052">first_derivative_unweighted()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00068">update_target()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00037">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00067">first_derivative_unweighted()</a>, <a class="el" href="_a_l_form_8cpp_source.html#l00083">update_target()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00052">value_unweighted()</a>.</p>
 
 </div>
 </div>

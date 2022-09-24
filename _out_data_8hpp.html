@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: Member List</title>
+<title>PolyFEM: src/polyfem/io/OutData.hpp File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -93,7 +93,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('classpolyfem_1_1_solution_frame.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('_out_data_8hpp.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -112,27 +112,65 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_solution_frame.html',
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">polyfem::SolutionFrame Member List</div></div>
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
+  <div class="headertitle"><div class="title">OutData.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>This is the complete list of members for <a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a2b4054c7f8ae1ecef14e7360244038ab">connectivity</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a37c36ba2d6afaa9f48b1e333c661ab6f">error</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a1ac9546a1fb6bac144f408be7de5966b">exact</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a28734487a569c62c14e57efb8c9b175c">name</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#ac98cc6ab0d8f8762fb1ccbbf9742f6a5">points</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a919fa088c8df36c537f081c23f231d3e">pressure</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a1c76942ae82536402a39aaf8a3b09846">scalar_value</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#a692d9ad99416ae51272d2c4f209eaeac">scalar_value_avg</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html#abe6995955526c073295b8f752c1524c4">solution</a></td><td class="entry"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+<div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_problem_8hpp_source.html">polyfem/assembler/Problem.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_element_bases_8hpp_source.html">polyfem/basis/ElementBases.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_mesh_8hpp_source.html">polyfem/mesh/Mesh.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_ref_element_sampler_8hpp_source.html">polyfem/utils/RefElementSampler.hpp</a>&gt;</code><br />
+<code>#include &lt;Eigen/Dense&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for OutData.hpp:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="_out_data_8hpp__incl.svg" width="4970" height="962"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="_out_data_8hpp__dep__incl.svg" width="2576" height="202"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</div>
+<p><a href="_out_data_8hpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_solution_frame.html">polyfem::io::SolutionFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">class used to save the solution of time dependent problems in code instead of saving it to the disc  <a href="classpolyfem_1_1io_1_1_solution_frame.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_geometry_data.html">polyfem::io::OutGeometryData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utilies related to export of geometry.  <a href="classpolyfem_1_1io_1_1_out_geometry_data.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html">polyfem::io::OutGeometryData::ExportOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">different export flags  <a href="structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">polyfem::io::OutRuntimeData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">stores all runtime data  <a href="classpolyfem_1_1io_1_1_out_runtime_data.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html">polyfem::io::OutStatsData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">all stats from polyfem  <a href="classpolyfem_1_1io_1_1_out_stats_data.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacepolyfem_1_1io"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1io.html">polyfem::io</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_734cdad6c925c4f361e29f2a6d60e23c.html">io</a></li><li class="navelem"><a class="el" href="_out_data_8hpp.html">OutData.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>

@@ -141,8 +141,8 @@ $(document).ready(function(){initNavTree('_mesh3_d_8cpp_source.html',''); initRe
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keyword">const</span> <span class="keyword">auto</span> v2 = <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">point</a>(<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">face_vertex</a>(gid, 1));</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keyword">const</span> <span class="keyword">auto</span> v3 = <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">point</a>(<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">face_vertex</a>(gid, 2));</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keyword">const</span> Vector3d e0 = (v2 - v1).transpose();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keyword">const</span> Vector3d e1 = (v3 - v1).transpose();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keyword">const</span> Eigen::Vector3d e0 = (v2 - v1).transpose();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keyword">const</span> Eigen::Vector3d e1 = (v3 - v1).transpose();</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">return</span> e0.cross(e1).norm() / 2;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        }</div>

@@ -1,7 +1,7 @@
 var namespacepolyfem_1_1mesh =
 [
     [ "MeshProcessing3D", "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html", [
-      [ "a_jacobian", "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#af88a21a6460239214208e809650d25c7", null ],
+      [ "a_jacobian", "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a4d70a5df70cd27f11b5d0f35460d66e6", null ],
       [ "build_connectivity", "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a847e9739d2404e59d7720542e7ea3cfa", null ],
       [ "ele_subdivison_levels", "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#aab32642b5afb67dded8ac3de524f5451", null ],
       [ "global_orientation_hexes", "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a25bdd715e037020898a20361e0a8e5cc", null ],

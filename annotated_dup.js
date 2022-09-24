@@ -71,9 +71,14 @@ var annotated_dup =
         [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ]
       ] ],
       [ "io", "namespacepolyfem_1_1io.html", [
+        [ "Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", "classpolyfem_1_1io_1_1_evaluator" ],
         [ "MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
         [ "OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", "classpolyfem_1_1io_1_1_o_b_j_reader" ],
         [ "OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", "classpolyfem_1_1io_1_1_o_b_j_writer" ],
+        [ "OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1io_1_1_out_geometry_data" ],
+        [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
+        [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
+        [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ],
         [ "VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", "classpolyfem_1_1io_1_1_v_t_u_writer" ]
       ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
@@ -225,7 +230,6 @@ var annotated_dup =
       [ "Density", "classpolyfem_1_1_density.html", "classpolyfem_1_1_density" ],
       [ "ElasticityTensor", "classpolyfem_1_1_elasticity_tensor.html", "classpolyfem_1_1_elasticity_tensor" ],
       [ "LameParameters", "classpolyfem_1_1_lame_parameters.html", "classpolyfem_1_1_lame_parameters" ],
-      [ "SolutionFrame", "classpolyfem_1_1_solution_frame.html", "classpolyfem_1_1_solution_frame" ],
       [ "SolveData", "classpolyfem_1_1_solve_data.html", "classpolyfem_1_1_solve_data" ],
       [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ]
     ] ],

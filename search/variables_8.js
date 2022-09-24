@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['h1_5ferr_0',['h1_err',['../classpolyfem_1_1_state.html#a395647864623dbc72f03de9b86de6362',1,'polyfem::State']]],
-  ['h1_5fsemi_5ferr_1',['h1_semi_err',['../classpolyfem_1_1_state.html#af36fe5c88eafe5e22eccd8b7c8e0593a',1,'polyfem::State']]],
-  ['h_5fjs_2',['H_Js',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a875bb32bbb347211b81439ddb4516441',1,'polyfem::mesh::Mesh_Quality']]],
+  ['h1_5ferr_0',['h1_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a65daad9f95cf1232ac81e43d2a6e96a8',1,'polyfem::io::OutStatsData']]],
+  ['h1_5fsemi_5ferr_1',['h1_semi_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a1cad59dcd347d00ae96d2821c07c1e54',1,'polyfem::io::OutStatsData']]],
+  ['h_5fjs_2',['H_Js',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a920ad4e97ed94fa0bf03ef16e1e23ac0',1,'polyfem::mesh::Mesh_Quality']]],
   ['h_5fnum_3',['H_num',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a4b9eb2e62bff6c681e61cdc2560e1a0e',1,'polyfem::mesh::Mesh_Quality']]],
   ['has_5fdhat_4',['has_dhat',['../classpolyfem_1_1_state.html#a5f415374f310d38dc925e1f0dc42a569',1,'polyfem::State']]],
   ['has_5fexact_5f_5',['has_exact_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a7c8d8b1aa4064d963e4ad26266466cf5',1,'polyfem::assembler::GenericTensorProblem::has_exact_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa70fa25584fd328d8369c401d50bd1f9',1,'polyfem::assembler::GenericScalarProblem::has_exact_()']]],

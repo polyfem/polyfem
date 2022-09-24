@@ -5,7 +5,7 @@ var searchData=
   ['simplestokeproblemexact_2',['SimpleStokeProblemExact',['../classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html',1,'polyfem::problem']]],
   ['sineproblem_3',['SineProblem',['../classpolyfem_1_1problem_1_1_sine_problem.html',1,'polyfem::problem']]],
   ['sinestokeproblemexact_4',['SineStokeProblemExact',['../classpolyfem_1_1problem_1_1_sine_stoke_problem_exact.html',1,'polyfem::problem']]],
-  ['solutionframe_5',['SolutionFrame',['../classpolyfem_1_1_solution_frame.html',1,'polyfem']]],
+  ['solutionframe_5',['SolutionFrame',['../classpolyfem_1_1io_1_1_solution_frame.html',1,'polyfem::io']]],
   ['solvedata_6',['SolveData',['../classpolyfem_1_1_solve_data.html',1,'polyfem']]],
   ['sparematrixcache_7',['SpareMatrixCache',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html',1,'polyfem::utils']]],
   ['sparsenewtondescentsolver_8',['SparseNewtonDescentSolver',['../classcppoptlib_1_1_sparse_newton_descent_solver.html',1,'cppoptlib']]],

@@ -118,26 +118,22 @@ $(document).ready(function(){initNavTree('_state_8hpp.html',''); initResizable()
   <div class="headertitle"><div class="title">State.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="_element_bases_8hpp_source.html">polyfem/basis/ElementBases.hpp</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_element_bases_8hpp_source.html">polyfem/basis/ElementBases.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_interface_data_8hpp_source.html">polyfem/basis/InterfaceData.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_element_assembly_values_8hpp_source.html">polyfem/assembler/ElementAssemblyValues.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_assembly_vals_cache_8hpp_source.html">polyfem/assembler/AssemblyValsCache.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_rhs_assembler_8hpp_source.html">polyfem/assembler/RhsAssembler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_problem_8hpp_source.html">polyfem/assembler/Problem.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_assembler_utils_8hpp_source.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mesh_8hpp_source.html">polyfem/mesh/Mesh.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_obstacle_8hpp_source.html">polyfem/mesh/Obstacle.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mesh_nodes_8hpp_source.html">polyfem/mesh/MeshNodes.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_ref_element_sampler_8hpp_source.html">polyfem/utils/RefElementSampler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_local_boundary_8hpp_source.html">polyfem/mesh/LocalBoundary.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_interface_data_8hpp_source.html">polyfem/basis/InterfaceData.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_assembler_utils_8hpp_source.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_elasticity_utils_8hpp_source.html">polyfem/utils/ElasticityUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_n_c_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/NCMesh2D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_c_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/CMesh2D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_c_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/CMesh3D.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_n_c_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/NCMesh3D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_string_utils_8hpp_source.html">polyfem/utils/StringUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_elasticity_utils_8hpp_source.html">polyfem/utils/ElasticityUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">polyfem/io/OutData.hpp</a>&gt;</code><br />
 <code>#include &lt;polysolve/LinearSolver.hpp&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
 <code>#include &lt;Eigen/Sparse&gt;</code><br />
@@ -148,13 +144,13 @@ $(document).ready(function(){initNavTree('_state_8hpp.html',''); initResizable()
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for State.hpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8hpp__incl.svg" width="5223" height="1155"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8hpp__incl.svg" width="5636" height="1186"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8hpp__dep__incl.svg" width="4430" height="306"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8hpp__dep__incl.svg" width="2576" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -162,9 +158,6 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solution_frame.html">polyfem::SolutionFrame</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">class used to save the solution of time dependent problems in code instead of saving it to the disc  <a href="classpolyfem_1_1_solution_frame.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_solve_data.html">polyfem::SolveData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">class to store time stepping data  <a href="classpolyfem_1_1_solve_data.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -177,6 +170,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacecppoptlib"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecppoptlib.html">cppoptlib</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacepolyfem_1_1mesh"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1solver"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html">polyfem::solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>

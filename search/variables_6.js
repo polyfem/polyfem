@@ -24,12 +24,13 @@ var searchData=
   ['formulation_5f_21',['formulation_',['../classpolyfem_1_1problem_1_1_kernel_problem.html#a56a4357a03166d12ddc469bbd40df343',1,'polyfem::problem::KernelProblem::formulation_()'],['../classpolyfem_1_1solver_1_1_elastic_form.html#a81e7ffa2df18cbe53518238ae3e45684',1,'polyfem::solver::ElasticForm::formulation_()'],['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0c0f9a3038e60592e5419b7a33c8620c',1,'polyfem::assembler::RhsAssembler::formulation_()']]],
   ['fragmentshader_22',['FragmentShader',['../classpolyfem_1_1renderer_1_1_program.html#a5cbcd183ca5560d03740532134640029',1,'polyfem::renderer::Program']]],
   ['friction_5fconstraint_5fset_5f_23',['friction_constraint_set_',['../classpolyfem_1_1solver_1_1_friction_form.html#a00af4221999274bc7bf2f6ce261a49e2',1,'polyfem::solver::FrictionForm']]],
-  ['friction_5fform_24',['friction_form',['../classpolyfem_1_1_solve_data.html#ad0e818dae5e8376c8868723dd8250fcd',1,'polyfem::SolveData']]],
-  ['fs_25',['fs',['../structpolyfem_1_1mesh_1_1_element.html#a11e462d1f85f110a35b57aa36b14613a',1,'polyfem::mesh::Element']]],
-  ['fs_5fflag_26',['fs_flag',['../structpolyfem_1_1mesh_1_1_element.html#afeb649296c1314613a97fab709636bb8',1,'polyfem::mesh::Element']]],
-  ['full_5fsize_5f_27',['full_size_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a00077100ef00ba2c93aa6673173244e9',1,'polyfem::solver::NLProblem']]],
-  ['fun_5f_28',['fun_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a22e2efaf2e7e4ff344e1631953f031ac',1,'polyfem::utils::InterpolatedFunction2d']]],
-  ['func_29',['func',['../namespacep__bases.html#a85cc6a89dd1a82f16ecb6133d551092e',1,'p_bases.func()'],['../namespaceq__bases.html#a282a463b5587ae6454d1062fea47d298',1,'q_bases.func()']]],
-  ['func_5f_30',['func_',['../classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#aea40950fc578ac126c86368d8b859c1f',1,'polyfem::problem::TransientStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a9ac31819cc6522b5980d55ccbda420f1',1,'polyfem::problem::SimpleStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7',1,'polyfem::problem::GenericScalarProblemExact::func_()']]],
-  ['fv_31',['FV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad58e5eaac4fb3b7383c2bcc4fe90cc52',1,'polyfem::mesh::Mesh3DStorage']]]
+  ['friction_5fforces_24',['friction_forces',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a273b9ec341d7dffb3ac1d798ce4ef638',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['friction_5fform_25',['friction_form',['../classpolyfem_1_1_solve_data.html#ad0e818dae5e8376c8868723dd8250fcd',1,'polyfem::SolveData']]],
+  ['fs_26',['fs',['../structpolyfem_1_1mesh_1_1_element.html#a11e462d1f85f110a35b57aa36b14613a',1,'polyfem::mesh::Element']]],
+  ['fs_5fflag_27',['fs_flag',['../structpolyfem_1_1mesh_1_1_element.html#afeb649296c1314613a97fab709636bb8',1,'polyfem::mesh::Element']]],
+  ['full_5fsize_5f_28',['full_size_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a00077100ef00ba2c93aa6673173244e9',1,'polyfem::solver::NLProblem']]],
+  ['fun_5f_29',['fun_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a22e2efaf2e7e4ff344e1631953f031ac',1,'polyfem::utils::InterpolatedFunction2d']]],
+  ['func_30',['func',['../namespacep__bases.html#a85cc6a89dd1a82f16ecb6133d551092e',1,'p_bases.func()'],['../namespaceq__bases.html#a282a463b5587ae6454d1062fea47d298',1,'q_bases.func()']]],
+  ['func_5f_31',['func_',['../classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#aea40950fc578ac126c86368d8b859c1f',1,'polyfem::problem::TransientStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a9ac31819cc6522b5980d55ccbda420f1',1,'polyfem::problem::SimpleStokeProblemExact::func_()'],['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a9d43b55a20c53e667e9fce27c13d11c7',1,'polyfem::problem::GenericScalarProblemExact::func_()']]],
+  ['fv_32',['FV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#ad58e5eaac4fb3b7383c2bcc4fe90cc52',1,'polyfem::mesh::Mesh3DStorage']]]
 ];

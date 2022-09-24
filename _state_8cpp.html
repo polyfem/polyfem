@@ -121,8 +121,10 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 <div class="textblock"><code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_matrix_i_o_8hpp_source.html">polyfem/io/MatrixIO.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/Mesh2D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_c_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/CMesh2D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_n_c_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/NCMesh2D.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/Mesh3D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_c_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/CMesh3D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_n_c_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/NCMesh3D.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_f_e_basis2d_8hpp_source.html">polyfem/basis/FEBasis2d.hpp</a>&gt;</code><br />
@@ -132,7 +134,6 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 <code>#include &lt;<a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html">polyfem/basis/MVPolygonalBasis2d.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_polygonal_basis2d_8hpp_source.html">polyfem/basis/PolygonalBasis2d.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_polygonal_basis3d_8hpp_source.html">polyfem/basis/PolygonalBasis3d.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_edge_sampler_8hpp_source.html">polyfem/utils/EdgeSampler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="auto__p__bases_8hpp_source.html">polyfem/autogen/auto_p_bases.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="auto__q__bases_8hpp_source.html">polyfem/autogen/auto_q_bases.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_hex_quadrature_8hpp_source.html">polyfem/quadrature/HexQuadrature.hpp</a>&gt;</code><br />
@@ -141,8 +142,8 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 <code>#include &lt;<a class="el" href="_tri_quadrature_8hpp_source.html">polyfem/quadrature/TriQuadrature.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_j_s_o_n_utils_8hpp_source.html">polyfem/utils/JSONUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
 <code>#include &lt;igl/Timer.h&gt;</code><br />
-<code>#include &lt;BVH.hpp&gt;</code><br />
 <code>#include &lt;unsupported/Eigen/SparseExtra&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
@@ -152,7 +153,7 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for State.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8cpp__incl.svg" width="5675" height="723"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_state_8cpp__incl.svg" width="4979" height="723"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -167,8 +168,8 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a69a453658bb41d2885cf329683f3d360"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_state_8cpp.html#a69a453658bb41d2885cf329683f3d360">DECLARE_DIFFSCALAR_BASE</a> ()</td></tr>
 <tr class="separator:a69a453658bb41d2885cf329683f3d360"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae42c1f8fedf96741b1166a16392bbf80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#ae42c1f8fedf96741b1166a16392bbf80">polyfem::compute_integral_constraints</a> (const Mesh3D &amp;mesh, const int n_bases, const std::vector&lt; ElementBases &gt; &amp;bases, const std::vector&lt; ElementBases &gt; &amp;gbases, Eigen::MatrixXd &amp;basis_integrals)</td></tr>
-<tr class="separator:ae42c1f8fedf96741b1166a16392bbf80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a066ceec9d3e84702a92a3c8d53b5a8ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a066ceec9d3e84702a92a3c8d53b5a8ce">polyfem::compute_integral_constraints</a> (const Mesh3D &amp;mesh, const int n_bases, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, Eigen::MatrixXd &amp;basis_integrals)</td></tr>
+<tr class="separator:a066ceec9d3e84702a92a3c8d53b5a8ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a69a453658bb41d2885cf329683f3d360" name="a69a453658bb41d2885cf329683f3d360"></a>

@@ -5,7 +5,7 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
       [ "FULL_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197a5d5ce683710994c10ad6a6a778b27e84", null ],
       [ "REDUCED_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197a37ee2f9ccf5dc92cadb63966587ad55b", null ]
     ] ],
-    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#aee2d8dcdf7b042382a2f67bb5bacde16", null ],
+    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#aab5c7653e10c4f2102359336856c3f42", null ],
     [ "current_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a4bb4f627d02af65c8b32b50ea19e13c2", null ],
     [ "full_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a6ca59190bb00c6cb186c3e87f24c6983", null ],
     [ "full_to_reduced", "classpolyfem_1_1solver_1_1_n_l_problem.html#a7000e6d7044be55a8bdb4db462f95d91", null ],
@@ -26,10 +26,12 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
     [ "use_full_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a5bdbfea7d735bba0ce3a45a85b25d7c0", null ],
     [ "use_reduced_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#ae46ba296dbf765122acfe737ef2b5e95", null ],
     [ "value", "classpolyfem_1_1solver_1_1_n_l_problem.html#ab854a9e6e1e661a25bcb1bf9e2eaa2a6", null ],
+    [ "boundary_nodes_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a255ff494c0fab139c00b87959dc400ae", null ],
     [ "current_size_", "classpolyfem_1_1solver_1_1_n_l_problem.html#af421cb8d4f4449f38ae44c09023e3a6b", null ],
     [ "full_size_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a00077100ef00ba2c93aa6673173244e9", null ],
+    [ "local_boundary_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a91bb690518f4e4973b7a7376b8d1186f", null ],
+    [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a58157be27da8a88c9c286a2a3eee575d", null ],
     [ "reduced_size_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a55f5ab69be721b129d5d3243d0d0b3e5", null ],
     [ "rhs_assembler_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a8956f9b63449756dded30cf38f435203", null ],
-    [ "state_", "classpolyfem_1_1solver_1_1_n_l_problem.html#ac6780bbdb33f7c68f47c1dea90329de7", null ],
     [ "t_", "classpolyfem_1_1solver_1_1_n_l_problem.html#af891bdb809cef5109b36381803d396a1", null ]
 ];

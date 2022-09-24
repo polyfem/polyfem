@@ -58,7 +58,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "is_boundary_vertex", "classpolyfem_1_1mesh_1_1_mesh.html#a621933dae34168bbcde32aba1aae763c", null ],
     [ "is_conforming", "classpolyfem_1_1mesh_1_1_mesh.html#a361e99b40e151869564304da752e4ea4", null ],
     [ "is_cube", "classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a", null ],
-    [ "is_linear", "classpolyfem_1_1mesh_1_1_mesh.html#a9a7cfac4a320e0d716e5393781ab259f", null ],
+    [ "is_linear", "classpolyfem_1_1mesh_1_1_mesh.html#a7d233e11627d08f6d164593cd8eb80e7", null ],
     [ "is_polytope", "classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779", null ],
     [ "is_rational", "classpolyfem_1_1mesh_1_1_mesh.html#a13697189b777adac8a396757a606b13d", null ],
     [ "is_simplex", "classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21", null ],

@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_contact_form =
 [
-    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#acc976e372dc924a0f282383020c37324", null ],
+    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#a605c35309f3743816a3099fc6d23eca2", null ],
     [ "barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440", null ],
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52", null ],
@@ -17,16 +17,18 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "update_quantities", "classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e", null ],
     [ "use_adaptive_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5", null ],
+    [ "avg_mass_", "classpolyfem_1_1solver_1_1_contact_form.html#a13bd7941951269f00eb817e59b54072a", null ],
+    [ "boundary_nodes_pos_", "classpolyfem_1_1solver_1_1_contact_form.html#a7c4b0aec5b4a23b81d911a0f836c874a", null ],
     [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_contact_form.html#a868172ec8ad062ce2fca20bf5efb63c4", null ],
     [ "candidates_", "classpolyfem_1_1solver_1_1_contact_form.html#ab69af438592375b855eb3d9800a28a89", null ],
     [ "ccd_max_iterations_", "classpolyfem_1_1solver_1_1_contact_form.html#ab7bdbce32f8352e653eddb3726d449a8", null ],
     [ "ccd_tolerance_", "classpolyfem_1_1solver_1_1_contact_form.html#ad5a60a654556c5c41dffc4761ee802e1", null ],
+    [ "collision_mesh_", "classpolyfem_1_1solver_1_1_contact_form.html#a95a81c1253e64a0777b2353c0eb3110c", null ],
     [ "constraint_set_", "classpolyfem_1_1solver_1_1_contact_form.html#aa9e315397fa0950018cd4b47b7930b0d", null ],
     [ "dhat_", "classpolyfem_1_1solver_1_1_contact_form.html#ae7c67afb6fd4cf38153e5e7029ba869b", null ],
     [ "is_time_dependent_", "classpolyfem_1_1solver_1_1_contact_form.html#afec9402e40be461c8b303c028dbd3dc5", null ],
     [ "max_barrier_stiffness_", "classpolyfem_1_1solver_1_1_contact_form.html#a6c460cdb21a8fc372635b45b85de154f", null ],
     [ "prev_distance_", "classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539", null ],
-    [ "state_", "classpolyfem_1_1solver_1_1_contact_form.html#a0cd4faf8c828a8e04031bc7fd20443d3", null ],
     [ "use_adaptive_barrier_stiffness_", "classpolyfem_1_1solver_1_1_contact_form.html#a1ae6235620f6a541213a870d20eeed82", null ],
     [ "use_cached_candidates_", "classpolyfem_1_1solver_1_1_contact_form.html#a301ecabb5109cf149b5da266acdd517a", null ]
 ];
