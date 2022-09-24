@@ -28,8 +28,8 @@ endif()
 # CMake Policies
 ################################################################################
 
-cmake_policy(VERSION 3.24)
-cmake_policy(SET CMP0135 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+# cmake_policy(VERSION 3.24)
+# cmake_policy(SET CMP0135 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0135.html
 
 ################################################################################
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")

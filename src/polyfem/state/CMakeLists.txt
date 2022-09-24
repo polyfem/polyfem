@@ -1,7 +1,6 @@
 set(SOURCES
 	StateInit.cpp
 	StateLoad.cpp
-	StatePref.cpp
 	StateSolve.cpp
 	StateSolveLinear.cpp
 	StateSolveNavierStokes.cpp
