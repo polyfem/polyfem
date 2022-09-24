@@ -32,7 +32,7 @@ var searchData=
   ['get_5flog_29',['get_log',['../classpolyfem_1_1_state.html#afe6bfb60bf2e8581e0584eac77c2a3e1',1,'polyfem::State']]],
   ['get_5fmatrix_30',['get_matrix',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a0189658a911ff68705e9ef87b8e4b3d0',1,'polyfem::utils::SpareMatrixCache']]],
   ['get_5fn_5fthreads_31',['get_n_threads',['../namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e',1,'polyfem::utils']]],
-  ['get_5fopt_5fp_32',['get_opt_p',['../namespacepolyfem.html#a07f3e6f88d5d78634d627cc82e18ac09',1,'polyfem']]],
+  ['get_5fopt_5fp_32',['get_opt_p',['../namespacepolyfem_1_1refinement.html#a195e7a176e3337f130065846b62aca8f',1,'polyfem::refinement']]],
   ['get_5fordered_5fvertices_5ffrom_5fhex_33',['get_ordered_vertices_from_hex',['../classpolyfem_1_1mesh_1_1_mesh3_d.html#a786f4a920dd29f5584136be44de9e1ef',1,'polyfem::mesh::Mesh3D']]],
   ['get_5fordered_5fvertices_5ffrom_5ftet_34',['get_ordered_vertices_from_tet',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#abad51bc57787d0d8a82065fc46b82dfb',1,'polyfem::mesh::NCMesh3D::get_ordered_vertices_from_tet()'],['../classpolyfem_1_1mesh_1_1_mesh3_d.html#ad6d21fb4c79bcfb88e03f70af01975cb',1,'polyfem::mesh::Mesh3D::get_ordered_vertices_from_tet()']]],
   ['get_5fproblem_35',['get_problem',['../classpolyfem_1_1problem_1_1_problem_factory.html#ac6f349b50bb9005320043fc708d128f3',1,'polyfem::problem::ProblemFactory']]],

@@ -164,6 +164,9 @@ var annotated_dup =
         [ "TetQuadrature", "classpolyfem_1_1quadrature_1_1_tet_quadrature.html", "classpolyfem_1_1quadrature_1_1_tet_quadrature" ],
         [ "TriQuadrature", "classpolyfem_1_1quadrature_1_1_tri_quadrature.html", "classpolyfem_1_1quadrature_1_1_tri_quadrature" ]
       ] ],
+      [ "refinement", "namespacepolyfem_1_1refinement.html", [
+        [ "APriori", "classpolyfem_1_1refinement_1_1_a_priori.html", "classpolyfem_1_1refinement_1_1_a_priori" ]
+      ] ],
       [ "renderer", "namespacepolyfem_1_1renderer.html", [
         [ "FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", "classpolyfem_1_1renderer_1_1_fragment_attributes" ],
         [ "FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes" ],

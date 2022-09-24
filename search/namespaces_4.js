@@ -15,9 +15,10 @@ var searchData=
   ['pretty_5fprint_12',['pretty_print',['../namespacepretty__print.html',1,'']]],
   ['problem_13',['problem',['../namespacepolyfem_1_1problem.html',1,'polyfem']]],
   ['quadrature_14',['quadrature',['../namespacepolyfem_1_1quadrature.html',1,'polyfem']]],
-  ['renderer_15',['renderer',['../namespacepolyfem_1_1renderer.html',1,'polyfem']]],
-  ['solver_16',['solver',['../namespacepolyfem_1_1solver.html',1,'polyfem']]],
-  ['stringutils_17',['StringUtils',['../namespacepolyfem_1_1utils_1_1_string_utils.html',1,'polyfem::utils']]],
-  ['time_5fintegrator_18',['time_integrator',['../namespacepolyfem_1_1time__integrator.html',1,'polyfem']]],
-  ['utils_19',['utils',['../namespacepolyfem_1_1utils.html',1,'polyfem']]]
+  ['refinement_15',['refinement',['../namespacepolyfem_1_1refinement.html',1,'polyfem']]],
+  ['renderer_16',['renderer',['../namespacepolyfem_1_1renderer.html',1,'polyfem']]],
+  ['solver_17',['solver',['../namespacepolyfem_1_1solver.html',1,'polyfem']]],
+  ['stringutils_18',['StringUtils',['../namespacepolyfem_1_1utils_1_1_string_utils.html',1,'polyfem::utils']]],
+  ['time_5fintegrator_19',['time_integrator',['../namespacepolyfem_1_1time__integrator.html',1,'polyfem']]],
+  ['utils_20',['utils',['../namespacepolyfem_1_1utils.html',1,'polyfem']]]
 ];

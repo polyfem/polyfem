@@ -33,8 +33,6 @@ var classpolyfem_1_1_state =
     [ "load_mesh", "classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9", null ],
     [ "make_nl_solver", "classpolyfem_1_1_state.html#a5ac6a52d3251f5e755ff76a140e2b813", null ],
     [ "n_boundary_samples", "classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4", null ],
-    [ "p_refinement", "classpolyfem_1_1_state.html#af64eecfd8303a8e67c856538984176b2", null ],
-    [ "p_refinement", "classpolyfem_1_1_state.html#a2c30674733746185004044209edf6055", null ],
     [ "reset_mesh", "classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7", null ],
     [ "resolve_input_path", "classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2", null ],
     [ "resolve_output_path", "classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a", null ],
