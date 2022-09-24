@@ -13,6 +13,8 @@
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
 
+#include <polyfem/refinement/APriori.hpp>
+
 #include <polyfem/basis/SplineBasis2d.hpp>
 #include <polyfem/basis/SplineBasis3d.hpp>
 
@@ -684,10 +686,14 @@ namespace polyfem
 		timer.start();
 		if (args["space"]["use_p_ref"])
 		{
-			if (mesh->is_volume())
-				p_refinement(*dynamic_cast<Mesh3D *>(mesh.get()));
-			else
-				p_refinement(*dynamic_cast<Mesh2D *>(mesh.get()));
+			refinement::APriori::p_refine(
+				*mesh,
+				args["space"]["advanced"]["B"],
+				args["space"]["advanced"]["h1_formula"],
+				args["space"]["discr_order"],
+				args["space"]["advanced"]["discr_order_max"],
+				stats,
+				disc_orders);
 
 			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
 		}

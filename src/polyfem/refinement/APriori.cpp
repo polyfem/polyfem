@@ -1,12 +1,12 @@
-#include <polyfem/State.hpp>
 
-#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
-#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include "APriori.hpp"
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
-namespace polyfem
+#include <polyfem/utils/Logger.hpp>
+
+namespace polyfem::refinement
 {
 	using namespace mesh;
 	using namespace utils;
@@ -44,7 +44,14 @@ namespace polyfem
 		return std::min(std::max(p_ref, (int)std::round(ptmp)), p_max);
 	}
 
-	void State::p_refinement(const Mesh2D &mesh2d)
+	void APriori::p_refine(
+		const Mesh2D &mesh2d,
+		const double B,
+		const bool h1_formula,
+		const int base_p,
+		const int discr_order_max,
+		io::OutStatsData &stats,
+		Eigen::VectorXi &disc_orders)
 	{
 		stats.max_angle = 0;
 		// static const int max_angles = 5;
@@ -54,11 +61,9 @@ namespace polyfem
 		mesh2d.get_edges(p0, p1);
 		const auto tmp = p0 - p1;
 		const double h_ref = tmp.rowwise().norm().mean();
-		const double B = args["space"]["advanced"]["B"];
-		const bool h1_formula = args["space"]["advanced"]["h1_formula"];
-		const int p_ref = args["space"]["discr_order"];
+
 		const double rho_ref = sqrt(3.0) / 6.0 * h_ref;
-		const int p_max = std::min(autogen::MAX_P_BASES, args["space"]["advanced"]["discr_order_max"].get<int>());
+		const int p_max = std::min(autogen::MAX_P_BASES, discr_order_max);
 
 		stats.sigma_avg = 0;
 		stats.sigma_max = 0;
@@ -95,7 +100,7 @@ namespace polyfem
 			stats.sigma_max = std::max(stats.sigma_max, sigma);
 			stats.sigma_min = std::min(stats.sigma_min, sigma);
 
-			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho, p_max);
+			const int p = get_opt_p(h1_formula, B, h_ref, base_p, rho_ref, hp, rho, p_max);
 
 			if (p > disc_orders[f])
 				disc_orders[f] = p;
@@ -133,7 +138,14 @@ namespace polyfem
 		logger().info("num_p5 {}", (disc_orders.array() == 5).count());
 	}
 
-	void State::p_refinement(const Mesh3D &mesh3d)
+	void APriori::p_refine(
+		const Mesh3D &mesh3d,
+		const double B,
+		const bool h1_formula,
+		const int base_p,
+		const int discr_order_max,
+		io::OutStatsData &stats,
+		Eigen::VectorXi &disc_orders)
 	{
 		stats.max_angle = 0;
 
@@ -141,11 +153,8 @@ namespace polyfem
 		mesh3d.get_edges(p0, p1);
 		const auto tmp = p0 - p1;
 		const double h_ref = tmp.rowwise().norm().mean();
-		const double B = args["space"]["advanced"]["B"];
-		const bool h1_formula = args["space"]["advanced"]["h1_formula"];
-		const int p_ref = args["space"]["discr_order"];
 		const double rho_ref = sqrt(6.) / 12. * h_ref;
-		const int p_max = std::min(autogen::MAX_P_BASES, args["space"]["advanced"]["discr_order_max"].get<int>());
+		const int p_max = std::min(autogen::MAX_P_BASES, discr_order_max);
 
 		stats.sigma_avg = 0;
 		stats.sigma_max = 0;
@@ -195,7 +204,7 @@ namespace polyfem
 			stats.sigma_max = std::max(stats.sigma_max, rho / hp);
 			stats.sigma_min = std::min(stats.sigma_min, rho / hp);
 
-			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho, p_max);
+			const int p = get_opt_p(h1_formula, B, h_ref, base_p, rho_ref, hp, rho, p_max);
 
 			if (p > disc_orders[c])
 				disc_orders[c] = p;
@@ -229,4 +238,19 @@ namespace polyfem
 		logger().info("num_p4 {}", (disc_orders.array() == 4).count());
 		logger().info("num_p5 {}", (disc_orders.array() == 5).count());
 	}
-} // namespace polyfem
+
+	void APriori::p_refine(
+		const mesh::Mesh &mesh,
+		const double B,
+		const bool h1_formula,
+		const int base_p,
+		const int discr_order_max,
+		io::OutStatsData &stats,
+		Eigen::VectorXi &disc_orders)
+	{
+		if (mesh.is_volume())
+			p_refine(static_cast<const Mesh3D &>(mesh), B, h1_formula, base_p, discr_order_max, stats, disc_orders);
+		else
+			p_refine(static_cast<const Mesh2D &>(mesh), B, h1_formula, base_p, discr_order_max, stats, disc_orders);
+	}
+} // namespace polyfem::refinement

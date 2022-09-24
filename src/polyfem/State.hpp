@@ -261,13 +261,6 @@ namespace polyfem
 			return n_b_samples;
 		}
 
-		/// compute a priori prefinement in 2d, fills disc_orders
-		/// @param[in] mesh2d mesh
-		void p_refinement(const mesh::Mesh2D &mesh2d);
-		/// compute a priori prefinement in 3d, fills disc_orders
-		/// @param[in] mesh3d mesh
-		void p_refinement(const mesh::Mesh3D &mesh3d);
-
 	private:
 		/// splits the solution in solution and pressure for mixed problems
 		void sol_to_pressure();
