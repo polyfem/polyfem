@@ -1,7 +1,9 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
@@ -18,7 +20,20 @@ namespace polyfem
 		public:
 			NavierStokesSolver(const json &solver_param);
 
-			void minimize(const State &state, const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
+			void minimize(const int n_bases,
+						  const int n_pressure_bases,
+						  const std::vector<basis::ElementBases> &bases,
+						  const std::vector<basis::ElementBases> &pressure_bases,
+						  const std::vector<basis::ElementBases> &gbases,
+						  const assembler::AssemblerUtils &assembler,
+						  const assembler::AssemblyValsCache &ass_vals_cache,
+						  const assembler::AssemblyValsCache &pressure_ass_vals_cache,
+						  const std::vector<int> &boundary_nodes,
+						  const bool use_avg_pressure,
+						  const std::string &formulation,
+						  const int problem_dim,
+						  const bool is_volume,
+						  const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
 			void get_info(json &params)
 			{
 				params = solver_info;
@@ -27,11 +42,23 @@ namespace polyfem
 			int error_code() const { return 0; }
 
 		private:
-			int minimize_aux(const std::string &formulation, const std::vector<int> &skipping, const State &state,
+			int minimize_aux(const std::string &formulation,
+							 const bool is_picard,
+							 const std::vector<int> &skipping,
+							 const int n_bases,
+							 const int n_pressure_bases,
+							 const std::vector<basis::ElementBases> &bases,
+							 const std::vector<basis::ElementBases> &gbases,
+							 const assembler::AssemblerUtils &assembler,
+							 const assembler::AssemblyValsCache &ass_vals_cache,
+							 const std::vector<int> &boundary_nodes,
+							 const bool use_avg_pressure,
+							 const int problem_dim,
+							 const bool is_volume,
 							 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 							 const Eigen::VectorXd &rhs, const double grad_norm,
-							 std::unique_ptr<polysolve::LinearSolver> &solver,
-							 double &nl_res_norm, Eigen::VectorXd &x);
+							 std::unique_ptr<polysolve::LinearSolver> &solver, double &nlres_norm,
+							 Eigen::VectorXd &x);
 
 			const json solver_param;
 			const std::string solver_type;

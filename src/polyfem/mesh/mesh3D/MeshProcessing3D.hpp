@@ -48,19 +48,19 @@ namespace polyfem
 			void build_connectivity(Mesh3DStorage &hmi);
 			void reorder_hex_mesh_propogation(Mesh3DStorage &hmi);
 			bool scaled_jacobian(Mesh3DStorage &hmi, Mesh_Quality &mq);
-			double a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Vector3d &v3);
+			double a_jacobian(Eigen::Vector3d &v0, Eigen::Vector3d &v1, Eigen::Vector3d &v2, Eigen::Vector3d &v3);
 
 			void global_orientation_hexes(Mesh3DStorage &hmi);
 			void refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> &Parents);
 			void refine_red_refinement_tet(Mesh3DStorage &M, int iter);
-			//Mi is a planar surface mesh
+			// Mi is a planar surface mesh
 			void straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo);
 
 			void orient_surface_mesh(Mesh3DStorage &hmi);
 			void orient_volume_mesh(Mesh3DStorage &hmi);
 			void ele_subdivison_levels(const Mesh3DStorage &hmi, std::vector<int> &Ls);
 
-			//template<typename T>
+			// template<typename T>
 			void set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::array<uint32_t, 2> &C, int &num);
 		} // namespace MeshProcessing3D
 	}     // namespace mesh

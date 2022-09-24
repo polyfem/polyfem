@@ -24,8 +24,8 @@ namespace polyfem
 			const auto v2 = point(face_vertex(gid, 1));
 			const auto v3 = point(face_vertex(gid, 2));
 
-			const Vector3d e0 = (v2 - v1).transpose();
-			const Vector3d e1 = (v3 - v1).transpose();
+			const Eigen::Vector3d e0 = (v2 - v1).transpose();
+			const Eigen::Vector3d e1 = (v3 - v1).transpose();
 
 			return e0.cross(e1).norm() / 2;
 		}

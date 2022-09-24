@@ -1,13 +1,12 @@
 set(SOURCES
 	StateInit.cpp
-	StateInterpolation.cpp
 	StateLoad.cpp
-	StateOutput.cpp
 	StatePref.cpp
 	StateSolve.cpp
 	StateSolveLinear.cpp
 	StateSolveNavierStokes.cpp
 	StateSolveNonlinear.cpp
+	StateOutput.cpp
 )
 
 prepend_current_path(SOURCES)

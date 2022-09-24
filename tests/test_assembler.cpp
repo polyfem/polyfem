@@ -32,7 +32,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	state.init(in_args, true);
 	state.load_mesh();
 
-	state.compute_mesh_stats();
+	// state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();

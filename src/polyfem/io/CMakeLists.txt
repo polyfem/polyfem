@@ -9,6 +9,8 @@ set(SOURCES
 	OBJWriter.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
+	Evaluator.cpp
+	OutData.cpp
 )
 
 prepend_current_path(SOURCES)

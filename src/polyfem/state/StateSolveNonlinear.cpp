@@ -161,12 +161,26 @@ namespace polyfem
 			}
 		}
 
+		const int ndof = n_bases * mesh->dimension();
+		// if (is_formulation_mixed) //mixed not supported
+		// 	ndof_ += n_pressure_bases; // Pressure is a scalar
+
 		assert(solve_data.rhs_assembler != nullptr);
 
 		std::vector<std::shared_ptr<Form>> forms;
-		solve_data.elastic_form = std::make_shared<ElasticForm>(*this);
+		solve_data.elastic_form = std::make_shared<ElasticForm>(
+			n_bases, bases, geom_bases(),
+			assembler, ass_vals_cache,
+			formulation(),
+			mesh->is_volume());
 		forms.push_back(solve_data.elastic_form);
-		solve_data.body_form = std::make_shared<BodyForm>(*this, *solve_data.rhs_assembler, /*apply_DBC=*/true);
+
+		solve_data.body_form = std::make_shared<BodyForm>(
+			ndof, n_pressure_bases,
+			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			rhs, *solve_data.rhs_assembler,
+			density,
+			/*apply_DBC=*/true, /*is_formulation_mixed=*/false);
 		forms.push_back(solve_data.body_form);
 
 		solve_data.inertia_form = nullptr;
@@ -186,7 +200,14 @@ namespace polyfem
 			}
 		}
 
-		solve_data.al_form = std::make_shared<ALForm>(*this, *solve_data.rhs_assembler, t);
+		solve_data.al_form = std::make_shared<ALForm>(
+			ndof,
+			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			mass,
+			*solve_data.rhs_assembler,
+			obstacle,
+			problem->is_time_dependent(),
+			t);
 		forms.push_back(solve_data.al_form);
 
 		solve_data.contact_form = nullptr;
@@ -197,8 +218,9 @@ namespace polyfem
 			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
 			solve_data.contact_form = std::make_shared<ContactForm>(
-				*this,
+				collision_mesh, boundary_nodes_pos,
 				args["contact"]["dhat"],
+				avg_mass,
 				use_adaptive_barrier_stiffness,
 				/*is_time_dependent=*/solve_data.time_integrator != nullptr,
 				args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -223,7 +245,8 @@ namespace polyfem
 			if (args["contact"]["friction_coefficient"].get<double>() != 0)
 			{
 				solve_data.friction_form = std::make_shared<FrictionForm>(
-					*this,
+					collision_mesh,
+					boundary_nodes_pos,
 					args["contact"]["epsv"],
 					args["contact"]["friction_coefficient"],
 					args["contact"]["dhat"],
@@ -237,7 +260,13 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
-		solve_data.nl_problem = std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t, forms);
+		solve_data.nl_problem = std::make_shared<NLProblem>(
+			ndof,
+			formulation(),
+			boundary_nodes,
+			local_boundary,
+			n_boundary_samples(),
+			*solve_data.rhs_assembler, t, forms);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
@@ -258,7 +287,7 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 
-		solver_info = json::array();
+		stats.solver_info = json::array();
 	}
 
 	void State::solve_tensor_nonlinear(const int t)
@@ -298,13 +327,13 @@ namespace polyfem
 		al_solver.post_subsolve = [&](const double al_weight) {
 			json info;
 			nl_solver->get_info(info);
-			solver_info.push_back(
+			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"info", info}});
 			if (al_weight > 0)
-				solver_info.back()["weight"] = al_weight;
-			this->save_subsolve(++subsolve_count, t);
+				stats.solver_info.back()["weight"] = al_weight;
+			save_subsolve(++subsolve_count, t);
 		};
 
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
@@ -347,7 +376,7 @@ namespace polyfem
 			// Save the subsolve sequence for debugging and info
 			json info;
 			nl_solver->get_info(info);
-			solver_info.push_back(
+			stats.solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
