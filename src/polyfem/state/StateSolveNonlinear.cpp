@@ -174,7 +174,7 @@ namespace polyfem
 			n_bases, bases, geom_bases(),
 			assembler, ass_vals_cache,
 			formulation(),
-			args["time"]["dt"],
+			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh->is_volume());
 		forms.push_back(solve_data.elastic_form);
 
