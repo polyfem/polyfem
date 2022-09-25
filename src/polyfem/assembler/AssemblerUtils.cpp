@@ -139,17 +139,17 @@ namespace polyfem
 		void AssemblerUtils::assemble_mass_matrix(const std::string &assembler,
 												  const bool is_volume,
 												  const int n_basis,
-												  const Density &density,
+												  const bool use_density,
 												  const std::vector<ElementBases> &bases,
 												  const std::vector<ElementBases> &gbases,
 												  const AssemblyValsCache &cache,
 												  StiffnessMatrix &mass) const
 		{
 			// TODO use cache
-			if (assembler == "Helmholtz" || assembler == "Laplacian")
-				mass_mat_assembler_.assemble(is_volume, 1, n_basis, density, bases, gbases, cache, mass);
+			if (use_density)
+				mass_mat_.assemble(is_volume, n_basis, bases, gbases, cache, mass, true);
 			else
-				mass_mat_assembler_.assemble(is_volume, is_volume ? 3 : 2, n_basis, density, bases, gbases, cache, mass);
+				mass_mat_no_density_.assemble(is_volume, n_basis, bases, gbases, cache, mass, true);
 		}
 
 		void AssemblerUtils::assemble_mixed_problem(const std::string &assembler,
@@ -291,7 +291,7 @@ namespace polyfem
 												  const Eigen::MatrixXd &fun,
 												  Eigen::MatrixXd &result) const
 		{
-			if (assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
+			if (assembler == "Mass" || assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
 				return;
 
 			else if (assembler == "LinearElasticity")
@@ -332,7 +332,7 @@ namespace polyfem
 												  const Eigen::MatrixXd &fun,
 												  Eigen::MatrixXd &result) const
 		{
-			if (assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
+			if (assembler == "Mass" || assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
 				return;
 
 			else if (assembler == "LinearElasticity")
@@ -470,8 +470,14 @@ namespace polyfem
 			}
 		}
 
-		void AssemblerUtils::set_size(const int dim)
+		void AssemblerUtils::set_size(const std::string &assembler, const int dim)
 		{
+			int size = dim;
+			if (assembler == "Helmholtz" || assembler == "Laplacian")
+				size = 1;
+			mass_mat_.local_assembler().set_size(size);
+			mass_mat_no_density_.local_assembler().set_size(size);
+
 			linear_elasticity_.local_assembler().set_size(dim);
 			linear_elasticity_energy_.local_assembler().set_size(dim);
 			hooke_linear_elasticity_.local_assembler().set_size(dim);
@@ -493,22 +499,6 @@ namespace polyfem
 			navier_stokes_velocity_picard_.local_assembler().set_size(dim);
 		}
 
-		void AssemblerUtils::update_lame_params(const LameParameters &newParams)
-		{
-			linear_elasticity_.local_assembler().set_params(newParams);
-			linear_elasticity_energy_.local_assembler().set_params(newParams);
-			// hooke_linear_elasticity_.local_assembler().set_params(newParams);
-
-			// saint_venant_elasticity_.local_assembler().set_params(newParams);
-			neo_hookean_elasticity_.local_assembler().set_params(newParams);
-			multi_models_elasticity_.local_assembler().set_params(newParams);
-			// ogden_elasticity_.local_assembler().set_params(newParams);
-
-			incompressible_lin_elast_displacement_.local_assembler().set_params(newParams);
-			incompressible_lin_elast_mixed_.local_assembler().set_params(newParams);
-			incompressible_lin_elast_pressure_.local_assembler().set_params(newParams);
-		}
-
 		void AssemblerUtils::init_multimodels(const std::vector<std::string> &materials)
 		{
 			multi_models_elasticity_.local_assembler().init_multimodels(materials);
@@ -516,6 +506,8 @@ namespace polyfem
 
 		void AssemblerUtils::add_multimaterial(const int index, const json &params)
 		{
+			mass_mat_.local_assembler().add_multimaterial(index, params);
+
 			laplacian_.local_assembler().add_multimaterial(index, params);
 			helmholtz_.local_assembler().add_multimaterial(index, params);
 

@@ -179,7 +179,7 @@ namespace polyfem
 			ndof, n_pressure_bases,
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
 			rhs, *solve_data.rhs_assembler,
-			density,
+			assembler.density(),
 			/*apply_DBC=*/true, /*is_formulation_mixed=*/false);
 		forms.push_back(solve_data.body_form);
 

@@ -3,7 +3,8 @@
 #include <polyfem/Common.hpp>
 
 #include "Assembler.hpp"
-#include "MassMatrixAssembler.hpp"
+
+#include "Mass.hpp"
 
 #include "Laplacian.hpp"
 #include "Bilaplacian.hpp"
@@ -23,6 +24,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <vector>
+#include <string>
 
 namespace polyfem
 {
@@ -43,11 +45,12 @@ namespace polyfem
 								  const std::vector<basis::ElementBases> &gbases,
 								  const AssemblyValsCache &cache,
 								  StiffnessMatrix &stiffness) const;
+
 			// mass matrix assembler, assembler is the name of the formulation
 			void assemble_mass_matrix(const std::string &assembler,
 									  const bool is_volume,
 									  const int n_basis,
-									  const Density &density,
+									  const bool use_density,
 									  const std::vector<basis::ElementBases> &bases,
 									  const std::vector<basis::ElementBases> &gbases,
 									  const AssemblyValsCache &cache,
@@ -135,11 +138,10 @@ namespace polyfem
 
 			// dispaces to all set parameters of the local assemblers
 			void add_multimaterial(const int index, const json &params);
-			void set_size(const int dim);
+			void set_size(const std::string &assembler, const int dim);
 			void init_multimodels(const std::vector<std::string> &materials);
 			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
-			void update_lame_params(const LameParameters &newParams);
-
+			const Density &density() const { return mass_mat_.local_assembler().density(); }
 			// checks if assembler is linear
 			static bool is_linear(const std::string &assembler);
 
@@ -170,7 +172,9 @@ namespace polyfem
 
 		private:
 			// all assemblers
-			MassMatrixAssembler mass_mat_assembler_;
+			Assembler<Mass> mass_mat_;
+			Assembler<Mass> mass_mat_no_density_;
+
 			Assembler<Laplacian> laplacian_;
 			Assembler<Helmholtz> helmholtz_;
 

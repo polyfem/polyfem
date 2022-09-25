@@ -1002,7 +1002,7 @@ namespace polyfem::io
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.density;
+		const Density &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1514,7 +1514,7 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.density;
+		const Density &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();

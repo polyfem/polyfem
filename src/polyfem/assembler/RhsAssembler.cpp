@@ -197,8 +197,7 @@ namespace polyfem
 				if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 				{
 					StiffnessMatrix mass;
-					Density d;
-					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
+					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, false, bases_, gbases_, ass_vals_cache_, mass);
 					auto solver = LinearSolver::create(solver_, preconditioner_);
 					solver->setParameters(solver_params_);
 					solver->analyzePattern(mass, mass.rows());

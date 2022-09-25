@@ -199,8 +199,6 @@ namespace polyfem
 
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
-		/// density of the input, default=1.
-		Density density;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 

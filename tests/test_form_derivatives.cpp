@@ -147,7 +147,7 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 				  state_ptr->local_neumann_boundary, state_ptr->n_boundary_samples(),
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
-				  state_ptr->density,
+				  state_ptr->assembler.density(),
 				  apply_DBC, false);
 
 	CAPTURE(apply_DBC);

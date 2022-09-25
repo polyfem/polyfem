@@ -389,7 +389,6 @@ namespace polyfem
 		if (!body_params.is_array())
 		{
 			assembler.add_multimaterial(0, body_params);
-			density.add_multimaterial(0, body_params);
 			return;
 		}
 
@@ -433,7 +432,6 @@ namespace polyfem
 
 			const json &tmp = it->second;
 			assembler.add_multimaterial(e, tmp);
-			density.add_multimaterial(e, tmp);
 		}
 
 		for (int bid : missing)
@@ -1065,7 +1063,7 @@ namespace polyfem
 				if (problem->is_time_dependent())
 				{
 					StiffnessMatrix velocity_mass;
-					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, geom_bases(), ass_vals_cache, velocity_mass);
+					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, velocity_mass);
 
 					std::vector<Eigen::Triplet<double>> mass_blocks;
 					mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1090,7 +1088,7 @@ namespace polyfem
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, geom_bases(), ass_vals_cache, mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, mass);
 			}
 		}
 
@@ -1182,7 +1180,7 @@ namespace polyfem
 		logger().info("Assigning rhs...");
 
 		solve_data.rhs_assembler = build_rhs_assembler();
-		solve_data.rhs_assembler->assemble(density, rhs);
+		solve_data.rhs_assembler->assemble(assembler.density(), rhs);
 		rhs *= -1;
 
 		// if(problem->is_mixed())
