@@ -11,7 +11,7 @@ namespace polyfem::assembler
 			tmp += rho * data.vals.basis_values[data.i].val(q) * data.vals.basis_values[data.j].val(q) * data.da(q);
 		}
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size(), 1);
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size(), 1);
 		for (int i = 0; i < size(); ++i)
 			res(i * size()) = tmp;
 
@@ -28,7 +28,7 @@ namespace polyfem::assembler
 
 	void Mass::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size_ == 1 || size_ == 2 || size_ == 3);
 
 		density_.add_multimaterial(index, params);
 	}
