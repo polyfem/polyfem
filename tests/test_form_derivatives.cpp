@@ -230,7 +230,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 {
 	const auto state_ptr = get_state();
-	const double dt = 1e-3;
+	const double dt = 1e-2;
 
 	ElasticForm form(
 		state_ptr->n_bases,
@@ -241,7 +241,7 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 		"Damping",
 		dt,
 		state_ptr->mesh->is_volume());
-	form.update_quantities(0, Eigen::VectorXd::Zero(state_ptr->n_bases * state_ptr->mesh->dimension()));
+	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * 2));
 	test_form(form, *state_ptr);
 }
 
