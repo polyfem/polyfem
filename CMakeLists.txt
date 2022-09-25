@@ -25,6 +25,13 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/PolyFEMOptions.cmake)
 endif()
 
 ################################################################################
+# CMake Policies
+################################################################################
+
+# cmake_policy(VERSION 3.24)
+# cmake_policy(SET CMP0135 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+
+################################################################################
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")
 ################################################################################
 
@@ -132,7 +139,8 @@ include(sanitizers)
 ################################################################################
 
 # add_library() can only be called without any source since CMake 3.11 ...
-add_library(polyfem src/polyfem/State.cpp)
+add_library(polyfem)
+add_library(polyfem::polyfem ALIAS polyfem)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
@@ -158,9 +166,17 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
 
+if (MSVC)
+    add_compile_options(/bigobj)
+endif ()
+
 ################################################################################
 # Required libraries
 ################################################################################
+
+# Eigen
+include(eigen)
+target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # polysolve
 include(polysolver)
@@ -278,8 +294,6 @@ if(POLYFEM_WITH_CLIPPER)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
-
-add_library(polyfem::polyfem ALIAS polyfem)
 
 ################################################################################
 # Polyfem binary

@@ -241,16 +241,16 @@
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "int",
-        "default": -1,
-        "doc": "Assign specified ID to all volume elements of the geometry (negative values indicate using the stored values in the MSH (default: 0))."
+        "doc": "Assign specified ID to all volume elements of the geometry."
     },
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "object",
-        "required": [
+        "optional": [
             "id_offset"
         ],
         "typename": "id_offset",
+        "default": null,
         "doc": "Offsets the volume IDs loaded from the mesh."
     },
     {
@@ -429,36 +429,16 @@
     },
     {
         "pointer": "/geometry/*/surface_selection",
-        "type": "object",
-        "optional": [
-            "threshold",
-            "offset"
-        ],
-        "typename": "bbox",
-        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
-    },
-    {
-        "pointer": "/geometry/*/surface_selection/threshold",
-        "type": "float",
-        "default": -1
-    },
-    {
-        "pointer": "/geometry/*/surface_selection/offset",
-        "type": "int",
-        "default": 0
-    },
-    {
-        "pointer": "/geometry/*/surface_selection",
-        "type": "list",
-        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
-    },
-    {
-        "pointer": "/geometry/*/surface_selection",
         "type": "file",
         "extensions": [
             ".txt"
         ],
         "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one ID for each; each triple must correspond to a surface element"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "list",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -519,6 +499,19 @@
         "default": null,
         "typename": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "threshold"
+        ],
+        "optional": [
+            "id_offset"
+        ],
+        "default": null,
+        "typename": "box_side",
+        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
@@ -596,6 +589,17 @@
         "pointer": "/geometry/*/surface_selection/*/box/*/*",
         "type": "float",
         "default": 0
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/threshold",
+        "type": "float",
+        "doc": "Threshold for box side selection."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "ID offset of box side selection."
     },
     {
         "pointer": "/geometry/*/n_refs",
@@ -855,9 +859,7 @@
         ],
         "optional": [
             "t0",
-            "integrator",
-            "newmark",
-            "BDF"
+            "integrator"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
@@ -870,9 +872,7 @@
         ],
         "optional": [
             "t0",
-            "integrator",
-            "newmark",
-            "BDF"
+            "integrator"
         ],
         "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
@@ -885,9 +885,7 @@
         ],
         "optional": [
             "t0",
-            "integrator",
-            "newmark",
-            "BDF"
+            "integrator"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
@@ -928,40 +926,71 @@
         "doc": "Time integrator"
     },
     {
-        "pointer": "/time/newmark",
+        "pointer": "/time/integrator",
         "type": "object",
-        "default": null,
+        "type_name": "ImplicitEuler",
+        "required": [
+            "type"
+        ],
+        "doc": "Implicit Euler time integration"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "BDF",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "steps"
+        ],
+        "doc": "Backwards differentiation formula time integration"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "ImplicitNewmark",
+        "required": [
+            "type"
+        ],
         "optional": [
             "gamma",
             "beta"
         ],
-        "doc": "Options for Newmark"
+        "doc": "Implicit Newmark time integration"
     },
     {
-        "pointer": "/time/newmark/gamma",
+        "pointer": "/time/integrator/type",
+        "type": "string",
+        "options": [
+            "ImplicitEuler",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "doc": "Type of time integrator to use"
+    },
+    {
+        "pointer": "/time/integrator/gamma",
         "type": "float",
         "default": 0.5,
+        "min": 0,
+        "max": 1,
         "doc": "Newmark gamma"
     },
     {
-        "pointer": "/time/newmark/beta",
+        "pointer": "/time/integrator/beta",
         "type": "float",
         "default": 0.25,
+        "min": 0,
+        "max": 0.5,
         "doc": "Newmark beta"
     },
     {
-        "pointer": "/time/BDF",
-        "type": "object",
-        "default": null,
-        "optional": [
-            "steps"
-        ],
-        "doc": "Options for BDF"
-    },
-    {
-        "pointer": "/time/BDF/steps",
+        "pointer": "/time/integrator/steps",
         "type": "int",
         "default": 1,
+        "min": 1,
+        "max": 6,
         "doc": "BDF order"
     },
     {
@@ -2170,6 +2199,18 @@
         "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "float",
         "doc": "Values of pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
+        "type": "list",
+        "default": [true, true, true],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": "value"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",

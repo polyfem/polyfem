@@ -79,7 +79,9 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &bases,
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
+				const double dt,
 				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev,
 				Eigen::MatrixXd &rhs) const;
 			//assemble hessian of energy (grad)
 			void assemble_hessian(
@@ -89,7 +91,9 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &bases,
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
+				const double dt,
 				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev,
 				utils::SpareMatrixCache &mat_cache,
 				StiffnessMatrix &grad) const;
 
@@ -99,54 +103,9 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &bases,
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
-				const Eigen::MatrixXd &displacement) const;
-
-			inline LocalAssembler &local_assembler() { return local_assembler_; }
-			inline const LocalAssembler &local_assembler() const { return local_assembler_; }
-
-		private:
-			LocalAssembler local_assembler_;
-		};
-
-		//non-linear assembler (eg neohookean elasticity)
-		template <class LocalAssembler>
-		class TransientNLAssembler
-		{
-		public:
-			//assemble gradient of energy (rhs)
-			void assemble_grad(
-				const bool is_volume,
-				const int n_basis,
 				const double dt,
-				const std::vector<basis::ElementBases> &bases,
-				const std::vector<basis::ElementBases> &gbases,
-				const AssemblyValsCache &cache,
 				const Eigen::MatrixXd &displacement,
-				const Eigen::MatrixXd &prev_displacement,
-				Eigen::MatrixXd &rhs) const;
-			//assemble hessian of energy (grad)
-			void assemble_hessian(
-				const bool is_volume,
-				const int n_basis,
-				const double dt,
-				const bool project_to_psd,
-				const std::vector<basis::ElementBases> &bases,
-				const std::vector<basis::ElementBases> &gbases,
-				const AssemblyValsCache &cache,
-				const Eigen::MatrixXd &displacement,
-				const Eigen::MatrixXd &prev_displacement,
-				utils::SpareMatrixCache &mat_cache,
-				StiffnessMatrix &grad) const;
-
-			//assemble energy
-			double assemble(
-				const bool is_volume,
-				const double dt,
-				const std::vector<basis::ElementBases> &bases,
-				const std::vector<basis::ElementBases> &gbases,
-				const AssemblyValsCache &cache,
-				const Eigen::MatrixXd &displacement,
-				const Eigen::MatrixXd &prev_displacement) const;
+				const Eigen::MatrixXd &displacement_prev) const;
 
 			inline LocalAssembler &local_assembler() { return local_assembler_; }
 			inline const LocalAssembler &local_assembler() const { return local_assembler_; }

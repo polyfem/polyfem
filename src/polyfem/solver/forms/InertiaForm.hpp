@@ -14,7 +14,8 @@ namespace polyfem::solver
 		/// @brief Construct a new Inertia Form object
 		/// @param mass Mass matrix
 		/// @param time_integrator Time integrator
-		InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator);
+		InertiaForm(const StiffnessMatrix &mass,
+					const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
 	protected:
 		/// @brief Compute the value of the form

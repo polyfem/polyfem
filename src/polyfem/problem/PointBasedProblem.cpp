@@ -1,5 +1,4 @@
 #include "PointBasedProblem.hpp"
-#include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
 #include <iostream>

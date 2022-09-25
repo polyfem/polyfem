@@ -13,8 +13,6 @@
 #include <tbb/tbb.h>
 #endif
 
-using namespace polysolve;
-
 namespace polyfem
 {
 	namespace solver
@@ -198,7 +196,7 @@ namespace polyfem
 
 				logger().info("Prefactorization begins...");
 
-				solver_mass = LinearSolver::create(solver_type, precond);
+				solver_mass = polysolve::LinearSolver::create(solver_type, precond);
 				solver_mass->setParameters(params);
 				// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
 				{
@@ -208,7 +206,7 @@ namespace polyfem
 
 				mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
 
-				solver_diffusion = LinearSolver::create(solver_type, precond);
+				solver_diffusion = polysolve::LinearSolver::create(solver_type, precond);
 				solver_diffusion->setParameters(params);
 				// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
 				{
@@ -244,7 +242,7 @@ namespace polyfem
 				}
 
 				mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
-				solver_projection = LinearSolver::create(solver_type, precond);
+				solver_projection = polysolve::LinearSolver::create(solver_type, precond);
 				solver_projection->setParameters(params);
 				logger().info("{}...", solver_projection->name());
 				// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
@@ -647,7 +645,7 @@ namespace polyfem
 												  double x = 1 - local_pts_particle(ppeI, 1);
 												  local_pts_particle(ppeI, 1) = 1 - local_pts_particle(ppeI, 0);
 												  local_pts_particle(ppeI, 0) = x;
-												  //TODO: dim == 3
+												  // TODO: dim == 3
 											  }
 										  }
 
@@ -758,7 +756,7 @@ namespace polyfem
 								double x = 1 - local_pts_particle(0, 1);
 								local_pts_particle(0, 1) = 1 - local_pts_particle(0, 0);
 								local_pts_particle(0, 0) = x;
-								//TODO: dim == 3
+								// TODO: dim == 3
 							}
 
 							// compute global position and velocity of particles
@@ -837,7 +835,7 @@ namespace polyfem
 						new_sol_w(bases[cellI].bases[i].global()[0].index) += vals.basis_values[i].val(0);
 					}
 				}
-				//TODO: need to add up boundary velocities and weights because of perodic BC
+				// TODO: need to add up boundary velocities and weights because of perodic BC
 
 #ifdef POLYFEM_WITH_TBB
 				tbb::parallel_for(0, (int)new_sol.rows() / dim, 1, [&](int i)
@@ -960,7 +958,7 @@ namespace polyfem
 						}
 					}
 				}
-				//TODO: need to add up boundary velocities and weights because of perodic BC
+				// TODO: need to add up boundary velocities and weights because of perodic BC
 
 #ifdef POLYFEM_WITH_TBB
 				tbb::parallel_for(0, (int)new_sol.rows() / dim, 1, [&](int i)
@@ -973,7 +971,7 @@ namespace polyfem
 #ifdef POLYFEM_WITH_TBB
 				);
 #endif
-				//TODO: need to think about what to do with negative quadratic weight
+				// TODO: need to think about what to do with negative quadratic weight
 			}
 
 			void solve_diffusion_1st(const StiffnessMatrix &mass, const std::vector<int> &bnd_nodes, Eigen::MatrixXd &sol)

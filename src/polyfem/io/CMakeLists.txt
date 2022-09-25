@@ -1,6 +1,4 @@
 set(SOURCES
-	FEBioReader.cpp
-	FEBioReader.hpp
 	MatrixIO.cpp
 	MatrixIO.hpp
 	MshReader.cpp
@@ -11,6 +9,8 @@ set(SOURCES
 	OBJWriter.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
+	Evaluator.cpp
+	OutData.cpp
 )
 
 prepend_current_path(SOURCES)

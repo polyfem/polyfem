@@ -24,12 +24,12 @@ namespace polyfem
 		const int precond_num = problem_dim * n_bases;
 
 		Eigen::VectorXd x;
-		spectrum = dirichlet_solve(
+		stats.spectrum = dirichlet_solve(
 			*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 			assembler.is_fluid(formulation()), use_avg_pressure);
 		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
-		solver->getInfo(solver_info);
+		solver->getInfo(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
 		if (error > 1e-4)
@@ -98,7 +98,6 @@ namespace polyfem
 			initial_acceleration(acceleration);
 
 			time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			time_integrator->set_parameters(args["time"]);
 			time_integrator->init(sol, velocity, acceleration, dt);
 		}
 

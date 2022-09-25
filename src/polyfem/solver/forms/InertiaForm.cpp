@@ -4,7 +4,8 @@
 
 namespace polyfem::solver
 {
-	InertiaForm::InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator)
+	InertiaForm::InertiaForm(const StiffnessMatrix &mass,
+							 const time_integrator::ImplicitTimeIntegrator &time_integrator)
 		: mass_(mass), time_integrator_(time_integrator)
 	{
 		assert(mass.size() != 0);

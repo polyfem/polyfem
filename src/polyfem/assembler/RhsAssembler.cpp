@@ -38,7 +38,7 @@ namespace polyfem
 
 		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichlet,
 								   const int n_basis, const int size,
-								   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
+								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const std::string &formulation, const Problem &problem,
 								   const std::string bc_method,
 								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
@@ -134,7 +134,7 @@ namespace polyfem
 			{
 				for (int e = 0; e < n_elements; ++e)
 				{
-					const ElementBases &bs = bases_[e];
+					const basis::ElementBases &bs = bases_[e];
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 					ids.resize(1, 1);
@@ -257,14 +257,14 @@ namespace polyfem
 				if (!has_samples)
 					continue;
 
-				const ElementBases &bs = bases_[e];
+				const basis::ElementBases &bs = bases_[e];
 				const int n_local_bases = int(bs.bases.size());
 
 				total_size += samples.rows();
 
 				for (int j = 0; j < n_local_bases; ++j)
 				{
-					const Basis &b = bs.bases[j];
+					const basis::Basis &b = bs.bases[j];
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
@@ -308,8 +308,8 @@ namespace polyfem
 				if (!has_samples)
 					continue;
 
-				const ElementBases &bs = bases_[e];
-				const ElementBases &gbs = gbases_[e];
+				const basis::ElementBases &bs = bases_[e];
+				const basis::ElementBases &gbs = gbases_[e];
 				const int n_local_bases = int(bs.bases.size());
 
 				gbs.eval_geom_mapping(samples, mapped);
@@ -317,7 +317,7 @@ namespace polyfem
 				bs.evaluate_bases(samples, tmp_val);
 				for (int j = 0; j < n_local_bases; ++j)
 				{
-					const Basis &b = bs.bases[j];
+					const basis::Basis &b = bs.bases[j];
 					const auto &tmp = tmp_val[j].val;
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
@@ -439,7 +439,7 @@ namespace polyfem
 			for (const auto &lb : local_boundary)
 			{
 				const int e = lb.element_id();
-				const ElementBases &bs = bases_[e];
+				const basis::ElementBases &bs = bases_[e];
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
@@ -508,8 +508,8 @@ namespace polyfem
 				if (!has_samples)
 					continue;
 
-				const ElementBases &bs = bases_[e];
-				const ElementBases &gbs = gbases_[e];
+				const basis::ElementBases &bs = bases_[e];
+				const basis::ElementBases &gbs = gbases_[e];
 
 				vals.compute(e, mesh_.is_volume(), samples, bs, gbs);
 
@@ -578,6 +578,8 @@ namespace polyfem
 						const int n_id = m(n, 0);
 						for (int d = 0; d < size_; ++d)
 						{
+							if (std::isnan(m(n, d + 1)))
+								continue;
 							const int g_index = n_id * size_ + d;
 							rhs(g_index) = m(n, d + 1);
 						}
@@ -601,8 +603,8 @@ namespace polyfem
 				if (!has_samples)
 					continue;
 
-				const ElementBases &gbs = gbases_[e];
-				const ElementBases &bs = bases_[e];
+				const basis::ElementBases &gbs = gbases_[e];
+				const basis::ElementBases &bs = bases_[e];
 
 				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 
@@ -613,7 +615,7 @@ namespace polyfem
 
 					trafo = vals.jac_it[n];
 
-					if (displacement.size() >= 0)
+					if (displacement.size() > 0)
 					{
 						assert(size_ == 2 || size_ == 3);
 						deform_mat.resize(size_, size_);
@@ -793,8 +795,8 @@ namespace polyfem
 				if (!has_samples)
 					continue;
 
-				const ElementBases &gbs = gbases_[e];
-				const ElementBases &bs = bases_[e];
+				const basis::ElementBases &gbs = gbases_[e];
+				const basis::ElementBases &bs = bases_[e];
 
 				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 

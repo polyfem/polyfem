@@ -23,7 +23,18 @@ namespace polyfem
 
 		Eigen::VectorXd x;
 		solver::NavierStokesSolver ns_solver(args["solver"]);
-		ns_solver.minimize(*this, rhs, x);
+		ns_solver.minimize(n_bases, n_pressure_bases,
+						   bases, pressure_bases,
+						   geom_bases(),
+						   assembler,
+						   ass_vals_cache,
+						   pressure_ass_vals_cache,
+						   boundary_nodes,
+						   use_avg_pressure,
+						   formulation(),
+						   mesh->dimension(),
+						   mesh->is_volume(),
+						   rhs, x);
 
 		sol = x;
 		sol_to_pressure();
@@ -157,7 +168,8 @@ namespace polyfem
 		Eigen::VectorXd prev_sol;
 
 		BDF time_integrator;
-		time_integrator.set_parameters(args["time"]);
+		if (args["time"]["integrator"].is_object())
+			time_integrator.set_parameters(args["time"]["integrator"]);
 		time_integrator.init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 
 		assembler.assemble_problem(
@@ -196,7 +208,15 @@ namespace polyfem
 
 			Eigen::VectorXd tmp_sol;
 			ns_solver.minimize(
-				*this, sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
+				n_bases, n_pressure_bases,
+				bases, geom_bases(),
+				assembler, ass_vals_cache,
+				boundary_nodes,
+				use_avg_pressure,
+				formulation(),
+				mesh->dimension(),
+				mesh->is_volume(),
+				sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
 				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
 			sol = tmp_sol;
 			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));

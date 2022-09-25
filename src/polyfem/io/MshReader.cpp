@@ -62,20 +62,24 @@ namespace polyfem::io
 		}
 
 		vertices.resize(n_vertices, dim);
-		std::vector<int> tag_to_index(max_tag + 1, -1);
+		std::vector<int> tag_to_index = std::vector<int>(max_tag + 1, -1);
+		if (n_vertices != max_tag)
+			logger().warn("MSH file contains more node tags than nodes, condensing nodes which will break input node ordering.");
+
 		int index = 0;
 		for (const auto &n : nodes.entity_blocks)
 		{
 			for (int i = 0; i < n.num_nodes_in_block * 3; i += 3)
 			{
+				const int node_id = n_vertices != max_tag ? (index++) : (n.tags[i / 3] - 1);
+
 				if (dim == 2)
-					vertices.row(index) << n.data[i], n.data[i + 1];
+					vertices.row(node_id) << n.data[i], n.data[i + 1];
 				if (dim == 3)
-					vertices.row(index) << n.data[i], n.data[i + 1], n.data[i + 2];
+					vertices.row(node_id) << n.data[i], n.data[i + 1], n.data[i + 2];
 
 				assert(n.tags[i / 3] < tag_to_index.size());
-				tag_to_index[n.tags[i / 3]] = index;
-				++index;
+				tag_to_index[n.tags[i / 3]] = node_id;
 			}
 		}
 
@@ -135,7 +139,7 @@ namespace polyfem::io
 				const size_t n_nodes = mshio::nodes_per_element(type);
 				for (int i = 0; i < e.data.size(); i += (n_nodes + 1))
 				{
-					index = 0;
+					int index = 0;
 					for (int j = i + 1; j <= i + cells_cols; ++j)
 					{
 						const int v_index = tag_to_index[e.data[j]];

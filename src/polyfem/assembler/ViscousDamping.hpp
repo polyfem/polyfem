@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AssemblerData.hpp"
+
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
@@ -22,10 +24,10 @@ namespace polyfem
 			ViscousDamping() = default;
 
 			//energy, gradient, and hessian used in newton method
-			Eigen::MatrixXd assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &prev_displacement, const QuadratureVector &da, const double dt) const;
-			Eigen::VectorXd assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &prev_displacement, const QuadratureVector &da, const double dt) const;
+			Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
+			Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
 
-			double compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &prev_displacement, const QuadratureVector &da, const double dt) const;
+			double compute_energy(const NonLinearAssemblerData &data) const;
 
 			//sets material params
 			void add_multimaterial(const int index, const json &params);

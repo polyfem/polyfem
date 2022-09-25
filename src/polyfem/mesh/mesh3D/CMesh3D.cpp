@@ -1198,6 +1198,24 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_faces());
+
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const bool is_boundary = is_boundary_face(f);
+				std::vector<int> vs(n_face_vertices(f));
+				for (int vid = 0; vid < vs.size(); ++vid)
+					vs[vid] = face_vertex(f, vid);
+
+				const auto p = face_barycenter(f);
+
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[f] = marker(f, vs, p, is_boundary);
+			}
+		}
+
 		void CMesh3D::compute_boundary_ids(const double eps)
 		{
 			boundary_ids_.resize(n_faces());
@@ -1481,11 +1499,11 @@ namespace polyfem
 			const auto v3 = point(vertices[2]);
 			const auto v4 = point(vertices[3]);
 
-			const Vector3d e0 = (v2 - v1).transpose();
-			const Vector3d e1 = (v3 - v1).transpose();
+			const Eigen::Vector3d e0 = (v2 - v1).transpose();
+			const Eigen::Vector3d e1 = (v3 - v1).transpose();
 
-			const Vector3d e2 = (v2 - v4).transpose();
-			const Vector3d e3 = (v3 - v4).transpose();
+			const Eigen::Vector3d e2 = (v2 - v4).transpose();
+			const Eigen::Vector3d e3 = (v3 - v4).transpose();
 
 			return e0.cross(e1).norm() / 2 + e2.cross(e3).norm() / 2;
 		}

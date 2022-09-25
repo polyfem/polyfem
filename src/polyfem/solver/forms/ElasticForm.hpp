@@ -2,8 +2,11 @@
 
 #include "Form.hpp"
 
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
+
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/State.hpp>
 
 namespace polyfem::solver
 {
@@ -13,7 +16,14 @@ namespace polyfem::solver
 	public:
 		/// @brief Construct a new Elastic Form object
 		/// @param state Reference to the simulation state
-		ElasticForm(const State &state);
+		ElasticForm(const int n_bases,
+					const std::vector<basis::ElementBases> &bases,
+					const std::vector<basis::ElementBases> &geom_bases,
+					const assembler::AssemblerUtils &assembler,
+					const assembler::AssemblyValsCache &ass_vals_cache,
+					const std::string &formulation,
+					const double dt,
+					const bool is_volume);
 
 	protected:
 		/// @brief Compute the elastic potential value
@@ -38,17 +48,26 @@ namespace polyfem::solver
 		/// @return True if the step is allowed
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
+		/// @brief Update time-dependent fields
+		/// @param t Current time
+		/// @param x Current solution at time t
+		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev = x; }
 	private:
-		const State &state_;                         ///< Reference to the simulation state
-		const assembler::AssemblerUtils &assembler_; ///< Reference to the assembler
-		const std::string formulation_;              ///< Elasticity formulation name
-		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
-		utils::SpareMatrixCache mat_cache_;          ///< Matrix cache
+		const int n_bases_;
+		const std::vector<basis::ElementBases> &bases_;
+		const std::vector<basis::ElementBases> &geom_bases_;
 
-		/// @brief Elasticity formulation name
-		const std::string &formulation() const { return formulation_; }
+		const assembler::AssemblerUtils &assembler_; ///< Reference to the assembler
+		const assembler::AssemblyValsCache &ass_vals_cache_;
+		const std::string formulation_; ///< Elasticity formulation name
+		const bool is_volume_;
+		const double dt_;
+		StiffnessMatrix cached_stiffness_;  ///< Cached stiffness matrix for linear elasticity
+		utils::SpareMatrixCache mat_cache_; ///< Matrix cache
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();
+
+		Eigen::VectorXd x_prev;
 	};
 } // namespace polyfem::solver
