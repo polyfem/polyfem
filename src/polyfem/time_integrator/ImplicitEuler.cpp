@@ -5,9 +5,9 @@ namespace polyfem::time_integrator
 	void ImplicitEuler::update_quantities(const Eigen::VectorXd &x)
 	{
 		const Eigen::VectorXd v = compute_velocity(x);
-		a_prev() = compute_acceleration(v);
-		v_prev() = v;
-		x_prev() = x;
+		set_a_prev(compute_acceleration(v));
+		set_v_prev(v);
+		set_x_prev(x);
 	}
 
 	Eigen::VectorXd ImplicitEuler::x_tilde() const

@@ -89,11 +89,11 @@ namespace polyfem::time_integrator
 		/// Store the necessary previous values of the acceleration for single or multi-step integration.
 		std::deque<Eigen::VectorXd> a_prevs;
 
-		/// Convenience functions for getting a mutable reference to the most recent previous solution.
-		Eigen::VectorXd &x_prev() { return x_prevs.front(); }
-		/// Convenience functions for getting a mutable reference to the most recent previous velocity.
-		Eigen::VectorXd &v_prev() { return v_prevs.front(); }
-		/// Convenience functions for getting a mutable reference to the most recent previous acceleration.
-		Eigen::VectorXd &a_prev() { return a_prevs.front(); }
+		/// Convenience functions for setting the most recent previous solution.
+		void set_x_prev(const Eigen::VectorXd &x_prev) { x_prevs.front() = x_prev; }
+		/// Convenience functions for setting the most recent previous velocity.
+		void set_v_prev(const Eigen::VectorXd &v_prev) { v_prevs.front() = v_prev; }
+		/// Convenience functions for setting the most recent previous acceleration.
+		void set_a_prev(const Eigen::VectorXd &a_prev) { a_prevs.front() = a_prev; }
 	};
 } // namespace polyfem::time_integrator

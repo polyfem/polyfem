@@ -3,6 +3,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
 #include <wmtk/utils/TriQualityUtils.hpp>
@@ -16,29 +17,25 @@ namespace polyfem::mesh
 	{
 		if (vertex_attrs[t.vid(*this)].frozen)
 			return false;
+
+		rest_positions_before = rest_positions();
+		positions_before = positions();
+		velocities_before = velocities();
+		accelerations_before = accelerations();
+		triangles_before = triangles();
+		energy_before = compute_global_energy();
+		// write_rest_obj("rest_mesh_before.obj");
+		// write_deformed_obj("deformed_mesh_before.obj");
+
 		return true;
 	}
 
 	bool WildRemeshing2D::smooth_after(const Tuple &t)
 	{
-		// Newton iterations are encapsulated here.
-		logger().trace("Newton iteration for vertex smoothing.");
 		const size_t vid = t.vid(*this);
 
 		const std::vector<Tuple> locs = get_one_ring_tris_for_vertex(t);
 		assert(locs.size() > 0);
-
-		// Computes the maximal error around the one ring
-		// that is needed to ensure the operation will decrease the error measure
-		double max_quality = 0;
-		for (const Tuple &tri : locs)
-		{
-			max_quality = std::max(max_quality, get_quality(tri));
-		}
-
-		assert(max_quality > 0); // If max quality is zero it is likely that the triangles are flipped
-
-		// ---------------------------------------------------------------------
 
 		std::vector<std::shared_ptr<Form>> forms;
 		for (const Tuple &loc : locs)
@@ -104,26 +101,26 @@ namespace polyfem::mesh
 
 		logger().critical("old pos {} -> new pos {}", old_rest_pos.transpose(), new_rest_pos.transpose());
 
-		// ---------------------------------------------------------------------
-
 		vertex_attrs[vid].rest_position = new_rest_pos;
-		// vertex_attrs[vid].position =
 
-		return true; // TODO: check for inversion
+		double energy_before_projection = compute_global_energy();
+		logger().critical("energy_before={} energy_before_projection={}", energy_before, energy_before_projection);
+
+		update_positions();
+
+		double energy_after = compute_global_energy();
+
+		logger().critical("energy_before={} energy_after={}", energy_before, energy_after);
+		return energy_after < energy_before;
 	}
 
 	void WildRemeshing2D::smooth_all_vertices()
 	{
-		// igl::Timer timer;
-		// double time;
-		// timer.start();
 		std::vector<std::pair<std::string, Tuple>> collect_all_ops;
 		for (const Tuple &loc : get_vertices())
 		{
 			collect_all_ops.emplace_back("vertex_smooth", loc);
 		}
-		// time = timer.getElapsedTime();
-		// logger().info("vertex smoothing prepare time: {}s", time);
 		logger().debug("Num verts {}", collect_all_ops.size());
 		if (NUM_THREADS > 0)
 		{
@@ -136,16 +133,11 @@ namespace polyfem::mesh
 			};
 			executor.num_threads = NUM_THREADS;
 			executor(*this, collect_all_ops);
-			// time = timer.getElapsedTime();
-			// logger().info("vertex smoothing operation time parallel: {}s", time);
 		}
 		else
 		{
-			// timer.start();
 			wmtk::ExecutePass<WildRemeshing2D, wmtk::ExecutionPolicy::kSeq> executor;
 			executor(*this, collect_all_ops);
-			// time = timer.getElapsedTime();
-			// logger().info("vertex smoothing operation time serial: {}s", time);
 		}
 	}
 

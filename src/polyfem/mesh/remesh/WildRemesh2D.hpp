@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/State.hpp>
+
 #include <wmtk/TriMesh.h>
 
 namespace polyfem::mesh
@@ -9,7 +11,10 @@ namespace polyfem::mesh
 	public:
 		typedef wmtk::TriMesh super;
 
-		WildRemeshing2D() {}
+		WildRemeshing2D(
+			State &state,
+			const double time)
+			: wmtk::TriMesh(), state_(state), time_(time) {}
 
 		virtual ~WildRemeshing2D(){};
 
@@ -17,75 +22,77 @@ namespace polyfem::mesh
 		void create_mesh(
 			const Eigen::MatrixXd &rest_positions,
 			const Eigen::MatrixXd &positions,
+			const Eigen::MatrixXd &velocities,
+			const Eigen::MatrixXd &accelerations,
 			const Eigen::MatrixXi &triangles);
 
-		// Exports positions and triangles of the stored mesh
-		void export_mesh(
-			Eigen::MatrixXd &rest_positions,
-			Eigen::MatrixXd &positions,
-			Eigen::MatrixXi &triangles);
+		int dim() const { return 2; }
 
-		// Writes a triangle mesh in OBJ format
-		void write_rest_obj(const std::string &path);
-		void write_deformed_obj(const std::string &path);
+		/// Exports rest positions of the stored mesh
+		Eigen::MatrixXd rest_positions() const;
+		/// Exports positions of the stored mesh
+		Eigen::MatrixXd displacements() const;
+		/// Exports displacements of the stored mesh
+		Eigen::MatrixXd positions() const;
+		/// Exports velocities of the stored mesh
+		Eigen::MatrixXd velocities() const;
+		/// Exports accelerations of the stored mesh
+		Eigen::MatrixXd accelerations() const;
+		/// Exports triangles of the stored mesh
+		Eigen::MatrixXi triangles() const;
 
-		// Computes the quality of a triangle
-		double get_quality(const Tuple &loc) const;
+		/// Set positions of the stored mesh
+		void set_positions(const Eigen::MatrixXd &positions);
+		/// Set velocities of the stored mesh
+		void set_velocities(const Eigen::MatrixXd &velocities);
+		/// Set accelerations of the stored mesh
+		void set_accelerations(const Eigen::MatrixXd &accelerations);
 
-		// Computes the average quality of a mesh
-		Eigen::VectorXd get_quality_all_triangles();
+		/// Writes a triangle mesh in OBJ format
+		void write_obj(const std::string &path, bool deformed) const;
+		void write_rest_obj(const std::string &path) const { write_obj(path, false); }
+		void write_deformed_obj(const std::string &path) const { write_obj(path, true); }
+
+		/// Compute the global energy of the mesh
+		double compute_global_energy() const;
 
 		// Check if a triangle is inverted
 		bool is_inverted(const Tuple &loc) const;
 
+		// Check if invariants
 		bool invariants(const std::vector<Tuple> &new_tris) override;
+
+		// Update the mesh position
+		void update_positions();
 
 		// Smoothing
 		void smooth_all_vertices();
 		bool smooth_before(const Tuple &t) override;
 		bool smooth_after(const Tuple &t) override;
 
-		// void freeze_vertex(TriMesh::Tuple &v);
-
-		// void partition_mesh();
-
-		// bool collapse_edge_before(const Tuple &t) override;
-		// bool collapse_edge_after(const Tuple &t) override;
-		// bool collapse_shortest(int target_vertex_count);
-		// bool invariants(const std::vector<Tuple> &new_tris) override;
-
-		// void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &triangles);
-
-		// bool is_vertex_frozen(const Tuple &v) const
-		// {
-		// 	return vertex_attrs[v.vid(*this)].frozen;
-		// }
-
 		struct VertexAttributes
 		{
-
 			Eigen::Vector2d rest_position;
 			Eigen::Vector2d position;
+			Eigen::Vector2d velocity;
+			Eigen::Vector2d acceleration;
 			size_t partition_id = 0; // Vertices marked as fixed cannot be modified by any local operation
 			bool frozen = false;
-		};
 
+			Eigen::Vector2d displacement() const { return position - rest_position; }
+		};
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 
-		// Energy Assigned to undefined energy
-		// TODO: why not the max double?
-		static constexpr double MAX_ENERGY = 1e50;
-
 	protected:
-		// std::vector<TriMesh::Tuple> new_edges_after(const std::vector<TriMesh::Tuple> &t) const;
+		State &state_;
+		const double time_;
 
-		/// Cached edge vertices before collapse.
-		// struct PositionInfoCache
-		// {
-		// 	VertexAttributes v1_attr;
-		// 	VertexAttributes v2_attr;
-		// };
-		// tbb::enumerable_thread_specific<PositionInfoCache> position_cache;
+		Eigen::MatrixXd rest_positions_before;
+		Eigen::MatrixXd positions_before;
+		Eigen::MatrixXd velocities_before;
+		Eigen::MatrixXd accelerations_before;
+		Eigen::MatrixXi triangles_before;
+		double energy_before;
 	};
 
 } // namespace polyfem::mesh

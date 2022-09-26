@@ -245,4 +245,25 @@ namespace polyfem
 		logger().info("total count:\t {}", mesh->n_elements());
 	}
 
+	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+	{
+		assert(in_node_to_node.size() == mesh->n_vertices());
+
+		V.resize(mesh->n_vertices(), mesh->dimension());
+		for (int i = 0; i < mesh->n_vertices(); ++i)
+		{
+			V.row(in_node_to_node[i]) = mesh->point(i);
+		}
+
+		// TODO: this only works for triangles and tetrahedra
+		Eigen::MatrixXi elements(mesh->n_elements(), mesh->dimension() + 1);
+		for (int i = 0; i < elements.rows(); ++i)
+		{
+			for (int j = 0; j < elements.cols(); ++j)
+			{
+				elements(i, j) = in_node_to_node[mesh->element_vertex(i, j)];
+			}
+		}
+	}
+
 } // namespace polyfem

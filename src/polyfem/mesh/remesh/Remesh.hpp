@@ -4,5 +4,5 @@
 
 namespace polyfem::mesh
 {
-	void remesh(State &state, const double t0, const double dt, const int t);
+	void remesh(State &state, const double time, const double dt);
 } // namespace polyfem::mesh

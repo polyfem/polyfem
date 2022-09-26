@@ -129,9 +129,9 @@ namespace polyfem
 			}
 
 			save_timestep(t0 + dt / 2 * t, 2 * t - 1, t0, dt / 2);
-			if (true)
+			if (t > time_steps / 2)
 			{
-				mesh::remesh(*this, t0, dt, t);
+				mesh::remesh(*this, t0 + dt * t, dt);
 			}
 
 			save_timestep(t0 + dt / 2 * t, 2 * t, t0, dt / 2);

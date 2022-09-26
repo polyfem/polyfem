@@ -23,12 +23,9 @@ namespace polyfem::mesh
 		const int n_basis_b,
 		const std::vector<ElementBases> &bases_b,
 		const std::vector<ElementBases> &gbases_b,
-		const polyfem::assembler::AssemblyValsCache &cache,
 		const Eigen::MatrixXd &y,
 		Eigen::MatrixXd &x,
-		const double t0,
-		const double dt,
-		const int t,
+		const double time = 0.0,
 		const bool lump_mass_matrix = false);
 
 	class L2ProjectionForm : public Form
