@@ -519,7 +519,7 @@ namespace polyfem
 			/// @brief check if the mesh is linear
 			///
 			/// @return if the mesh is linear
-			inline bool is_linear() { return orders_.size() == 0 || orders_.maxCoeff() == 1; }
+			inline bool is_linear() const { return orders_.size() == 0 || orders_.maxCoeff() == 1; }
 
 			/// @brief list of *sorted* edges. Used to map to input vertices
 			///

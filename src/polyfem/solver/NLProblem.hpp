@@ -1,8 +1,8 @@
 #pragma once
 
 #include <polyfem/solver/FullNLProblem.hpp>
-#include <polyfem/State.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
 
 namespace polyfem::solver
 {
@@ -13,7 +13,13 @@ namespace polyfem::solver
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;
 
-		NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, std::vector<std::shared_ptr<Form>> &forms);
+		NLProblem(const int full_size,
+				  const std::string &formulation,
+				  const std::vector<int> &boundary_nodes,
+				  const std::vector<mesh::LocalBoundary> &local_boundary,
+				  const int n_boundary_samples,
+				  const assembler::RhsAssembler &rhs_assembler,
+				  const double t, std::vector<std::shared_ptr<Form>> &forms);
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
@@ -47,7 +53,10 @@ namespace polyfem::solver
 		void set_apply_DBC(const TVector &x, const bool val);
 
 	private:
-		const State &state_;
+		const std::vector<int> &boundary_nodes_;
+		const std::vector<mesh::LocalBoundary> &local_boundary_;
+
+		const int n_boundary_samples_;
 		const assembler::RhsAssembler &rhs_assembler_;
 		double t_;
 
@@ -66,9 +75,9 @@ namespace polyfem::solver
 		}
 
 		template <class FullMat, class ReducedMat>
-		static void full_to_reduced_aux(const State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);
+		static void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);
 
 		template <class ReducedMat, class FullMat>
-		static void reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full);
+		static void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full);
 	};
 } // namespace polyfem::solver

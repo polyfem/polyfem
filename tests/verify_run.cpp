@@ -102,7 +102,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		return 1;
 	}
 
-	state.compute_mesh_stats();
+	// state.compute_mesh_stats();
 
 	state.build_basis();
 
@@ -114,12 +114,12 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	state.compute_errors();
 
 	json out = json({});
-	out["err_l2"] = state.l2_err;
-	out["err_h1"] = state.h1_err;
-	out["err_h1_semi"] = state.h1_semi_err;
-	out["err_linf"] = state.linf_err;
-	out["err_linf_grad"] = state.grad_max_err;
-	out["err_lp"] = state.lp_err;
+	out["err_l2"] = state.stats.l2_err;
+	out["err_h1"] = state.stats.h1_err;
+	out["err_h1_semi"] = state.stats.h1_semi_err;
+	out["err_linf"] = state.stats.linf_err;
+	out["err_linf_grad"] = state.stats.grad_max_err;
+	out["err_lp"] = state.stats.lp_err;
 	out["margin"] = 1e-5;
 	out["time_steps"] = time_steps;
 
