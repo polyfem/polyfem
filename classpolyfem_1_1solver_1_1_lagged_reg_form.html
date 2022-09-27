@@ -146,9 +146,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a255d69111f33dce57fcf095b61784b2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a255d69111f33dce57fcf095b61784b2c">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a255d69111f33dce57fcf095b61784b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields.  <a href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a255d69111f33dce57fcf095b61784b2c">More...</a><br /></td></tr>
 <tr class="separator:a255d69111f33dce57fcf095b61784b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a82b91e554725c41774266c3aef3062"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a4a82b91e554725c41774266c3aef3062">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num) override</td></tr>
-<tr class="memdesc:a4a82b91e554725c41774266c3aef3062"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a4a82b91e554725c41774266c3aef3062">More...</a><br /></td></tr>
-<tr class="separator:a4a82b91e554725c41774266c3aef3062"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3718fea62f7f6be229e2daeeebf83596"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a3718fea62f7f6be229e2daeeebf83596">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num) override</td></tr>
+<tr class="memdesc:a3718fea62f7f6be229e2daeeebf83596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a3718fea62f7f6be229e2daeeebf83596">More...</a><br /></td></tr>
+<tr class="separator:a3718fea62f7f6be229e2daeeebf83596"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ffc08f7075f76ecb0ae8517104843af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a6ffc08f7075f76ecb0ae8517104843af">uses_lagging</a> () const override</td></tr>
 <tr class="memdesc:a6ffc08f7075f76ecb0ae8517104843af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does this form require lagging?  <a href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a6ffc08f7075f76ecb0ae8517104843af">More...</a><br /></td></tr>
 <tr class="separator:a6ffc08f7075f76ecb0ae8517104843af"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,9 +191,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9c7f35903dc6327f12961fd098cb3e39 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="memdesc:a9c7f35903dc6327f12961fd098cb3e39 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields TODO: more than one step.  <a href="classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39">More...</a><br /></td></tr>
 <tr class="separator:a9c7f35903dc6327f12961fd098cb3e39 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad367e50a5eb11987b29382207bcb722a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad367e50a5eb11987b29382207bcb722a">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num)</td></tr>
-<tr class="memdesc:ad367e50a5eb11987b29382207bcb722a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_form.html#ad367e50a5eb11987b29382207bcb722a">More...</a><br /></td></tr>
-<tr class="separator:ad367e50a5eb11987b29382207bcb722a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15005d528c9e3d19a1af57cf59e334fc inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num)</td></tr>
+<tr class="memdesc:a15005d528c9e3d19a1af57cf59e334fc inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">More...</a><br /></td></tr>
+<tr class="separator:a15005d528c9e3d19a1af57cf59e334fc inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec784f581cc71ef11d739c66cf8c822a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">max_lagging_iterations</a> () const</td></tr>
+<tr class="memdesc:aec784f581cc71ef11d739c66cf8c822a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximum number of lagging iteration allowable.  <a href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">More...</a><br /></td></tr>
+<tr class="separator:aec784f581cc71ef11d739c66cf8c822a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">uses_lagging</a> () const</td></tr>
+<tr class="memdesc:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does this form require lagging?  <a href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">More...</a><br /></td></tr>
+<tr class="separator:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4">set_project_to_psd</a> (bool <a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)</td></tr>
 <tr class="memdesc:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set project to psd.  <a href="classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4">More...</a><br /></td></tr>
 <tr class="separator:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,9 +221,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6d82bbde92a18b72b0630dd40ff59136 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136">set_weight</a> (const double weight)</td></tr>
 <tr class="memdesc:a6d82bbde92a18b72b0630dd40ff59136 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the form's multiplicative constant weight.  <a href="classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136">More...</a><br /></td></tr>
 <tr class="separator:a6d82bbde92a18b72b0630dd40ff59136 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">uses_lagging</a> () const</td></tr>
-<tr class="memdesc:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does this form require lagging?  <a href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">More...</a><br /></td></tr>
-<tr class="separator:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3bc1982e0d2a817919eba357e1ccb16 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">set_apply_DBC</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, bool apply_DBC)</td></tr>
 <tr class="memdesc:aa3bc1982e0d2a817919eba357e1ccb16 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set if the Dirichlet boundary conditions should be enforced.  <a href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">More...</a><br /></td></tr>
 <tr class="separator:aa3bc1982e0d2a817919eba357e1ccb16 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -438,8 +441,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a4a82b91e554725c41774266c3aef3062" name="a4a82b91e554725c41774266c3aef3062"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a82b91e554725c41774266c3aef3062">&#9670;&nbsp;</a></span>update_lagging()</h2>
+<a id="a3718fea62f7f6be229e2daeeebf83596" name="a3718fea62f7f6be229e2daeeebf83596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3718fea62f7f6be229e2daeeebf83596">&#9670;&nbsp;</a></span>update_lagging()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -448,7 +451,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool polyfem::solver::LaggedRegForm::update_lagging </td>
+          <td class="memname">void polyfem::solver::LaggedRegForm::update_lagging </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>x</em>, </td>
@@ -481,11 +484,11 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the lagged fields have been updated </dd></dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad367e50a5eb11987b29382207bcb722a">polyfem::solver::Form</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">polyfem::solver::Form</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_lagged_reg_form_8cpp_source.html#l00037">37</a> of file <a class="el" href="_lagged_reg_form_8cpp_source.html">LaggedRegForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00104">polyfem::solver::Form::enabled()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_lagged_reg_form_8hpp_source.html#l00047">n_lagging_iters_</a>, <a class="el" href="_form_8hpp_source.html#l00100">polyfem::solver::Form::set_enabled()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_lagged_reg_form_8hpp_source.html#l00048">x_lagged_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00109">polyfem::solver::Form::enabled()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_lagged_reg_form_8hpp_source.html#l00047">n_lagging_iters_</a>, <a class="el" href="_form_8hpp_source.html#l00105">polyfem::solver::Form::set_enabled()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>, and <a class="el" href="_lagged_reg_form_8hpp_source.html#l00048">x_lagged_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_lagged_reg_form_8cpp_source.html#l00032">init_lagging()</a>.</p>
 

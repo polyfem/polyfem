@@ -1,5 +1,11 @@
 var NAVTREEINDEX29 =
 {
+"structpolyfem_1_1mesh_1_1_mesh___quality.html#ae54002c5edd88d2a404f34c9237475d4":[3,0,6,4,14,0],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html":[3,0,6,4,16,0],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html":[4,0,3,3,14,0],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html#a98e4502258e6a7211aae30214204a03b":[3,0,6,4,16,0,0],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html#a98e4502258e6a7211aae30214204a03b":[4,0,3,3,14,0,0],
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html":[4,0,3,3,14,1],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html":[3,0,6,4,16,1],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#a6b1791cb578ae2c493c776d2ffc1204b":[4,0,3,3,14,1,3],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#a6b1791cb578ae2c493c776d2ffc1204b":[3,0,6,4,16,1,3],
@@ -243,11 +249,5 @@ var NAVTREEINDEX29 =
 "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html":[4,0,3,3,0,0],
 "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a3a4aa8f82431a4bd8fc60649450eb731":[3,0,6,4,1,0,0],
 "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a3a4aa8f82431a4bd8fc60649450eb731":[4,0,3,3,0,0,0],
-"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a4a96c1f8551683acfad3c292031d4225":[3,0,6,4,1,0,2],
-"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a4a96c1f8551683acfad3c292031d4225":[4,0,3,3,0,0,2],
-"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669":[4,0,3,3,0,0,3],
-"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669":[3,0,6,4,1,0,3],
-"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8":[4,0,3,3,0,0,1],
-"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8":[3,0,6,4,1,0,1],
-"structpolyfem_1_1mesh_1_1_vertex.html":[4,0,3,3,17]
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a4a96c1f8551683acfad3c292031d4225":[3,0,6,4,1,0,2]
 };

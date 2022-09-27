@@ -147,9 +147,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a13496c772de23a6a34114dc4a6a725df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a13496c772de23a6a34114dc4a6a725df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields.  <a href="classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df">More...</a><br /></td></tr>
 <tr class="separator:a13496c772de23a6a34114dc4a6a725df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a2e423e5391f50cb153f9227d533080"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a4a2e423e5391f50cb153f9227d533080">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num) override</td></tr>
-<tr class="memdesc:a4a2e423e5391f50cb153f9227d533080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_friction_form.html#a4a2e423e5391f50cb153f9227d533080">More...</a><br /></td></tr>
-<tr class="separator:a4a2e423e5391f50cb153f9227d533080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d39d4abbf850fbe702a89befd07da70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num) override</td></tr>
+<tr class="memdesc:a2d39d4abbf850fbe702a89befd07da70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70">More...</a><br /></td></tr>
+<tr class="separator:a2d39d4abbf850fbe702a89befd07da70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f29a64cef734a1c61bc8bd36d324d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#aa9f29a64cef734a1c61bc8bd36d324d0">max_lagging_iterations</a> () const override</td></tr>
+<tr class="memdesc:aa9f29a64cef734a1c61bc8bd36d324d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximum number of lagging iteration allowable.  <a href="classpolyfem_1_1solver_1_1_friction_form.html#aa9f29a64cef734a1c61bc8bd36d324d0">More...</a><br /></td></tr>
+<tr class="separator:aa9f29a64cef734a1c61bc8bd36d324d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6c5ed4c5b1f333f2c49a262994aa76b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#ab6c5ed4c5b1f333f2c49a262994aa76b">uses_lagging</a> () const override</td></tr>
 <tr class="memdesc:ab6c5ed4c5b1f333f2c49a262994aa76b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does this form require lagging?  <a href="classpolyfem_1_1solver_1_1_friction_form.html#ab6c5ed4c5b1f333f2c49a262994aa76b">More...</a><br /></td></tr>
 <tr class="separator:ab6c5ed4c5b1f333f2c49a262994aa76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -194,9 +197,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9c7f35903dc6327f12961fd098cb3e39 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="memdesc:a9c7f35903dc6327f12961fd098cb3e39 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields TODO: more than one step.  <a href="classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39">More...</a><br /></td></tr>
 <tr class="separator:a9c7f35903dc6327f12961fd098cb3e39 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad367e50a5eb11987b29382207bcb722a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad367e50a5eb11987b29382207bcb722a">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num)</td></tr>
-<tr class="memdesc:ad367e50a5eb11987b29382207bcb722a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_form.html#ad367e50a5eb11987b29382207bcb722a">More...</a><br /></td></tr>
-<tr class="separator:ad367e50a5eb11987b29382207bcb722a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15005d528c9e3d19a1af57cf59e334fc inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num)</td></tr>
+<tr class="memdesc:a15005d528c9e3d19a1af57cf59e334fc inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <a href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">More...</a><br /></td></tr>
+<tr class="separator:a15005d528c9e3d19a1af57cf59e334fc inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec784f581cc71ef11d739c66cf8c822a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">max_lagging_iterations</a> () const</td></tr>
+<tr class="memdesc:aec784f581cc71ef11d739c66cf8c822a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximum number of lagging iteration allowable.  <a href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">More...</a><br /></td></tr>
+<tr class="separator:aec784f581cc71ef11d739c66cf8c822a inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">uses_lagging</a> () const</td></tr>
+<tr class="memdesc:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does this form require lagging?  <a href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">More...</a><br /></td></tr>
+<tr class="separator:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4">set_project_to_psd</a> (bool <a class="el" href="_rhs_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)</td></tr>
 <tr class="memdesc:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set project to psd.  <a href="classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4">More...</a><br /></td></tr>
 <tr class="separator:a2847474520e0c403400be6c64423d2e4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,9 +227,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6d82bbde92a18b72b0630dd40ff59136 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136">set_weight</a> (const double weight)</td></tr>
 <tr class="memdesc:a6d82bbde92a18b72b0630dd40ff59136 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the form's multiplicative constant weight.  <a href="classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136">More...</a><br /></td></tr>
 <tr class="separator:a6d82bbde92a18b72b0630dd40ff59136 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">uses_lagging</a> () const</td></tr>
-<tr class="memdesc:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does this form require lagging?  <a href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">More...</a><br /></td></tr>
-<tr class="separator:a358f316a9aaea1785fd4a5b2bdefb4f7 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3bc1982e0d2a817919eba357e1ccb16 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">set_apply_DBC</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, bool apply_DBC)</td></tr>
 <tr class="memdesc:aa3bc1982e0d2a817919eba357e1ccb16 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set if the Dirichlet boundary conditions should be enforced.  <a href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">More...</a><br /></td></tr>
 <tr class="separator:aa3bc1982e0d2a817919eba357e1ccb16 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -424,9 +430,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00031">31</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00074">boundary_nodes_pos_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00073">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00359">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00076">boundary_nodes_pos_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00075">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00359">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00062">init_lagging()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00062">init_lagging()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -453,9 +459,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00070">70</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00072">72</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00084">displaced_surface_prev_</a>.</p>
+<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00086">displaced_surface_prev_</a>.</p>
 
 </div>
 </div>
@@ -506,7 +512,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00042">42</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00073">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00084">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00078">dt_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00076">epsv_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00083">friction_constraint_set_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00075">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00086">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00080">dt_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00078">epsv_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00085">friction_constraint_set_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -546,7 +552,40 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00062">62</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00084">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00086">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+
+</div>
+</div>
+<a id="aa9f29a64cef734a1c61bc8bd36d324d0" name="aa9f29a64cef734a1c61bc8bd36d324d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9f29a64cef734a1c61bc8bd36d324d0">&#9670;&nbsp;</a></span>max_lagging_iterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::solver::FrictionForm::max_lagging_iterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the maximum number of lagging iteration allowable. </p>
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">polyfem::solver::Form</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00066">66</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00083">n_lagging_iters_</a>.</p>
 
 </div>
 </div>
@@ -597,12 +636,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00050">50</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00073">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00084">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00078">dt_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00076">epsv_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00083">friction_constraint_set_</a>, <a class="el" href="_timer_8hpp_source.html#l00007">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::project_to_psd_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00075">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00086">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00080">dt_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00078">epsv_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00085">friction_constraint_set_</a>, <a class="el" href="_timer_8hpp_source.html#l00007">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00127">polyfem::solver::Form::project_to_psd_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
-<a id="a4a2e423e5391f50cb153f9227d533080" name="a4a2e423e5391f50cb153f9227d533080"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a2e423e5391f50cb153f9227d533080">&#9670;&nbsp;</a></span>update_lagging()</h2>
+<a id="a2d39d4abbf850fbe702a89befd07da70" name="a2d39d4abbf850fbe702a89befd07da70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d39d4abbf850fbe702a89befd07da70">&#9670;&nbsp;</a></span>update_lagging()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -611,7 +650,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool polyfem::solver::FrictionForm::update_lagging </td>
+          <td class="memname">void polyfem::solver::FrictionForm::update_lagging </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>x</em>, </td>
@@ -642,13 +681,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True able to update the lagged fields </dd></dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad367e50a5eb11987b29382207bcb722a">polyfem::solver::Form</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00069">69</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00068">68</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00086">polyfem::solver::ContactForm::barrier_stiffness()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00080">broad_phase_method_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00073">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00089">contact_form_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00079">dhat_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00083">friction_constraint_set_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00077">mu_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00081">n_lagging_iters_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00086">polyfem::solver::ContactForm::barrier_stiffness()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00082">broad_phase_method_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00075">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00091">contact_form_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00081">dhat_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00085">friction_constraint_set_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00079">mu_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00062">init_lagging()</a>.</p>
 
@@ -682,7 +720,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00068">68</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00070">70</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -723,7 +761,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_friction_form_8cpp_source.html#l00036">36</a> of file <a class="el" href="_friction_form_8cpp_source.html">FrictionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00073">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00084">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00078">dt_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00076">epsv_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00083">friction_constraint_set_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_friction_form_8hpp_source.html#l00075">collision_mesh_</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8hpp_source.html#l00086">displaced_surface_prev_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00080">dt_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00078">epsv_</a>, <a class="el" href="_friction_form_8hpp_source.html#l00085">friction_constraint_set_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 
 </div>
 </div>
@@ -748,7 +786,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00074">74</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>.</p>
 
@@ -776,9 +814,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Broad-phase method used for distance computation and collision detection. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00082">82</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -802,9 +840,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00031">compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -830,9 +868,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>necessary to have the barrier stiffnes, maybe clean me </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00091">91</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -858,9 +896,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Barrier activation distance. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00079">79</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00081">81</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -886,9 +924,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Displaced vertices at the start of the time-step. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8hpp_source.html#l00070">displaced_surface_prev()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00062">init_lagging()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8hpp_source.html#l00072">displaced_surface_prev()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00062">init_lagging()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -914,7 +952,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Time step size. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
 
@@ -942,7 +980,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Smoothing factor between static and dynamic friction. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
 
@@ -970,9 +1008,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Lagged friction constraint set. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00083">83</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00085">85</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00042">first_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00050">second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00036">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -998,9 +1036,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Global coefficient of friction. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00077">77</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00079">79</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00068">update_lagging()</a>.</p>
 
 </div>
 </div>
@@ -1026,9 +1064,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Number of lagging iterations. </p>
 
-<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00081">81</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_friction_form_8hpp_source.html#l00083">83</a> of file <a class="el" href="_friction_form_8hpp_source.html">FrictionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00069">update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8hpp_source.html#l00066">max_lagging_iterations()</a>.</p>
 
 </div>
 </div>

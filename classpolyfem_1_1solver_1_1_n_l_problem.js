@@ -21,7 +21,7 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
     [ "reduced_to_full", "classpolyfem_1_1solver_1_1_n_l_problem.html#a887440705d78e1fe9ae808e053e3210b", null ],
     [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_n_l_problem.html#aedf81fd753bb54d804eabb10af39df87", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_n_l_problem.html#ade6ccc960c7b39a7f0645bb2acaf2ddd", null ],
-    [ "update_lagging", "classpolyfem_1_1solver_1_1_n_l_problem.html#a6bd0175f0a29837adde702c80e62d4bf", null ],
+    [ "update_lagging", "classpolyfem_1_1solver_1_1_n_l_problem.html#a95e034a58eb88d93767df43d46691746", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_n_l_problem.html#a7110f930d05e90196a0824700ff9bca5", null ],
     [ "use_full_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a5bdbfea7d735bba0ce3a45a85b25d7c0", null ],
     [ "use_reduced_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#ae46ba296dbf765122acfe737ef2b5e95", null ],

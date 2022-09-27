@@ -1,5 +1,11 @@
 var NAVTREEINDEX30 =
 {
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a4a96c1f8551683acfad3c292031d4225":[4,0,3,3,0,0,2],
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669":[4,0,3,3,0,0,3],
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669":[3,0,6,4,1,0,3],
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8":[4,0,3,3,0,0,1],
+"structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8":[3,0,6,4,1,0,1],
+"structpolyfem_1_1mesh_1_1_vertex.html":[4,0,3,3,17],
 "structpolyfem_1_1mesh_1_1_vertex.html":[3,0,6,4,19],
 "structpolyfem_1_1mesh_1_1_vertex.html#a114ec4dc4447a1eb759799bba1c4db08":[4,0,3,3,17,0],
 "structpolyfem_1_1mesh_1_1_vertex.html#a114ec4dc4447a1eb759799bba1c4db08":[3,0,6,4,19,0],
