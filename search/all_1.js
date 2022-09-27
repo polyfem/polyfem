@@ -128,7 +128,7 @@ var searchData=
   ['autodifftypes_2ehpp_125',['AutodiffTypes.hpp',['../_autodiff_types_8hpp.html',1,'']]],
   ['ave_5fjacobian_126',['ave_Jacobian',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#ae54002c5edd88d2a404f34c9237475d4',1,'polyfem::mesh::Mesh_Quality']]],
   ['average_5fedge_5flength_127',['average_edge_length',['../classpolyfem_1_1io_1_1_out_stats_data.html#a87d671a7fc6da0c88db83ad49768801f',1,'polyfem::io::OutStatsData']]],
-  ['average_5fgrad_5fbased_5ffunction_128',['average_grad_based_function',['../classpolyfem_1_1io_1_1_evaluator.html#ad60ea71eb61e80e20f011b7c31650fc6',1,'polyfem::io::Evaluator']]],
+  ['average_5fgrad_5fbased_5ffunction_128',['average_grad_based_function',['../classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336',1,'polyfem::io::Evaluator']]],
   ['avg_5fmass_129',['avg_mass',['../classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096',1,'polyfem::State']]],
   ['avg_5fmass_5f_130',['avg_mass_',['../classpolyfem_1_1solver_1_1_contact_form.html#a13bd7941951269f00eb817e59b54072a',1,'polyfem::solver::ContactForm']]],
   ['axis_5f_131',['axis_',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8',1,'polyfem::utils::AxisPlaneSelection']]],

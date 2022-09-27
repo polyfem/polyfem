@@ -152,9 +152,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a986b570a15726b4b5cd982c0dc37858b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b">compute_scalar_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
 <tr class="memdesc:a986b570a15726b4b5cd982c0dc37858b"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)  <a href="classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b">More...</a><br /></td></tr>
 <tr class="separator:a986b570a15726b4b5cd982c0dc37858b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad60ea71eb61e80e20f011b7c31650fc6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#ad60ea71eb61e80e20f011b7c31650fc6">average_grad_based_function</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result_scalar, Eigen::MatrixXd &amp;result_tensor, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:ad60ea71eb61e80e20f011b7c31650fc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos  <a href="classpolyfem_1_1io_1_1_evaluator.html#ad60ea71eb61e80e20f011b7c31650fc6">More...</a><br /></td></tr>
-<tr class="separator:ad60ea71eb61e80e20f011b7c31650fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52d1cc4158d9ae80fb7d5bf69700336"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336">average_grad_based_function</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result_scalar, Eigen::MatrixXd &amp;result_tensor, const bool use_sampler, const bool boundary_only)</td></tr>
+<tr class="memdesc:aa52d1cc4158d9ae80fb7d5bf69700336"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos  <a href="classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336">More...</a><br /></td></tr>
+<tr class="separator:aa52d1cc4158d9ae80fb7d5bf69700336"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24e2cae8cea1b4a4f8b0c446886b8953"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
 <tr class="memdesc:a24e2cae8cea1b4a4f8b0c446886b8953"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute tensor quantity (ie stress tensor or velocy)  <a href="classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953">More...</a><br /></td></tr>
 <tr class="separator:a24e2cae8cea1b4a4f8b0c446886b8953"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,8 +211,8 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad60ea71eb61e80e20f011b7c31650fc6" name="ad60ea71eb61e80e20f011b7c31650fc6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad60ea71eb61e80e20f011b7c31650fc6">&#9670;&nbsp;</a></span>average_grad_based_function()</h2>
+<a id="aa52d1cc4158d9ae80fb7d5bf69700336" name="aa52d1cc4158d9ae80fb7d5bf69700336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52d1cc4158d9ae80fb7d5bf69700336">&#9670;&nbsp;</a></span>average_grad_based_function()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,6 +231,12 @@ Private Member Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
           <td class="paramname"><em>is_problem_scalar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -334,6 +340,7 @@ Private Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">is_problem_scalar</td><td>if problem is scalar </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n_bases</td><td>number of bases </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>bases </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">gbases</td><td>geom bases </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">disc_orders</td><td>discretization orders </td></tr>
