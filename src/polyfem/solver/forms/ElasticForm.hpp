@@ -51,7 +51,7 @@ namespace polyfem::solver
 		/// @brief Update time-dependent fields
 		/// @param t Current time
 		/// @param x Current solution at time t
-		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev = x; }
+		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
 	private:
 		const int n_bases_;
 		const std::vector<basis::ElementBases> &bases_;
@@ -68,6 +68,6 @@ namespace polyfem::solver
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();
 
-		Eigen::VectorXd x_prev;
+		Eigen::VectorXd x_prev_;
 	};
 } // namespace polyfem::solver

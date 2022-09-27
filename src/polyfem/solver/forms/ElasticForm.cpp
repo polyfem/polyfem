@@ -31,7 +31,7 @@ namespace polyfem::solver
 	{
 		return assembler_.assemble_energy(
 			formulation_, is_volume_, bases_, geom_bases_,
-			ass_vals_cache_, dt_, x, x_prev);
+			ass_vals_cache_, dt_, x, x_prev_);
 	}
 
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
@@ -39,7 +39,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd grad;
 		assembler_.assemble_energy_gradient(
 			formulation_, is_volume_, n_bases_, bases_, geom_bases_,
-			ass_vals_cache_, dt_, x, x_prev, grad);
+			ass_vals_cache_, dt_, x, x_prev_, grad);
 		gradv = grad;
 	}
 
@@ -59,7 +59,7 @@ namespace polyfem::solver
 			// TODO: somehow remove mat_cache_ so this function can be marked const
 			assembler_.assemble_energy_hessian(
 				formulation_, is_volume_, n_bases_, project_to_psd_, bases_,
-				geom_bases_, ass_vals_cache_, dt_, x, x_prev, mat_cache_, hessian);
+				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, mat_cache_, hessian);
 		}
 	}
 

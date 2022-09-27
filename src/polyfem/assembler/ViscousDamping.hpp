@@ -44,7 +44,7 @@ namespace polyfem
 			// material parameters controlling shear and bulk damping
 			double psi_ = 0, phi_ = 0;
 
-			int size_ = 2;
+			int size_ = -1;
 
 			void compute_stress_aux(const Eigen::MatrixXd& F, const Eigen::MatrixXd& dFdt, Eigen::MatrixXd& dRdF, Eigen::MatrixXd& dRdFdot) const;
 			void compute_stress_grad_aux(const Eigen::MatrixXd& F, const Eigen::MatrixXd& dFdt, Eigen::MatrixXd& d2RdF2, Eigen::MatrixXd& d2RdFdFdot, Eigen::MatrixXd& d2RdFdot2) const;
