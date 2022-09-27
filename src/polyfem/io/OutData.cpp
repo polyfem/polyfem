@@ -805,7 +805,7 @@ namespace polyfem::io
 		if (tend <= 0)
 			tend = 1;
 
-		if (!vis_mesh_path.empty() && is_time_dependent)
+		if (!vis_mesh_path.empty() && !is_time_dependent)
 		{
 			save_vtu(
 				vis_mesh_path, state,
@@ -870,7 +870,7 @@ namespace polyfem::io
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];
-		sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
+		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
 
