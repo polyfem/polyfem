@@ -27,9 +27,8 @@ set (HDF5_EXTERNALLY_CONFIGURED 1)
 include(FetchContent)
 FetchContent_Declare(
     hdf5
-    GIT_REPOSITORY https://github.com/HDFGroup/hdf5.git
-    GIT_TAG 338c2c6cd4bfb9d3001668ef74db178f10fe0abd
-    GIT_SHALLOW FALSE
+    URL https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_13_2.zip
+    URL_HASH MD5=3aa01fa7d6717f8cd3646b4119c165a1
 )
 FetchContent_MakeAvailable(hdf5)
 
