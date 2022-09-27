@@ -1298,7 +1298,7 @@ namespace polyfem::io
 			if (!opts.use_spline)
 			{
 				Evaluator::average_grad_based_function(
-					mesh, problem.is_scalar(), bases, gbases,
+					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d,
 					state.assembler, state.formulation(),
 					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);

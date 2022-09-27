@@ -571,6 +571,7 @@ namespace polyfem::io
 	void Evaluator::average_grad_based_function(
 		const mesh::Mesh &mesh,
 		const bool is_problem_scalar,
+		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
@@ -600,7 +601,6 @@ namespace polyfem::io
 
 		assert(!is_problem_scalar);
 		const int actual_dim = mesh.dimension();
-		const int n_bases = bases.size(); // TODO: check me
 
 		Eigen::MatrixXd avg_scalar(n_bases, 1);
 		// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
