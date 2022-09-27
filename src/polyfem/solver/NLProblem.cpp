@@ -43,9 +43,9 @@ namespace polyfem::solver
 		FullNLProblem::init_lagging(reduced_to_full(x));
 	}
 
-	bool NLProblem::update_lagging(const TVector &x, const int iter_num)
+	void NLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
-		return FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
+		FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
