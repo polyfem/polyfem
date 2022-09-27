@@ -36,7 +36,8 @@ namespace polyfem::solver
 		virtual void solution_changed(const TVector &new_x);
 
 		virtual void init_lagging(const TVector &x);
-		virtual bool update_lagging(const TVector &x, const int iter_num);
+		virtual void update_lagging(const TVector &x, const int iter_num);
+		int max_lagging_iterations() const;
 		bool uses_lagging() const;
 
 	protected:
