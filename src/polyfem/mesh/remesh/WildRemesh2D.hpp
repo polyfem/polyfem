@@ -68,6 +68,16 @@ namespace polyfem::mesh
 		bool smooth_before(const Tuple &t) override;
 		bool smooth_after(const Tuple &t) override;
 
+		// Edge splitting
+		void split_all_edges();
+		bool split_edge_before(const Tuple &t) override;
+		bool split_edge_after(const Tuple &t) override;
+
+		// Edge collapse
+		void collapse_all_edges();
+		bool collapse_edge_before(const Tuple &t) override;
+		bool collapse_edge_after(const Tuple &t) override;
+
 		struct VertexAttributes
 		{
 			Eigen::Vector2d rest_position;
@@ -108,6 +118,8 @@ namespace polyfem::mesh
 		Eigen::MatrixXd accelerations_before;
 		Eigen::MatrixXi triangles_before;
 		double energy_before;
+
+		std::array<VertexAttributes, 2> cache;
 	};
 
 } // namespace polyfem::mesh

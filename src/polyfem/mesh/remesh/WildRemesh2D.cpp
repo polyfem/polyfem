@@ -9,13 +9,15 @@
 #include <igl/boundary_facets.h>
 #include <igl/predicates/predicates.h>
 
-#define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                 \
-	Eigen::MatrixXd WildRemeshing2D::name() const                                \
-	{                                                                            \
-		Eigen::MatrixXd attributes(vert_capacity(), dim());                      \
-		for (const Tuple &t : get_vertices())                                    \
-			attributes.row(t.vid(*this)) = vertex_attrs[t.vid(*this)].attribute; \
-		return attributes;                                                       \
+#define VERTEX_ATTRIBUTE_GETTER(name, attribute)                        \
+	Eigen::MatrixXd WildRemeshing2D::name() const                       \
+	{                                                                   \
+		const std::vector<Tuple> vertices = get_vertices();             \
+		Eigen::MatrixXd attributes(vertices.size(), dim());             \
+		size_t i = 0;                                                   \
+		for (const Tuple &t : vertices)                                 \
+			attributes.row(i++) = vertex_attrs[t.vid(*this)].attribute; \
+		return attributes;                                              \
 	}
 
 #define VERTEX_ATTRIBUTE_SETTER(name, attribute)                                 \
@@ -81,15 +83,18 @@ namespace polyfem::mesh
 
 	Eigen::MatrixXi WildRemeshing2D::triangles() const
 	{
-		Eigen::MatrixXi triangles(tri_capacity(), 3);
-		for (const Tuple &t : get_faces())
+		const std::vector<Tuple> faces = get_faces();
+		Eigen::MatrixXi triangles(faces.size(), 3);
+		size_t i = 0;
+		for (const Tuple &t : faces)
 		{
-			const size_t i = t.fid(*this);
+			// const size_t i = t.fid(*this);
 			const std::array<Tuple, 3> vs = oriented_tri_vertices(t);
 			for (int j = 0; j < 3; j++)
 			{
 				triangles(i, j) = vs[j].vid(*this);
 			}
+			i++;
 		}
 		return triangles;
 	}

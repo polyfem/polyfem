@@ -125,7 +125,6 @@ namespace polyfem::mesh
 		logger().debug("Num verts {}", collect_all_ops.size());
 		if (NUM_THREADS > 0)
 		{
-			// timer.start();
 			wmtk::ExecutePass<WildRemeshing2D, wmtk::ExecutionPolicy::kPartition> executor;
 			executor.lock_vertices = [](WildRemeshing2D &m,
 										const Tuple &e,
