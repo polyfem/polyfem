@@ -2,6 +2,8 @@
 // Authors: Tobias Lendenmann, Teseo Schneider, Jérémie Dumas, Marco Tarini
 // License: MIT (https://github.com/cellogram/cellogram/blob/master/LICENSE)
 
+#ifdef POLYFEM_WITH_MMG
+
 ////////////////////////////////////////////////////////////////////////////////
 #include "MMGRemesh.hpp"
 // #include <cellogram/MeshUtils.h>
@@ -635,3 +637,5 @@ namespace polyfem::mesh
 	}
 
 } // namespace polyfem::mesh
+
+#endif

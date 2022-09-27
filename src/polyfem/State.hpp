@@ -267,6 +267,7 @@ namespace polyfem
 		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
+	public:
 		/// set the multimaterial, this is mean for internal usage.
 		void set_materials();
 

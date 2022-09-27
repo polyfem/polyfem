@@ -1,12 +1,13 @@
+#pragma once
 #include "ALSolver.hpp"
 
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
 {
-
-	ALSolver::ALSolver(
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver,
+	template <class Problem>
+	ALSolver<Problem>::ALSolver(
+		std::shared_ptr<NLSolver> nl_solver,
 		std::shared_ptr<ALForm> al_form,
 		const double initial_al_weight,
 		const double max_al_weight,
@@ -19,10 +20,8 @@ namespace polyfem::solver
 	{
 	}
 
-	void ALSolver::solve(
-		NLProblem &nl_problem,
-		Eigen::MatrixXd &sol,
-		bool force_al)
+	template <class Problem>
+	void ALSolver<Problem>::solve(Problem &nl_problem, Eigen::MatrixXd &sol, bool force_al)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -78,7 +77,8 @@ namespace polyfem::solver
 		post_subsolve(0);
 	}
 
-	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
+	template <class Problem>
+	void ALSolver<Problem>::set_al_weight(Problem &nl_problem, const Eigen::VectorXd &x, const double weight)
 	{
 		if (al_form == nullptr)
 			return;

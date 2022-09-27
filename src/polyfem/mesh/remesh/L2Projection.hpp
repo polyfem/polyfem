@@ -1,34 +1,32 @@
 #pragma once
 
-#include <polyfem/State.hpp>
-#include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/MassMatrixAssembler.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 
 namespace polyfem::mesh
 {
-	using namespace polyfem::solver;
-	using namespace polyfem::assembler;
-	using namespace polyfem::basis;
-
 	/// @brief Project the quantities in u on to the space spanned by mesh.bases.
 	void L2_projection(
-		const State &state,
-		const RhsAssembler &rhs_assembler,
 		const bool is_volume,
 		const int size,
-		const int n_basis_a,
-		const std::vector<ElementBases> &bases_a,
-		const std::vector<ElementBases> &gbases_a,
-		const int n_basis_b,
-		const std::vector<ElementBases> &bases_b,
-		const std::vector<ElementBases> &gbases_b,
+		// Project from these bases
+		const int n_from_basis,
+		const std::vector<polyfem::basis::ElementBases> &from_bases,
+		const std::vector<polyfem::basis::ElementBases> &from_gbases,
+		// to these bases
+		const int n_to_basis,
+		const std::vector<polyfem::basis::ElementBases> &to_bases,
+		const std::vector<polyfem::basis::ElementBases> &to_gbases,
+		// with these boundary values.
+		const std::vector<int> &boundary_nodes,
+		const Obstacle &obstacle,
+		const Eigen::MatrixXd &target_x,
+		// DOF
 		const Eigen::MatrixXd &y,
 		Eigen::MatrixXd &x,
-		const double time = 0.0,
 		const bool lump_mass_matrix = false);
 
-	class L2ProjectionForm : public Form
+	class L2ProjectionForm : public polyfem::solver::Form
 	{
 	public:
 		L2ProjectionForm(
@@ -54,6 +52,26 @@ namespace polyfem::mesh
 
 		StiffnessMatrix M_;
 		Eigen::VectorXd rhs_;
+	};
+
+	class StaticBoundaryNLProblem : public polyfem::solver::NLProblem
+	{
+	public:
+		StaticBoundaryNLProblem(
+			const int full_size,
+			const std::vector<int> &boundary_nodes,
+			const Eigen::VectorXd &boundary_values,
+			std::vector<std::shared_ptr<polyfem::solver::Form>> &forms)
+			: polyfem::solver::NLProblem(full_size, boundary_nodes, forms),
+			  boundary_values_(boundary_values)
+		{
+		}
+
+	protected:
+		Eigen::MatrixXd boundary_values() const override { return boundary_values_; }
+
+	private:
+		const Eigen::MatrixXd boundary_values_;
 	};
 
 } // namespace polyfem::mesh

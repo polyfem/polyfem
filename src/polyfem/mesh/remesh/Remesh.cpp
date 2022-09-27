@@ -19,7 +19,7 @@ namespace polyfem::mesh
 		state.build_mesh_matrices(rest_positions, elements);
 
 		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state, time);
+		WildRemeshing2D remeshing(state.obstacle);
 		remeshing.create_mesh(
 			rest_positions,
 			rest_positions + utils::unflatten(state.sol, dim),

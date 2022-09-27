@@ -24,8 +24,8 @@ namespace polyfem::mesh
 		accelerations_before = accelerations();
 		triangles_before = triangles();
 		energy_before = compute_global_energy();
-		// write_rest_obj("rest_mesh_before.obj");
-		// write_deformed_obj("deformed_mesh_before.obj");
+		write_rest_obj("rest_mesh_before.obj");
+		write_deformed_obj("deformed_mesh_before.obj");
 
 		return true;
 	}
@@ -70,6 +70,7 @@ namespace polyfem::mesh
 
 		problem.init(old_rest_pos);
 
+		// TODO: expose these parameters
 		const json newton_args = R"({
 				"f_delta": 1e-7,
 				"grad_norm": 1e-7,
@@ -110,7 +111,7 @@ namespace polyfem::mesh
 
 		double energy_after = compute_global_energy();
 
-		logger().critical("energy_before={} energy_after={}", energy_before, energy_after);
+		logger().critical("energy_before={} energy_after={} accept={}", energy_before, energy_after, energy_after < energy_before);
 		return energy_after < energy_before;
 	}
 

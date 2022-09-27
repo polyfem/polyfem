@@ -131,7 +131,7 @@ namespace polyfem
 			save_timestep(t0 + dt / 2 * t, 2 * t - 1, t0, dt / 2);
 			if (t > time_steps / 2)
 			{
-				mesh::remesh(*this, t0 + dt * t, dt);
+				mesh::remesh(*this, t0 + dt * (t + 1), dt);
 			}
 
 			save_timestep(t0 + dt / 2 * t, 2 * t, t0, dt / 2);
@@ -269,11 +269,7 @@ namespace polyfem
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof,
-			formulation(),
-			boundary_nodes,
-			local_boundary,
-			n_boundary_samples(),
+			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, t, forms);
 
 		///////////////////////////////////////////////////////////////////////

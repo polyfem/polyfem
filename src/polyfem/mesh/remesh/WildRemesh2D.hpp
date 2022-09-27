@@ -11,10 +11,8 @@ namespace polyfem::mesh
 	public:
 		typedef wmtk::TriMesh super;
 
-		WildRemeshing2D(
-			State &state,
-			const double time)
-			: wmtk::TriMesh(), state_(state), time_(time) {}
+		WildRemeshing2D(const Obstacle &obstacle)
+			: wmtk::TriMesh(), obstacle(obstacle) {}
 
 		virtual ~WildRemeshing2D(){};
 
@@ -83,10 +81,27 @@ namespace polyfem::mesh
 		};
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 
-	protected:
-		State &state_;
-		const double time_;
+		struct FaceAttributes
+		{
+			// polyfem::basis::ElementBases bases;
+			// polyfem::basis::ElementBases geom_bases;
+			// int body_id = 0;
+		};
 
+		struct EdgeAttributes
+		{
+			int boundary_id = -1;
+		};
+
+	protected:
+		/// Get the boundary nodes of the stored mesh
+		std::vector<int> boundary_nodes() const;
+
+		const Obstacle &obstacle;
+
+		// int old_n_bases;
+		// std::vector<polyfem::basis::ElementBases> old_bases;
+		// const std::vector<polyfem::basis::ElementBases> old_geom_bases;
 		Eigen::MatrixXd rest_positions_before;
 		Eigen::MatrixXd positions_before;
 		Eigen::MatrixXd velocities_before;

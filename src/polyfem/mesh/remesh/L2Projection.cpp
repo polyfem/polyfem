@@ -12,11 +12,12 @@
 
 namespace polyfem::mesh
 {
+	using namespace polyfem::assembler;
+	using namespace polyfem::basis;
+	using namespace polyfem::solver;
 	using namespace polyfem::utils;
 
 	void L2_projection(
-		const State &state,
-		const RhsAssembler &rhs_assembler,
 		const bool is_volume,
 		const int size,
 		const int n_from_basis,
@@ -25,9 +26,11 @@ namespace polyfem::mesh
 		const int n_to_basis,
 		const std::vector<ElementBases> &to_bases,
 		const std::vector<ElementBases> &to_gbases,
+		const std::vector<int> &boundary_nodes,
+		const Obstacle &obstacle,
+		const Eigen::MatrixXd &target_x,
 		const Eigen::MatrixXd &y,
 		Eigen::MatrixXd &x,
-		const double time,
 		const bool lump_mass_matrix)
 	{
 		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
@@ -54,8 +57,11 @@ namespace polyfem::mesh
 			M = lump_matrix(M);
 		}
 
-		std::shared_ptr<L2ProjectionForm> l2_projection_form = std::make_shared<L2ProjectionForm>(M, A, y.col(0));
-		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(state, rhs_assembler, time);
+		std::shared_ptr<L2ProjectionForm> l2_projection_form =
+			std::make_shared<L2ProjectionForm>(M, A, y.col(0));
+		const int ndof = n_to_basis * size;
+		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
+			ndof, boundary_nodes, M, obstacle, target_x);
 		// std::shared_ptr<ElasticForm> elastic_form = std::make_shared<ElasticForm>(state);
 		// const bool use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
 		// std::shared_ptr<ContactForm> contact_form = std::make_shared<ContactForm>(
@@ -80,20 +86,33 @@ namespace polyfem::mesh
 
 		// std::vector<std::shared_ptr<Form>> forms = {l2_projection_form, al_form, elastic_form, contact_form};
 		std::vector<std::shared_ptr<Form>> forms = {l2_projection_form, al_form};
-		NLProblem problem(state, rhs_assembler, time, forms);
+		StaticBoundaryNLProblem problem(ndof, boundary_nodes, target_x, forms);
 
 		// --------------------------------------------------------------------
 
 		// Create Newton solver
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver;
+		using NLSolver = cppoptlib::NonlinearSolver<decltype(problem)>;
+		std::shared_ptr<NLSolver> nl_solver;
 		{
-			json newton_args = state.args["solver"]["nonlinear"];
-			newton_args["f_delta"] = 1e-7;
-			newton_args["grad_norm"] = 1e-7;
-			newton_args["use_grad_norm"] = true;
-			// newton_args["relative_gradient"] = true;
-			nl_solver = std::make_shared<cppoptlib::SparseNewtonDescentSolver<NLProblem>>(
-				newton_args, state.args["solver"]["linear"]);
+			// TODO: expose these parameters
+			const json newton_args = R"({
+				"f_delta": 1e-7,
+				"grad_norm": 1e-7,
+				"use_grad_norm": true,
+				"first_grad_norm_tol": 1e-10,
+				"max_iterations": 100,
+				"relative_gradient": false,
+				"line_search": {
+					"method": "backtracking",
+					"use_grad_norm_tol": 0.0001
+				}
+			})"_json;
+			const json linear_solver_args = R"({
+				"solver": "Eigen::PardisoLDLT",
+				"precond": "Eigen::IdentityPreconditioner"
+			})"_json;
+			using NewtonSolver = cppoptlib::SparseNewtonDescentSolver<decltype(problem)>;
+			nl_solver = std::make_shared<NewtonSolver>(newton_args, linear_solver_args);
 		}
 
 		// --------------------------------------------------------------------
@@ -116,15 +135,18 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
+		// TODO: Make these parameters
+		const double al_initial_weight = 1e6;
+		const double al_max_weight = 1e11;
+		const bool force_al = false;
+
 		// Create augmented Lagrangian solver
 		ALSolver al_solver(
-			nl_solver, al_form,
-			state.args["solver"]["augmented_lagrangian"]["initial_weight"],
-			state.args["solver"]["augmented_lagrangian"]["max_weight"],
+			nl_solver, al_form, al_initial_weight, al_max_weight,
 			updated_barrier_stiffness);
 
 		Eigen::MatrixXd sol = Eigen::VectorXd::Zero(M.rows());
-		al_solver.solve(problem, sol, state.args["solver"]["augmented_lagrangian"]["force"]);
+		al_solver.solve(problem, sol, force_al);
 
 		// --------------------------------------------------------------------
 

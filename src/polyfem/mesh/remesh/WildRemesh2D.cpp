@@ -1,7 +1,9 @@
 #include "WildRemesh2D.hpp"
 
+#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
+#include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/boundary_facets.h>
@@ -32,6 +34,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &accelerations,
 		const Eigen::MatrixXi &triangles)
 	{
+		assert(triangles.size() > 0);
 		Eigen::MatrixXi boundary_edges;
 		igl::boundary_facets(triangles, boundary_edges);
 
@@ -78,7 +81,7 @@ namespace polyfem::mesh
 
 	Eigen::MatrixXi WildRemeshing2D::triangles() const
 	{
-		MatrixXi triangles(tri_capacity(), 3);
+		Eigen::MatrixXi triangles(tri_capacity(), 3);
 		for (const Tuple &t : get_faces())
 		{
 			const size_t i = t.fid(*this);
@@ -144,16 +147,57 @@ namespace polyfem::mesh
 		return true;
 	}
 
+	std::vector<int> WildRemeshing2D::boundary_nodes() const
+	{
+		std::vector<int> boundary_nodes;
+		for (const Tuple &t : get_vertices())
+			if (vertex_attrs[t.vid(*this)].frozen)
+				boundary_nodes.push_back(t.vid(*this));
+		return boundary_nodes;
+	}
+
+	int build_bases(
+		const Eigen::MatrixXd &V,
+		const Eigen::MatrixXi &F,
+		std::vector<polyfem::basis::ElementBases> &bases)
+	{
+		CMesh2D mesh;
+		mesh.build_from_matrices(V, F);
+		std::vector<LocalBoundary> local_boundary;
+		std::map<int, basis::InterfaceData> poly_edge_to_data;
+		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
+		return basis::FEBasis2d::build_bases(
+			mesh,
+			/*quadrature_order=*/1,
+			/*mass_quadrature_order=*/2,
+			/*discr_order=*/1,
+			/*serendipity=*/false,
+			/*has_polys=*/false,
+			/*is_geom_bases=*/false,
+			bases,
+			local_boundary,
+			poly_edge_to_data,
+			mesh_nodes);
+	}
+
 	void WildRemeshing2D::update_positions()
 	{
 		// Assume the rest positions and triangles have been updated
 		const Eigen::MatrixXd proposed_rest_positions = rest_positions();
 		const Eigen::MatrixXi proposed_triangles = triangles();
 
-		// Save old values
-		const int old_n_bases = state_.n_bases;
-		const std::vector<ElementBases> old_bases = state_.bases;
-		const std::vector<ElementBases> old_geom_bases = state_.geom_bases();
+		// Assume isoparametric
+		std::vector<polyfem::basis::ElementBases> bases_before;
+		int n_bases_before = build_bases(rest_positions_before, triangles_before, bases_before);
+		const std::vector<polyfem::basis::ElementBases> &geom_bases_before = bases_before;
+		n_bases_before += obstacle.n_vertices();
+
+		std::vector<polyfem::basis::ElementBases> bases;
+		int n_bases = build_bases(proposed_rest_positions, proposed_triangles, bases);
+		const std::vector<polyfem::basis::ElementBases> &geom_bases = bases;
+		n_bases += obstacle.n_vertices();
+
+		const Eigen::MatrixXd target_x = utils::flatten(positions() - rest_positions_before);
 
 		// Old values of independent variables
 		Eigen::MatrixXd y(rest_positions_before.size(), 3);
@@ -163,26 +207,16 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		// TODO: All I need out of this is the new bases (no need to modify the state)
-		state_.load_mesh(proposed_rest_positions, proposed_triangles);
-		// FIXME:
-		state_.mesh->compute_boundary_ids(1e-6);
-		state_.mesh->set_body_ids(std::vector<int>(state_.mesh->n_elements(), 1));
-		state_.set_materials(); // TODO: Explain why I need this?
-		state_.build_basis();
-		state_.assemble_rhs();
-		state_.assemble_stiffness_mat();
-		std::shared_ptr<assembler::RhsAssembler> rhs_assembler = state_.build_rhs_assembler();
-
-		// --------------------------------------------------------------------
-
 		// L2 Projection
 		Eigen::MatrixXd x;
 		L2_projection(
-			state_, *rhs_assembler, /*is_volume=*/false, /*size=*/dim(),
-			old_n_bases, old_bases, old_geom_bases,            // from
-			state_.n_bases, state_.bases, state_.geom_bases(), // to
-			y, x, time_, /*lump_mass_matrix=*/false);
+			/*is_volume=*/dim() == 3, /*size=*/dim(),
+			n_bases_before, bases_before, geom_bases_before, // from
+			n_bases, bases, geom_bases,                      // to
+			boundary_nodes(), obstacle, target_x,
+			y, x, /*lump_mass_matrix=*/false);
+
+		// --------------------------------------------------------------------
 
 		set_positions(proposed_rest_positions + utils::unflatten(x.col(0), dim()));
 		set_velocities(utils::unflatten(x.col(1), dim()));

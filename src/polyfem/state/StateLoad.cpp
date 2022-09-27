@@ -163,12 +163,12 @@ namespace polyfem
 		}
 
 		// TODO: this only works for triangles and tetrahedra
-		Eigen::MatrixXi elements(mesh->n_elements(), mesh->dimension() + 1);
-		for (int i = 0; i < elements.rows(); ++i)
+		F.resize(mesh->n_elements(), mesh->dimension() + 1);
+		for (int i = 0; i < F.rows(); ++i)
 		{
-			for (int j = 0; j < elements.cols(); ++j)
+			for (int j = 0; j < F.cols(); ++j)
 			{
-				elements(i, j) = in_node_to_node[mesh->element_vertex(i, j)];
+				F(i, j) = in_node_to_node[mesh->element_vertex(i, j)];
 			}
 		}
 	}

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#ifdef POLYFEM_WITH_MMG
+
 ////////////////////////////////////////////////////////////////////////////////
 #include <Eigen/Dense>
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,3 +67,5 @@ namespace polyfem::mesh
 							Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT, MmgOptions opt = MmgOptions());
 
 } // namespace polyfem::mesh
+
+#endif
