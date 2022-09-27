@@ -30,7 +30,7 @@ namespace polyfem
 			/// @param[in]  discr_order        The order of the elements (1-4)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
-			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodse are important
+			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
 			/// @param[out] bases              List of basis functions per element
 			/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 			///                                the canonical elements lie on the boundary of the mesh
@@ -63,7 +63,7 @@ namespace polyfem
 			/// @param[in]  discr_order        The order for each element
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
-			/// @param[in]  is_geom_bases      Flag to decide if build gemetric mapping or normal bases, used to decide if the ndoes are important
+			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
 			/// @param[out] bases              List of basis functions per element
 			/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 			///                                the canonical elements lie on the boundary of the mesh
