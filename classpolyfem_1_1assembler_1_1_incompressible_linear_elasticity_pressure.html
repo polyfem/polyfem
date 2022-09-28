@@ -130,8 +130,8 @@ Collaboration diagram for polyfem::assembler::IncompressibleLinearElasticityPres
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a49ce8e8af843dbb1a1a2725722ea5494"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, 1, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a49ce8e8af843dbb1a1a2725722ea5494">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_rhs_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const int i, const int j, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_mass_matrix_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>) const</td></tr>
-<tr class="separator:a49ce8e8af843dbb1a1a2725722ea5494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b01ce0c5d98d4257cd0278aecbaea57"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, 1, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a4b01ce0c5d98d4257cd0278aecbaea57">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const</td></tr>
+<tr class="separator:a4b01ce0c5d98d4257cd0278aecbaea57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9536d0f6f60e8d3a03fc21ea8e843e34"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, 1, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a9536d0f6f60e8d3a03fc21ea8e843e34">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const</td></tr>
 <tr class="separator:a9536d0f6f60e8d3a03fc21ea8e843e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad729e2a32b3fd971603865986fbfcc7c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#ad729e2a32b3fd971603865986fbfcc7c">size</a> () const</td></tr>
@@ -152,7 +152,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00071">71</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00068">68</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a6bb393142498eac04f2ef377686b54fd" name="a6bb393142498eac04f2ef377686b54fd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6bb393142498eac04f2ef377686b54fd">&#9670;&nbsp;</a></span>add_multimaterial()</h2>
@@ -180,14 +180,14 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00157">157</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00155">155</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00519">polyfem::LameParameters::add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00093">params_</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00092">size_</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00519">polyfem::LameParameters::add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00090">params_</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00089">size_</a>.</p>
 
 </div>
 </div>
-<a id="a49ce8e8af843dbb1a1a2725722ea5494" name="a49ce8e8af843dbb1a1a2725722ea5494"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49ce8e8af843dbb1a1a2725722ea5494">&#9670;&nbsp;</a></span>assemble()</h2>
+<a id="a4b01ce0c5d98d4257cd0278aecbaea57" name="a4b01ce0c5d98d4257cd0278aecbaea57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b01ce0c5d98d4257cd0278aecbaea57">&#9670;&nbsp;</a></span>assemble()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -195,38 +195,16 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">Eigen::Matrix&lt; double, 1, 1 &gt; polyfem::assembler::IncompressibleLinearElasticityPressure::assemble </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;&#160;</td>
-          <td class="paramname"><em>vals</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;&#160;</td>
-          <td class="paramname"><em>da</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00165">165</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00163">163</a> of file <a class="el" href="_incompressible_lin_elast_8cpp_source.html">IncompressibleLinElast.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00040">da</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00093">params_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00039">vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00490">polyfem::LameParameters::lambda_mu()</a>, <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00090">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00012">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
 
 </div>
 </div>
@@ -254,7 +232,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00079">79</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00076">76</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
 </div>
 </div>
@@ -282,9 +260,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00089">89</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00086">86</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00093">params_</a>.</p>
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00090">params_</a>.</p>
 
 </div>
 </div>
@@ -312,9 +290,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00086">86</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00083">83</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00085">size()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00092">size_</a>.</p>
+<p class="reference">References <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00082">size()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00089">size_</a>.</p>
 
 </div>
 </div>
@@ -341,9 +319,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00085">85</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00082">82</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00086">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00083">set_size()</a>.</p>
 
 </div>
 </div>
@@ -368,9 +346,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00093">93</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00090">90</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00157">add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00165">assemble()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00089">set_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00155">add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00163">assemble()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00086">set_params()</a>.</p>
 
 </div>
 </div>
@@ -394,9 +372,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00092">92</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00089">89</a> of file <a class="el" href="_incompressible_lin_elast_8hpp_source.html">IncompressibleLinElast.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00157">add_multimaterial()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00086">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00155">add_multimaterial()</a>, and <a class="el" href="_incompressible_lin_elast_8hpp_source.html#l00083">set_size()</a>.</p>
 
 </div>
 </div>

@@ -65,7 +65,6 @@ var classpolyfem_1_1_state =
     [ "boundary_nodes", "classpolyfem_1_1_state.html#ad0e2e2a71a9632307b64bfe93994feab", null ],
     [ "boundary_nodes_pos", "classpolyfem_1_1_state.html#aefce6ee76cd68e01f63d19132417b39c", null ],
     [ "collision_mesh", "classpolyfem_1_1_state.html#a345bc04a1a0b2856c4a4c184235246ba", null ],
-    [ "density", "classpolyfem_1_1_state.html#aeab025709c7909abdc29c60600e53f86", null ],
     [ "disc_orders", "classpolyfem_1_1_state.html#ae949933dff0a8e595e0a17b4916d33b4", null ],
     [ "geom_bases_", "classpolyfem_1_1_state.html#a38df0e77102a74f3c091de71b7ceee73", null ],
     [ "has_dhat", "classpolyfem_1_1_state.html#a5f415374f310d38dc925e1f0dc42a569", null ],

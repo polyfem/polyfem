@@ -17,10 +17,12 @@ var searchData=
   ['nlassembler_3c_20polyfem_3a_3aassembler_3a_3anavierstokesvelocity_3c_20true_20_3e_20_3e_14',['NLAssembler&lt; polyfem::assembler::NavierStokesVelocity&lt; true &gt; &gt;',['../classpolyfem_1_1assembler_1_1_n_l_assembler.html',1,'polyfem::assembler']]],
   ['nlassembler_3c_20polyfem_3a_3aassembler_3a_3aneohookeanelasticity_20_3e_15',['NLAssembler&lt; polyfem::assembler::NeoHookeanElasticity &gt;',['../classpolyfem_1_1assembler_1_1_n_l_assembler.html',1,'polyfem::assembler']]],
   ['nlassembler_3c_20polyfem_3a_3aassembler_3a_3asaintvenantelasticity_20_3e_16',['NLAssembler&lt; polyfem::assembler::SaintVenantElasticity &gt;',['../classpolyfem_1_1assembler_1_1_n_l_assembler.html',1,'polyfem::assembler']]],
-  ['nlproblem_17',['NLProblem',['../classpolyfem_1_1solver_1_1_n_l_problem.html',1,'polyfem::solver']]],
-  ['nodeproblem_18',['NodeProblem',['../classpolyfem_1_1problem_1_1_node_problem.html',1,'polyfem::problem']]],
-  ['nodevalues_19',['NodeValues',['../classpolyfem_1_1problem_1_1_node_values.html',1,'polyfem::problem']]],
-  ['nointerpolation_20',['NoInterpolation',['../classpolyfem_1_1assembler_1_1_no_interpolation.html',1,'polyfem::assembler']]],
-  ['nonlinearsolver_21',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html',1,'cppoptlib']]],
-  ['nthread_22',['NThread',['../classpolyfem_1_1utils_1_1_n_thread.html',1,'polyfem::utils']]]
+  ['nlassembler_3c_20polyfem_3a_3aassembler_3a_3aviscousdamping_20_3e_17',['NLAssembler&lt; polyfem::assembler::ViscousDamping &gt;',['../classpolyfem_1_1assembler_1_1_n_l_assembler.html',1,'polyfem::assembler']]],
+  ['nlproblem_18',['NLProblem',['../classpolyfem_1_1solver_1_1_n_l_problem.html',1,'polyfem::solver']]],
+  ['nodeproblem_19',['NodeProblem',['../classpolyfem_1_1problem_1_1_node_problem.html',1,'polyfem::problem']]],
+  ['nodevalues_20',['NodeValues',['../classpolyfem_1_1problem_1_1_node_values.html',1,'polyfem::problem']]],
+  ['nointerpolation_21',['NoInterpolation',['../classpolyfem_1_1assembler_1_1_no_interpolation.html',1,'polyfem::assembler']]],
+  ['nonlinearassemblerdata_22',['NonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html',1,'polyfem::assembler']]],
+  ['nonlinearsolver_23',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html',1,'cppoptlib']]],
+  ['nthread_24',['NThread',['../classpolyfem_1_1utils_1_1_n_thread.html',1,'polyfem::utils']]]
 ];

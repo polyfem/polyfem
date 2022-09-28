@@ -2,7 +2,7 @@ var classpolyfem_1_1assembler_1_1_hooke_linear_elasticity =
 [
     [ "HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a10b5f798ac54f0f315b79024e144d11c", null ],
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a574a581ea6b256c7bdcfbdaf024b9f66", null ],
-    [ "assemble", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#aade8575fb67cd53bea20e64e7a6784bd", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a559634b99bf134ffe76c7a804bc8c159", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a4267779b0f56623f20f3ebaff39eeb3e", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a8f59a561f54032433b4738f2121ca243", null ],
     [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a896de5ba1433c92d841024c3ea2e6e1a", null ],

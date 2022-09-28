@@ -2,8 +2,8 @@ var searchData=
 [
   ['main_2ecpp_0',['main.cpp',['../main_8cpp.html',1,'']]],
   ['main_2emd_1',['main.md',['../main_8md.html',1,'']]],
-  ['massmatrixassembler_2ecpp_2',['MassMatrixAssembler.cpp',['../_mass_matrix_assembler_8cpp.html',1,'']]],
-  ['massmatrixassembler_2ehpp_3',['MassMatrixAssembler.hpp',['../_mass_matrix_assembler_8hpp.html',1,'']]],
+  ['mass_2ecpp_2',['Mass.cpp',['../_mass_8cpp.html',1,'']]],
+  ['mass_2ehpp_3',['Mass.hpp',['../_mass_8hpp.html',1,'']]],
   ['matrixio_2ecpp_4',['MatrixIO.cpp',['../_matrix_i_o_8cpp.html',1,'']]],
   ['matrixio_2ehpp_5',['MatrixIO.hpp',['../_matrix_i_o_8hpp.html',1,'']]],
   ['matrixutils_2ecpp_6',['MatrixUtils.cpp',['../_matrix_utils_8cpp.html',1,'']]],

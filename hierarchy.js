@@ -16,6 +16,7 @@ var hierarchy =
     [ "polyfem::assembler::Assembler< polyfem::assembler::IncompressibleLinearElasticityPressure >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::Assembler< polyfem::assembler::Laplacian >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::Assembler< polyfem::assembler::LinearElasticity >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
+    [ "polyfem::assembler::Assembler< polyfem::assembler::Mass >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::Assembler< polyfem::assembler::StokesPressure >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::Assembler< polyfem::assembler::StokesVelocity >", "classpolyfem_1_1assembler_1_1_assembler.html", null ],
     [ "polyfem::assembler::AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html", null ],
@@ -99,6 +100,7 @@ var hierarchy =
     [ "q_bases.Lagrange", "classq__bases_1_1_lagrange.html", null ],
     [ "polyfem::LameParameters", "classpolyfem_1_1_lame_parameters.html", null ],
     [ "polyfem::assembler::Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", null ],
+    [ "polyfem::assembler::LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", null ],
     [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
     [ "polyfem::quadrature::LineQuadrature", "classpolyfem_1_1quadrature_1_1_line_quadrature.html", null ],
     [ "polyfem::solver::line_search::LineSearch< ProblemType >", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html", [
@@ -109,7 +111,7 @@ var hierarchy =
     ] ],
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
-    [ "polyfem::assembler::MassMatrixAssembler", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html", null ],
+    [ "polyfem::assembler::Mass", "classpolyfem_1_1assembler_1_1_mass.html", null ],
     [ "polyfem::renderer::Material", "structpolyfem_1_1renderer_1_1_material.html", null ],
     [ "polyfem::mesh::Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", [
       [ "polyfem::mesh::Mesh2D", "classpolyfem_1_1mesh_1_1_mesh2_d.html", [
@@ -128,6 +130,7 @@ var hierarchy =
     [ "polyfem::assembler::MixedAssembler< polyfem::assembler::BilaplacianMixed >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],
     [ "polyfem::assembler::MixedAssembler< polyfem::assembler::IncompressibleLinearElasticityMixed >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],
     [ "polyfem::assembler::MixedAssembler< polyfem::assembler::StokesMixed >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", null ],
+    [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
@@ -149,7 +152,9 @@ var hierarchy =
     [ "polyfem::assembler::NLAssembler< polyfem::assembler::NavierStokesVelocity< true > >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
     [ "polyfem::assembler::NLAssembler< polyfem::assembler::NeoHookeanElasticity >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
     [ "polyfem::assembler::NLAssembler< polyfem::assembler::SaintVenantElasticity >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
+    [ "polyfem::assembler::NLAssembler< polyfem::assembler::ViscousDamping >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
     [ "polyfem::problem::NodeValues", "classpolyfem_1_1problem_1_1_node_values.html", null ],
+    [ "polyfem::assembler::NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", null ],
     [ "polyfem::utils::NThread", "classpolyfem_1_1utils_1_1_n_thread.html", null ],
     [ "polyfem::io::OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", null ],
     [ "polyfem::io::OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", null ],
@@ -263,5 +268,6 @@ var hierarchy =
     [ "polyfem::renderer::UniformAttributes", "classpolyfem_1_1renderer_1_1_uniform_attributes.html", null ],
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
+    [ "polyfem::assembler::ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", null ],
     [ "polyfem::io::VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", null ]
 ];

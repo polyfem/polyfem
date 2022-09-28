@@ -5,6 +5,7 @@ var classpolyfem_1_1_solve_data =
     [ "al_form", "classpolyfem_1_1_solve_data.html#a17ea2402b990cd3942b7f22a2af4e002", null ],
     [ "body_form", "classpolyfem_1_1_solve_data.html#a16be32f112018931c9fcb9e33bf20086", null ],
     [ "contact_form", "classpolyfem_1_1_solve_data.html#abd2957c5c3dc50b61d82a4e8cd2b3368", null ],
+    [ "damping_form", "classpolyfem_1_1_solve_data.html#ae532a7fb16ce23711b61e39155a98545", null ],
     [ "elastic_form", "classpolyfem_1_1_solve_data.html#a6c294ec4dce23156e229078ca0c295da", null ],
     [ "friction_form", "classpolyfem_1_1_solve_data.html#ad0e818dae5e8376c8868723dd8250fcd", null ],
     [ "inertia_form", "classpolyfem_1_1_solve_data.html#a3787585c1039d01f9b35ec731d5c9ca2", null ],

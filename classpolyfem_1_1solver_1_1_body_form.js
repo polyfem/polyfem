@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_body_form =
 [
-    [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#ae9eb426e88a7ac34c3ef948a675a0f25", null ],
+    [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#aebce643481177f0a825138837f93a85e", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1", null ],
     [ "get_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a479616172545ad47d9f20ffe0205287e", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a9db4bedebb1994874ca7294fc745a929", null ],

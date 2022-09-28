@@ -124,8 +124,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_assemble
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5b4615748f11afd0c78d472b789fdcc0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a5b4615748f11afd0c78d472b789fdcc0">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness) const</td></tr>
-<tr class="separator:a5b4615748f11afd0c78d472b789fdcc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cbdd868c3196e27f96c44faf2b5e5c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a3cbdd868c3196e27f96c44faf2b5e5c5">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#a75b8caa5c3e5e68853e282a4792eeb95">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const</td></tr>
+<tr class="separator:a3cbdd868c3196e27f96c44faf2b5e5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a741a13903acc706273f7de97b2068054"><td class="memItemLeft" align="right" valign="top">LocalAssembler &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a741a13903acc706273f7de97b2068054">local_assembler</a> ()</td></tr>
 <tr class="separator:a741a13903acc706273f7de97b2068054"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1b9cd0e702c6e7669ee3628ce81ac93"><td class="memItemLeft" align="right" valign="top">const LocalAssembler &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#aa1b9cd0e702c6e7669ee3628ce81ac93">local_assembler</a> () const</td></tr>
@@ -139,10 +139,10 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;class LocalAssembler&gt;<br />
 class polyfem::assembler::Assembler&lt; LocalAssembler &gt;</div>
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00023">23</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00022">22</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5b4615748f11afd0c78d472b789fdcc0" name="a5b4615748f11afd0c78d472b789fdcc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b4615748f11afd0c78d472b789fdcc0">&#9670;&nbsp;</a></span>assemble()</h2>
+<a id="a3cbdd868c3196e27f96c44faf2b5e5c5" name="a3cbdd868c3196e27f96c44faf2b5e5c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cbdd868c3196e27f96c44faf2b5e5c5">&#9670;&nbsp;</a></span>assemble()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,7 +183,13 @@ template&lt;class LocalAssembler &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
-          <td class="paramname"><em>stiffness</em>&#160;</td>
+          <td class="paramname"><em>stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_mass</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -193,7 +199,7 @@ template&lt;class LocalAssembler &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00099">99</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00101">101</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
 </div>
 </div>

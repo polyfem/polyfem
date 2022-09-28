@@ -18,12 +18,13 @@ var searchData=
   ['assembler_3c_20polyfem_3a_3aassembler_3a_3aincompressiblelinearelasticitypressure_20_3e_15',['Assembler&lt; polyfem::assembler::IncompressibleLinearElasticityPressure &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
   ['assembler_3c_20polyfem_3a_3aassembler_3a_3alaplacian_20_3e_16',['Assembler&lt; polyfem::assembler::Laplacian &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
   ['assembler_3c_20polyfem_3a_3aassembler_3a_3alinearelasticity_20_3e_17',['Assembler&lt; polyfem::assembler::LinearElasticity &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
-  ['assembler_3c_20polyfem_3a_3aassembler_3a_3astokespressure_20_3e_18',['Assembler&lt; polyfem::assembler::StokesPressure &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
-  ['assembler_3c_20polyfem_3a_3aassembler_3a_3astokesvelocity_20_3e_19',['Assembler&lt; polyfem::assembler::StokesVelocity &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
-  ['assemblerutils_20',['AssemblerUtils',['../classpolyfem_1_1assembler_1_1_assembler_utils.html',1,'polyfem::assembler']]],
-  ['assemblyvalscache_21',['AssemblyValsCache',['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html',1,'polyfem::assembler']]],
-  ['assemblyvalues_22',['AssemblyValues',['../classpolyfem_1_1assembler_1_1_assembly_values.html',1,'polyfem::assembler']]],
-  ['autodiffallocator_23',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
-  ['autodiffallocator_3c_20double_20_3e_24',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
-  ['axisplaneselection_25',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
+  ['assembler_3c_20polyfem_3a_3aassembler_3a_3amass_20_3e_18',['Assembler&lt; polyfem::assembler::Mass &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
+  ['assembler_3c_20polyfem_3a_3aassembler_3a_3astokespressure_20_3e_19',['Assembler&lt; polyfem::assembler::StokesPressure &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
+  ['assembler_3c_20polyfem_3a_3aassembler_3a_3astokesvelocity_20_3e_20',['Assembler&lt; polyfem::assembler::StokesVelocity &gt;',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
+  ['assemblerutils_21',['AssemblerUtils',['../classpolyfem_1_1assembler_1_1_assembler_utils.html',1,'polyfem::assembler']]],
+  ['assemblyvalscache_22',['AssemblyValsCache',['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html',1,'polyfem::assembler']]],
+  ['assemblyvalues_23',['AssemblyValues',['../classpolyfem_1_1assembler_1_1_assembly_values.html',1,'polyfem::assembler']]],
+  ['autodiffallocator_24',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
+  ['autodiffallocator_3c_20double_20_3e_25',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
+  ['axisplaneselection_26',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
 ];
