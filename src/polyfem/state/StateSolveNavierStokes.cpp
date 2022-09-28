@@ -82,7 +82,7 @@ namespace polyfem
 		assembler.assemble_problem(
 			"Laplacian", mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);
 		assembler.assemble_mass_matrix(
-			"Laplacian", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, mass);
+			"Laplacian", mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, mass);
 
 		// coefficient matrix of pressure projection
 		assembler.assemble_problem(
@@ -94,7 +94,7 @@ namespace polyfem
 			"Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
 			pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
 		assembler.assemble_mass_matrix(
-			"Stokes", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
+			"Stokes", mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, velocity_mass);
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
@@ -161,7 +161,7 @@ namespace polyfem
 
 		StiffnessMatrix velocity_mass;
 		assembler.assemble_mass_matrix(
-			formulation(), mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
+			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, velocity_mass);
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
@@ -195,7 +195,7 @@ namespace polyfem
 
 			prev_sol = time_integrator.weighted_sum_x_prevs();
 			solve_data.rhs_assembler->compute_energy_grad(
-				local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
+				local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			solve_data.rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, Eigen::MatrixXd(), time);
 

@@ -79,6 +79,7 @@ namespace polyfem
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ALForm> al_form;
+		std::shared_ptr<solver::ElasticForm> damping_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
@@ -199,8 +200,6 @@ namespace polyfem
 
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
-		/// density of the input, default=1.
-		Density density;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 

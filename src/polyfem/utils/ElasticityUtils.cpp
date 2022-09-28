@@ -9,18 +9,18 @@ namespace polyfem
 	using namespace basis;
 	using namespace utils;
 
-	Eigen::VectorXd gradient_from_energy(const int size, const int n_bases, const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 6, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun6,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 8, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun8,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 12, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun12,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 18, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 24, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 30, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 60, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun60,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, 81, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funN,
-										 const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funBigN,
-										 const std::function<DScalar1<double, Eigen::VectorXd>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn)
+	Eigen::VectorXd gradient_from_energy(const int size, const int n_bases, const assembler::NonLinearAssemblerData &data,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 6, 1>>(const assembler::NonLinearAssemblerData &)> &fun6,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 8, 1>>(const assembler::NonLinearAssemblerData &)> &fun8,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 12, 1>>(const assembler::NonLinearAssemblerData &)> &fun12,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 18, 1>>(const assembler::NonLinearAssemblerData &)> &fun18,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 24, 1>>(const assembler::NonLinearAssemblerData &)> &fun24,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 30, 1>>(const assembler::NonLinearAssemblerData &)> &fun30,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 60, 1>>(const assembler::NonLinearAssemblerData &)> &fun60,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, 81, 1>>(const assembler::NonLinearAssemblerData &)> &fun81,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>(const assembler::NonLinearAssemblerData &)> &funN,
+										 const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>(const assembler::NonLinearAssemblerData &)> &funBigN,
+										 const std::function<DScalar1<double, Eigen::VectorXd>(const assembler::NonLinearAssemblerData &)> &funn)
 	{
 		Eigen::VectorXd grad;
 
@@ -28,49 +28,49 @@ namespace polyfem
 		{
 		case 6:
 		{
-			auto auto_diff_energy = fun6(vals, displacement, da);
+			auto auto_diff_energy = fun6(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 8:
 		{
-			auto auto_diff_energy = fun8(vals, displacement, da);
+			auto auto_diff_energy = fun8(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 12:
 		{
-			auto auto_diff_energy = fun12(vals, displacement, da);
+			auto auto_diff_energy = fun12(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 18:
 		{
-			auto auto_diff_energy = fun18(vals, displacement, da);
+			auto auto_diff_energy = fun18(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 24:
 		{
-			auto auto_diff_energy = fun24(vals, displacement, da);
+			auto auto_diff_energy = fun24(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 30:
 		{
-			auto auto_diff_energy = fun30(vals, displacement, da);
+			auto auto_diff_energy = fun30(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 60:
 		{
-			auto auto_diff_energy = fun60(vals, displacement, da);
+			auto auto_diff_energy = fun60(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
 		case 81:
 		{
-			auto auto_diff_energy = fun81(vals, displacement, da);
+			auto auto_diff_energy = fun81(data);
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
@@ -80,12 +80,12 @@ namespace polyfem
 		{
 			if (n_bases * size <= SMALL_N)
 			{
-				auto auto_diff_energy = funN(vals, displacement, da);
+				auto auto_diff_energy = funN(data);
 				grad = auto_diff_energy.getGradient();
 			}
 			else if (n_bases * size <= BIG_N)
 			{
-				auto auto_diff_energy = funBigN(vals, displacement, da);
+				auto auto_diff_energy = funBigN(data);
 				grad = auto_diff_energy.getGradient();
 			}
 			else
@@ -98,7 +98,7 @@ namespace polyfem
 					show_message = false;
 				}
 
-				auto auto_diff_energy = funn(vals, displacement, da);
+				auto auto_diff_energy = funn(data);
 				grad = auto_diff_energy.getGradient();
 			}
 		}
@@ -106,17 +106,17 @@ namespace polyfem
 		return grad;
 	}
 
-	Eigen::MatrixXd hessian_from_energy(const int size, const int n_bases, const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun6,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun8,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun12,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun60,
-										const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
-										const std::function<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funN,
-										const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn)
+	Eigen::MatrixXd hessian_from_energy(const int size, const int n_bases, const assembler::NonLinearAssemblerData &data,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>(const assembler::NonLinearAssemblerData &)> &fun6,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>(const assembler::NonLinearAssemblerData &)> &fun8,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>(const assembler::NonLinearAssemblerData &)> &fun12,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>(const assembler::NonLinearAssemblerData &)> &fun18,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>(const assembler::NonLinearAssemblerData &)> &fun24,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>(const assembler::NonLinearAssemblerData &)> &fun30,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>(const assembler::NonLinearAssemblerData &)> &fun60,
+										const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>(const assembler::NonLinearAssemblerData &)> &fun81,
+										const std::function<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>(const assembler::NonLinearAssemblerData &)> &funN,
+										const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(const assembler::NonLinearAssemblerData &)> &funn)
 	{
 		Eigen::MatrixXd hessian;
 
@@ -124,49 +124,49 @@ namespace polyfem
 		{
 		case 6:
 		{
-			auto auto_diff_energy = fun6(vals, displacement, da);
+			auto auto_diff_energy = fun6(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 8:
 		{
-			auto auto_diff_energy = fun8(vals, displacement, da);
+			auto auto_diff_energy = fun8(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 12:
 		{
-			auto auto_diff_energy = fun12(vals, displacement, da);
+			auto auto_diff_energy = fun12(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 18:
 		{
-			auto auto_diff_energy = fun18(vals, displacement, da);
+			auto auto_diff_energy = fun18(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 24:
 		{
-			auto auto_diff_energy = fun24(vals, displacement, da);
+			auto auto_diff_energy = fun24(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 30:
 		{
-			auto auto_diff_energy = fun30(vals, displacement, da);
+			auto auto_diff_energy = fun30(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 60:
 		{
-			auto auto_diff_energy = fun60(vals, displacement, da);
+			auto auto_diff_energy = fun60(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
 		case 81:
 		{
-			auto auto_diff_energy = fun81(vals, displacement, da);
+			auto auto_diff_energy = fun81(data);
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
@@ -176,7 +176,7 @@ namespace polyfem
 		{
 			if (n_bases * size <= SMALL_N)
 			{
-				auto auto_diff_energy = funN(vals, displacement, da);
+				auto auto_diff_energy = funN(data);
 				hessian = auto_diff_energy.getHessian();
 			}
 			else
@@ -189,7 +189,7 @@ namespace polyfem
 					show_message = false;
 				}
 
-				auto auto_diff_energy = funn(vals, displacement, da);
+				auto auto_diff_energy = funn(data);
 				hessian = auto_diff_energy.getHessian();
 			}
 		}
@@ -441,7 +441,7 @@ namespace polyfem
 		double nuYX, double nuZX, double nuZY,
 		double muYZ, double muZX, double muXY)
 	{
-		//copied from Julian
+		// copied from Julian
 		assert(size_ == 3);
 		// Note: this isn't the flattened compliance tensor! Rather, it is the
 		// matrix inverse of the flattened elasticity tensor. See the tensor
@@ -456,7 +456,7 @@ namespace polyfem
 
 	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuYX, double muXY)
 	{
-		//copied from Julian
+		// copied from Julian
 		assert(size_ == 2);
 		// Note: this isn't the flattened compliance tensor! Rather, it is the
 		// matrix inverse of the flattened elasticity tensor.
@@ -546,7 +546,7 @@ namespace polyfem
 
 	void LameParameters::set_e_nu(const int index, const json &E, const json &nu)
 	{
-		//TODO: conversion is always called
+		// TODO: conversion is always called
 		is_lambda_mu_ = false;
 		lambda_or_E_[index].init(E);
 		mu_or_nu_[index].init(nu);
@@ -586,7 +586,7 @@ namespace polyfem
 		}
 	}
 
-	//template instantiation
+	// template instantiation
 	template double ElasticityTensor::compute_stress<3>(const std::array<double, 3> &strain, const int j) const;
 	template double ElasticityTensor::compute_stress<6>(const std::array<double, 6> &strain, const int j) const;
 

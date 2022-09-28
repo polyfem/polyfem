@@ -12,7 +12,8 @@ namespace polyfem::solver
 					   const assembler::RhsAssembler &rhs_assembler,
 					   const Density &density,
 					   const bool apply_DBC,
-					   const bool is_formulation_mixed)
+					   const bool is_formulation_mixed,
+					   const bool is_time_dependent)
 		: ndof_(ndof),
 		  n_pressure_bases_(n_pressure_bases),
 		  boundary_nodes_(boundary_nodes),
@@ -26,7 +27,8 @@ namespace polyfem::solver
 		  is_formulation_mixed_(is_formulation_mixed)
 	{
 		t_ = 0;
-		update_current_rhs(Eigen::VectorXd());
+		if (is_time_dependent)
+			update_current_rhs(Eigen::VectorXd());
 	}
 
 	double BodyForm::value_unweighted(const Eigen::VectorXd &x) const
