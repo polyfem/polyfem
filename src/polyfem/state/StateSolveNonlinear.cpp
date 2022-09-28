@@ -79,6 +79,8 @@ namespace polyfem
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
+			if (damping_form)
+				damping_form->set_weight(time_integrator->acceleration_scaling());
 
 			// TODO: Determine if friction should be scaled by h²
 			// if (friction_form)
@@ -172,6 +174,7 @@ namespace polyfem
 			n_bases, bases, geom_bases(),
 			assembler, ass_vals_cache,
 			formulation(),
+			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh->is_volume());
 		forms.push_back(solve_data.elastic_form);
 
@@ -180,15 +183,27 @@ namespace polyfem
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
 			rhs, *solve_data.rhs_assembler,
 			density,
-			/*apply_DBC=*/true, /*is_formulation_mixed=*/false);
+			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
+		solve_data.body_form->update_quantities(t, sol);
 		forms.push_back(solve_data.body_form);
 
 		solve_data.inertia_form = nullptr;
+		solve_data.damping_form = nullptr;
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 			forms.push_back(solve_data.inertia_form);
+			if (assembler.has_damping())
+			{
+				solve_data.damping_form = std::make_shared<ElasticForm>(
+											n_bases, bases, geom_bases(),
+											assembler, ass_vals_cache,
+											"Damping",
+											args["time"]["dt"],
+											mesh->is_volume());
+				forms.push_back(solve_data.damping_form);
+			}
 		}
 		else
 		{

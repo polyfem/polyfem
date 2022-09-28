@@ -12,6 +12,7 @@ namespace polyfem::solver
 							 const assembler::AssemblerUtils &assembler,
 							 const assembler::AssemblyValsCache &ass_vals_cache,
 							 const std::string &formulation,
+							 const double dt,
 							 const bool is_volume)
 		: n_bases_(n_bases),
 		  bases_(bases),
@@ -19,6 +20,7 @@ namespace polyfem::solver
 		  assembler_(assembler),
 		  ass_vals_cache_(ass_vals_cache),
 		  formulation_(formulation),
+		  dt_(dt),
 		  is_volume_(is_volume)
 	{
 		if (assembler_.is_linear(formulation_))
@@ -29,7 +31,7 @@ namespace polyfem::solver
 	{
 		return assembler_.assemble_energy(
 			formulation_, is_volume_, bases_, geom_bases_,
-			ass_vals_cache_, x);
+			ass_vals_cache_, dt_, x, x_prev_);
 	}
 
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
@@ -37,7 +39,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd grad;
 		assembler_.assemble_energy_gradient(
 			formulation_, is_volume_, n_bases_, bases_, geom_bases_,
-			ass_vals_cache_, x, grad);
+			ass_vals_cache_, dt_, x, x_prev_, grad);
 		gradv = grad;
 	}
 
@@ -49,7 +51,7 @@ namespace polyfem::solver
 
 		if (assembler_.is_linear(formulation_))
 		{
-			assert(cached_stiffness_.rows() != x.size() && cached_stiffness_.cols() != x.size());
+			assert(cached_stiffness_.rows() == x.size() && cached_stiffness_.cols() == x.size());
 			hessian = cached_stiffness_;
 		}
 		else
@@ -57,7 +59,7 @@ namespace polyfem::solver
 			// TODO: somehow remove mat_cache_ so this function can be marked const
 			assembler_.assemble_energy_hessian(
 				formulation_, is_volume_, n_bases_, project_to_psd_, bases_,
-				geom_bases_, ass_vals_cache_, x, mat_cache_, hessian);
+				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, mat_cache_, hessian);
 		}
 	}
 

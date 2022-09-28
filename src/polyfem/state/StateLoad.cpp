@@ -135,7 +135,7 @@ namespace polyfem
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		assembler.set_size(mesh->dimension());
-
+		
 		set_materials();
 
 		timer.stop();

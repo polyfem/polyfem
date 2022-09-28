@@ -33,7 +33,9 @@ namespace
                 "type": "NeoHookean",
                 "E": 20000,
                 "nu": 0.3,
-                "rho": 1000
+                "rho": 1000,
+				"phi": 1,
+				"psi": 1
             },
 
 			"geometry": [{
@@ -148,7 +150,8 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
 				  state_ptr->density,
-				  apply_DBC, false);
+				  apply_DBC, false, state_ptr->problem->is_time_dependent());
+	form.update_quantities(state_ptr->args["time"]["t0"].get<double>(), Eigen::VectorXd());
 
 	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);
@@ -188,6 +191,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		state_ptr->assembler,
 		state_ptr->ass_vals_cache,
 		state_ptr->formulation(),
+		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 	test_form(form, *state_ptr);
 }
@@ -220,6 +224,24 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 		state_ptr->boundary_nodes_pos,
 		epsv, mu, dhat, broad_phase_method, dt, contact_form, /*n_lagging_iters=*/-1);
 
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
+{
+	const auto state_ptr = get_state();
+	const double dt = 1e-2;
+
+	ElasticForm form(
+		state_ptr->n_bases,
+		state_ptr->bases,
+		state_ptr->geom_bases(),
+		state_ptr->assembler,
+		state_ptr->ass_vals_cache,
+		"Damping",
+		dt,
+		state_ptr->mesh->is_volume());
+	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * 2));
 	test_form(form, *state_ptr);
 }
 

@@ -14,6 +14,7 @@
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "MultiModel.hpp"
+#include "ViscousDamping.hpp"
 // #include "OgdenElasticity.hpp"
 
 #include "Stokes.hpp"
@@ -79,7 +80,9 @@ namespace polyfem
 								   const std::vector<basis::ElementBases> &bases,
 								   const std::vector<basis::ElementBases> &gbases,
 								   const AssemblyValsCache &cache,
-								   const Eigen::MatrixXd &displacement) const;
+								   const double dt,
+								   const Eigen::MatrixXd &displacement,
+								   const Eigen::MatrixXd &displacement_prev) const;
 
 			// non linear gradient, assembler is the name of the formulation
 			void assemble_energy_gradient(const std::string &assembler,
@@ -88,7 +91,9 @@ namespace polyfem
 										  const std::vector<basis::ElementBases> &bases,
 										  const std::vector<basis::ElementBases> &gbases,
 										  const AssemblyValsCache &cache,
+										  const double dt,
 										  const Eigen::MatrixXd &displacement,
+										  const Eigen::MatrixXd &displacement_prev,
 										  Eigen::MatrixXd &grad) const;
 			// non-linear hessian, assembler is the name of the formulation
 			void assemble_energy_hessian(const std::string &assembler,
@@ -98,7 +103,9 @@ namespace polyfem
 										 const std::vector<basis::ElementBases> &bases,
 										 const std::vector<basis::ElementBases> &gbases,
 										 const AssemblyValsCache &cache,
+										 const double dt,
 										 const Eigen::MatrixXd &displacement,
+										 const Eigen::MatrixXd &displacement_prev,
 										 utils::SpareMatrixCache &mat_cache,
 										 StiffnessMatrix &hessian) const;
 
@@ -155,7 +162,9 @@ namespace polyfem
 			// checks if it is a fluid simulation
 			static bool is_fluid(const std::string &assembler);
 
-			// gets the names of all assemblers
+			bool has_damping() const;
+
+			//gets the names of all assemblers
 			static std::vector<std::string> scalar_assemblers();
 			static std::vector<std::string> tensor_assemblers();
 			// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
@@ -186,6 +195,8 @@ namespace polyfem
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
 			// NLAssembler<OgdenElasticity> ogden_elasticity_;
+
+			NLAssembler<ViscousDamping> damping_;
 
 			Assembler<StokesVelocity> stokes_velocity_;
 			MixedAssembler<StokesMixed> stokes_mixed_;

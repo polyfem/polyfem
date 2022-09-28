@@ -11,6 +11,8 @@
 #include "MultiModel.hpp"
 // #include "OgdenElasticity.hpp"
 
+#include "ViscousDamping.hpp"
+
 #include "Stokes.hpp"
 #include "NavierStokes.hpp"
 #include "IncompressibleLinElast.hpp"
@@ -422,7 +424,9 @@ namespace polyfem
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double dt,
 			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
 			Eigen::MatrixXd &rhs) const
 		{
 			rhs.resize(n_basis * local_assembler_.size(), 1);
@@ -449,7 +453,7 @@ namespace polyfem
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 					const int n_loc_bases = int(vals.basis_values.size());
 
-					const auto val = local_assembler_.assemble_grad(NonLinearAssemblerData(vals, displacement, local_storage.da));
+					const auto val = local_assembler_.assemble_grad(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
 					assert(val.size() == n_loc_bases * local_assembler_.size());
 
 					for (int j = 0; j < n_loc_bases; ++j)
@@ -496,7 +500,9 @@ namespace polyfem
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double dt,
 			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
 			SpareMatrixCache &mat_cache,
 			StiffnessMatrix &grad) const
 		{
@@ -530,7 +536,7 @@ namespace polyfem
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 					const int n_loc_bases = int(vals.basis_values.size());
 
-					auto stiffness_val = local_assembler_.assemble_hessian(NonLinearAssemblerData(vals, displacement, local_storage.da));
+					auto stiffness_val = local_assembler_.assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
 					assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 					assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
@@ -624,7 +630,9 @@ namespace polyfem
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
 			const AssemblyValsCache &cache,
-			const Eigen::MatrixXd &displacement) const
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const
 		{
 			auto storage = create_thread_storage(LocalThreadScalarStorage());
 			const int n_bases = int(bases.size());
@@ -642,7 +650,7 @@ namespace polyfem
 					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, displacement, local_storage.da));
+					const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
 					local_storage.val += val;
 				}
 			});
@@ -669,6 +677,8 @@ namespace polyfem
 		template class NLAssembler<NeoHookeanElasticity>;
 		template class NLAssembler<MultiModel>;
 		// template class NLAssembler<OgdenElasticity>;
+
+		template class NLAssembler<ViscousDamping>;
 
 		template class Assembler<StokesVelocity>;
 		template class MixedAssembler<StokesMixed>;

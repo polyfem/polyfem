@@ -4,6 +4,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -78,7 +79,9 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &bases,
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
+				const double dt,
 				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev,
 				Eigen::MatrixXd &rhs) const;
 			//assemble hessian of energy (grad)
 			void assemble_hessian(
@@ -88,7 +91,9 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &bases,
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
+				const double dt,
 				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev,
 				utils::SpareMatrixCache &mat_cache,
 				StiffnessMatrix &grad) const;
 
@@ -98,7 +103,9 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &bases,
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
-				const Eigen::MatrixXd &displacement) const;
+				const double dt,
+				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev) const;
 
 			inline LocalAssembler &local_assembler() { return local_assembler_; }
 			inline const LocalAssembler &local_assembler() const { return local_assembler_; }
