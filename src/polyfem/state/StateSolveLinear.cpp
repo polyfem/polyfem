@@ -120,7 +120,7 @@ namespace polyfem
 			if (is_scalar_or_mixed)
 			{
 				solve_data.rhs_assembler->compute_energy_grad(
-					local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time,
+					local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time,
 					current_rhs);
 
 				solve_data.rhs_assembler->set_bc(
@@ -148,7 +148,7 @@ namespace polyfem
 			}
 			else
 			{
-				solve_data.rhs_assembler->assemble(density, current_rhs, time);
+				solve_data.rhs_assembler->assemble(assembler.density(), current_rhs, time);
 
 				current_rhs *= -1;
 

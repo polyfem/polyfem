@@ -149,7 +149,7 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 				  state_ptr->local_neumann_boundary, state_ptr->n_boundary_samples(),
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
-				  state_ptr->density,
+				  state_ptr->assembler.density(),
 				  apply_DBC, false, state_ptr->problem->is_time_dependent());
 	form.update_quantities(state_ptr->args["time"]["t0"].get<double>(), Eigen::VectorXd());
 
