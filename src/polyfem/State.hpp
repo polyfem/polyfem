@@ -567,9 +567,7 @@ namespace polyfem
 		// Solves the adjoint PDE for derivatives
 		void solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution);
 		void solve_adjoint(const SummableFunctional &j, Eigen::MatrixXd &adjoint_solution);
-		void solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
-		// TODO: Eventually merge with above
-		void solve_transient_adjoint_dirichlet(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
+		void solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false);
 		void solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution);
 		// Discretizes a vector field over the current mesh
 		void sample_field(std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1);

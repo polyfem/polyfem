@@ -1801,65 +1801,6 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p)
-	{
-		assert(problem->is_time_dependent());
-		assert(!problem->is_scalar());
-
-		int bdf_order = get_bdf_order();
-
-		const double dt = args["time"]["dt"];
-		const int time_steps = args["time"]["time_steps"];
-		const auto &gbases = geom_bases();
-
-		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
-		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
-
-		if (!j.depend_on_u() && !j.depend_on_gradu())
-			return;
-
-		// set dirichlet rows of mass to identity
-		StiffnessMatrix reduced_mass;
-		replace_rows_by_identity(reduced_mass, mass, boundary_nodes);
-
-		std::vector<double> weights;
-		j.get_transient_quadrature_weights(time_steps, dt, weights);
-		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
-		for (int i = time_steps; i >= 0; --i)
-		{
-			double beta;
-			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-			double beta_dt = beta * dt;
-
-			StiffnessMatrix gradu_h, gradu_h_next;
-			if (i > 0)
-				replace_rows_by_identity(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
-			replace_rows_by_identity(gradu_h_next, -beta_dt * diff_cached[i].gradu_h_next, boundary_nodes);
-
-			auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
-				json params_extended = params;
-				params_extended["step"] = i;
-				params_extended["t"] = i * args["time"]["dt"].get<double>();
-				return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params_extended);
-			};
-			Eigen::VectorXd gradu_j;
-			compute_adjoint_rhs(grad_j_func, diff_cached[i].u, gradu_j, j.is_surface_integral());
-
-			if (i > 0)
-			{
-				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
-				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - weights[i] * gradu_j;
-				solve_zero_dirichlet(A, rhs_, boundary_nodes, adjoint_nu[i]);
-				adjoint_p[i] = beta_dt * adjoint_nu[i] - sum_alpha_p;
-			}
-			else
-			{
-				adjoint_p[i] = -reduced_mass.transpose() * sum_alpha_p;
-				adjoint_nu[i] = -weights[i] * gradu_j - reduced_mass.transpose() * sum_alpha_nu + beta_dt * diff_cached[i].gradu_h_next.transpose() * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
-			}
-		}
-	}
-
 	void State::dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
@@ -2036,8 +1977,7 @@ namespace polyfem
 		one_form += weights[0] * functional_term + mass_term;
 	}
 
-	// TODO: merge with the other solve_transient_adjoint, for now only used for dirichlet bc derivative
-	void State::solve_transient_adjoint_dirichlet(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p)
+	void State::solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative)
 	{
 		assert(problem->is_time_dependent());
 		assert(!problem->is_scalar());
@@ -2091,7 +2031,21 @@ namespace polyfem
 					if ((i + 2) < adjoint_p.size() - 1)
 						rhs_(b) += (1. / beta_dt) * adjoint_p[i + 2](b);
 				}
-				solve_zero_dirichlet(A, rhs_, {}, adjoint_nu[i]);
+				
+				{
+					StiffnessMatrix A_tmp = A;
+					Eigen::VectorXd b_ = rhs_;
+					solve_zero_dirichlet(A_tmp, b_, boundary_nodes, adjoint_nu[i]);
+				}
+
+				if (dirichlet_derivative)
+				{
+					Eigen::VectorXd tmp = rhs_ - A * adjoint_nu[i];
+					for (const auto &b : boundary_nodes)
+					{
+						adjoint_nu[i](b) = tmp(b);
+					}
+				}
 				adjoint_p[i] = beta_dt * adjoint_nu[i] - sum_alpha_p;
 			}
 			else
@@ -2108,7 +2062,7 @@ namespace polyfem
 		assert(!problem->is_scalar());
 
 		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
-		solve_transient_adjoint_dirichlet(j, adjoint_nu, adjoint_p);
+		solve_transient_adjoint(j, adjoint_nu, adjoint_p, true);
 
 		int bdf_order = get_bdf_order();
 

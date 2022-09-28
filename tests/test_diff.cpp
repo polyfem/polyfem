@@ -512,10 +512,6 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 		"solver": {
 			"linear": {
 				"solver": "Eigen::PardisoLDLT"
-			},
-			"nonlinear": {
-				"grad_norm": 1e-14,
-				"use_grad_norm": true
 			}
 		},
 		"differentiable": true,
@@ -2599,12 +2595,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SparseLU"
-			},
-			"nonlinear": {
-				"f_delta": 1e-15,
-				"grad_norm": 1e-15,
-				"max_iterations": 500
+				"solver": "Eigen::PardisoLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 100000
@@ -2943,12 +2934,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::SparseLU"
-			},
-			"nonlinear": {
-				"f_delta": 1e-15,
-				"grad_norm": 1e-15,
-				"max_iterations": 500
+				"solver": "Eigen::PardisoLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 100000
