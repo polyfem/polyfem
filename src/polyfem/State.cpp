@@ -212,6 +212,12 @@ namespace polyfem
 			return;
 		}
 
+		if (mesh->has_poly())
+		{
+			logger().warn("Node ordering disabled, not supported for polygonal meshes!");
+			return;
+		}
+
 		if (mesh->in_ordered_vertices().size() <= 0 || mesh->in_ordered_edges().size() <= 0 || (mesh->is_volume() && mesh->in_ordered_faces().size() <= 0))
 		{
 			logger().warn("Node ordering disabled, input vertices/edges/faces not computed!");
@@ -515,9 +521,8 @@ namespace polyfem
 
 	bool State::iso_parametric() const
 	{
-		// TODO: fix me, ask mesh if polygonal
-		//  if (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
-		//  return true;
+		if (mesh->has_poly())
+			return true;
 
 		if (args["space"]["advanced"]["use_spline"])
 			return true;
@@ -600,9 +605,7 @@ namespace polyfem
 		problem->init(*mesh);
 
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
-		const bool has_polys = false;
-		// TODO: fix me add function to mesh
-		// non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0;
+		const bool has_polys = mesh->has_poly();
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
