@@ -35,7 +35,7 @@ namespace polyfem::solver
 		void solution_changed(const TVector &new_x) override;
 
 		void init_lagging(const TVector &x) override;
-		bool update_lagging(const TVector &x, const int iter_num) override;
+		void update_lagging(const TVector &x, const int iter_num) override;
 
 		// --------------------------------------------------------------------
 

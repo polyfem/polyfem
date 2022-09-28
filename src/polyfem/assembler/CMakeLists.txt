@@ -40,6 +40,8 @@ set(SOURCES
 	Problem.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
+	ViscousDamping.cpp
+	ViscousDamping.hpp
 )
 
 prepend_current_path(SOURCES)

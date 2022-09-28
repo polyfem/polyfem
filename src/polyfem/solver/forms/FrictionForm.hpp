@@ -60,8 +60,10 @@ namespace polyfem::solver
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		/// @return True able to update the lagged fields
-		bool update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+
+		/// @brief Get the maximum number of lagging iteration allowable.
+		int max_lagging_iterations() const override { return n_lagging_iters_; }
 
 		/// @brief Does this form require lagging?
 		/// @return True if the form requires lagging

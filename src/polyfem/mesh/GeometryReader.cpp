@@ -314,7 +314,9 @@ namespace polyfem::mesh
 			// points -> vertices (drop edges and faces)
 			codim_edges.resize(0, 0);
 			faces.resize(0, 0);
-			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
+			codim_vertices.resize(vertices.rows());
+			for (int i = 0; i < codim_vertices.size(); ++i)
+				codim_vertices[i] = i;
 		}
 		else if (extract == "edges" && faces.size() != 0)
 		{

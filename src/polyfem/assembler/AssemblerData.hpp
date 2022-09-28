@@ -9,14 +9,18 @@ namespace polyfem::assembler
 	public:
 		NonLinearAssemblerData(
 			const ElementAssemblyValues &vals,
+			const double dt,
 			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &x_prev,
 			const QuadratureVector &da)
-			: vals(vals), x(x), da(da)
+			: vals(vals), dt(dt), x(x), x_prev(x_prev), da(da)
 		{
 		}
 
 		const ElementAssemblyValues &vals;
+		const double dt;
 		const Eigen::MatrixXd &x;
+		const Eigen::MatrixXd &x_prev;
 		const QuadratureVector &da;
 	};
 

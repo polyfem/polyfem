@@ -188,7 +188,7 @@ namespace polyfem
 			SpareMatrixCache mat_cache;
 
 			time.start();
-			assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, x, mat_cache, nl_matrix);
+			assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -214,7 +214,7 @@ namespace polyfem
 				time.start();
 				if (!is_picard)
 				{
-					assembler.assemble_energy_hessian(formulation, is_volume, n_bases, false, bases, gbases, ass_vals_cache, x, mat_cache, nl_matrix);
+					assembler.assemble_energy_hessian(formulation, is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 														 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 														 total_matrix);
@@ -230,7 +230,7 @@ namespace polyfem
 				// TODO check for nans
 
 				time.start();
-				assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, x, mat_cache, nl_matrix);
+				assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 													 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 													 total_matrix);
