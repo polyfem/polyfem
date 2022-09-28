@@ -81,9 +81,14 @@ namespace polyfem::solver
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		/// @param iter_num Lagging iteration number
-		/// @return True able to update the lagged fields
-		virtual bool update_lagging(const Eigen::VectorXd &x, const int iter_num) { return true; };
+		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num){};
+
+		/// @brief Get the maximum number of lagging iteration allowable.
+		virtual int max_lagging_iterations() const { return std::numeric_limits<int>::max(); }
+
+		/// @brief Does this form require lagging?
+		/// @return True if the form requires lagging
+		virtual bool uses_lagging() const { return false; }
 
 		/// @brief Set project to psd
 		/// @param val If true, the form's second derivative is projected to be positive semidefinite
@@ -106,10 +111,6 @@ namespace polyfem::solver
 		/// @brief Set the form's multiplicative constant weight
 		/// @param weight New weight to use
 		void set_weight(const double weight) { weight_ = weight; }
-
-		/// @brief Does this form require lagging?
-		/// @return True if the form requires lagging
-		virtual bool uses_lagging() const { return false; }
 
 		// NOTE: The following functions are really specific to the different form and should be implemented in the derived class.
 

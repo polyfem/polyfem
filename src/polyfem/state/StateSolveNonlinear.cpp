@@ -313,13 +313,12 @@ namespace polyfem
 
 		assert(sol.size() == rhs.size());
 
+		if (nl_problem.uses_lagging())
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
 			nl_problem.init_lagging(sol);
+			logger().info("Lagging iteration {:d}:", 1);
 		}
-
-		int lag_i = 0;
-		logger().info("Lagging iteration {:d}:", lag_i + 1);
 
 		// ---------------------------------------------------------------------
 
@@ -360,24 +359,33 @@ namespace polyfem
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		bool lagging_converged = !nl_problem.uses_lagging();
-		for (lag_i = 1; !lagging_converged; lag_i++)
+		for (int lag_i = 1; !lagging_converged; lag_i++)
 		{
 			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 			// Update the lagging before checking for convergence
-			if (!nl_problem.update_lagging(tmp_sol, lag_i))
-			{
-				logger().warn("Failed to update lagging: max lagging iterations exceeded");
-				break;
-			}
+			nl_problem.update_lagging(tmp_sol, lag_i);
 
 			// Check if lagging converged
 			Eigen::VectorXd grad;
 			nl_problem.gradient(tmp_sol, grad);
-			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
+			logger().debug("Lagging convergence grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
 			if (grad.norm() <= lagging_tol)
 			{
+				logger().info(
+					"Lagging converged in {:d} iteration(s) (grad_norm={:g} tol={:g})",
+					lag_i, grad.norm(), lagging_tol);
 				lagging_converged = true;
+				break;
+			}
+
+			// Check for convergence first before checking if we can continue
+			if (lag_i >= nl_problem.max_lagging_iterations())
+			{
+				logger().warn(
+					"Lagging failed to converge with {:d} iteration(s) (grad_norm={:g} tol={:g})",
+					lag_i, grad.norm(), lagging_tol);
+				lagging_converged = false;
 				break;
 			}
 
@@ -398,17 +406,6 @@ namespace polyfem
 				 {"info", info}});
 			save_subsolve(++subsolve_count, t);
 		}
-
-		// ---------------------------------------------------------------------
-
-		nl_problem.update_lagging(sol, -1); // -1 bypasses the max lagging iterations check
-		Eigen::VectorXd grad;
-		nl_problem.gradient(sol, grad);
-		logger().log(
-			lagging_converged ? spdlog::level::info : spdlog::level::warn,
-			"{} {:d} iteration(s) (grad_norm={:g} tol={:g})",
-			lagging_converged ? "Lagging converged in" : "Lagging failed to converge with",
-			lag_i, grad.norm(), lagging_tol);
 	}
 
 	////////////////////////////////////////////////////////////////////////
