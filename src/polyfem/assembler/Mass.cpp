@@ -12,6 +12,7 @@ namespace polyfem::assembler
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size(), 1);
+		res.setZero();
 		for (int i = 0; i < size(); ++i)
 			res(i * size() + i) = tmp;
 

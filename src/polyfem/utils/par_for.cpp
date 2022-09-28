@@ -1,6 +1,7 @@
 #include "par_for.hpp"
 
 #include <vector>
+#include <algorithm>
 
 namespace polyfem
 {
