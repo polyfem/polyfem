@@ -53,17 +53,82 @@ namespace polyfem
 			}
 		}
 
-		min_mu = material_params.value("min_mu", 0.0);
-		max_mu = material_params.value("max_mu", std::numeric_limits<double>::max());
+		if (material_params["mu_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_mu = 0.0;
+			max_mu = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_mu = material_params["mu_bound"][0];
+			max_mu = material_params["mu_bound"][1];
+		}
 
-		min_lambda = material_params.value("min_lambda", 0.0);
-		max_lambda = material_params.value("max_lambda", std::numeric_limits<double>::max());
+		if (material_params["lambda_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_lambda = 0.0;
+			max_lambda = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_lambda = material_params["lambda_bound"][0];
+			max_lambda = material_params["lambda_bound"][1];
+		}
 
-		min_E = material_params.value("min_E", 0.0);
-		max_E = material_params.value("max_E", std::numeric_limits<double>::max());
+		if (material_params["E_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_E = 0.0;
+			max_E = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_E = material_params["E_bound"][0];
+			max_E = material_params["E_bound"][1];
+		}
 
-		min_nu = material_params.value("min_nu", std::numeric_limits<double>::min());
-		max_nu = material_params.value("max_nu", std::numeric_limits<double>::max());
+		if (material_params["nu_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_nu = 0.0;
+			max_nu = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_nu = material_params["nu_bound"][0];
+			max_nu = material_params["nu_bound"][1];
+		}
+
+		if (material_params["phi_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_phi = 0.0;
+			max_phi = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_phi = material_params["phi_bound"][0];
+			max_phi = material_params["phi_bound"][1];
+		}
+
+		if (material_params["psi_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_psi = 0.0;
+			max_psi = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_psi = material_params["psi_bound"][0];
+			max_psi = material_params["psi_bound"][1];
+		}
+
+		if (material_params["fric_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_fric = 0.0;
+			max_fric = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_fric = material_params["fric_bound"][0];
+			max_fric = material_params["fric_bound"][1];
+		}
 
 		has_material_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
@@ -225,24 +290,16 @@ namespace polyfem
 		const double phi = state.damping_assembler.local_assembler().get_phi();
 
 		bool flag = true;
-		if (mu < 0 || psi < 0 || phi < 0)
-			flag = false;
 
 		if (cur_lambdas.minCoeff() < min_lambda || cur_mus.minCoeff() < min_mu)
 			flag = false;
 		if (cur_lambdas.maxCoeff() > max_lambda || cur_mus.maxCoeff() > max_mu)
 			flag = false;
-		if (material_params.contains("min_phi") && material_params["min_phi"].get<double>() > phi)
+		if (min_phi > phi || max_phi < phi)
 			flag = false;
-		if (material_params.contains("max_phi") && material_params["max_phi"].get<double>() < phi)
+		if (min_psi > psi || max_psi < psi)
 			flag = false;
-		if (material_params.contains("min_psi") && material_params["min_psi"].get<double>() > psi)
-			flag = false;
-		if (material_params.contains("max_psi") && material_params["max_psi"].get<double>() < psi)
-			flag = false;
-		if (material_params.contains("min_fric") && material_params["min_fric"].get<double>() > mu)
-			flag = false;
-		if (material_params.contains("max_fric") && material_params["max_fric"].get<double>() < mu)
+		if (min_fric > mu || max_fric < mu)
 			flag = false;
 
 		for (int e = 0; e < cur_lambdas.size(); e++)
