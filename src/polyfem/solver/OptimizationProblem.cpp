@@ -62,7 +62,7 @@ namespace polyfem
 		cur_grad.resize(0);
 		cur_val = std::nan("");
 
-		opt_nonlinear_params = state.args["solver"]["optimization_nonlinear"];
+		opt_nonlinear_params = state.args["solver"]["nonlinear_optimization"];
 		opt_output_params = state.args["output"]["optimization"];
 		opt_params = state.args["optimization"];
 

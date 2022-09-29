@@ -213,7 +213,7 @@ namespace polyfem
 		state.get_vf(V_rest, elements);
 
 		// contact
-		const auto &opt_contact_params = state.args["solver"]["optimization_contact"];
+		const auto &opt_contact_params = state.args["solver"]["contact_optimization"];
 		has_collision = opt_contact_params["enabled"];
 		if (state.is_contact_enabled() && !has_collision)
 			logger().warn("Problem has collision, but collision detection in shape optimization is disabled!");
@@ -1019,9 +1019,9 @@ namespace polyfem
 							fixed_nodes.insert(g.index);
 			}
 		}
-		else if (shape_params.contains("boundary_selection"))
+		else if (shape_params.contains("surface_selection"))
 		{
-			for (int i : shape_params["boundary_selection"])
+			for (int i : shape_params["surface_selection"])
 				optimize_boundary_ids.insert(i);
 
 			for (const auto &lb : state.total_local_boundary)

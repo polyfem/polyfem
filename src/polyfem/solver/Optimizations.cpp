@@ -1041,7 +1041,7 @@ namespace polyfem
 	std::shared_ptr<ControlProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 
 		std::shared_ptr<ControlProblem> control_problem = std::make_shared<ControlProblem>(state, j);
 		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
@@ -1066,7 +1066,7 @@ namespace polyfem
 
 	void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1082,7 +1082,7 @@ namespace polyfem
 
 	void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1098,7 +1098,7 @@ namespace polyfem
 
 	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1114,7 +1114,7 @@ namespace polyfem
 
 	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1130,7 +1130,7 @@ namespace polyfem
 
 	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
@@ -1190,7 +1190,7 @@ namespace polyfem
 
 	void general_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["solver"]["nonlinear_optimization"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<GeneralOptimizationProblem>> nlsolver = make_nl_solver<GeneralOptimizationProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
