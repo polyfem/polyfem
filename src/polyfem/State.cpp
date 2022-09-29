@@ -1171,14 +1171,14 @@ namespace polyfem
 		logger().info("Done!");
 
 		// incompatible with optimization, fix me!
-		// {
-		// 	igl::Timer timer2;
-		// 	logger().debug("Building node mapping...");
-		// 	timer2.start();
-		// 	build_node_mapping();
-		// 	timer2.stop();
-		// 	logger().debug("Done (took {}s)", timer2.getElapsedTime());
-		// }
+		{
+			igl::Timer timer2;
+			logger().debug("Building node mapping...");
+			timer2.start();
+			build_node_mapping();
+			timer2.stop();
+			logger().debug("Done (took {}s)", timer2.getElapsedTime());
+		}
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, geom_bases(), pressure_bases, boundary_gnodes, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
