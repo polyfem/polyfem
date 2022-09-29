@@ -35,7 +35,6 @@ namespace polyfem::mesh
 		update_positions();
 
 		const double energy_after = compute_global_energy();
-		assert(std::isfinite(energy_after));
 
 		logger().critical("energy_before={} energy_after={} accept={}", energy_before, energy_after, energy_after < energy_before);
 		return energy_after < energy_before;

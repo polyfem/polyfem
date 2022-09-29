@@ -29,9 +29,9 @@ namespace polyfem::mesh
 
 		for (int i = 0; i < 1; ++i)
 		{
-			remeshing.smooth_all_vertices();
+			// remeshing.smooth_all_vertices();
 			// remeshing.split_all_edges();
-			// remeshing.collapse_all_edges();
+			remeshing.collapse_all_edges();
 		}
 
 		remeshing.consolidate_mesh();

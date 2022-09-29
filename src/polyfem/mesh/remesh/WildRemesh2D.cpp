@@ -267,7 +267,7 @@ namespace polyfem::mesh
 		n_bases += obstacle.n_vertices();
 
 		Eigen::MatrixXd target_x = Eigen::MatrixXd::Zero(n_bases, DIM);
-		for (int i = 0; i < n_bases; i++)
+		for (int i = 0; i < num_vertices; i++)
 		{
 			const int j = vertex_to_basis[i];
 			if (j < 0)
@@ -296,7 +296,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXd proposed_displacements = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
 		Eigen::MatrixXd proposed_velocities = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
 		Eigen::MatrixXd proposed_accelerations = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
-		for (int i = 0; i < n_bases; i++)
+		for (int i = 0; i < num_vertices; i++)
 		{
 			const int j = vertex_to_basis[i];
 			if (j < 0)
