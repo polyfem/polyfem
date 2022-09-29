@@ -8,12 +8,15 @@ namespace polyfem::mesh
 	{
 		if (!super::collapse_edge_before(t))
 			return false;
+
 		const size_t vi = t.vid(*this);
 		const size_t vj = t.switch_vertex(*this).vid(*this);
 		if (vertex_attrs[vi].frozen || vertex_attrs[vj].frozen)
 			return false;
+
 		cache = {{vertex_attrs[vi], vertex_attrs[vj]}};
-		energy_before = compute_global_energy();
+		cache_before();
+
 		return true;
 	}
 
@@ -22,15 +25,17 @@ namespace polyfem::mesh
 		size_t vid = t.vid(*this);
 
 		vertex_attrs[vid].rest_position = (cache[0].rest_position + cache[1].rest_position) / 2.0;
-		vertex_attrs[vid].position = (cache[0].position + cache[1].position) / 2.0;
-		vertex_attrs[vid].velocity = (cache[0].velocity + cache[1].velocity) / 2.0;
-		vertex_attrs[vid].acceleration = (cache[0].acceleration + cache[1].acceleration) / 2.0;
 		vertex_attrs[vid].partition_id = cache[0].partition_id;
 		vertex_attrs[vid].frozen = false;
 
-		// update_positions();
+		// vertex_attrs[vid].position = (cache[0].position + cache[1].position) / 2.0;
+		// vertex_attrs[vid].velocity = (cache[0].velocity + cache[1].velocity) / 2.0;
+		// vertex_attrs[vid].acceleration = (cache[0].acceleration + cache[1].acceleration) / 2.0;
 
-		double energy_after = compute_global_energy();
+		update_positions();
+
+		const double energy_after = compute_global_energy();
+		assert(std::isfinite(energy_after));
 
 		logger().critical("energy_before={} energy_after={} accept={}", energy_before, energy_after, energy_after < energy_before);
 		return energy_after < energy_before;

@@ -16,6 +16,8 @@ namespace polyfem::mesh
 
 		virtual ~WildRemeshing2D(){};
 
+		static constexpr int DIM = 2;
+
 		// Initializes the mesh
 		void create_mesh(
 			const Eigen::MatrixXd &rest_positions,
@@ -23,8 +25,6 @@ namespace polyfem::mesh
 			const Eigen::MatrixXd &velocities,
 			const Eigen::MatrixXd &accelerations,
 			const Eigen::MatrixXi &triangles);
-
-		int dim() const { return 2; }
 
 		/// Exports rest positions of the stored mesh
 		Eigen::MatrixXd rest_positions() const;
@@ -106,6 +106,8 @@ namespace polyfem::mesh
 	protected:
 		/// Get the boundary nodes of the stored mesh
 		std::vector<int> boundary_nodes() const;
+
+		void cache_before();
 
 		const Obstacle &obstacle;
 

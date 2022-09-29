@@ -18,14 +18,7 @@ namespace polyfem::mesh
 		if (vertex_attrs[t.vid(*this)].frozen)
 			return false;
 
-		rest_positions_before = rest_positions();
-		positions_before = positions();
-		velocities_before = velocities();
-		accelerations_before = accelerations();
-		triangles_before = triangles();
-		energy_before = compute_global_energy();
-		write_rest_obj("rest_mesh_before.obj");
-		write_deformed_obj("deformed_mesh_before.obj");
+		cache_before();
 
 		return true;
 	}

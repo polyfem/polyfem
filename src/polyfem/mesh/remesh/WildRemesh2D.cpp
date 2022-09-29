@@ -9,15 +9,13 @@
 #include <igl/boundary_facets.h>
 #include <igl/predicates/predicates.h>
 
-#define VERTEX_ATTRIBUTE_GETTER(name, attribute)                        \
-	Eigen::MatrixXd WildRemeshing2D::name() const                       \
-	{                                                                   \
-		const std::vector<Tuple> vertices = get_vertices();             \
-		Eigen::MatrixXd attributes(vertices.size(), dim());             \
-		size_t i = 0;                                                   \
-		for (const Tuple &t : vertices)                                 \
-			attributes.row(i++) = vertex_attrs[t.vid(*this)].attribute; \
-		return attributes;                                              \
+#define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                           \
+	Eigen::MatrixXd WildRemeshing2D::name() const                                          \
+	{                                                                                      \
+		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(vert_capacity(), DIM, nan); \
+		for (const Tuple &t : get_vertices())                                              \
+			attributes.row(t.vid(*this)) = vertex_attrs[t.vid(*this)].attribute;           \
+		return attributes;                                                                 \
 	}
 
 #define VERTEX_ATTRIBUTE_SETTER(name, attribute)                                 \
@@ -29,6 +27,11 @@
 
 namespace polyfem::mesh
 {
+	namespace
+	{
+		constexpr double nan = std::numeric_limits<double>::quiet_NaN();
+	}
+
 	void WildRemeshing2D::create_mesh(
 		const Eigen::MatrixXd &rest_positions,
 		const Eigen::MatrixXd &positions,
@@ -63,10 +66,10 @@ namespace polyfem::mesh
 		// Save the vertex position in the vertex attributes
 		for (unsigned i = 0; i < positions.rows(); ++i)
 		{
-			vertex_attrs[i].rest_position = rest_positions.row(i).head(dim());
-			vertex_attrs[i].position = positions.row(i).head(dim());
-			vertex_attrs[i].velocity = velocities.row(i).head(dim());
-			vertex_attrs[i].acceleration = accelerations.row(i).head(dim());
+			vertex_attrs[i].rest_position = rest_positions.row(i).head<DIM>();
+			vertex_attrs[i].position = positions.row(i).head<DIM>();
+			vertex_attrs[i].velocity = velocities.row(i).head<DIM>();
+			vertex_attrs[i].acceleration = accelerations.row(i).head<DIM>();
 			vertex_attrs[i].frozen = is_boundary_vertex[i];
 		}
 	}
@@ -84,17 +87,15 @@ namespace polyfem::mesh
 	Eigen::MatrixXi WildRemeshing2D::triangles() const
 	{
 		const std::vector<Tuple> faces = get_faces();
-		Eigen::MatrixXi triangles(faces.size(), 3);
-		size_t i = 0;
-		for (const Tuple &t : faces)
+		Eigen::MatrixXi triangles = Eigen::MatrixXi::Constant(faces.size(), 3, -1);
+		for (size_t i = 0; i < faces.size(); i++)
 		{
-			// const size_t i = t.fid(*this);
+			const Tuple &t = faces[i];
 			const std::array<Tuple, 3> vs = oriented_tri_vertices(t);
 			for (int j = 0; j < 3; j++)
 			{
 				triangles(i, j) = vs[j].vid(*this);
 			}
-			i++;
 		}
 		return triangles;
 	}
@@ -161,17 +162,32 @@ namespace polyfem::mesh
 		return boundary_nodes;
 	}
 
+	void WildRemeshing2D::cache_before()
+	{
+		rest_positions_before = rest_positions();
+		positions_before = positions();
+		velocities_before = velocities();
+		accelerations_before = accelerations();
+		triangles_before = triangles();
+		energy_before = compute_global_energy();
+		write_rest_obj("rest_mesh_before.obj");
+		write_deformed_obj("deformed_mesh_before.obj");
+	}
+
 	int build_bases(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
-		std::vector<polyfem::basis::ElementBases> &bases)
+		std::vector<polyfem::basis::ElementBases> &bases,
+		Eigen::VectorXi &vertex_to_basis)
 	{
+		using namespace polyfem::basis;
+
 		CMesh2D mesh;
 		mesh.build_from_matrices(V, F);
 		std::vector<LocalBoundary> local_boundary;
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
-		return basis::FEBasis2d::build_bases(
+		const int n_bases = FEBasis2d::build_bases(
 			mesh,
 			/*quadrature_order=*/1,
 			/*mass_quadrature_order=*/2,
@@ -183,6 +199,30 @@ namespace polyfem::mesh
 			local_boundary,
 			poly_edge_to_data,
 			mesh_nodes);
+
+		vertex_to_basis.setConstant(V.rows(), -1);
+		for (const ElementBases &elm : bases)
+		{
+			for (const Basis &basis : elm.bases)
+			{
+				assert(basis.global().size() == 1);
+				const int basis_id = basis.global()[0].index;
+				const RowVectorNd v = basis.global()[0].node;
+
+				for (int i = 0; i < V.rows(); i++)
+				{
+					if ((V.row(i) - v).norm() < 1e-10)
+					{
+						if (vertex_to_basis[i] == -1)
+							vertex_to_basis[i] = basis_id;
+						assert(vertex_to_basis[i] == basis_id);
+						break;
+					}
+				}
+			}
+		}
+
+		return n_bases;
 	}
 
 	void WildRemeshing2D::update_positions()
@@ -191,41 +231,84 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd proposed_rest_positions = rest_positions();
 		const Eigen::MatrixXi proposed_triangles = triangles();
 
+		// --------------------------------------------------------------------
+
+		const int num_vertices_before = rest_positions_before.rows();
+
 		// Assume isoparametric
 		std::vector<polyfem::basis::ElementBases> bases_before;
-		int n_bases_before = build_bases(rest_positions_before, triangles_before, bases_before);
+		Eigen::VectorXi vertex_to_basis_before;
+		int n_bases_before = build_bases(rest_positions_before, triangles_before, bases_before, vertex_to_basis_before);
 		const std::vector<polyfem::basis::ElementBases> &geom_bases_before = bases_before;
 		n_bases_before += obstacle.n_vertices();
 
+		// Old values of independent variables
+		const Eigen::MatrixXd displacements_before = positions_before - rest_positions_before;
+		Eigen::MatrixXd y(n_bases_before * DIM, 3);
+		for (int i = 0; i < num_vertices_before; i++)
+		{
+			const int j = vertex_to_basis_before[i];
+			if (j < 0)
+				continue;
+
+			y.block<DIM, 1>(j * DIM, 0) = displacements_before.row(i).transpose();
+			y.block<DIM, 1>(j * DIM, 1) = velocities_before.row(i).transpose();
+			y.block<DIM, 1>(j * DIM, 2) = accelerations_before.row(i).transpose();
+		}
+
+		// --------------------------------------------------------------------
+
+		const int num_vertices = proposed_rest_positions.rows();
+
 		std::vector<polyfem::basis::ElementBases> bases;
-		int n_bases = build_bases(proposed_rest_positions, proposed_triangles, bases);
+		Eigen::VectorXi vertex_to_basis;
+		int n_bases = build_bases(proposed_rest_positions, proposed_triangles, bases, vertex_to_basis);
 		const std::vector<polyfem::basis::ElementBases> &geom_bases = bases;
 		n_bases += obstacle.n_vertices();
 
-		const Eigen::MatrixXd target_x = utils::flatten(positions() - rest_positions_before);
+		Eigen::MatrixXd target_x = Eigen::MatrixXd::Zero(n_bases, DIM);
+		for (int i = 0; i < n_bases; i++)
+		{
+			const int j = vertex_to_basis[i];
+			if (j < 0)
+				continue;
+			target_x.row(j) = vertex_attrs[i].displacement().transpose();
+		}
+		target_x = utils::flatten(target_x);
 
-		// Old values of independent variables
-		Eigen::MatrixXd y(rest_positions_before.size(), 3);
-		y.col(0) = utils::flatten(positions_before - rest_positions_before);
-		y.col(1) = utils::flatten(velocities_before);
-		y.col(2) = utils::flatten(accelerations_before);
+		std::vector<int> _boundary_nodes = boundary_nodes();
+		for (int &boundary_node : _boundary_nodes)
+			boundary_node = vertex_to_basis[boundary_node];
 
 		// --------------------------------------------------------------------
 
 		// L2 Projection
 		Eigen::MatrixXd x;
 		L2_projection(
-			/*is_volume=*/dim() == 3, /*size=*/dim(),
+			/*is_volume=*/DIM == 3, /*size=*/DIM,
 			n_bases_before, bases_before, geom_bases_before, // from
 			n_bases, bases, geom_bases,                      // to
-			boundary_nodes(), obstacle, target_x,
+			_boundary_nodes, obstacle, target_x,
 			y, x, /*lump_mass_matrix=*/false);
 
 		// --------------------------------------------------------------------
 
-		set_positions(proposed_rest_positions + utils::unflatten(x.col(0), dim()));
-		set_velocities(utils::unflatten(x.col(1), dim()));
-		set_accelerations(utils::unflatten(x.col(2), dim()));
+		Eigen::MatrixXd proposed_displacements = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
+		Eigen::MatrixXd proposed_velocities = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
+		Eigen::MatrixXd proposed_accelerations = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
+		for (int i = 0; i < n_bases; i++)
+		{
+			const int j = vertex_to_basis[i];
+			if (j < 0)
+				continue;
+			proposed_displacements.row(i) = x.block<DIM, 1>(j * DIM, 0).transpose();
+			proposed_velocities.row(i) = x.block<DIM, 1>(j * DIM, 1).transpose();
+			proposed_accelerations.row(i) = x.block<DIM, 1>(j * DIM, 2).transpose();
+		}
+
+		set_positions(proposed_rest_positions + proposed_displacements);
+		set_velocities(proposed_velocities);
+		set_accelerations(proposed_accelerations);
 
 		write_rest_obj("proposed_rest_mesh.obj");
 		write_deformed_obj("proposed_deformed_mesh.obj");

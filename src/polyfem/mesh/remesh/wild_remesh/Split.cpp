@@ -45,6 +45,23 @@ namespace polyfem::mesh
 			collect_all_ops.emplace_back("edge_split", loc);
 		}
 
+		// auto measure_len2 = [](auto& m, auto op, const Tuple& new_e) {
+		//     auto len2 =
+		//         (m.vertex_attrs[new_e.vid(m)].pos - m.vertex_attrs[new_e.switch_vertex(m).vid(m)].pos)
+		//             .squaredNorm();
+		//     return -len2;
+		// };
+		// auto setup_and_execute = [&](auto executor) {
+		//     executor.num_threads = NUM_THREADS;
+		//     executor.renew_neighbor_tuples = renew;
+		//     executor.priority = measure_len2;
+		//     executor.stopping_criterion_checking_frequency =
+		//         target_vert_number > 0 ? (initial_size - target_vert_number - 1)
+		//                                : std::numeric_limits<int>::max();
+		//     executor.stopping_criterion = [](auto& m) { return true; };
+		//     executor(*this, collect_all_ops);
+		// };
+
 		logger().debug("Num edges {}", collect_all_ops.size());
 		if (NUM_THREADS > 0)
 		{

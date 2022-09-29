@@ -29,10 +29,12 @@ namespace polyfem::mesh
 
 		for (int i = 0; i < 1; ++i)
 		{
-			// remeshing.smooth_all_vertices();
+			remeshing.smooth_all_vertices();
 			// remeshing.split_all_edges();
-			remeshing.collapse_all_edges();
+			// remeshing.collapse_all_edges();
 		}
+
+		remeshing.consolidate_mesh();
 
 		state.load_mesh(remeshing.rest_positions(), remeshing.triangles());
 		// FIXME:
@@ -43,15 +45,32 @@ namespace polyfem::mesh
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();
 
-		state.sol = utils::flatten(remeshing.displacements());
+		const Eigen::MatrixXd U = remeshing.displacements();
+		const Eigen::MatrixXd V = remeshing.velocities();
+		const Eigen::MatrixXd A = remeshing.accelerations();
+		Eigen::MatrixXd U_reordered, V_reordered, A_reordered;
+		U_reordered.resizeLike(U);
+		V_reordered.resizeLike(V);
+		A_reordered.resizeLike(A);
+		assert(state.in_node_to_node.size() == state.mesh->n_vertices());
+		for (int i = 0; i < state.mesh->n_vertices(); ++i)
+		{
+			U_reordered.row(state.in_node_to_node[i]) = U.row(i);
+			V_reordered.row(state.in_node_to_node[i]) = V.row(i);
+			A_reordered.row(state.in_node_to_node[i]) = A.row(i);
+		}
+		const Eigen::VectorXd displacements = utils::flatten(U_reordered);
+		const Eigen::VectorXd velocities = utils::flatten(V_reordered);
+		const Eigen::VectorXd accelerations = utils::flatten(A_reordered);
+
+		state.sol = displacements;
 
 		state.solve_data.rhs_assembler = state.build_rhs_assembler();
 		state.init_nonlinear_tensor_solve(time);
 		if (state.problem->is_time_dependent())
 		{
 			state.solve_data.time_integrator->init(
-				state.sol, utils::flatten(remeshing.velocities()),
-				utils::flatten(remeshing.accelerations()), dt);
+				displacements, velocities, accelerations, dt);
 		}
 	}
 } // namespace polyfem::mesh
