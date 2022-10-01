@@ -484,7 +484,7 @@ namespace polyfem::mesh
 					}
 					else
 					{
-						mesh_files = glob::rglob(meshes);
+						mesh_files = glob::rglob(meshes.string());
 					}
 					// Sort the file names naturally
 					std::sort(mesh_files.begin(), mesh_files.end(), [](const fs::path &p1, const fs::path &p2) {
