@@ -488,7 +488,7 @@ namespace polyfem::mesh
 					}
 					// Sort the file names naturally
 					std::sort(mesh_files.begin(), mesh_files.end(), [](const fs::path &p1, const fs::path &p2) {
-						return strnatcmp(p1.c_str(), p2.c_str()) < 0;
+						return strnatcmp(p1.string().c_str(), p2.string().c_str()) < 0;
 					});
 				}
 
