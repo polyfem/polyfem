@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	state.compute_mesh_stats();
+	state.stats.compute_mesh_stats(*state.mesh);
 	state.build_basis();
 
 	topology_optimization(state, func);

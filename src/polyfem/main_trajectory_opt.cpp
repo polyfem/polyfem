@@ -297,7 +297,7 @@ int main(int argc, char **argv)
 			return EXIT_FAILURE;
 		}
 
-		state_reference.compute_mesh_stats();
+		state_reference.stats.compute_mesh_stats(*state_reference.mesh);
 		state_reference.build_basis();
 
 		if (state_reference.problem->is_time_dependent())
@@ -311,7 +311,20 @@ int main(int argc, char **argv)
 		state_reference.solve_problem();
 
 		if (!state_reference.problem->is_time_dependent())
-			state_reference.save_vtu(state_reference.resolve_output_path("target.vtu"), 0.);
+		{
+			// state_reference.save_vtu(state_reference.resolve_output_path("target.vtu"), 0.);
+			state_reference.out_geom.export_data(
+				state_reference,
+				!state_reference.args["time"].is_null(),
+				1, 1, // tend, dt,
+				io::OutGeometryData::ExportOptions(state_reference.args, state_reference.mesh->is_linear(), state_reference.problem->is_scalar(), state_reference.solve_export_to_file),
+				state_reference.resolve_output_path("target.vtu"), // vis_mesh_path,
+				"", // nodes_path,
+				"", // solution_path,
+				"", // stress_path,
+				"", // mises_path,
+				state_reference.is_contact_enabled(), state_reference.solution_frames);
+		}
 
 		logger().info("Reference solve done!");
 	}
@@ -362,7 +375,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	state.compute_mesh_stats();
+	state.stats.compute_mesh_stats(*state.mesh);
 	state.build_basis();
 
 	state.assemble_rhs();

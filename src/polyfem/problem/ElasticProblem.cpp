@@ -1,7 +1,8 @@
 #include "ElasticProblem.hpp"
-#include <polyfem/State.hpp>
 
 #include <iostream>
+
+using namespace Eigen;
 
 namespace polyfem
 {
@@ -379,12 +380,12 @@ namespace polyfem
 				res1.setZero(dim, 1);
 				res2.setZero(dim, 1);
 				const double lambda = (E * nu) / (1 + nu) / (1 - (dim - 1) * nu);
-				const double mu = E / (2 * (1 + nu));			
+				const double mu = E / (2 * (1 + nu));
 
 				// Boundary condition related formulas in Rossel's paper
-				double a = 0.71117293; 			
-				double P = 100;	// force
-				double I = D * D * D / 12;	// second moment of area of the cross-section
+				double a = 0.71117293;
+				double P = 100;            // force
+				double I = D * D * D / 12; // second moment of area of the cross-section
 
 				// Add 2 singular solutions for an infinite wedge with  Dirichlet/Neumann sides
 				compute_singularity(y + delta, x + delta, res1, a, mu, nu, lambda, t);
@@ -392,8 +393,8 @@ namespace polyfem
 				res = res1 + res2;
 
 				// Formulas in Charles's paper
-				res(0) += t * P * (y - D/2) / (6 * E * I) * ((6 * L - 3 * x) * x + (2 + nu) * ((y - D/2) * (y - D/2) - D * D / 4)) / 3;
-				res(1) += -t * P / (6 * E * I) * (3 * nu * (y - D/2) * (y - D/2) * (L - x) + (4 + 5 * nu) * D * D * x / 4 + (3 * L - x) * x * x) / 3;
+				res(0) += t * P * (y - D / 2) / (6 * E * I) * ((6 * L - 3 * x) * x + (2 + nu) * ((y - D / 2) * (y - D / 2) - D * D / 4)) / 3;
+				res(1) += -t * P / (6 * E * I) * (3 * nu * (y - D / 2) * (y - D / 2) * (L - x) + (4 + 5 * nu) * D * D * x / 4 + (3 * L - x) * x * x) / 3;
 
 				return res;
 			}
@@ -644,29 +645,37 @@ namespace polyfem
 			nu = 0.3;
 			formulation = "None";
 			length = 1;
-			width = 1/3.;
+			width = 1 / 3.;
 		}
 
 		void ElasticCantileverExact::set_parameters(const json &params)
 		{
-			if (params.contains("displacement")) {
+			if (params.contains("displacement"))
+			{
 				singular_point_displacement = params["displacement"];
 			}
-			if (params.contains("E")) {
+			if (params.contains("E"))
+			{
 				E = params["E"];
 			}
-			if (params.contains("nu")) {
+			if (params.contains("nu"))
+			{
 				nu = params["nu"];
 			}
-			if (params.contains("formulation")) {
+			if (params.contains("formulation"))
+			{
 				formulation = params["formulation"];
 			}
-			if (params.contains("mesh_size")) {
+			if (params.contains("mesh_size"))
+			{
 				auto size = params["mesh_size"];
-				if (size.is_array()) {
+				if (size.is_array())
+				{
 					length = size[0];
 					width = size[1];
-				} else {
+				}
+				else
+				{
 					throw std::invalid_argument("Mesh_size needs to be an array!");
 				}
 			}
@@ -755,19 +764,26 @@ namespace polyfem
 
 				AutodiffHessianPt res = eval_fun(pt, t);
 				Eigen::MatrixXd grad_u(mesh.dimension(), mesh.dimension());
-				for (int d1 = 0; d1 < mesh.dimension(); d1++) {
-					for (int d2 = 0; d2 < mesh.dimension(); d2++) {
+				for (int d1 = 0; d1 < mesh.dimension(); d1++)
+				{
+					for (int d2 = 0; d2 < mesh.dimension(); d2++)
+					{
 						grad_u(d1, d2) = res(d1).getGradient()(d2);
 					}
 				}
 
-				if (formulation == "LinearElasticity") {
+				if (formulation == "LinearElasticity")
+				{
 					sigma = mu * (grad_u + grad_u.transpose()) + lambda * grad_u.trace() * Eigen::MatrixXd::Identity(mesh.dimension(), mesh.dimension());
-				} else if (formulation == "NeoHookean") {
+				}
+				else if (formulation == "NeoHookean")
+				{
 					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u.rows(), grad_u.cols()) + grad_u;
 					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 					sigma = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
-				} else {
+				}
+				else
+				{
 					throw std::invalid_argument("No specified formulation in params!");
 					assert(false);
 				}

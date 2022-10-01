@@ -9,15 +9,13 @@
 
 namespace polyfem
 {
-
-	class State;
 	namespace problem
 	{
 
 		class KernelProblem : public ProblemWithSolution
 		{
 		public:
-			KernelProblem(const std::string &name);
+			KernelProblem(const std::string &name, const assembler::AssemblerUtils &assembler);
 
 			VectorNd eval_fun(const VectorNd &pt, const double t) const override;
 			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
@@ -32,9 +30,8 @@ namespace polyfem
 			void set_parameters(const json &params) override;
 			bool is_scalar() const override;
 
-			State *state;
-
 		private:
+			const assembler::AssemblerUtils &assembler_;
 			std::string formulation_ = "Laplacian";
 			int n_kernels_ = 5;
 			double kernel_distance_ = 0.05;

@@ -98,7 +98,7 @@ namespace polyfem
 			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
 			Eigen::MatrixXd diff_field = full - test_field;
 
-			return assembler.assemble_energy(state.formulation(), state.mesh->is_volume(), state.bases, state.geom_bases(), state.ass_vals_cache, diff_field);
+			return assembler.assemble_energy(state.formulation(), state.mesh->is_volume(), state.bases, state.geom_bases(), state.ass_vals_cache, 0, diff_field, Eigen::MatrixXd::Zero(diff_field.rows(), diff_field.cols()));
 		}
 
 		void NLHomogenizationProblem::gradient(const TVector &x, TVector &gradv)
@@ -122,7 +122,7 @@ namespace polyfem
 			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
 			Eigen::MatrixXd diff_field = full - test_field;
 			
-			assembler.assemble_energy_gradient(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, state.geom_bases(), state.ass_vals_cache, diff_field, grad);
+			assembler.assemble_energy_gradient(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, state.geom_bases(), state.ass_vals_cache, 0, diff_field, Eigen::MatrixXd::Zero(diff_field.rows(), diff_field.cols()), grad);
 
 			// state.assemble_homogenization_gradient(grad, full, test_strain_);
 
@@ -148,7 +148,7 @@ namespace polyfem
 			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
 			Eigen::MatrixXd diff_field = full - test_field;
 
-			assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, false, state.bases, state.geom_bases(), state.ass_vals_cache, diff_field, mat_cache, hessian);
+			assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, diff_field, Eigen::MatrixXd::Zero(diff_field.rows(), diff_field.cols()), mat_cache, hessian);
 			
 			// state.assemble_homogenization_hessian(hessian, mat_cache, full, test_strain_);
 

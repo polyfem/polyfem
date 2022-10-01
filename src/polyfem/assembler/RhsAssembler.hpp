@@ -14,8 +14,6 @@
 
 namespace polyfem
 {
-	using namespace basis;
-
 	namespace assembler
 	{
 		// computes the rhs of a problem by \int \phi rho rhs

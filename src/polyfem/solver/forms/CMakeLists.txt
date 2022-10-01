@@ -4,8 +4,6 @@ set(SOURCES
 	ALForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
-	DampingForm.hpp
-	DampingForm.cpp
 	ElasticForm.hpp
 	ElasticForm.cpp
 	InertiaForm.hpp

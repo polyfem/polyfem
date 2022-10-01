@@ -1552,11 +1552,11 @@ namespace polyfem
 			const auto v3 = point(vertices[2]);
 			const auto v4 = point(vertices[3]);
 
-			const Vector3d e0 = (v2 - v1).transpose();
-			const Vector3d e1 = (v3 - v1).transpose();
+			const Eigen::Vector3d e0 = (v2 - v1).transpose();
+			const Eigen::Vector3d e1 = (v3 - v1).transpose();
 
-			const Vector3d e2 = (v2 - v4).transpose();
-			const Vector3d e3 = (v3 - v4).transpose();
+			const Eigen::Vector3d e2 = (v2 - v4).transpose();
+			const Eigen::Vector3d e3 = (v3 - v4).transpose();
 
 			return e0.cross(e1).norm() / 2 + e2.cross(e3).norm() / 2;
 		}

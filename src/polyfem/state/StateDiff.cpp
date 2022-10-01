@@ -6,7 +6,7 @@
 #include <polysolve/FEMSolver.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-
+#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
@@ -16,9 +16,9 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/DampingForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
@@ -31,6 +31,8 @@
 #include <algorithm>
 
 #include <fstream>
+
+using namespace polyfem::basis;
 
 namespace polyfem
 {
@@ -372,9 +374,7 @@ namespace polyfem
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, gbases);
 		}
 
-		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, n_bases, bases);
-		extract_vis_boundary_mesh();
+		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
 	}
 
 	/**
@@ -394,7 +394,8 @@ namespace polyfem
 				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
 					if (j.depend_on_u() || j.depend_on_gradu())
-						interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
+						// io::Evaluator::interpolate_at_local_vals(*mesh, e, reference_points, sol, u, grad_u);
+						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, sol, u, grad_u);
 					else
 					{
 						u.setZero(reference_points.rows(), actual_dim);
@@ -417,7 +418,8 @@ namespace polyfem
 				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
 					if (j.depend_on_u() || j.depend_on_gradu())
-						interpolate_at_local_vals(e, reference_points, sol, u, grad_u);
+						// io::Evaluator::interpolate_at_local_vals(*mesh, e, reference_points, sol, u, grad_u);
+						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, sol, u, grad_u);
 					else
 					{
 						u.setZero(reference_points.rows(), actual_dim);
@@ -452,7 +454,7 @@ namespace polyfem
 			VolumeIntegrandTerms integrand_functions = {
 				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, reference_points, diff_cached[step].u, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[step].u, u, grad_u);
 					Eigen::MatrixXd vec_term_mat;
 					json params = {};
 					params["elem"] = e;
@@ -471,7 +473,7 @@ namespace polyfem
 			SurfaceIntegrandTerms integrand_functions = {
 				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, reference_points, diff_cached[step].u, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[step].u, u, grad_u);
 					std::vector<int> boundary_ids = {};
 					for (int i = 0; i < global_primitive_ids.size(); ++i)
 						boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
@@ -519,7 +521,7 @@ namespace polyfem
 
 		StiffnessMatrix gradu_h;
 		StiffnessMatrix gradu_h_prev;
-		if (args["differentiable"])
+		if (args["differentiable"] && current_step > 0)
 			compute_force_hessian(gradu_h, gradu_h_prev, std::min(current_step, bdf_order));
 
 		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());
@@ -582,11 +584,11 @@ namespace polyfem
 			}
 		}
 
-		if (problem->is_time_dependent() && damping_assembler.local_assembler().is_valid() && diff_cached.size() > 0)
+		if (problem->is_time_dependent() && assembler.has_damping() && diff_cached.size() > 0)
 		{
 			utils::SpareMatrixCache mat_cache;
 			StiffnessMatrix damping_hessian_prev(sol.size(), sol.size());
-			damping_assembler.assemble_stress_prev_grad(mesh->is_volume(), n_bases, solve_data.time_integrator->dt(), false, bases, geom_bases(), ass_vals_cache, sol, diff_cached.back().u, mat_cache, damping_hessian_prev);
+			assembler.assemble_energy_hessian("DampingPrev", mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, solve_data.time_integrator->dt(), sol, diff_cached.back().u, mat_cache, damping_hessian_prev);
 
 			hessian_prev += damping_hessian_prev;
 		}
@@ -697,7 +699,7 @@ namespace polyfem
 
 					const int n_loc_bases_ = int(vals.basis_values.size());
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
 
 					json params = {};
 					params["elem"] = e;
@@ -718,7 +720,7 @@ namespace polyfem
 							{
 								for (int q = 0; q < local_storage.da.size(); ++q)
 								{
-									Eigen::Matrix<double, -1, -1, RowMajor> grad_phi;
+									Eigen::Matrix<double, -1, -1, Eigen::RowMajor> grad_phi;
 									grad_phi.setZero(actual_dim, mesh->dimension());
 									grad_phi.row(d) = v.grad_t_m.row(q);
 									for (int k = 0; k < result_.cols(); k++)
@@ -768,7 +770,7 @@ namespace polyfem
 
 				const int n_loc_bases_ = int(vals.basis_values.size());
 				Eigen::MatrixXd u, grad_u;
-				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
 
 				std::vector<int> boundary_ids = {};
 				for (int i = 0; i < global_primitive_ids.size(); ++i)
@@ -799,7 +801,7 @@ namespace polyfem
 							{
 								for (int q = 0; q < da.size(); ++q)
 								{
-									Eigen::Matrix<double, -1, -1, RowMajor> grad_phi;
+									Eigen::Matrix<double, -1, -1, Eigen::RowMajor> grad_phi;
 									grad_phi.setZero(actual_dim, mesh->dimension());
 									grad_phi.row(d) = v.grad_t_m.row(q);
 									for (int k = 0; k < result_.cols(); k++)
@@ -962,7 +964,7 @@ namespace polyfem
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
 
 					Eigen::MatrixXd j_value;
 					json params = {};
@@ -1062,7 +1064,8 @@ namespace polyfem
 					}
 
 					Eigen::MatrixXd u, grad_u;
-					interpolate_at_local_vals(e, points, solution, u, grad_u);
+					// io::Evaluator::interpolate_at_local_vals(*mesh, e, points, solution, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, points, solution, u, grad_u);
 
 					std::vector<int> boundary_ids = {};
 					for (int i = 0; i < global_primitive_ids.size(); ++i)
@@ -1204,15 +1207,15 @@ namespace polyfem
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, p, grad_p;
-				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, adjoint_sol, p, grad_p);
 
 				Eigen::MatrixXd rhs_function;
 				problem->rhs(assembler, formulation(), vals.val, 0, rhs_function);
 				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
-					const double rho = density(quadrature.points.row(q), vals.val.row(q), e);
+					const double rho = assembler.density()(quadrature.points.row(q), vals.val.row(q), e);
 					rhs_function.row(q) *= rho;
 				}
 
@@ -1267,8 +1270,11 @@ namespace polyfem
 			return;
 
 		const auto params = args["materials"];
-		if (!damping_assembler.local_assembler().is_valid())
+		if (!assembler.has_damping())
 			return;
+
+		const auto stress_grad_func = assembler.get_stress_grad_function("Damping");
+		const auto stress_prev_grad_func = assembler.get_stress_prev_grad_function("Damping");
 
 		const double dt = args["time"]["dt"];
 
@@ -1288,9 +1294,9 @@ namespace polyfem
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, prev_solution, prev_u, prev_grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, prev_solution, prev_u, prev_grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, adjoint_sol, p, grad_p);
 
 				Eigen::MatrixXd grad_u_i, grad_p_i, prev_grad_u_i;
 				Eigen::MatrixXd grad_v_i;
@@ -1306,8 +1312,8 @@ namespace polyfem
 					for (auto &v : gvals.basis_values)
 					{
 						Eigen::MatrixXd stress_grad, stress_prev_grad;
-						damping_assembler.local_assembler().compute_stress_grad(e, dt, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_tensor, stress_grad);
-						damping_assembler.local_assembler().compute_stress_prev_grad(e, dt, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_prev_grad);
+						stress_grad_func(e, dt, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_tensor, stress_grad);
+						stress_prev_grad_func(e, dt, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_prev_grad);
 						for (int d = 0; d < actual_dim; d++)
 						{
 							grad_v_i.setZero(actual_dim, actual_dim);
@@ -1368,8 +1374,8 @@ namespace polyfem
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, p, grad_p;
-				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, adjoint_sol, p, grad_p);
 
 				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
@@ -1418,8 +1424,8 @@ namespace polyfem
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, p, grad_p;
-				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, adjoint_sol, p, grad_p);
 
 				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
@@ -1463,9 +1469,9 @@ namespace polyfem
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-				interpolate_at_local_vals(e, actual_dim, vals, solution, u, grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, prev_solution, prev_u, prev_grad_u);
-				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, solution, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, prev_solution, prev_u, prev_grad_u);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, adjoint_sol, p, grad_p);
 
 				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
@@ -1475,7 +1481,7 @@ namespace polyfem
 					vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
 
 					Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
-					damping_assembler.local_assembler().compute_dstress_dpsi_dphi(e, args["time"]["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
+					assembler::ViscousDamping::compute_dstress_dpsi_dphi(e, args["time"]["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
 
 					// This needs to be a sum over material parameter basis.
 					local_storage.vec(0) += -dot(f_prime_dpsi, grad_p_i) * local_storage.da(q);
@@ -1512,12 +1518,12 @@ namespace polyfem
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd vel, grad_vel, p, grad_p;
-				interpolate_at_local_vals(e, actual_dim, vals, adjoint_sol, p, grad_p);
-				interpolate_at_local_vals(e, actual_dim, vals, velocity, vel, grad_vel);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, adjoint_sol, p, grad_p);
+				io::Evaluator::interpolate_at_local_vals(*mesh, e, actual_dim, vals, velocity, vel, grad_vel);
 
 				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
-					const double rho = density(quadrature.points.row(q), vals.val.row(q), e);
+					const double rho = assembler.density()(quadrature.points.row(q), vals.val.row(q), e);
 
 					for (const auto &v : gvals.basis_values)
 					{
@@ -2007,9 +2013,7 @@ namespace polyfem
 			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
 			double beta_dt = beta * dt;
 
-			StiffnessMatrix gradu_h, gradu_h_next;
-			if (i > 0)
-				replace_rows_by_zero(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
+			StiffnessMatrix gradu_h_next;
 			replace_rows_by_zero(gradu_h_next, -beta_dt * diff_cached[i].gradu_h_next, boundary_nodes);
 
 			auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
@@ -2023,6 +2027,8 @@ namespace polyfem
 
 			if (i > 0)
 			{
+				StiffnessMatrix gradu_h;
+				replace_rows_by_zero(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
 				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
 				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - weights[i] * gradu_j;
 				for (const auto &b : boundary_nodes)
@@ -2113,12 +2119,11 @@ namespace polyfem
 			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
 			beta_dt = beta * dt;
 
-			StiffnessMatrix gradu_h, gradu_h_next;
-			replace_rows_by_identity(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
+			StiffnessMatrix gradu_h_next;
 			replace_rows_by_identity(gradu_h_next, -beta_dt * diff_cached[i].gradu_h_next, boundary_nodes);
 
 			Eigen::VectorXd dJ_du;
-			dJ_du.setZero(gradu_h.rows());
+			dJ_du.setZero(gradu_h_next.rows());
 
 			Eigen::VectorXd integrals(js.size());
 			for (int k = 0; k < js.size(); k++)
@@ -2148,6 +2153,8 @@ namespace polyfem
 
 			if (i > 0)
 			{
+				StiffnessMatrix gradu_h;
+				replace_rows_by_identity(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
 				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
 				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - dJ_du;
 				solve_zero_dirichlet(A, rhs_, boundary_nodes, adjoint_nu[i]);

@@ -4,7 +4,6 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/DampingForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/ALForm.hpp>
@@ -80,7 +79,8 @@ namespace polyfem
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
-			damping_form->set_weight(time_integrator->acceleration_scaling());
+			if (damping_form)
+				damping_form->set_weight(time_integrator->acceleration_scaling());
 
 			// TODO: Determine if friction should be scaled by h²
 			// if (friction_form)
@@ -170,12 +170,27 @@ namespace polyfem
 			}
 		}
 
+		const int ndof = n_bases * mesh->dimension();
+		// if (is_formulation_mixed) //mixed not supported
+		// 	ndof_ += n_pressure_bases; // Pressure is a scalar
+
 		assert(solve_data.rhs_assembler != nullptr);
 
 		std::vector<std::shared_ptr<Form>> forms;
-		solve_data.elastic_form = std::make_shared<ElasticForm>(*this);
+		solve_data.elastic_form = std::make_shared<ElasticForm>(
+			n_bases, bases, geom_bases(),
+			assembler, ass_vals_cache,
+			formulation(),
+			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
+			mesh->is_volume());
 		forms.push_back(solve_data.elastic_form);
-		solve_data.body_form = std::make_shared<BodyForm>(*this, *solve_data.rhs_assembler, /*apply_DBC=*/true);
+
+		solve_data.body_form = std::make_shared<BodyForm>(
+			ndof, n_pressure_bases,
+			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			rhs, *solve_data.rhs_assembler,
+			assembler.density(),
+			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
 		solve_data.body_form->update_quantities(t, cur_sol);
 		forms.push_back(solve_data.body_form);
 
@@ -186,8 +201,16 @@ namespace polyfem
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 			forms.push_back(solve_data.inertia_form);
-			solve_data.damping_form = std::make_shared<DampingForm>(*this, args["time"]["dt"]);
-			forms.push_back(solve_data.damping_form);
+			if (assembler.has_damping())
+			{
+				solve_data.damping_form = std::make_shared<ElasticForm>(
+					n_bases, bases, geom_bases(),
+					assembler, ass_vals_cache,
+					"Damping",
+					args["time"]["dt"],
+					mesh->is_volume());
+				forms.push_back(solve_data.damping_form);
+			}
 		}
 		else
 		{
@@ -199,7 +222,14 @@ namespace polyfem
 			}
 		}
 
-		solve_data.al_form = std::make_shared<ALForm>(*this, *solve_data.rhs_assembler, t);
+		solve_data.al_form = std::make_shared<ALForm>(
+			ndof,
+			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			mass,
+			*solve_data.rhs_assembler,
+			obstacle,
+			problem->is_time_dependent(),
+			t);
 		forms.push_back(solve_data.al_form);
 
 		solve_data.contact_form = nullptr;
@@ -210,8 +240,9 @@ namespace polyfem
 			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
 			solve_data.contact_form = std::make_shared<ContactForm>(
-				*this,
+				collision_mesh, boundary_nodes_pos,
 				args["contact"]["dhat"],
+				avg_mass,
 				use_adaptive_barrier_stiffness,
 				/*is_time_dependent=*/solve_data.time_integrator != nullptr,
 				args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -236,7 +267,8 @@ namespace polyfem
 			if (args["contact"]["friction_coefficient"].get<double>() != 0)
 			{
 				solve_data.friction_form = std::make_shared<FrictionForm>(
-					*this,
+					collision_mesh,
+					boundary_nodes_pos,
 					args["contact"]["epsv"],
 					args["contact"]["friction_coefficient"],
 					args["contact"]["dhat"],
@@ -250,7 +282,13 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
-		solve_data.nl_problem = std::make_shared<NLProblem>(*this, *solve_data.rhs_assembler, t, forms);
+		solve_data.nl_problem = std::make_shared<NLProblem>(
+			ndof,
+			formulation(),
+			boundary_nodes,
+			local_boundary,
+			n_boundary_samples(),
+			*solve_data.rhs_assembler, *this, t, forms);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
@@ -285,7 +323,7 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 
-		solver_info = json::array();
+		stats.solver_info = json::array();
 	}
 
 	void State::solve_tensor_nonlinear(const int t)
@@ -296,9 +334,11 @@ namespace polyfem
 
 		assert(sol.size() == rhs.size());
 
+		if (nl_problem.uses_lagging())
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
 			nl_problem.init_lagging(sol);
+			logger().info("Lagging iteration {:d}:", 1);
 		}
 
 		if (pre_sol.rows() == sol.rows())
@@ -306,9 +346,6 @@ namespace polyfem
 			logger().debug("Use better initial guess...");
 			sol = pre_sol;
 		}
-
-		int lag_i = 0;
-		logger().info("Lagging iteration {:d}:", lag_i + 1);
 
 		// ---------------------------------------------------------------------
 
@@ -331,48 +368,57 @@ namespace polyfem
 		al_solver.post_subsolve = [&](const double al_weight) {
 			json info;
 			nl_solver->get_info(info);
-			solver_info.push_back(
+			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"info", info}});
 			if (al_weight > 0)
-				solver_info.back()["weight"] = al_weight;
+				stats.solver_info.back()["weight"] = al_weight;
 			
 			n_linear_solves += info["iterations"].get<int>();
 			n_nonlinear_solves += 1;
 
-			this->save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t);
 		};
 
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
 
 		// ---------------------------------------------------------------------
 
-		// TODO: Make this more general
-		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
-
 		if (!args["differentiable"])
 		{
+			// TODO: Make this more general
+			const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
+
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();
-			for (lag_i = 1; !lagging_converged; lag_i++)
+			for (int lag_i = 1; !lagging_converged; lag_i++)
 			{
 				Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 				// Update the lagging before checking for convergence
-				if (!nl_problem.update_lagging(tmp_sol, lag_i))
-				{
-					logger().warn("Failed to update lagging: max lagging iterations exceeded");
-					break;
-				}
+				nl_problem.update_lagging(tmp_sol, lag_i);
 
 				// Check if lagging converged
 				Eigen::VectorXd grad;
 				nl_problem.gradient(tmp_sol, grad);
-				logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
+				logger().debug("Lagging convergence grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
 				if (grad.norm() <= lagging_tol)
 				{
+					logger().info(
+						"Lagging converged in {:d} iteration(s) (grad_norm={:g} tol={:g})",
+						lag_i, grad.norm(), lagging_tol);
 					lagging_converged = true;
+					break;
+				}
+
+				// Check for convergence first before checking if we can continue
+				if (lag_i >= nl_problem.max_lagging_iterations())
+				{
+					logger().warn(
+						"Lagging failed to converge with {:d} iteration(s) (grad_norm={:g} tol={:g})",
+						lag_i, grad.norm(), lagging_tol);
+					lagging_converged = false;
 					break;
 				}
 
@@ -386,24 +432,13 @@ namespace polyfem
 				// Save the subsolve sequence for debugging and info
 				json info;
 				nl_solver->get_info(info);
-				solver_info.push_back(
+				stats.solver_info.push_back(
 					{{"type", "rc"},
 					{"t", t}, // TODO: null if static?
 					{"lag_i", lag_i},
 					{"info", info}});
 				save_subsolve(++subsolve_count, t);
 			}
-
-				// ---------------------------------------------------------------------
-
-			nl_problem.update_lagging(sol, -1); // -1 bypasses the max lagging iterations check
-			Eigen::VectorXd grad;
-			nl_problem.gradient(sol, grad);
-			logger().log(
-				lagging_converged ? spdlog::level::info : spdlog::level::warn,
-				"{} {:d} iteration(s) (grad_norm={:g} tol={:g})",
-				lagging_converged ? "Lagging converged in" : "Lagging failed to converge with",
-				lag_i, grad.norm(), lagging_tol);
 		}
 	}
 

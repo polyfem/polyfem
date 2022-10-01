@@ -1996,7 +1996,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
@@ -2055,7 +2057,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -2069,7 +2073,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -2213,13 +2219,13 @@
     {
         "pointer": "/materials/*/phi",
         "type": "float",
-        "doc": "damping parameter 1",
+        "doc": "Damping parameter 1",
         "default": 0
     },
     {
         "pointer": "/materials/*/psi",
         "type": "float",
-        "doc": "damping parameter 2",
+        "doc": "Damping parameter 2",
         "default": 0
     },
     {

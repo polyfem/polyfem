@@ -228,8 +228,7 @@ namespace polyfem
 		}
 
 		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
+		state.build_collision_mesh(boundary_nodes_pos, collision_mesh, state.n_geom_bases, gbases);
 
 		// boundary smoothing
 		has_boundary_smoothing = false;
@@ -242,7 +241,7 @@ namespace polyfem
 				if (param["scale_invariant"].get<bool>())
 					boundary_smoother.p = boundary_smoothing_params.value("power", 2);
 				boundary_smoother.dim = dim;
-				boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
+				boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), collision_mesh.edges(), state.boundary_gnodes, fixed_nodes);
 				has_boundary_smoothing = true;
 				break;
 			}
@@ -301,8 +300,8 @@ namespace polyfem
 
 			for (const auto &pair : this->tied_nodes)
 			{
-				grad_x(seqN(pair[0] * this->dim, this->dim)) += grad_x(seqN(pair[1] * this->dim, this->dim));
-				grad_x(seqN(pair[1] * this->dim, this->dim)).setZero();
+				grad_x(Eigen::seqN(pair[0] * this->dim, this->dim)) += grad_x(Eigen::seqN(pair[1] * this->dim, this->dim));
+				grad_x(Eigen::seqN(pair[1] * this->dim, this->dim)).setZero();
 			}
 		};
 	}
@@ -873,7 +872,7 @@ namespace polyfem
 		state.init(in_args, false);
 
 		state.load_mesh();
-		state.compute_mesh_stats();
+		state.stats.compute_mesh_stats(*state.mesh);
 		state.build_basis();
 
 		state.sol.resize(0, 0);
@@ -883,8 +882,7 @@ namespace polyfem
 		param_to_x(x, V_rest);
 
 		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		state.build_collision_mesh(collision_mesh, boundary_nodes_pos, boundary_edges, boundary_triangles, state.n_geom_bases, gbases);
+		state.build_collision_mesh(boundary_nodes_pos, collision_mesh, state.n_geom_bases, gbases);
 
 		build_fixed_nodes();
 		build_tied_nodes();
@@ -895,7 +893,7 @@ namespace polyfem
 		sol_at_ls_begin.resize(0, 0);
 		x_at_ls_begin.resize(0);
 
-		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
+		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), collision_mesh.edges(), state.boundary_gnodes, fixed_nodes);
 
 		logger().info("Remeshing finished!");
 
@@ -958,7 +956,7 @@ namespace polyfem
 			if (!has_samples)
 				continue;
 
-			const ElementBases &gbs = gbases[e];
+			const basis::ElementBases &gbs = gbases[e];
 
 			vals.compute(e, state.mesh->is_volume(), points, gbs, gbs);
 
@@ -981,7 +979,7 @@ namespace polyfem
 
 					if (tied_nodes_mask[v.global[0].index])
 					{
-						vertex_perturbation(seqN(v.global[0].index * dim, dim)) -= normals(n_quad_pts * i, seqN(0, dim)).transpose();
+						vertex_perturbation(Eigen::seqN(v.global[0].index * dim, dim)) -= normals(n_quad_pts * i, Eigen::seqN(0, dim)).transpose();
 						n_shared_edges(v.global[0].index) += 1;
 					}
 				}
@@ -989,7 +987,7 @@ namespace polyfem
 		}
 		for (int i = 0; i < n_shared_edges.size(); i++)
 			if (n_shared_edges(i) > 1)
-				vertex_perturbation(seqN(i * dim, dim)) *= displace_dist / vertex_perturbation(seqN(i * dim, dim)).norm();
+				vertex_perturbation(Eigen::seqN(i * dim, dim)) *= displace_dist / vertex_perturbation(Eigen::seqN(i * dim, dim)).norm();
 		state.pre_sol = state.down_sampling_mat.transpose() * vertex_perturbation;
 	}
 

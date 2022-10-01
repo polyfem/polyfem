@@ -122,7 +122,6 @@ TEST_CASE("density_elastic_homo", "[homogenization]")
 
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
     state.assemble_rhs();
@@ -197,7 +196,6 @@ TEST_CASE("density_elastic_homo_grad", "[homogenization]")
 
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
     state.assemble_rhs();
@@ -292,7 +290,6 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
 	state.init(in_args, false);
 
 	state.load_mesh();
-	state.compute_mesh_stats();
 	state.build_basis();
 
     Eigen::MatrixXd homogenized_tensor;
@@ -386,7 +383,6 @@ TEST_CASE("neohookean_homo", "[homogenization]")
 	state1.init(in_args, false);
 
 	state1.load_mesh();
-	state1.compute_mesh_stats();
 	state1.build_basis();
 
     Eigen::MatrixXd homogenized_tensor1, homogenized_tensor2;
@@ -402,7 +398,6 @@ TEST_CASE("neohookean_homo", "[homogenization]")
 	state2.init(in_args, false);
 
 	state2.load_mesh();
-	state2.compute_mesh_stats();
 	state2.build_basis();
 
     Eigen::MatrixXd tmp;
@@ -432,80 +427,79 @@ TEST_CASE("neohookean_homo", "[homogenization]")
     REQUIRE(err < 1e-4);
 }
 
-TEST_CASE("density_stokes_homo", "[homogenization]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"({
-        "geometry": [
-            {
-                "mesh": "",
-                "surface_selection": {
-                    "threshold": 1e-6
-                }
-            }
-        ],
-        "space": {
-            "discr_order": 1,
-            "pressure_discr_order": 1,
-            "advanced": {
-                "periodic_basis": true,
-                "quadrature_order": 2
-            }
-        },
-        "solver": {
-            "linear": {
-                "solver": "Eigen::PardisoLDLT"
-            }
-        },
-        "boundary_conditions": {
-            "periodic_boundary": true
-        },
-        "materials": {
-            "type": "Stokes",
-            "viscosity": 1,
-            "delta2": 0.00005,
-            "use_avg_pressure": false,
-            "solid_permeability": 1e-8
-        }
-    })"_json;
-    in_args["geometry"][0]["mesh"] = path + "/../2D.msh";
+// TEST_CASE("density_stokes_homo", "[homogenization]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR;
+// 	json in_args = R"({
+//         "geometry": [
+//             {
+//                 "mesh": "",
+//                 "surface_selection": {
+//                     "threshold": 1e-6
+//                 }
+//             }
+//         ],
+//         "space": {
+//             "discr_order": 1,
+//             "pressure_discr_order": 1,
+//             "advanced": {
+//                 "periodic_basis": true,
+//                 "quadrature_order": 2
+//             }
+//         },
+//         "solver": {
+//             "linear": {
+//                 "solver": "Eigen::PardisoLDLT"
+//             }
+//         },
+//         "boundary_conditions": {
+//             "periodic_boundary": true
+//         },
+//         "materials": {
+//             "type": "Stokes",
+//             "viscosity": 1,
+//             "delta2": 0.00005,
+//             "use_avg_pressure": false,
+//             "solid_permeability": 1e-8
+//         }
+//     })"_json;
+//     in_args["geometry"][0]["mesh"] = path + "/../2D.msh";
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
+// 	State state;
+// 	state.init_logger("", spdlog::level::level_enum::err, false);
+// 	state.init(in_args, false);
 
-	state.load_mesh();
+// 	state.load_mesh();
 
-	state.compute_mesh_stats();
-	state.build_basis();
+// 	state.build_basis();
 
-    state.assemble_rhs();
+//     state.assemble_rhs();
 
-    Eigen::MatrixXd homogenized_tensor;
-    Eigen::MatrixXd density_mat(state.bases.size(), 1);
-    Eigen::MatrixXd barycenters;
-    if (state.mesh->is_volume())
-        state.mesh->cell_barycenters(barycenters);
-    else
-        state.mesh->face_barycenters(barycenters);
-    for (int e = 0; e < state.bases.size(); e++)
-    {
-        density_mat(e) = 1 - five_cylinders_fluid1(barycenters(e, 0), barycenters(e, 1));
-    }
-    // state.density.init_multimaterial(density_mat);
-    state.assembler.update_lame_params_density(density_mat);
-    state.homogenize_weighted_stokes(homogenized_tensor);
+//     Eigen::MatrixXd homogenized_tensor;
+//     Eigen::MatrixXd density_mat(state.bases.size(), 1);
+//     Eigen::MatrixXd barycenters;
+//     if (state.mesh->is_volume())
+//         state.mesh->cell_barycenters(barycenters);
+//     else
+//         state.mesh->face_barycenters(barycenters);
+//     for (int e = 0; e < state.bases.size(); e++)
+//     {
+//         density_mat(e) = 1 - five_cylinders_fluid1(barycenters(e, 0), barycenters(e, 1));
+//     }
+//     // state.density.init_multimaterial(density_mat);
+//     state.assembler.update_lame_params_density(density_mat);
+//     state.homogenize_weighted_stokes(homogenized_tensor);
 
-    std::cout << homogenized_tensor << std::endl;
+//     std::cout << homogenized_tensor << std::endl;
 
-    Eigen::Matrix3d reference_tensor;
-    reference_tensor <<
-    0.0271293, 1.40512e-12, 9.04009e-15,
-    1.40508e-12,    0.027081, 1.56278e-13,
-    9.04009e-15, 1.56278e-13,   0.0535809;
+//     Eigen::Matrix3d reference_tensor;
+//     reference_tensor <<
+//     0.0271293, 1.40512e-12, 9.04009e-15,
+//     1.40508e-12,    0.027081, 1.56278e-13,
+//     9.04009e-15, 1.56278e-13,   0.0535809;
 
-    REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
-}
+//     REQUIRE((homogenized_tensor - reference_tensor).norm() / reference_tensor.norm() < 1e-6);
+// }
 
 TEST_CASE("density_stokes_homo_grad", "[homogenization]")
 {
@@ -513,7 +507,7 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
 	json in_args = R"({
         "geometry": [
             {
-                "mesh": "square6.msh",
+                "mesh": "square5.msh",
                 "n_refs": 0,
                 "surface_selection": {
                     "threshold": 1e-6
@@ -555,7 +549,6 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
 
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
     state.assemble_rhs();

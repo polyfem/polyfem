@@ -132,7 +132,6 @@ void State::solve_nonlinear_homogenization()
     auto homo_problem = std::make_shared<NLHomogenizationProblem>(*this);
     
     const int dim = mesh->dimension();
-    solver_info = json::array();
     sol.setZero(n_bases * dim, dim * dim);
 
     for (int i = 0; i < dim; i++)
@@ -154,11 +153,6 @@ void State::solve_nonlinear_homogenization()
             homo_problem->init(tmp_sol);
             nl_solver->minimize(*homo_problem, tmp_sol);
 
-            json nl_solver_info;
-            nl_solver->get_info(nl_solver_info);
-            solver_info.push_back(
-                {{"type", "rc"},
-                 {"info", nl_solver_info}});
             Eigen::VectorXd full;
             homo_problem->reduced_to_full(tmp_sol, full);
             sol.col(i * dim + j) = full;
@@ -201,7 +195,7 @@ void State::solve_linear_homogenization()
             // assemble_homogenization_gradient(tmp_rhs, Eigen::MatrixXd::Zero(n_bases * problem_dim, 1), unit_grad);
 			Eigen::MatrixXd test_field = generate_linear_field(unit_grad);
 			
-			assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, test_field, tmp_rhs);
+			assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, test_field, Eigen::MatrixXd::Zero(test_field.rows(), test_field.cols()), tmp_rhs);
 
             rhs.col(i) = tmp_rhs;
         }
@@ -252,7 +246,6 @@ void State::solve_linear_homogenization()
         sol.col(k) = x;
     }
     // spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
-    solver->getInfo(solver_info);
 
     const auto error = (A_tmp * sol - rhs).norm();
     if (error > 1e-4)
@@ -666,7 +659,18 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     for (int id = 0; id < unit_disp_ids.size(); id++)
     {       
         sol = w.col(id);
-        save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", 1.);
+        // out_geom.save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", *this, 0, 0, io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file), is_contact_enabled(), solution_frames);
+		out_geom.export_data(
+			*this,
+			!args["time"].is_null(),
+			1, 1, // tend, dt,
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			resolve_output_path("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu"), // vis_mesh_path,
+			"", // nodes_path,
+			"", // solution_path,
+			"", // stress_path,
+			"", // mises_path,
+			is_contact_enabled(), solution_frames);
     }
 
     // compute homogenized stiffness
@@ -1265,7 +1269,18 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     {       
         sol = w.col(id);
         pressure.setZero(n_pressure_bases, 1);
-        save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
+        // save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
+		out_geom.export_data(
+			*this,
+			!args["time"].is_null(),
+			1, 1, // tend, dt,
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			resolve_output_path("homo_" + std::to_string(id) + ".vtu"), // vis_mesh_path,
+			"", // nodes_path,
+			"", // solution_path,
+			"", // stress_path,
+			"", // mises_path,
+			is_contact_enabled(), solution_frames);
     }
 
     // compute homogenized permeability
@@ -1419,7 +1434,18 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     {       
         sol = w.block(0, id, n_bases * dim, 1);
         pressure = w.block(n_bases * dim, id, n_pressure_bases, 1);
-        save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
+        // save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
+		out_geom.export_data(
+			*this,
+			!args["time"].is_null(),
+			1, 1, // tend, dt,
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			resolve_output_path("homo_" + std::to_string(id) + ".vtu"), // vis_mesh_path,
+			"", // nodes_path,
+			"", // solution_path,
+			"", // stress_path,
+			"", // mises_path,
+			is_contact_enabled(), solution_frames);
     }
 
     w.conservativeResize(n_bases * dim, w.cols());

@@ -2,8 +2,11 @@
 
 #include "Form.hpp"
 
+#include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
+
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/State.hpp>
 
 namespace polyfem::solver
 {
@@ -15,7 +18,18 @@ namespace polyfem::solver
 		/// @param state Reference to the simulation state
 		/// @param rhs_assembler Reference to the right hand side assembler
 		/// @param apply_DBC If true, set the Dirichlet boundary conditions in the RHS
-		BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler, const bool apply_DBC);
+		BodyForm(const int ndof,
+				 const int n_pressure_bases,
+				 const std::vector<int> &boundary_nodes,
+				 const std::vector<mesh::LocalBoundary> &local_boundary,
+				 const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				 const int n_boundary_samples,
+				 const Eigen::MatrixXd &rhs,
+				 const assembler::RhsAssembler &rhs_assembler,
+				 const Density &density,
+				 const bool apply_DBC,
+				 const bool is_formulation_mixed,
+				 const bool is_time_dependent);
 
 	protected:
 		/// @brief Compute the value of the body force form
@@ -50,15 +64,22 @@ namespace polyfem::solver
 		}
 
 	private:
-		const State &state_;                           ///< Reference to the simulation state
-		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
-		bool is_formulation_mixed_;                    ///< True if the formulation is mixed
+		const std::vector<int> &boundary_nodes_;
+		const std::vector<mesh::LocalBoundary> &local_boundary_;
+		const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;
+		const int n_boundary_samples_;
 
-		double t_; ///< Current time
-		int ndof_; ///< Number of degrees of freedom
+		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
+		const Density &density_;
+		bool is_formulation_mixed_; ///< True if the formulation is mixed
+
+		double t_;       ///< Current time
+		const int ndof_; ///< Number of degrees of freedom
+		const int n_pressure_bases_;
 
 		bool apply_DBC_; ///< If true, set the Dirichlet boundary conditions in the RHS
 
+		const Eigen::MatrixXd &rhs_;  ///< static RHS for the current time
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
 
 		/// @brief Update current_rhs

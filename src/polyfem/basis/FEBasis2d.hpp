@@ -30,7 +30,7 @@ namespace polyfem
 			/// @param[in]  discr_order        The order of the elements (1-4)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
-			/// @param[in]  is_geom_bases      Flag to decide if build gemetric mapping or normal bases, used to decide if the ndoes are important
+			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
 			/// @param[out] bases              List of basis functions per element
 			/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 			///                                the canonical elements lie on the boundary of the mesh
@@ -50,7 +50,7 @@ namespace polyfem
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
-				std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes);
+				std::shared_ptr<mesh::MeshNodes> &mesh_nodes);
 
 			///
 			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1,
@@ -63,7 +63,7 @@ namespace polyfem
 			/// @param[in]  discr_order        The order for each element
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
-			/// @param[in]  is_geom_bases      Flag to decide if build gemetric mapping or normal bases, used to decide if the ndoes are important
+			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
 			/// @param[out] bases              List of basis functions per element
 			/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 			///                                the canonical elements lie on the boundary of the mesh
@@ -83,9 +83,9 @@ namespace polyfem
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
-				std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes);
+				std::shared_ptr<mesh::MeshNodes> &mesh_nodes);
 
-			//return the local edge nodes for a tri or a quad of order p, index points to the edge
+			// return the local edge nodes for a tri or a quad of order p, index points to the edge
 			static Eigen::VectorXi tri_edge_local_nodes(const int p, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
 			static Eigen::VectorXi quad_edge_local_nodes(const int q, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
 		};

@@ -3,7 +3,8 @@
 #include <polyfem/Common.hpp>
 
 #include "Assembler.hpp"
-#include "MassMatrixAssembler.hpp"
+
+#include "Mass.hpp"
 
 #include "Laplacian.hpp"
 #include "Bilaplacian.hpp"
@@ -24,19 +25,20 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <vector>
+#include <string>
 
 namespace polyfem
 {
 	namespace assembler
 	{
-		//factory class that dispaces call to the different assemblers
-		//templated with differnt local assemblers
+		// factory class that dispaces call to the different assemblers
+		// templated with differnt local assemblers
 		class AssemblerUtils
 		{
 		public:
 			AssemblerUtils();
 
-			//Linear, assembler is the name of the formulation
+			// Linear, assembler is the name of the formulation
 			void assemble_problem(const std::string &assembler,
 								  const bool is_volume,
 								  const int n_basis,
@@ -47,7 +49,7 @@ namespace polyfem
 			void assemble_problem(const std::string &assembler,
 								  const bool is_volume,
 								  const int n_basis,
-								  const Density &density,
+								  const Density &density_,
 								  const std::vector<basis::ElementBases> &bases,
 								  const std::vector<basis::ElementBases> &gbases,
 								  const AssemblyValsCache &cache,
@@ -61,8 +63,16 @@ namespace polyfem
 									  const std::vector<basis::ElementBases> &gbases,
 									  const AssemblyValsCache &cache,
 									  StiffnessMatrix &mass) const;
+			void assemble_mass_matrix(const std::string &assembler,
+									  const bool is_volume,
+									  const int n_basis,
+									  const bool use_density,
+									  const std::vector<basis::ElementBases> &bases,
+									  const std::vector<basis::ElementBases> &gbases,
+									  const AssemblyValsCache &cache,
+									  StiffnessMatrix &mass) const;
 
-			//mixed assembler phi is the tensor, psi the scalar, assembler is the name of the formulation
+			// mixed assembler phi is the tensor, psi the scalar, assembler is the name of the formulation
 			void assemble_mixed_problem(const std::string &assembler,
 										const bool is_volume,
 										const int n_psi_basis,
@@ -77,7 +87,7 @@ namespace polyfem
 										const bool is_volume,
 										const int n_psi_basis,
 										const int n_phi_basis,
-										const Density &density,
+										const Density &density_,
 										const std::vector<basis::ElementBases> &psi_bases,
 										const std::vector<basis::ElementBases> &phi_bases,
 										const std::vector<basis::ElementBases> &gbases,
@@ -95,30 +105,34 @@ namespace polyfem
 			void assemble_pressure_problem(const std::string &assembler,
 										   const bool is_volume,
 										   const int n_basis,
-										   const Density &density,
+										   const Density &density_,
 										   const std::vector<basis::ElementBases> &bases,
 										   const std::vector<basis::ElementBases> &gbases,
 										   const AssemblyValsCache &cache,
 										   StiffnessMatrix &stiffness) const;
 
-			//Non linear energy, assembler is the name of the formulation
+			// Non linear energy, assembler is the name of the formulation
 			double assemble_energy(const std::string &assembler,
 								   const bool is_volume,
 								   const std::vector<basis::ElementBases> &bases,
 								   const std::vector<basis::ElementBases> &gbases,
 								   const AssemblyValsCache &cache,
-								   const Eigen::MatrixXd &displacement) const;
+								   const double dt,
+								   const Eigen::MatrixXd &displacement,
+								   const Eigen::MatrixXd &displacement_prev) const;
 
-			//non linear gradient, assembler is the name of the formulation
+			// non linear gradient, assembler is the name of the formulation
 			void assemble_energy_gradient(const std::string &assembler,
 										  const bool is_volume,
 										  const int n_basis,
 										  const std::vector<basis::ElementBases> &bases,
 										  const std::vector<basis::ElementBases> &gbases,
 										  const AssemblyValsCache &cache,
+										  const double dt,
 										  const Eigen::MatrixXd &displacement,
+										  const Eigen::MatrixXd &displacement_prev,
 										  Eigen::MatrixXd &grad) const;
-			//non-linear hessian, assembler is the name of the formulation
+			// non-linear hessian, assembler is the name of the formulation
 			void assemble_energy_hessian(const std::string &assembler,
 										 const bool is_volume,
 										 const int n_basis,
@@ -126,11 +140,13 @@ namespace polyfem
 										 const std::vector<basis::ElementBases> &bases,
 										 const std::vector<basis::ElementBases> &gbases,
 										 const AssemblyValsCache &cache,
+										 const double dt,
 										 const Eigen::MatrixXd &displacement,
+										 const Eigen::MatrixXd &displacement_prev,
 										 utils::SpareMatrixCache &mat_cache,
 										 StiffnessMatrix &hessian) const;
 
-			//plotting (eg von mises), assembler is the name of the formulation
+			// plotting (eg von mises), assembler is the name of the formulation
 			void compute_scalar_value(const std::string &assembler,
 									  const int el_id,
 									  const basis::ElementBases &bs,
@@ -138,7 +154,7 @@ namespace polyfem
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
 									  Eigen::MatrixXd &result) const;
-			//computes tensor, assembler is the name of the formulation
+			// computes tensor, assembler is the name of the formulation
 			void compute_tensor_value(const std::string &assembler,
 									  const int el_id,
 									  const basis::ElementBases &bs,
@@ -147,10 +163,10 @@ namespace polyfem
 									  const Eigen::MatrixXd &fun,
 									  Eigen::MatrixXd &result) const;
 
-			//for errors, uses the rhs methods inside local assemblers
+			// for errors, uses the rhs methods inside local assemblers
 			VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
 
-			//for constraints in polygonal bases
+			// for constraints in polygonal bases
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 			local_assemble(const std::string &assembler,
 						   const ElementAssemblyValues &vals,
@@ -158,55 +174,62 @@ namespace polyfem
 						   const int j,
 						   const QuadratureVector &da) const;
 
-			//returns the kernel of the assembler, if present
+			// returns the kernel of the assembler, if present
 			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const;
 
-			//dispaces to all set parameters of the local assemblers
+			// dispaces to all set parameters of the local assemblers
 			void add_multimaterial(const int index, const json &params);
-			void set_size(const int dim);
+			void set_size(const std::string &assembler, const int dim);
 			void init_multimodels(const std::vector<std::string> &materials);
 			LameParameters &lame_params() { return linear_elasticity_.local_assembler().lame_params(); }
 			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
+			const DampingParameters &damping_params() const { return damping_.local_assembler().damping_params(); }
 			void update_lame_params(const LameParameters &newParams);
 			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
 			void update_lame_params_density(const Eigen::MatrixXd& density, const double power = -1);
 
 			std::function<double(const Eigen::MatrixXd &, const double, const double)> get_elastic_energy_function(const std::string& assembler) const;
-			std::function<void(const Eigen::MatrixXd &, const double, const double, Eigen::MatrixXd &)> get_elastic_energy_grad_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_multiply_mat_function(const std::string& assembler) const;
+			std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_function(const std::string& assembler) const;
+			std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_prev_grad_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_dstress_dmu_dlambda_function(const std::string& assembler) const;
 
+			const Density &density() const { return mass_mat_.local_assembler().density(); }
 			//checks if assembler is linear
 			static bool is_linear(const std::string &assembler);
 
-			//checks if assembler solution is displacement (true for elasticty)
+			// checks if assembler solution is displacement (true for elasticty)
 			static bool is_solution_displacement(const std::string &assembler);
 
-			//checks if assembler is scalar (Laplace and Helmolz)
+			// checks if assembler is scalar (Laplace and Helmolz)
 			static bool is_scalar(const std::string &assembler);
-			//checks if assembler is tensor (other)
+			// checks if assembler is tensor (other)
 			static bool is_tensor(const std::string &assembler);
-			//checks if assembler is mixed (eg, stokes)
+			// checks if assembler is mixed (eg, stokes)
 			static bool is_mixed(const std::string &assembler);
-			//checks if it is a fluid simulation
+			// checks if it is a fluid simulation
 			static bool is_fluid(const std::string &assembler);
+
+			bool has_damping() const;
 
 			//gets the names of all assemblers
 			static std::vector<std::string> scalar_assemblers();
 			static std::vector<std::string> tensor_assemblers();
 			// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
-			//utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness
-			// A   B
-			// B^T C
+			// utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness
+			//  A   B
+			//  B^T C
 			static void merge_mixed_matrices(
 				const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 				const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 				StiffnessMatrix &stiffness);
 
 		private:
-			//all assemblers
-			MassMatrixAssembler mass_mat_assembler_;
+			// all assemblers
+			Assembler<Mass> mass_mat_;
+			Assembler<Mass> mass_mat_no_density_;
+
 			Assembler<Laplacian> laplacian_;
 			Assembler<Helmholtz> helmholtz_;
 
@@ -223,6 +246,9 @@ namespace polyfem
 			NLAssembler<MultiModel> multi_models_elasticity_;
 			// NLAssembler<OgdenElasticity> ogden_elasticity_;
 
+			NLAssembler<ViscousDamping> damping_;
+			NLAssembler<ViscousDampingPrev> damping_prev_;
+
 			Assembler<StokesVelocity> stokes_velocity_;
 			MixedAssembler<StokesMixed> stokes_mixed_;
 			Assembler<StokesPressure> stokes_pressure_;
@@ -234,7 +260,5 @@ namespace polyfem
 			MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
 			Assembler<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
 		};
-
-		typedef TransientNLAssembler<ViscousDamping> ViscousDampingAssembler;
 	} // namespace assembler
 } // namespace polyfem

@@ -172,10 +172,28 @@ namespace polyfem
 	void OptimizationProblem::save_to_file(const TVector &x0)
 	{
 		logger().info("Iter {} Save Freq {}", iter, save_freq);
+		
 		if (iter % save_freq == 0)
 		{
-			logger().debug("Save to file {} ...", state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)));
-			state.save_vtu(state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter)), 0.);
+			std::string vis_mesh_path = state.resolve_output_path(fmt::format("opt_{:d}.vtu", iter));
+			logger().debug("Save to file {} ...", vis_mesh_path);
+
+			double tend = state.args.value("tend", 1.0);
+			double dt = 1;
+			if (!state.args["time"].is_null())
+				dt = state.args["time"]["dt"];
+
+			state.out_geom.export_data(
+				state,
+				!state.args["time"].is_null(),
+				tend, dt,
+				io::OutGeometryData::ExportOptions(state.args, state.mesh->is_linear(), state.problem->is_scalar(), state.solve_export_to_file),
+				vis_mesh_path,
+				"", // nodes_path,
+				"", // solution_path,
+				"", // stress_path,
+				"", // mises_path,
+				state.is_contact_enabled(), state.solution_frames);
 
 			if (!state.mesh->is_volume())
 				state.mesh->save(state.resolve_output_path(fmt::format("opt_{:d}.obj", iter)));

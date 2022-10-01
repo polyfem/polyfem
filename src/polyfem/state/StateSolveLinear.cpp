@@ -43,12 +43,12 @@ namespace polyfem
 		}
 		else
 		{
-			spectrum = dirichlet_solve(
+			stats.spectrum = dirichlet_solve(
 				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler.is_fluid(formulation()), use_avg_pressure);
 		}
 
-		solver->getInfo(solver_info);
+		solver->getInfo(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
 		if (error > 1e-4)
@@ -154,7 +154,7 @@ namespace polyfem
 			if (is_scalar_or_mixed)
 			{
 				solve_data.rhs_assembler->compute_energy_grad(
-					local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time,
+					local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time,
 					current_rhs);
 
 				solve_data.rhs_assembler->set_bc(
@@ -182,7 +182,7 @@ namespace polyfem
 			}
 			else
 			{
-				solve_data.rhs_assembler->assemble(density, current_rhs, time);
+				solve_data.rhs_assembler->assemble(assembler.density(), current_rhs, time);
 
 				current_rhs *= -1;
 

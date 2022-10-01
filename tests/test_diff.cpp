@@ -70,7 +70,6 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 	state.init(in_args, false);
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();
@@ -192,7 +191,6 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	state.init(in_args, false);
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();
@@ -322,7 +320,6 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	state.init(in_args, false);
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();
@@ -458,7 +455,6 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	state.init_logger("", spdlog::level::level_enum::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
-	state.compute_mesh_stats();
 	state.build_basis();
 	Eigen::MatrixXd density_mat;
 	density_mat.setConstant(state.mesh->n_elements(), 1, 0.5);
@@ -685,7 +681,6 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	state.init(in_args, false);
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
 	state.assemble_stiffness_mat();
@@ -807,7 +802,6 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	state.init(in_args, false);
 	state.load_mesh();
 
-	state.compute_mesh_stats();
 	state.build_basis();
 
 	NodeTrajectoryFunctional j;
@@ -2327,7 +2321,6 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
 }
 
-// failed
 TEST_CASE("barycenter-height", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR;

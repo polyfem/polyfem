@@ -35,7 +35,7 @@ TEST_CASE("franke 2d", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(2);
+	assembler.set_size("Helmholtz", 2);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -128,7 +128,7 @@ TEST_CASE("franke 3d", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(3);
+	assembler.set_size("Helmholtz", 3);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -208,7 +208,7 @@ TEST_CASE("linear", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(2);
+	assembler.set_size("Helmholtz", 2);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -269,7 +269,7 @@ TEST_CASE("quadratic", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(2);
+	assembler.set_size("Helmholtz", 2);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -328,7 +328,7 @@ TEST_CASE("zero bc 2d", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(2);
+	assembler.set_size("Laplacian", 2);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -362,7 +362,7 @@ TEST_CASE("zero bc 3d", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(2);
+	assembler.set_size("Laplacian",2);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -396,7 +396,7 @@ TEST_CASE("elasticity 2d", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(2);
+	assembler.set_size("LinearElasticity",2);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();
@@ -466,7 +466,7 @@ TEST_CASE("elasticity 3d", "[problem]")
 	const json params = get_params();
 
 	AssemblerUtils assembler;
-	assembler.set_size(3);
+	assembler.set_size("LinearElasticity",3);
 	assembler.add_multimaterial(0, params);
 
 	auto x = pts.col(0).array();

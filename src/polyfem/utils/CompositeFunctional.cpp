@@ -1,6 +1,6 @@
 #include <polyfem/utils/CompositeFunctional.hpp>
-
 #include <polyfem/utils/CompositeSplineParam.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem
 {
@@ -241,7 +241,7 @@ namespace polyfem
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
 				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
-				state_ref_->interpolate_at_local_vals(e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
+				io::Evaluator::interpolate_at_local_vals(*(state_ref_->mesh), state_ref_->problem->is_scalar(), state_ref_->bases, state_ref_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
 				{
@@ -265,7 +265,7 @@ namespace polyfem
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
 				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
-				state_ref_->interpolate_at_local_vals(e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
+				io::Evaluator::interpolate_at_local_vals(*(state_ref_->mesh), state_ref_->problem->is_scalar(), state_ref_->bases, state_ref_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
 				{
@@ -290,7 +290,7 @@ namespace polyfem
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
 				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
-				state_ref_->interpolate_at_local_vals(e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
+				io::Evaluator::interpolate_at_local_vals(*(state_ref_->mesh), state_ref_->problem->is_scalar(), state_ref_->bases, state_ref_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
 				{

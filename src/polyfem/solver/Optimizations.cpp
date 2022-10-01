@@ -709,14 +709,17 @@ namespace polyfem
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 
 					state.args["contact"]["friction_coefficient"] = std::exp(x(x.size() - 3));
-					state.damping_assembler.local_assembler().set_params(std::exp(x(x.size() - 2)), std::exp(x(x.size() - 1)));
-
+					json damping_param = {
+					{"psi", std::exp(x(x.size() - 2))},
+					{"phi", std::exp(x(x.size() - 1))},
+					};
+					state.assembler.add_multimaterial(0, damping_param);
 					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size() - 3);
 					for (int i = 0; i < x_display.size(); i++)
 						x_display(i) = std::exp(x(i));
 					logger().debug("material: {}", x_display.transpose());
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
+					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
 				};
 				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
@@ -728,15 +731,15 @@ namespace polyfem
 						x(i.second[1] * 2 + 1) = std::log(cur_mus(i.second[0]));
 					}
 					x(x.size() - 3) = std::log(state.args["contact"]["friction_coefficient"].get<double>());
-					x(x.size() - 2) = std::log(state.damping_assembler.local_assembler().get_psi());
-					x(x.size() - 1) = std::log(state.damping_assembler.local_assembler().get_phi());
+					x(x.size() - 2) = std::log(state.assembler.damping_params()[0]);
+					x(x.size() - 1) = std::log(state.assembler.damping_params()[1]);
 
 					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size() - 3);
 					for (int i = 0; i < x_display.size(); i++)
 						x_display(i) = std::exp(x(i));
 					logger().debug("material: {}", x_display.transpose());
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
+					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
 				};
 				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
@@ -750,28 +753,31 @@ namespace polyfem
 					}
 					dx.tail(3) = dparams.tail(3);
 					dx(dx.size() - 3) = dparams(dparams.size() - 3) * state.args["contact"]["friction_coefficient"].get<double>();
-					dx(dx.size() - 2) = dparams(dparams.size() - 2) * state.damping_assembler.local_assembler().get_psi();
-					dx(dx.size() - 1) = dparams(dparams.size() - 1) * state.damping_assembler.local_assembler().get_phi();
+					dx(dx.size() - 2) = dparams(dparams.size() - 2) * state.assembler.damping_params()[0];
+					dx(dx.size() - 1) = dparams(dparams.size() - 1) * state.assembler.damping_params()[1];
 				};
 			}
 			else if (material_params["restriction"].get<std::string>() == "friction_damping")
 			{
 				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
 					state.args["contact"]["friction_coefficient"] = x(x.size() - 3);
-					state.damping_assembler.local_assembler().set_params(x(x.size() - 2), x(x.size() - 1));
-
+					json damping_param = {
+					{"psi", std::exp(x(x.size() - 2))},
+					{"phi", std::exp(x(x.size() - 1))},
+					};
+					state.assembler.add_multimaterial(0, damping_param);
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
+					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
 				};
 				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
 					x.setZero(3);
 
 					x(x.size() - 3) = state.args["contact"]["friction_coefficient"].get<double>();
-					x(x.size() - 2) = state.damping_assembler.local_assembler().get_psi();
-					x(x.size() - 1) = state.damping_assembler.local_assembler().get_phi();
+					x(x.size() - 2) = state.assembler.damping_params()[0];
+					x(x.size() - 1) = state.assembler.damping_params()[1];
 
 					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
+					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
 				};
 				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(3);
@@ -806,16 +812,20 @@ namespace polyfem
 			else if (material_params["restriction"].get<std::string>() == "damping")
 			{
 				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
-					state.damping_assembler.local_assembler().set_params(x(x.size() - 2), x(x.size() - 1));
-					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
+					json damping_param = {
+					{"psi", std::exp(x(x.size() - 2))},
+					{"phi", std::exp(x(x.size() - 1))},
+					};
+					state.assembler.add_multimaterial(0, damping_param);
+					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
 				};
 				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
 					x.setZero(2);
 
-					x(x.size() - 2) = state.damping_assembler.local_assembler().get_psi();
-					x(x.size() - 1) = state.damping_assembler.local_assembler().get_phi();
+					x(x.size() - 2) = state.assembler.damping_params()[0];
+					x(x.size() - 1) = state.assembler.damping_params()[1];
 
-					logger().debug("psi = {}, phi = {}", state.damping_assembler.local_assembler().get_psi(), state.damping_assembler.local_assembler().get_phi());
+					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
 				};
 				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(2);

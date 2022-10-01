@@ -132,7 +132,9 @@ int main(int argc, char **argv)
 	// Mesh was not loaded successfully; load_mesh() logged the error.
 	if (state.mesh == nullptr)
 		// Cannot proceed without a mesh.
-	state.compute_mesh_stats();
+		return EXIT_FAILURE;
+
+	state.stats.compute_mesh_stats(*state.mesh);
 
 	state.build_basis();
 
@@ -142,6 +144,8 @@ int main(int argc, char **argv)
 	state.solve_problem();
 
 	state.compute_errors();
+
+	logger().info("total time: {}s", state.timings.total_time());
 
 	state.save_json();
 	state.export_data();

@@ -5,7 +5,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/writeOBJ.h>
-
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <filesystem>
 
 namespace polyfem
@@ -83,7 +83,7 @@ namespace polyfem
 		if (has_material_smoothing && !state.mesh->is_volume())
 		{
 			std::vector<Eigen::Triplet<bool>> tt_adjacency_list;
-			const mesh::Mesh2D &mesh2d = *dynamic_cast<const mesh::Mesh2D *>(state.mesh.get());
+			const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(state.mesh.get());
 			for (int i = 0; i < state.mesh->n_faces(); ++i)
 			{
 				auto idx = mesh2d.get_index_from_face(i);
@@ -133,7 +133,7 @@ namespace polyfem
 
 		double value = 0;
 		for (int k = 0; k < tt_adjacency.outerSize(); ++k)
-			for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
+			for (Eigen::SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
 			{
 				value += pow((1 - lambdas(it.row()) / lambdas(it.col())), 2);
 				value += pow((1 - mus(it.row()) / mus(it.col())), 2);
@@ -178,7 +178,7 @@ namespace polyfem
 		dJ_dlambda.setZero(lambdas.size(), 1);
 
 		for (int k = 0; k < tt_adjacency.outerSize(); ++k)
-			for (SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
+			for (Eigen::SparseMatrix<bool>::InnerIterator it(tt_adjacency, k); it; ++it)
 			{
 				dJ_dlambda(it.row()) += 2 * (lambdas(it.row()) / lambdas(it.col()) - 1) / lambdas(it.col());
 				dJ_dlambda(it.col()) += 2 * (1 - lambdas(it.row()) / lambdas(it.col())) * lambdas(it.row()) / lambdas(it.col()) / lambdas(it.col());
@@ -221,8 +221,8 @@ namespace polyfem
 		const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 		const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 		const double mu = state.args["contact"]["friction_coefficient"];
-		const double psi = state.damping_assembler.local_assembler().get_psi();
-		const double phi = state.damping_assembler.local_assembler().get_phi();
+		const double psi = state.assembler.damping_params()[0];
+		const double phi = state.assembler.damping_params()[1];
 
 		bool flag = true;
 		if (mu < 0 || psi < 0 || phi < 0)
@@ -262,7 +262,7 @@ namespace polyfem
 	bool MaterialProblem::solution_changed_pre(const TVector &newX)
 	{
 		x_to_param(newX, state);
-		state.set_materials();
+		// state.set_materials();
 		return true;
 	}
 
