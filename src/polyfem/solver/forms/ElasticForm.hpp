@@ -36,6 +36,7 @@ namespace polyfem::solver
 		/// @param[out] gradv Output gradient of the value wrt x
 		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
+	public:
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
@@ -52,6 +53,7 @@ namespace polyfem::solver
 		/// @param t Current time
 		/// @param x Current solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
+
 	private:
 		const int n_bases_;
 		const std::vector<basis::ElementBases> &bases_;

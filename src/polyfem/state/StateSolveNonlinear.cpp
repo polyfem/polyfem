@@ -7,6 +7,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/ALForm.hpp>
+#include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
@@ -204,6 +205,13 @@ namespace polyfem
 					mesh->is_volume());
 				forms.push_back(solve_data.damping_form);
 			}
+
+			// TODO: expose this thorugh JSON args and make it optional
+			forms.push_back(std::make_shared<RayleighDampingForm>(
+				*solve_data.elastic_form,
+				*solve_data.time_integrator,
+				/*stiffness_ratio=*/0.2,
+				/*n_lagging_iters=*/1));
 		}
 		else
 		{

@@ -36,4 +36,9 @@ namespace polyfem::time_integrator
 	{
 		return beta() * dt() * dt();
 	}
+
+	double ImplicitNewmark::dv_dx() const
+	{
+		return gamma() / beta() / dt();
+	}
 } // namespace polyfem::time_integrator
