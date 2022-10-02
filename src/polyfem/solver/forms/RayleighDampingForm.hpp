@@ -14,7 +14,7 @@ namespace polyfem::solver
 	public:
 		/// @brief Construct a new Lagged Regularization Form object
 		RayleighDampingForm(
-			ElasticForm &elastic_form,
+			Form &form_to_damp,
 			const time_integrator::ImplicitTimeIntegrator &time_integrator,
 			const double stiffness_ratio,
 			const int n_lagging_iters);
@@ -53,10 +53,10 @@ namespace polyfem::solver
 		bool uses_lagging() const override { return true; }
 
 	private:
-		double stiffness() const { return 0.75 * stiffness_ratio_ * std::pow(time_integrator_.dt(), 3); }
+		double stiffness() const;
 
 		// TODO: Make this const by making ElasticForm::second_derivative_unweighted const
-		ElasticForm &elastic_form_;                                      ///< Reference to the elastic form
+		Form &form_to_damp_;                                             ///< Reference to the form we are damping
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Reference to the time integrator
 		double stiffness_ratio_;                                         ///< Damping stiffness coefficient
 		int n_lagging_iters_;                                            ///< Number of iterations to lag for

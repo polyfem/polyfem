@@ -3,16 +3,16 @@
 namespace polyfem::solver
 {
 	RayleighDampingForm::RayleighDampingForm(
-		ElasticForm &elastic_form,
+		Form &form_to_damp,
 		const time_integrator::ImplicitTimeIntegrator &time_integrator,
 		const double stiffness_ratio,
 		const int n_lagging_iters)
-		: elastic_form_(elastic_form),
+		: form_to_damp_(form_to_damp),
 		  time_integrator_(time_integrator),
 		  stiffness_ratio_(stiffness_ratio),
 		  n_lagging_iters_(n_lagging_iters)
 	{
-		assert(0 < stiffness_ratio && stiffness_ratio < 1);
+		assert(0 < stiffness_ratio);
 		assert(n_lagging_iters_ > 0);
 	}
 
@@ -30,7 +30,7 @@ namespace polyfem::solver
 
 	void RayleighDampingForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		// NOTE: Assumes that v(x) is linear in x
+		// NOTE: Assumes that v(x) is linear in x, so ∂²v/∂x² = 0
 		hessian = stiffness() * lagged_stiffness_matrix_;
 	}
 
@@ -41,6 +41,11 @@ namespace polyfem::solver
 
 	void RayleighDampingForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
-		elastic_form_.second_derivative_unweighted(x, lagged_stiffness_matrix_);
+		form_to_damp_.second_derivative(x, lagged_stiffness_matrix_);
+	}
+
+	double RayleighDampingForm::stiffness() const
+	{
+		return 0.75 * stiffness_ratio_ * std::pow(time_integrator_.dt(), 3) / form_to_damp_.weight();
 	}
 } // namespace polyfem::solver
