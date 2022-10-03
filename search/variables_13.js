@@ -7,7 +7,7 @@ var searchData=
   ['scaling_5f_4',['scaling_',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a1ba494ea763c1e6407e03fe91b76c223',1,'polyfem::problem::PointBasedTensorProblem']]],
   ['second_5fcache_5f_5',['second_cache_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a13a0ba7a615ca5a98b904508ea0dce34',1,'polyfem::utils::SpareMatrixCache']]],
   ['second_5fcache_5fentries_5f_6',['second_cache_entries_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a3e0f348413e2e02f03b1d7bf115da7f9',1,'polyfem::utils::SpareMatrixCache']]],
-  ['sfunc_5f_7',['sfunc_',['../classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5',1,'polyfem::utils::ExpressionValue']]],
+  ['sfunc_5f_7',['sfunc_',['../classpolyfem_1_1utils_1_1_expression_value.html#a9b2e465dec2a0e7f224edd18283ba699',1,'polyfem::utils::ExpressionValue']]],
   ['shape_8',['shape',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['sigma_9',['sigma',['../namespaceelasticity__rhs.html#a2b28ad677225256bc5cf2f4b29c76a2c',1,'elasticity_rhs']]],
   ['sigma_5favg_10',['sigma_avg',['../classpolyfem_1_1io_1_1_out_stats_data.html#ab7fb71a9b284a7699c81db1dd8a948cb',1,'polyfem::io::OutStatsData']]],

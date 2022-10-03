@@ -90,7 +90,7 @@ var searchData=
   ['setup_5fmonomials_5fstrong_5f2d_87',['setup_monomials_strong_2d',['../classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab5aff3ff452671e145858cf8e7d82fd4',1,'polyfem::basis::RBFWithQuadratic']]],
   ['setup_5fmonomials_5fvals_5f2d_88',['setup_monomials_vals_2d',['../classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a699276b593b76cf2523f9e2c995b33b6',1,'polyfem::basis::RBFWithQuadratic']]],
   ['setvariablecount_89',['setVariableCount',['../struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7',1,'DiffScalarBase']]],
-  ['sfunc_5f_90',['sfunc_',['../classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5',1,'polyfem::utils::ExpressionValue']]],
+  ['sfunc_5f_90',['sfunc_',['../classpolyfem_1_1utils_1_1_expression_value.html#a9b2e465dec2a0e7f224edd18283ba699',1,'polyfem::utils::ExpressionValue']]],
   ['shape_91',['shape',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['show_5fmatrix_5fstats_92',['show_matrix_stats',['../namespacepolyfem_1_1utils.html#a3a719017c6c406fba78aee8fbaa4103b',1,'polyfem::utils']]],
   ['sigma_93',['sigma',['../namespaceelasticity__rhs.html#a2b28ad677225256bc5cf2f4b29c76a2c',1,'elasticity_rhs']]],

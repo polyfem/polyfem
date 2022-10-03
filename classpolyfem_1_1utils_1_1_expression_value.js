@@ -7,6 +7,7 @@ var classpolyfem_1_1utils_1_1_expression_value =
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#ac69b660ef83fc044fa4a2b3af35d546a", null ],
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#a07dd930467d04f9f1fcc3435356c0dc3", null ],
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#a57c2b120be6cb9d8bca77880d1da6f17", null ],
+    [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#aa171f85236bf14a7f5c8bbfc1b8720e5", null ],
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#a2d148ffde046825335f8228ec0d2bd16", null ],
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#a6cb32f01d47125307f889b1290bdfbbe", null ],
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#a7c91d2b63cdbbe2ade03b3df44262b4b", null ],
@@ -14,7 +15,7 @@ var classpolyfem_1_1utils_1_1_expression_value =
     [ "operator()", "classpolyfem_1_1utils_1_1_expression_value.html#ad762696d2188a5d149b0b5f78141261f", null ],
     [ "expr_", "classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee", null ],
     [ "mat_", "classpolyfem_1_1utils_1_1_expression_value.html#acba4698f4d7b6185c254e2ecc5643231", null ],
-    [ "sfunc_", "classpolyfem_1_1utils_1_1_expression_value.html#aa58fa238116610d899a6b422a6eb9da5", null ],
+    [ "sfunc_", "classpolyfem_1_1utils_1_1_expression_value.html#a9b2e465dec2a0e7f224edd18283ba699", null ],
     [ "tfunc_", "classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d", null ],
     [ "tfunc_coo_", "classpolyfem_1_1utils_1_1_expression_value.html#a4fc6c8daab0ed01e76542d310e873b20", null ],
     [ "value_", "classpolyfem_1_1utils_1_1_expression_value.html#a334b1e3fce0065123090b2ce1a0bbf6b", null ]

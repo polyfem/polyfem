@@ -27,6 +27,5 @@ var searchData=
   ['orient_5fnormals_5f2d_24',['orient_normals_2d',['../namespacepolyfem_1_1mesh.html#a3f115973d5927d123c20eb7941c5169e',1,'polyfem::mesh']]],
   ['orient_5fsurface_5fmesh_25',['orient_surface_mesh',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a7981f693a60ec02573977df905b4a400',1,'polyfem::mesh::MeshProcessing3D']]],
   ['orient_5fvolume_5fmesh_26',['orient_volume_mesh',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a9e7226a476a286a41ca81d04b358d12f',1,'polyfem::mesh::MeshProcessing3D']]],
-  ['origin_27',['origin',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#ad0f05dea2a67762aa9e676c492f208d3',1,'polyfem::mesh::Obstacle::Plane']]],
-  ['outside_5fquad_28',['outside_quad',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aba2c584adcb4c5633f68a076110d5fd4',1,'polyfem::solver::OperatorSplittingSolver']]]
+  ['outside_5fquad_27',['outside_quad',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aba2c584adcb4c5633f68a076110d5fd4',1,'polyfem::solver::OperatorSplittingSolver']]]
 ];
