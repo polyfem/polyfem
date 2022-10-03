@@ -1,7 +1,7 @@
-#include "OptimizationProblem.hpp"
 #include "Optimizations.hpp"
+
+#include "OptimizationProblem.hpp"
 #include "ShapeProblem.hpp"
-#include <polyfem/assembler/RhsAssembler.hpp>
 #include "TopologyOptimizationProblem.hpp"
 #include "MaterialProblem.hpp"
 #include "InitialConditionProblem.hpp"
@@ -9,12 +9,15 @@
 #include "FrictionProblem.hpp"
 #include "DampingProblem.hpp"
 #include "GeneralOptimizationProblem.hpp"
+
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
 #include "BFGSSolver.hpp"
 #include "MMASolver.hpp"
 #include "GradientDescentSolver.hpp"
+
 #include <polyfem/utils/CompositeSplineParam.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <map>
 
@@ -86,7 +89,7 @@ namespace polyfem
 
 	double matrix_dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
-	std::shared_ptr<InitialConditionProblem> setup_initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 
@@ -355,7 +358,7 @@ namespace polyfem
 		return initial_problem;
 	}
 
-	std::shared_ptr<MaterialProblem> setup_material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 		json material_params;
@@ -634,7 +637,7 @@ namespace polyfem
 		return material_problem;
 	}
 
-	std::shared_ptr<FrictionProblem> setup_friction_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_friction_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 		json material_params;
@@ -656,7 +659,7 @@ namespace polyfem
 		return material_problem;
 	}
 
-	std::shared_ptr<DampingProblem> setup_damping_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_damping_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 		json material_params;
@@ -678,7 +681,7 @@ namespace polyfem
 		return material_problem;
 	}
 
-	std::shared_ptr<ShapeProblem> setup_shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 
 		const auto &opt_params = state.args["optimization"];
@@ -833,7 +836,7 @@ namespace polyfem
 		return shape_problem;
 	}
 
-	std::shared_ptr<TopologyOptimizationProblem> setup_topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 
@@ -880,7 +883,7 @@ namespace polyfem
 		return top_opt;
 	}
 
-	std::shared_ptr<ControlProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	std::shared_ptr<OptimizationProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
 		const auto &opt_nl_params = opt_params["solver"]["nonlinear"];
@@ -907,80 +910,25 @@ namespace polyfem
 		return control_problem;
 	}
 
-	void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	std::shared_ptr<OptimizationProblem> setup_optimization(const std::string &type, State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
-		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
-		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
-		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
+		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)> > setup_functions{{"shape", setup_shape_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
 
-		Eigen::VectorXd x;
-		auto initial_problem = setup_initial_condition_optimization(state, j, x);
-
-		nlsolver->minimize(*initial_problem, x);
-
-		json solver_info;
-		nlsolver->get_info(solver_info);
-		std::cout << solver_info << std::endl;
+		return setup_functions[type](state, j, x_initial);
 	}
 
-	void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
+	void single_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
 		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
-		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
+		std::shared_ptr<cppoptlib::NonlinearSolver<OptimizationProblem>> nlsolver = make_nl_solver<OptimizationProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
-		Eigen::VectorXd x;
-		auto material_problem = setup_material_optimization(state, j, x);
-
-		nlsolver->minimize(*material_problem, x);
-
-		json solver_info;
-		nlsolver->get_info(solver_info);
-		std::cout << solver_info << std::endl;
-	}
-
-	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
-	{
-		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
-		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
-		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
+		assert(state.args["optimization"]["parameters"].size() == 1);
 
 		Eigen::VectorXd x;
-		auto shape_problem = setup_shape_optimization(state, j, x);
+		auto opt_problem = setup_optimization(state.args["optimization"]["parameters"][0]["type"], state, j, x);
 
-		nlsolver->minimize(*shape_problem, x);
-
-		json solver_info;
-		nlsolver->get_info(solver_info);
-		std::cout << solver_info << std::endl;
-	}
-
-	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
-	{
-		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
-		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
-		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
-
-		Eigen::VectorXd x;
-		auto top_opt = setup_topology_optimization(state, j, x);
-
-		nlsolver->minimize(*top_opt, x);
-
-		json solver_info;
-		nlsolver->get_info(solver_info);
-		std::cout << solver_info << std::endl;
-	}
-
-	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
-	{
-		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
-
-		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
-		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
-
-		Eigen::VectorXd x;
-		auto control_problem = setup_control_optimization(state, j, x);
-		nlsolver->minimize(*control_problem, x);
+		nlsolver->minimize(*opt_problem, x);
 
 		json solver_info;
 		nlsolver->get_info(solver_info);
@@ -996,45 +944,10 @@ namespace polyfem
 		int x_initial_size = 0;
 		for (const auto &param : opt_params["parameters"])
 		{
-			if (param["type"] == "shape")
-			{
-				Eigen::VectorXd tmp;
-				problems.push_back(setup_shape_optimization(state, j, tmp));
-				x_initial_size += tmp.size();
-				x_initial_list.push_back(tmp);
-			}
-			else if (param["type"] == "control")
-			{
-				Eigen::VectorXd tmp;
-				problems.push_back(setup_control_optimization(state, j, tmp));
-				x_initial_size += tmp.size();
-				x_initial_list.push_back(tmp);
-			}
-			else if (param["type"] == "material")
-			{
-				Eigen::VectorXd tmp;
-				problems.push_back(setup_material_optimization(state, j, tmp));
-				x_initial_size += tmp.size();
-				x_initial_list.push_back(tmp);
-			}
-			else if (param["type"] == "friction")
-			{
-				Eigen::VectorXd tmp;
-				problems.push_back(setup_friction_optimization(state, j, tmp));
-				x_initial_size += tmp.size();
-				x_initial_list.push_back(tmp);
-			}
-			else if (param["type"] == "damping")
-			{
-				Eigen::VectorXd tmp;
-				problems.push_back(setup_damping_optimization(state, j, tmp));
-				x_initial_size += tmp.size();
-				x_initial_list.push_back(tmp);
-			}
-			else
-			{
-				logger().error("General optimization with {} not currently supported.", param["type"]);
-			}
+			Eigen::VectorXd tmp;
+			problems.push_back(setup_optimization(param["type"], state, j, tmp));
+			x_initial_size += tmp.size();
+			x_initial_list.push_back(tmp);
 		}
 
 		x_initial.resize(x_initial_size);

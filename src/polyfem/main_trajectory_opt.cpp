@@ -528,18 +528,10 @@ int main(int argc, char **argv)
 	}
 
 	// shape optimization
-	if (opt_type == "shape")
-		shape_optimization(state, func);
-	else if (opt_type == "material")
-		material_optimization(state, func);
-	else if (opt_type == "initial")
-		initial_condition_optimization(state, func);
-	else if (opt_type == "control")
-		control_optimization(state, func);
-	else if (opt_type == "" && opt_types.size() > 0)
+	if (opt_type == "" && opt_types.size() > 0)
 		general_optimization(state, func);
 	else
-		logger().error("Invalid optimization type!");
+		single_optimization(state, func);
 
 	return EXIT_SUCCESS;
 }
