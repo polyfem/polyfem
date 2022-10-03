@@ -4,10 +4,10 @@
 
 namespace polyfem
 {
-	class DampingProblem : public OptimizationProblem
+	class FrictionProblem : public OptimizationProblem
 	{
 	public:
-		DampingProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
+		FrictionProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
 		using OptimizationProblem::gradient;
 		using OptimizationProblem::value;
@@ -20,7 +20,7 @@ namespace polyfem
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 
-		int optimization_dim() override { return 2; }
+		int optimization_dim() override { return 1; }
 
 		void line_search_end(bool failed);
 		bool remesh(TVector &x) { return false; }
@@ -42,7 +42,7 @@ namespace polyfem
 
 		double target_weight = 1;
 
-		double min_phi, min_psi;
-		double max_phi, max_psi;
+		double min_fric;
+		double max_fric;
 	};
 } // namespace polyfem

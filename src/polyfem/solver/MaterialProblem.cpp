@@ -97,39 +97,6 @@ namespace polyfem
 			max_nu = material_params["nu_bound"][1];
 		}
 
-		if (material_params["phi_bound"].get<std::vector<double>>().size() == 0)
-		{
-			min_phi = 0.0;
-			max_phi = std::numeric_limits<double>::max();
-		}
-		else
-		{
-			min_phi = material_params["phi_bound"][0];
-			max_phi = material_params["phi_bound"][1];
-		}
-
-		if (material_params["psi_bound"].get<std::vector<double>>().size() == 0)
-		{
-			min_psi = 0.0;
-			max_psi = std::numeric_limits<double>::max();
-		}
-		else
-		{
-			min_psi = material_params["psi_bound"][0];
-			max_psi = material_params["psi_bound"][1];
-		}
-
-		if (material_params["fric_bound"].get<std::vector<double>>().size() == 0)
-		{
-			min_fric = 0.0;
-			max_fric = std::numeric_limits<double>::max();
-		}
-		else
-		{
-			min_fric = material_params["fric_bound"][0];
-			max_fric = material_params["fric_bound"][1];
-		}
-
 		has_material_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
 		{
@@ -285,21 +252,12 @@ namespace polyfem
 
 		const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 		const auto &cur_mus = state.assembler.lame_params().mu_mat_;
-		const double mu = state.args["contact"]["friction_coefficient"];
-		const double psi = state.assembler.damping_params()[0];
-		const double phi = state.assembler.damping_params()[1];
 
 		bool flag = true;
 
 		if (cur_lambdas.minCoeff() < min_lambda || cur_mus.minCoeff() < min_mu)
 			flag = false;
 		if (cur_lambdas.maxCoeff() > max_lambda || cur_mus.maxCoeff() > max_mu)
-			flag = false;
-		if (min_phi > phi || max_phi < phi)
-			flag = false;
-		if (min_psi > psi || max_psi < psi)
-			flag = false;
-		if (min_fric > mu || max_fric < mu)
 			flag = false;
 
 		for (int e = 0; e < cur_lambdas.size(); e++)

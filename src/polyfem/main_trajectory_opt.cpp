@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
 
-	const std::set<std::string> valid_opt_types = {"material", "shape", "initial", "control"};
+	const std::set<std::string> valid_opt_types = {"material", "friction", "damping", "shape", "initial", "control"};
 
 	const std::set<std::string> matching_types = {"exact-center", "sine", "exact", "sdf", "center-data", "last-center", "marker-data"};
 

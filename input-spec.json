@@ -2717,6 +2717,8 @@
         "options": [
             "initial",
             "material",
+            "friction",
+            "damping",
             "shape",
             "control",
             "topology"
@@ -2737,11 +2739,6 @@
             "E_nu",
             "constant_E_nu",
             "constant_log",
-            "constant_log_friction",
-            "constant_log_friction_damping",
-            "friction_damping",
-            "friction",
-            "damping",
             "cubic_hermite_spline"
         ],
         "doc": "TODO"
@@ -2854,6 +2851,31 @@
     {
         "pointer": "/optimization/parameters/*",
         "type": "object",
+        "type_name": "damping",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "phi_bound",
+            "psi_bound"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type": "object",
+        "type_name": "friction",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "bound"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type": "object",
         "type_name": "material",
         "required": [
             "type"
@@ -2863,10 +2885,7 @@
             "E_bound",
             "nu_bound",
             "lambda_bound",
-            "mu_bound",
-            "phi_bound",
-            "psi_bound",
-            "fric_bound"
+            "mu_bound"
         ],
         "doc": "TODO"
     },
@@ -2889,7 +2908,7 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/fric_bound",
+        "pointer": "/optimization/parameters/*/bound",
         "type": "list",
         "default": [],
         "doc": "TODO"

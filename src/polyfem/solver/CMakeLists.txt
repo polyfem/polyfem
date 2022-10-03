@@ -25,6 +25,10 @@ set(SOURCES
 	ShapeProblem.cpp
 	MaterialProblem.hpp
 	MaterialProblem.cpp
+	DampingProblem.hpp
+	DampingProblem.cpp
+	FrictionProblem.hpp
+	FrictionProblem.cpp
 	InitialConditionProblem.hpp
 	InitialConditionProblem.cpp
 	TopologyOptimizationProblem.hpp

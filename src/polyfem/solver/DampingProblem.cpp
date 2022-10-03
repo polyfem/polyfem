@@ -45,6 +45,28 @@ namespace polyfem
 				break;
 			}
 		}
+
+		if (material_params["phi_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_phi = 0.0;
+			max_phi = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_phi = material_params["phi_bound"][0];
+			max_phi = material_params["phi_bound"][1];
+		}
+
+		if (material_params["psi_bound"].get<std::vector<double>>().size() == 0)
+		{
+			min_psi = 0.0;
+			max_psi = std::numeric_limits<double>::max();
+		}
+		else
+		{
+			min_psi = material_params["psi_bound"][0];
+			max_psi = material_params["psi_bound"][1];
+		}
 	}
 
 	void DampingProblem::line_search_end(bool failed)
@@ -95,16 +117,9 @@ namespace polyfem
 		const double phi = state.assembler.damping_params()[1];
 
 		bool flag = true;
-		if (psi < 0 || phi < 0)
+		if (min_phi > phi || max_phi < phi)
 			flag = false;
-
-		if (material_params.contains("min_phi") && material_params["min_phi"].get<double>() > phi)
-			flag = false;
-		if (material_params.contains("max_phi") && material_params["max_phi"].get<double>() < phi)
-			flag = false;
-		if (material_params.contains("min_psi") && material_params["min_psi"].get<double>() > psi)
-			flag = false;
-		if (material_params.contains("max_psi") && material_params["max_psi"].get<double>() < psi)
+		if (min_psi > psi || max_psi < psi)
 			flag = false;
 
 		solution_changed_pre(x0);

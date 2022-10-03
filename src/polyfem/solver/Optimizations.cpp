@@ -6,6 +6,8 @@
 #include "MaterialProblem.hpp"
 #include "InitialConditionProblem.hpp"
 #include "ControlProblem.hpp"
+#include "FrictionProblem.hpp"
+#include "DampingProblem.hpp"
 #include "GeneralOptimizationProblem.hpp"
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
@@ -625,213 +627,52 @@ namespace polyfem
 					}
 				};
 			}
-			else if (material_params["restriction"].get<std::string>() == "constant_log_friction")
+		}
+
+		material_problem->param_to_x(x_initial, state);
+
+		return material_problem;
+	}
+
+	std::shared_ptr<FrictionProblem> setup_friction_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	{
+		const auto &opt_params = state.args["optimization"];
+		json material_params;
+
+		state.args["output"]["paraview"]["options"]["material"] = true;
+
+		for (const auto &param : opt_params["parameters"])
+		{
+			if (param["type"] == "friction")
 			{
-				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
-
-				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
-					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
-					auto cur_mus = state.assembler.lame_params().mu_mat_;
-
-					cur_lambdas.setConstant(dof, 1, std::exp(x(0)));
-					cur_mus.setConstant(dof, 1, std::exp(x(1)));
-
-					for (int e = 0; e < dof; e++)
-					{
-						const int body_id = state.mesh->get_body_id(e);
-
-						cur_lambdas(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 0));
-						cur_mus(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 1));
-					}
-					state.assembler.update_lame_params(cur_lambdas, cur_mus);
-
-					state.args["contact"]["friction_coefficient"] = std::exp(x(x.size() - 1));
-
-					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size() - 1);
-					for (int i = 0; i < x_display.size(); i++)
-						x_display(i) = std::exp(x(i));
-					logger().debug("material: {}", x_display.transpose());
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-				};
-				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
-					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
-					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
-					x.setZero(2 * body_id_map.size() + 1);
-					for (auto i : body_id_map)
-					{
-						x(i.second[1] * 2 + 0) = std::log(cur_lambdas(i.second[0]));
-						x(i.second[1] * 2 + 1) = std::log(cur_mus(i.second[0]));
-					}
-					x(x.size() - 1) = std::log(state.args["contact"]["friction_coefficient"].get<double>());
-
-					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size() - 1);
-					for (int i = 0; i < x_display.size(); i++)
-						x_display(i) = std::exp(x(i));
-					logger().debug("material: {}", x_display.transpose());
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-				};
-				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
-					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
-					dx.setZero(2 * body_id_map.size() + 1);
-					for (int e = 0; e < dof; e++)
-					{
-						const int body_id = state.mesh->get_body_id(e);
-						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * cur_lambdas(e);
-						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
-					}
-					dx(dx.size() - 1) = dparams(2 * dof) * state.args["contact"]["friction_coefficient"].get<double>();
-				};
-			}
-			else if (material_params["restriction"].get<std::string>() == "constant_log_friction_damping")
-			{
-				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
-
-				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
-					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
-					auto cur_mus = state.assembler.lame_params().mu_mat_;
-
-					cur_lambdas.setConstant(dof, 1, std::exp(x(0)));
-					cur_mus.setConstant(dof, 1, std::exp(x(1)));
-
-					for (int e = 0; e < dof; e++)
-					{
-						const int body_id = state.mesh->get_body_id(e);
-
-						cur_lambdas(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 0));
-						cur_mus(e) = std::exp(x(body_id_map.at(body_id)[1] * 2 + 1));
-					}
-					state.assembler.update_lame_params(cur_lambdas, cur_mus);
-
-					state.args["contact"]["friction_coefficient"] = std::exp(x(x.size() - 3));
-					json damping_param = {
-					{"psi", std::exp(x(x.size() - 2))},
-					{"phi", std::exp(x(x.size() - 1))},
-					};
-					state.assembler.add_multimaterial(0, damping_param);
-					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size() - 3);
-					for (int i = 0; i < x_display.size(); i++)
-						x_display(i) = std::exp(x(i));
-					logger().debug("material: {}", x_display.transpose());
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
-				};
-				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
-					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
-					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
-					x.setZero(2 * body_id_map.size() + 3);
-					for (auto i : body_id_map)
-					{
-						x(i.second[1] * 2 + 0) = std::log(cur_lambdas(i.second[0]));
-						x(i.second[1] * 2 + 1) = std::log(cur_mus(i.second[0]));
-					}
-					x(x.size() - 3) = std::log(state.args["contact"]["friction_coefficient"].get<double>());
-					x(x.size() - 2) = std::log(state.assembler.damping_params()[0]);
-					x(x.size() - 1) = std::log(state.assembler.damping_params()[1]);
-
-					Eigen::VectorXd x_display = Eigen::VectorXd::Zero(x.size() - 3);
-					for (int i = 0; i < x_display.size(); i++)
-						x_display(i) = std::exp(x(i));
-					logger().debug("material: {}", x_display.transpose());
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
-				};
-				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
-					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
-					dx.setZero(2 * body_id_map.size() + 3);
-					for (int e = 0; e < dof; e++)
-					{
-						const int body_id = state.mesh->get_body_id(e);
-						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * cur_lambdas(e);
-						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e + dof) * cur_mus(e);
-					}
-					dx.tail(3) = dparams.tail(3);
-					dx(dx.size() - 3) = dparams(dparams.size() - 3) * state.args["contact"]["friction_coefficient"].get<double>();
-					dx(dx.size() - 2) = dparams(dparams.size() - 2) * state.assembler.damping_params()[0];
-					dx(dx.size() - 1) = dparams(dparams.size() - 1) * state.assembler.damping_params()[1];
-				};
-			}
-			else if (material_params["restriction"].get<std::string>() == "friction_damping")
-			{
-				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
-					state.args["contact"]["friction_coefficient"] = x(x.size() - 3);
-					json damping_param = {
-					{"psi", std::exp(x(x.size() - 2))},
-					{"phi", std::exp(x(x.size() - 1))},
-					};
-					state.assembler.add_multimaterial(0, damping_param);
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
-				};
-				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
-					x.setZero(3);
-
-					x(x.size() - 3) = state.args["contact"]["friction_coefficient"].get<double>();
-					x(x.size() - 2) = state.assembler.damping_params()[0];
-					x(x.size() - 1) = state.assembler.damping_params()[1];
-
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
-				};
-				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-					dx.setZero(3);
-
-					dx.tail(3) = dparams.tail(3);
-
-					logger().debug("opt grad: {}", dx.transpose());
-				};
-			}
-			else if (material_params["restriction"].get<std::string>() == "friction")
-			{
-				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
-					state.args["contact"]["friction_coefficient"] = x(0);
-
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-				};
-				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
-					x.setZero(1);
-
-					x(0) = state.args["contact"]["friction_coefficient"].get<double>();
-
-					logger().debug("friction coeff = {}", state.args["contact"]["friction_coefficient"].get<double>());
-				};
-				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-					dx.setZero(1);
-
-					dx(0) = dparams(dparams.size() - 3);
-
-					logger().debug("opt grad: {}", dx.transpose());
-				};
-			}
-			else if (material_params["restriction"].get<std::string>() == "damping")
-			{
-				material_problem->x_to_param = [](const MaterialProblem::TVector &x, State &state) {
-					json damping_param = {
-					{"psi", std::exp(x(x.size() - 2))},
-					{"phi", std::exp(x(x.size() - 1))},
-					};
-					state.assembler.add_multimaterial(0, damping_param);
-					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
-				};
-				material_problem->param_to_x = [](MaterialProblem::TVector &x, State &state) {
-					x.setZero(2);
-
-					x(x.size() - 2) = state.assembler.damping_params()[0];
-					x(x.size() - 1) = state.assembler.damping_params()[1];
-
-					logger().debug("psi = {}, phi = {}", state.assembler.damping_params()[0], state.assembler.damping_params()[1]);
-				};
-				material_problem->dparam_to_dx = [](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-					dx.setZero(2);
-
-					dx.tail(2) = dparams.tail(2);
-
-					logger().debug("opt grad: {}", dx.transpose());
-				};
+				material_params = param;
+				break;
 			}
 		}
 
+		std::shared_ptr<FrictionProblem> material_problem = std::make_shared<FrictionProblem>(state, j);
+		material_problem->param_to_x(x_initial, state);
+
+		return material_problem;
+	}
+
+	std::shared_ptr<DampingProblem> setup_damping_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
+	{
+		const auto &opt_params = state.args["optimization"];
+		json material_params;
+
+		state.args["output"]["paraview"]["options"]["material"] = true;
+
+		for (const auto &param : opt_params["parameters"])
+		{
+			if (param["type"] == "damping")
+			{
+				material_params = param;
+				break;
+			}
+		}
+
+		std::shared_ptr<DampingProblem> material_problem = std::make_shared<DampingProblem>(state, j);
 		material_problem->param_to_x(x_initial, state);
 
 		return material_problem;
@@ -1166,6 +1007,27 @@ namespace polyfem
 			{
 				Eigen::VectorXd tmp;
 				problems.push_back(setup_control_optimization(state, j, tmp));
+				x_initial_size += tmp.size();
+				x_initial_list.push_back(tmp);
+			}
+			else if (param["type"] == "material")
+			{
+				Eigen::VectorXd tmp;
+				problems.push_back(setup_material_optimization(state, j, tmp));
+				x_initial_size += tmp.size();
+				x_initial_list.push_back(tmp);
+			}
+			else if (param["type"] == "friction")
+			{
+				Eigen::VectorXd tmp;
+				problems.push_back(setup_friction_optimization(state, j, tmp));
+				x_initial_size += tmp.size();
+				x_initial_list.push_back(tmp);
+			}
+			else if (param["type"] == "damping")
+			{
+				Eigen::VectorXd tmp;
+				problems.push_back(setup_damping_optimization(state, j, tmp));
 				x_initial_size += tmp.size();
 				x_initial_list.push_back(tmp);
 			}

@@ -97,8 +97,6 @@ namespace polyfem
 		double max_mu, max_lambda;
 		double min_E, min_nu;
 		double max_E, max_nu;
-		double min_phi, min_psi, min_fric;
-		double max_phi, max_psi, max_fric;
 
 		bool has_material_smoothing = false;
 		json material_params;
