@@ -36,7 +36,7 @@ namespace polyfem
 		}
 
 		Eigen::VectorXd x;
-		if (args["differentiable"])
+		if (args["optimization"]["enabled"])
 		{
 			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
 			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
@@ -134,7 +134,7 @@ namespace polyfem
 
 		const int n_b_samples = n_boundary_samples();
 
-		if (args["differentiable"])
+		if (args["optimization"]["enabled"])
 		{
 			cache_transient_adjoint_quantities(0);
 		}
@@ -207,7 +207,7 @@ namespace polyfem
 
 			save_timestep(time, t, t0, dt);
 
-			if (args["differentiable"])
+			if (args["optimization"]["enabled"])
 			{
 				cache_transient_adjoint_quantities(t);
 			}

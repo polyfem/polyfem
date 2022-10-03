@@ -62,8 +62,8 @@ namespace polyfem
 		cur_grad.resize(0);
 		cur_val = std::nan("");
 
-		opt_nonlinear_params = state.args["solver"]["optimization_nonlinear"];
-		opt_output_params = state.args["output"]["optimization"];
+		opt_nonlinear_params = state.args["optimization"]["solver"]["nonlinear"];
+		opt_output_params = state.args["optimization"]["output"];
 		opt_params = state.args["optimization"];
 
 		save_freq = opt_output_params["save_frequency"];
@@ -72,7 +72,7 @@ namespace polyfem
 
 	void OptimizationProblem::solve_pde(const TVector &x)
 	{
-		if (!state.problem->is_time_dependent() && opt_nonlinear_params.value("better_initial_guess", true))
+		if (!state.problem->is_time_dependent() && opt_nonlinear_params["better_initial_guess"])
 		{
 			if (optimization_name == "shape")
 			{
@@ -92,7 +92,7 @@ namespace polyfem
 
 		// control forward solve log level
 		const int cur_log = state.current_log_level;
-		state.set_log_level(static_cast<spdlog::level::level_enum>(opt_output_params.value("solve_log_level", cur_log)));
+		state.set_log_level(static_cast<spdlog::level::level_enum>(opt_output_params["solve_log_level"]));
 
 		auto output_dir = state.output_dir;
 		if (state.problem->is_time_dependent() && save_iter < iter)
@@ -152,7 +152,7 @@ namespace polyfem
 		descent_direction = x1 - x0;
 
 		// debug
-		if (opt_nonlinear_params.contains("debug_fd") && opt_nonlinear_params["debug_fd"].get<bool>())
+		if (opt_nonlinear_params["debug_fd"].get<bool>())
 		{
 			double t = 1e-6;
 			TVector new_x = x0 + descent_direction * t;

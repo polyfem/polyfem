@@ -213,7 +213,7 @@ namespace polyfem
 		state.get_vf(V_rest, elements);
 
 		// contact
-		const auto &opt_contact_params = state.args["solver"]["optimization_contact"];
+		const auto &opt_contact_params = state.args["optimization"]["solver"]["contact"];
 		has_collision = opt_contact_params["enabled"];
 		if (state.is_contact_enabled() && !has_collision)
 			logger().warn("Problem has collision, but collision detection in shape optimization is disabled!");
@@ -693,16 +693,18 @@ namespace polyfem
 
 		bool should_remesh = false;
 
-		if (shape_params.contains("remesh_tolerance") && min_quality < shape_params["remesh_tolerance"].get<double>())
+		json remesh_args = shape_params["remesh"];
+
+		if (min_quality < remesh_args["tolerance"].get<double>())
 		{
 			should_remesh = true;
 			logger().debug("Remesh due to bad quality...");
 		}
 
-		if (shape_params.contains("remesh_period") && (no_remesh_iter % shape_params["remesh_period"].get<int>() == 0))
+		if (no_remesh_iter % remesh_args["period"].get<int>() == 0)
 		{
 			should_remesh = true;
-			logger().debug("Remesh every {} iter...", shape_params["remesh_period"].get<int>());
+			logger().debug("Remesh every {} iter...", remesh_args["period"].get<int>());
 		}
 
 		if (!should_remesh)
@@ -821,14 +823,8 @@ namespace polyfem
 						return false;
 					}
 
-					if (!shape_params.contains("remesh_exe"))
 					{
-						logger().error("No remeshing executable specified!");
-						return false;
-					}
-					else
-					{
-						std::string command = shape_params["remesh_exe"].template get<std::string>() + " " + tmp_before_remesh_path + " " + after_remesh_path + " -j 10";
+						std::string command = remesh_args["remesh_exe"].template get<std::string>() + " " + tmp_before_remesh_path + " " + after_remesh_path + " -j 10";
 						return_val = system(command.c_str());
 						if (return_val == 0)
 							logger().info("remesh command \"{}\" returns {}", command, return_val);
@@ -899,11 +895,7 @@ namespace polyfem
 
 		state.get_vf(V, F);
 		scaled_jacobian(V, F, quality);
-		// if (quality.minCoeff() <= shape_params["remesh_tolerance"].get<double>())
-		// {
-		// 	logger().error("Quality not good after remeshing!");
-		// 	exit(0);
-		// }
+
 		min_quality = quality.minCoeff();
 		avg_quality = quality.sum() / quality.size();
 		logger().debug("Mesh worst quality: {}, avg quality: {}", min_quality, avg_quality);
@@ -1017,9 +1009,9 @@ namespace polyfem
 							fixed_nodes.insert(g.index);
 			}
 		}
-		else if (shape_params.contains("boundary_selection"))
+		else if (shape_params.contains("surface_selection"))
 		{
-			for (int i : shape_params["boundary_selection"])
+			for (int i : shape_params["surface_selection"])
 				optimize_boundary_ids.insert(i);
 
 			for (const auto &lb : state.total_local_boundary)

@@ -14,11 +14,11 @@
             "contact",
             "solver",
             "boundary_conditions",
-            "differentiable",
             "initial_conditions",
             "output",
             "input",
-            "tests"
+            "tests",
+            "optimization"
         ],
         "doc": "Root of the configuration file."
     },
@@ -1045,10 +1045,8 @@
         "optional": [
             "linear",
             "nonlinear",
-            "optimization_nonlinear",
             "augmented_lagrangian",
             "contact",
-            "optimization_contact",
             "ignore_inertia",
             "advanced"
         ],
@@ -1481,7 +1479,7 @@
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
     {
-        "pointer": "/solver/optimization_nonlinear",
+        "pointer": "/optimization/solver/nonlinear",
         "default": null,
         "type": "object",
         "optional": [
@@ -1505,7 +1503,7 @@
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/solver",
+        "pointer": "/optimization/solver/nonlinear/solver",
         "default": "lbfgs",
         "type": "string",
         "options": [
@@ -1518,91 +1516,91 @@
         "doc": "Nonlinear solver type"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/export_energy",
+        "pointer": "/optimization/solver/nonlinear/export_energy",
         "default": "runtime.csv",
         "type": "string",
         "doc": "Save energy and gradient in optimizations to file"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/debug_fd",
+        "pointer": "/optimization/solver/nonlinear/debug_fd",
         "default": false,
         "type": "bool",
         "doc": "Use finite difference to verify gradient in optimization"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/max_change",
+        "pointer": "/optimization/solver/nonlinear/max_change",
         "default": 1e10,
         "type": "float",
         "doc": "Max difference in design variables in single iteration"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/max_step_size",
+        "pointer": "/optimization/solver/nonlinear/max_step_size",
         "default": 1,
         "type": "float",
         "doc": "Max step size in line search"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/better_initial_guess",
+        "pointer": "/optimization/solver/nonlinear/better_initial_guess",
         "default": false,
         "type": "bool",
         "doc": "Use former solves as the initial guess in line search iterations"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/f_delta",
+        "pointer": "/optimization/solver/nonlinear/f_delta",
         "default": 1e-10,
         "type": "float",
         "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/x_delta",
+        "pointer": "/optimization/solver/nonlinear/x_delta",
         "default": 0,
         "type": "float",
         "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/solver_info_log",
+        "pointer": "/optimization/solver/nonlinear/solver_info_log",
         "default": true,
         "type": "bool",
         "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/grad_norm",
+        "pointer": "/optimization/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
         "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/first_grad_norm_tol",
+        "pointer": "/optimization/solver/nonlinear/first_grad_norm_tol",
         "default": 1e-8,
         "type": "float",
         "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
     },
     {
-        "pointer": "/solver/optimization_nonlinear/min_step_size",
+        "pointer": "/optimization/solver/nonlinear/min_step_size",
         "default": 0,
         "type": "float",
         "doc": "Minimum step size in line search"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/max_iterations",
+        "pointer": "/optimization/solver/nonlinear/max_iterations",
         "default": 200,
         "type": "int",
         "doc": "Maximum number of iterations for a non-linear solve."
     },
     {
-        "pointer": "/solver/optimization_nonlinear/use_grad_norm",
+        "pointer": "/optimization/solver/nonlinear/use_grad_norm",
         "default": true,
         "type": "bool",
         "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
     },
     {
-        "pointer": "/solver/optimization_nonlinear/relative_gradient",
+        "pointer": "/optimization/solver/nonlinear/relative_gradient",
         "default": false,
         "type": "bool",
         "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/line_search",
+        "pointer": "/optimization/solver/nonlinear/line_search",
         "default": null,
         "type": "object",
         "optional": [
@@ -1612,7 +1610,7 @@
         "doc": "Settings for line-search in the nonlinear solver"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/line_search/method",
+        "pointer": "/optimization/solver/nonlinear/line_search/method",
         "default": "backtracking",
         "type": "string",
         "options": [
@@ -1622,7 +1620,7 @@
         "doc": "Line-search type"
     },
     {
-        "pointer": "/solver/optimization_nonlinear/line_search/use_grad_norm_tol",
+        "pointer": "/optimization/solver/nonlinear/line_search/use_grad_norm_tol",
         "default": 0,
         "type": "float",
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
@@ -1841,10 +1839,11 @@
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
-        "pointer": "/solver/optimization_contact",
+        "pointer": "/optimization/solver/contact",
         "default": null,
         "type": "object",
         "optional": [
+            "enabled",
             "CCD",
             "barrier_stiffness",
             "dhat"
@@ -1852,7 +1851,13 @@
         "doc": "Settings for optimization contact handling in the solver."
     },
     {
-        "pointer": "/solver/optimization_contact/CCD",
+        "pointer": "/optimization/solver/contact/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/solver/contact/CCD",
         "default": null,
         "type": "object",
         "optional": [
@@ -1863,7 +1868,7 @@
         "doc": "CCD options"
     },
     {
-        "pointer": "/solver/optimization_contact/CCD/broad_phase",
+        "pointer": "/optimization/solver/contact/CCD/broad_phase",
         "default": "hash_grid",
         "type": "string",
         "options": [
@@ -1881,25 +1886,25 @@
         "doc": "Broad phase collision-detection algorithm to use"
     },
     {
-        "pointer": "/solver/optimization_contact/CCD/tolerance",
+        "pointer": "/optimization/solver/contact/CCD/tolerance",
         "default": 1e-06,
         "type": "float",
         "doc": "CCD tolerance"
     },
     {
-        "pointer": "/solver/optimization_contact/CCD/max_iterations",
+        "pointer": "/optimization/solver/contact/CCD/max_iterations",
         "default": 1000000.0,
         "type": "float",
         "doc": "Maximum number of iterations for continuous collision detection"
     },
     {
-        "pointer": "/solver/optimization_contact/barrier_stiffness",
+        "pointer": "/optimization/solver/contact/barrier_stiffness",
         "type": "float",
         "default": 0,
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
-        "pointer": "/solver/optimization_contact/dhat",
+        "pointer": "/optimization/solver/contact/dhat",
         "type": "float",
         "default": 1e-3,
         "doc": "The support size of barrier function"
@@ -2650,10 +2655,552 @@
         "doc": "value as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/differentiable",
+        "pointer": "/optimization",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "solver",
+            "output",
+            "parameters",
+            "functionals"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/output",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solve_log_level",
+            "save_frequency"
+        ],
+        "doc": "Optimization output options"
+    },
+    {
+        "pointer": "/optimization/output/save_frequency",
+        "default": 1,
+        "type": "int",
+        "doc": "Optimization output frequency"
+    },
+    {
+        "pointer": "/optimization/output/solve_log_level",
+        "default": 2,
+        "type": "int",
+        "doc": "Log level in forward solve"
+    },
+    {
+        "pointer": "/optimization/solver",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "nonlinear",
+            "contact"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/enabled",
         "type": "bool",
         "default": false,
         "doc": "Cache transient solutions for differentiability of PDE solution."
+    },
+    {
+        "pointer": "/optimization/parameters",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/type",
+        "type": "string",
+        "options": [
+            "initial",
+            "material",
+            "shape",
+            "control",
+            "topology"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/restriction",
+        "type": "string",
+        "default": "",
+        "options": [
+            "",
+            "position",
+            "velocity",
+            "velocityXZ",
+            "constant",
+            "log",
+            "E_nu",
+            "constant_E_nu",
+            "constant_log",
+            "constant_log_friction",
+            "constant_log_friction_damping",
+            "friction_damping",
+            "friction",
+            "damping",
+            "cubic_hermite_spline"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type": "object",
+        "type_name": "initial",
+        "optional": [
+            "restriction"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type": "object",
+        "type_name": "topology",
+        "optional": [
+            "power"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/power",
+        "type": "int",
+        "default": 1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type_name": "shape",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "restriction",
+            "smoothing_paramters",
+            "remesh",
+            "spline_specification"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification",
+        "type": "object",
+        "default": null,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/remesh",
+        "type": "object",
+        "default": null,
+        "required": [
+            "remesh_exe"
+        ],
+        "optional": [
+            "period",
+            "tolerance"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/remesh/remesh_exe",
+        "type": "string",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/remesh/tolerance",
+        "type": "float",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/remesh/period",
+        "type": "int",
+        "default": 1000000,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/smoothing_paramters",
+        "type": "object",
+        "default": null,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/smoothing_paramters/exp_factor",
+        "type": "float",
+        "default": 5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/smoothing_paramters/soft_p",
+        "type": "float",
+        "default": 1e5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/smoothing_paramters/tol",
+        "type": "float",
+        "default": 1e-8,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/smoothing_paramters/min_iter",
+        "type": "int",
+        "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type": "object",
+        "type_name": "material",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "restriction",
+            "E_bound",
+            "nu_bound",
+            "lambda_bound",
+            "mu_bound",
+            "phi_bound",
+            "psi_bound",
+            "fric_bound"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/E_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/phi_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/psi_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/fric_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/nu_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/lambda_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/mu_bound",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*",
+        "type": "object",
+        "type_name": "control",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/type",
+        "type": "string",
+        "options": [
+            "trajectory",
+            "height",
+            "stress",
+            "boundary_smoothing",
+            "control_smoothing",
+            "material_smoothing",
+            "volume_constraint"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/power",
+        "type": "float",
+        "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/adjust_weight_period",
+        "type": "int",
+        "default": 1000000,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/adjustment_coeff",
+        "type": "float",
+        "default": 1.0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/scale_invariant",
+        "type": "bool",
+        "default": true,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "trajectory",
+        "required": [
+            "type",
+            "matching"
+        ],
+        "optional": [
+            "path",
+            "target_position",
+            "control_points",
+            "tangents",
+            "delta",
+            "transient_integral_type",
+            "weight",
+            "volume_selection",
+            "surface_selection",
+            "reference_cached_body_ids"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/volume_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/volume_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/surface_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/surface_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/reference_cached_body_ids",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/reference_cached_body_ids/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/path",
+        "type": "string",
+        "default": "",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/weight",
+        "type": "float",
+        "default": 1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/transient_integral_type",
+        "type": "string",
+        "default": "uniform",
+        "options": [
+            "simpson",
+            "uniform",
+            "final"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/target_position",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/target_position/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/tangents",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/tangents/*",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/tangents/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/control_points",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/control_points/*",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/control_points/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/delta",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/delta/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/matching",
+        "type": "string",
+        "options": [
+            "exact-center",
+            "sine",
+            "exact",
+            "sdf",
+            "center-data",
+            "last-center",
+            "marker-data"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "height",
+        "required": [
+            "type",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "stress",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "power",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "boundary_smoothing",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "scale_invariant",
+            "power",
+            "weight",
+            "adjust_weight_period",
+            "adjustment_coeff"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "material_smoothing",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "control_smoothing",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*",
+        "type": "object",
+        "type_name": "volume_constraint",
+        "required": [
+            "type",
+            "soft_bound"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/soft_bound",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/functionals/*/soft_bound/*",
+        "type": "float",
+        "doc": "TODO"
     },
     {
         "pointer": "/output",
@@ -2664,8 +3211,7 @@
             "paraview",
             "data",
             "advanced",
-            "reference",
-            "optimization"
+            "reference"
         ],
         "doc": "output settings"
     },
@@ -2690,28 +3236,6 @@
             "options"
         ],
         "doc": "Output in paraview format"
-    },
-    {
-        "pointer": "/output/optimization",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "solve_log_level",
-            "save_frequency"
-        ],
-        "doc": "Optimization output options"
-    },
-    {
-        "pointer": "/output/optimization/save_frequency",
-        "default": 1,
-        "type": "int",
-        "doc": "Optimization output frequency"
-    },
-    {
-        "pointer": "/output/optimization/solve_log_level",
-        "default": 2,
-        "type": "int",
-        "doc": "Log level in forward solve"
     },
     {
         "pointer": "/output/paraview/file_name",

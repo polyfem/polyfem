@@ -113,14 +113,14 @@ namespace polyfem
 
 		save_timestep(t0, 0, t0, dt);
 
-		if (args["differentiable"])
+		if (args["optimization"]["enabled"])
 			cache_transient_adjoint_quantities(0);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_tensor_nonlinear(t);
 
-			if (args["differentiable"])
+			if (args["optimization"]["enabled"])
 				cache_transient_adjoint_quantities(t);
 
 			{
@@ -302,7 +302,7 @@ namespace polyfem
 			initial_velocity(acceleration);
 			assert(acceleration.size() == sol.size());
 
-			if (args["differentiable"])
+			if (args["optimization"]["enabled"])
 			{
 				if (initial_sol_update.size() > 0)
 					sol = initial_sol_update;
@@ -385,7 +385,7 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 
-		if (!args["differentiable"])
+		if (!args["optimization"]["enabled"])
 		{
 			// TODO: Make this more general
 			const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);

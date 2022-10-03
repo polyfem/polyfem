@@ -28,10 +28,10 @@ namespace polyfem
 			}
 		}
 
-		if (control_params.contains("optimize_boundary_ids"))
+		if (control_params.contains("surface_selection"))
 		{
 			int count = 0;
-			for (int i : control_params["optimize_boundary_ids"])
+			for (int i : control_params["surface_selection"])
 			{
 				optimize_boundary_ids_to_position[i] = count;
 				count++;

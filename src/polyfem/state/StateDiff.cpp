@@ -521,7 +521,7 @@ namespace polyfem
 
 		StiffnessMatrix gradu_h;
 		StiffnessMatrix gradu_h_prev;
-		if (args["differentiable"] && current_step > 0)
+		if (args["optimization"]["enabled"] && current_step > 0)
 			compute_force_hessian(gradu_h, gradu_h_prev, std::min(current_step, bdf_order));
 
 		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());

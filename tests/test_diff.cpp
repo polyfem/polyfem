@@ -418,7 +418,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 				"solver": "Eigen::PardisoLDLT"
 			}
 		},
-		"differentiable": true,
+		"optimization": { "enabled": true },
 		"boundary_conditions": {
 			"rhs": [
 				10,
@@ -510,7 +510,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 				"solver": "Eigen::PardisoLDLT"
 			}
 		},
-		"differentiable": true,
+		"optimization": { "enabled": true },
 		"boundary_conditions": {
 			"rhs": [
 				10,
@@ -632,7 +632,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 				]
 			}
 		],
-		"differentiable": true,
+		"optimization": { "enabled": true },
 		"contact": {
 			"enabled": true,
 			"dhat": 0.001
@@ -948,7 +948,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1000000.0,
@@ -1112,7 +1112,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1e6,
@@ -1271,7 +1271,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1000000.0,
@@ -1432,7 +1432,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1000000.0,
@@ -1597,7 +1597,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1e5,
@@ -1768,7 +1768,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 					}
 // 				]
 // 			},
-// 			"differentiable": true,
+// 			"optimization": { "enabled": true },
 // 			"materials": [
 // 				{
 // 					"id": 1,
@@ -1948,7 +1948,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 					}
 // 				]
 // 			},
-// 			"differentiable": true,
+// 			"optimization": { "enabled": true },
 // 			"materials": {
 // 				"type": "NeoHookean",
 // 				"E": 1000000.0,
@@ -2107,7 +2107,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 // 					}
 // 				]
 // 			},
-// 			"differentiable": true,
+// 			"optimization": { "enabled": true },
 // 			"materials":
 // 			{
 // 				"E": 1000000.0,
@@ -2250,7 +2250,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1000000.0,
@@ -2417,7 +2417,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 					}
 				]
 			},
-			"differentiable": true,
+			"optimization": { "enabled": true },
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1000000.0,
@@ -2566,7 +2566,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 				]
 			}
 		],
-		"differentiable": true,
+		"optimization": { "enabled": true },
 		"space": {
 			"discr_order": 2,
 			"advanced": {
@@ -2905,7 +2905,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 				]
 			}
 		],
-		"differentiable": true,
+		"optimization": { "enabled": true },
 		"space": {
 			"discr_order": 1,
 			"advanced": {

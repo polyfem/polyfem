@@ -50,7 +50,7 @@ namespace polyfem
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(const json &solver_params)
 	{
-		const std::string name = solver_params.contains("solver") ? solver_params["solver"].template get<std::string>() : "lbfgs";
+		const std::string name = solver_params["solver"].template get<std::string>();
 		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
 		{
 			return std::make_shared<cppoptlib::GradientDescentSolver<ProblemType>>(
@@ -102,7 +102,7 @@ namespace polyfem
 
 		// fix certain object
 		std::set<int> optimize_body_ids;
-		if (initial_params.contains("volume_selection"))
+		if (initial_params["volume_selection"].size() > 0)
 		{
 			for (int i : initial_params["volume_selection"])
 				optimize_body_ids.insert(i);
@@ -147,10 +147,6 @@ namespace polyfem
 			}
 		}
 		logger().info("{} objects found, each object has a constant initial velocity and position...", body_id_map.size());
-
-		// by default optimize for initial velocity
-		if (!initial_params.contains("restriction"))
-			initial_params["restriction"] = "";
 
 		if (initial_params["restriction"].get<std::string>() == "velocity")
 		{
@@ -377,7 +373,7 @@ namespace polyfem
 
 		// fix certain object
 		std::set<int> optimize_body_ids;
-		if (material_params.contains("volume_selection"))
+		if (material_params["volume_selection"].size() > 0)
 		{
 			for (int i : material_params["volume_selection"])
 				optimize_body_ids.insert(i);
@@ -401,7 +397,6 @@ namespace polyfem
 		}
 
 		// constraints on optimization
-		if (material_params.contains("restriction"))
 		{
 			if (material_params["restriction"].get<std::string>() == "constant")
 			{
@@ -854,7 +849,6 @@ namespace polyfem
 		state.get_vf(V, F);
 
 		const auto &shape_params = shape_problem->get_shape_params();
-		if (shape_params.contains("restriction"))
 		{
 			if (shape_params["restriction"].get<std::string>() == "cubic_hermite_spline" and shape_params.contains("spline_specification"))
 			{
@@ -1035,10 +1029,7 @@ namespace polyfem
 					// density_mat.setOnes();
 				}
 
-				if (param.contains("power"))
-					state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat), param["power"]);
-				else
-					state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat));
+				state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat), param["power"]);
 				break;
 			}
 		}
@@ -1051,7 +1042,7 @@ namespace polyfem
 	std::shared_ptr<ControlProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = opt_params["solver"]["nonlinear"];
 
 		std::shared_ptr<ControlProblem> control_problem = std::make_shared<ControlProblem>(state, j);
 		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
@@ -1059,10 +1050,11 @@ namespace polyfem
 
 		Eigen::VectorXd x;
 		x.setZero(control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() * state.args["time"]["time_steps"].get<int>());
-		for (int i = 0; i < state.args["boundary_conditions"]["dirichlet_boundary"].size(); ++i)
-			if (control_problem->get_optimize_boundary_ids_to_position().count(state.args["boundary_conditions"]["dirichlet_boundary"][i]["id"].get<int>()) != 0)
+		std::vector<json> dirichlet_bc_params = state.args["boundary_conditions"]["dirichlet_boundary"];
+		for (int i = 0; i < dirichlet_bc_params.size(); ++i)
+			if (control_problem->get_optimize_boundary_ids_to_position().count(dirichlet_bc_params[i]["id"].get<int>()) != 0)
 			{
-				int position = control_problem->get_optimize_boundary_ids_to_position().at(state.args["boundary_conditions"]["dirichlet_boundary"][i]["id"].get<int>());
+				int position = control_problem->get_optimize_boundary_ids_to_position().at(dirichlet_bc_params[i]["id"].get<int>());
 				for (int k = 0; k < state.mesh->dimension(); ++k)
 					for (int t = 0; t < state.args["time"]["time_steps"]; ++t)
 						x(t * control_problem->get_optimize_boundary_ids_to_position().size() * state.mesh->dimension() + position * state.mesh->dimension() + k) = state.args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>();
@@ -1076,7 +1068,7 @@ namespace polyfem
 
 	void initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<InitialConditionProblem>> nlsolver = make_nl_solver<InitialConditionProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1092,7 +1084,7 @@ namespace polyfem
 
 	void material_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1108,7 +1100,7 @@ namespace polyfem
 
 	void shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<ShapeProblem>> nlsolver = make_nl_solver<ShapeProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1124,7 +1116,7 @@ namespace polyfem
 
 	void topology_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<TopologyOptimizationProblem>> nlsolver = make_nl_solver<TopologyOptimizationProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 
@@ -1140,7 +1132,7 @@ namespace polyfem
 
 	void control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<ControlProblem>> nlsolver = make_nl_solver<ControlProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
@@ -1200,7 +1192,7 @@ namespace polyfem
 
 	void general_optimization(State &state, const std::shared_ptr<CompositeFunctional> j)
 	{
-		const auto &opt_nl_params = state.args["solver"]["optimization_nonlinear"];
+		const auto &opt_nl_params = state.args["optimization"]["solver"]["nonlinear"];
 		std::shared_ptr<cppoptlib::NonlinearSolver<GeneralOptimizationProblem>> nlsolver = make_nl_solver<GeneralOptimizationProblem>(opt_nl_params);
 		nlsolver->set_line_search(opt_nl_params["line_search"]["method"]);
 

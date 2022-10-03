@@ -108,13 +108,9 @@ int main(int argc, char **argv)
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
 
-	const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
-	std::string solver;
-	command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
-
 	const std::set<std::string> valid_opt_types = {"material", "shape", "initial", "control"};
 
-	const std::set<std::string> matching_types = {"exact-center", "sine", "exact", "sdf", "center-data", "max-height", "last-center", "marker-data"};
+	const std::set<std::string> matching_types = {"exact-center", "sine", "exact", "sdf", "center-data", "last-center", "marker-data"};
 
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
@@ -135,14 +131,17 @@ int main(int argc, char **argv)
 	std::vector<Eigen::MatrixXi> cells;
 	std::vector<Eigen::MatrixXd> vertices;
 
-	json in_args = json({});
-	json target_in_args = json({});
+	State state(max_threads);
+	state.init_logger(log_file, log_level, false);
 
 	std::string target_path, matching_type, opt_type;
 	std::vector<std::string> opt_types;
 
-	json opt_params, trajectory_params;
+	json opt_params, objective_params;
 	std::string transient_integral_type = "";
+
+	if (!output_dir.empty())
+		create_directories(output_dir);
 
 	Eigen::MatrixXd control_points, tangents, delta;
 	Eigen::Vector3d target_position;
@@ -151,6 +150,7 @@ int main(int argc, char **argv)
 	{
 		std::ifstream file(json_file);
 
+		json in_args = json({});
 		if (file.is_open())
 			file >> in_args;
 		else
@@ -158,49 +158,50 @@ int main(int argc, char **argv)
 		file.close();
 
 		in_args["root_path"] = json_file;
-		opt_params = in_args["optimization"];
+		state.init(in_args, false, output_dir);
+	}
+	else
+	{
+		logger().error("No json provided!");
+		return EXIT_FAILURE;
+	}
 
-		if (opt_params.contains("parameters"))
+	opt_params = state.args["optimization"];
+	if (opt_params["parameters"].size() > 0)
+	{
+		if (opt_params["parameters"].size() == 1)
 		{
-			if (opt_params["parameters"].size() == 1)
-			{
-				opt_type = opt_params["parameters"][0]["type"];
-				assert(valid_opt_types.count(opt_type));
-			}
-			else
-				for (int i = 0; i < opt_params["parameters"].size(); ++i)
-				{
-					opt_types.push_back(opt_params["parameters"][i]["type"]);
-					assert(valid_opt_types.count(opt_types[i]));
-				}
+			opt_type = opt_params["parameters"][0]["type"];
+			assert(valid_opt_types.count(opt_type));
 		}
 		else
-			throw std::runtime_error("No optimization parameter specified!");
+			for (int i = 0; i < opt_params["parameters"].size(); ++i)
+			{
+				opt_types.push_back(opt_params["parameters"][i]["type"]);
+				assert(valid_opt_types.count(opt_types[i]));
+			}
+	}
+	else
+		throw std::runtime_error("No optimization parameter specified!");
 
-		if (opt_params.contains("functionals"))
+	if (opt_params["functionals"].size() > 0)
+	{
+		objective_params = opt_params["functionals"][0];
+
+		if (objective_params["type"] != "trajectory" && objective_params["type"] != "height")
+			throw std::runtime_error("Unrecognized functional!");
+
+		transient_integral_type = objective_params["transient_integral_type"];
+
+		if (objective_params["type"] == "trajectory")
 		{
-			trajectory_params = opt_params["functionals"][0];
-
-			if (trajectory_params["type"] != "trajectory")
-				throw std::runtime_error("The first functional should be trajectory!");
-
-			if (trajectory_params.contains("matching"))
-				matching_type = trajectory_params["matching"];
-			else
-				throw std::runtime_error("Matching type not specified!");
-			assert(matching_types.count(matching_type));
-
-			if (trajectory_params.contains("transient_integral_type"))
-				transient_integral_type = trajectory_params["transient_integral_type"];
-
-			if (trajectory_params.contains("path"))
-				target_path = trajectory_params["path"];
+			matching_type = objective_params["matching"];
+			target_path = objective_params["path"];
 
 			if (matching_type == "last-center")
 			{
-				assert(trajectory_params.contains("target_position"));
 				int i = 0;
-				for (double x : trajectory_params["target_position"].get<std::vector<double>>())
+				for (double x : objective_params["target_position"].get<std::vector<double>>())
 				{
 					if (i >= target_position.size())
 						break;
@@ -211,57 +212,36 @@ int main(int argc, char **argv)
 			else if (matching_type == "sdf")
 			{
 				double dim;
-				if (trajectory_params.contains("control_points"))
+				control_points.setZero(objective_params["control_points"].size(), objective_params["control_points"][0].size());
+				for (int i = 0; i < objective_params["control_points"].size(); ++i)
 				{
-					if (trajectory_params["control_points"].is_array() && trajectory_params["control_points"].size() > 0)
-					{
-						control_points.setZero(trajectory_params["control_points"].size(), trajectory_params["control_points"][0].size());
-						for (int i = 0; i < trajectory_params["control_points"].size(); ++i)
-						{
-							dim = trajectory_params["control_points"][i].size();
-							for (int j = 0; j < trajectory_params["control_points"][i].size(); ++j)
-								control_points(i, j) = trajectory_params["control_points"][i][j].get<double>();
-						}
-					}
+					dim = objective_params["control_points"][i].size();
+					for (int j = 0; j < objective_params["control_points"][i].size(); ++j)
+						control_points(i, j) = objective_params["control_points"][i][j].get<double>();
 				}
+				tangents.setZero(objective_params["tangents"].size(), objective_params["tangents"][0].size());
+				for (int i = 0; i < objective_params["tangents"].size(); ++i)
+					for (int j = 0; j < objective_params["tangents"][i].size(); ++j)
+						tangents(i, j) = objective_params["tangents"][i][j].get<double>();
 
-				if (trajectory_params.contains("tangents"))
-				{
-					if (trajectory_params["tangents"].is_array() && trajectory_params["tangents"].size() > 0)
-					{
-						tangents.setZero(trajectory_params["tangents"].size(), trajectory_params["tangents"][0].size());
-						for (int i = 0; i < trajectory_params["tangents"].size(); ++i)
-							for (int j = 0; j < trajectory_params["tangents"][i].size(); ++j)
-								tangents(i, j) = trajectory_params["tangents"][i][j].get<double>();
-					}
-				}
-
-				if (trajectory_params.contains("delta"))
-				{
-					if (trajectory_params["delta"].is_array())
-					{
-						delta.setZero(trajectory_params["delta"].size(), 1);
-						for (int i = 0; i < delta.size(); ++i)
-							delta(i) = trajectory_params["delta"][i].get<double>();
-					}
-				}
+				delta.setZero(objective_params["delta"].size(), 1);
+				for (int i = 0; i < delta.size(); ++i)
+					delta(i) = objective_params["delta"][i].get<double>();
 			}
 		}
-		else
-			throw std::runtime_error("No functional specifed in json!");
 	}
 	else
-	{
-		logger().error("No json provided!");
-		return EXIT_FAILURE;
-	}
+		throw std::runtime_error("No functional specifed in json!");
 
-	if (utils::StringUtils::startswith(matching_type, "exact"))
+	State state_reference(max_threads);
+	state_reference.init_logger(log_file, state.args["optimization"]["output"]["solve_log_level"], false);
+	if (objective_params["type"] == "trajectory" && utils::StringUtils::startswith(matching_type, "exact"))
 	{
 		if (!target_path.empty())
 		{
 			std::ifstream file(target_path);
 
+			json target_in_args = json({});
 			if (file.is_open())
 				file >> target_in_args;
 			else
@@ -269,25 +249,14 @@ int main(int argc, char **argv)
 			file.close();
 
 			target_in_args["root_path"] = target_path;
+			target_in_args["optimization"]["enabled"] = true;
+			state_reference.init(target_in_args, false, output_dir);
 		}
 		else
 			throw std::runtime_error("Target json input missing!");
-	}
 
-	if (!solver.empty())
-		in_args["solver"]["linear"]["solver"] = solver;
-
-	if (!output_dir.empty())
-		create_directories(output_dir);
-
-	// compute reference solution
-	State state_reference(max_threads);
-	if (utils::StringUtils::startswith(matching_type, "exact"))
-	{
 		logger().info("Start reference solve...");
-		target_in_args["differentiable"] = true;
-		state_reference.init_logger(log_file, in_args["output"]["optimization"]["solve_log_level"], false);
-		state_reference.init(target_in_args, false, output_dir);
+
 		state_reference.load_mesh();
 
 		// Mesh was not loaded successfully; load_mesh() logged the error.
@@ -329,12 +298,9 @@ int main(int argc, char **argv)
 		logger().info("Reference solve done!");
 	}
 
-	State state(max_threads);
-	state.init_logger(log_file, log_level, false);
-	state.init(in_args, false, output_dir);
 	state.load_mesh();
 
-	if (state.is_contact_enabled() && !state.args["solver"]["contact"].contains("barrier_stiffness"))
+	if (state.is_contact_enabled() && !state.args["solver"]["contact"]["barrier_stiffness"].is_number())
 	{
 		logger().error("Not fixing the barrier stiffness in optimization!");
 		return EXIT_FAILURE;
@@ -347,34 +313,6 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	std::set<int> interested_body_ids;
-	if (trajectory_params.contains("interested_body_ids"))
-	{
-		const auto &interested_bodies = trajectory_params["interested_body_ids"].get<std::vector<int>>();
-		interested_body_ids = std::set(interested_bodies.begin(), interested_bodies.end());
-	}
-
-	std::set<int> interested_boundary_ids;
-	if (trajectory_params.contains("interested_boundary_ids"))
-	{
-		const auto &interested_boundaries = trajectory_params["interested_boundary_ids"].get<std::vector<int>>();
-		interested_boundary_ids = std::set(interested_boundaries.begin(), interested_boundaries.end());
-	}
-
-	std::set<int> reference_cached_body_ids;
-	if (matching_type == "exact")
-	{
-		if (trajectory_params.contains("reference_cached_body_ids"))
-		{
-			const auto &ref_cached = trajectory_params["reference_cached_body_ids"].get<std::vector<int>>();
-			reference_cached_body_ids = std::set(ref_cached.begin(), ref_cached.end());
-		}
-		else if (interested_body_ids.size() != 0)
-		{
-			reference_cached_body_ids = interested_body_ids;
-		}
-	}
-
 	state.stats.compute_mesh_stats(*state.mesh);
 	state.build_basis();
 
@@ -383,33 +321,61 @@ int main(int argc, char **argv)
 
 	assert(state.formulation() == "LinearElasticity" || state.formulation() == "NeoHookean");
 	std::shared_ptr<CompositeFunctional> func;
-	if (matching_type == "exact")
-		func = CompositeFunctional::create("Trajectory");
-	else if (matching_type == "sdf")
-		func = CompositeFunctional::create("SDFTrajectory");
-	else if (matching_type == "exact-center")
-		func = CompositeFunctional::create("CenterTrajectory");
-	else if (matching_type == "last-center")
-		func = CompositeFunctional::create("CenterXZTrajectory");
-	else if (matching_type == "sine")
-		func = CompositeFunctional::create("TargetY");
-	else if (matching_type == "max-height")
+	if (objective_params["type"] == "trajectory")
+	{
+		if (matching_type == "exact")
+			func = CompositeFunctional::create("Trajectory");
+		else if (matching_type == "sdf")
+			func = CompositeFunctional::create("SDFTrajectory");
+		else if (matching_type == "exact-center")
+			func = CompositeFunctional::create("CenterTrajectory");
+		else if (matching_type == "last-center")
+			func = CompositeFunctional::create("CenterXZTrajectory");
+		else if (matching_type == "sine")
+			func = CompositeFunctional::create("TargetY");
+		else if (matching_type == "center-data")
+			func = CompositeFunctional::create("CenterXYTrajectory");
+		else if (matching_type == "marker-data")
+			func = CompositeFunctional::create("NodeTrajectory");
+		else
+			logger().error("Invalid matching type!");
+	}
+	else if (objective_params["type"] == "height")
+	{
 		func = CompositeFunctional::create("Height");
-	else if (matching_type == "center-data")
-		func = CompositeFunctional::create("CenterXYTrajectory");
-	else if (matching_type == "marker-data")
-		func = CompositeFunctional::create("NodeTrajectory");
-	else
-		logger().error("Invalid target type!");
+	}
 
 	if (transient_integral_type != "")
 		func->set_transient_integral_type(transient_integral_type);
+
+	std::set<int> interested_body_ids;
+	const auto &interested_bodies = objective_params["volume_selection"].get<std::vector<int>>();
+	interested_body_ids = std::set(interested_bodies.begin(), interested_bodies.end());
+
+	std::set<int> interested_boundary_ids;
+	const auto &interested_boundaries = objective_params["surface_selection"].get<std::vector<int>>();
+	interested_boundary_ids = std::set(interested_boundaries.begin(), interested_boundaries.end());
 
 	func->set_interested_ids(interested_body_ids, interested_boundary_ids);
 
 	if (matching_type == "exact")
 	{
 		auto &f = *dynamic_cast<TrajectoryFunctional *>(func.get());
+
+		std::set<int> reference_cached_body_ids;
+		if (objective_params["type"] == "trajectory" && matching_type == "exact")
+		{
+			if (objective_params["reference_cached_body_ids"].size() > 0)
+			{
+				const auto &ref_cached = objective_params["reference_cached_body_ids"].get<std::vector<int>>();
+				reference_cached_body_ids = std::set(ref_cached.begin(), ref_cached.end());
+			}
+			else
+			{
+				reference_cached_body_ids = interested_body_ids;
+			}
+		}
+
 		f.set_reference(&state_reference, state, reference_cached_body_ids);
 	}
 	else if (matching_type == "sdf")
@@ -487,7 +453,7 @@ int main(int argc, char **argv)
 	}
 	else if (matching_type == "marker-data")
 	{
-		const std::string scene = in_args["optimization"]["name"];
+		const std::string scene = state.args["optimization"]["name"];
 		auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(func.get());
 		std::ifstream infile(target_path);
 		std::vector<Eigen::VectorXd> markers;
