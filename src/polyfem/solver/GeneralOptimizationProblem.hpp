@@ -1,22 +1,25 @@
 #pragma once
 
-#include "OptimizationProblem.hpp"
+#include <cppoptlib/problem.h>
 
 namespace polyfem
 {
-	class GeneralOptimizationProblem : public OptimizationProblem
+	class GeneralOptimizationProblem : public cppoptlib::Problem<double>
 	{
 	public:
-		GeneralOptimizationProblem(State &state_, std::vector<std::shared_ptr<OptimizationProblem>> subproblems_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
+		using typename cppoptlib::Problem<double>::Scalar;
+		using typename cppoptlib::Problem<double>::TVector;
+
+		GeneralOptimizationProblem(std::vector<std::shared_ptr<OptimizationProblem>> subproblems_, const std::shared_ptr<CompositeFunctional> j_)
 		{
 			subproblems = subproblems_;
 			for (const auto &subproblem : subproblems)
 				optimization_dim_ += subproblem->optimization_dim();
 		}
 
-		int optimization_dim() override { return optimization_dim_; }
+		int optimization_dim()  { return optimization_dim_; }
 
-		double target_value(const TVector &x) override
+		double target_value(const TVector &x) 
 		{
 			double val = 0;
 			int cumulative = 0;
@@ -28,7 +31,7 @@ namespace polyfem
 			return val;
 		}
 
-		double value(const TVector &x) override
+		double value(const TVector &x) 
 		{
 			double val = 0;
 			int cumulative = 0;
@@ -40,7 +43,7 @@ namespace polyfem
 			return val;
 		}
 
-		double value(const TVector &x, const bool only_elastic) override
+		double value(const TVector &x, const bool only_elastic) 
 		{
 			double val = 0;
 			int cumulative = 0;
@@ -52,7 +55,7 @@ namespace polyfem
 			return val;
 		}
 
-		void target_gradient(const TVector &x, TVector &gradv) override
+		void target_gradient(const TVector &x, TVector &gradv) 
 		{
 			gradv.resize(optimization_dim_);
 			int cumulative = 0;
@@ -66,7 +69,7 @@ namespace polyfem
 			}
 		}
 
-		void gradient(const TVector &x, TVector &gradv) override
+		void gradient(const TVector &x, TVector &gradv) 
 		{
 			gradv.resize(optimization_dim_);
 			int cumulative = 0;
@@ -80,7 +83,7 @@ namespace polyfem
 			}
 		}
 
-		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) override
+		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) 
 		{
 			gradv.resize(optimization_dim_);
 			int cumulative = 0;
@@ -94,7 +97,7 @@ namespace polyfem
 			}
 		}
 
-		void smoothing(const TVector &x, TVector &new_x) override
+		void smoothing(const TVector &x, TVector &new_x) 
 		{
 			int cumulative = 0;
 			for (const auto &subproblem : subproblems)
@@ -108,7 +111,7 @@ namespace polyfem
 			}
 		}
 
-		bool is_step_valid(const TVector &x0, const TVector &x1) override
+		bool is_step_valid(const TVector &x0, const TVector &x1) 
 		{
 			bool valid = true;
 			int cumulative = 0;
@@ -159,7 +162,7 @@ namespace polyfem
 			return *min;
 		}
 
-		bool remesh(TVector &x) override
+		bool remesh(TVector &x) 
 		{
 			bool remesh = false;
 			int cumulative = 0;
@@ -174,7 +177,7 @@ namespace polyfem
 			return remesh;
 		}
 
-		void line_search_begin(const TVector &x0, const TVector &x1) override
+		void line_search_begin(const TVector &x0, const TVector &x1) 
 		{
 
 			int cumulative = 0;
@@ -185,7 +188,7 @@ namespace polyfem
 			}
 		}
 
-		void line_search_end(bool failed) override
+		void line_search_end(bool failed) 
 		{
 
 			int cumulative = 0;
@@ -196,7 +199,7 @@ namespace polyfem
 			}
 		}
 
-		void post_step(const int iter_num, const TVector &x0) override
+		void post_step(const int iter_num, const TVector &x0) 
 		{
 			int cumulative = 0;
 			for (const auto &subproblem : subproblems)
@@ -207,7 +210,7 @@ namespace polyfem
 			iter++;
 		}
 
-		bool solution_changed_pre(const TVector &newX) override
+		bool solution_changed_pre(const TVector &newX) 
 		{
 			int cumulative = 0;
 			bool flag = true;
@@ -219,7 +222,7 @@ namespace polyfem
 			return flag;
 		}
 
-		void solution_changed_post(const TVector &newX) override
+		void solution_changed_post(const TVector &newX) 
 		{
 			int cumulative = 0;
 			for (const auto &subproblem : subproblems)
@@ -229,9 +232,115 @@ namespace polyfem
 			}
 		}
 
+		TVector get_lower_bound(const TVector &x) const
+		{
+			TVector min(x.size());
+			int cumulative = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				TVector tmp;
+				min.segment(cumulative, subproblem->optimization_dim()) = subproblem->get_lower_bound(x.segment(cumulative, subproblem->optimization_dim()));
+				cumulative += subproblem->optimization_dim();
+			}
+			return min;
+		}
+		TVector get_upper_bound(const TVector &x) const
+		{
+			TVector max(x.size());
+			int cumulative = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				TVector tmp;
+				max.segment(cumulative, subproblem->optimization_dim()) = subproblem->get_upper_bound(x.segment(cumulative, subproblem->optimization_dim()));
+				cumulative += subproblem->optimization_dim();
+			}
+			return max;
+		}
+
+		void solution_changed(const TVector &newX)
+		{
+			int cumulative = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				subproblem->solution_changed(newX.segment(cumulative, subproblem->optimization_dim()));
+				cumulative += subproblem->optimization_dim();
+			}
+		}
+
+		TVector force_inequality_constraint(const TVector &x0, const TVector &dx)
+		{
+			TVector newX(x0.size());
+			int cumulative = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				newX.segment(cumulative, subproblem->optimization_dim()) = subproblem->force_inequality_constraint(x0.segment(cumulative, subproblem->optimization_dim()), dx.segment(cumulative, subproblem->optimization_dim()));
+				cumulative += subproblem->optimization_dim();
+			}
+			return newX;
+		}
+
+		int n_inequality_constraints()
+		{
+			int num = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				num += subproblem->n_inequality_constraints();
+			}
+			return num;
+		}
+
+		double inequality_constraint_val(const TVector &x, const int index)
+		{
+			int num = 0;
+			int cumulative = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				num += subproblem->n_inequality_constraints();
+				if (num > index)
+				{
+					num -= subproblem->n_inequality_constraints();
+					return subproblem->inequality_constraint_val(x.segment(cumulative, subproblem->optimization_dim()), index - num);
+				}
+				cumulative += subproblem->optimization_dim();
+			}
+			log_and_throw_error("Exceeding number of inequality constraints!");
+			return 0;
+		}
+		
+		TVector inequality_constraint_grad(const TVector &x, const int index)
+		{
+			int num = 0;
+			int cumulative = 0;
+			TVector grad(x.size());
+			grad.setZero();
+			for (const auto &subproblem : subproblems)
+			{
+				num += subproblem->n_inequality_constraints();
+				if (num > index)
+				{
+					num -= subproblem->n_inequality_constraints();
+					grad.segment(cumulative, subproblem->optimization_dim()) = subproblem->inequality_constraint_grad(x.segment(cumulative, subproblem->optimization_dim()), index - num);
+					break;
+				}
+				cumulative += subproblem->optimization_dim();
+			}
+			return grad;
+		}
+
+		void save_to_file(const TVector &x0)
+		{
+			int cumulative = 0;
+			for (const auto &subproblem : subproblems)
+			{
+				subproblem->save_to_file(x0.segment(cumulative, subproblem->optimization_dim()));
+				cumulative += subproblem->optimization_dim();
+			}
+		}
+
 	private:
 		std::vector<std::shared_ptr<OptimizationProblem>> subproblems;
 
+		int iter = 0;
 		int optimization_dim_ = 0;
 	};
 } // namespace polyfem

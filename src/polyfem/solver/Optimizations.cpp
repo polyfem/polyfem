@@ -1047,7 +1047,7 @@ namespace polyfem
 		}
 
 		std::shared_ptr<GeneralOptimizationProblem>
-			general_optimization_problem = std::make_shared<GeneralOptimizationProblem>(state, problems, j);
+			general_optimization_problem = std::make_shared<GeneralOptimizationProblem>(problems, j);
 
 		return general_optimization_problem;
 	}

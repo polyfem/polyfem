@@ -114,8 +114,6 @@ namespace polyfem
 		Eigen::MatrixXd sol_at_ls_begin;
 		TVector x_at_ls_begin;
 
-		std::vector<Eigen::MatrixXd> sols_at_ls_begin;
-
 		// store value and grad of current solution
 		double cur_val;
 		TVector cur_x, cur_grad;
