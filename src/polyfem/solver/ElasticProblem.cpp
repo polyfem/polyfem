@@ -1,4 +1,4 @@
-#include "MaterialProblem.hpp"
+#include "ElasticProblem.hpp"
 
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -12,7 +12,7 @@ namespace polyfem
 {
 	using namespace utils;
 
-	MaterialProblem::MaterialProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
+	ElasticProblem::ElasticProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_) : OptimizationProblem(state_, j_)
 	{
 		optimization_name = "material";
 
@@ -145,16 +145,16 @@ namespace polyfem
 		}
 	}
 
-	void MaterialProblem::line_search_end(bool failed)
+	void ElasticProblem::line_search_end(bool failed)
 	{
 	}
 
-	double MaterialProblem::target_value(const TVector &x)
+	double ElasticProblem::target_value(const TVector &x)
 	{
 		return target_weight * j->energy(state);
 	}
 
-	double MaterialProblem::smooth_value(const TVector &x)
+	double ElasticProblem::smooth_value(const TVector &x)
 	{
 		if (!has_material_smoothing || state.mesh->is_volume())
 			return 0;
@@ -174,20 +174,20 @@ namespace polyfem
 		return smoothing_weight * value;
 	}
 
-	double MaterialProblem::value(const TVector &x)
+	double ElasticProblem::value(const TVector &x)
 	{
 		if (std::isnan(cur_val))
 		{
 			double target_val, smooth_val;
 			target_val = target_value(x);
 			smooth_val = smooth_value(x);
-			logger().debug("target = {}, smooth = {}", target_val, smooth_val);
+			logger().debug("elastic: target = {}, smooth = {}", target_val, smooth_val);
 			cur_val = target_val + smooth_val;
 		}
 		return cur_val;
 	}
 
-	void MaterialProblem::target_gradient(const TVector &x, TVector &gradv)
+	void ElasticProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
 		Eigen::VectorXd dparam = j->gradient(state, state.problem->is_time_dependent() ? "material-full" : "material");
 
@@ -195,7 +195,7 @@ namespace polyfem
 		gradv *= target_weight;
 	}
 
-	void MaterialProblem::smooth_gradient(const TVector &x, TVector &gradv)
+	void ElasticProblem::smooth_gradient(const TVector &x, TVector &gradv)
 	{
 		if (!has_material_smoothing || state.mesh->is_volume())
 		{
@@ -230,21 +230,21 @@ namespace polyfem
 		gradv *= smoothing_weight;
 	}
 
-	void MaterialProblem::gradient(const TVector &x, TVector &gradv)
+	void ElasticProblem::gradient(const TVector &x, TVector &gradv)
 	{
 		if (cur_grad.size() == 0)
 		{
 			Eigen::VectorXd grad_target, grad_smoothing;
 			target_gradient(x, grad_target);
 			smooth_gradient(x, grad_smoothing);
-			logger().debug("‖∇ target‖ = {}, ‖∇ smooth‖ = {}", grad_target.norm(), grad_smoothing.norm());
+			logger().debug("elastic: ‖∇ target‖ = {}, ‖∇ smooth‖ = {}", grad_target.norm(), grad_smoothing.norm());
 			cur_grad = grad_target + grad_smoothing;
 		}
 
 		gradv = cur_grad;
 	}
 
-	bool MaterialProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	bool ElasticProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		if ((x1 - x0).cwiseAbs().maxCoeff() > max_change)
 			return false;
@@ -274,7 +274,7 @@ namespace polyfem
 		return flag;
 	}
 
-	bool MaterialProblem::solution_changed_pre(const TVector &newX)
+	bool ElasticProblem::solution_changed_pre(const TVector &newX)
 	{
 		x_to_param(newX, state);
 		// state.set_materials();

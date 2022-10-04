@@ -4,10 +4,10 @@
 
 namespace polyfem
 {
-	class MaterialProblem : public OptimizationProblem
+	class ElasticProblem : public OptimizationProblem
 	{
 	public:
-		MaterialProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
+		ElasticProblem(State &state_, const std::shared_ptr<CompositeFunctional> j_);
 
 		using OptimizationProblem::gradient;
 		using OptimizationProblem::value;
@@ -23,7 +23,13 @@ namespace polyfem
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 
-		int optimization_dim() override { return 0; }
+		void set_optimization_dim(const int optimization_dim) { optimization_dim_ = optimization_dim; }
+		int optimization_dim() override 
+		{ 
+			if (optimization_dim_ <= 0)
+				log_and_throw_error("Invalid optimization dimension!");
+			return optimization_dim_; 
+		}
 
 		void line_search_end(bool failed);
 		bool remesh(TVector &x) { return false; }
@@ -104,6 +110,8 @@ namespace polyfem
 
 		double smoothing_weight;
 		double target_weight = 1;
+
+		int optimization_dim_ = -1;
 
 		Eigen::SparseMatrix<bool> tt_adjacency;
 	};

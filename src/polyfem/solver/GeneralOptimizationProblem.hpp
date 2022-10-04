@@ -224,6 +224,7 @@ namespace polyfem
 
 		void solution_changed_post(const TVector &newX) 
 		{
+			cur_x = newX;
 			int cumulative = 0;
 			for (const auto &subproblem : subproblems)
 			{
@@ -259,12 +260,19 @@ namespace polyfem
 
 		void solution_changed(const TVector &newX)
 		{
-			int cumulative = 0;
-			for (const auto &subproblem : subproblems)
+			if (cur_x.size() == newX.size() && cur_x == newX)
+				return;
+			if (solution_changed_pre(newX))
 			{
-				subproblem->solution_changed(newX.segment(cumulative, subproblem->optimization_dim()));
-				cumulative += subproblem->optimization_dim();
+				int cumulative = 0;
+				for (const auto &subproblem : subproblems)
+				{
+					subproblem->solve_pde(newX.segment(cumulative, subproblem->optimization_dim()));
+					cumulative += subproblem->optimization_dim();
+					break;
+				}
 			}
+			solution_changed_post(newX);
 		}
 
 		TVector force_inequality_constraint(const TVector &x0, const TVector &dx)
@@ -334,6 +342,7 @@ namespace polyfem
 			{
 				subproblem->save_to_file(x0.segment(cumulative, subproblem->optimization_dim()));
 				cumulative += subproblem->optimization_dim();
+				break;
 			}
 		}
 
@@ -342,5 +351,7 @@ namespace polyfem
 
 		int iter = 0;
 		int optimization_dim_ = 0;
+
+		TVector cur_x;
 	};
 } // namespace polyfem

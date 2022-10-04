@@ -25,6 +25,7 @@ namespace polyfem
 			{"phi", x(1)},
 			};
 			state.assembler.add_multimaterial(0, damping_param);
+			logger().info("Current damping params: {}, {}", x(0), x(1));
 		};
 
 		param_to_x = [](TVector &x, State &state) {
@@ -83,7 +84,7 @@ namespace polyfem
 		if (std::isnan(cur_val))
 		{
 			cur_val = target_value(x);
-			logger().debug("target = {}", cur_val);
+			logger().debug("damping: target = {}", cur_val);
 		}
 		return cur_val;
 	}
@@ -101,7 +102,7 @@ namespace polyfem
 		if (cur_grad.size() == 0)
 		{
 			target_gradient(x, cur_grad);
-			logger().debug("‖∇ target‖ = {}", cur_grad.norm());
+			logger().debug("damping: ∇ target = {}, {}", cur_grad(0), cur_grad(1));
 		}
 
 		gradv = cur_grad;
@@ -111,18 +112,15 @@ namespace polyfem
 	{
 		if ((x1 - x0).cwiseAbs().maxCoeff() > max_change)
 			return false;
-		solution_changed_pre(x1);
 
-		const double psi = state.assembler.damping_params()[0];
-		const double phi = state.assembler.damping_params()[1];
+		const double psi = x1(0);
+		const double phi = x1(1);
 
 		bool flag = true;
 		if (min_phi > phi || max_phi < phi)
 			flag = false;
 		if (min_psi > psi || max_psi < psi)
 			flag = false;
-
-		solution_changed_pre(x0);
 
 		return flag;
 	}

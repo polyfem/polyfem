@@ -3,7 +3,7 @@
 #include "OptimizationProblem.hpp"
 #include "ShapeProblem.hpp"
 #include "TopologyOptimizationProblem.hpp"
-#include "MaterialProblem.hpp"
+#include "ElasticProblem.hpp"
 #include "InitialConditionProblem.hpp"
 #include "ControlProblem.hpp"
 #include "FrictionProblem.hpp"
@@ -374,7 +374,7 @@ namespace polyfem
 			}
 		}
 
-		std::shared_ptr<MaterialProblem> material_problem = std::make_shared<MaterialProblem>(state, j);
+		std::shared_ptr<ElasticProblem> material_problem = std::make_shared<ElasticProblem>(state, j);
 
 		// fix certain object
 		std::set<int> optimize_body_ids;
@@ -407,7 +407,7 @@ namespace polyfem
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
 
-				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const ElasticProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -420,7 +420,7 @@ namespace polyfem
 					}
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 				};
-				material_problem->param_to_x = [body_id_map, dof](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map, dof](ElasticProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(2 * body_id_map.size());
@@ -431,7 +431,7 @@ namespace polyfem
 					}
 					logger().debug("material: {}", x.transpose());
 				};
-				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](ElasticProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.setZero(2 * body_id_map.size());
 					for (int e = 0; e < dof; e++)
 					{
@@ -443,7 +443,7 @@ namespace polyfem
 			}
 			else if (material_params["restriction"].get<std::string>() == "log")
 			{
-				material_problem->x_to_param = [dof](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [dof](const ElasticProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 					cur_mus = x.tail(dof).array().exp().matrix();
@@ -451,7 +451,7 @@ namespace polyfem
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 				};
 
-				material_problem->param_to_x = [dof](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [dof](ElasticProblem::TVector &x, State &state) {
 					x.resize(2 * dof);
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
@@ -460,7 +460,7 @@ namespace polyfem
 					x.head(dof) = cur_lambdas.array().log().matrix();
 				};
 
-				material_problem->dparam_to_dx = [dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [dof](ElasticProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					dx.resize(dof * 2);
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
@@ -473,7 +473,7 @@ namespace polyfem
 			else if (material_params["restriction"].get<std::string>() == "E_nu")
 			{
 				material_problem->design_variable_name = "E_nu";
-				material_problem->x_to_param = [dof](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [dof](const ElasticProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -487,7 +487,7 @@ namespace polyfem
 					}
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 				};
-				material_problem->param_to_x = [dof, dim](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [dof, dim](ElasticProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(dof * 2);
@@ -497,7 +497,7 @@ namespace polyfem
 						x(e * 2 + 1) = convert_to_nu(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
 					}
 				};
-				material_problem->dparam_to_dx = [dof, dim](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [dof, dim](ElasticProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					dx.setZero(dof * 2);
@@ -523,7 +523,7 @@ namespace polyfem
 				logger().info("{} objects found, each object has constant material parameter nu...", body_id_map.size());
 
 				material_problem->design_variable_name = "E_nu";
-				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const ElasticProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -543,7 +543,7 @@ namespace polyfem
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 					logger().debug("material E nu: {}", x.transpose());
 				};
-				material_problem->param_to_x = [body_id_map, dof](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map, dof](ElasticProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(body_id_map.size() * 2);
@@ -554,7 +554,7 @@ namespace polyfem
 					}
 					logger().debug("material E nu: {}", x.transpose());
 				};
-				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](ElasticProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					dx.setZero(body_id_map.size() * 2);
@@ -581,7 +581,7 @@ namespace polyfem
 			{
 				logger().info("{} objects found, each object has constant material parameters...", body_id_map.size());
 
-				material_problem->x_to_param = [body_id_map, dof](const MaterialProblem::TVector &x, State &state) {
+				material_problem->x_to_param = [body_id_map, dof](const ElasticProblem::TVector &x, State &state) {
 					auto cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					auto cur_mus = state.assembler.lame_params().mu_mat_;
 
@@ -602,7 +602,7 @@ namespace polyfem
 					state.assembler.update_lame_params(cur_lambdas, cur_mus);
 					logger().debug("material: {}", x_display.transpose());
 				};
-				material_problem->param_to_x = [body_id_map](MaterialProblem::TVector &x, State &state) {
+				material_problem->param_to_x = [body_id_map](ElasticProblem::TVector &x, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					x.setZero(2 * body_id_map.size());
@@ -616,7 +616,7 @@ namespace polyfem
 						x_display(i) = std::exp(x(i));
 					logger().debug("material: {}", x_display.transpose());
 				};
-				material_problem->dparam_to_dx = [body_id_map, dof](MaterialProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
+				material_problem->dparam_to_dx = [body_id_map, dof](ElasticProblem::TVector &dx, const Eigen::VectorXd &dparams, State &state) {
 					const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
 					const auto &cur_mus = state.assembler.lame_params().mu_mat_;
 					dx.setZero(2 * body_id_map.size());
@@ -633,6 +633,7 @@ namespace polyfem
 		}
 
 		material_problem->param_to_x(x_initial, state);
+		material_problem->set_optimization_dim(x_initial.size());
 
 		return material_problem;
 	}

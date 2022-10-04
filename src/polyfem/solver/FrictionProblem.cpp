@@ -21,6 +21,7 @@ namespace polyfem
 
 		x_to_param = [](const TVector &x, State &state) {
 			state.args["contact"]["friction_coefficient"] = x(0);
+			logger().info("Current friction coefficient: {}", x(0));
 		};
 
 		param_to_x = [](TVector &x, State &state) {
@@ -34,22 +35,22 @@ namespace polyfem
 
 		for (const auto &param : opt_params["parameters"])
 		{
-			if (param["type"] == "damping")
+			if (param["type"] == "friction")
 			{
 				material_params = param;
 				break;
 			}
 		}
 
-		if (material_params["fric_bound"].get<std::vector<double>>().size() == 0)
+		if (material_params["bound"].get<std::vector<double>>().size() == 0)
 		{
 			min_fric = 0.0;
 			max_fric = std::numeric_limits<double>::max();
 		}
 		else
 		{
-			min_fric = material_params["fric_bound"][0];
-			max_fric = material_params["fric_bound"][1];
+			min_fric = material_params["bound"][0];
+			max_fric = material_params["bound"][1];
 		}
 	}
 
@@ -67,7 +68,7 @@ namespace polyfem
 		if (std::isnan(cur_val))
 		{
 			cur_val = target_value(x);
-			logger().debug("target = {}", cur_val);
+			logger().debug("friction: target = {}", cur_val);
 		}
 		return cur_val;
 	}
@@ -85,7 +86,7 @@ namespace polyfem
 		if (cur_grad.size() == 0)
 		{
 			target_gradient(x, cur_grad);
-			logger().debug("‖∇ target‖ = {}", cur_grad.norm());
+			logger().debug("friction: ∇ target = {}", cur_grad(0));
 		}
 
 		gradv = cur_grad;
@@ -95,15 +96,12 @@ namespace polyfem
 	{
 		if ((x1 - x0).cwiseAbs().maxCoeff() > max_change)
 			return false;
-		solution_changed_pre(x1);
 
-		const double mu = state.args["contact"]["friction_coefficient"];
+		const double mu = x1(0);
 
 		bool flag = true;
 		if (min_fric > mu || max_fric < mu)
 			flag = false;
-
-		solution_changed_pre(x0);
 
 		return flag;
 	}

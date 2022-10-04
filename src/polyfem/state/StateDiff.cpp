@@ -2301,7 +2301,7 @@ namespace polyfem
 			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 			for (int t_aux = start; t_aux < end; ++t_aux)
 			{
-				const int t = time_steps - t_aux - 1;
+				const int t = time_steps - t_aux;
 				const int real_order = std::min(bdf_order, t);
 				double beta = time_integrator::BDF::betas(real_order - 1);
 

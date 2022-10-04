@@ -23,8 +23,8 @@ set(SOURCES
 	OperatorSplittingSolver.cpp
 	ShapeProblem.hpp
 	ShapeProblem.cpp
-	MaterialProblem.hpp
-	MaterialProblem.cpp
+	ElasticProblem.hpp
+	ElasticProblem.cpp
 	DampingProblem.hpp
 	DampingProblem.cpp
 	FrictionProblem.hpp
