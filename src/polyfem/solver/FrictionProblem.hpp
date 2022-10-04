@@ -30,12 +30,8 @@ namespace polyfem
 		// TVector get_lower_bound(const TVector &x) const override;
 		// TVector get_upper_bound(const TVector &x) const override;
 
-		// map x (optimization variables) to parameters (lambda, mu, friction, damping)
-		std::function<void(const TVector &x, State &state)> x_to_param;
 		// map parameters to x
-		std::function<void(TVector &x, State &state)> param_to_x;
-		// compute gradient wrt. x given: gradient wrt. parameters, values of parameters
-		std::function<void(TVector &dx, const Eigen::VectorXd &dparams, State &state)> dparam_to_dx;
+		std::function<void(TVector &x, const State &state)> param_to_x;
 
 	private:
 		json material_params;

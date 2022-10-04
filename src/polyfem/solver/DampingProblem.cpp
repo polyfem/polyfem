@@ -19,23 +19,10 @@ namespace polyfem
 		if (!state.problem->is_time_dependent())
 			log_and_throw_error("Damping parameter optimization is only supported in transient simulations!");
 
-		x_to_param = [](const TVector &x, State &state) {
-			json damping_param = {
-			{"psi", x(0)},
-			{"phi", x(1)},
-			};
-			state.assembler.add_multimaterial(0, damping_param);
-			logger().info("Current damping params: {}, {}", x(0), x(1));
-		};
-
-		param_to_x = [](TVector &x, State &state) {
+		param_to_x = [](TVector &x, const State &state) {
 			x.setZero(2);
 			x(0) = state.assembler.damping_params()[0];
 			x(1) = state.assembler.damping_params()[1];
-		};
-
-		dparam_to_dx = [](TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-			dx = dparams;
 		};
 
 		for (const auto &param : opt_params["parameters"])
@@ -91,10 +78,7 @@ namespace polyfem
 
 	void DampingProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		Eigen::VectorXd dparam = j->gradient(state, "damping-parameter");
-
-		dparam_to_dx(gradv, dparam, state);
-		gradv *= target_weight;
+		gradv = j->gradient(state, "damping-parameter") * target_weight;
 	}
 
 	void DampingProblem::gradient(const TVector &x, TVector &gradv)
@@ -127,7 +111,12 @@ namespace polyfem
 
 	bool DampingProblem::solution_changed_pre(const TVector &newX)
 	{
-		x_to_param(newX, state);
+		json damping_param = {
+		{"psi", newX(0)},
+		{"phi", newX(1)},
+		};
+		state.assembler.add_multimaterial(0, damping_param);
+		logger().info("Current damping params: {}, {}", newX(0), newX(1));
 		return true;
 	}
 

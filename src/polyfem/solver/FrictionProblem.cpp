@@ -19,18 +19,9 @@ namespace polyfem
 		if (!state.problem->is_time_dependent())
 			log_and_throw_error("Friction parameter optimization is only supported in transient simulations!");
 
-		x_to_param = [](const TVector &x, State &state) {
-			state.args["contact"]["friction_coefficient"] = x(0);
-			logger().info("Current friction coefficient: {}", x(0));
-		};
-
-		param_to_x = [](TVector &x, State &state) {
+		param_to_x = [](TVector &x, const State &state) {
 			x.setZero(1);
 			x(0) = state.args["contact"]["friction_coefficient"];
-		};
-
-		dparam_to_dx = [](TVector &dx, const Eigen::VectorXd &dparams, State &state) {
-			dx = dparams;
 		};
 
 		for (const auto &param : opt_params["parameters"])
@@ -75,10 +66,7 @@ namespace polyfem
 
 	void FrictionProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		Eigen::VectorXd dparam = j->gradient(state, "friction-coefficient");
-
-		dparam_to_dx(gradv, dparam, state);
-		gradv *= target_weight;
+		gradv = j->gradient(state, "friction-coefficient") * target_weight;
 	}
 
 	void FrictionProblem::gradient(const TVector &x, TVector &gradv)
@@ -108,7 +96,7 @@ namespace polyfem
 
 	bool FrictionProblem::solution_changed_pre(const TVector &newX)
 	{
-		x_to_param(newX, state);
+		state.args["contact"]["friction_coefficient"] = newX(0);
 		return true;
 	}
 
