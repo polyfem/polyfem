@@ -38,6 +38,8 @@
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 #include <igl/Timer.h>
 
 #include <unsupported/Eigen/SparseExtra>
@@ -1483,6 +1485,13 @@ void State::build_collision_mesh(
 		igl::Timer timer;
 		timer.start();
 		logger().info("Solving {} homogenization", formulation());
+
+		solve_data.elastic_form = std::make_shared<solver::ElasticForm>(
+			n_bases, n_geom_bases, bases, geom_bases(),
+			assembler, ass_vals_cache,
+			formulation(),
+			0.0,
+			mesh->is_volume());
 
 		if (assembler.is_linear(formulation()))
 			solve_linear_homogenization();
