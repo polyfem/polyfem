@@ -61,7 +61,6 @@ namespace polyfem
 
 		class ContactForm;
 		class FrictionForm;
-		class DampingForm;
 		class BodyForm;
 		class ALForm;
 		class InertiaForm;
@@ -348,6 +347,9 @@ namespace polyfem
 		/// initialize the nonlinear solver
 		/// @param[in] t (optional) initial time
 		void init_nonlinear_tensor_solve(const double t = 1.0);
+		/// initialize the linear solve
+		/// @param[in] t (optional) initial time
+		void init_linear_tensor_solve(const double t = 1.0);
 		/// solves a linear problem
 		void solve_linear();
 		/// solves a navier stokes
@@ -607,10 +609,10 @@ namespace polyfem
 		double J_transient_step(const IntegrableFunctional &j, const int step);
 		// Aux functions for computing derivatives of different forces wrt. different parameters
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
-		void compute_shape_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
-		void compute_shape_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_shape_derivative_laplacian_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_shape_derivative_rhs_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
-		void compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		// void compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);

@@ -1565,7 +1565,10 @@ void State::build_collision_mesh(
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
+			{
+				init_linear_tensor_solve();
 				solve_linear();
+			}
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else

@@ -1030,7 +1030,7 @@ namespace polyfem::io
 		}
 	}
 
-	void Evaluator::interpolate_at_local_vals(const mesh::Mesh &mesh, const int el_index, const int actual_dim, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, Eigen::MatrixXd &result_grad)
+	void Evaluator::interpolate_at_local_vals(const int el_index, const int dim, const int actual_dim, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, Eigen::MatrixXd &result_grad)
 	{
 		if (fun.size() <= 0)
 		{
@@ -1043,7 +1043,7 @@ namespace polyfem::io
 		result.resize(vals.val.rows(), actual_dim);
 		result.setZero();
 
-		result_grad.resize(vals.val.rows(), mesh.dimension() * actual_dim);
+		result_grad.resize(vals.val.rows(), dim * actual_dim);
 		result_grad.setZero();
 
 		const int n_loc_bases = int(vals.basis_values.size());

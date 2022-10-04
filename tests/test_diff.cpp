@@ -60,7 +60,8 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 			},
 			"materials": {
 				"type": "Laplacian"
-			}
+			},
+			"optimization": { "enabled": true }
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../circle2.msh";
@@ -181,7 +182,8 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 				"type": "LinearElasticity",
 				"lambda": 17284000.0,
 				"mu": 7407410.0
-			}
+			},
+			"optimization": { "enabled": true }
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../cube.msh";
@@ -310,7 +312,8 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 				"type": "LinearElasticity",
 				"lambda": 17284000.0,
 				"mu": 7407410.0
-			}
+			},
+			"optimization": { "enabled": true }
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";

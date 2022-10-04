@@ -178,7 +178,7 @@ namespace polyfem
 
 		std::vector<std::shared_ptr<Form>> forms;
 		solve_data.elastic_form = std::make_shared<ElasticForm>(
-			n_bases, bases, geom_bases(),
+			n_bases, n_geom_bases, bases, geom_bases(),
 			assembler, ass_vals_cache,
 			formulation(),
 			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
@@ -204,7 +204,7 @@ namespace polyfem
 			if (assembler.has_damping())
 			{
 				solve_data.damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases(),
+					n_bases, n_geom_bases, bases, geom_bases(),
 					assembler, ass_vals_cache,
 					"Damping",
 					args["time"]["dt"],

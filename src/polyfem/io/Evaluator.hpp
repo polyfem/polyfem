@@ -152,8 +152,8 @@ namespace polyfem::io
 			Eigen::MatrixXd &result_grad);
 
 		static void interpolate_at_local_vals(
-			const mesh::Mesh &mesh,
 			const int el_index, 
+			const int dim,
 			const int actual_dim,
 			const assembler::ElementAssemblyValues &vals,
 			const Eigen::MatrixXd &fun,

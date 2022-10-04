@@ -1,12 +1,43 @@
 #include "ElasticForm.hpp"
 
 #include <polyfem/basis/ElementBases.hpp>
-
+#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 namespace polyfem::solver
 {
+	namespace {
+
+		class LocalThreadVecStorage
+		{
+		public:
+			Eigen::MatrixXd vec;
+			assembler::ElementAssemblyValues vals;
+			QuadratureVector da;
+
+			LocalThreadVecStorage(const int size)
+			{
+				vec.resize(size, 1);
+				vec.setZero();
+			}
+		};
+
+		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
+
+		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
+		{
+			int size = sqrt(vec.size());
+			assert(size * size == vec.size());
+
+			mat.resize(size, size);
+			for (int i = 0; i < size; i++)
+				for (int j = 0; j < size; j++)
+					mat(i, j) = vec(i * size + j);
+		}
+	}
 	ElasticForm::ElasticForm(const int n_bases,
+							 const int n_geom_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
 							 const assembler::AssemblerUtils &assembler,
@@ -15,6 +46,7 @@ namespace polyfem::solver
 							 const double dt,
 							 const bool is_volume)
 		: n_bases_(n_bases),
+		  n_geom_bases_(n_geom_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
 		  assembler_(assembler),
@@ -88,5 +120,179 @@ namespace polyfem::solver
 				formulation_, is_volume_, n_bases_, bases_, geom_bases_,
 				ass_vals_cache_, cached_stiffness_);
 		}
+	}
+
+	void ElasticForm::foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	{
+		const int dim = is_volume_ ? 3 : 2;
+
+		const int n_elements = int(bases_.size());
+		term.setZero(n_elements * 2, 1);
+
+		auto df_dmu_dlambda_function = assembler_.get_dstress_dmu_dlambda_function(formulation_);
+
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			for (int e = start; e < end; ++e)
+			{
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				Eigen::MatrixXd u, grad_u, p, grad_p;
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+
+				for (int q = 0; q < local_storage.da.size(); ++q)
+				{
+					Eigen::MatrixXd grad_p_i, grad_u_i;
+					vector2matrix(grad_p.row(q), grad_p_i);
+					vector2matrix(grad_u.row(q), grad_u_i);
+
+					Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
+					df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
+
+					// This needs to be a sum over material parameter basis.
+					local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
+					local_storage.vec(e) += -dot(f_prime_dlambda, grad_p_i) * local_storage.da(q);
+				}
+			}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
+	}
+
+	void ElasticForm::force_shape_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	{
+		const int dim = is_volume_ ? 3 : 2;
+
+		const int n_elements = int(bases_.size());
+		term.setZero(n_geom_bases_ * dim, 1);
+
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+
+		if (formulation_ == "Damping")
+		{
+			const auto stress_grad_func = assembler_.get_stress_grad_function("Damping");
+			const auto stress_prev_grad_func = assembler_.get_stress_prev_grad_function("Damping");
+
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
+				{
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
+					assembler::ElementAssemblyValues gvals;
+					gvals.compute(e, is_volume_, vals.quadrature.points, geom_bases_[e], geom_bases_[e]);
+
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x_prev, prev_u, prev_grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+
+					Eigen::MatrixXd grad_u_i, grad_p_i, prev_grad_u_i;
+					Eigen::MatrixXd grad_v_i;
+					Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
+					Eigen::MatrixXd f_prev_prime_prev_gradu_gradv;
+
+					for (int q = 0; q < local_storage.da.size(); ++q)
+					{
+						vector2matrix(grad_u.row(q), grad_u_i);
+						vector2matrix(grad_p.row(q), grad_p_i);
+						vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
+
+						for (auto &v : gvals.basis_values)
+						{
+							Eigen::MatrixXd stress_grad, stress_prev_grad;
+							stress_grad_func(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_tensor, stress_grad);
+							stress_prev_grad_func(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_prev_grad);
+							for (int d = 0; d < dim; d++)
+							{
+								grad_v_i.setZero(dim, dim);
+								grad_v_i.row(d) = v.grad_t_m.row(q);
+
+								f_prime_gradu_gradv.setZero(dim, dim);
+								Eigen::MatrixXd tmp = grad_u_i * grad_v_i;
+								for (int i = 0; i < f_prime_gradu_gradv.rows(); i++)
+									for (int j = 0; j < f_prime_gradu_gradv.cols(); j++)
+										for (int k = 0; k < tmp.rows(); k++)
+											for (int l = 0; l < tmp.cols(); l++)
+												f_prime_gradu_gradv(i, j) += stress_grad(i * dim + j, k * dim + l) * tmp(k, l);
+
+								f_prev_prime_prev_gradu_gradv.setZero(dim, dim);
+								tmp = prev_grad_u_i * grad_v_i;
+								for (int i = 0; i < f_prev_prime_prev_gradu_gradv.rows(); i++)
+									for (int j = 0; j < f_prev_prime_prev_gradu_gradv.cols(); j++)
+										for (int k = 0; k < tmp.rows(); k++)
+											for (int l = 0; l < tmp.cols(); l++)
+												f_prev_prime_prev_gradu_gradv(i, j) += stress_prev_grad(i * dim + j, k * dim + l) * tmp(k, l);
+
+								tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
+								local_storage.vec(v.global[0].index * dim + d) += dot(f_prime_gradu_gradv + f_prev_prime_prev_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
+							}
+						}
+					}
+				}
+			});
+		}
+		else
+		{
+			auto f_prime_gradu_gradv_function = assembler_.get_stress_grad_multiply_mat_function(formulation_);
+
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
+				{
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
+					assembler::ElementAssemblyValues gvals;
+					gvals.compute(e, is_volume_, vals.quadrature.points, geom_bases_[e], geom_bases_[e]);
+
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					Eigen::MatrixXd u, grad_u, p, grad_p;
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+
+					for (int q = 0; q < local_storage.da.size(); ++q)
+					{
+						Eigen::MatrixXd grad_u_i, grad_p_i;
+						vector2matrix(grad_u.row(q), grad_u_i);
+						vector2matrix(grad_p.row(q), grad_p_i);
+
+						for (auto &v : gvals.basis_values)
+						{
+							for (int d = 0; d < dim; d++)
+							{
+								Eigen::MatrixXd grad_v_i;
+								grad_v_i.setZero(dim, dim);
+								grad_v_i.row(d) = v.grad_t_m.row(q);
+
+								Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
+								f_prime_gradu_gradv_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
+
+								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
+								local_storage.vec(v.global[0].index * dim + d) += dot(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
+							}
+						}
+					}
+				}
+			});
+		}
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 } // namespace polyfem::solver

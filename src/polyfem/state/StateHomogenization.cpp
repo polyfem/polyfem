@@ -8,6 +8,8 @@
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
@@ -785,7 +787,7 @@ void State::homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen:
     Eigen::VectorXd term;
     for (int a = 0; a < unit_disp_ids.size(); a++)
     {
-        compute_shape_derivative_elasticity_term(sol.col(a), adjoint.col(a), term); // ignored the rhs contribution
+        solve_data.elastic_form->force_shape_derivative(sol.col(a), sol.col(a), adjoint.col(a), term); // ignored the rhs contribution
 
         for (int b = 0; b <= a; b++)
         {

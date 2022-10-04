@@ -186,6 +186,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 	const auto state_ptr = get_state();
 	ElasticForm form(
 		state_ptr->n_bases,
+		state_ptr->n_geom_bases,
 		state_ptr->bases,
 		state_ptr->geom_bases(),
 		state_ptr->assembler,
@@ -234,6 +235,7 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 
 	ElasticForm form(
 		state_ptr->n_bases,
+		state_ptr->n_geom_bases,
 		state_ptr->bases,
 		state_ptr->geom_bases(),
 		state_ptr->assembler,

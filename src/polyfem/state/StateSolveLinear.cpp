@@ -3,6 +3,12 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+
+#include <polyfem/utils/Timer.hpp>
+
 #include <polysolve/FEMSolver.hpp>
 
 namespace polyfem
@@ -10,6 +16,8 @@ namespace polyfem
 	using namespace mesh;
 	using namespace time_integrator;
 	using namespace utils;
+	using namespace solver;
+	using namespace io;
 
 	void State::solve_linear(
 		const std::unique_ptr<polysolve::LinearSolver> &solver,
@@ -96,6 +104,73 @@ namespace polyfem
 		solve_linear(lin_solver_cached, A, b, args["output"]["advanced"]["spectrum"]);
 	}
 
+	void State::init_linear_tensor_solve(const double t)
+	{
+		assert(assembler.is_linear(formulation()) && !is_contact_enabled()); // linear
+
+		if (assembler.is_mixed(formulation()) || assembler.is_scalar(formulation()))
+			return;
+
+		const int ndof = n_bases * mesh->dimension();
+
+		solve_data.elastic_form = std::make_shared<ElasticForm>(
+			n_bases, n_geom_bases, bases, geom_bases(),
+			assembler, ass_vals_cache,
+			formulation(),
+			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
+			mesh->is_volume());
+
+		solve_data.body_form = std::make_shared<BodyForm>(
+			ndof, n_pressure_bases,
+			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			rhs, *solve_data.rhs_assembler,
+			assembler.density(),
+			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
+		solve_data.body_form->update_quantities(t, sol);
+
+		solve_data.inertia_form = nullptr;
+		solve_data.damping_form = nullptr;
+		if (problem->is_time_dependent())
+		{
+			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
+		}
+
+		solve_data.contact_form = nullptr;
+		solve_data.friction_form = nullptr;
+
+		///////////////////////////////////////////////////////////////////////
+		// Initialize time integrator
+		if (problem->is_time_dependent())
+		{
+			POLYFEM_SCOPED_TIMER("Initialize time integrator");
+
+			Eigen::MatrixXd velocity, acceleration;
+			initial_velocity(velocity);
+			assert(velocity.size() == sol.size());
+			initial_velocity(acceleration);
+			assert(acceleration.size() == sol.size());
+
+			if (args["optimization"]["enabled"])
+			{
+				if (initial_sol_update.size() > 0)
+					sol = initial_sol_update;
+				else
+					initial_sol_update = sol;
+				if (initial_vel_update.size() > 0)
+					velocity = initial_vel_update;
+				else
+					initial_vel_update = velocity;
+			}
+
+			initial_velocity_cache = velocity;
+
+			const double dt = args["time"]["dt"];
+			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+		}
+		solve_data.update_dt();
+	}
+	
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt)
 	{
 		assert(problem->is_time_dependent());
@@ -136,6 +211,7 @@ namespace polyfem
 
 		if (args["optimization"]["enabled"])
 		{
+			log_and_throw_error("Transient linear problems are not differentiable yet!");
 			cache_transient_adjoint_quantities(0);
 		}
 
@@ -203,14 +279,14 @@ namespace polyfem
 
 			solve_linear(solver, A, b, compute_spectrum); // solution is stored in sol
 
-			time_integrator->update_quantities(sol);
-
-			save_timestep(time, t, t0, dt);
-
 			if (args["optimization"]["enabled"])
 			{
 				cache_transient_adjoint_quantities(t);
 			}
+
+			time_integrator->update_quantities(sol);
+
+			save_timestep(time, t, t0, dt);
 			
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
