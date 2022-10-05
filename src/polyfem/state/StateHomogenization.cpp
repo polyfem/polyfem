@@ -119,6 +119,33 @@ Eigen::MatrixXd State::generate_linear_field(const Eigen::MatrixXd &grad)
     return func;
 }
 
+void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
+{
+    if (formulation() != "NeoHookean" && formulation() != "LinearElasticity")
+    {
+        logger().error("Nonlinear homogenization only supports NeoHookean!");
+        return;
+    }
+
+    auto homo_problem = std::make_shared<NLHomogenizationProblem>(*this);
+    
+    const int dim = mesh->dimension();
+    sol.setZero(n_bases * dim, 1);
+    
+    Eigen::VectorXd tmp_sol;
+    homo_problem->full_to_reduced(sol, tmp_sol);
+    homo_problem->set_test_strain(def_grad);
+
+    std::shared_ptr<cppoptlib::NonlinearSolver<NLHomogenizationProblem>> nl_solver = make_nl_homo_solver<NLHomogenizationProblem>(args["solver"]);
+    nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
+    homo_problem->init(tmp_sol);
+    nl_solver->minimize(*homo_problem, tmp_sol);
+
+    Eigen::VectorXd full;
+    homo_problem->reduced_to_full(tmp_sol, full);
+    sol = full + generate_linear_field(def_grad);
+}
+
 void State::solve_nonlinear_homogenization()
 {
     assert(!assembler.is_linear(formulation())); // non-linear
@@ -231,7 +258,7 @@ void State::solve_linear_homogenization()
     apply_lagrange_multipliers(A);
     rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), rhs.cols()));
 
-    if (args["boundary_conditions"]["periodic_boundary"])
+    if (has_periodic_bc())
     {
         precond_num = full_to_periodic(A);
         full_to_periodic(rhs);
@@ -258,7 +285,7 @@ void State::solve_linear_homogenization()
     sol.conservativeResize(sol.rows() - n_lagrange_multipliers(), sol.cols());
     rhs.conservativeResize(rhs.rows() - n_lagrange_multipliers(), rhs.cols());
 
-    if (args["boundary_conditions"]["periodic_boundary"])
+    if (has_periodic_bc())
     {
         sol = periodic_to_full(full_size, sol);
         rhs = periodic_to_full(full_size, rhs);
@@ -360,7 +387,7 @@ void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_so
     apply_lagrange_multipliers(A);
     adjoint_rhs.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), adjoint_rhs.cols()));
 
-    if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
+    if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
     {
         precond_num = full_to_periodic(A);
         full_to_periodic(adjoint_rhs);
@@ -390,7 +417,7 @@ void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_so
     
     adjoint_solution.conservativeResize(adjoint_solution.rows() - n_lagrange_multipliers(), adjoint_solution.cols());
 
-    if (args["boundary_conditions"]["periodic_boundary"])
+    if (has_periodic_bc())
         adjoint_solution = periodic_to_full(full_size, adjoint_solution);
 }
 

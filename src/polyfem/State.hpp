@@ -366,20 +366,25 @@ namespace polyfem
 		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
 		Eigen::VectorXi periodic_reduce_map;
 		int n_periodic_dependent_dofs;
+		bool has_periodic_bc() const
+		{
+			int i = 0;
+			for (const bool &r : args["boundary_conditions"]["periodic_boundary"])
+			{
+				if (r)
+					return true;
+				i++;
+				if (i >= mesh->dimension())
+					break;
+			}
+			return false;
+		}
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
 		int n_lagrange_multipliers() const
 		{
 			if (boundary_nodes.size() > 0 || problem->is_time_dependent())
 				return 0;
-			
-			// if (args["boundary_conditions"]["periodic_boundary"])
-			// {
-			// 	if (problem->is_scalar())
-			// 		return 1;
-			// 	else
-			// 		return mesh->dimension();
-			// }
 			
 			if (formulation() == "Stokes" || formulation() == "NavierStokes")
 				return mesh->dimension();
@@ -399,6 +404,10 @@ namespace polyfem
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;
 		int full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet = true) const;
+
+		// add multipoint constraints for periodic elasticity
+		std::vector<std::map<int, double>> multipoint_constraints;
+		void add_multipoint_constraints(StiffnessMatrix &A) const;
 
 		Eigen::MatrixXd periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const;
 
@@ -662,6 +671,7 @@ namespace polyfem
 			solve_homogenization();
 			compute_homogenized_tensor(C_H);
 		}
+		void solve_homogenized_field(const Eigen::MatrixXd &def_grad);
 		void solve_linear_homogenization();
 		void solve_nonlinear_homogenization();
 

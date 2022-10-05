@@ -106,7 +106,7 @@ TEST_CASE("density_elastic_homo", "[homogenization]")
             }
         },
         "boundary_conditions": {
-            "periodic_boundary": true
+            "periodic_boundary": [true, true, true]
         },
         "materials": {
             "type": "LinearElasticity",
@@ -180,7 +180,7 @@ TEST_CASE("density_elastic_homo_grad", "[homogenization]")
             }
         },
         "boundary_conditions": {
-            "periodic_boundary": true
+            "periodic_boundary": [true, true, true]
         },
         "materials": {
             "type": "LinearElasticity",
@@ -274,10 +274,9 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
             }
         },
         "boundary_conditions": {
-            "periodic_boundary": true
+            "periodic_boundary": [true, true, true]
         },
         "materials": {
-            "homogenization": true,
             "type": "LinearElasticity",
             "E": 10,
             "nu": 0.2
@@ -367,10 +366,9 @@ TEST_CASE("neohookean_homo", "[homogenization]")
             }
         },
         "boundary_conditions": {
-            "periodic_boundary": true
+            "periodic_boundary": [true, true, true]
         },
         "materials": {
-            "homogenization": true,
             "type": "NeoHookean",
             "E": 10,
             "nu": 0.2
@@ -453,7 +451,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
 //             }
 //         },
 //         "boundary_conditions": {
-//             "periodic_boundary": true
+//             "periodic_boundary": [true, true, true]
 //         },
 //         "materials": {
 //             "type": "Stokes",
@@ -531,7 +529,7 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
             }
         },
         "boundary_conditions": {
-            "periodic_boundary": true
+            "periodic_boundary": [true, true, true]
         },
         "materials": {
             "type": "Stokes",

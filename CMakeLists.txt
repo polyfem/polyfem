@@ -305,6 +305,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(shape_optimization src/polyfem/main_shape_opt.cpp)
     add_executable(trajectory_optimization src/polyfem/main_trajectory_opt.cpp)
     add_executable(topology_optimization src/polyfem/main_top_opt.cpp)
+    add_executable(homogenization src/polyfem/main_homogenization.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
     include(cli11)
@@ -333,6 +334,14 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 
     target_compile_features(topology_optimization PUBLIC ${CXX14_FEATURES})
     target_link_libraries(topology_optimization
+        PUBLIC
+            polyfem::polyfem
+            polyfem::warnings
+            CLI11::CLI11
+    )
+
+    target_compile_features(homogenization PUBLIC ${CXX14_FEATURES})
+    target_link_libraries(homogenization
         PUBLIC
             polyfem::polyfem
             polyfem::warnings

@@ -583,7 +583,7 @@ namespace polyfem
 		if (args["space"]["use_p_ref"])
 			return false;
 		
-		if (args["boundary_conditions"]["periodic_boundary"])
+		if (has_periodic_bc())
 			return false;
 
 		if (mesh->orders().size() <= 0)
@@ -912,9 +912,18 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-		if (args["boundary_conditions"]["periodic_boundary"].get<bool>())
+		
+		// handle periodic bc
+		if (has_periodic_bc())
 		{
+			std::vector<bool> periodic_dim;
+			for (const auto &r : args["boundary_conditions"]["periodic_boundary"])
+				periodic_dim.push_back(r);
+			while (periodic_dim.size() < dim)
+				periodic_dim.push_back(false);
+			
 			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
+			multipoint_constraints.clear();
 
 			Eigen::VectorXi dependent_map(n_bases);
 			dependent_map.setConstant(-1);
@@ -923,6 +932,9 @@ namespace polyfem
 			Eigen::Vector3i dependent_face({1,2,5}), target_face({3,4,6});
 			for (int d = 0; d < dim; d++)
 			{
+				if (!periodic_dim[d])
+					continue;
+				
 				const int dependent_boundary_id = dependent_face(d);
 				const int target_boundary_id = target_face(d);
 
@@ -952,6 +964,9 @@ namespace polyfem
 					}
 				}
 
+				std::array<int, 2> first_pair;
+				std::array<int, 2> cur_pair;
+				bool first_flag = true;
 				for (int i : dependent_ids)
 				{
 					bool found_target = false;
@@ -963,11 +978,38 @@ namespace polyfem
 						{
 							dependent_map(i) = j;
 							found_target = true;
+							cur_pair[0] = i;
+							cur_pair[1] = j;
 							break;
 						}
 					}
 					if (!found_target)
 						throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
+					else
+					{
+						if (first_flag)
+							first_pair = cur_pair;
+
+						for (int d_ = 0; d_ < dim; d_++)
+						{
+							std::map<int, double> tmp;
+							if (d_ != d)
+							{
+								tmp.insert({cur_pair[0] * dim + d_, -1.});
+								tmp.insert({cur_pair[1] * dim + d_, 1.});
+							}
+							else if (!first_flag)
+							{
+								tmp.insert({cur_pair[0] * dim + d_, -1.});
+								tmp.insert({cur_pair[1] * dim + d_, 1.});
+								tmp.insert({first_pair[0] * dim + d_, 1.});
+								tmp.insert({first_pair[1] * dim + d_, -1.});
+							}
+							multipoint_constraints.push_back(tmp);
+						}
+
+						first_flag = false;
+					}
 				}
 			}
 
@@ -1519,11 +1561,6 @@ void State::build_collision_mesh(
 		if (assembler.is_linear(formulation()) && !is_contact_enabled() && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
-			return;
-		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
 			return;
 		}
 

@@ -83,7 +83,7 @@ namespace polyfem
 				reduced.resize(reduced_size, 1);
 
 				Eigen::MatrixXd tmp = full;
-				if (state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"])
+				if (state.has_periodic_bc() && !state.args["space"]["advanced"]["periodic_basis"])
 					state.full_to_periodic(tmp);
 				
 				long j = 0;
@@ -131,7 +131,7 @@ namespace polyfem
 					tmp(i) = reduced(j++);
 				}
 
-				if (state.args["boundary_conditions"]["periodic_boundary"] && !state.args["space"]["advanced"]["periodic_basis"])
+				if (state.has_periodic_bc() && !state.args["space"]["advanced"]["periodic_basis"])
 					full = state.periodic_to_full(full_size, tmp);
 				else
 					full = tmp;

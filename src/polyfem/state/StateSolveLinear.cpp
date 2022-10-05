@@ -33,15 +33,12 @@ namespace polyfem
 		int precond_num = problem_dim * n_bases;
 
 		apply_lagrange_multipliers(A);
-		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 
-		if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
+		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
 		{
-			precond_num = full_to_periodic(A);
-			Eigen::MatrixXd tmp = b;
-			full_to_periodic(tmp);
-			b = tmp;
+			add_multipoint_constraints(A);
 		}
+		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 
 		Eigen::VectorXd x;
 		if (args["optimization"]["enabled"])
@@ -64,13 +61,7 @@ namespace polyfem
 		else
 			logger().debug("Solver error: {}", error);
 
-		x.conservativeResize(x.size() - n_lagrange_multipliers());
-		if (args["boundary_conditions"]["periodic_boundary"] && !args["space"]["advanced"]["periodic_basis"])
-		{
-			sol = periodic_to_full(full_size, x);
-		}
-		else
-			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
+		sol = x.segment(0, full_size);
 
 		if (assembler.is_mixed(formulation()))
 			sol_to_pressure();
