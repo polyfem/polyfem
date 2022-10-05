@@ -1217,18 +1217,10 @@ namespace polyfem
 
 				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
+					const double value = dot(p.row(q), rhs_function.row(q)) * local_storage.da(q);
 					for (auto &v : gvals.basis_values)
 					{
-						for (int d = 0; d < mesh->dimension(); d++)
-						{
-							Eigen::MatrixXd grad_v_i;
-							grad_v_i.setZero(mesh->dimension(), mesh->dimension());
-							grad_v_i.row(d) = v.grad_t_m.row(q);
-
-							double velocity_div = grad_v_i.trace();
-
-							local_storage.vec(v.global[0].index * mesh->dimension() + d) +=  dot(p.row(q), rhs_function.row(q)) * velocity_div * local_storage.da(q);
-						}
+						local_storage.vec.block(v.global[0].index * mesh->dimension(), 0, mesh->dimension(), 1) += value * v.grad_t_m.row(q).transpose();
 					}
 				}
 			}
@@ -1341,152 +1333,6 @@ namespace polyfem
 					const double value = local_storage.da(q) * density_power * pow(density_mat(e), density_power - 1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
 
 					local_storage.vec(e) -= value;
-				}
-			}
-		});
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
-	}
-
-	// void State::solve_data.elastic_form->foce_material_derivative(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
-	// {
-	// 	const auto &gbases = geom_bases();
-	// 	const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-	// 	const int n_elements = int(bases.size());
-	// 	term.setZero(n_elements * 2, 1);
-
-	// 	auto df_dmu_dlambda_function = assembler.get_dstress_dmu_dlambda_function(formulation());
-
-	// 	auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-	// 	utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-	// 		LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-	// 		for (int e = start; e < end; ++e)
-	// 		{
-	// 			assembler::ElementAssemblyValues &vals = local_storage.vals;
-	// 			ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-	// 			const quadrature::Quadrature &quadrature = vals.quadrature;
-	// 			local_storage.da = vals.det.array() * quadrature.weights.array();
-
-	// 			Eigen::MatrixXd u, grad_u, p, grad_p;
-	// 			io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, solution, u, grad_u);
-	// 			io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, adjoint_sol, p, grad_p);
-
-	// 			for (int q = 0; q < local_storage.da.size(); ++q)
-	// 			{
-	// 				Eigen::MatrixXd grad_p_i, grad_u_i;
-	// 				vector2matrix(grad_p.row(q), grad_p_i);
-	// 				vector2matrix(grad_u.row(q), grad_u_i);
-
-	// 				Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-	// 				df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
-
-	// 				// This needs to be a sum over material parameter basis.
-	// 				local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
-	// 				local_storage.vec(e) += -dot(f_prime_dlambda, grad_p_i) * local_storage.da(q);
-	// 			}
-	// 		}
-	// 	});
-
-	// 	for (const LocalThreadVecStorage &local_storage : storage)
-	// 		term += local_storage.vec;
-	// }
-
-	void State::compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
-	{
-		const auto &gbases = geom_bases();
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		const int n_elements = int(bases.size());
-		term.setZero(2);
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-			for (int e = start; e < end; ++e)
-			{
-				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, solution, u, grad_u);
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, prev_solution, prev_u, prev_grad_u);
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, adjoint_sol, p, grad_p);
-
-				for (int q = 0; q < local_storage.da.size(); ++q)
-				{
-					Eigen::MatrixXd grad_p_i, grad_u_i, prev_grad_u_i;
-					vector2matrix(grad_p.row(q), grad_p_i);
-					vector2matrix(grad_u.row(q), grad_u_i);
-					vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
-
-					Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
-					assembler::ViscousDamping::compute_dstress_dpsi_dphi(e, args["time"]["dt"].get<double>(), quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
-
-					// This needs to be a sum over material parameter basis.
-					local_storage.vec(0) += -dot(f_prime_dpsi, grad_p_i) * local_storage.da(q);
-					local_storage.vec(1) += -dot(f_prime_dphi, grad_p_i) * local_storage.da(q);
-				}
-			}
-		});
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
-	}
-
-	void State::compute_mass_derivative_term(const Eigen::MatrixXd &adjoint_sol, const Eigen::MatrixXd &velocity, Eigen::VectorXd &term)
-	{
-		const auto &gbases = geom_bases();
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		const int n_elements = int(bases.size());
-		term.setZero(n_geom_bases * mesh->dimension(), 1);
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-			for (int e = start; e < end; ++e)
-			{
-				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-				assembler::ElementAssemblyValues gvals;
-				gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd vel, grad_vel, p, grad_p;
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, adjoint_sol, p, grad_p);
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, velocity, vel, grad_vel);
-
-				for (int q = 0; q < local_storage.da.size(); ++q)
-				{
-					const double rho = assembler.density()(quadrature.points.row(q), vals.val.row(q), e);
-
-					for (const auto &v : gvals.basis_values)
-					{
-						for (int d = 0; d < mesh->dimension(); d++)
-						{
-							Eigen::MatrixXd grad_v_i;
-							grad_v_i.setZero(mesh->dimension(), mesh->dimension());
-							grad_v_i.row(d) = v.grad_t_m.row(q);
-
-							double shape_velocity_div = grad_v_i.trace();
-
-							local_storage.vec(v.global[0].index * mesh->dimension() + d) += rho * dot(p.row(q), vel.row(q)) * shape_velocity_div * local_storage.da(q);
-						}
-					}
 				}
 			}
 		});
@@ -1615,7 +1461,7 @@ namespace polyfem
 		one_form.setZero(bases.size() * 2, 1);
 		if (j.depend_on_u())
 		{
-			solve_data.elastic_form->foce_material_derivative(sol, adjoint_sol, one_form);
+			solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint_sol, one_form);
 		}
 	}
 
@@ -1674,7 +1520,7 @@ namespace polyfem
 			const int real_order = std::min(bdf_order, i);
 			double beta = time_integrator::BDF::betas(real_order - 1);
 
-			compute_damping_derivative_damping_term(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
+			solve_data.damping_form->foce_material_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 			one_form += beta * dt * damping_term;
 		}
 	}
@@ -1688,7 +1534,7 @@ namespace polyfem
 		solve_adjoint(j, adjoint_sol);
 
 		Eigen::VectorXd elasticity_term;
-		solve_data.elastic_form->foce_material_derivative(sol, adjoint_sol, elasticity_term);
+		solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint_sol, elasticity_term);
 
 		one_form = elasticity_term;
 		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());
@@ -1775,63 +1621,6 @@ namespace polyfem
 		one_form.block(n_bases * mesh->dimension(), 0, n_bases * mesh->dimension(), 1) = -adjoint_p[0];
 	}
 
-	void State::dJ_full_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
-	{
-		assert(problem->is_time_dependent());
-		assert(!problem->is_scalar());
-		assert(is_contact_enabled());
-		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
-
-		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
-		solve_transient_adjoint(j, adjoint_nu, adjoint_p);
-
-		const double dt = args["time"]["dt"];
-		const double mu = args["contact"]["friction_coefficient"].get<double>();
-		const int time_steps = args["time"]["time_steps"];
-		const int problem_dim = mesh->dimension();
-
-		int bdf_order = get_bdf_order();
-
-		Eigen::VectorXd elasticity_term;
-		one_form.setZero(bases.size() * 2 + 3);
-
-		for (int t = time_steps; t > 0; --t)
-		{
-			const int real_order = std::min(bdf_order, t);
-			const double beta = time_integrator::BDF::betas(real_order - 1);
-			const double beta_dt = beta * dt;
-
-			// lame paramters
-			solve_data.elastic_form->foce_material_derivative(diff_cached[t].u, -adjoint_p[t], elasticity_term);
-			one_form.head(2 * bases.size()) += beta_dt * elasticity_term;
-
-			// friction coefficients
-			ipc::FrictionConstraints friction_constraint_set = diff_cached[t].friction_constraint_set;
-			const auto &solution = diff_cached[t].u;
-			const auto &prev_solution = diff_cached[t - 1].u;
-
-			Eigen::MatrixXd solution_(n_bases, problem_dim), prev_solution_(n_bases, problem_dim);
-			for (int i = 0; i < n_bases; ++i)
-				for (int d = 0; d < problem_dim; d++)
-				{
-					solution_(i, d) = solution(i * problem_dim + d);
-					prev_solution_(i, d) = prev_solution(i * problem_dim + d);
-				}
-
-			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
-			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
-
-			Eigen::VectorXd force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt());
-			Eigen::VectorXd full_force = collision_mesh.to_full_dof(force);
-			one_form(2 * bases.size()) += (adjoint_p[t].array() * full_force.array()).sum() / (beta_dt * mu);
-
-			// damping coefficients
-			Eigen::VectorXd damping_term;
-			compute_damping_derivative_damping_term(diff_cached[t].u, diff_cached[t - 1].u, -adjoint_p[t], damping_term);
-			one_form.tail(2) += beta_dt * damping_term;
-		}
-	}
-
 	void State::dJ_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
@@ -1853,7 +1642,7 @@ namespace polyfem
 			const int real_order = std::min(bdf_order, i);
 			double beta = time_integrator::BDF::betas(real_order - 1);
 
-			solve_data.elastic_form->foce_material_derivative(diff_cached[i].u, -adjoint_p[i], elasticity_term);
+			solve_data.elastic_form->foce_material_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], elasticity_term);
 			one_form += beta * dt * elasticity_term;
 		}
 	}
@@ -1894,7 +1683,7 @@ namespace polyfem
 
 			if (j.depend_on_u() || j.depend_on_gradu())
 			{
-				compute_mass_derivative_term(adjoint_nu[i], velocity, mass_term);
+				solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 				solve_data.elastic_form->force_shape_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 				compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 				solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
@@ -1927,7 +1716,7 @@ namespace polyfem
 			double beta;
 			Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 			get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-			compute_mass_derivative_term(sum_alpha_p, initial_velocity_cache, mass_term);
+			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, initial_velocity_cache, sum_alpha_p, mass_term);
 		}
 		else
 		{
@@ -2150,63 +1939,6 @@ namespace polyfem
 		return result;
 	}
 
-	void State::dJ_full_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form)
-	{
-		assert(problem->is_time_dependent());
-		assert(!problem->is_scalar());
-		assert(is_contact_enabled());
-		assert(args["contact"]["friction_coefficient"].get<double>() > 0);
-
-		std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
-		solve_transient_adjoint(js, dJi_dintegrals, adjoint_nu, adjoint_p);
-
-		const double dt = args["time"]["dt"];
-		const double mu = args["contact"]["friction_coefficient"].get<double>();
-		const int time_steps = args["time"]["time_steps"];
-		const int problem_dim = mesh->dimension();
-
-		int bdf_order = get_bdf_order();
-
-		Eigen::VectorXd elasticity_term;
-		one_form.setZero(bases.size() * 2 + 3);
-
-		for (int t = time_steps; t > 0; --t)
-		{
-			const int real_order = std::min(bdf_order, t);
-			const double beta = time_integrator::BDF::betas(real_order - 1);
-			const double beta_dt = beta * dt;
-
-			// lame paramters
-			solve_data.elastic_form->foce_material_derivative(diff_cached[t].u, -adjoint_p[t], elasticity_term);
-			one_form.head(2 * bases.size()) += beta_dt * elasticity_term;
-
-			// friction coefficients
-			ipc::FrictionConstraints friction_constraint_set = diff_cached[t].friction_constraint_set;
-			const auto &solution = diff_cached[t].u;
-			const auto &prev_solution = diff_cached[t - 1].u;
-
-			Eigen::MatrixXd solution_(n_bases, problem_dim), prev_solution_(n_bases, problem_dim);
-			for (int i = 0; i < n_bases; ++i)
-				for (int d = 0; d < problem_dim; d++)
-				{
-					solution_(i, d) = solution(i * problem_dim + d);
-					prev_solution_(i, d) = prev_solution(i * problem_dim + d);
-				}
-
-			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(prev_solution_);
-			Eigen::MatrixXd surface_solution = collision_mesh.vertices(solution_);
-
-			auto force = -ipc::compute_friction_force(collision_mesh, collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, friction_constraint_set, solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt());
-
-			one_form(2 * bases.size()) += (adjoint_p[t].array() * collision_mesh.to_full_dof(force).array()).sum() / (beta_dt * mu);
-
-			// damping coefficients
-			Eigen::VectorXd damping_term;
-			compute_damping_derivative_damping_term(diff_cached[t].u, diff_cached[t - 1].u, -adjoint_p[t], damping_term);
-			one_form.tail(2) += beta_dt * damping_term;
-		}
-	}
-
 	void State::dJ_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
@@ -2228,7 +1960,7 @@ namespace polyfem
 			const int real_order = std::min(bdf_order, i);
 			double beta = time_integrator::BDF::betas(real_order - 1);
 
-			solve_data.elastic_form->foce_material_derivative(diff_cached[i].u, -adjoint_p[i], elasticity_term);
+			solve_data.elastic_form->foce_material_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			one_form += beta * dt * elasticity_term;
 		}
 	}
@@ -2305,7 +2037,7 @@ namespace polyfem
 			const int real_order = std::min(bdf_order, t);
 			double beta = time_integrator::BDF::betas(real_order - 1);
 
-			compute_damping_derivative_damping_term(diff_cached[t].u, diff_cached[t - 1].u, -adjoint_p[t], damping_term);
+			solve_data.damping_form->foce_material_derivative(diff_cached[t].u, diff_cached[t - 1].u, -adjoint_p[t], damping_term);
 			one_form += beta * dt * damping_term;
 		}
 	}
@@ -2374,7 +2106,7 @@ namespace polyfem
 				functional_term += functional_term_k * outer_grad(k);
 			}
 
-			compute_mass_derivative_term(adjoint_nu[i], velocity, mass_term);
+			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 			solve_data.elastic_form->force_shape_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 			solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
@@ -2395,7 +2127,7 @@ namespace polyfem
 		double beta;
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-		compute_mass_derivative_term(sum_alpha_p, initial_velocity_cache, mass_term);
+		solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, initial_velocity_cache, sum_alpha_p, mass_term);
 
 		Eigen::VectorXd integrals(js.size());
 		for (int k = 0; k < js.size(); k++)

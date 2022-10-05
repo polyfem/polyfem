@@ -189,7 +189,7 @@ namespace polyfem
 
 	void ElasticProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		Eigen::VectorXd dparam = j->gradient(state, state.problem->is_time_dependent() ? "material-full" : "material");
+		Eigen::VectorXd dparam = j->gradient(state, "material");
 
 		dparam_to_dx(gradv, dparam, state);
 		gradv *= target_weight;

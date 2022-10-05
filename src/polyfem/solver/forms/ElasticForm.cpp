@@ -1,6 +1,5 @@
 #include "ElasticForm.hpp"
 
-#include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -122,50 +121,96 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void ElasticForm::foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
 
 		const int n_elements = int(bases_.size());
-		term.setZero(n_elements * 2, 1);
 
-		auto df_dmu_dlambda_function = assembler_.get_dstress_dmu_dlambda_function(formulation_);
+		if (formulation_ == "Damping")
+		{
+			term.setZero(2);
 
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			for (int e = start; e < end; ++e)
-			{
-				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd u, grad_u, p, grad_p;
-				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
-
-				for (int q = 0; q < local_storage.da.size(); ++q)
+				for (int e = start; e < end; ++e)
 				{
-					Eigen::MatrixXd grad_p_i, grad_u_i;
-					vector2matrix(grad_p.row(q), grad_p_i);
-					vector2matrix(grad_u.row(q), grad_u_i);
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
 
-					Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-					df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					// This needs to be a sum over material parameter basis.
-					local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
-					local_storage.vec(e) += -dot(f_prime_dlambda, grad_p_i) * local_storage.da(q);
+					Eigen::MatrixXd u, grad_u, prev_u, prev_grad_u, p, grad_p;
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x_prev, prev_u, prev_grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+
+					for (int q = 0; q < local_storage.da.size(); ++q)
+					{
+						Eigen::MatrixXd grad_p_i, grad_u_i, prev_grad_u_i;
+						vector2matrix(grad_p.row(q), grad_p_i);
+						vector2matrix(grad_u.row(q), grad_u_i);
+						vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
+
+						Eigen::MatrixXd f_prime_dpsi, f_prime_dphi;
+						assembler::ViscousDamping::compute_dstress_dpsi_dphi(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
+
+						// This needs to be a sum over material parameter basis.
+						local_storage.vec(0) += -dot(f_prime_dpsi, grad_p_i) * local_storage.da(q);
+						local_storage.vec(1) += -dot(f_prime_dphi, grad_p_i) * local_storage.da(q);
+					}
 				}
-			}
-		});
+			});
 
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
+			for (const LocalThreadVecStorage &local_storage : storage)
+				term += local_storage.vec;
+		}
+		else
+		{
+			term.setZero(n_elements * 2, 1);
+
+			auto df_dmu_dlambda_function = assembler_.get_dstress_dmu_dlambda_function(formulation_);
+
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
+				{
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
+
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					Eigen::MatrixXd u, grad_u, p, grad_p;
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+
+					for (int q = 0; q < local_storage.da.size(); ++q)
+					{
+						Eigen::MatrixXd grad_p_i, grad_u_i;
+						vector2matrix(grad_p.row(q), grad_p_i);
+						vector2matrix(grad_u.row(q), grad_u_i);
+
+						Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
+						df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
+
+						// This needs to be a sum over material parameter basis.
+						local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
+						local_storage.vec(e) += -dot(f_prime_dlambda, grad_p_i) * local_storage.da(q);
+					}
+				}
+			});
+
+			for (const LocalThreadVecStorage &local_storage : storage)
+				term += local_storage.vec;
+		}
 	}
 
 	void ElasticForm::force_shape_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
@@ -179,8 +224,8 @@ namespace polyfem::solver
 
 		if (formulation_ == "Damping")
 		{
-			const auto stress_grad_func = assembler_.get_stress_grad_function("Damping");
-			const auto stress_prev_grad_func = assembler_.get_stress_prev_grad_function("Damping");
+			const auto stress_grad_func = assembler_.get_stress_grad_function(formulation_);
+			const auto stress_prev_grad_func = assembler_.get_stress_prev_grad_function(formulation_);
 
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);

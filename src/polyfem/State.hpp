@@ -609,22 +609,20 @@ namespace polyfem
 		double J_transient_step(const IntegrableFunctional &j, const int step);
 		// Aux functions for computing derivatives of different forces wrt. different parameters
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
-		void compute_shape_derivative_laplacian_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
-		void compute_shape_derivative_rhs_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
-		// void compute_material_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+		void compute_shape_derivative_laplacian_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
+
+		void compute_shape_derivative_rhs_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
-		void compute_damping_derivative_damping_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
-		void compute_mass_derivative_term(const Eigen::MatrixXd &adjoint_sol, const Eigen::MatrixXd &velocity, Eigen::VectorXd &term);
+
 		// Derivatives wrt. an input functional J = \int j dx
 		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const SummableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		// For transient problems, Derivatives wrt. an input functional J = sum_i J_i, where J_i = \int j dx at time step i
-		void dJ_full_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form); // including material, friction, damping
 		void dJ_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_friction_transient(const IntegrableFunctional &j, double &one_form);
 		void dJ_damping_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
@@ -634,7 +632,6 @@ namespace polyfem
 		// More generally, J_i is some function of a vector of \int j dx at time step i
 		double J_transient(const std::vector<IntegrableFunctional> &js, const std::function<double(const Eigen::VectorXd &, const json &)> &Ji);
 		void solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
-		void dJ_full_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form); // including material, friction, damping
 		void dJ_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
 		void dJ_friction_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, double &one_form);
 		void dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
@@ -706,8 +703,6 @@ namespace polyfem
 				}
 				else if (type == "damping-parameter")
 					dJ_damping_transient(j, grad);
-				else if (type == "material-full")
-					dJ_full_material_transient(j, grad);
 				else if (type == "dirichlet")
 					dJ_dirichlet_transient(j, grad);
 				else
@@ -745,8 +740,6 @@ namespace polyfem
 			}
 			else if (type == "damping-parameter")
 				dJ_damping_transient(js, dJi_dintegrals, grad);
-			else if (type == "material-full")
-				dJ_full_material_transient(js, dJi_dintegrals, grad);
 			else
 				logger().error("Unknown derivative type!");
 
