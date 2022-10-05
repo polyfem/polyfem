@@ -2117,8 +2117,6 @@ namespace polyfem
 	}
 	Eigen::VectorXd State::sum_gradient(const SummableFunctional &j, const std::string &type)
 	{
-		assert((problem->is_time_dependent() && diff_cached.size() > 0));
-
 		Eigen::VectorXd grad;
 		if (type == "material")
 			dJ_material_static(j, grad);
@@ -2129,8 +2127,6 @@ namespace polyfem
 	}
 	Eigen::VectorXd State::integral_gradient(const IntegrableFunctional &j, const std::string &type)
 	{
-		// assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
-
 		Eigen::VectorXd grad;
 		if (type == "material")
 			dJ_material(j, grad);
