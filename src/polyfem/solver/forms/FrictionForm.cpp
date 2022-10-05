@@ -28,6 +28,22 @@ namespace polyfem::solver
 		assert(epsv_ > 0);
 	}
 
+	void FrictionForm::force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term)
+	{
+		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
+		Eigen::MatrixXd U_prev = collision_mesh_.vertices(utils::unflatten(prev_solution, collision_mesh_.dim()));
+
+		StiffnessMatrix hess = ipc::compute_friction_force_jacobian(
+			collision_mesh_,
+			collision_mesh_.vertices_at_rest(),
+			U_prev, U,
+			friction_constraints_set,
+			dhat_, contact_form_.barrier_stiffness(), epsv_,
+			ipc::FrictionConstraint::DiffWRT::X);
+
+		term = (adjoint.transpose() * collision_mesh_.to_full_dof(hess)).transpose();
+	}
+
 	Eigen::MatrixXd FrictionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
 		return collision_mesh_.displace_vertices(utils::unflatten(x, boundary_nodes_pos_.cols()));

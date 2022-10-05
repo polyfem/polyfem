@@ -614,8 +614,6 @@ namespace polyfem
 
 		void compute_shape_derivative_rhs_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
-		void compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
-		void compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
 
 		// Derivatives wrt. an input functional J = \int j dx
 		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
@@ -638,113 +636,14 @@ namespace polyfem
 		void dJ_initial_condition(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
 		void dJ_shape_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
 		// unify transient and static
-		void dJ_shape(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
-		{
-			if (problem->is_time_dependent())
-				dJ_shape_transient(j, one_form);
-			else
-				dJ_shape_static(j, one_form);
-		}
-		void dJ_material(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
-		{
-			if (problem->is_time_dependent())
-				dJ_material_transient(j, one_form);
-			else
-				dJ_material_static(j, one_form);
-		}
+		void dJ_shape(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
+		void dJ_material(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 
 		// unify everything
-		Eigen::VectorXd sum_gradient(const SummableFunctional &j, const std::string &type)
-		{
-			assert((problem->is_time_dependent() && diff_cached.size() > 0));
+		Eigen::VectorXd sum_gradient(const SummableFunctional &j, const std::string &type);
+		Eigen::VectorXd integral_gradient(const IntegrableFunctional &j, const std::string &type);
+		Eigen::VectorXd integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type);
 
-			Eigen::VectorXd grad;
-			if (type == "material")
-				dJ_material_static(j, grad);
-			else
-			{
-				logger().error("Only static problem and material derivative is supported in sum_gradient!");
-				exit(0);
-			}
-			return grad;
-		}
-		Eigen::VectorXd integral_gradient(const IntegrableFunctional &j, const std::string &type)
-		{
-			// assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
-
-			Eigen::VectorXd grad;
-			if (type == "material")
-				dJ_material(j, grad);
-			else if (type == "shape")
-				dJ_shape(j, grad);
-			else if (type == "topology")
-				dJ_topology_static(j, grad);
-			else
-			{
-				assert(problem->is_time_dependent());
-				if (type == "initial-velocity")
-				{
-					Eigen::VectorXd tmp;
-					dJ_initial_condition(j, tmp);
-					grad = tmp.tail(tmp.size() / 2);
-				}
-				else if (type == "initial-position")
-				{
-					Eigen::VectorXd tmp;
-					dJ_initial_condition(j, tmp);
-					grad = tmp.head(tmp.size() / 2);
-				}
-				else if (type == "initial-condition")
-					dJ_initial_condition(j, grad);
-				else if (type == "friction-coefficient")
-				{
-					grad.resize(1);
-					dJ_friction_transient(j, grad(0));
-				}
-				else if (type == "damping-parameter")
-					dJ_damping_transient(j, grad);
-				else if (type == "dirichlet")
-					dJ_dirichlet_transient(j, grad);
-				else
-					logger().error("Unknown derivative type!");
-			}
-			return grad;
-		}
-		Eigen::VectorXd integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type)
-		{
-			assert(problem->is_time_dependent() && diff_cached.size() > 0);
-
-			Eigen::VectorXd grad;
-			if (type == "material")
-				dJ_material_transient(js, dJi_dintegrals, grad);
-			else if (type == "shape")
-				dJ_shape_transient(js, dJi_dintegrals, grad);
-			else if (type == "initial-velocity")
-			{
-				Eigen::VectorXd tmp;
-				dJ_initial_condition(js, dJi_dintegrals, tmp);
-				grad = tmp.tail(tmp.size() / 2);
-			}
-			else if (type == "initial-position")
-			{
-				Eigen::VectorXd tmp;
-				dJ_initial_condition(js, dJi_dintegrals, tmp);
-				grad = tmp.head(tmp.size() / 2);
-			}
-			else if (type == "initial-condition")
-				dJ_initial_condition(js, dJi_dintegrals, grad);
-			else if (type == "friction-coefficient")
-			{
-				grad.resize(1);
-				dJ_friction_transient(js, dJi_dintegrals, grad(0));
-			}
-			else if (type == "damping-parameter")
-				dJ_damping_transient(js, dJi_dintegrals, grad);
-			else
-				logger().error("Unknown derivative type!");
-
-			return grad;
-		}
 		// Alters the mesh for a given discrete perturbation (vector) field over the vertices
 		void perturb_mesh(const Eigen::MatrixXd &perturbation);
 		void perturb_material(const Eigen::MatrixXd &perturbation);

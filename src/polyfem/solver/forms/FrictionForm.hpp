@@ -37,6 +37,8 @@ namespace polyfem::solver
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
 
+		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution

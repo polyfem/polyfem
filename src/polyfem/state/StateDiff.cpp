@@ -1341,74 +1341,6 @@ namespace polyfem
 			term += local_storage.vec;
 	}
 
-	void State::compute_derivative_contact_term(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
-	{
-		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!is_contact_enabled())
-			return;
-
-		const double dhat = solve_data.contact_form->dhat();
-		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
-		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
-
-		StiffnessMatrix dq_h = collision_mesh.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh, X + U, contact_set, dhat));
-		term = -solve_data.contact_form->barrier_stiffness() * down_sampling_mat * (adjoint_sol.transpose() * dq_h).transpose();
-
-		// const double eps = 1e-6;
-		// Eigen::MatrixXd target = dq_h;
-		// Eigen::MatrixXd hessian_fd;
-		// hessian_fd.setZero(dq_h.rows(), dq_h.cols());
-
-		// Eigen::VectorXd theta(n_geom_bases * mesh->dimension());
-		// for (int i = 0; i < theta.size(); i++)
-		// 	theta(i) = (rand() % 10000) / 10000.0;
-
-		// Eigen::VectorXd deriv = dq_h * down_sampling_mat.transpose() * theta;
-		// Eigen::VectorXd deriv_FD = Eigen::VectorXd::Zero(deriv.size());
-
-		// for (int k = 0; k < 2; k++)
-		// {
-		// 	double sign = k ? 1 : -1;
-		// 	perturb_mesh(theta * eps * sign);
-		// 	auto X1 = collision_mesh.vertices(boundary_nodes_pos);
-
-		// 	ipc::Constraints constraint_set1;
-		// 	ipc::construct_constraint_set(collision_mesh, X1 + U, dhat, constraint_set1);
-
-		// 	Eigen::VectorXd H = collision_mesh.to_full_dof(ipc::compute_barrier_potential_gradient(collision_mesh, X1 + U, constraint_set1, dhat));
-		// 	deriv_FD += H * sign / (2 * eps);
-
-		// 	perturb_mesh(theta * eps * -sign);
-		// }
-
-		// logger().error("FD error: {}, norm: {}", (deriv_FD - deriv).norm(), deriv.norm());
-	}
-
-	void State::compute_derivative_friction_term(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, const ipc::FrictionConstraints &friction_constraint_set, Eigen::VectorXd &term)
-	{
-		term.setZero(n_geom_bases * mesh->dimension(), 1);
-		if (!solve_data.friction_form)
-			return;
-
-		Eigen::MatrixXd U = collision_mesh.vertices(utils::unflatten(solution, mesh->dimension()));
-		Eigen::MatrixXd U_prev = collision_mesh.vertices(utils::unflatten(prev_solution, mesh->dimension()));
-		Eigen::MatrixXd X = collision_mesh.vertices(boundary_nodes_pos);
-
-		const double kappa = solve_data.contact_form->barrier_stiffness();
-		const double dhat = solve_data.contact_form->dhat();
-		const double epsv = solve_data.friction_form->epsv_dt();
-
-		StiffnessMatrix hess = ipc::compute_friction_force_jacobian(
-			collision_mesh,
-			collision_mesh.vertices_at_rest(),
-			U_prev, U,
-			friction_constraint_set,
-			dhat, kappa, epsv,
-			ipc::FrictionConstraint::DiffWRT::X);
-
-		term = down_sampling_mat * (adjoint_sol.transpose() * collision_mesh.to_full_dof(hess)).transpose();
-	}
-
 	/**
 	 * @brief Computes the shape derivative in one form.
 	 *
@@ -1441,11 +1373,13 @@ namespace polyfem
 				solve_data.elastic_form->force_shape_derivative(sol, sol, adjoint_sol, elasticity_term);
 			compute_shape_derivative_rhs_term(sol, adjoint_sol, rhs_term);
 			if (is_contact_enabled())
-				compute_derivative_contact_term(solve_data.contact_form->get_constraint_set(), sol, adjoint_sol, contact_term);
+			{
+				solve_data.contact_form->force_shape_derivative(solve_data.contact_form->get_constraint_set(), sol, adjoint_sol, contact_term);
+				contact_term = down_sampling_mat * contact_term;
+			}
 			else
 				contact_term.setZero(elasticity_term.size());
-			// compute_derivative_friction_term(sol, sol, adjoint_sol, solve_data.friction_form->get_friction_constraint_set(), friction_term);
-			one_form += elasticity_term + rhs_term + contact_term; // + friction_term;
+			one_form += elasticity_term + rhs_term + contact_term;
 		}
 	}
 
@@ -1688,10 +1622,19 @@ namespace polyfem
 				compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 				solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 				if (is_contact_enabled())
-					compute_derivative_contact_term(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+				{
+					solve_data.contact_form->force_shape_derivative(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+					contact_term = down_sampling_mat * contact_term;
+				}
 				else
 					contact_term.setZero(mass_term.size());
-				compute_derivative_friction_term(diff_cached[i - 1].u, diff_cached[i].u, -adjoint_p[i], diff_cached[i].friction_constraint_set, friction_term);
+				if (solve_data.friction_form)
+				{
+					solve_data.friction_form->force_shape_derivative(diff_cached[i - 1].u, diff_cached[i].u, -adjoint_p[i], diff_cached[i].friction_constraint_set, friction_term);
+					friction_term = down_sampling_mat * friction_term;
+				}
+				else
+					friction_term.setZero(mass_term.size());
 
 				contact_term /= beta_dt * beta_dt;
 				friction_term /= beta_dt * beta_dt;
@@ -2111,10 +2054,19 @@ namespace polyfem
 			compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 			solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 			if (is_contact_enabled())
-				compute_derivative_contact_term(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+			{
+				solve_data.contact_form->force_shape_derivative(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
+				contact_term = down_sampling_mat * contact_term;
+			}
 			else
 				contact_term.setZero(mass_term.size());
-			compute_derivative_friction_term(diff_cached[i - 1].u, diff_cached[i].u, -adjoint_p[i], friction_constraint_set, friction_term);
+			if (solve_data.friction_form)
+			{
+				solve_data.friction_form->force_shape_derivative(diff_cached[i - 1].u, diff_cached[i].u, -adjoint_p[i], diff_cached[i].friction_constraint_set, friction_term);
+				friction_term = down_sampling_mat * friction_term;
+			}
+			else
+				friction_term.setZero(mass_term.size());
 
 			contact_term /= beta_dt * beta_dt;
 			friction_term /= beta_dt * beta_dt;
@@ -2147,5 +2099,109 @@ namespace polyfem
 		}
 
 		one_form += weights[0] * functional_term + mass_term;
+	}
+
+	void State::dJ_shape(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
+	{
+		if (problem->is_time_dependent())
+			dJ_shape_transient(j, one_form);
+		else
+			dJ_shape_static(j, one_form);
+	}
+	void State::dJ_material(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
+	{
+		if (problem->is_time_dependent())
+			dJ_material_transient(j, one_form);
+		else
+			dJ_material_static(j, one_form);
+	}
+	Eigen::VectorXd State::sum_gradient(const SummableFunctional &j, const std::string &type)
+	{
+		assert((problem->is_time_dependent() && diff_cached.size() > 0));
+
+		Eigen::VectorXd grad;
+		if (type == "material")
+			dJ_material_static(j, grad);
+		else
+			log_and_throw_error("Only static problem and material derivative is supported in sum_gradient!");
+
+		return grad;
+	}
+	Eigen::VectorXd State::integral_gradient(const IntegrableFunctional &j, const std::string &type)
+	{
+		// assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
+
+		Eigen::VectorXd grad;
+		if (type == "material")
+			dJ_material(j, grad);
+		else if (type == "shape")
+			dJ_shape(j, grad);
+		else if (type == "topology")
+			dJ_topology_static(j, grad);
+		else
+		{
+			assert(problem->is_time_dependent());
+			if (type == "initial-velocity")
+			{
+				Eigen::VectorXd tmp;
+				dJ_initial_condition(j, tmp);
+				grad = tmp.tail(tmp.size() / 2);
+			}
+			else if (type == "initial-position")
+			{
+				Eigen::VectorXd tmp;
+				dJ_initial_condition(j, tmp);
+				grad = tmp.head(tmp.size() / 2);
+			}
+			else if (type == "initial-condition")
+				dJ_initial_condition(j, grad);
+			else if (type == "friction-coefficient")
+			{
+				grad.resize(1);
+				dJ_friction_transient(j, grad(0));
+			}
+			else if (type == "damping-parameter")
+				dJ_damping_transient(j, grad);
+			else if (type == "dirichlet")
+				dJ_dirichlet_transient(j, grad);
+			else
+				log_and_throw_error("Unknown derivative type!");
+		}
+		return grad;
+	}
+	Eigen::VectorXd State::integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type)
+	{
+		assert(problem->is_time_dependent() && diff_cached.size() > 0);
+
+		Eigen::VectorXd grad;
+		if (type == "material")
+			dJ_material_transient(js, dJi_dintegrals, grad);
+		else if (type == "shape")
+			dJ_shape_transient(js, dJi_dintegrals, grad);
+		else if (type == "initial-velocity")
+		{
+			Eigen::VectorXd tmp;
+			dJ_initial_condition(js, dJi_dintegrals, tmp);
+			grad = tmp.tail(tmp.size() / 2);
+		}
+		else if (type == "initial-position")
+		{
+			Eigen::VectorXd tmp;
+			dJ_initial_condition(js, dJi_dintegrals, tmp);
+			grad = tmp.head(tmp.size() / 2);
+		}
+		else if (type == "initial-condition")
+			dJ_initial_condition(js, dJi_dintegrals, grad);
+		else if (type == "friction-coefficient")
+		{
+			grad.resize(1);
+			dJ_friction_transient(js, dJi_dintegrals, grad(0));
+		}
+		else if (type == "damping-parameter")
+			dJ_damping_transient(js, dJi_dintegrals, grad);
+		else
+			log_and_throw_error("Unknown derivative type!");
+
+		return grad;
 	}
 } // namespace polyfem

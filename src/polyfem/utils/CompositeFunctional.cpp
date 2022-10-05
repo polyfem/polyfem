@@ -518,8 +518,7 @@ namespace polyfem
 		SummableFunctional j = get_trajectory_functional();
 		if (active_vertex_mask.size() > 0 && state.n_bases != active_vertex_mask.size())
 			logger().error("vertex mask size doesn't match number of nodes!");
-		Eigen::VectorXd grad;
-		state.dJ_material_static(j, grad);
+		Eigen::VectorXd grad = state.sum_gradient(j, "material");
 
 		return grad / 2 / energy(state);
 	}

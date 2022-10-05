@@ -8,6 +8,8 @@
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 
+#include <polyfem/basis/ElementBases.hpp>
+
 namespace polyfem::solver
 {
 	/// @brief Form representing the contact potential and forces
@@ -35,6 +37,8 @@ namespace polyfem::solver
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
+
+		void force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the contact barrier potential value
