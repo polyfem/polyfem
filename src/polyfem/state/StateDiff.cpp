@@ -1622,6 +1622,8 @@ namespace polyfem
 				compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 				if (solve_data.damping_form)
 					solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
+				else
+					damping_term.setZero(mass_term.size());
 				if (is_contact_enabled())
 				{
 					solve_data.contact_form->force_shape_derivative(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
@@ -1980,7 +1982,7 @@ namespace polyfem
 		{
 			const int real_order = std::min(bdf_order, t);
 			double beta = time_integrator::BDF::betas(real_order - 1);
-			
+
 			solve_data.damping_form->foce_material_derivative(diff_cached[t].u, diff_cached[t - 1].u, -adjoint_p[t], damping_term);
 			one_form += beta * dt * damping_term;
 		}
@@ -2055,6 +2057,8 @@ namespace polyfem
 			compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 			if (solve_data.damping_form)
 				solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
+			else
+				damping_term.setZero(mass_term.size());
 			if (is_contact_enabled())
 			{
 				solve_data.contact_form->force_shape_derivative(diff_cached[i].contact_set, diff_cached[i].u, -adjoint_p[i], contact_term);
