@@ -2315,9 +2315,14 @@
     },
     {
         "pointer": "/boundary_conditions/periodic_boundary",
-        "default": false,
-        "type": "bool",
+        "default": [],
+        "type": "list",
         "doc": "Whether to enforce periodic boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/*",
+        "type": "bool",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
@@ -2784,18 +2789,21 @@
     },
     {
         "pointer": "/optimization/parameters/*/spline_specification",
-        "type": "object",
+        "type": "list",
         "default": null,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*",
+        "type": "object",
         "doc": "TODO"
     },
     {
         "pointer": "/optimization/parameters/*/remesh",
         "type": "object",
         "default": null,
-        "required": [
-            "remesh_exe"
-        ],
         "optional": [
+            "remesh_exe",
             "period",
             "tolerance"
         ],
@@ -2804,6 +2812,7 @@
     {
         "pointer": "/optimization/parameters/*/remesh/remesh_exe",
         "type": "string",
+        "default": "",
         "doc": "TODO"
     },
     {
@@ -2941,6 +2950,17 @@
         "optional": [
             "surface_selection"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/surface_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/surface_selection/*",
+        "type": "int",
         "doc": "TODO"
     },
     {
