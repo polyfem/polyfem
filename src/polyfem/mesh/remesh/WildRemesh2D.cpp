@@ -4,7 +4,10 @@
 #include <polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+
+#include <wmtk/utils/TupleUtils.hpp>
 
 #include <igl/boundary_facets.h>
 #include <igl/predicates/predicates.h>
@@ -112,16 +115,71 @@ namespace polyfem::mesh
 		{
 			// Global ids of the vertices of the triangle
 			const std::array<size_t, 3> its = super::oriented_tri_vids(t);
-			// Energy evaluation
-			energy += solver::AMIPSForm::energy(
+
+			const double area = utils::triangle_area_2D(
+				vertex_attrs[its[0]].rest_position,
+				vertex_attrs[its[1]].rest_position,
+				vertex_attrs[its[2]].rest_position);
+
+			const double AMIPS_energy = solver::AMIPSForm::energy(
 				vertex_attrs[its[0]].rest_position,
 				vertex_attrs[its[1]].rest_position,
 				vertex_attrs[its[2]].rest_position,
 				vertex_attrs[its[0]].position,
 				vertex_attrs[its[1]].position,
 				vertex_attrs[its[2]].position);
+
+			energy += area * AMIPS_energy;
 		}
+		assert(energy >= 0);
 		return energy;
+	}
+
+	template <int N>
+	double harmonic_mean(const std::array<double, N> &x)
+	{
+		double inv_sum = 0;
+		for (double xi : x)
+			inv_sum += 1.0 / xi;
+		return N / inv_sum;
+	}
+
+	template <int N>
+	double root_mean_squared(const std::array<double, N> &x)
+	{
+		double RMS = 0;
+		for (double xi : x)
+			RMS += xi * xi;
+		return std::sqrt(RMS / N);
+	}
+
+	double WildRemeshing2D::compute_global_wicke_measure() const
+	{
+		double measure = 0;
+		for (const Tuple &t : get_faces())
+		{
+			// Global ids of the vertices of the triangle
+			const std::array<size_t, 3> its = super::oriented_tri_vids(t);
+
+			const std::array<double, 3> edge_lengths{{
+				(vertex_attrs[its[1]].position - vertex_attrs[its[0]].position).norm(),
+				(vertex_attrs[its[2]].position - vertex_attrs[its[1]].position).norm(),
+				(vertex_attrs[its[0]].position - vertex_attrs[its[2]].position).norm(),
+			}};
+
+			const double rest_area = utils::triangle_area_2D(
+				vertex_attrs[its[0]].rest_position,
+				vertex_attrs[its[1]].rest_position,
+				vertex_attrs[its[2]].rest_position);
+
+			const double area = utils::triangle_area_2D(
+				vertex_attrs[its[0]].position,
+				vertex_attrs[its[1]].position,
+				vertex_attrs[its[2]].position);
+
+			measure += rest_area * (4 / std::sqrt(3) * area * harmonic_mean<3>(edge_lengths) / std::pow(root_mean_squared<3>(edge_lengths), 3));
+		}
+		return measure;
 	}
 
 	bool WildRemeshing2D::is_inverted(const Tuple &loc) const
@@ -276,9 +334,10 @@ namespace polyfem::mesh
 		}
 		target_x = utils::flatten(target_x);
 
-		std::vector<int> _boundary_nodes = boundary_nodes();
-		for (int &boundary_node : _boundary_nodes)
+		std::vector<int> boundary_nodes = this->boundary_nodes();
+		for (int &boundary_node : boundary_nodes)
 			boundary_node = vertex_to_basis[boundary_node];
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
 		// --------------------------------------------------------------------
 
@@ -288,7 +347,7 @@ namespace polyfem::mesh
 			/*is_volume=*/DIM == 3, /*size=*/DIM,
 			n_bases_before, bases_before, geom_bases_before, // from
 			n_bases, bases, geom_bases,                      // to
-			_boundary_nodes, obstacle, target_x,
+			boundary_nodes, obstacle, target_x,
 			y, x, /*lump_mass_matrix=*/false);
 
 		// --------------------------------------------------------------------
@@ -312,6 +371,23 @@ namespace polyfem::mesh
 
 		write_rest_obj("proposed_rest_mesh.obj");
 		write_deformed_obj("proposed_deformed_mesh.obj");
+	}
+
+	std::vector<WildRemeshing2D::Tuple> WildRemeshing2D::new_edges_after(
+		const std::vector<Tuple> &tris) const
+	{
+		std::vector<Tuple> new_edges;
+		std::vector<size_t> one_ring_fid;
+
+		for (auto t : tris)
+		{
+			for (auto j = 0; j < 3; j++)
+			{
+				new_edges.push_back(tuple_from_edge(t.fid(*this), j));
+			}
+		}
+		wmtk::unique_edge_tuples(*this, new_edges);
+		return new_edges;
 	}
 
 } // namespace polyfem::mesh

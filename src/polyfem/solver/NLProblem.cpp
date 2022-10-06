@@ -179,6 +179,8 @@ namespace polyfem::solver
 		assert(full.cols() == 1);
 		reduced.resize(reduced_size, 1);
 
+		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
+
 		long j = 0;
 		size_t k = 0;
 		for (int i = 0; i < full.size(); ++i)
@@ -209,6 +211,8 @@ namespace polyfem::solver
 		assert(reduced.size() == reduced_size);
 		assert(reduced.cols() == 1);
 		full.resize(full_size, 1);
+
+		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 
 		long j = 0;
 		size_t k = 0;

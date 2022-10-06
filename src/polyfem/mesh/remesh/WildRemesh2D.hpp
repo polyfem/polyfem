@@ -3,6 +3,7 @@
 #include <polyfem/State.hpp>
 
 #include <wmtk/TriMesh.h>
+#include <wmtk/ExecutionScheduler.hpp>
 
 namespace polyfem::mesh
 {
@@ -17,6 +18,7 @@ namespace polyfem::mesh
 		virtual ~WildRemeshing2D(){};
 
 		static constexpr int DIM = 2;
+		static constexpr wmtk::ExecutionPolicy EXECUTION_POLICY = wmtk::ExecutionPolicy::kSeq;
 
 		// Initializes the mesh
 		void create_mesh(
@@ -53,6 +55,7 @@ namespace polyfem::mesh
 
 		/// Compute the global energy of the mesh
 		double compute_global_energy() const;
+		double compute_global_wicke_measure() const;
 
 		// Check if a triangle is inverted
 		bool is_inverted(const Tuple &loc) const;
@@ -77,6 +80,8 @@ namespace polyfem::mesh
 		void collapse_all_edges();
 		bool collapse_edge_before(const Tuple &t) override;
 		bool collapse_edge_after(const Tuple &t) override;
+
+		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tris) const;
 
 		struct VertexAttributes
 		{

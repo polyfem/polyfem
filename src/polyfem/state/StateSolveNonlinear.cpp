@@ -111,30 +111,34 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(t0 + dt);
 
-		save_timestep(t0, 0, t0, dt / 2);
+		const double save_dt = dt / 3; // dt;
+		int save_i = 0;
+
+		save_timestep(t0, save_i++, t0, save_dt);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_tensor_nonlinear(t);
 
+			if (t > time_steps / 2)
+			{
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				mesh::remesh(*this, t0 + dt * (t + 0), dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				solve_tensor_nonlinear(t); // solve the scene again after remeshing
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+			}
+
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
 
-				solve_data.time_integrator->update_quantities(sol);
+				solve_data.time_integrator->update_quantities(sol, args["time"]["quasistatic"]);
 
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				solve_data.update_dt();
 				solve_data.updated_barrier_stiffness(sol);
 			}
-
-			save_timestep(t0 + dt / 2 * t, 2 * t - 1, t0, dt / 2);
-			if (t > time_steps / 2)
-			{
-				mesh::remesh(*this, t0 + dt * (t + 1), dt);
-			}
-
-			save_timestep(t0 + dt / 2 * t, 2 * t, t0, dt / 2);
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}

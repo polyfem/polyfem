@@ -859,7 +859,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
@@ -872,7 +873,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
@@ -885,7 +887,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
@@ -992,6 +995,12 @@
         "min": 1,
         "max": 6,
         "doc": "BDF order"
+    },
+    {
+        "pointer": "/time/quasistatic",
+        "type": "bool",
+        "default": false,
+        "doc": "Quasistatic time integration (i.e., zero out velocity after each time step)."
     },
     {
         "pointer": "/contact",
