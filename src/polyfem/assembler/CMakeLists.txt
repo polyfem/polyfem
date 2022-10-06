@@ -18,8 +18,10 @@ set(SOURCES
 	Laplacian.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
-	Mass.cpp
-	Mass.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
+	MooneyRivlinElasticity.cpp
+	MooneyRivlinElasticity.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NeoHookeanElasticity.cpp
@@ -40,8 +42,6 @@ set(SOURCES
 	Problem.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
-	ViscousDamping.cpp
-	ViscousDamping.hpp
 )
 
 prepend_current_path(SOURCES)
