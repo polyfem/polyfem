@@ -2265,7 +2265,7 @@
             "linear_ramp"
         ],
         "default": "none",
-        "doc": "interpolation of boundary condition"
+        "doc": "type of interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/from",
@@ -2360,7 +2360,7 @@
             "linear_ramp"
         ],
         "default": "none",
-        "doc": "interpolation of boundary condition"
+        "doc": "type of interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/from",
@@ -2468,7 +2468,7 @@
             "linear_ramp"
         ],
         "default": "none",
-        "doc": "interpolation of boundary condition"
+        "doc": "type of interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/from",
@@ -2563,7 +2563,7 @@
             "linear_ramp"
         ],
         "default": "none",
-        "doc": "interpolation of boundary condition"
+        "doc": "type of interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/from",
