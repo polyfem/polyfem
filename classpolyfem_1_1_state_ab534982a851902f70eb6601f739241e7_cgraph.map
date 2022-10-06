@@ -1,0 +1,52 @@
+<map id="polyfem::State::save_subsolve" name="polyfem::State::save_subsolve">
+<area shape="rect" id="node1" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="5,756,163,797"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="238,691,375,732"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a" title="Resolve output path relative to output_dir if the path is not absolute." alt="" coords="219,756,394,797"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a842de4f9d003ca9df072545938091f69" title="saves the vtu file for time t" alt="" coords="211,821,403,863"/>
+<area shape="rect" id="node5" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1261,1054,1386,1081"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a5dbf360987cc96fabcf32ddc13b73314" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="451,567,643,608"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3d16cbc6a9d9211027f46b6f064e0b93" title="saves the volume vtu file" alt="" coords="451,1668,643,1709"/>
+<area shape="rect" id="node50" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3c66d8c6f4c319704fb0a98e5a0a4a47" title="saves the wireframe" alt="" coords="451,1040,643,1081"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1io_1_1_v_t_u_writer.html#ad81262a6b782af9c3e3734a9f1cd91f1" title=" " alt="" coords="718,1105,889,1147"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a8867f92a6f5370d8ccc88fda2ff5dee1" title="builds the boundary mesh for visualization" alt="" coords="1208,101,1439,143"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="1487,1181,1649,1223"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#addd752547163ac089167266b4895bf4a" title=" " alt="" coords="965,413,1159,469"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a0acace118edf344b90d3a56691abd115" title=" " alt="" coords="711,676,896,717"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="1242,1820,1405,1861"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and delas with multiphisics)" alt="" coords="702,413,905,439"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="722,975,885,1016"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef" title="Get the volume selection of an element (cell in 3d, face in 2d)" alt="" coords="722,464,885,505"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="1242,252,1405,293"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="707,2041,900,2083"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#afe174814a2a7d78b076b71acc6982138" title=" " alt="" coords="706,529,901,571"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="727,1040,879,1081"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1_lame_parameters.html#adbe7284ebd8d24b11a16df2235931afd" title=" " alt="" coords="706,741,901,783"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13" title=" " alt="" coords="718,595,889,651"/>
+<area shape="rect" id="node22" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="714,210,893,237"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1io_1_1_v_t_u_writer.html#ab707baa6e2436c11c6f9a517419463bb" title=" " alt="" coords="718,909,889,951"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" title="Get the most recent previous acceleration value." alt="" coords="711,2275,896,2331"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ..." alt="" coords="691,1639,916,1680"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1io_1_1_evaluator.html#ab32b1665947f01b2f9a09badd94545bb" title="interpolate the function fun." alt="" coords="979,2100,1145,2141"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simples compatible" alt="" coords="981,1689,1143,1731"/>
+<area shape="rect" id="node29" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="985,1441,1139,1483"/>
+<area shape="rect" id="node30" href="$namespacepolyfem_1_1autogen.html#a9c2688a6744801097c2f8baa081ab3a7" title=" " alt="" coords="985,1324,1139,1365"/>
+<area shape="rect" id="node31" href="$namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25" title=" " alt="" coords="985,1507,1139,1548"/>
+<area shape="rect" id="node32" href="$namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0" title=" " alt="" coords="985,1572,1139,1613"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a1ad796fa6abb25be642f87f788f750b9" title="builds high&#45;der visualzation mesh per element all disconnected it also retuns the mapping to element ..." alt="" coords="707,1886,899,1942"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="981,1959,1143,2000"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c" title="builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mes..." alt="" coords="707,2209,899,2251"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="715,1288,891,1329"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="714,1223,893,1264"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1assembler_1_1_problem.html#add068e57938271170ec204f843611cca" title=" " alt="" coords="727,1405,879,1447"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a39075d38314de5925213956c14dd1a04" title=" " alt="" coords="711,2356,896,2397"/>
+<area shape="rect" id="node41" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a7c8eb9750b6623620ba63039021dd7f4" title=" " alt="" coords="711,2421,896,2463"/>
+<area shape="rect" id="node42" href="$classpolyfem_1_1mesh_1_1_obstacle.html#afb62c18348c6db81422d79834c5797a0" title=" " alt="" coords="710,2539,897,2580"/>
+<area shape="rect" id="node43" href="$classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9" title=" " alt="" coords="711,1471,895,1512"/>
+<area shape="rect" id="node44" href="$classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923" title=" " alt="" coords="695,2604,911,2645"/>
+<area shape="rect" id="node45" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="711,2772,896,2813"/>
+<area shape="rect" id="node46" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a6e1e78c30df24229f0e9409cc5445580" title=" " alt="" coords="711,2837,896,2879"/>
+<area shape="rect" id="node47" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a7f676c678626887e7fef558a70a19467" title=" " alt="" coords="711,2903,896,2944"/>
+<area shape="rect" id="node48" href="$classpolyfem_1_1mesh_1_1_obstacle.html#acd4b860705bf9f9c6af1206b64c3e6f5" title=" " alt="" coords="703,2969,904,2995"/>
+<area shape="rect" id="node49" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" title="Get the most recent previous velocity value." alt="" coords="711,1755,896,1811"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a6139f11a17d03d061c67f901d12a5f26" title=" " alt="" coords="964,1207,1160,1248"/>
+</map>

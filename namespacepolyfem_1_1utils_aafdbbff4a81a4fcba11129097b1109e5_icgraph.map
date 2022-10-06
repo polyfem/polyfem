@@ -1,0 +1,36 @@
+<map id="polyfem::utils::unflatten" name="polyfem::utils::unflatten">
+<area shape="rect" id="node1" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="1691,1101,1869,1127"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="1452,374,1641,430"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1solver_1_1_friction_form.html#a813fc2f87b22de23caf3d1cb850fdfac" title="Compute the displaced positions of the surface nodes." alt="" coords="1452,941,1641,997"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aff992cab598e340fa50273b7a9861c17" title="exports everytihng, txt, vtu, etc" alt="" coords="943,1093,1135,1135"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#abd851705312f4ec60428cf62dc960889" title="initialize the nonlinear solver" alt="" coords="703,1280,883,1321"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a5dbf360987cc96fabcf32ddc13b73314" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1451,1152,1643,1193"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52" title="Compute the first derivative of the value wrt x." alt="" coords="1201,137,1384,193"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb" title="Initialize the form." alt="" coords="1201,217,1384,259"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006" title="Checks if the step is collision free." alt="" coords="1191,283,1394,324"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c" title="Initialize variables used during the line search." alt="" coords="1201,348,1384,389"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="1201,413,1384,455"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_contact_form.html#af1f9e0e3d713c85183191e884b7df2d7" title="Update fields after a step in the optimization." alt="" coords="1201,479,1384,520"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1solver_1_1_contact_form.html#ad7fabb192b6b9c74b8fc06b0527fb028" title="Compute the second derivative of the value wrt x." alt="" coords="1201,545,1384,601"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e" title="Update cached fields upon a change in the solution." alt="" coords="1201,625,1384,667"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="1183,691,1403,732"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e" title="Update time&#45;dependent fields." alt="" coords="1201,5,1384,47"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5" title="Compute the contact barrier potential value." alt="" coords="1201,71,1384,112"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620" title="Compute the first derivative of the value wrt x." alt="" coords="1203,903,1383,959"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df" title="Initialize lagged fields." alt="" coords="949,1005,1129,1047"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1solver_1_1_friction_form.html#a72fef1ad422e278c0d346d003514b6d0" title="Compute the second derivative of the value wrt x." alt="" coords="1201,757,1384,813"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" title="Update lagged fields." alt="" coords="1203,984,1383,1025"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd" title="Compute the value of the form." alt="" coords="1201,837,1384,879"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#ace95e485ec689c24e293b317da6505c3" title="saves all data on the disk according to the input params" alt="" coords="691,1098,895,1125"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1_state.html#a5f707e0e648aa0e3ffd866f9599f39d0" title="solves the problems" alt="" coords="215,1149,376,1191"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1_state.html#adad1ddc955ed74e3bbb706ea2e0fa8b8" title="solves transient tensor nonlinear problem" alt="" coords="432,1215,635,1256"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1_state.html#aedf3207db0c8d717766f410878876cab" title="solves the problem, call other methods" alt="" coords="5,1157,167,1183"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a842de4f9d003ca9df072545938091f69" title="saves the vtu file for time t" alt="" coords="1197,1152,1389,1193"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#ab534982a851902f70eb6601f739241e7" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="960,1213,1117,1255"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1_state.html#a61ff1981be991580c3c68c323145d4e6" title="saves a timestep" alt="" coords="714,1149,871,1191"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1_state.html#afb78d1df43d732318dd15a370d96360d" title="solves nonlinear problems" alt="" coords="712,1215,873,1256"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1_state.html#ac206e46b9e10eed613f8e20e0317b540" title="initialize solver" alt="" coords="460,1084,607,1125"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#a300265f0645d258fe96a04a95f1837ed" title="solves transient linear problem" alt="" coords="453,1149,614,1191"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1_state.html#a8987d7b98af154391196ee304a613953" title="solves transient navier stokes with FEM" alt="" coords="441,953,625,995"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1_state.html#aeebf24720a27fd360daed232cccae73a" title="solves transient navier stokes with operator splitting" alt="" coords="424,1019,643,1060"/>
+</map>
