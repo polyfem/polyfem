@@ -2225,35 +2225,35 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
         "type": "object",
-        "optional": [
+        "required": [
             "type"
         ],
         "type_name": "none",
-        "default": null,
-        "doc": "interpolation of boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
-        "type": "object",
-        "optional": [
-            "type"
-        ],
-        "type_name": "linear",
-        "default": null,
+        "default": {
+            "type": "none"
+        },
         "doc": "interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
         "type": "object",
         "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
             "to"
         ],
         "optional": [
-            "type",
             "from"
         ],
         "type_name": "linear_ramp",
-        "default": null,
         "doc": "interpolation of boundary condition"
     },
     {
@@ -2264,7 +2264,6 @@
             "linear",
             "linear_ramp"
         ],
-        "default": "none",
         "doc": "type of interpolation of boundary condition"
     },
     {
@@ -2320,35 +2319,35 @@
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
         "type": "object",
-        "optional": [
+        "required": [
             "type"
         ],
         "type_name": "none",
-        "default": true,
-        "doc": "interpolation of boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
-        "type": "object",
-        "optional": [
-            "type"
-        ],
-        "type_name": "linear",
-        "default": true,
+        "default": {
+            "type": "none"
+        },
         "doc": "interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
         "type": "object",
         "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
             "to"
         ],
         "optional": [
-            "type",
             "from"
         ],
         "type_name": "linear_ramp",
-        "default": true,
         "doc": "interpolation of boundary condition"
     },
     {
@@ -2359,7 +2358,6 @@
             "linear",
             "linear_ramp"
         ],
-        "default": "none",
         "doc": "type of interpolation of boundary condition"
     },
     {
@@ -2428,35 +2426,35 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
         "type": "object",
-        "optional": [
+        "required": [
             "type"
         ],
         "type_name": "none",
-        "default": null,
-        "doc": "interpolation of boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
-        "type": "object",
-        "optional": [
-            "type"
-        ],
-        "type_name": "linear",
-        "default": null,
+        "default": {
+            "type": "none"
+        },
         "doc": "interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
         "type": "object",
         "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
             "to"
         ],
         "optional": [
-            "type",
             "from"
         ],
         "type_name": "linear_ramp",
-        "default": null,
         "doc": "interpolation of boundary condition"
     },
     {
@@ -2467,7 +2465,6 @@
             "linear",
             "linear_ramp"
         ],
-        "default": "none",
         "doc": "type of interpolation of boundary condition"
     },
     {
@@ -2523,35 +2520,35 @@
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
         "type": "object",
-        "optional": [
+        "required": [
             "type"
         ],
         "type_name": "none",
-        "default": null,
-        "doc": "interpolation of boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
-        "type": "object",
-        "optional": [
-            "type"
-        ],
-        "type_name": "linear",
-        "default": null,
+        "default": {
+            "type": "none"
+        },
         "doc": "interpolation of boundary condition"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
         "type": "object",
         "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
             "to"
         ],
         "optional": [
-            "type",
             "from"
         ],
         "type_name": "linear_ramp",
-        "default": null,
         "doc": "interpolation of boundary condition"
     },
     {
@@ -2562,7 +2559,6 @@
             "linear",
             "linear_ramp"
         ],
-        "default": "none",
         "doc": "type of interpolation of boundary condition"
     },
     {
