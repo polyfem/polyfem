@@ -43,8 +43,7 @@ namespace polyfem
 			const Eigen::MatrixXd &vertices,
 			const Eigen::VectorXi &codim_vertices,
 			const Eigen::MatrixXi &codim_edges,
-			const Eigen::MatrixXi &faces,
-			const json &displacement)
+			const Eigen::MatrixXi &faces)
 		{
 			if (vertices.size() == 0)
 				return;
@@ -94,6 +93,18 @@ namespace polyfem
 			v_.conservativeResize(v_.rows() + vertices.rows(), dim_);
 			v_.bottomRows(vertices.rows()) = vertices;
 
+			endings_.push_back(v_.rows());
+		}
+
+		void Obstacle::append_mesh(
+			const Eigen::MatrixXd &vertices,
+			const Eigen::VectorXi &codim_vertices,
+			const Eigen::MatrixXi &codim_edges,
+			const Eigen::MatrixXi &faces,
+			const json &displacement)
+		{
+			append_mesh(vertices, codim_vertices, codim_edges, faces);
+
 			displacements_.emplace_back();
 			for (size_t d = 0; d < dim_; ++d)
 			{
@@ -105,8 +116,47 @@ namespace polyfem
 				displacements_interpolation_.emplace_back(Interpolation::build(displacement["interpolation"]));
 			else
 				displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		}
 
-			endings_.push_back(v_.rows());
+		void Obstacle::append_mesh_sequence(
+			const std::vector<Eigen::MatrixXd> &vertices,
+			const Eigen::VectorXi &codim_vertices,
+			const Eigen::MatrixXi &codim_edges,
+			const Eigen::MatrixXi &faces,
+			const int fps)
+		{
+			if (vertices.size() == 0 || vertices[0].size() == 0)
+				return;
+
+			append_mesh(vertices[0], codim_vertices, codim_edges, faces);
+
+			std::array<std::vector<Eigen::MatrixXd>, 3> displacements_xyz;
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				Eigen::MatrixXd displacement = vertices[i] - vertices[0];
+				for (size_t d = 0; d < dim_; ++d)
+					displacements_xyz[d].push_back(displacement.col(d));
+			}
+
+			displacements_.emplace_back();
+			for (size_t d = 0; d < dim_; ++d)
+			{
+				const std::vector<Eigen::MatrixXd> displacements = displacements_xyz[d];
+				displacements_.back()[d].init(
+					[displacements, fps](double x, double y, double z, double t, int index) -> double {
+						const double frame = t * fps;
+						const double interp = frame - floor(frame);
+						const int frame0 = (int)floor(frame);
+						const int frame1 = (int)ceil(frame);
+						if (frame1 >= displacements.size())
+							return displacements.back()(index);
+						const double u0 = displacements[frame0](index);
+						const double u1 = displacements[frame1](index);
+						return (u1 - u0) * interp + u0;
+					});
+			}
+
+			displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
 		}
 
 		void Obstacle::append_plane(const VectorNd &origin, const VectorNd &normal)
@@ -172,14 +222,9 @@ namespace polyfem
 
 					for (int d = 0; d < dim_; ++d)
 					{
-						if (sol.cols() == 1)
-						{
-							sol(offset + i * dim_ + d) = disp[d](x, y, z, t) * interp_val;
-						}
-						else
-						{
-							sol(offset + i, d) = disp[d](x, y, z, t) * interp_val;
-						}
+						const int sol_row = sol.cols() == 1 ? (offset + i * dim_ + d) : (offset + i);
+						const int sol_col = sol.cols() == 1 ? 0 : d;
+						sol(sol_row, sol_col) = disp[d](x, y, z, t, i - start) * interp_val;
 					}
 				}
 

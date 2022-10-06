@@ -135,7 +135,54 @@
             "enabled",
             "is_obstacle"
         ],
+        "#type_name": "mesh",
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "type",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "plane",
+        "doc": "Plane geometry object defined by its origin and normal."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "height"
+        ],
+        "optional": [
+            "type",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "ground",
+        "doc": "Plane orthogonal to gravity defined by its height."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh_sequence",
+            "fps"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "transformation",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "mesh_sequence",
+        "doc": "Mesh sequence."
     },
     {
         "pointer": "/geometry/*/mesh",
@@ -153,7 +200,10 @@
         "pointer": "/geometry/*/type",
         "type": "string",
         "options": [
-            "mesh"
+            "mesh",
+            "plane",
+            "ground",
+            "mesh_sequence"
         ],
         "default": "mesh",
         "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
@@ -249,7 +299,7 @@
         "optional": [
             "id_offset"
         ],
-        "typename": "id_offset",
+        "#type_name": "id_offset",
         "default": null,
         "doc": "Offsets the volume IDs loaded from the mesh."
     },
@@ -283,7 +333,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "box",
+        "#type_name": "box",
         "doc": "Assign the ID to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
@@ -298,7 +348,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "sphere",
+        "#type_name": "sphere",
         "doc": "Assign the ID to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
@@ -314,7 +364,7 @@
             "offset"
         ],
         "default": null,
-        "typename": "plane",
+        "#type_name": "plane",
         "doc": "Assign the ID to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
@@ -329,7 +379,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "axis",
+        "#type_name": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
     },
     {
@@ -451,7 +501,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "box",
+        "#type_name": "box",
         "doc": "Assign the ID to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
@@ -466,7 +516,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "sphere",
+        "#type_name": "sphere",
         "doc": "Assign the ID to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
@@ -482,7 +532,7 @@
             "offset"
         ],
         "default": null,
-        "typename": "plane",
+        "#type_name": "plane",
         "doc": "Assign the ID to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
@@ -497,7 +547,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "axis",
+        "#type_name": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
     },
     {
@@ -510,7 +560,7 @@
             "id_offset"
         ],
         "default": null,
-        "typename": "box_side",
+        "#type_name": "box_side",
         "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
     },
     {
@@ -654,6 +704,56 @@
         "type": "bool",
         "default": true,
         "doc": "Skips the geometry if false"
+    },
+    {
+        "pointer": "/geometry/*/point",
+        "type": "list",
+        "doc": "Point on plane (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/normal",
+        "type": "list",
+        "doc": "Normal of plane (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/height",
+        "type": "float",
+        "doc": "Height of ground plane."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence",
+        "type": "string",
+        "doc": "Directory (or GLOB) of meshes for the mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence",
+        "type": "list",
+        "doc": "List of mesh files for the mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence/*",
+        "type": "file",
+        "extensions": [
+            ".obj",
+            ".msh",
+            ".stl",
+            ".ply",
+            ".mesh"
+        ],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/*/fps",
+        "type": "int",
+        "doc": "Frames of the mesh sequence per second."
     },
     {
         "pointer": "/space",
@@ -1723,7 +1823,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
@@ -1738,7 +1840,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
@@ -1753,7 +1857,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
@@ -1812,7 +1918,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -1826,7 +1934,9 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -1966,6 +2076,18 @@
         "type": "float",
         "doc": "Density",
         "default": 1
+    },
+    {
+        "pointer": "/materials/*/phi",
+        "type": "float",
+        "doc": "Damping parameter 1",
+        "default": 0
+    },
+    {
+        "pointer": "/materials/*/psi",
+        "type": "float",
+        "doc": "Damping parameter 2",
+        "default": 0
     },
     {
         "pointer": "/materials/*/k",

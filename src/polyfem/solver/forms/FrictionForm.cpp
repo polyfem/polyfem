@@ -62,16 +62,11 @@ namespace polyfem::solver
 	void FrictionForm::init_lagging(const Eigen::VectorXd &x)
 	{
 		displaced_surface_prev_ = compute_displaced_surface(x);
-		bool update_success = update_lagging(x, 0);
-		assert(update_success);
+		update_lagging(x, 0);
 	}
 
-	bool FrictionForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
+	void FrictionForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
-		// Only update the friction constraints if we are not out of lagging iterations
-		if (iter_num >= n_lagging_iters_)
-			return false;
-
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::Constraints constraint_set;
@@ -82,7 +77,5 @@ namespace polyfem::solver
 		ipc::construct_friction_constraint_set(
 			collision_mesh_, displaced_surface, constraint_set,
 			dhat_, contact_form_.barrier_stiffness(), mu_, friction_constraint_set_);
-
-		return true;
 	}
 } // namespace polyfem::solver

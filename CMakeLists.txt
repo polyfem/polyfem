@@ -246,8 +246,13 @@ target_link_libraries(polyfem PUBLIC hdf5::hdf5)
 include(high_five)
 target_link_libraries(polyfem PUBLIC HighFive::HighFive)
 
-include(polyclipper)
-target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
+# natsort library
+include(natsort)
+target_link_libraries(polyfem PUBLIC natsort::natsort)
+
+# GLOB library
+include(glob)
+target_link_libraries(polyfem PUBLIC Glob::Glob)
 
 ################################################################################
 # Optional libraries
@@ -272,6 +277,10 @@ if(POLYFEM_WITH_CLIPPER)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
+# else()
+include(polyclipper)
+target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
+# endif()
 
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)

@@ -45,6 +45,23 @@
 
 extern "C" size_t getPeakRSS();
 
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+} // namespace ipc
+
 namespace polyfem::io
 {
 
@@ -1002,7 +1019,7 @@ namespace polyfem::io
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.density;
+		const Density &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1298,7 +1315,7 @@ namespace polyfem::io
 			if (!opts.use_spline)
 			{
 				Evaluator::average_grad_based_function(
-					mesh, problem.is_scalar(), bases, gbases,
+					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d,
 					state.assembler, state.formulation(),
 					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
@@ -1514,7 +1531,7 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.density;
+		const Density &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1624,7 +1641,7 @@ namespace polyfem::io
 			ipc::Constraints constraint_set;
 			constraint_set.build(
 				collision_mesh, displaced_surface, dhat,
-				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
+				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 

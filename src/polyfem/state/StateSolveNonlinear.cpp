@@ -81,6 +81,8 @@ namespace polyfem
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
+			if (damping_form)
+				damping_form->set_weight(time_integrator->acceleration_scaling());
 
 			// TODO: Determine if friction should be scaled by h²
 			// if (friction_form)
@@ -184,6 +186,7 @@ namespace polyfem
 			n_bases, bases, geom_bases(),
 			assembler, ass_vals_cache,
 			formulation(),
+			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh->is_volume());
 		forms.push_back(solve_data.elastic_form);
 
@@ -191,16 +194,28 @@ namespace polyfem
 			ndof, n_pressure_bases,
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
 			rhs, *solve_data.rhs_assembler,
-			density,
-			/*apply_DBC=*/true, /*is_formulation_mixed=*/false);
+			assembler.density(),
+			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
+		solve_data.body_form->update_quantities(t, sol);
 		forms.push_back(solve_data.body_form);
 
 		solve_data.inertia_form = nullptr;
+		solve_data.damping_form = nullptr;
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
 			forms.push_back(solve_data.inertia_form);
+			if (assembler.has_damping())
+			{
+				solve_data.damping_form = std::make_shared<ElasticForm>(
+					n_bases, bases, geom_bases(),
+					assembler, ass_vals_cache,
+					"Damping",
+					args["time"]["dt"],
+					mesh->is_volume());
+				forms.push_back(solve_data.damping_form);
+			}
 		}
 		else
 		{
@@ -306,13 +321,12 @@ namespace polyfem
 
 		assert(sol.size() == rhs.size());
 
+		if (nl_problem.uses_lagging())
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
 			nl_problem.init_lagging(sol);
+			logger().info("Lagging iteration {:d}:", 1);
 		}
-
-		int lag_i = 0;
-		logger().info("Lagging iteration {:d}:", lag_i + 1);
 
 		// ---------------------------------------------------------------------
 
@@ -353,24 +367,33 @@ namespace polyfem
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		bool lagging_converged = !nl_problem.uses_lagging();
-		for (lag_i = 1; !lagging_converged; lag_i++)
+		for (int lag_i = 1; !lagging_converged; lag_i++)
 		{
 			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 
 			// Update the lagging before checking for convergence
-			if (!nl_problem.update_lagging(tmp_sol, lag_i))
-			{
-				logger().warn("Failed to update lagging: max lagging iterations exceeded");
-				break;
-			}
+			nl_problem.update_lagging(tmp_sol, lag_i);
 
 			// Check if lagging converged
 			Eigen::VectorXd grad;
 			nl_problem.gradient(tmp_sol, grad);
-			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
+			logger().debug("Lagging convergence grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
 			if (grad.norm() <= lagging_tol)
 			{
+				logger().info(
+					"Lagging converged in {:d} iteration(s) (grad_norm={:g} tol={:g})",
+					lag_i, grad.norm(), lagging_tol);
 				lagging_converged = true;
+				break;
+			}
+
+			// Check for convergence first before checking if we can continue
+			if (lag_i >= nl_problem.max_lagging_iterations())
+			{
+				logger().warn(
+					"Lagging failed to converge with {:d} iteration(s) (grad_norm={:g} tol={:g})",
+					lag_i, grad.norm(), lagging_tol);
+				lagging_converged = false;
 				break;
 			}
 
@@ -391,17 +414,6 @@ namespace polyfem
 				 {"info", info}});
 			save_subsolve(++subsolve_count, t);
 		}
-
-		// ---------------------------------------------------------------------
-
-		nl_problem.update_lagging(sol, -1); // -1 bypasses the max lagging iterations check
-		Eigen::VectorXd grad;
-		nl_problem.gradient(sol, grad);
-		logger().log(
-			lagging_converged ? spdlog::level::info : spdlog::level::warn,
-			"{} {:d} iteration(s) (grad_norm={:g} tol={:g})",
-			lagging_converged ? "Lagging converged in" : "Lagging failed to converge with",
-			lag_i, grad.norm(), lagging_tol);
 	}
 
 	////////////////////////////////////////////////////////////////////////

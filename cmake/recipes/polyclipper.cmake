@@ -1,7 +1,7 @@
 # Clipper
 # License: (BSL1.0)
 
-if(TARGET clipper::clipper)
+if(TARGET PolyClipper::PolyClipper)
     return()
 endif()
 

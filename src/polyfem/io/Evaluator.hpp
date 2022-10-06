@@ -218,6 +218,7 @@ namespace polyfem::io
 		/// the scalar value is averaged around every node to make it continuos
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
+		/// @param[in] n_bases number of bases
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
@@ -235,6 +236,7 @@ namespace polyfem::io
 		static void average_grad_based_function(
 			const mesh::Mesh &mesh,
 			const bool is_problem_scalar,
+			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,

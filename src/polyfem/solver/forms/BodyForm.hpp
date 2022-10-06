@@ -28,7 +28,8 @@ namespace polyfem::solver
 				 const assembler::RhsAssembler &rhs_assembler,
 				 const Density &density,
 				 const bool apply_DBC,
-				 const bool is_formulation_mixed);
+				 const bool is_formulation_mixed,
+				 const bool is_time_dependent);
 
 	protected:
 		/// @brief Compute the value of the body force form

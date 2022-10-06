@@ -22,6 +22,7 @@ namespace polyfem::solver
 					const assembler::AssemblerUtils &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
 					const std::string &formulation,
+					const double dt,
 					const bool is_volume);
 
 	protected:
@@ -47,6 +48,10 @@ namespace polyfem::solver
 		/// @return True if the step is allowed
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
+		/// @brief Update time-dependent fields
+		/// @param t Current time
+		/// @param x Current solution at time t
+		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
 	private:
 		const int n_bases_;
 		const std::vector<basis::ElementBases> &bases_;
@@ -56,10 +61,13 @@ namespace polyfem::solver
 		const assembler::AssemblyValsCache &ass_vals_cache_;
 		const std::string formulation_; ///< Elasticity formulation name
 		const bool is_volume_;
+		const double dt_;
 		StiffnessMatrix cached_stiffness_;  ///< Cached stiffness matrix for linear elasticity
 		utils::SpareMatrixCache mat_cache_; ///< Matrix cache
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();
+
+		Eigen::VectorXd x_prev_;
 	};
 } // namespace polyfem::solver
