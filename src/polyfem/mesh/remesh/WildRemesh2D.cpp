@@ -40,7 +40,9 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &positions,
 		const Eigen::MatrixXd &velocities,
 		const Eigen::MatrixXd &accelerations,
-		const Eigen::MatrixXi &triangles)
+		const Eigen::MatrixXi &triangles,
+		const EdgeMap &edge_to_boundary_id,
+		const std::vector<int> &body_ids)
 	{
 		assert(triangles.size() > 0);
 		Eigen::MatrixXi boundary_edges;
@@ -55,6 +57,8 @@ namespace polyfem::mesh
 
 		// Register attributes
 		p_vertex_attrs = &vertex_attrs;
+		p_edge_attrs = &edge_attrs;
+		p_face_attrs = &face_attrs;
 
 		// Convert from eigen to internal representation (TODO: move to utils and remove it from all app)
 		std::vector<std::array<size_t, 3>> tri(triangles.rows());
@@ -75,6 +79,20 @@ namespace polyfem::mesh
 			vertex_attrs[i].acceleration = accelerations.row(i).head<DIM>();
 			vertex_attrs[i].frozen = is_boundary_vertex[i];
 		}
+
+		for (const Tuple &e : get_edges())
+		{
+			size_t e0 = e.vid(*this);
+			size_t e1 = e.switch_vertex(*this).vid(*this);
+			if (e1 < e0)
+				std::swap(e0, e1);
+			edge_attrs[e.eid(*this)].boundary_id = edge_to_boundary_id.at(std::make_pair(e0, e1));
+		}
+
+		for (const Tuple &f : get_faces())
+		{
+			face_attrs[f.fid(*this)].body_id = body_ids.at(f.fid(*this));
+		}
 	}
 
 	VERTEX_ATTRIBUTE_GETTER(rest_positions, rest_position)
@@ -86,6 +104,36 @@ namespace polyfem::mesh
 	VERTEX_ATTRIBUTE_SETTER(set_positions, position)
 	VERTEX_ATTRIBUTE_SETTER(set_velocities, velocity)
 	VERTEX_ATTRIBUTE_SETTER(set_accelerations, acceleration)
+
+	Eigen::MatrixXi WildRemeshing2D::edges() const
+	{
+		const std::vector<Tuple> edges = get_edges();
+		Eigen::MatrixXi E = Eigen::MatrixXi::Constant(edges.size(), 2, -1);
+		for (int i = 0; i < edges.size(); ++i)
+		{
+			const Tuple &e = edges[i];
+			// E(e.eid(*this), 0) = e.vid(*this);
+			// E(e.eid(*this), 1) = e.switch_vertex(*this).vid(*this);
+			E(i, 0) = e.vid(*this);
+			E(i, 1) = e.switch_vertex(*this).vid(*this);
+		}
+		return E;
+	}
+
+	WildRemeshing2D::EdgeMap WildRemeshing2D::boundary_ids() const
+	{
+		const std::vector<Tuple> edges = get_edges();
+		EdgeMap boundary_ids;
+		for (int i = 0; i < edges.size(); ++i)
+		{
+			size_t e0 = edges[i].vid(*this);
+			size_t e1 = edges[i].switch_vertex(*this).vid(*this);
+			if (e1 < e0)
+				std::swap(e0, e1);
+			boundary_ids[std::make_pair(e0, e1)] = edge_attrs[edges[i].eid(*this)].boundary_id;
+		}
+		return boundary_ids;
+	}
 
 	Eigen::MatrixXi WildRemeshing2D::triangles() const
 	{
@@ -101,6 +149,18 @@ namespace polyfem::mesh
 			}
 		}
 		return triangles;
+	}
+
+	std::vector<int> WildRemeshing2D::body_ids() const
+	{
+		const std::vector<Tuple> faces = get_faces();
+		std::vector<int> body_ids(faces.size(), -1);
+		for (size_t i = 0; i < faces.size(); i++)
+		{
+			const Tuple &t = faces[i];
+			body_ids[i] = face_attrs[t.fid(*this)].body_id;
+		}
+		return body_ids;
 	}
 
 	void WildRemeshing2D::write_obj(const std::string &path, bool deformed) const
@@ -230,6 +290,37 @@ namespace polyfem::mesh
 		energy_before = compute_global_energy();
 		write_rest_obj("rest_mesh_before.obj");
 		write_deformed_obj("deformed_mesh_before.obj");
+	}
+
+	WildRemeshing2D::EdgeCache::EdgeCache(const WildRemeshing2D &m, const Tuple &t)
+	{
+		v0 = m.vertex_attrs[t.vid(m)];
+		v1 = m.vertex_attrs[t.switch_vertex(m).vid(m)];
+
+		edges = {{
+			m.edge_attrs[t.eid(m)],
+			m.edge_attrs[t.switch_vertex(m).switch_edge(m).eid(m)],
+			m.edge_attrs[t.switch_edge(m).eid(m)],
+		}};
+
+		// logger().critical(m.vertex_attrs[t.vid(m)].rest_position);
+		// logger().critical(m.vertex_attrs[t.switch_vertex(m).vid(m)].rest_position);
+		// logger().critical(m.vertex_attrs[t.switch_edge(m).switch_vertex(m).vid(m)].rest_position);
+
+		faces = {{
+			m.face_attrs[t.fid(m)],
+		}};
+
+		if (t.switch_face(m))
+		{
+			const Tuple t1 = t.switch_face(m).value();
+			edges.push_back(m.edge_attrs[t1.switch_edge(m).eid(m)]);
+			edges.push_back(m.edge_attrs[t1.switch_vertex(m).switch_edge(m).eid(m)]);
+			faces.push_back(m.face_attrs[t1.fid(m)]);
+
+			// logger().critical(m.vertex_attrs[t1.switch_edge(m).switch_vertex(m).vid(m)].rest_position);
+			// logger().critical("");
+		}
 	}
 
 	int build_bases(

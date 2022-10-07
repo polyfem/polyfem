@@ -77,7 +77,7 @@ namespace polyfem
 
 	void SolveData::update_dt()
 	{
-		if (inertia_form)
+		if (time_integrator) // if is time dependent
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
@@ -118,17 +118,44 @@ namespace polyfem
 
 		save_timestep(t0, save_i++, t0, save_dt);
 
+		// Write the total energy to a CSV file
+		std::ofstream energy_file(resolve_output_path("energy.csv"));
+		energy_file << "i,elastic_energy,body_energy,inertia,AL_energy,total_energy" << std::endl;
+		const auto save_energy = [&](int i) {
+			energy_file << fmt::format(
+				"{},{},{},{},{},{}\n", i,
+				solve_data.elastic_form->value(sol),
+				solve_data.body_form->value(sol),
+				solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
+				solve_data.al_form->value(sol),
+				solve_data.nl_problem->value(sol));
+			energy_file.flush();
+		};
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_tensor_nonlinear(t);
 
 			if (t > time_steps / 2)
 			{
+				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+
 				mesh::remesh(*this, t0 + dt * (t + 0), dt);
+
+				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+
 				solve_tensor_nonlinear(t); // solve the scene again after remeshing
+
+				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+			}
+			else
+			{
+				save_energy(save_i++);
+				save_energy(save_i++);
+				save_energy(save_i++);
 			}
 
 			{
@@ -204,8 +231,11 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
-			forms.push_back(solve_data.inertia_form);
+			if (!args["solver"]["ignore_inertia"])
+			{
+				solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
+				forms.push_back(solve_data.inertia_form);
+			}
 			if (assembler.has_damping())
 			{
 				solve_data.damping_form = std::make_shared<ElasticForm>(

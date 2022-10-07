@@ -19,6 +19,7 @@ namespace polyfem::mesh
 
 		static constexpr int DIM = 2;
 		static constexpr wmtk::ExecutionPolicy EXECUTION_POLICY = wmtk::ExecutionPolicy::kSeq;
+		using EdgeMap = std::unordered_map<std::pair<int, int>, int, polyfem::utils::HashPair>;
 
 		// Initializes the mesh
 		void create_mesh(
@@ -26,7 +27,9 @@ namespace polyfem::mesh
 			const Eigen::MatrixXd &positions,
 			const Eigen::MatrixXd &velocities,
 			const Eigen::MatrixXd &accelerations,
-			const Eigen::MatrixXi &triangles);
+			const Eigen::MatrixXi &triangles,
+			const EdgeMap &edge_to_boundary_id,
+			const std::vector<int> &body_ids);
 
 		/// Exports rest positions of the stored mesh
 		Eigen::MatrixXd rest_positions() const;
@@ -38,8 +41,14 @@ namespace polyfem::mesh
 		Eigen::MatrixXd velocities() const;
 		/// Exports accelerations of the stored mesh
 		Eigen::MatrixXd accelerations() const;
+		/// Exports edges of the stored mesh
+		Eigen::MatrixXi edges() const;
+		/// Exports boundary ids of the stored mesh
+		EdgeMap boundary_ids() const;
 		/// Exports triangles of the stored mesh
 		Eigen::MatrixXi triangles() const;
+		/// Exports body ids of the stored mesh
+		std::vector<int> body_ids() const;
 
 		/// Set positions of the stored mesh
 		void set_positions(const Eigen::MatrixXd &positions);
@@ -100,13 +109,15 @@ namespace polyfem::mesh
 		{
 			// polyfem::basis::ElementBases bases;
 			// polyfem::basis::ElementBases geom_bases;
-			// int body_id = 0;
+			int body_id = 0;
 		};
+		wmtk::AttributeCollection<FaceAttributes> face_attrs;
 
 		struct EdgeAttributes
 		{
 			int boundary_id = -1;
 		};
+		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
 
 	protected:
 		/// Get the boundary nodes of the stored mesh
@@ -126,7 +137,17 @@ namespace polyfem::mesh
 		Eigen::MatrixXi triangles_before;
 		double energy_before;
 
-		std::array<VertexAttributes, 2> cache;
+		struct EdgeCache
+		{
+			EdgeCache() = default;
+			EdgeCache(const WildRemeshing2D &m, const Tuple &t);
+
+			VertexAttributes v0;
+			VertexAttributes v1;
+			std::vector<EdgeAttributes> edges;
+			std::vector<FaceAttributes> faces;
+		};
+		EdgeCache edge_cache;
 	};
 
 } // namespace polyfem::mesh

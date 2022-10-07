@@ -9,13 +9,14 @@ namespace polyfem::mesh
 		if (!super::collapse_edge_before(t))
 			return false;
 
-		const size_t vi = t.vid(*this);
-		const size_t vj = t.switch_vertex(*this).vid(*this);
-		if (vertex_attrs[vi].frozen || vertex_attrs[vj].frozen)
+		if (vertex_attrs[t.vid(*this)].frozen
+			|| vertex_attrs[t.switch_vertex(*this).vid(*this)].frozen)
+		{
 			return false;
+		}
 
-		cache = {{vertex_attrs[vi], vertex_attrs[vj]}};
 		cache_before();
+		edge_cache = EdgeCache(*this, t);
 
 		return true;
 	}
@@ -24,9 +25,11 @@ namespace polyfem::mesh
 	{
 		size_t vid = t.vid(*this);
 
-		vertex_attrs[vid].rest_position = (cache[0].rest_position + cache[1].rest_position) / 2.0;
-		vertex_attrs[vid].partition_id = cache[0].partition_id;
+		vertex_attrs[vid].rest_position = (edge_cache.v0.rest_position + edge_cache.v1.rest_position) / 2.0;
+		vertex_attrs[vid].partition_id = edge_cache.v0.partition_id;
 		vertex_attrs[vid].frozen = false;
+
+		// TODO: set the boundary_id of the new edges
 
 		// vertex_attrs[vid].position = (cache[0].position + cache[1].position) / 2.0;
 		// vertex_attrs[vid].velocity = (cache[0].velocity + cache[1].velocity) / 2.0;

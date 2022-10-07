@@ -8,17 +8,19 @@ namespace polyfem::mesh
 	{
 		if (!super::split_edge_before(t))
 			return false;
-		const size_t vi = t.vid(*this);
-		const size_t vj = t.switch_vertex(*this).vid(*this);
+
+		const VertexAttributes &e0 = vertex_attrs[t.vid(*this)];
+		const VertexAttributes &e1 = vertex_attrs[t.switch_vertex(*this).vid(*this)];
 
 		// Dont split if the edge is too small
-		// if ((vertex_attrs[vj].position - vertex_attrs[vi].position).norm() < 5e-3)
+		// if ((e1.position - e0.position).norm() < 5e-3)
 		// 	return false;
 
-		// if (vertex_attrs[vi].frozen && vertex_attrs[vj].frozen)
+		// if (e0.frozen && e1.frozen)
 		// 	return false;
 
-		cache = {{vertex_attrs[vi], vertex_attrs[vj]}};
+		edge_cache = EdgeCache(*this, t);
+
 		energy_before = compute_global_energy();
 		// energy_before = compute_global_wicke_measure();
 
@@ -27,14 +29,70 @@ namespace polyfem::mesh
 
 	bool WildRemeshing2D::split_edge_after(const Tuple &t)
 	{
-		size_t vid = t.vid(*this);
+		const auto &[v0, v1, old_edges, old_faces] = edge_cache;
 
-		vertex_attrs[vid].rest_position = (cache[0].rest_position + cache[1].rest_position) / 2.0;
-		vertex_attrs[vid].position = (cache[0].position + cache[1].position) / 2.0;
-		vertex_attrs[vid].velocity = (cache[0].velocity + cache[1].velocity) / 2.0;
-		vertex_attrs[vid].acceleration = (cache[0].acceleration + cache[1].acceleration) / 2.0;
-		vertex_attrs[vid].partition_id = cache[0].partition_id;
-		vertex_attrs[vid].frozen = cache[0].frozen && cache[1].frozen;
+		const size_t new_vid = t.vid(*this);
+		// const std::vector<Tuple> new_faces = get_one_ring_tris_for_vertex(t);
+		// const std::vector<Tuple> new_edges = new_edges_after(new_faces);
+
+		vertex_attrs[new_vid] = {
+			.rest_position = (v0.rest_position + v1.rest_position) / 2.0,
+			.position = (v0.position + v1.position) / 2.0,
+			.velocity = (v0.velocity + v1.velocity) / 2.0,
+			.acceleration = (v0.acceleration + v1.acceleration) / 2.0,
+			.partition_id = v0.partition_id,
+			.frozen = v0.frozen && v1.frozen,
+		};
+
+		// Assign edge attributes to the new edges
+		Tuple nav = t.switch_face(*this)->switch_edge(*this);
+		edge_attrs[nav.eid(*this)] = old_edges[0];
+
+		nav = nav.switch_vertex(*this).switch_edge(*this);
+		edge_attrs[nav.eid(*this)] = old_edges[1];
+
+		nav = nav.switch_vertex(*this).switch_edge(*this);
+		edge_attrs[nav.eid(*this)].boundary_id = -1; // interior edge
+
+		nav = nav.switch_face(*this)->switch_edge(*this);
+		edge_attrs[nav.eid(*this)] = old_edges[2];
+		nav = nav.switch_vertex(*this).switch_edge(*this);
+		edge_attrs[nav.eid(*this)] = old_edges[0];
+
+		if (nav.switch_face(*this))
+		{
+			nav = nav.switch_face(*this)->switch_edge(*this);
+			edge_attrs[nav.eid(*this)] = old_edges[3];
+
+			nav = nav.switch_vertex(*this).switch_edge(*this);
+			edge_attrs[nav.eid(*this)].boundary_id = -1; // interior edge
+
+			nav = nav.switch_face(*this)->switch_edge(*this);
+			edge_attrs[nav.eid(*this)] = old_edges[4];
+#ifndef NDEBUG
+			nav = nav.switch_vertex(*this).switch_edge(*this);
+			assert(edge_attrs[nav.eid(*this)].boundary_id == old_edges[0].boundary_id);
+#endif
+		}
+
+		// Assign face attributes to the new faces
+		nav = t.switch_face(*this).value();
+		face_attrs[nav.fid(*this)] = old_faces[0];
+		nav = nav.switch_face(*this).value();
+		face_attrs[nav.fid(*this)] = old_faces[0];
+		nav = nav.switch_edge(*this);
+		if (nav.switch_face(*this))
+		{
+			nav = nav.switch_face(*this).value();
+			face_attrs[nav.fid(*this)] = old_faces[1];
+			nav = nav.switch_edge(*this).switch_face(*this).value();
+			face_attrs[nav.fid(*this)] = old_faces[1];
+
+#ifndef NDEBUG
+			nav = nav.switch_edge(*this).switch_face(*this).value();
+			assert(face_attrs[nav.fid(*this)].body_id == old_faces[0].body_id);
+#endif
+		}
 
 		double energy_after = compute_global_energy();
 		// double energy_after = compute_global_wicke_measure();
