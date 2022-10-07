@@ -75,7 +75,7 @@ namespace polyfem
 
 	void SolveData::update_dt()
 	{
-		if (time_integrator) // if is time dependent
+		if (inertia_form)
 		{
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
 			body_form->set_weight(time_integrator->acceleration_scaling());
