@@ -80,7 +80,7 @@ namespace polyfem
 		if (n_lagrange_multipliers() == 0)
 			return;
 
-		logger().debug("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
+		logger().trace("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
 
 		if (formulation() == "Laplacian")
 		{
@@ -351,32 +351,6 @@ namespace polyfem
 		std::swap(A_periodic, A);
 
 		return independent_dof;
-	}
-
-	void State::add_multipoint_constraints(StiffnessMatrix &A) const
-	{
-		std::vector<Eigen::Triplet<double>> entries;
-		entries.reserve(A.nonZeros());
-		for (int k = 0; k < A.outerSize(); k++)
-		{
-			for (StiffnessMatrix::InnerIterator it(A,k); it; ++it)
-			{
-				entries.emplace_back(it.row(), it.col(), it.value());
-			}
-		}
-		int row = A.rows();
-		for (const auto &constraint : multipoint_constraints)
-		{
-			for (const auto &pair : constraint)
-			{
-				entries.emplace_back(row, pair.first, pair.second);
-				entries.emplace_back(pair.first, row, pair.second);
-			}
-			row++;
-		}
-		A.resize(A.rows() + multipoint_constraints.size(), A.cols() + multipoint_constraints.size());
-		A.setZero();
-		A.setFromTriplets(entries.begin(), entries.end());
 	}
 
 	int State::full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet) const

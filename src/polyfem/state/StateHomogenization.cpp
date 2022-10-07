@@ -143,7 +143,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
 
     Eigen::VectorXd full;
     homo_problem->reduced_to_full(tmp_sol, full);
-    sol = full + generate_linear_field(def_grad);
+    sol = full - generate_linear_field(def_grad);
 }
 
 void State::solve_nonlinear_homogenization()

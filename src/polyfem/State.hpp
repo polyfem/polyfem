@@ -405,10 +405,6 @@ namespace polyfem
 		int full_to_periodic(StiffnessMatrix &A) const;
 		int full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet = true) const;
 
-		// add multipoint constraints for periodic elasticity
-		std::vector<std::map<int, double>> multipoint_constraints;
-		void add_multipoint_constraints(StiffnessMatrix &A) const;
-
 		Eigen::MatrixXd periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const;
 
 	private:

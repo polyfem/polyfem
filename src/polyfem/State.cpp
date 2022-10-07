@@ -923,7 +923,6 @@ namespace polyfem
 				periodic_dim.push_back(false);
 			
 			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
-			multipoint_constraints.clear();
 
 			Eigen::VectorXi dependent_map(n_bases);
 			dependent_map.setConstant(-1);
@@ -964,9 +963,6 @@ namespace polyfem
 					}
 				}
 
-				std::array<int, 2> first_pair;
-				std::array<int, 2> cur_pair;
-				bool first_flag = true;
 				for (int i : dependent_ids)
 				{
 					bool found_target = false;
@@ -978,38 +974,11 @@ namespace polyfem
 						{
 							dependent_map(i) = j;
 							found_target = true;
-							cur_pair[0] = i;
-							cur_pair[1] = j;
 							break;
 						}
 					}
 					if (!found_target)
 						throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
-					else
-					{
-						if (first_flag)
-							first_pair = cur_pair;
-
-						for (int d_ = 0; d_ < dim; d_++)
-						{
-							std::map<int, double> tmp;
-							if (d_ != d)
-							{
-								tmp.insert({cur_pair[0] * dim + d_, -1.});
-								tmp.insert({cur_pair[1] * dim + d_, 1.});
-							}
-							else if (!first_flag)
-							{
-								tmp.insert({cur_pair[0] * dim + d_, -1.});
-								tmp.insert({cur_pair[1] * dim + d_, 1.});
-								tmp.insert({first_pair[0] * dim + d_, 1.});
-								tmp.insert({first_pair[1] * dim + d_, -1.});
-							}
-							multipoint_constraints.push_back(tmp);
-						}
-
-						first_flag = false;
-					}
 				}
 			}
 
