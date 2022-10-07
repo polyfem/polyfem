@@ -1122,18 +1122,6 @@ namespace polyfem::io
 
 		io::VTUWriter writer;
 
-		if (opts.solve_export_to_file && fun.cols() != 1 && !mesh.is_volume())
-		{
-			fun.conservativeResize(fun.rows(), 3);
-			fun.col(2).setZero();
-
-			if (problem.has_exact_sol())
-			{
-				exact_fun.conservativeResize(exact_fun.rows(), 3);
-				exact_fun.col(2).setZero();
-			}
-		}
-
 		if (opts.solve_export_to_file)
 			writer.add_field("solution", fun);
 		else
@@ -1163,12 +1151,6 @@ namespace polyfem::io
 					obstacle.set_zero(interp_vel); // TODO
 				}
 
-				if (opts.solve_export_to_file && interp_vel.cols() == 2)
-				{
-					interp_vel.conservativeResize(interp_vel.rows(), 3);
-					interp_vel.col(2).setZero();
-				}
-
 				if (opts.solve_export_to_file)
 				{
 					writer.add_field("velocity", interp_vel);
@@ -1194,12 +1176,6 @@ namespace polyfem::io
 				{
 					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
 					obstacle.set_zero(interp_acc); // TODO
-				}
-
-				if (opts.solve_export_to_file && interp_acc.cols() == 2)
-				{
-					interp_acc.conservativeResize(interp_acc.rows(), 3);
-					interp_acc.col(2).setZero();
 				}
 
 				if (opts.solve_export_to_file)
@@ -1882,21 +1858,6 @@ namespace polyfem::io
 		{
 			problem.exact(points, t, exact_fun);
 			err = (fun - exact_fun).eval().rowwise().norm();
-		}
-
-		if (fun.cols() != 1 && !mesh.is_volume())
-		{
-			fun.conservativeResize(fun.rows(), 3);
-			fun.col(2).setZero();
-
-			exact_fun.conservativeResize(exact_fun.rows(), 3);
-			exact_fun.col(2).setZero();
-		}
-
-		if (!mesh.is_volume())
-		{
-			points.conservativeResize(points.rows(), 3);
-			points.col(2).setZero();
 		}
 
 		io::VTUWriter writer;
