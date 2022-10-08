@@ -88,32 +88,13 @@ namespace polyfem
 
 		double PiecewiseConstantInterpolation::eval(const double t) const
 		{
-			if (t < points_[0])
-				return 0;
 			for (size_t i = 0; i < points_.size()-1; ++i) {
 				if (t >= points_[i] && t < points_[i+1]) {
 					return values_[i];
 				}
 			}
-			if (extend_ == 0)
-				return values_[values_.size()-1];
-			else if (extend_ == 1)
-				return values_[values_.size()-1]*t;
-			else if (extend_ == 2) {
-				for (size_t i = 0; i < points_.size()-1; ++i) {
-					if (t-points_[points_.size()-1] >= points_[i] && t-points_[points_.size()-1] < points_[i+1]) {
-						return values_[i];
-					}
-				}
-			}
-			else if (extend_ == 3) {
-				for (size_t i = 0; i < points_.size()-1; ++i) {
-					if (t-points_[points_.size()-1] >= points_[i] && t-points_[points_.size()-1] < points_[i+1]) {
-						return values_[i] + offset_;
-					}
-				}
-			}
 
+			extend(t);
 			return 0;
 		}
 
@@ -127,32 +108,13 @@ namespace polyfem
 					return val;
 				}
 			}
-			if (extend_ == 0)
-				return values_[values_.size()-1];
-			else if (extend_ == 1)
-				return values_[values_.size()-1]*t;
-			else if (extend_ == 2) {
-				for (size_t i = 0; i < points_.size()-1; ++i) {
-					if (t-points_[points_.size()-1] >= points_[i] && t-points_[points_.size()-1] < points_[i+1]) {
-						double val = (values_[i+1]-values_[i]) * ((t-points_[i])/(points_[i+1]-points_[i])) + values_[i];
-						return val;
-					}
-				}
-			}
-			else if (extend_ == 3) {
-				for (size_t i = 0; i < points_.size()-1; ++i) {
-					if (t-points_[points_.size()-1] >= points_[i] && t-points_[points_.size()-1] < points_[i+1]) {
-						double val = (values_[i+1]-values_[i]) * ((t-points_[i])/(points_[i+1]-points_[i])) + values_[i];
-						return val + offset_;
-					}
-				}
-			}
-
+			
+			extend(t);
 			return 0;
 		}
 
 
-		void PiecewiseConstantInterpolation::init(const json &params)
+		void PiecewiseInterpolation::init(const json &params)
 		{
 			if (!params["points"].is_array())
 				throw "Points must be an array";
@@ -169,45 +131,46 @@ namespace polyfem
 
 			if (params.contains("extend")) {
 				if (params["extend"] == "constant")
-					extend_ = 0;
+					ext_ = constant;
 				else if (params["extend"] == "extrapolate")
-					extend_ = 1;
+					ext_ = extrapolate;
 				else if (params["extend"] == "repeat")
-					extend_ = 2;
+					ext_ = repeat;
 				else if (params["extend"] == "repeat_offset")
-					extend_ = 3;
+					ext_ = repeat_offset;
 			}
 			else
-				extend_ = -1;
+				ext_ = constant;
 		}
 
-		void PiecewiseLinearInterpolation::init(const json &params)
+		double PiecewiseInterpolation::extend(const double t) const
 		{
-			if (!params["points"].is_array())
-				throw "Points must be an array";
-			if (!params["values"].is_array())
-				throw "Values must be an array";
-			
-			points_.reserve(params["points"].size());
-			values_.reserve(params["values"].size());
-
-			for (int i = 0; i < params["points"].size(); ++i) {
-				points_[i] = params["points"][i];
-				values_[i] = params["values"][i];
+			if (ext_ == constant) {
+				if (t < points_[0])
+					return values_[0];
+				else
+					return values_[values_.size()-1];
+			}
+			else if (ext_ == extrapolate) {
+				if (t < points_[0])
+					return values_[0]*t;
+				else
+					return values_[values_.size()-1]*t;
+			}
+			else if (ext_ == repeat) {
+				if (t < points_[0]) 
+					return eval(t + points_[points_.size()-1]);
+				else
+					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]);
+			}
+			else if (ext_ == repeat_offset) {
+				if (t < points_[0]) 
+					return eval(t + points_[points_.size()-1]) + (values_[values_.size()-1] - values_[0]);
+				else
+					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]) + (values_[values_.size()-1] - values_[0]);
 			}
 
-			if (params.contains("extend")) {
-				if (params["extend"] == "constant")
-					extend_ = 0;
-				else if (params["extend"] == "extrapolate")
-					extend_ = 1;
-				else if (params["extend"] == "repeat")
-					extend_ = 2;
-				else if (params["extend"] == "repeat_offset")
-					extend_ = 3;
-			}
-			else
-				extend_ = -1;
+			return 0;
 		}
 
 		GenericTensorProblem::GenericTensorProblem(const std::string &name)
