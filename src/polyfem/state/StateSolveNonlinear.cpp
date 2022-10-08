@@ -192,8 +192,11 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
-			forms.push_back(solve_data.inertia_form);
+			if (!args["solver"]["ignore_inertia"])
+			{
+				solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
+				forms.push_back(solve_data.inertia_form);
+			}
 			if (assembler.has_damping())
 			{
 				solve_data.damping_form = std::make_shared<ElasticForm>(
