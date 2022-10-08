@@ -568,7 +568,8 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
-		input_dirichlet.clear();
+		dirichlet_nodes.clear();
+		neumann_nodes.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -801,41 +802,21 @@ namespace polyfem
 			logger().debug("Building node mapping...");
 			timer2.start();
 			build_node_mapping();
+			problem->update_nodes(in_node_to_node);
+			// TODO add update nodes for mesh teseo
 			timer2.stop();
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
 
 		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
+		problem->setup_bc(*mesh, n_bases,
+						  bases, pressure_bases,
+						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+						  dirichlet_nodes, neumann_nodes);
+
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		for (int b = 0; b < args["boundary_conditions"]["dirichlet_boundary"].size(); ++b)
-		{
-			if (!args["boundary_conditions"]["dirichlet_boundary"][b].is_string())
-				continue;
-			const std::string path = resolve_input_path(args["boundary_conditions"]["dirichlet_boundary"][b]);
-			if (std::filesystem::is_regular_file(path))
-			{
-				Eigen::MatrixXd tmp;
-				read_matrix(path, tmp);
-
-				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
-				for (int n = 0; n < nodes.size(); ++n)
-				{
-					const int node_id = in_node_to_node[nodes[n]];
-					tmp(n, 0) = node_id;
-					for (int d = 0; d < problem_dim; ++d)
-					{
-						if (!std::isnan(tmp(n, d + 1)))
-							boundary_nodes.push_back(node_id * problem_dim + d);
-					}
-				}
-
-				input_dirichlet.emplace_back(tmp);
-			}
-		}
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
@@ -1139,7 +1120,9 @@ namespace polyfem
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
 		return std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, geom_bases(), ass_vals_cache, formulation(), *problem,
+			assembler, *mesh, obstacle,
+			dirichlet_nodes, neumann_nodes,
+			n_bases, size, bases, geom_bases(), ass_vals_cache, formulation(), *problem,
 			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 	}
 
@@ -1163,6 +1146,7 @@ namespace polyfem
 
 		json p_params = {};
 		p_params["formulation"] = formulation();
+		p_params["root_path"] = root_path();
 		{
 			RowVectorNd min, max, delta;
 			mesh->bounding_box(min, max);

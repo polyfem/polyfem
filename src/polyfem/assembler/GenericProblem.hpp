@@ -64,6 +64,16 @@ namespace polyfem
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 
+			// TODO implement me teseo
+			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const double t, Eigen::MatrixXd &val) const {}
+			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
+			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag) { return false; }
+			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag) { return false; }
+			virtual bool has_nodal_dirichlet() { return false; }
+			virtual bool has_nodal_neumann() { return false; }
+			virtual bool is_nodal_dimension_dirichet(const int n_id, const int tag, const int dim) const { return true; }
+			virtual void update_nodes(const Eigen::VectorXi &in_node_to_node) {}
+
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return false; }
 			bool is_time_dependent() const override { return is_time_dept_; }
@@ -134,6 +144,8 @@ namespace polyfem
 			std::array<utils::ExpressionValue, 3> rhs_;
 			std::array<utils::ExpressionValue, 3> exact_;
 			std::array<utils::ExpressionValue, 9> exact_grad_;
+
+			std::vector<Eigen::MatrixXd> input_dirichlet_;
 			bool is_all_;
 		};
 

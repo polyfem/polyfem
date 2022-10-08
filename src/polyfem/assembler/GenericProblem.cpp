@@ -1,6 +1,8 @@
 #include "GenericProblem.hpp"
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <iostream>
 
@@ -571,6 +573,16 @@ namespace polyfem
 			rhs_[2].init(z);
 		}
 
+		// void GenericTensorProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
+		// {
+		// 	// Eigen::VectorXi nodes = tmp.col(0).cast<int>();
+		// 	// for (int n = 0; n < nodes.size(); ++n)
+		// 	// {
+		// 	// 	const int node_id = in_node_to_node[nodes[n]];
+		// 	// 	tmp(n, 0) = node_id;
+		// 	// }
+		// }
+
 		void GenericTensorProblem::set_parameters(const json &params)
 		{
 			if (is_param_valid(params, "is_time_dependent"))
@@ -637,6 +649,19 @@ namespace polyfem
 
 				for (size_t i = offset; i < boundary_ids_.size(); ++i)
 				{
+					if (j_boundary[i - offset].is_string())
+					{
+						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
+						if (std::filesystem::is_regular_file(path))
+						{
+							Eigen::MatrixXd tmp;
+							io::read_matrix(path, tmp);
+							input_dirichlet_.emplace_back(tmp);
+						}
+
+						continue;
+					}
+
 					if (j_boundary[i - offset]["id"] == "all")
 					{
 						assert(boundary_ids_.size() == 1);

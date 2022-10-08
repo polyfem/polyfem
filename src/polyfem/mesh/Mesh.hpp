@@ -434,6 +434,17 @@ namespace polyfem
 				else
 					return -1; // default for no boundary
 			}
+
+			/// @brief Get the boundary selection of a node
+			///
+			/// @param[in] node_id node id
+			/// @return label of node
+			virtual int get_node_id(const int node_id) const
+			{
+				// TODO add node selection, teseo
+				return -1; // default for no boundary
+			}
+
 			/// @brief Get the volume selection of an element (cell in 3d, face in 2d)
 			///
 			/// @param[in] primitive element id
