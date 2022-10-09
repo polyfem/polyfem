@@ -94,8 +94,7 @@ namespace polyfem
 				}
 			}
 
-			extend(t);
-			return 0;
+			return extend(t);
 		}
 
 		double PiecewiseLinearInterpolation::eval(const double t) const
@@ -107,8 +106,7 @@ namespace polyfem
 				}
 			}
 			
-			extend(t);
-			return 0;
+			return extend(t);
 		}
 
 
@@ -167,6 +165,8 @@ namespace polyfem
 				else
 					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]) + (values_[values_.size()-1] - values_[0]);
 			}
+			else
+				log_and_throw_error(fmt::format("Extend Method not recognized. Should be one of {constant, extrapolate, repeat, repeat_offset}"));
 
 			return 0;
 		}
