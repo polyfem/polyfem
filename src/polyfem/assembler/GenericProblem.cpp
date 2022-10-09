@@ -115,9 +115,9 @@ namespace polyfem
 		void PiecewiseInterpolation::init(const json &params)
 		{
 			if (!params["points"].is_array())
-				logger().error("Points must be an array");
+				log_and_throw_error(fmt::format("Points must be an array"));
 			if (!params["values"].is_array())
-				logger().error("Values must be an array");
+				log_and_throw_error(fmt::format("Values must be an array"));
 			
 			points_.reserve(params["points"].size());
 			values_.reserve(params["values"].size());
