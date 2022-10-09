@@ -16,7 +16,7 @@ jobs:
 
   Linux:
     name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: [self-hosted]
+    runs-on: [self-hosted,Linux]
     strategy:
       fail-fast: false
       matrix:
@@ -71,7 +71,7 @@ jobs:
 
   MacOS:
     name: ${{ matrix.name }}-${{ matrix.arc }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: ${{ matrix.os }}
+    runs-on: [self-hosted,macOS]
     strategy:
       fail-fast: false
       matrix:
@@ -142,7 +142,7 @@ jobs:
   ####################
 
   Windows:
-    runs-on: windows-2022
+    runs-on: [self-hosted,Windows]
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
     strategy:
