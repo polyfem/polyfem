@@ -134,6 +134,8 @@ namespace polyfem
 					ext_ = repeat;
 				else if (params["extend"] == "repeat_offset")
 					ext_ = repeat_offset;
+				else
+					log_and_throw_error(fmt::format("Extend Method not recognized. Should be one of {constant, extrapolate, repeat, repeat_offset}"));
 			}
 			else
 				ext_ = constant;
@@ -164,9 +166,7 @@ namespace polyfem
 					return eval(t + points_[points_.size()-1]) + (values_[values_.size()-1] - values_[0]);
 				else
 					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]) + (values_[values_.size()-1] - values_[0]);
-			}
-			else
-				log_and_throw_error(fmt::format("Extend Method not recognized. Should be one of {constant, extrapolate, repeat, repeat_offset}"));
+			}	
 
 			return 0;
 		}
