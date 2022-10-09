@@ -100,8 +100,6 @@ namespace polyfem
 
 		double PiecewiseLinearInterpolation::eval(const double t) const
 		{
-			if (t < points_[0])
-				return 0;
 			for (size_t i = 0; i < points_.size()-1; ++i) {
 				if (t >= points_[i] && t < points_[i+1]) {
 					double val = (values_[i+1]-values_[i]) * ((t-points_[i])/(points_[i+1]-points_[i])) + values_[i];
@@ -117,9 +115,9 @@ namespace polyfem
 		void PiecewiseInterpolation::init(const json &params)
 		{
 			if (!params["points"].is_array())
-				throw "Points must be an array";
+				logger().error("Points must be an array");
 			if (!params["values"].is_array())
-				throw "Values must be an array";
+				logger().error("Values must be an array");
 			
 			points_.reserve(params["points"].size());
 			values_.reserve(params["values"].size());
