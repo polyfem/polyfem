@@ -124,7 +124,7 @@ namespace polyfem
 
 						for (int d = 0; d < dim; ++d)
 						{
-							if (is_nodal_dimension_dirichet(n_id, tag, d))
+							if (is_nodal_dimension_dirichlet(n_id, tag, d))
 								boundary_nodes.push_back(n_id * dim + d);
 						}
 					}

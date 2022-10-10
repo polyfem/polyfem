@@ -814,6 +814,69 @@ namespace polyfem
 						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
 
+		// setp nodal values
+		{
+			dirichlet_nodes_position.resize(dirichlet_nodes.size());
+			for (int n = 0; n < dirichlet_nodes.size(); ++n)
+			{
+				const int n_id = dirichlet_nodes[n];
+				bool found = false;
+				for (const auto &bs : bases)
+				{
+					for (const auto &b : bs.bases)
+					{
+						for (const auto &lg : b.global())
+						{
+							if (lg.index == n_id)
+							{
+								dirichlet_nodes_position[n] = lg.node;
+								found = true;
+								break;
+							}
+						}
+
+						if (found)
+							break;
+					}
+
+					if (found)
+						break;
+				}
+
+				assert(found);
+			}
+
+			neumann_nodes_position.resize(neumann_nodes.size());
+			for (int n = 0; n < neumann_nodes.size(); ++n)
+			{
+				const int n_id = neumann_nodes[n];
+				bool found = false;
+				for (const auto &bs : bases)
+				{
+					for (const auto &b : bs.bases)
+					{
+						for (const auto &lg : b.global())
+						{
+							if (lg.index == n_id)
+							{
+								neumann_nodes_position[n] = lg.node;
+								found = true;
+								break;
+							}
+						}
+
+						if (found)
+							break;
+					}
+
+					if (found)
+						break;
+				}
+
+				assert(found);
+			}
+		}
+
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -1122,6 +1185,7 @@ namespace polyfem
 		return std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle,
 			dirichlet_nodes, neumann_nodes,
+			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases, size, bases, geom_bases(), ass_vals_cache, formulation(), *problem,
 			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 	}

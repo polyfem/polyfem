@@ -90,8 +90,10 @@ namespace polyfem
 
 		double PiecewiseConstantInterpolation::eval(const double t) const
 		{
-			for (size_t i = 0; i < points_.size()-1; ++i) {
-				if (t >= points_[i] && t < points_[i+1]) {
+			for (size_t i = 0; i < points_.size() - 1; ++i)
+			{
+				if (t >= points_[i] && t < points_[i + 1])
+				{
 					return values_[i];
 				}
 			}
@@ -101,16 +103,17 @@ namespace polyfem
 
 		double PiecewiseLinearInterpolation::eval(const double t) const
 		{
-			for (size_t i = 0; i < points_.size()-1; ++i) {
-				if (t >= points_[i] && t < points_[i+1]) {
-					double val = (values_[i+1]-values_[i]) * ((t-points_[i])/(points_[i+1]-points_[i])) + values_[i];
+			for (size_t i = 0; i < points_.size() - 1; ++i)
+			{
+				if (t >= points_[i] && t < points_[i + 1])
+				{
+					double val = (values_[i + 1] - values_[i]) * ((t - points_[i]) / (points_[i + 1] - points_[i])) + values_[i];
 					return val;
 				}
 			}
-			
+
 			return extend(t);
 		}
-
 
 		void PiecewiseInterpolation::init(const json &params)
 		{
@@ -118,16 +121,18 @@ namespace polyfem
 				log_and_throw_error(fmt::format("Points must be an array"));
 			if (!params["values"].is_array())
 				log_and_throw_error(fmt::format("Values must be an array"));
-			
+
 			points_.reserve(params["points"].size());
 			values_.reserve(params["values"].size());
 
-			for (int i = 0; i < params["points"].size(); ++i) {
+			for (int i = 0; i < params["points"].size(); ++i)
+			{
 				points_[i] = params["points"][i];
 				values_[i] = params["values"][i];
 			}
 
-			if (params.contains("extend")) {
+			if (params.contains("extend"))
+			{
 				if (params["extend"] == "constant")
 					ext_ = constant;
 				else if (params["extend"] == "extrapolate")
@@ -145,30 +150,34 @@ namespace polyfem
 
 		double PiecewiseInterpolation::extend(const double t) const
 		{
-			if (ext_ == constant) {
+			if (ext_ == constant)
+			{
 				if (t < points_[0])
 					return values_[0];
 				else
-					return values_[values_.size()-1];
+					return values_[values_.size() - 1];
 			}
-			else if (ext_ == extrapolate) {
+			else if (ext_ == extrapolate)
+			{
 				if (t < points_[0])
-					return values_[0]*t;
+					return values_[0] * t;
 				else
-					return values_[values_.size()-1]*t;
+					return values_[values_.size() - 1] * t;
 			}
-			else if (ext_ == repeat) {
-				if (t < points_[0]) 
-					return eval(t + points_[points_.size()-1]);
+			else if (ext_ == repeat)
+			{
+				if (t < points_[0])
+					return eval(t + points_[points_.size() - 1]);
 				else
-					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]);
+					return eval(std::fmod(t, points_[points_.size() - 1]) + points_[0]);
 			}
-			else if (ext_ == repeat_offset) {
-				if (t < points_[0]) 
-					return eval(t + points_[points_.size()-1]) + (values_[values_.size()-1] - values_[0]);
+			else if (ext_ == repeat_offset)
+			{
+				if (t < points_[0])
+					return eval(t + points_[points_.size() - 1]) + (values_[values_.size() - 1] - values_[0]);
 				else
-					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]) + (values_[values_.size()-1] - values_[0]);
-			}	
+					return eval(std::fmod(t, points_[points_.size() - 1]) + points_[0]) + (values_[values_.size() - 1] - values_[0]);
+			}
 
 			return 0;
 		}
@@ -664,15 +673,115 @@ namespace polyfem
 			rhs_[2].init(z);
 		}
 
-		// void GenericTensorProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
-		// {
-		// 	// Eigen::VectorXi nodes = tmp.col(0).cast<int>();
-		// 	// for (int n = 0; n < nodes.size(); ++n)
-		// 	// {
-		// 	// 	const int node_id = in_node_to_node[nodes[n]];
-		// 	// 	tmp(n, 0) = node_id;
-		// 	// }
-		// }
+		void GenericTensorProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const
+		{
+			val = Eigen::MatrixXd::Zero(1, mesh.dimension());
+			const int tag = mesh.get_node_id(node_id);
+
+			const auto it = nodal_dirichlet_.find(tag);
+			if (it != nodal_dirichlet_.end())
+			{
+				double x = pt(0), y = pt(1), z = pt.size() == 2 ? 0 : pt(2);
+
+				for (int d = 0; d < val.cols(); ++d)
+				{
+					val(d) = it->second.value[d](x, y, z, t);
+				}
+
+				return;
+			}
+
+			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int i = 0; i < n_dirichlet.rows(); ++i)
+				{
+					if (n_dirichlet(i, 0) == node_id)
+					{
+						for (int d = 0; d < val.cols(); ++d)
+						{
+							val(d) = n_dirichlet(i, d + 1);
+						}
+
+						return;
+					}
+				}
+			}
+
+			assert(false);
+		}
+
+		void GenericTensorProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const
+		{
+			// TODO implement me;
+			log_and_throw_error("Nodal neumann not implemented");
+		}
+
+		bool GenericTensorProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag)
+		{
+			if (nodal_dirichlet_.find(tag) != nodal_dirichlet_.end())
+				return true;
+
+			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int i = 0; i < n_dirichlet.rows(); ++i)
+				{
+					if (n_dirichlet(i, 0) == n_id)
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool GenericTensorProblem::is_nodal_neumann_boundary(const int n_id, const int tag)
+		{
+			return nodal_neumann_.find(tag) != nodal_neumann_.end();
+		}
+
+		bool GenericTensorProblem::has_nodal_dirichlet()
+		{
+			return nodal_dirichlet_mat_.size() > 0 || nodal_dirichlet_.size() > 0;
+		}
+
+		bool GenericTensorProblem::has_nodal_neumann()
+		{
+			return nodal_neumann_.size() > 0;
+		}
+
+		bool GenericTensorProblem::is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const
+		{
+			const auto it = nodal_dirichlet_.find(tag);
+			if (it != nodal_dirichlet_.end())
+			{
+				return it->second.dirichlet_dimension(dim);
+			}
+
+			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int i = 0; i < n_dirichlet.rows(); ++i)
+				{
+					if (n_dirichlet(i, 0) == n_id)
+					{
+						return !std::isnan(n_dirichlet(i, dim + 1));
+					}
+				}
+			}
+
+			assert(false);
+			return true;
+		}
+
+		void GenericTensorProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
+		{
+			for (auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int n = 0; n < n_dirichlet.rows(); ++n)
+				{
+					const int node_id = in_node_to_node[n_dirichlet(n, 0)];
+					n_dirichlet(n, 0) = node_id;
+				}
+			}
+		}
 
 		void GenericTensorProblem::set_parameters(const json &params)
 		{
@@ -747,7 +856,7 @@ namespace polyfem
 						{
 							Eigen::MatrixXd tmp;
 							io::read_matrix(path, tmp);
-							input_dirichlet_.emplace_back(tmp);
+							nodal_dirichlet_mat_.emplace_back(tmp);
 						}
 
 						continue;

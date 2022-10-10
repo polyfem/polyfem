@@ -38,6 +38,7 @@ namespace polyfem
 
 		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
 								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
+								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const std::string &formulation, const Problem &problem,
@@ -49,7 +50,8 @@ namespace polyfem
 			  formulation_(formulation), problem_(problem),
 			  bc_method_(bc_method),
 			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
-			  dirichlet_nodes_(dirichlet_nodes), neumann_nodes_(neumann_nodes)
+			  dirichlet_nodes_(dirichlet_nodes), neumann_nodes_(neumann_nodes),
+			  dirichlet_nodes_position_(dirichlet_nodes_position), neumann_nodes_position_(neumann_nodes_position)
 		{
 		}
 
@@ -571,15 +573,18 @@ namespace polyfem
 			if (bounday_nodes.size() > 0)
 			{
 				Eigen::MatrixXd tmp_val;
-				for (const auto &n_id : dirichlet_nodes_)
+				for (int n = 0; n < dirichlet_nodes_.size(); ++n)
 				{
+					const auto &n_id = dirichlet_nodes_[n];
+					const auto &pt = dirichlet_nodes_position_[n];
+
 					const int tag = mesh_.get_node_id(n_id);
-					problem_.dirichlet_nodal_value(mesh_, n_id, t, tmp_val);
+					problem_.dirichlet_nodal_value(mesh_, n_id, pt, t, tmp_val);
 					assert(tmp_val.size() == size_);
 
 					for (int d = 0; d < size_; ++d)
 					{
-						if (problem_.is_nodal_dimension_dirichet(n_id, tag, d))
+						if (!problem_.is_nodal_dimension_dirichlet(n_id, tag, d))
 							continue;
 						const int g_index = n_id * size_ + d;
 						rhs(g_index) = tmp_val(d);

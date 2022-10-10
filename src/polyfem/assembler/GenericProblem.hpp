@@ -50,13 +50,19 @@ namespace polyfem
 		public:
 			void init(const json &params) override;
 			double extend(const double t) const;
-		
+
 		public:
 			std::vector<double> points_;
 			std::vector<double> values_;
-			enum extend_ {constant, extrapolate, repeat, repeat_offset};
+			enum extend_
+			{
+				constant,
+				extrapolate,
+				repeat,
+				repeat_offset
+			};
 			extend_ ext_;
-		};	
+		};
 
 		class PiecewiseConstantInterpolation : public PiecewiseInterpolation
 		{
@@ -100,15 +106,14 @@ namespace polyfem
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 
-			// TODO implement me teseo
-			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const double t, Eigen::MatrixXd &val) const {}
-			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
-			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag) { return false; }
-			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag) { return false; }
-			virtual bool has_nodal_dirichlet() { return false; }
-			virtual bool has_nodal_neumann() { return false; }
-			virtual bool is_nodal_dimension_dirichet(const int n_id, const int tag, const int dim) const { return true; }
-			virtual void update_nodes(const Eigen::VectorXi &in_node_to_node) {}
+			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const override;
+			bool is_nodal_dirichlet_boundary(const int n_id, const int tag) override;
+			bool is_nodal_neumann_boundary(const int n_id, const int tag) override;
+			bool has_nodal_dirichlet() override;
+			bool has_nodal_neumann() override;
+			bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const override;
+			void update_nodes(const Eigen::VectorXi &in_node_to_node) override;
 
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return false; }
@@ -181,7 +186,23 @@ namespace polyfem
 			std::array<utils::ExpressionValue, 3> exact_;
 			std::array<utils::ExpressionValue, 9> exact_grad_;
 
-			std::vector<Eigen::MatrixXd> input_dirichlet_;
+			struct NodalDirichlet
+			{
+				std::array<utils::ExpressionValue, 3> value;
+				std::shared_ptr<Interpolation> interpolation;
+				Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
+			};
+
+			struct NodalNeumann
+			{
+				std::array<utils::ExpressionValue, 3> value;
+				std::shared_ptr<Interpolation> interpolation;
+			};
+
+			std::map<int, NodalDirichlet> nodal_dirichlet_;
+			std::map<int, NodalNeumann> nodal_neumann_;
+			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
+
 			bool is_all_;
 		};
 

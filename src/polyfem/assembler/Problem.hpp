@@ -33,8 +33,8 @@ namespace polyfem
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
 
-			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const double t, Eigen::MatrixXd &val) const {}
-			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
+			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const {}
+			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
 			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag) { return false; }
 			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag) { return false; }
 			virtual bool has_nodal_dirichlet() { return false; }
@@ -58,7 +58,7 @@ namespace polyfem
 
 			virtual bool might_have_no_dirichlet() { return false; }
 			virtual bool is_dimension_dirichet(const int tag, const int dim) const { return true; }
-			virtual bool is_nodal_dimension_dirichet(const int n_id, const int tag, const int dim) const { return true; }
+			virtual bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const { return true; }
 
 			virtual bool all_dimensions_dirichlet() const { return true; } // here for efficiency reasons
 
