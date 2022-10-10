@@ -89,7 +89,11 @@ var hierarchy =
     [ "polyfem::assembler::Interpolation", "classpolyfem_1_1assembler_1_1_interpolation.html", [
       [ "polyfem::assembler::LinearInterpolation", "classpolyfem_1_1assembler_1_1_linear_interpolation.html", null ],
       [ "polyfem::assembler::LinearRamp", "classpolyfem_1_1assembler_1_1_linear_ramp.html", null ],
-      [ "polyfem::assembler::NoInterpolation", "classpolyfem_1_1assembler_1_1_no_interpolation.html", null ]
+      [ "polyfem::assembler::NoInterpolation", "classpolyfem_1_1assembler_1_1_no_interpolation.html", null ],
+      [ "polyfem::assembler::PiecewiseInterpolation", "classpolyfem_1_1assembler_1_1_piecewise_interpolation.html", [
+        [ "polyfem::assembler::PiecewiseConstantInterpolation", "classpolyfem_1_1assembler_1_1_piecewise_constant_interpolation.html", null ],
+        [ "polyfem::assembler::PiecewiseLinearInterpolation", "classpolyfem_1_1assembler_1_1_piecewise_linear_interpolation.html", null ]
+      ] ]
     ] ],
     [ "ISolver", null, [
       [ "cppoptlib::NonlinearSolver< ProblemType >", "classcppoptlib_1_1_nonlinear_solver.html", [
