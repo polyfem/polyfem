@@ -82,8 +82,8 @@ namespace polyfem::utils
 			}
 		}
 
-		assert(false);
-		return 0;
+		assert(points_.size() == 1);
+		return values_[0];
 	}
 
 	double PiecewiseLinearInterpolation::eval(const double t) const
@@ -100,8 +100,8 @@ namespace polyfem::utils
 			}
 		}
 
-		assert(false);
-		return 0;
+		assert(points_.size() == 1);
+		return values_[0];
 	}
 
 	double PiecewiseLinearInterpolation::dy_dt(const double t) const
@@ -117,7 +117,7 @@ namespace polyfem::utils
 			}
 		}
 
-		assert(false);
+		assert(points_.size() == 1);
 		return 0;
 	}
 
