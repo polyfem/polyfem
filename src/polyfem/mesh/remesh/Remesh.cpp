@@ -11,19 +11,6 @@
 
 namespace polyfem::mesh
 {
-	namespace
-	{
-		bool points_equal(const RowVectorNd &p0, const RowVectorNd &p1)
-		{
-			return (p0 - p1).norm() < 1e-15;
-		}
-
-		bool edges_equal(const RowVectorNd &ea0, const RowVectorNd &ea1, const RowVectorNd &eb0, const RowVectorNd &eb1)
-		{
-			return (points_equal(ea0, eb0) && points_equal(ea1, eb1)) || (points_equal(ea0, eb1) && points_equal(ea1, eb0));
-		}
-	} // namespace
-
 	void remesh(State &state, const double time, const double dt)
 	{
 		const int dim = state.mesh->dimension();
@@ -80,30 +67,10 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// set boundary ids
 
-		// std::vector<int> mesh_edge_to_remesh_edge(state.mesh->n_edges(), -1);
-		// const Eigen::MatrixXi edges = remeshing.edges();
-		// for (int i = 0; i < state.mesh->n_edges(); i++)
-		// {
-		// 	int e0 = state.mesh->edge_vertex(i, 0);
-		// 	int e1 = state.mesh->edge_vertex(i, 1);
-		// 	for (int j = 0; j < edges.rows(); j++)
-		// 	{
-		// 		// TODO: find a better way to match edges
-		// 		if (edges_equal(rest_positions.row(e0), rest_positions.row(e1), remeshing.rest_positions().row(edges(j, 0)), remeshing.rest_positions().row(edges(j, 1))))
-		// 		{
-		// 			mesh_edge_to_remesh_edge[i] = j;
-		// 			break;
-		// 		}
-		// 	}
-		// 	assert(mesh_edge_to_remesh_edge[i] >= 0);
-		// }
-
-		// const std::vector<int> remesh_boundary_ids = remeshing.boundary_ids();
 		const WildRemeshing2D::EdgeMap remesh_boundary_ids = remeshing.boundary_ids();
 		std::vector<int> boundary_ids(state.mesh->n_edges(), -1);
 		for (int i = 0; i < state.mesh->n_edges(); i++)
 		{
-			// boundary_ids[i] = remesh_boundary_ids[mesh_edge_to_remesh_edge[i]];
 			int e0 = state.mesh->edge_vertex(i, 0);
 			int e1 = state.mesh->edge_vertex(i, 1);
 			if (e1 < e0)
@@ -141,11 +108,6 @@ namespace polyfem::mesh
 		const Eigen::VectorXd displacements = utils::flatten(U_reordered);
 		const Eigen::VectorXd velocities = utils::flatten(V_reordered);
 		const Eigen::VectorXd accelerations = utils::flatten(A_reordered);
-
-		// x = min Inertia(x^t)
-		// x = remesh(x)
-		// x = min (Inertia(x) = 0)
-		// loop
 
 		state.sol = displacements;
 

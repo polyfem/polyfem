@@ -120,13 +120,14 @@ namespace polyfem
 
 		// Write the total energy to a CSV file
 		std::ofstream energy_file(resolve_output_path("energy.csv"));
-		energy_file << "i,elastic_energy,body_energy,inertia,AL_energy,total_energy" << std::endl;
+		energy_file << "i,elastic_energy,body_energy,inertia,contact_form,AL_energy,total_energy" << std::endl;
 		const auto save_energy = [&](int i) {
 			energy_file << fmt::format(
 				"{},{},{},{},{},{}\n", i,
 				solve_data.elastic_form->value(sol),
 				solve_data.body_form->value(sol),
 				solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
+				solve_data.contact_form ? solve_data.contact_form->value(sol) : 0,
 				solve_data.al_form->value(sol),
 				solve_data.nl_problem->value(sol));
 			energy_file.flush();
@@ -136,7 +137,7 @@ namespace polyfem
 		{
 			solve_tensor_nonlinear(t);
 
-			if (t > time_steps / 2)
+			if (t > 18)
 			{
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
@@ -153,9 +154,12 @@ namespace polyfem
 			}
 			else
 			{
-				save_energy(save_i++);
-				save_energy(save_i++);
-				save_energy(save_i++);
+				save_energy(save_i);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_energy(save_i);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_energy(save_i);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
 			}
 
 			{

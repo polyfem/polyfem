@@ -141,7 +141,7 @@ namespace polyfem::mesh
 
 		// Split 25% of edges
 		int num_splits = 0;
-		const int max_splits = std::round(0.25 * collect_all_ops.size());
+		const int max_splits = std::round(1.0 * collect_all_ops.size());
 		executor.stopping_criterion = [&](const WildRemeshing2D &m) -> bool {
 			return (++num_splits) > max_splits;
 		};
