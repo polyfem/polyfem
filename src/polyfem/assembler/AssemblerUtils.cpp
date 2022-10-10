@@ -32,6 +32,7 @@ namespace polyfem
 			{"IncompressibleLinearElasticity", {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/true,  /*is_solution_displacement=*/true,  /*is_linear=*/true}},
 			{"SaintVenant",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"NeoHookean",                     {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
+			{"MoooneyRivlin",                  {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"MultiModels",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			// {"Ogden",                          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true, /*is_linear=*/false}},
 			{"Stokes",                         {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/true}},
@@ -128,6 +129,8 @@ namespace polyfem
 				return;
 			else if (assembler == "NeoHookean")
 				return;
+			else if (assembler == "MooneyRivlin")
+				return;
 			else if (assembler == "MultiModels")
 				return;
 			// else if (assembler == "NavierStokes")
@@ -223,6 +226,8 @@ namespace polyfem
 				return saint_venant_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else if (assembler == "NeoHookean")
 				return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+			else if (assembler == "MooneyRivlin")
+				return mooney_rivlin_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else if (assembler == "MultiModels")
 				return multi_models_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else if (assembler == "Damping")
@@ -251,6 +256,8 @@ namespace polyfem
 				saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "NeoHookean")
 				neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			else if (assembler == "MooneyRivlin")
+				mooney_rivlin_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "Damping")
@@ -282,6 +289,8 @@ namespace polyfem
 				saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "NeoHookean")
 				neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			else if (assembler == "MooneyRivlin")
+				mooney_rivlin_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "Damping")
@@ -319,6 +328,8 @@ namespace polyfem
 				saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "NeoHookean")
 				neo_hookean_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "MooneyRivlin")
+				mooney_rivlin_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			// else if(assembler == "Ogden")
@@ -360,6 +371,8 @@ namespace polyfem
 				saint_venant_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "NeoHookean")
 				neo_hookean_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "MooneyRivlin")
+				mooney_rivlin_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			// else if(assembler == "Ogden")
@@ -398,6 +411,8 @@ namespace polyfem
 				return saint_venant_elasticity_.local_assembler().compute_rhs(pt);
 			else if (assembler == "NeoHookean")
 				return neo_hookean_elasticity_.local_assembler().compute_rhs(pt);
+			else if (assembler == "MooneyRivlin")
+				return mooney_rivlin_elasticity_.local_assembler().compute_rhs(pt);
 			else if (assembler == "MultiModels")
 				return multi_models_elasticity_.local_assembler().compute_rhs(pt);
 			// else if(assembler == "Ogden")
@@ -500,6 +515,7 @@ namespace polyfem
 
 			saint_venant_elasticity_.local_assembler().set_size(dim);
 			neo_hookean_elasticity_.local_assembler().set_size(dim);
+			mooney_rivlin_elasticity_.local_assembler().set_size(dim);
 			multi_models_elasticity_.local_assembler().set_size(dim);
 			// ogden_elasticity_.local_assembler().set_size(dim);
 
@@ -539,6 +555,7 @@ namespace polyfem
 
 			saint_venant_elasticity_.local_assembler().add_multimaterial(index, params);
 			neo_hookean_elasticity_.local_assembler().add_multimaterial(index, params);
+			mooney_rivlin_elasticity_.local_assembler().add_multimaterial(index, params);
 			multi_models_elasticity_.local_assembler().add_multimaterial(index, params);
 			// ogden_elasticity_.local_assembler().add_multimaterial(index, params);
 

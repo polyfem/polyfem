@@ -20,6 +20,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	Mass.cpp
 	Mass.hpp
+	MooneyRivlinElasticity.cpp
+	MooneyRivlinElasticity.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NeoHookeanElasticity.cpp
