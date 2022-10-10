@@ -14,6 +14,7 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "MultiscaleRB.hpp"
 #include "MultiModel.hpp"
 #include "ViscousDamping.hpp"
 // #include "OgdenElasticity.hpp"
@@ -243,6 +244,7 @@ namespace polyfem
 
 			NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
+			NLAssembler<MultiscaleRB> multiscale_reduced_basis_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
 			// NLAssembler<OgdenElasticity> ogden_elasticity_;
 

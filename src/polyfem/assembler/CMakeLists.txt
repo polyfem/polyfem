@@ -24,6 +24,8 @@ set(SOURCES
 	MultiModel.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
+	MultiscaleRB.cpp
+	MultiscaleRB.hpp
 	# OgdenElasticity.cpp
 	# OgdenElasticity.hpp
 	RhsAssembler.cpp

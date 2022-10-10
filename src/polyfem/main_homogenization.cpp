@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         i++;
     }
 
-    state.solve_homogenized_field(def_grad);
+    state.sol = state.solve_homogenized_field(def_grad);
 
 	logger().info("total time: {}s", state.timings.total_time());
 

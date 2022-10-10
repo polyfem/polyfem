@@ -295,6 +295,9 @@ if(POLYFEM_WITH_CLIPPER)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 
+include(finite_diff)
+target_link_libraries(polyfem PUBLIC finitediff::finitediff)
+
 ################################################################################
 # Polyfem binary
 ################################################################################

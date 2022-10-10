@@ -10,6 +10,7 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "MultiscaleRB.hpp"
 #include "MultiModel.hpp"
 // #include "OgdenElasticity.hpp"
 
@@ -1021,6 +1022,7 @@ namespace polyfem::assembler
 	template class Assembler<HookeLinearElasticity>;
 	template class NLAssembler<SaintVenantElasticity>;
 	template class NLAssembler<NeoHookeanElasticity>;
+	template class NLAssembler<MultiscaleRB>;
 	template class NLAssembler<MultiModel>;
 	// template class NLAssembler<OgdenElasticity>;
 
