@@ -50,6 +50,12 @@ namespace polyfem
 				res = std::make_shared<LinearInterpolation>();
 			else if (type == "linear_ramp")
 				res = std::make_shared<LinearRamp>();
+			else if (type == "piecewise_constant")
+				res = std::make_shared<PiecewiseConstantInterpolation>();
+			else if (type == "piecewise_linear")
+				res = std::make_shared<PiecewiseLinearInterpolation>();
+			// else if (type == "piecewise_cubic")
+			// 	res = std::make_shared<PiecewiseCubicInterpolation>();
 			else
 				logger().error("Usupported interpolation type {}", type);
 
@@ -78,6 +84,91 @@ namespace polyfem
 				form_ = params["from"];
 			else
 				form_ = 0;
+		}
+
+		double PiecewiseConstantInterpolation::eval(const double t) const
+		{
+			for (size_t i = 0; i < points_.size()-1; ++i) {
+				if (t >= points_[i] && t < points_[i+1]) {
+					return values_[i];
+				}
+			}
+
+			return extend(t);
+		}
+
+		double PiecewiseLinearInterpolation::eval(const double t) const
+		{
+			for (size_t i = 0; i < points_.size()-1; ++i) {
+				if (t >= points_[i] && t < points_[i+1]) {
+					double val = (values_[i+1]-values_[i]) * ((t-points_[i])/(points_[i+1]-points_[i])) + values_[i];
+					return val;
+				}
+			}
+			
+			return extend(t);
+		}
+
+
+		void PiecewiseInterpolation::init(const json &params)
+		{
+			if (!params["points"].is_array())
+				log_and_throw_error(fmt::format("Points must be an array"));
+			if (!params["values"].is_array())
+				log_and_throw_error(fmt::format("Values must be an array"));
+			
+			points_.reserve(params["points"].size());
+			values_.reserve(params["values"].size());
+
+			for (int i = 0; i < params["points"].size(); ++i) {
+				points_[i] = params["points"][i];
+				values_[i] = params["values"][i];
+			}
+
+			if (params.contains("extend")) {
+				if (params["extend"] == "constant")
+					ext_ = constant;
+				else if (params["extend"] == "extrapolate")
+					ext_ = extrapolate;
+				else if (params["extend"] == "repeat")
+					ext_ = repeat;
+				else if (params["extend"] == "repeat_offset")
+					ext_ = repeat_offset;
+				else
+					log_and_throw_error(fmt::format("Extend Method not recognized. Should be one of {constant, extrapolate, repeat, repeat_offset}"));
+			}
+			else
+				ext_ = constant;
+		}
+
+		double PiecewiseInterpolation::extend(const double t) const
+		{
+			if (ext_ == constant) {
+				if (t < points_[0])
+					return values_[0];
+				else
+					return values_[values_.size()-1];
+			}
+			else if (ext_ == extrapolate) {
+				if (t < points_[0])
+					return values_[0]*t;
+				else
+					return values_[values_.size()-1]*t;
+			}
+			else if (ext_ == repeat) {
+				if (t < points_[0]) 
+					return eval(t + points_[points_.size()-1]);
+				else
+					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]);
+			}
+			else if (ext_ == repeat_offset) {
+				if (t < points_[0]) 
+					return eval(t + points_[points_.size()-1]) + (values_[values_.size()-1] - values_[0]);
+				else
+					return eval(std::fmod(t, points_[points_.size()-1]) + points_[0]) + (values_[values_.size()-1] - values_[0]);
+			}	
+
+			return 0;
 		}
 
 		GenericTensorProblem::GenericTensorProblem(const std::string &name)
