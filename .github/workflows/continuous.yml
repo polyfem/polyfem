@@ -159,15 +159,15 @@ jobs:
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Stetup Conda
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          conda-channels: anaconda, conda-forge
+      # - name: Stetup Conda
+      #   uses: s-weigand/setup-conda@v1
+      #   with:
+      #     update-conda: true
+      #     conda-channels: anaconda, conda-forge
 
-      - name: Install Dependencies
-        run: |
-          conda install libblas libcblas suitesparse -y
+      # - name: Install Dependencies
+      #   run: |
+      #     conda install libblas libcblas suitesparse -y
 
       - name: Set env
         run: |
