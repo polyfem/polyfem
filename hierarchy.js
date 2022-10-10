@@ -86,13 +86,13 @@ var hierarchy =
     [ "polyfem::mesh::Navigation::Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", null ],
     [ "polyfem::basis::InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", null ],
     [ "polyfem::utils::InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", null ],
-    [ "polyfem::assembler::Interpolation", "classpolyfem_1_1assembler_1_1_interpolation.html", [
-      [ "polyfem::assembler::LinearInterpolation", "classpolyfem_1_1assembler_1_1_linear_interpolation.html", null ],
-      [ "polyfem::assembler::LinearRamp", "classpolyfem_1_1assembler_1_1_linear_ramp.html", null ],
-      [ "polyfem::assembler::NoInterpolation", "classpolyfem_1_1assembler_1_1_no_interpolation.html", null ],
-      [ "polyfem::assembler::PiecewiseInterpolation", "classpolyfem_1_1assembler_1_1_piecewise_interpolation.html", [
-        [ "polyfem::assembler::PiecewiseConstantInterpolation", "classpolyfem_1_1assembler_1_1_piecewise_constant_interpolation.html", null ],
-        [ "polyfem::assembler::PiecewiseLinearInterpolation", "classpolyfem_1_1assembler_1_1_piecewise_linear_interpolation.html", null ]
+    [ "polyfem::utils::Interpolation", "classpolyfem_1_1utils_1_1_interpolation.html", [
+      [ "polyfem::utils::LinearInterpolation", "classpolyfem_1_1utils_1_1_linear_interpolation.html", null ],
+      [ "polyfem::utils::LinearRamp", "classpolyfem_1_1utils_1_1_linear_ramp.html", null ],
+      [ "polyfem::utils::NoInterpolation", "classpolyfem_1_1utils_1_1_no_interpolation.html", null ],
+      [ "polyfem::utils::PiecewiseInterpolation", "classpolyfem_1_1utils_1_1_piecewise_interpolation.html", [
+        [ "polyfem::utils::PiecewiseConstantInterpolation", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html", null ],
+        [ "polyfem::utils::PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", null ]
       ] ]
     ] ],
     [ "ISolver", null, [

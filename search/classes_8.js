@@ -10,5 +10,5 @@ var searchData=
   ['inertiaform_7',['InertiaForm',['../classpolyfem_1_1solver_1_1_inertia_form.html',1,'polyfem::solver']]],
   ['interfacedata_8',['InterfaceData',['../structpolyfem_1_1basis_1_1_interface_data.html',1,'polyfem::basis']]],
   ['interpolatedfunction2d_9',['InterpolatedFunction2d',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html',1,'polyfem::utils']]],
-  ['interpolation_10',['Interpolation',['../classpolyfem_1_1assembler_1_1_interpolation.html',1,'polyfem::assembler']]]
+  ['interpolation_10',['Interpolation',['../classpolyfem_1_1utils_1_1_interpolation.html',1,'polyfem::utils']]]
 ];

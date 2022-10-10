@@ -1,5 +1,16 @@
 var NAVTREEINDEX26 =
 {
+"functions_func_h.html":[4,3,1,8],
+"functions_func_i.html":[4,3,1,9],
+"functions_func_k.html":[4,3,1,10],
+"functions_func_l.html":[4,3,1,11],
+"functions_func_m.html":[4,3,1,12],
+"functions_func_n.html":[4,3,1,13],
+"functions_func_o.html":[4,3,1,14],
+"functions_func_p.html":[4,3,1,15],
+"functions_func_q.html":[4,3,1,16],
+"functions_func_r.html":[4,3,1,17],
+"functions_func_s.html":[4,3,1,18],
 "functions_func_t.html":[4,3,1,19],
 "functions_func_u.html":[4,3,1,20],
 "functions_func_v.html":[4,3,1,21],
@@ -238,16 +249,5 @@ var NAVTREEINDEX26 =
 "namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc":[3,0,6,21],
 "namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321":[3,0,6,26],
 "namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569":[3,0,6,38],
-"namespacepolyfem.html#acf04b657153af8a5f4d2269617e8555c":[3,0,6,34],
-"namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e":[3,0,6,31],
-"namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391":[3,0,6,36],
-"namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4":[3,0,6,19],
-"namespacepolyfem.html#af67ac2f505cacb0b0f006754bf981929":[3,0,6,33],
-"namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4":[3,0,6,27],
-"namespacepolyfem.html#afe7d5ac326e47bbc47caa5539c4f8172":[3,0,6,29],
-"namespacepolyfem_1_1assembler.html":[3,0,6,0],
-"namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32":[3,0,6,0,43],
-"namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784":[3,0,6,0,42],
-"namespacepolyfem_1_1autogen.html":[3,0,6,1],
-"namespacepolyfem_1_1autogen.html#a048e18759622a9d960c4bb71cee11fd3":[3,0,6,1,2]
+"namespacepolyfem.html#acf04b657153af8a5f4d2269617e8555c":[3,0,6,34]
 };

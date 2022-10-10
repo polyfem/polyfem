@@ -6,7 +6,7 @@ var searchData=
   ['_7ecmesh3d_3',['~CMesh3D',['../classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aa27534127474beed655235694ca37e7d',1,'polyfem::mesh::CMesh3D']]],
   ['_7eform_4',['~Form',['../classpolyfem_1_1solver_1_1_form.html#aeed3585f6af9b01c48c07809f745f01f',1,'polyfem::solver::Form']]],
   ['_7eimplicittimeintegrator_5',['~ImplicitTimeIntegrator',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a74403eb9fc355ac9c5231e8bc7f6c46c',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
-  ['_7einterpolation_6',['~Interpolation',['../classpolyfem_1_1assembler_1_1_interpolation.html#a2ef142f85ead7632671cfa723e2f723b',1,'polyfem::assembler::Interpolation']]],
+  ['_7einterpolation_6',['~Interpolation',['../classpolyfem_1_1utils_1_1_interpolation.html#a143e09273b0bbb83af4735a0c129af5b',1,'polyfem::utils::Interpolation']]],
   ['_7elinesearch_7',['~LineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#abc022a0d423d25988b975c070c9c481a',1,'polyfem::solver::line_search::LineSearch']]],
   ['_7emesh_8',['~Mesh',['../classpolyfem_1_1mesh_1_1_mesh.html#afbc74f93b8fdf5fde844201a33468c73',1,'polyfem::mesh::Mesh']]],
   ['_7emesh2d_9',['~Mesh2D',['../classpolyfem_1_1mesh_1_1_mesh2_d.html#abdd3fe7a2dec434aa4ea1005006faf80',1,'polyfem::mesh::Mesh2D']]],

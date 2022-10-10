@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['piecewiseconstantinterpolation_0',['PiecewiseConstantInterpolation',['../classpolyfem_1_1assembler_1_1_piecewise_constant_interpolation.html',1,'polyfem::assembler']]],
-  ['piecewiseinterpolation_1',['PiecewiseInterpolation',['../classpolyfem_1_1assembler_1_1_piecewise_interpolation.html',1,'polyfem::assembler']]],
-  ['piecewiselinearinterpolation_2',['PiecewiseLinearInterpolation',['../classpolyfem_1_1assembler_1_1_piecewise_linear_interpolation.html',1,'polyfem::assembler']]],
+  ['piecewiseconstantinterpolation_0',['PiecewiseConstantInterpolation',['../classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html',1,'polyfem::utils']]],
+  ['piecewiseinterpolation_1',['PiecewiseInterpolation',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html',1,'polyfem::utils']]],
+  ['piecewiselinearinterpolation_2',['PiecewiseLinearInterpolation',['../classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html',1,'polyfem::utils']]],
   ['plane_3',['Plane',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html',1,'polyfem::mesh::Obstacle']]],
   ['planeselection_4',['PlaneSelection',['../classpolyfem_1_1utils_1_1_plane_selection.html',1,'polyfem::utils']]],
   ['pointbasedtensorproblem_5',['PointBasedTensorProblem',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem.html',1,'polyfem::problem']]],

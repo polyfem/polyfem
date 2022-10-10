@@ -21,7 +21,7 @@ var searchData=
   ['nlproblem_18',['NLProblem',['../classpolyfem_1_1solver_1_1_n_l_problem.html',1,'polyfem::solver']]],
   ['nodeproblem_19',['NodeProblem',['../classpolyfem_1_1problem_1_1_node_problem.html',1,'polyfem::problem']]],
   ['nodevalues_20',['NodeValues',['../classpolyfem_1_1problem_1_1_node_values.html',1,'polyfem::problem']]],
-  ['nointerpolation_21',['NoInterpolation',['../classpolyfem_1_1assembler_1_1_no_interpolation.html',1,'polyfem::assembler']]],
+  ['nointerpolation_21',['NoInterpolation',['../classpolyfem_1_1utils_1_1_no_interpolation.html',1,'polyfem::utils']]],
   ['nonlinearassemblerdata_22',['NonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html',1,'polyfem::assembler']]],
   ['nonlinearsolver_23',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html',1,'cppoptlib']]],
   ['nthread_24',['NThread',['../classpolyfem_1_1utils_1_1_n_thread.html',1,'polyfem::utils']]]
