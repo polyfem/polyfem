@@ -45,6 +45,42 @@ namespace polyfem
 			double form_;
 		};
 
+		class PiecewiseInterpolation : public Interpolation
+		{
+		public:
+			void init(const json &params) override;
+			double extend(const double t) const;
+		
+		public:
+			std::vector<double> points_;
+			std::vector<double> values_;
+			enum extend_ {constant, extrapolate, repeat, repeat_offset};
+			extend_ ext_;
+		};	
+
+		class PiecewiseConstantInterpolation : public PiecewiseInterpolation
+		{
+		public:
+			double eval(const double t) const override;
+		};
+
+		class PiecewiseLinearInterpolation : public PiecewiseInterpolation
+		{
+		public:
+			double eval(const double t) const override;
+		};
+
+		// class PiecewiseCubicInterpolation : public PiecewiseInterpolation
+		// {
+		// public:
+		// 	double eval(const double t) const override;
+		// 	void init(const json &params) override;
+
+		// private:
+		// 	std::vector<double> points;
+		// 	std::vector<double> values;
+		// };
+
 		class GenericTensorProblem : public Problem
 		{
 		public:
