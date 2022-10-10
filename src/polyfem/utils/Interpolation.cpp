@@ -104,12 +104,29 @@ namespace polyfem::utils
 		return 0;
 	}
 
+	double PiecewiseLinearInterpolation::dy_dt(const double t) const
+	{
+		assert(t >= points_.front() && t <= points_.back());
+
+		for (size_t i = 0; i < points_.size() - 1; ++i)
+		{
+			// NOTE: technically at t ∈ points dy/dt is undefined, but we just use the previous intervals value.
+			if (t >= points_[i] && t <= points_[i + 1])
+			{
+				return (values_[i + 1] - values_[i]) / (points_[i + 1] - points_[i]);
+			}
+		}
+
+		assert(false);
+		return 0;
+	}
+
 	double PiecewiseInterpolation::extend(const double t) const
 	{
 		assert(points_.size() == values_.size());
 		const double t0 = points_.front(), tn = points_.back();
+		assert(t < t0 || t >= tn);
 		const double y0 = values_.front(), yn = values_.back();
-		const double n = points_.size() - 1;
 
 		double offset = 0;
 		switch (extend_)
@@ -119,19 +136,10 @@ namespace polyfem::utils
 
 		case Extend::EXTRAPOLATE:
 		{
-			// TODO: for cubic interpolation, we need to compute the derivative at the end points
-			double dy_dt;
-			if (points_.size() == 1)
-				dy_dt = 0;
-			else if (t < t0)
-				dy_dt = (values_[1] - y0) / (points_[1] - t0);
-			else
-				dy_dt = (yn - values_[n - 1]) / (tn - points_[n - 1]);
-
 			if (t < t0)
-				return dy_dt * (t - t0) + y0;
+				return dy_dt(t0) * (t - t0) + y0;
 			else
-				return dy_dt * (t - tn) + yn;
+				return dy_dt(tn) * (t - tn) + yn;
 		}
 
 		case Extend::REPEAT_OFFSET:

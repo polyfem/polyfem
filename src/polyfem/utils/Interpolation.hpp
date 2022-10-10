@@ -58,18 +58,27 @@ namespace polyfem::utils
 			REPEAT_OFFSET
 		};
 		Extend extend_;
+
+	protected:
+		virtual double dy_dt(const double t) const = 0;
 	};
 
 	class PiecewiseConstantInterpolation : public PiecewiseInterpolation
 	{
 	public:
 		double eval(const double t) const override;
+
+	protected:
+		double dy_dt(const double t) const override { return 0; }
 	};
 
 	class PiecewiseLinearInterpolation : public PiecewiseInterpolation
 	{
 	public:
 		double eval(const double t) const override;
+
+	protected:
+		double dy_dt(const double t) const override;
 	};
 
 	// class PiecewiseCubicInterpolation : public PiecewiseInterpolation
