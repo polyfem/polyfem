@@ -43,7 +43,8 @@ namespace polyfem::utils
 	class PiecewiseInterpolation : public Interpolation
 	{
 	public:
-		void init(const json &params) override;
+		virtual void init(const json &params) override;
+		double eval(const double t) const override;
 		double extend(const double t) const;
 
 	public:
@@ -60,31 +61,38 @@ namespace polyfem::utils
 		Extend extend_;
 
 	protected:
-		virtual double dy_dt(const double t) const = 0;
+		virtual double eval_piece(const double t, const int i) const = 0;
+
+		double dy_dt(const double t) const;
+		virtual double dy_dt_piece(const double t, const int i) const = 0;
 	};
 
 	class PiecewiseConstantInterpolation : public PiecewiseInterpolation
 	{
-	public:
-		double eval(const double t) const override;
-
 	protected:
-		double dy_dt(const double t) const override { return 0; }
+		double eval_piece(const double t, const int i) const override { return values_[i]; }
+		double dy_dt_piece(const double t, const int i) const override { return 0; }
 	};
 
 	class PiecewiseLinearInterpolation : public PiecewiseInterpolation
 	{
-	public:
-		double eval(const double t) const override;
-
 	protected:
-		double dy_dt(const double t) const override;
+		double eval_piece(const double t, const int i) const override;
+		double dy_dt_piece(const double t, const int i) const override;
 	};
 
-	// class PiecewiseCubicInterpolation : public PiecewiseInterpolation
-	// {
-	// public:
-	// 	double eval(const double t) const override;
-	// };
+	class PiecewiseCubicInterpolation : public PiecewiseInterpolation
+	{
+	public:
+		void init(const json &params) override;
+
+		const Eigen::MatrixXd &coeffs() const { return coeffs_; }
+
+	protected:
+		double eval_piece(const double t, const int i) const override;
+		double dy_dt_piece(const double t, const int i) const override;
+
+		Eigen::MatrixXd coeffs_;
+	};
 
 } // namespace polyfem::utils
