@@ -204,20 +204,18 @@ namespace polyfem::assembler
 
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
+		const int n_elements = int(bases.size());
 
 		RowVectorNd min, max;
 		state->mesh->bounding_box(min, max);
-		double volume = 1;
-		for (int d = 0; d < min.size(); d++)
-			volume *= (max(d) - min(d));
+		const double volume = (max - min).prod();
 
-		energy = state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x);
-		stress.setZero(size(), size());
-		stiffness.setZero(size()*size(), size()*size());
+		// effective energy = average energy over unit cell
+		energy = state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / volume;
 
 		// effective stress = average stress over unit cell
-		{			
-			const int n_elements = int(bases.size());
+		{
+			stress.setZero(size(), size());
 			Eigen::MatrixXd stresses, avg_stress, tmp;
 
 			for (int e = 0; e < n_elements; ++e)
@@ -235,10 +233,23 @@ namespace polyfem::assembler
 				avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
 				stress += avg_stress;
 			}
+
+			stress = R * stress / volume;
 		}
-	
-		energy /= volume;
-		stress = R * stress / volume;
+
+		// \bar{C}^{RB} = < C^{RB} > - \sum_{i,j} D^{-1}_{ij} < C^{RB} \cdot B^{(i)} > \cross < B^{(j)} \cdot C^{RB} >
+		// D_{ij} = < B^{(i)} \cdot C \cdot B^{(j)} >
+		{
+			stiffness.setZero(size()*size(), size()*size());
+			Eigen::MatrixXd stiffness_no_rotation = stiffness;
+
+
+
+			for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
+			for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
+			for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
+				stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
+		}
 	}
 
 	void MultiscaleRB::sample_def_grads(std::vector<Eigen::MatrixXd> &def_grads) const
