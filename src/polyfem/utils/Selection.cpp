@@ -35,7 +35,7 @@ namespace polyfem::utils
 		else if (selection["id"].is_number_integer()) // assume ID is uniform
 			res = std::make_shared<UniformSelection>(selection["id"]);
 		else
-			log_and_throw_error(fmt::format("Selection not recognized: {}", selection.dump()));
+			log_and_throw_error("Selection not recognized: {}", selection.dump());
 
 		return res;
 	}
@@ -67,7 +67,7 @@ namespace polyfem::utils
 		}
 		else if (!j_selections.is_null())
 		{
-			log_and_throw_error(fmt::format("Invalid selections: {}", j_selections));
+			log_and_throw_error("Invalid selections: {}", j_selections);
 		}
 		return selections;
 	}
