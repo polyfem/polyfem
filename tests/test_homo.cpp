@@ -102,7 +102,7 @@ TEST_CASE("density_elastic_homo", "[homogenization]")
         },
         "solver": {
             "linear": {
-                "solver": "Eigen::PardisoLDLT"
+                "solver": "Eigen::SimplicialLDLT"
             }
         },
         "boundary_conditions": {
@@ -176,7 +176,7 @@ TEST_CASE("density_elastic_homo_grad", "[homogenization]")
         },
         "solver": {
             "linear": {
-                "solver": "Eigen::PardisoLDLT"
+                "solver": "Eigen::SimplicialLDLT"
             }
         },
         "boundary_conditions": {
@@ -270,7 +270,7 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
         },
         "solver": {
             "linear": {
-                "solver": "Eigen::PardisoLDLT"
+                "solver": "Eigen::SimplicialLDLT"
             }
         },
         "boundary_conditions": {
@@ -362,7 +362,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
                 "f_delta": 1e-16
             },
             "linear": {
-                "solver": "Eigen::PardisoLDLT"
+                "solver": "Eigen::SimplicialLDLT"
             }
         },
         "boundary_conditions": {
@@ -447,7 +447,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
 //         },
 //         "solver": {
 //             "linear": {
-//                 "solver": "Eigen::PardisoLDLT"
+//                 "solver": "Eigen::SimplicialLDLT"
 //             }
 //         },
 //         "boundary_conditions": {
@@ -525,7 +525,7 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
         },
         "solver": {
             "linear": {
-                "solver": "Eigen::PardisoLDLT"
+                "solver": "Eigen::SimplicialLDLT"
             }
         },
         "boundary_conditions": {

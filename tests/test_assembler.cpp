@@ -103,7 +103,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 		],
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLDLT"
+				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
 		"boundary_conditions": {
