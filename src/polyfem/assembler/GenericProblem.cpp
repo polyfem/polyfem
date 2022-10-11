@@ -39,47 +39,6 @@ namespace polyfem
 			}
 		} // namespace
 
-		std::shared_ptr<Interpolation> Interpolation::build(const json &params)
-		{
-			const std::string type = params["type"];
-			std::shared_ptr<Interpolation> res = nullptr;
-
-			if (type == "none")
-				res = std::make_shared<NoInterpolation>();
-			else if (type == "linear")
-				res = std::make_shared<LinearInterpolation>();
-			else if (type == "linear_ramp")
-				res = std::make_shared<LinearRamp>();
-			else
-				logger().error("Usupported interpolation type {}", type);
-
-			if (res)
-				res->init(params);
-
-			return res;
-		}
-
-		double LinearRamp::eval(const double t) const
-		{
-			if (t >= to_)
-				return to_;
-
-			if (t <= form_)
-				return 0;
-
-			return t - form_;
-		}
-
-		void LinearRamp::init(const json &params)
-		{
-			to_ = params["to"];
-
-			if (params.contains("from"))
-				form_ = params["from"];
-			else
-				form_ = 0;
-		}
-
 		GenericTensorProblem::GenericTensorProblem(const std::string &name)
 			: Problem(name), is_all_(false)
 		{

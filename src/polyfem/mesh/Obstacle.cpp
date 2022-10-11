@@ -10,7 +10,6 @@
 
 namespace polyfem
 {
-	using namespace assembler;
 	using namespace utils;
 
 	namespace mesh

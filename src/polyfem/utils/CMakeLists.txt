@@ -22,6 +22,8 @@ set(SOURCES
 	HashUtils.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
+	Interpolation.cpp
+	Interpolation.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
 	Logger.cpp
