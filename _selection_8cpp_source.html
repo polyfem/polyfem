@@ -152,7 +152,7 @@ $(document).ready(function(){initNavTree('_selection_8cpp_source.html',''); init
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (selection[<span class="stringliteral">&quot;id&quot;</span>].is_number_integer()) <span class="comment">// assume ID is uniform</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            res = std::make_shared&lt;UniformSelection&gt;(selection[<span class="stringliteral">&quot;id&quot;</span>]);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;Selection not recognized: {}&quot;</span>, selection.dump()));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Selection not recognized: {}&quot;</span>, selection.dump());</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> res;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
@@ -184,7 +184,7 @@ $(document).ready(function(){initNavTree('_selection_8cpp_source.html',''); init
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        }</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!j_selections.is_null())</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;Invalid selections: {}&quot;</span>, j_selections));</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Invalid selections: {}&quot;</span>, j_selections);</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> selections;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>

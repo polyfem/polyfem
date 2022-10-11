@@ -6,5 +6,6 @@ var _interpolation_8hpp =
     [ "polyfem::utils::LinearRamp", "classpolyfem_1_1utils_1_1_linear_ramp.html", "classpolyfem_1_1utils_1_1_linear_ramp" ],
     [ "polyfem::utils::PiecewiseInterpolation", "classpolyfem_1_1utils_1_1_piecewise_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_interpolation" ],
     [ "polyfem::utils::PiecewiseConstantInterpolation", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation" ],
-    [ "polyfem::utils::PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation" ]
+    [ "polyfem::utils::PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation" ],
+    [ "polyfem::utils::PiecewiseCubicInterpolation", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation" ]
 ];

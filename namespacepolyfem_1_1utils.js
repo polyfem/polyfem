@@ -26,6 +26,7 @@ var namespacepolyfem_1_1utils =
     [ "NoInterpolation", "classpolyfem_1_1utils_1_1_no_interpolation.html", "classpolyfem_1_1utils_1_1_no_interpolation" ],
     [ "NThread", "classpolyfem_1_1utils_1_1_n_thread.html", "classpolyfem_1_1utils_1_1_n_thread" ],
     [ "PiecewiseConstantInterpolation", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation" ],
+    [ "PiecewiseCubicInterpolation", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation" ],
     [ "PiecewiseInterpolation", "classpolyfem_1_1utils_1_1_piecewise_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_interpolation" ],
     [ "PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation" ],
     [ "PlaneSelection", "classpolyfem_1_1utils_1_1_plane_selection.html", "classpolyfem_1_1utils_1_1_plane_selection" ],

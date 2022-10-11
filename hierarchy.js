@@ -92,6 +92,7 @@ var hierarchy =
       [ "polyfem::utils::NoInterpolation", "classpolyfem_1_1utils_1_1_no_interpolation.html", null ],
       [ "polyfem::utils::PiecewiseInterpolation", "classpolyfem_1_1utils_1_1_piecewise_interpolation.html", [
         [ "polyfem::utils::PiecewiseConstantInterpolation", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html", null ],
+        [ "polyfem::utils::PiecewiseCubicInterpolation", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html", null ],
         [ "polyfem::utils::PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", null ]
       ] ]
     ] ],

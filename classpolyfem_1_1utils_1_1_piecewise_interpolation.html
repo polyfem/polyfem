@@ -126,7 +126,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1utils_1_1_piecewise_in
 <div class="dynheader">
 Inheritance diagram for polyfem::utils::PiecewiseInterpolation:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation__inherit__graph.svg" width="100%" height="388"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation__inherit__graph.svg" width="100%" height="437"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -147,8 +147,10 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1ea8df66832f20f59564969c3703da19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a1ea8df66832f20f59564969c3703da19">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
+<tr class="memitem:a1ea8df66832f20f59564969c3703da19"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a1ea8df66832f20f59564969c3703da19">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
 <tr class="separator:a1ea8df66832f20f59564969c3703da19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e299570a192b9d9f612b10b36a3629a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a0e299570a192b9d9f612b10b36a3629a">eval</a> (const double t) const override</td></tr>
+<tr class="separator:a0e299570a192b9d9f612b10b36a3629a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a594261dc63b365d258c363d365fa1d2d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d">extend</a> (const double t) const</td></tr>
 <tr class="separator:a594261dc63b365d258c363d365fa1d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1utils_1_1_interpolation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1utils_1_1_interpolation')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1utils_1_1_interpolation.html">polyfem::utils::Interpolation</a></td></tr>
@@ -170,8 +172,12 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ae45871dd738c4f3418dda1981b993868"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#ae45871dd738c4f3418dda1981b993868">dy_dt</a> (const double t) const =0</td></tr>
-<tr class="separator:ae45871dd738c4f3418dda1981b993868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02fc3a48edce8569d8c7868d286e0568"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a02fc3a48edce8569d8c7868d286e0568">eval_piece</a> (const double t, const int i) const =0</td></tr>
+<tr class="separator:a02fc3a48edce8569d8c7868d286e0568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a8c517535aeff5d8d0b06f73ffcd57"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a29a8c517535aeff5d8d0b06f73ffcd57">dy_dt</a> (const double t) const</td></tr>
+<tr class="separator:a29a8c517535aeff5d8d0b06f73ffcd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc458d04680178797872951d46c50e20"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afc458d04680178797872951d46c50e20">dy_dt_piece</a> (const double t, const int i) const =0</td></tr>
+<tr class="separator:afc458d04680178797872951d46c50e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -209,13 +215,13 @@ Additional Inherited Members</h2></td></tr>
 <tr><td class="fieldname"><a id="afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c" name="afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c"></a>REPEAT_OFFSET&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00053">53</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00054">54</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae45871dd738c4f3418dda1981b993868" name="ae45871dd738c4f3418dda1981b993868"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae45871dd738c4f3418dda1981b993868">&#9670;&nbsp;</a></span>dy_dt()</h2>
+<a id="a29a8c517535aeff5d8d0b06f73ffcd57" name="a29a8c517535aeff5d8d0b06f73ffcd57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a8c517535aeff5d8d0b06f73ffcd57">&#9670;&nbsp;</a></span>dy_dt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -224,11 +230,65 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual double polyfem::utils::PiecewiseInterpolation::dy_dt </td>
+          <td class="memname">double polyfem::utils::PiecewiseInterpolation::dy_dt </td>
           <td>(</td>
           <td class="paramtype">const double&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_interpolation_8cpp_source.html#l00129">129</a> of file <a class="el" href="_interpolation_8cpp_source.html">Interpolation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afc458d04680178797872951d46c50e20">dy_dt_piece()</a>, and <a class="el" href="_interpolation_8hpp_source.html#l00051">points_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00090">extend()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a29a8c517535aeff5d8d0b06f73ffcd57_cgraph.svg" width="435" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a29a8c517535aeff5d8d0b06f73ffcd57_icgraph.svg" width="663" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="afc458d04680178797872951d46c50e20" name="afc458d04680178797872951d46c50e20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc458d04680178797872951d46c50e20">&#9670;&nbsp;</a></span>dy_dt_piece()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double polyfem::utils::PiecewiseInterpolation::dy_dt_piece </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -238,13 +298,105 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html#ab90785d82ecce1838b788523fa824cbc">polyfem::utils::PiecewiseConstantInterpolation</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html#a8728ff154564c123c4b80a5e5a54cc6c">polyfem::utils::PiecewiseLinearInterpolation</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html#a38cfd254ed29149531b986aad1ac92ad">polyfem::utils::PiecewiseConstantInterpolation</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html#ac87bcd6c37b4c20c2f1b5cadeefe251e">polyfem::utils::PiecewiseLinearInterpolation</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#af5031d441c3c1c8db4f7c748306d3915">polyfem::utils::PiecewiseCubicInterpolation</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00124">extend()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00129">dy_dt()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_ae45871dd738c4f3418dda1981b993868_icgraph.svg" width="100%" height="388"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_afc458d04680178797872951d46c50e20_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a0e299570a192b9d9f612b10b36a3629a" name="a0e299570a192b9d9f612b10b36a3629a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e299570a192b9d9f612b10b36a3629a">&#9670;&nbsp;</a></span>eval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::PiecewiseInterpolation::eval </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_interpolation.html#a70afe65fa357aac01ec53f33bf9eb891">polyfem::utils::Interpolation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_interpolation_8cpp_source.html#l00073">73</a> of file <a class="el" href="_interpolation_8cpp_source.html">Interpolation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a02fc3a48edce8569d8c7868d286e0568">eval_piece()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00090">extend()</a>, <a class="el" href="_interpolation_8hpp_source.html#l00051">points_</a>, and <a class="el" href="_interpolation_8hpp_source.html#l00052">values_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00090">extend()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a0e299570a192b9d9f612b10b36a3629a_cgraph.svg" width="100%" height="388"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a0e299570a192b9d9f612b10b36a3629a_icgraph.svg" width="430" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a02fc3a48edce8569d8c7868d286e0568" name="a02fc3a48edce8569d8c7868d286e0568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02fc3a48edce8569d8c7868d286e0568">&#9670;&nbsp;</a></span>eval_piece()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double polyfem::utils::PiecewiseInterpolation::eval_piece </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html#a0a866d7254a69146c269385190eb1115">polyfem::utils::PiecewiseConstantInterpolation</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html#a84b2e1a85e56ddcf444a831879055943">polyfem::utils::PiecewiseLinearInterpolation</a>, and <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#a07eebbde098934e6babc4087868ff3f4">polyfem::utils::PiecewiseCubicInterpolation</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00073">eval()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a02fc3a48edce8569d8c7868d286e0568_icgraph.svg" width="663" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -266,21 +418,21 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_interpolation_8cpp_source.html#l00124">124</a> of file <a class="el" href="_interpolation_8cpp_source.html">Interpolation.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_interpolation_8cpp_source.html#l00090">90</a> of file <a class="el" href="_interpolation_8cpp_source.html">Interpolation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da8d6b5cada83510220f59e00ce86d4d92">CONSTANT</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#ae45871dd738c4f3418dda1981b993868">dy_dt()</a>, <a class="el" href="classpolyfem_1_1utils_1_1_interpolation.html#a70afe65fa357aac01ec53f33bf9eb891">polyfem::utils::Interpolation::eval()</a>, <a class="el" href="_interpolation_8hpp_source.html#l00060">extend_</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5765f108b8ee77f8e20d0c4815f8a65e">EXTRAPOLATE</a>, <a class="el" href="_interpolation_8hpp_source.html#l00050">points_</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5be68175be14dfaa080165456c2e9555">REPEAT</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c">REPEAT_OFFSET</a>, and <a class="el" href="_interpolation_8hpp_source.html#l00051">values_</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da8d6b5cada83510220f59e00ce86d4d92">CONSTANT</a>, <a class="el" href="_interpolation_8cpp_source.html#l00129">dy_dt()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00073">eval()</a>, <a class="el" href="_interpolation_8hpp_source.html#l00061">extend_</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5765f108b8ee77f8e20d0c4815f8a65e">EXTRAPOLATE</a>, <a class="el" href="_interpolation_8hpp_source.html#l00051">points_</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5be68175be14dfaa080165456c2e9555">REPEAT</a>, <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c">REPEAT_OFFSET</a>, and <a class="el" href="_interpolation_8hpp_source.html#l00052">values_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00072">polyfem::utils::PiecewiseConstantInterpolation::eval()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00089">polyfem::utils::PiecewiseLinearInterpolation::eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00073">eval()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a594261dc63b365d258c363d365fa1d2d_cgraph.svg" width="447" height="118"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a594261dc63b365d258c363d365fa1d2d_cgraph.svg" width="100%" height="388"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a594261dc63b365d258c363d365fa1d2d_icgraph.svg" width="443" height="118"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a594261dc63b365d258c363d365fa1d2d_icgraph.svg" width="430" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -312,13 +464,23 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1utils_1_1_interpolation.html#a56fe02aff55f98d5abfcc3173645ef69">polyfem::utils::Interpolation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_interpolation_8cpp_source.html#l00057">57</a> of file <a class="el" href="_interpolation_8cpp_source.html">Interpolation.cpp</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#a7372bf5c01c30ef97f8cac9735a4f729">polyfem::utils::PiecewiseCubicInterpolation</a>.</p>
 
-<p class="reference">References <a class="el" href="_interpolation_8hpp_source.html#l00060">extend_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_interpolation_8hpp_source.html#l00050">points_</a>, and <a class="el" href="_interpolation_8hpp_source.html#l00051">values_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_interpolation_8cpp_source.html#l00058">58</a> of file <a class="el" href="_interpolation_8cpp_source.html">Interpolation.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_interpolation_8hpp_source.html#l00061">extend_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_interpolation_8hpp_source.html#l00051">points_</a>, and <a class="el" href="_interpolation_8hpp_source.html#l00052">values_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a1ea8df66832f20f59564969c3703da19_cgraph.svg" width="596" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_piecewise_interpolation_a1ea8df66832f20f59564969c3703da19_icgraph.svg" width="430" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -337,9 +499,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00060">60</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00061">61</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00124">extend()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00057">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00090">extend()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00058">init()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>.</p>
 
 </div>
 </div>
@@ -355,9 +517,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00050">50</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00051">51</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00107">polyfem::utils::PiecewiseLinearInterpolation::dy_dt()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00072">polyfem::utils::PiecewiseConstantInterpolation::eval()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00089">polyfem::utils::PiecewiseLinearInterpolation::eval()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00124">extend()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00057">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00129">dy_dt()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00151">polyfem::utils::PiecewiseLinearInterpolation::dy_dt_piece()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00073">eval()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00145">polyfem::utils::PiecewiseLinearInterpolation::eval_piece()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00090">extend()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00058">init()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>.</p>
 
 </div>
 </div>
@@ -373,9 +535,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00051">51</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_interpolation_8hpp_source.html#l00052">52</a> of file <a class="el" href="_interpolation_8hpp_source.html">Interpolation.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00107">polyfem::utils::PiecewiseLinearInterpolation::dy_dt()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00072">polyfem::utils::PiecewiseConstantInterpolation::eval()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00089">polyfem::utils::PiecewiseLinearInterpolation::eval()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00124">extend()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00057">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_interpolation_8cpp_source.html#l00151">polyfem::utils::PiecewiseLinearInterpolation::dy_dt_piece()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00073">eval()</a>, <a class="el" href="_interpolation_8hpp_source.html#l00073">polyfem::utils::PiecewiseConstantInterpolation::eval_piece()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00145">polyfem::utils::PiecewiseLinearInterpolation::eval_piece()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00090">extend()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00058">init()</a>, and <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>.</p>
 
 </div>
 </div>

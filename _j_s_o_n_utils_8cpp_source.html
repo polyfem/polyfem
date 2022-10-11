@@ -140,7 +140,7 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            std::ifstream file(common_params_path);</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">if</span> (!file.is_open())</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;Unable to open common params {} file&quot;</span>, common_params_path));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Unable to open common params {} file&quot;</span>, common_params_path);</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> common_params;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            file &gt;&gt; common_params;</div>
