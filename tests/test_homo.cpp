@@ -270,7 +270,7 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
         },
         "solver": {
             "linear": {
-                "solver": "Eigen::SimplicialLDLT"
+                "solver": "Eigen::SparseLU"
             }
         },
         "boundary_conditions": {
@@ -525,7 +525,7 @@ TEST_CASE("density_stokes_homo_grad", "[homogenization]")
         },
         "solver": {
             "linear": {
-                "solver": "Eigen::SimplicialLDLT"
+                "solver": "Eigen::SparseLU"
             }
         },
         "boundary_conditions": {
