@@ -303,10 +303,6 @@ namespace polyfem::mesh
 			m.edge_attrs[t.switch_edge(m).eid(m)],
 		}};
 
-		// logger().critical(m.vertex_attrs[t.vid(m)].rest_position);
-		// logger().critical(m.vertex_attrs[t.switch_vertex(m).vid(m)].rest_position);
-		// logger().critical(m.vertex_attrs[t.switch_edge(m).switch_vertex(m).vid(m)].rest_position);
-
 		faces = {{
 			m.face_attrs[t.fid(m)],
 		}};
@@ -317,13 +313,10 @@ namespace polyfem::mesh
 			edges.push_back(m.edge_attrs[t1.switch_edge(m).eid(m)]);
 			edges.push_back(m.edge_attrs[t1.switch_vertex(m).switch_edge(m).eid(m)]);
 			faces.push_back(m.face_attrs[t1.fid(m)]);
-
-			// logger().critical(m.vertex_attrs[t1.switch_edge(m).switch_vertex(m).vid(m)].rest_position);
-			// logger().critical("");
 		}
 	}
 
-	int build_bases(
+	int WildRemeshing2D::build_bases(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
 		std::vector<polyfem::basis::ElementBases> &bases,

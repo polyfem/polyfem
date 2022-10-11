@@ -123,6 +123,12 @@ namespace polyfem::mesh
 		/// Get the boundary nodes of the stored mesh
 		std::vector<int> boundary_nodes() const;
 
+		static int build_bases(
+			const Eigen::MatrixXd &V,
+			const Eigen::MatrixXi &F,
+			std::vector<polyfem::basis::ElementBases> &bases,
+			Eigen::VectorXi &vertex_to_basis);
+
 		void cache_before();
 
 		const Obstacle &obstacle;

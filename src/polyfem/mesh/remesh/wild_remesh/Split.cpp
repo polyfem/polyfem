@@ -1,5 +1,8 @@
 #include <polyfem/mesh/remesh/WildRemesh2D.hpp>
 
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/NeoHookeanElasticity.hpp>
+
 #include <wmtk/utils/ExecutorUtils.hpp>
 
 namespace polyfem::mesh
@@ -125,10 +128,57 @@ namespace polyfem::mesh
 		// 	executor.num_threads = NUM_THREADS;
 		// }
 
-		executor.priority = [](const WildRemeshing2D &m, std::string op, const Tuple &t) -> double {
-			return (m.vertex_attrs[t.vid(m)].position
-					- m.vertex_attrs[t.switch_vertex(m).vid(m)].position)
-				.squaredNorm();
+		using namespace assembler;
+		NeoHookeanElasticity neo_hookean;
+		neo_hookean.set_size(DIM);
+		// TODO: set the material parameters
+		neo_hookean.add_multimaterial(0, R"({
+			"id": 1,
+			"E": 3500,
+			"nu": 0.4,
+			"rho": 1000,
+			"type": "NeoHookean"
+		})"_json);
+
+		executor.priority = [&neo_hookean](const WildRemeshing2D &m, std::string op, const Tuple &t) -> double {
+			// NOTE: this code compute the edge length
+			// return (m.vertex_attrs[t.vid(m)].position
+			// 		- m.vertex_attrs[t.switch_vertex(m).vid(m)].position)
+			// 	.squaredNorm();
+
+			std::vector<polyfem::basis::ElementBases> bases;
+			Eigen::VectorXi vertex_to_basis;
+			Eigen::MatrixXi F;
+			{
+				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
+
+				F.resize(1, 3);
+				F << vs[0].vid(m), vs[1].vid(m), vs[2].vid(m);
+
+				Eigen::MatrixXd V(3, DIM);
+				V.row(0) = m.vertex_attrs[F(0, 0)].position;
+				V.row(1) = m.vertex_attrs[F(0, 1)].position;
+				V.row(2) = m.vertex_attrs[F(0, 2)].position;
+
+				WildRemeshing2D::build_bases(V, F, bases, vertex_to_basis);
+			}
+
+			ElementAssemblyValues vals;
+			vals.compute(
+				/*el_index=*/0, /*is_volume=*/DIM == 3, bases[0], /*gbases=*/bases[0]);
+
+			assert(MAX_QUAD_POINTS == -1 || vals.quadrature.weights.size() < MAX_QUAD_POINTS);
+			QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+
+			Eigen::VectorXd displacements(3 * DIM);
+			for (int i = 0; i < 3; i++)
+				displacements.segment<DIM>(vertex_to_basis[i] * DIM) =
+					m.vertex_attrs[F(0, i)].displacement();
+
+			const double energy = neo_hookean.compute_energy(NonLinearAssemblerData(
+				vals, /*dt=*/-1, displacements, /*displacement_prev=*/Eigen::MatrixXd(), da));
+			assert(std::isfinite(energy));
+			return energy;
 		};
 
 		executor.renew_neighbor_tuples = [](const WildRemeshing2D &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
