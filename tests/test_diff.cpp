@@ -43,7 +43,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 			],
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			},
 			"space": {
@@ -151,7 +151,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 			],
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			},
 			"space": {
@@ -290,7 +290,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				}
 			},
 			"boundary_conditions": {
@@ -418,7 +418,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLDLT"
+				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
 		"optimization": { "enabled": true },
@@ -510,7 +510,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLDLT"
+				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
 		"optimization": { "enabled": true },
@@ -642,7 +642,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLDLT"
+				"solver": "Eigen::SimplicialLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 20
@@ -757,7 +757,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 20
@@ -919,7 +919,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1083,7 +1083,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e5
@@ -1253,7 +1253,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1414,7 +1414,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 100000.0
@@ -1568,7 +1568,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e4
@@ -2221,7 +2221,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 1e5
@@ -2388,7 +2388,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 			},
 			"solver": {
 				"linear": {
-					"solver": "Eigen::PardisoLDLT"
+					"solver": "Eigen::SimplicialLDLT"
 				},
 				"contact": {
 					"barrier_stiffness": 23216604
@@ -2591,7 +2591,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLDLT"
+				"solver": "Eigen::SimplicialLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 100000
@@ -2930,7 +2930,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 		},
 		"solver": {
 			"linear": {
-				"solver": "Eigen::PardisoLDLT"
+				"solver": "Eigen::SimplicialLDLT"
 			},
 			"contact": {
 				"barrier_stiffness": 100000
