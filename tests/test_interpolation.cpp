@@ -49,21 +49,6 @@ TEST_CASE("piecewise cubic interpolation", "[interpolation]")
 	        -15,  192, -781, 1000;
 		// clang-format on
 		expected_coeffs /= 20.0;
-
-		//   -1/20
-		//    -3/2 = -30 / 20
-		//   77/20
-		//    7/10 = 14 / 20
-		//
-		//   31/20
-		// -111/10 = -222 / 20
-		//  461/20
-		// -121/10 = -242 / 20
-		//
-		//    -3/4 = -15 / 20
-		//    48/5 = 192 / 20
-		// -781/20
-		//      50 = 1000 / 20
 	}
 
 	const std::shared_ptr<Interpolation> interp = Interpolation::build(params);
