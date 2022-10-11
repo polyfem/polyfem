@@ -116,7 +116,7 @@ namespace polyfem::assembler
 			reduced_basis.col(j) /= sqrt(es.eigenvalues()(ev.cols() - Ns + j));
 
 		for (int i = 0; i < es.eigenvalues().size() - 1; i++)
-			assert(es.eigenvalues(i) <= es.eigenvalues(i+1));
+			assert(es.eigenvalues()(i) <= es.eigenvalues()(i+1));
 
 		logger().info("Reduced basis created!");
 	}
