@@ -2,10 +2,10 @@
 
 namespace polyfem::time_integrator
 {
-	void ImplicitNewmark::set_parameters(const nlohmann::json &params)
+	void ImplicitNewmark::set_parameters(const json &params)
 	{
-		m_gamma = params.at("gamma");
-		m_beta = params.at("beta");
+		beta_ = params.at("gamma");
+		gamma_ = params.at("beta");
 	}
 
 	void ImplicitNewmark::update_quantities(const Eigen::VectorXd &x)

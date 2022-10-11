@@ -162,7 +162,7 @@ namespace polyfem
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
-		/// assembler, it dispatches call to the differnt assembers based on the formulation
+		/// assembler, it dispatches call to the different assembers based on the formulation
 		assembler::AssemblerUtils assembler;
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
