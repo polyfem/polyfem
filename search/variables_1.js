@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['a_5fprevs_0',['a_prevs',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad34ead24a22cb3aaf95daacefeddf40c',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
+  ['a_5fprevs_5f_0',['a_prevs_',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa8b21a3a2ab95e537fb7c2499eefbb32',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
   ['acceleration_1',['acceleration',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a7c851855db2ea4c90b6c57e5db552a1a',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['adj_5fprepared_2',['adj_prepared',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ac3f35889cad958a2653f6e0d94c58689',1,'polyfem::mesh::NCMesh2D::adj_prepared()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a1569a6dbf46378943f40cf2ce7aab8a4',1,'polyfem::mesh::NCMesh3D::adj_prepared()']]],
   ['al_5fform_3',['al_form',['../classpolyfem_1_1solver_1_1_a_l_solver.html#ad7f880fd6eb9f69f7847008e14fc0b19',1,'polyfem::solver::ALSolver::al_form()'],['../classpolyfem_1_1_solve_data.html#a17ea2402b990cd3942b7f22a2af4e002',1,'polyfem::SolveData::al_form()']]],

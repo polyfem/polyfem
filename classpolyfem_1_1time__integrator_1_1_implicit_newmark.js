@@ -6,9 +6,9 @@ var classpolyfem_1_1time__integrator_1_1_implicit_newmark =
     [ "compute_acceleration", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c", null ],
     [ "compute_velocity", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55", null ],
     [ "gamma", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e", null ],
-    [ "set_parameters", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a08b28af11fb8a6428f7650c207a1b6c0", null ],
+    [ "set_parameters", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aaab79106504b78a273830f3a15f13b7c", null ],
     [ "update_quantities", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860", null ],
     [ "x_tilde", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7", null ],
-    [ "m_beta", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a03f8ce9b39c762ca6de896ccc246305a", null ],
-    [ "m_gamma", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a9fcdb74c52caab2e866b8b1e30948e89", null ]
+    [ "beta_", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a93779d0d4147ba0fbb0cae8e212b8437", null ],
+    [ "gamma_", "classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a77af9590b17627b1bf8b505fd14c9600", null ]
 ];
