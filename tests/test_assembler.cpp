@@ -3,6 +3,8 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 
+#include <finitediff.hpp>
+
 using namespace polyfem;
 using namespace polyfem::assembler;
 using namespace polyfem::basis;
@@ -60,5 +62,94 @@ TEST_CASE("hessian_lin", "[assembler]")
 		}
 
 		disp.setRandom();
+	}
+}
+
+TEST_CASE("multiscale_derivatives", "[assembler]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"(
+	{
+		"geometry": [
+			{
+				"mesh": "",
+				"transformation": {
+					"scale": 1
+				},
+				"volume_selection": 1,
+				"surface_selection": [
+					{
+						"id": 2,
+						"axis": "-y",
+						"position": -0.99
+					},
+					{
+						"id": 4,
+						"axis": "y",
+						"position": 0.99
+					},
+					{
+						"id": 1,
+						"axis": "-x",
+						"position": -0.99
+					},
+					{
+						"id": 3,
+						"axis": "x",
+						"position": 0.99
+					}
+				]
+			}
+		],
+		"solver": {
+			"linear": {
+				"solver": "Eigen::PardisoLDLT"
+			}
+		},
+		"boundary_conditions": {
+			"periodic_boundary": [true, true]
+		},
+		"materials": {
+			"type": "MultiscaleRB",
+			"microstructure": {},
+			"rho": 1
+		}
+	}
+	)"_json;
+	in_args["geometry"][0]["mesh"] = path + "../square.msh";
+
+	json tmp = in_args;
+	tmp["materials"]["type"] = "NeoHookean";
+	tmp["materials"]["E"] = 100;
+	tmp["materials"]["nu"] = 0.4;
+	tmp["materials"].erase("microstructure");
+	tmp["geometry"][0]["mesh"] = path + "../negative-nu.msh";
+	tmp["geometry"][0]["transformation"]["scale"] = 0.01;
+	in_args["materials"]["microstructure"] = tmp;
+
+	State state;
+	state.init_logger("", spdlog::level::info, false);
+	state.init(in_args, false);
+	state.load_mesh();
+	state.build_basis();
+
+	Eigen::MatrixXd grad;
+	Eigen::MatrixXd disp(state.n_bases * 2, 1);
+	disp.setZero();
+
+	for (int rand = 0; rand < 5; ++rand)
+	{
+		state.assembler.assemble_energy_gradient(
+			state.formulation(), false, state.n_bases, state.bases, state.geom_bases(), 
+			state.ass_vals_cache, 0, disp, disp, grad);
+
+		Eigen::VectorXd fgrad;
+		fd::finite_gradient(
+			disp, [&state](const Eigen::VectorXd &x) -> double { return state.assembler.assemble_energy(state.formulation(), false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, x, x); }, fgrad);
+
+		REQUIRE (fd::compare_gradient(grad, fgrad));
+
+		disp.setRandom();
+		disp /= 10;
 	}
 }

@@ -57,9 +57,14 @@ namespace polyfem::assembler
 	{
 	}
 
+	MultiscaleRB::~MultiscaleRB()
+	{
+		
+	}
+
 	void MultiscaleRB::create_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads)
 	{
-		state = std::make_shared<polyfem::State>(utils::get_n_threads());
+		state = std::make_shared<polyfem::State>(utils::get_n_threads(), true);
 		state->init(unit_cell_args, false, "", false);
 		state->load_mesh(false);
 		if (state->mesh == nullptr)

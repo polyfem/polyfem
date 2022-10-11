@@ -20,6 +20,7 @@ namespace polyfem::assembler
 	{
 	public:
 		MultiscaleRB();
+		~MultiscaleRB();
 
 		// energy, gradient, and hessian used in newton method
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;

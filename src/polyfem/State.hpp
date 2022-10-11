@@ -108,7 +108,7 @@ namespace polyfem
 		~State() = default;
 		/// Constructor
 		/// @param[in] max_threads max number of threads
-		State(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
+		State(const unsigned int max_threads = std::numeric_limits<unsigned int>::max(), const bool skip_thread_initialization = false);
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
