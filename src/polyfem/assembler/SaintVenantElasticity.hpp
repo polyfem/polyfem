@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MatParams.hpp"
+
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
