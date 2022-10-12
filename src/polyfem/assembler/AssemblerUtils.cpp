@@ -464,6 +464,26 @@ namespace polyfem
 			}
 		}
 
+		void AssemblerUtils::compute_stiffness_value(const std::string &assembler,
+												  const int el_id,
+												  const ElementBases &bs,
+												  const ElementBases &gbs,
+												  const Eigen::MatrixXd &local_pts,
+												  const Eigen::MatrixXd &fun,
+												  Eigen::MatrixXd &result) const
+		{
+			if (assembler == "LinearElasticity")
+				linear_elasticity_.local_assembler().compute_stiffness_tensor(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "NeoHookean")
+				neo_hookean_elasticity_.local_assembler().compute_stiffness_tensor(el_id, bs, gbs, local_pts, fun, result);
+			else
+			{
+				logger().warn("{} not found, fallback to default", assembler);
+				assert(false);
+				linear_elasticity_.local_assembler().compute_stiffness_tensor(el_id, bs, gbs, local_pts, fun, result);
+			}
+		}
+
 		void AssemblerUtils::compute_tensor_value(const std::string &assembler,
 												  const int el_id,
 												  const ElementBases &bs,

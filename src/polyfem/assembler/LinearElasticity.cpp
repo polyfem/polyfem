@@ -197,6 +197,35 @@ namespace polyfem
 			});
 		}
 
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+
+		void LinearElasticity::compute_stiffness_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+		{
+			tensor.resize(local_pts.rows(), size() * size() * size() * size());
+			assert(displacement.cols() == 1);
+
+			ElementAssemblyValues vals;
+			vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+
+			for (long p = 0; p < local_pts.rows(); ++p)
+			{
+				double lambda, mu;
+				params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+
+				for (int i = 0, idx = 0; i < size(); i++)
+				for (int j = 0; j < size(); j++)
+				for (int k = 0; k < size(); k++)
+				for (int l = 0; l < size(); l++)
+				{
+					tensor(p, idx) = mu * delta(i, k) * delta(j, l) + mu * delta(i, l) * delta(j, k) + lambda * delta(i, j) * delta(k, l);
+					idx++;
+				}
+			}
+		}
+
 		void LinearElasticity::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 		{
 			assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress) {
