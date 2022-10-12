@@ -11,6 +11,13 @@ namespace polyfem
 
 	namespace assembler
 	{
+		namespace {
+			bool delta(int i, int j)
+			{
+				return (i == j) ? true : false;
+			}
+		}
+
 		void LinearElasticity::add_multimaterial(const int index, const json &params)
 		{
 			assert(size_ == 2 || size_ == 3);
@@ -195,11 +202,6 @@ namespace polyfem
 				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 				return Eigen::MatrixXd(a);
 			});
-		}
-
-		bool delta(int i, int j)
-		{
-			return (i == j) ? true : false;
 		}
 
 		void LinearElasticity::compute_stiffness_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const

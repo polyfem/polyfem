@@ -8,6 +8,13 @@
 
 namespace polyfem::assembler
 {
+	namespace {
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+	}
+
 	NeoHookeanElasticity::NeoHookeanElasticity()
 	{
 	}
@@ -191,13 +198,8 @@ namespace polyfem::assembler
 
 		return hessian;
 	}
-
-	bool delta(int i, int j)
-	{
-		return (i == j) ? true : false;
-	}
 	
-	void NeoHookeanElasticity::compute_stiffness_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+	void NeoHookeanElasticity::compute_stiffness_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
 	{
 		tensor.resize(local_pts.rows(), size() * size() * size() * size());
 		assert(displacement.cols() == 1);
