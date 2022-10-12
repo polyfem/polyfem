@@ -379,7 +379,7 @@ TEST_CASE("neohookean_homo", "[homogenization]")
     in_args["geometry"][0]["mesh"] = path + "/../cross2d.msh";
 
 	State state1;
-	state1.init_logger("", spdlog::level::level_enum::debug, false);
+	state1.init_logger("", spdlog::level::level_enum::err, false);
 	state1.init(in_args, false);
 
 	state1.load_mesh();

@@ -112,6 +112,9 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 		"materials": {
 			"type": "MultiscaleRB",
 			"microstructure": {},
+			"det_samples": [1, 1.02, 1.04],
+			"amp_samples": [0.05, 0.1],
+			"n_dir_samples": 3,
 			"rho": 1
 		}
 	}

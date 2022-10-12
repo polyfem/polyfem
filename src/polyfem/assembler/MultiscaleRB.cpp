@@ -126,15 +126,14 @@ namespace polyfem::assembler
 		logger().info("Reduced basis created!");
 	}
 
-	void MultiscaleRB::projection(const Eigen::MatrixXd &F, Eigen::MatrixXd &x) const
+	void MultiscaleRB::projection(const Eigen::MatrixXd &F, Eigen::VectorXd &xi) const
 	{
 		const int ndof = reduced_basis.cols();
 
-		Eigen::VectorXd xi;
 		xi.setZero(ndof);
 
 		Eigen::MatrixXd x0 = state->generate_linear_field(F);
-		x = x0;
+		Eigen::MatrixXd x = x0;
 
 		Eigen::MatrixXd gradv(ndof, 1), grad;
 		utils::SpareMatrixCache mat_cache_;
@@ -200,7 +199,11 @@ namespace polyfem::assembler
 			logger().error("Negative Deformation Gradient!");
 
 		Eigen::MatrixXd x;
-		projection(Ubar, x);
+		{
+			Eigen::VectorXd xi;
+			projection(Ubar, xi);
+			x = state->generate_linear_field(Ubar) + reduced_basis * xi;
+		}
 
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
@@ -256,18 +259,11 @@ namespace polyfem::assembler
 	{
 		const int unit_sphere_dim = (size() == 2) ? 2 : 5;
 		Eigen::MatrixXd directions;
-		sample_on_sphere(directions, unit_sphere_dim, 2);
-		const int Ndir = directions.rows();
-
-		const int Ndet = 2;
-		Eigen::VectorXd Js(Ndet);
-		for (int m = 0; m < Ndet; m++)
-			Js(m) = 1.0 + 0.02 * m / (double)Ndet;
+		sample_on_sphere(directions, unit_sphere_dim, n_sample_dir);
 		
-		const int Namp = 2;
-		Eigen::VectorXd ts(Namp);
-		for (int p = 0; p < Namp; p++)
-			ts(p) = 0.05 * (p + 1);
+		const int Ndir = directions.rows();
+		const int Ndet = sample_det.size();
+		const int Namp = sample_amp.size();
 		
 		def_grads.clear();
 		def_grads.resize(Ndet * Namp * Ndir);
@@ -286,11 +282,11 @@ namespace polyfem::assembler
 			
 			for (int p = 0; p < Namp; p++)
 			{
-				Eigen::MatrixXd tmp2 = (ts(p) * tmp1).exp();
+				Eigen::MatrixXd tmp2 = (sample_amp(p) * tmp1).exp();
 				for (int m = 0; m < Ndet; m++)
 				{	
 					// equation (45)
-					def_grads[idx] = std::pow(Js(m), 1./3) * tmp2;
+					def_grads[idx] = std::pow(sample_det(m), 1./3) * tmp2;
 					idx++;
 				}
 			}
@@ -304,6 +300,13 @@ namespace polyfem::assembler
 		if (params.contains("microstructure"))
 		{
 			unit_cell_args = params["microstructure"];
+
+			assert(params["det_samples"].is_array());
+			assert(params["amp_samples"].is_array());
+
+			sample_det = params["det_samples"];
+			sample_amp = params["amp_samples"];
+			n_sample_dir = params["n_dir_samples"];
 
 			std::vector<Eigen::MatrixXd> def_grads;
 			sample_def_grads(def_grads);
@@ -438,12 +441,12 @@ namespace polyfem::assembler
 			// hessian_temp(i + j * size(), k + l * size());
 
 			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
-			for (size_t i = 0; i < local_disp.rows(); ++i)
+			Eigen::MatrixXd temp;
+			for (size_t j = 0; j < local_disp.cols(); ++j)
 			{
-				for (size_t j = 0; j < local_disp.cols(); ++j)
+				temp.setZero(size(), size());
+				for (size_t i = 0; i < local_disp.rows(); ++i)
 				{
-					Eigen::MatrixXd temp;
-					temp.setZero(size(), size());
 					temp.row(j) = grad.row(i);
 					temp = temp * jac_it;
 					Eigen::VectorXd temp_flattened(Eigen::Map<Eigen::VectorXd>(temp.data(), temp.size()));
