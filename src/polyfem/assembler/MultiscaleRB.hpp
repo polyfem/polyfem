@@ -65,10 +65,15 @@ namespace polyfem::assembler
 		void sample_def_grads(std::vector<Eigen::MatrixXd> &def_grads) const;
 		void create_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads);
 		void projection(const Eigen::MatrixXd &F, Eigen::VectorXd &xi) const;
+		
 		void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
+		double homogenize_energy(const Eigen::MatrixXd &x) const;
+		void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;
+		void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const;
 
 		Eigen::VectorXd sample_det;
 		Eigen::VectorXd sample_amp;
 		int n_sample_dir = 5;
+		int n_reduced_basis = 5;
 	};
 } // namespace polyfem::assembler

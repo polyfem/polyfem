@@ -5,6 +5,10 @@
 
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
+#include <polyfem/utils/MatrixUtils.hpp>
+#include <finitediff.hpp>
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem
 {
 	using namespace basis;
@@ -225,6 +229,27 @@ namespace polyfem
 					tensor(p, idx) = mu * delta(i, k) * delta(j, l) + mu * delta(i, l) * delta(j, k) + lambda * delta(i, j) * delta(k, l);
 					idx++;
 				}
+
+				// {
+				// 	Eigen::MatrixXd hess = utils::unflatten(tensor.row(p), size()*size());
+				// 	Eigen::MatrixXd fhess;
+				// 	Eigen::VectorXd x0 = utils::flatten(Eigen::MatrixXd::Identity(size(), size()));
+				// 	fd::finite_jacobian(
+				// 		x0, [this, lambda, mu](const Eigen::VectorXd &x1) -> Eigen::VectorXd 
+				// 		{ 
+				// 			Eigen::MatrixXd F = utils::unflatten(x1, this->size());
+				// 			Eigen::MatrixXd strain = (F + F.transpose()) / 2;
+				// 			Eigen::MatrixXd stress_tensor = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(this->size(), this->size());
+				// 			return utils::flatten(stress_tensor);
+				// 		}, fhess);
+
+				// 	if (!fd::compare_hessian(hess, fhess))
+				// 	{
+				// 		std::cout << "Hessian: " << hess << std::endl;
+				// 		std::cout << "Finite hessian: " << fhess << std::endl;
+				// 		log_and_throw_error("Hessian in LinearElasticity mismatch");
+				// 	}
+				// }
 			}
 		}
 

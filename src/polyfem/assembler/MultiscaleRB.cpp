@@ -10,6 +10,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <unsupported/Eigen/MatrixFunctions>
 #include <finitediff.hpp>
@@ -115,7 +116,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd ev = es.eigenvectors();
 
 		// Setup reduced basis
-		const int Ns = 5;
+		const int Ns = n_reduced_basis;
 		reduced_basis = sols * ev.rightCols(Ns);
 		for (int j = 0; j < Ns; j++)
 			reduced_basis.col(j) /= sqrt(es.eigenvalues()(ev.cols() - Ns + j));
@@ -142,6 +143,7 @@ namespace polyfem::assembler
 
 		const double eps = 1e-8;
 		const int max_iter = 100;
+		const int min_iter = 10;
 
 		state->assembler.assemble_energy_gradient(
 			state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
@@ -149,7 +151,7 @@ namespace polyfem::assembler
 		gradv = reduced_basis.transpose() * grad;
 
 		int iter = 0;
-		while (gradv.norm() > eps && iter++ < max_iter) {
+		while ((gradv.norm() > eps || iter < min_iter) && iter < max_iter) {
 			// evaluate hessian
 			state->assembler.assemble_energy_hessian(
 				state->formulation(), size() == 3, state->n_bases, false, state->bases,
@@ -182,10 +184,119 @@ namespace polyfem::assembler
 				state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
 				state->ass_vals_cache, 0, x, x, grad);
 			gradv = reduced_basis.transpose() * grad;
+			iter++;
 		}
 
 		if (gradv.norm() > eps)
 			logger().error("Newton failed to converge on finding RB coefficients!");
+	}
+
+	double MultiscaleRB::homogenize_energy(const Eigen::MatrixXd &x) const
+	{
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		const double volume = (max - min).prod();
+
+		const auto &bases = state->bases;
+		const auto &gbases = state->geom_bases();
+
+		return state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / volume;
+	}
+	void MultiscaleRB::homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const
+	{
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		const double volume = (max - min).prod();
+
+		const auto &bases = state->bases;
+		const auto &gbases = state->geom_bases();
+
+		stress.setZero(size(), size());
+		Eigen::MatrixXd stresses, avg_stress, tmp;
+
+		for (int e = 0; e < bases.size(); ++e)
+		{
+			assembler::ElementAssemblyValues vals;
+			state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
+
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+			state->assembler.compute_tensor_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stresses);
+			tmp = stresses.transpose() * da;
+			avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
+			stress += avg_stress;
+		}
+	}
+	void MultiscaleRB::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
+	{
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		const double volume = (max - min).prod();
+
+		const auto &bases = state->bases;
+		const auto &gbases = state->geom_bases();
+
+		Eigen::MatrixXd avg_stiffness, term2;
+		avg_stiffness.setZero(size()*size(), size()*size());
+		term2.setZero(size()*size(), size()*size());
+
+		Eigen::MatrixXd stiffnesses, tmp;
+		Eigen::MatrixXd u, grad_u;
+		Eigen::MatrixXd CB;
+		CB.setZero(size()*size(), n_reduced_basis);
+		for (int e = 0; e < bases.size(); ++e)
+		{
+			assembler::ElementAssemblyValues vals;
+			state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
+
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+			state->assembler.compute_stiffness_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stiffnesses);
+			// tmp = stiffnesses.transpose() * da;
+			// for (int i = 0, idx = 0; i < size(); i++)
+			// for (int j = 0; j < size(); j++)
+			// for (int k = 0; k < size(); k++)
+			// for (int l = 0; l < size(); l++)
+			// {
+			// 	avg_stiffness(i * size() + j, k * size() + l) += tmp(idx);
+			// 	idx++;
+			// }
+			avg_stiffness += utils::unflatten(stiffnesses.transpose() * da, size()*size());
+
+			for (int i = 0; i < n_reduced_basis; i++)
+			{
+				io::Evaluator::interpolate_at_local_vals(e, size(), size(), vals, reduced_basis.col(i), u, grad_u);
+
+				for (int a = 0, idx = 0; a < size(); a++)
+				for (int b = 0; b < size(); b++)
+				for (int k = 0; k < size(); k++)
+				for (int l = 0; l < size(); l++)
+				{
+					CB(a * size() + b, i) += (stiffnesses.col(idx).array() * grad_u.col(k * size() + l).array() * da.array()).sum();
+					idx++;
+				}
+			}
+		}
+		avg_stiffness /= volume;
+
+		// compute term2 given CB
+		{
+			Eigen::MatrixXd Dinv;
+			{
+				StiffnessMatrix hessian;
+				utils::SpareMatrixCache mat_cache_;
+				state->assembler.assemble_energy_hessian(
+					state->formulation(), size() == 3, state->n_bases, false, state->bases,
+					state->geom_bases(), state->ass_vals_cache, 0, x, x, mat_cache_, hessian);
+				Dinv = (reduced_basis.transpose() * hessian * reduced_basis).inverse();
+			}
+
+			term2 = CB * Dinv * CB.transpose() / volume * volume;
+		}
+
+		stiffness = avg_stiffness - term2;
 	}
 
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
@@ -194,7 +305,7 @@ namespace polyfem::assembler
 		Eigen::JacobiSVD<Eigen::MatrixXd> svd; // def_grad == svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
 		svd.compute(def_grad, Eigen::ComputeThinU | Eigen::ComputeThinV);
 		Eigen::MatrixXd R = svd.matrixU() * svd.matrixV().transpose();
-		Eigen::MatrixXd Ubar = svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
+		Eigen::MatrixXd Ubar = R.transpose() * def_grad; // svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
 		if (svd.singularValues().minCoeff() <= 0)
 			logger().error("Negative Deformation Gradient!");
 
@@ -205,66 +316,24 @@ namespace polyfem::assembler
 			x = state->generate_linear_field(Ubar) + reduced_basis * xi;
 		}
 
-		const auto &bases = state->bases;
-		const auto &gbases = state->geom_bases();
-		const int n_elements = int(bases.size());
-
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
-
 		// effective energy = average energy over unit cell
-		energy = state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / volume;
+		energy = homogenize_energy(x);
 
 		// effective stress = average stress over unit cell
-		{
-			stress.setZero(size(), size());
-			Eigen::MatrixXd stresses, avg_stress, tmp;
+		Eigen::MatrixXd stress_no_rotation;
+		homogenize_stress(x, stress_no_rotation);
+		stress = R * stress_no_rotation;
 
-			for (int e = 0; e < n_elements; ++e)
-			{
-				assembler::ElementAssemblyValues vals;
-				state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
-
-				// io::Evaluator::interpolate_at_local_vals(e, size(), size(), vals, x, u, grad_u);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-				state->assembler.compute_tensor_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stresses);
-				tmp = stresses.transpose() * da;
-				avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
-				stress += avg_stress;
-			}
-
-			stress = R * stress / volume;
-		}
-
-		// \bar{C}^{RB} = < C^{RB} > - \sum_{i,j} D^{-1}_{ij} < C^{RB} \cdot B^{(i)} > \cross < B^{(j)} \cdot C^{RB} >
+		// \bar{C}^{RB} = < C^{RB} > - \sum_{i,j} (D^{-1})_{ij} < C^{RB} \cdot B^{(i)} > \cross < B^{(j)} \cdot C^{RB} >
 		// D_{ij} = < B^{(i)} \cdot C \cdot B^{(j)} >
+		Eigen::MatrixXd stiffness_no_rotation;
+		homogenize_stiffness(x, stiffness_no_rotation);
+		stiffness.setZero(size()*size(), size()*size());
+		for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
+		for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
+		for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
 		{
-			stiffness.setZero(size()*size(), size()*size());
-			Eigen::MatrixXd stiffness_no_rotation = stiffness;
-
-			Eigen::MatrixXd stiffnesses;
-			for (int e = 0; e < n_elements; ++e)
-			{
-				assembler::ElementAssemblyValues vals;
-				state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
-
-				// io::Evaluator::interpolate_at_local_vals(e, size(), size(), vals, x, u, grad_u);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
-
-				state->assembler.compute_stiffness_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stiffnesses);
-				
-			}
-
-			for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
-			for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
-			for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
-				stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
+			stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
 		}
 	}
 
@@ -320,6 +389,7 @@ namespace polyfem::assembler
 			sample_det = params["det_samples"];
 			sample_amp = params["amp_samples"];
 			n_sample_dir = params["n_dir_samples"];
+			n_reduced_basis = params["n_reduced_basis"];
 
 			std::vector<Eigen::MatrixXd> def_grads;
 			sample_def_grads(def_grads);
@@ -387,19 +457,18 @@ namespace polyfem::assembler
 
 			// {
 			// 	Eigen::VectorXd fgrad, grad;
-			// 	Eigen::VectorXd x0 = Eigen::Map<Eigen::MatrixXd>(def_grad.data(), def_grad.size(), 1);
+			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
 			// 	fd::finite_gradient(
 			// 		x0, [this](const Eigen::VectorXd &x) -> double 
 			// 		{ 
-			// 			Eigen::MatrixXd F = x;
-			// 			F = Eigen::Map<Eigen::MatrixXd>(F.data(), state->mesh->dimension(), state->mesh->dimension());
+			// 			Eigen::MatrixXd F = utils::unflatten(x, this->size());
 			// 			double val;
 			// 			Eigen::MatrixXd stress, stiffness;
 			// 			this->homogenization(F, val, stress, stiffness);
-			// 			return val; 
+			// 			return val;
 			// 		}, fgrad);
 
-			// 	grad = Eigen::Map<Eigen::MatrixXd>(stress_tensor.data(), stress_tensor.size(), 1);
+			// 	grad = utils::flatten(stress_tensor);
 			// 	if (!fd::compare_gradient(grad, fgrad))
 			// 	{
 			// 		std::cout << "Gradient: " << grad.transpose() << std::endl;
@@ -452,6 +521,33 @@ namespace polyfem::assembler
 			double energy = 0;
 			homogenization(def_grad, energy, stress_tensor, hessian_temp);
 			// hessian_temp(i + j * size(), k + l * size());
+
+			{
+				Eigen::MatrixXd fhess;
+				Eigen::VectorXd x0 = utils::flatten(def_grad);
+				fd::finite_jacobian(
+					x0,
+					[this](const Eigen::VectorXd &x) -> Eigen::VectorXd {
+						Eigen::MatrixXd F = utils::unflatten(x, this->size());
+						double val;
+						Eigen::MatrixXd stress, stiffness;
+						this->homogenization(F, val, stress, stiffness);
+						return utils::flatten(stress);
+					},
+					fhess);
+
+				if (!fd::compare_hessian(hessian_temp, fhess))
+				{
+					// std::cout << "Hessian: " << stiffness_tensor << std::endl;
+					// std::cout << "Finite hessian: " << fhess << std::endl;
+					logger().error("Hessian mismatch!");
+					hessian_temp = fhess;
+				}
+				else
+				{
+					logger().warn("Hessian match!");
+				}
+			}
 
 			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
 			Eigen::MatrixXd temp;

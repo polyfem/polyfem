@@ -6,6 +6,9 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/Timer.h>
 
+#include <finitediff.hpp>
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem::assembler
 {
 	namespace {
@@ -227,6 +230,28 @@ namespace polyfem::assembler
 				tensor(p, idx) = mu * delta(i, k) * delta(j, l) + (mu - lambda * std::log(J)) * FmT(i, l) * FmT(k, j) + lambda * FmT(k, l) * FmT(i, j);
 				idx++;
 			}
+
+			// {
+			// 	Eigen::MatrixXd hess = utils::unflatten(tensor.row(p), size()*size());
+			// 	Eigen::MatrixXd fhess;
+			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
+			// 	fd::finite_jacobian(
+			// 		x0, [this, lambda, mu](const Eigen::VectorXd &x1) -> Eigen::VectorXd 
+			// 		{ 
+			// 			Eigen::MatrixXd def_grad = utils::unflatten(x1, this->size());
+			// 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			// 			const double J = def_grad.determinant();
+			// 			Eigen::MatrixXd stress_tensor = mu * (def_grad - FmT) + lambda * std::log(J) * FmT;
+			// 			return utils::flatten(stress_tensor);
+			// 		}, fhess);
+
+			// 	if (!fd::compare_hessian(hess, fhess))
+			// 	{
+			// 		std::cout << "Hessian: " << hess << std::endl;
+			// 		std::cout << "Finite hessian: " << fhess << std::endl;
+			// 		log_and_throw_error("Hessian in Neohookean mismatch");
+			// 	}
+			// }
 		}
 	}
 

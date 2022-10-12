@@ -112,9 +112,10 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 		"materials": {
 			"type": "MultiscaleRB",
 			"microstructure": {},
-			"det_samples": [1, 1.02, 1.04],
+			"det_samples": [1, 1.02],
 			"amp_samples": [0.05, 0.1],
-			"n_dir_samples": 3,
+			"n_dir_samples": 2,
+			"n_reduced_basis": 3,
 			"rho": 1
 		}
 	}
@@ -127,11 +128,11 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 	tmp["materials"]["nu"] = 0.4;
 	tmp["materials"].erase("microstructure");
 	tmp["geometry"][0]["mesh"] = path + "../negative-nu.msh";
-	tmp["geometry"][0]["transformation"]["scale"] = 0.01;
+	tmp["geometry"][0]["transformation"]["scale"] = 0.2;
 	in_args["materials"]["microstructure"] = tmp;
 
 	State state;
-	state.init_logger("", spdlog::level::err, false);
+	state.init_logger("", spdlog::level::warn, false);
 	state.init(in_args, false);
 	state.load_mesh();
 	state.build_basis();
@@ -140,8 +141,13 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 	Eigen::MatrixXd disp(state.n_bases * 2, 1);
 	disp.setZero();
 
+	utils::SpareMatrixCache mat_cache;
+
 	for (int rand = 0; rand < 5; ++rand)
 	{
+		disp.setRandom();
+		disp /= 5;
+
 		state.assembler.assemble_energy_gradient(
 			state.formulation(), false, state.n_bases, state.bases, state.geom_bases(), 
 			state.ass_vals_cache, 0, disp, disp, grad);
@@ -152,7 +158,20 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 
 		REQUIRE (fd::compare_gradient(grad, fgrad));
 
-		disp.setRandom();
-		disp /= 10;
+		StiffnessMatrix hessian;
+		state.assembler.assemble_energy_hessian(state.formulation(), false, state.n_bases, false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, disp, disp, mat_cache, hessian);
+		Eigen::MatrixXd hess = hessian;
+
+		Eigen::MatrixXd fhess;
+		fd::finite_jacobian(
+			disp,
+			[&state](const Eigen::VectorXd &x) -> Eigen::VectorXd {
+				Eigen::MatrixXd grad;
+				state.assembler.assemble_energy_gradient(state.formulation(), false, state.n_bases, state.bases, state.geom_bases(), state.ass_vals_cache, 0, x, x, grad);
+				return grad;
+			},
+			fhess);
+
+		REQUIRE (fd::compare_jacobian(hess, fhess));
 	}
 }

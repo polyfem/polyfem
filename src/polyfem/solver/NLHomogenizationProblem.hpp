@@ -180,7 +180,7 @@ namespace polyfem
 			Eigen::MatrixXd _current_rhs;
 
 			const int full_size, reduced_size;
-			bool rhs_computed;
+			bool rhs_computed = false;
 			bool project_to_psd;
 
 			Eigen::MatrixXd test_strain_;
