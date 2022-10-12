@@ -163,6 +163,14 @@ namespace polyfem
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
 									  Eigen::MatrixXd &result) const;
+			// computes tensor, assembler is the name of the formulation
+			void compute_stiffness_value(const std::string &assembler,
+										const int el_id,
+										const basis::ElementBases &bs,
+										const basis::ElementBases &gbs,
+										const Eigen::MatrixXd &local_pts,
+										const Eigen::MatrixXd &fun,
+										Eigen::MatrixXd &result) const;
 
 			// for errors, uses the rhs methods inside local assemblers
 			VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;

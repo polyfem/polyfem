@@ -246,7 +246,20 @@ namespace polyfem::assembler
 			stiffness.setZero(size()*size(), size()*size());
 			Eigen::MatrixXd stiffness_no_rotation = stiffness;
 
+			Eigen::MatrixXd stiffnesses;
+			for (int e = 0; e < n_elements; ++e)
+			{
+				assembler::ElementAssemblyValues vals;
+				state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
 
+				// io::Evaluator::interpolate_at_local_vals(e, size(), size(), vals, x, u, grad_u);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+				state->assembler.compute_stiffness_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stiffnesses);
+				
+			}
 
 			for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
 			for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
