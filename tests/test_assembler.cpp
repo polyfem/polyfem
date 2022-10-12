@@ -128,7 +128,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 	in_args["materials"]["microstructure"] = tmp;
 
 	State state;
-	state.init_logger("", spdlog::level::info, false);
+	state.init_logger("", spdlog::level::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
 	state.build_basis();
