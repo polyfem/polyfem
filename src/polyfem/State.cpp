@@ -347,15 +347,32 @@ namespace polyfem
 					current = tmp;
 				else if (current != tmp)
 				{
-					if (current == "LinearElasticity" || current == "NeoHookean" || current == "MultiModels")
+					if (
+						current == "LinearElasticity" || //
+						current == "NeoHookean" ||       //
+						current == "SaintVenant" ||
+						// current == "HookeLinearElasticity" ||
+						current == "MooneyRivlin" || //
+						current == "Ogden" ||        //
+						current == "MultiModels")
 					{
-						if (tmp == "LinearElasticity" || tmp == "NeoHookean")
+						if (tmp == "LinearElasticity" || //
+							tmp == "NeoHookean" ||       //
+							tmp == "SaintVenant" ||
+							// tmp == "HookeLinearElasticity" ||
+							tmp == "MooneyRivlin" || //
+							tmp == "Ogden")
 							current = "MultiModels";
 						else
 						{
 							logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
 							throw "invalid input";
 						}
+					}
+					else
+					{
+						logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
+						throw "invalid input";
 					}
 				}
 			}
