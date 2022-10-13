@@ -18,7 +18,7 @@
 #include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
 #include "ViscousDamping.hpp"
-// #include "OgdenElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include "Stokes.hpp"
 #include "NavierStokes.hpp"
@@ -201,7 +201,7 @@ namespace polyfem
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 			NLAssembler<GenericElastic<MooneyRivlinElasticity>> mooney_rivlin_elasticity_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
-			// NLAssembler<GenericElastic<OgdenElasticity>> ogden_elasticity_;
+			NLAssembler<GenericElastic<OgdenElasticity>> ogden_elasticity_;
 
 			NLAssembler<ViscousDamping> damping_;
 

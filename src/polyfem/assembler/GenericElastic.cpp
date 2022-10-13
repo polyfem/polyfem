@@ -1,5 +1,7 @@
 #include "GenericElastic.hpp"
+
 #include "MooneyRivlinElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include <polyfem/basis/Basis.hpp>
 
@@ -125,4 +127,5 @@ namespace polyfem::assembler
 	}
 
 	template class GenericElastic<MooneyRivlinElasticity>;
+	template class GenericElastic<OgdenElasticity>;
 } // namespace polyfem::assembler

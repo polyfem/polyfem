@@ -30,8 +30,8 @@ set(SOURCES
 	MultiModel.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
-	# OgdenElasticity.cpp
-	# OgdenElasticity.hpp
+	OgdenElasticity.cpp
+	OgdenElasticity.hpp
 	RhsAssembler.cpp
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp

@@ -34,7 +34,7 @@ namespace polyfem
 			{"NeoHookean",                     {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"MoooneyRivlin",                  {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"MultiModels",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
-			// {"Ogden",                          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true, /*is_linear=*/false}},
+			{"Ogden",                          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true, /*is_linear=*/false}},
 			{"Stokes",                         {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/true}},
 			{"NavierStokes",                   {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/false}},
 			{"OperatorSplitting",              {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/false}},
@@ -135,8 +135,8 @@ namespace polyfem
 				return;
 			// else if (assembler == "NavierStokes")
 			// return;
-			// else if(assembler == "Ogden")
-			//	return;
+			else if (assembler == "Ogden")
+				return;
 			else
 			{
 				logger().warn("{} not found, fallback to default", assembler);
@@ -233,8 +233,8 @@ namespace polyfem
 			else if (assembler == "Damping")
 				return damping_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 
-			// else if(assembler == "Ogden")
-			//	return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+			else if (assembler == "Ogden")
+				return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else if (assembler == "LinearElasticity")
 				return linear_elasticity_energy_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else
@@ -266,8 +266,8 @@ namespace polyfem
 				navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			// else if(assembler == "Ogden")
-			//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			else if (assembler == "Ogden")
+				ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else
 				return;
 		}
@@ -302,8 +302,8 @@ namespace polyfem
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 
-			// else if(assembler == "Ogden")
-			//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			else if (assembler == "Ogden")
+				ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else
 				return;
 		}
@@ -333,7 +333,7 @@ namespace polyfem
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			// else if(assembler == "Ogden")
-			//	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			// 	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 				stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
@@ -376,7 +376,7 @@ namespace polyfem
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			// else if(assembler == "Ogden")
-			//	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			// 	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting") // WARNING stokes and NS dont have el_id
 				stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
@@ -517,7 +517,7 @@ namespace polyfem
 			neo_hookean_elasticity_.local_assembler().set_size(dim);
 			mooney_rivlin_elasticity_.local_assembler().set_size(dim);
 			multi_models_elasticity_.local_assembler().set_size(dim);
-			// ogden_elasticity_.local_assembler().set_size(dim);
+			ogden_elasticity_.local_assembler().set_size(dim);
 
 			damping_.local_assembler().set_size(dim);
 
@@ -557,7 +557,7 @@ namespace polyfem
 			neo_hookean_elasticity_.local_assembler().add_multimaterial(index, params);
 			mooney_rivlin_elasticity_.local_assembler().add_multimaterial(index, params);
 			multi_models_elasticity_.local_assembler().add_multimaterial(index, params);
-			// ogden_elasticity_.local_assembler().add_multimaterial(index, params);
+			ogden_elasticity_.local_assembler().add_multimaterial(index, params);
 
 			damping_.local_assembler().add_multimaterial(index, params);
 

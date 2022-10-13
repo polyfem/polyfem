@@ -13,7 +13,7 @@
 #include "GenericElastic.hpp"
 #include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
-// #include "OgdenElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include "ViscousDamping.hpp"
 
@@ -688,7 +688,7 @@ namespace polyfem::assembler
 	template class NLAssembler<NeoHookeanElasticity>;
 	template class NLAssembler<GenericElastic<MooneyRivlinElasticity>>;
 	template class NLAssembler<MultiModel>;
-	// template class NLAssembler<GenericElastic<OgdenElasticity>>;
+	template class NLAssembler<GenericElastic<OgdenElasticity>>;
 
 	template class NLAssembler<ViscousDamping>;
 
