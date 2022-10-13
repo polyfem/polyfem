@@ -9,6 +9,7 @@
 #include <Eigen/Dense>
 
 #include <functional>
+#include <iostream>
 #include <vector>
 
 // non linear MooneyRivlin material model
@@ -40,8 +41,12 @@ namespace polyfem::assembler
 			const double c2 = c2_(p, t, el_id);
 			const double k = k_(p, t, el_id);
 
-			const T log_det_j = log(polyfem::utils::determinant(disp_grad));
-			const T val = c1 * ((disp_grad.transpose() * disp_grad).trace() - size) + c2 * ((disp_grad.transpose() * disp_grad * disp_grad.transpose() * disp_grad).trace() - size) + k / 2 * (log_det_j * log_det_j);
+			auto def_grad = disp_grad;
+			for (int d = 0; d < size; ++d)
+				def_grad(d, d) += T(1);
+
+			const T log_det_j = log(polyfem::utils::determinant(def_grad));
+			const T val = c1 * ((def_grad.transpose() * def_grad).trace() - size) + c2 * ((def_grad.transpose() * def_grad * def_grad.transpose() * def_grad).trace() - size) + k / 2 * (log_det_j * log_det_j);
 
 			return val;
 		}

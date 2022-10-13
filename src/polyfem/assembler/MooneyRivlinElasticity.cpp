@@ -30,9 +30,13 @@ namespace polyfem::assembler
 		const double c2 = c2_(p, t, el_id);
 		const double k = k_(p, t, el_id);
 
-		const Eigen::MatrixXd FmT = displacement_grad.inverse().transpose();
+		auto def_grad = disp_grad;
+		for (int d = 0; d < stress_tensor.rows(); ++d)
+			def_grad(d, d) += 1;
+
+		const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 
 		// stress = 2*c1*F + 4*c2*FF^{T}F + k*lnJ*F^{-T}
-		stress_tensor = 2 * c1 * displacement_grad + 4 * c2 * displacement_grad * displacement_grad.transpose() * displacement_grad + k * std::log(displacement_grad.determinant()) * FmT;
+		stress_tensor = 2 * c1 * def_grad + 4 * c2 * def_grad * def_grad.transpose() * def_grad + k * std::log(def_grad.determinant()) * FmT;
 	}
 } // namespace polyfem::assembler
