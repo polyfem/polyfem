@@ -921,7 +921,11 @@ namespace polyfem
 				periodic_dim.push_back(r);
 			while (periodic_dim.size() < dim)
 				periodic_dim.push_back(false);
-			
+
+			RowVectorNd min, max;
+			mesh->bounding_box(min, max);
+			const double bbox_size = (max - min).maxCoeff();
+
 			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
 
 			Eigen::VectorXi dependent_map(n_bases);
@@ -970,7 +974,7 @@ namespace polyfem
 					{
 						RowVectorNd projected_diff = mesh_nodes->node_position(j) - mesh_nodes->node_position(i);
 						projected_diff(d) = 0;
-						if (projected_diff.norm() < 1e-6)
+						if (projected_diff.norm() < 1e-6 * bbox_size)
 						{
 							dependent_map(i) = j;
 							found_target = true;

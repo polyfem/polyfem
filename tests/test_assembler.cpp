@@ -65,6 +65,15 @@ TEST_CASE("hessian_lin", "[assembler]")
 	}
 }
 
+Eigen::VectorXd transform(const Eigen::VectorXd &p)
+{
+	Eigen::Matrix2d A;
+	A << 1.2, 0.3,
+	     0.2, 1.2;
+
+	return A*p;
+}
+
 TEST_CASE("multiscale_derivatives", "[assembler]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
@@ -77,28 +86,9 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 					"scale": 1
 				},
 				"volume_selection": 1,
-				"surface_selection": [
-					{
-						"id": 2,
-						"axis": "-y",
-						"position": -0.99
-					},
-					{
-						"id": 4,
-						"axis": "y",
-						"position": 0.99
-					},
-					{
-						"id": 1,
-						"axis": "-x",
-						"position": -0.99
-					},
-					{
-						"id": 3,
-						"axis": "x",
-						"position": 0.99
-					}
-				]
+				"surface_selection": {
+					"threshold": 1e-7
+				}
 			}
 		],
 		"solver": {
@@ -107,32 +97,64 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 			}
 		},
 		"boundary_conditions": {
-			"periodic_boundary": [true, true]
+			"dirichlet_boundary": [
+				{
+					"id": 1,
+					"value": [0, 0]
+				}
+			]
 		},
 		"materials": {
 			"type": "MultiscaleRB",
-			"microstructure": {},
-			"det_samples": [1, 1.02],
-			"amp_samples": [0.05, 0.1],
-			"n_dir_samples": 2,
-			"n_reduced_basis": 3,
+			"microstructure": 
+			{
+				"geometry": [
+					{
+						"mesh": "negative-nu.msh",
+						"n_refs": 0,
+						"transformation": {
+							"scale": 1e-3
+						},
+						"surface_selection": {
+							"threshold": 1e-8
+						}
+					}
+				],
+				"space": {
+					"discr_order": 1
+				},
+				"solver": {
+					"nonlinear": {
+						"max_step_size": 1,
+						"grad_norm": 1e-10,
+						"f_delta": 1e-12
+					},
+					"linear": {
+						"solver": "Eigen::SimplicialLDLT"
+					}
+				},
+				"boundary_conditions": {
+					"periodic_boundary": [true, true]
+				},
+				"materials": {
+					"type": "NeoHookean",
+					"E": 100,
+					"nu": 0.4
+				}
+			},
+			"det_samples": [1, 1.05, 1.1],
+			"amp_samples": [0.05, 0.1, 0.15],
+			"n_dir_samples": 4,
+			"n_reduced_basis": 5,
 			"rho": 1
 		}
 	}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "../square.msh";
-
-	json tmp = in_args;
-	tmp["materials"]["type"] = "NeoHookean";
-	tmp["materials"]["E"] = 100;
-	tmp["materials"]["nu"] = 0.4;
-	tmp["materials"].erase("microstructure");
-	tmp["geometry"][0]["mesh"] = path + "../negative-nu.msh";
-	tmp["geometry"][0]["transformation"]["scale"] = 0.2;
-	in_args["materials"]["microstructure"] = tmp;
+	in_args["materials"]["microstructure"]["geometry"][0]["mesh"] = path + "../negative-nu.msh";
 
 	State state;
-	state.init_logger("", spdlog::level::warn, false);
+	state.init_logger("", spdlog::level::err, false);
 	state.init(in_args, false);
 	state.load_mesh();
 	state.build_basis();
@@ -143,10 +165,13 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 
 	utils::SpareMatrixCache mat_cache;
 
-	for (int rand = 0; rand < 5; ++rand)
+	// for (int rand = 0; rand < 5; ++rand)
 	{
-		disp.setRandom();
-		disp /= 5;
+		for (int p = 0; p < state.n_bases; p++)
+		{
+			RowVectorNd point = state.mesh_nodes->node_position(p);
+			disp.block(p * 2, 0, 2, 1) = transform(point.transpose()) - point.transpose();
+		}
 
 		state.assembler.assemble_energy_gradient(
 			state.formulation(), false, state.n_bases, state.bases, state.geom_bases(), 

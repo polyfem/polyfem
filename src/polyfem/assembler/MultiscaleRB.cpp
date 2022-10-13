@@ -84,15 +84,35 @@ namespace polyfem::assembler
 			{
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
-				sols.col(idx) = state->solve_homogenized_field(grad) + state->generate_linear_field(grad);
+				sols.col(idx) = state->solve_homogenized_field(grad);
 			}
 		});
+
+		for (int i = 0; i < sols.cols(); i++)
+		{
+			state->sol = sols.col(i);
+			state->out_geom.export_data(
+				*state,
+				!state->args["time"].is_null(),
+				0, 0,
+				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+				"step_" + std::to_string(i) + ".vtu",
+				"", // nodes_path,
+				"", // solution_path,
+				"", // stress_path,
+				"", // mises_path,
+				state->is_contact_enabled(), state->solution_frames);
+		}
 
 		logger().info("Compute covarianece matrix...");
 
 		// compute covariance matrix
 		StiffnessMatrix laplacian;
 		state->assembler.assemble_problem("Laplacian", state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(), state->ass_vals_cache, laplacian);
+
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		const double volume = (max - min).prod();
 
 		Eigen::MatrixXd covariance;
 		// covariance = Eigen::MatrixXd::Identity(def_grads.size(), def_grads.size());
@@ -111,6 +131,8 @@ namespace polyfem::assembler
 			for (int j = i + 1; j < covariance.cols(); j++)
 				covariance(i, j) = covariance(j, i);
 
+		covariance /= volume;
+
 		// Schur Decomposition
 		Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(covariance);
 		Eigen::MatrixXd ev = es.eigenvectors();
@@ -121,8 +143,34 @@ namespace polyfem::assembler
 		for (int j = 0; j < Ns; j++)
 			reduced_basis.col(j) /= sqrt(es.eigenvalues()(ev.cols() - Ns + j));
 
+		if (std::isnan(reduced_basis.norm()))
+		{
+			logger().error("Covariance eigenvalues: {}", es.eigenvalues().transpose());
+			log_and_throw_error("NAN in reduced basis!");
+		}
+
 		for (int i = 0; i < es.eigenvalues().size() - 1; i++)
-			assert(es.eigenvalues()(i) <= es.eigenvalues()(i+1));
+			if (es.eigenvalues()(i) > es.eigenvalues()(i+1))
+			{
+				std::cout << es.eigenvalues().transpose() << "\n";
+				log_and_throw_error("Eigenvalues not in increase order in Schur decomposition!");
+			}
+
+		for (int i = 0; i < reduced_basis.cols(); i++)
+		{
+			state->sol = reduced_basis.col(i);
+			state->out_geom.export_data(
+				*state,
+				!state->args["time"].is_null(),
+				0, 0,
+				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+				"rb_" + std::to_string(i) + ".vtu",
+				"", // nodes_path,
+				"", // solution_path,
+				"", // stress_path,
+				"", // mises_path,
+				state->is_contact_enabled(), state->solution_frames);
+		}
 
 		logger().info("Reduced basis created!");
 	}
@@ -141,6 +189,10 @@ namespace polyfem::assembler
 		StiffnessMatrix hessian;
 		Eigen::MatrixXd hessianv(ndof, ndof);
 
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		const double volume = (max - min).prod();
+
 		const double eps = 1e-8;
 		const int max_iter = 100;
 		const int min_iter = 10;
@@ -151,7 +203,11 @@ namespace polyfem::assembler
 		gradv = reduced_basis.transpose() * grad;
 
 		int iter = 0;
-		while ((gradv.norm() > eps || iter < min_iter) && iter < max_iter) {
+		while ((gradv.norm() > eps * volume || iter < min_iter) && iter < max_iter) {
+
+			if (std::isnan(gradv.norm()))
+				log_and_throw_error("NAN in newton solve for reduced basis projection!");
+
 			// evaluate hessian
 			state->assembler.assemble_energy_hessian(
 				state->formulation(), size() == 3, state->n_bases, false, state->bases,
@@ -176,14 +232,23 @@ namespace polyfem::assembler
 			// 	logger().error("RB hessian doesn't match with FD!");
 			// }
 
+			// descent direction
+			Eigen::VectorXd direction;
+			{
+				direction = hessianv.ldlt().solve(-gradv);
+				if (std::isnan(direction.norm()))
+					direction = -gradv;
+			}
+
 			// newton step
-			xi = xi - hessianv.ldlt().solve(gradv);
+			xi = xi + direction;
 			x = x0 + reduced_basis * xi;
 
 			state->assembler.assemble_energy_gradient(
 				state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
 				state->ass_vals_cache, 0, x, x, grad);
 			gradv = reduced_basis.transpose() * grad;
+
 			iter++;
 		}
 
@@ -227,6 +292,8 @@ namespace polyfem::assembler
 			avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
 			stress += avg_stress;
 		}
+
+		stress /= volume;
 	}
 	void MultiscaleRB::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
 	{
@@ -292,8 +359,7 @@ namespace polyfem::assembler
 					state->geom_bases(), state->ass_vals_cache, 0, x, x, mat_cache_, hessian);
 				Dinv = (reduced_basis.transpose() * hessian * reduced_basis).inverse();
 			}
-
-			term2 = CB * Dinv * CB.transpose() / volume * volume;
+			term2 = CB * Dinv * CB.transpose() / volume;
 		}
 
 		stiffness = avg_stiffness - term2;
@@ -304,16 +370,17 @@ namespace polyfem::assembler
 		// polar decomposition
 		Eigen::JacobiSVD<Eigen::MatrixXd> svd; // def_grad == svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
 		svd.compute(def_grad, Eigen::ComputeThinU | Eigen::ComputeThinV);
-		Eigen::MatrixXd R = svd.matrixU() * svd.matrixV().transpose();
+		Eigen::MatrixXd R = Eigen::MatrixXd::Identity(size(), size()); // svd.matrixU() * svd.matrixV().transpose();
 		Eigen::MatrixXd Ubar = R.transpose() * def_grad; // svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
 		if (svd.singularValues().minCoeff() <= 0)
 			logger().error("Negative Deformation Gradient!");
 
 		Eigen::MatrixXd x;
 		{
+			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::VectorXd xi;
-			projection(Ubar, xi);
-			x = state->generate_linear_field(Ubar) + reduced_basis * xi;
+			projection(disp_grad, xi);
+			x = state->generate_linear_field(disp_grad) + reduced_basis * xi;
 		}
 
 		// effective energy = average energy over unit cell
@@ -475,9 +542,13 @@ namespace polyfem::assembler
 			// 		std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
 			// 		log_and_throw_error("Gradient mismatch");
 			// 	}
+			// 	else
+			// 	{
+			// 		logger().info("Gradient match!");
+			// 	}
 			// }
 
-			G += delF_delU * stress_tensor * data.da(p);
+			G += delF_delU * stress_tensor.transpose() * data.da(p);
 		}
 
 		Eigen::MatrixXd G_T = G.transpose();
@@ -520,34 +591,40 @@ namespace polyfem::assembler
 
 			double energy = 0;
 			homogenization(def_grad, energy, stress_tensor, hessian_temp);
-			// hessian_temp(i + j * size(), k + l * size());
-
 			{
-				Eigen::MatrixXd fhess;
-				Eigen::VectorXd x0 = utils::flatten(def_grad);
-				fd::finite_jacobian(
-					x0,
-					[this](const Eigen::VectorXd &x) -> Eigen::VectorXd {
-						Eigen::MatrixXd F = utils::unflatten(x, this->size());
-						double val;
-						Eigen::MatrixXd stress, stiffness;
-						this->homogenization(F, val, stress, stiffness);
-						return utils::flatten(stress);
-					},
-					fhess);
-
-				if (!fd::compare_hessian(hessian_temp, fhess))
-				{
-					// std::cout << "Hessian: " << stiffness_tensor << std::endl;
-					// std::cout << "Finite hessian: " << fhess << std::endl;
-					logger().error("Hessian mismatch!");
-					hessian_temp = fhess;
-				}
-				else
-				{
-					logger().warn("Hessian match!");
-				}
+				Eigen::MatrixXd hessian_temp2 = hessian_temp;
+				for (int i = 0; i < size(); i++)
+				for (int j = 0; j < size(); j++)
+				for (int k = 0; k < size(); k++)
+				for (int l = 0; l < size(); l++)
+					hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
 			}
+			// {
+			// 	Eigen::MatrixXd fhess;
+			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
+			// 	fd::finite_jacobian(
+			// 		x0,
+			// 		[this](const Eigen::VectorXd &x) -> Eigen::VectorXd {
+			// 			Eigen::MatrixXd F = utils::unflatten(x, this->size());
+			// 			double val;
+			// 			Eigen::MatrixXd stress, stiffness;
+			// 			this->homogenization(F, val, stress, stiffness);
+			// 			return utils::flatten(stress);
+			// 		},
+			// 		fhess);
+
+			// 	if (!fd::compare_hessian(hessian_temp, fhess))
+			// 	{
+			// 		std::cout << "Hessian: " << hessian_temp << std::endl;
+			// 		std::cout << "Finite hessian: " << fhess << std::endl;
+			// 		logger().error("Hessian mismatch!");
+			// 		hessian_temp = fhess;
+			// 	}
+			// 	else
+			// 	{
+			// 		logger().info("Hessian match!");
+			// 	}
+			// }
 
 			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
 			Eigen::MatrixXd temp;

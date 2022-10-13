@@ -123,7 +123,7 @@ Eigen::MatrixXd State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
 {
     if (formulation() != "NeoHookean" && formulation() != "LinearElasticity")
     {
-        log_and_throw_error("Nonlinear homogenization only supports NeoHookean!");
+        log_and_throw_error("Nonlinear homogenization only supports NeoHookean and linear elasticity!");
     }
 
     auto homo_problem = std::make_shared<NLHomogenizationProblem>(*this);
@@ -143,7 +143,7 @@ Eigen::MatrixXd State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
 
     Eigen::VectorXd full;
     homo_problem->reduced_to_full(tmp_sol, full);
-    return full - generate_linear_field(def_grad);
+    return full; // - generate_linear_field(def_grad);
 }
 
 void State::solve_nonlinear_homogenization()
