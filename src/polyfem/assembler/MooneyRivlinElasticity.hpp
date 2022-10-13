@@ -1,54 +1,61 @@
 #pragma once
 
-#include "AssemblerData.hpp"
+#include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <polyfem/Common.hpp>
 
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <polyfem/utils/AutodiffTypes.hpp>
-
 #include <Eigen/Dense>
-#include <functional>
 
-//non linear NeoHookean material model
+#include <functional>
+#include <vector>
+
+// non linear NeoHookean material model
 namespace polyfem::assembler
 {
 	class MooneyRivlinElasticity
 	{
 	public:
-		MooneyRivlinElasticity();
-
-		//energy, gradient, and hessian used in newton method
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
-
-		double compute_energy(const NonLinearAssemblerData &data) const;
-
-		//rhs for fabbricated solution, compute with automatic sympy code
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		inline int size() const { return size_; }
-		void set_size(const int size);
-
-		//von mises and stress tensor
-		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
-
-		//sets material params
+		// sets material params
 		void add_multimaterial(const int index, const json &params);
 
-	private:
-		int size_ = -1;
+		void stress_from_disp_grad(const int size,
+								   const RowVectorNd &p,
+								   const int el_id,
+								   const Eigen::MatrixXd &displacement_grad,
+								   Eigen::MatrixXd &stress_tensor) const;
 
-		double c1_ = 0; 
-		double c2_ = 0;
-		double k_ = 0;
-
-		//utulity function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
-		T compute_energy_aux(const NonLinearAssemblerData &data) const;
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
+		T elastic_energy(const int size,
+						 const RowVectorNd &p,
+						 const int el_id,
+						 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &disp_grad) const
+		{
+			assert(c1_.size() == 1 || el_id < c1_.size());
+
+			const double x = p(0);
+			const double y = p(1);
+			const double z = size == 3 ? p(2) : 0;
+			const double t = 0; // TODO
+
+			const auto &tmp_c1 = c1_.size() == 1 ? c1_[0] : c1_[el_id];
+			const auto &tmp_c2 = c2_.size() == 1 ? c2_[0] : c2_[el_id];
+			const auto &tmp_k = k_.size() == 1 ? k_[0] : k_[el_id];
+
+			const double c1 = tmp_c1(x, y, z, t, el_id);
+			const double c2 = tmp_c2(x, y, z, t, el_id);
+			const double k = tmp_k(x, y, z, t, el_id);
+
+			const T log_det_j = log(polyfem::utils::determinant(disp_grad));
+			const T val = c1 * ((disp_grad.transpose() * disp_grad).trace() - size) + c2 * ((disp_grad.transpose() * disp_grad * disp_grad.transpose() * disp_grad).trace() - size) + k / 2 * (log_det_j * log_det_j);
+
+			return val;
+		}
+
+	private:
+		std::vector<utils::ExpressionValue> c1_;
+		std::vector<utils::ExpressionValue> c2_;
+		std::vector<utils::ExpressionValue> k_;
 	};
-} // namespace polyfem
+} // namespace polyfem::assembler
