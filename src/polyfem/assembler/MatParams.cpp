@@ -18,6 +18,40 @@ namespace polyfem::assembler
 		}
 	} // namespace
 
+	GenericMatParam::GenericMatParam(const std::string &param_name)
+		: param_name_(param_name)
+	{
+	}
+
+	void GenericMatParam::add_multimaterial(const int index, const json &params)
+	{
+		for (int i = param_.size(); i <= index; ++i)
+		{
+			param_.emplace_back();
+		}
+
+		if (params.count(param_name_))
+			param_[index].init(params[param_name_]);
+	}
+
+	double GenericMatParam::operator()(const RowVectorNd &p, double t, int index) const
+	{
+		const double x = p(0);
+		const double y = p(1);
+		const double z = p.size() == 3 ? p(2) : 0;
+
+		return (*this)(x, y, z, t, index);
+	}
+
+	double GenericMatParam::operator()(double x, double y, double z, double t, int index) const
+	{
+		assert(param_.size() == 1 || index < param_.size());
+
+		const auto &tmp_param = param_.size() == 1 ? param_[0] : param_[index];
+
+		return tmp_param(x, y, z, t, index);
+	}
+
 	void ElasticityTensor::resize(const int size)
 	{
 		if (size == 2)

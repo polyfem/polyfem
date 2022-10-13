@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <polyfem/utils/ExpressionValue.hpp>
 
@@ -8,6 +9,21 @@
 
 namespace polyfem::assembler
 {
+	class GenericMatParam
+	{
+	public:
+		GenericMatParam(const std::string &param_name);
+
+		double operator()(const RowVectorNd &p, double t, int index) const;
+		double operator()(double x, double y, double z, double t, int index) const;
+
+		void add_multimaterial(const int index, const json &params);
+
+	private:
+		const std::string param_name_;
+		std::vector<utils::ExpressionValue> param_;
+	};
+
 	class ElasticityTensor
 	{
 	public:
