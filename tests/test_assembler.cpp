@@ -65,11 +65,16 @@ TEST_CASE("hessian_lin", "[assembler]")
 	}
 }
 
+double myrand(const double range = 1)
+{
+	return rand() / (double)RAND_MAX * range;
+}
+
 Eigen::VectorXd transform(const Eigen::VectorXd &p)
 {
 	Eigen::Matrix2d A;
-	A << 1.2, 0.3,
-	     0.2, 1.2;
+	A << 1.2 + myrand(2), myrand(0.5),
+	     myrand(0.5), 1.2 + myrand(2);
 
 	return A*p;
 }
@@ -142,9 +147,9 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 					"nu": 0.4
 				}
 			},
-			"det_samples": [1, 1.05, 1.1],
-			"amp_samples": [0.05, 0.1, 0.15],
-			"n_dir_samples": 4,
+			"det_samples": [1, 1.1],
+			"amp_samples": [0.05, 0.15],
+			"n_dir_samples": 3,
 			"n_reduced_basis": 5,
 			"rho": 1
 		}
@@ -165,7 +170,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 
 	utils::SpareMatrixCache mat_cache;
 
-	// for (int rand = 0; rand < 5; ++rand)
+	for (int rand = 0; rand < 3; ++rand)
 	{
 		for (int p = 0; p < state.n_bases; p++)
 		{

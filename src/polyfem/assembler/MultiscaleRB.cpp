@@ -202,11 +202,11 @@ namespace polyfem::assembler
 			state->ass_vals_cache, 0, x, x, grad);
 		gradv = reduced_basis.transpose() * grad;
 
+		if (std::isnan(gradv.norm()))
+			log_and_throw_error("NAN initial gradient in coefficient Newton solve!");
+
 		int iter = 0;
 		while ((gradv.norm() > eps * volume || iter < min_iter) && iter < max_iter) {
-
-			if (std::isnan(gradv.norm()))
-				log_and_throw_error("NAN in newton solve for reduced basis projection!");
 
 			// evaluate hessian
 			state->assembler.assemble_energy_hessian(
@@ -241,13 +241,19 @@ namespace polyfem::assembler
 			}
 
 			// newton step
-			xi = xi + direction;
-			x = x0 + reduced_basis * xi;
+			double alpha = 1.0;
+			do
+			{
+				xi = xi + alpha * direction;
+				x = x0 + reduced_basis * xi;
 
-			state->assembler.assemble_energy_gradient(
-				state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
-				state->ass_vals_cache, 0, x, x, grad);
-			gradv = reduced_basis.transpose() * grad;
+				state->assembler.assemble_energy_gradient(
+					state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
+					state->ass_vals_cache, 0, x, x, grad);
+				gradv = reduced_basis.transpose() * grad;
+
+				alpha /= 2;
+			} while (std::isnan(gradv.norm()) && alpha > 1e-8);
 
 			iter++;
 		}
