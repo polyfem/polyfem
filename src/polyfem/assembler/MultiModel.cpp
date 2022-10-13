@@ -13,7 +13,7 @@ namespace polyfem::assembler
 	void MultiModel::set_size(const int size)
 	{
 		size_ = size;
-		// saint_venant_.set_size(size);
+		saint_venant_.set_size(size);
 		neo_hookean_.set_size(size);
 		linear_elasticity_.set_size(size);
 
