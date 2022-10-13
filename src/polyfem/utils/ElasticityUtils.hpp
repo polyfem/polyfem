@@ -5,6 +5,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <Eigen/Dense>
 
@@ -111,5 +112,24 @@ namespace polyfem
 		for (long k = 0; k < jac_it.size(); ++k)
 			jac_it(k) = T(data.vals.jac_it[p](k));
 		def_grad = def_grad * jac_it;
+	}
+
+	// https://en.wikipedia.org/wiki/Invariants_of_tensors
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar first_invariant(const AutoDiffGradMat &B)
+	{
+		return B.trace();
+	}
+
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar second_invariant(const AutoDiffGradMat &B)
+	{
+		return 0.5 * (B.trace() * B.trace() - (B * B).trace());
+	}
+
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar third_invariant(const AutoDiffGradMat &B)
+	{
+		return polyfem::utils::determinant(B);
 	}
 } // namespace polyfem
