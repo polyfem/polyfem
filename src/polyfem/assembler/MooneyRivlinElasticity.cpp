@@ -77,7 +77,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 
 			// stress = 2*c1*F + 4*c2*FF^{T}F + k*lnJ*F^{-T}
-			Eigen::MatrixXd stress_tensor = 2*c1_*def_grad + 4*c2_*def_grad*def_grad.transpose()*def_grad + k_*std::log(def_grad.determinant())*FmT;
+			Eigen::MatrixXd stress_tensor = 2 * c1_ * def_grad + 4 * c2_ * def_grad * def_grad.transpose() * def_grad + k_ * std::log(def_grad.determinant()) * FmT;
 
 			all.row(p) = fun(stress_tensor);
 		}
@@ -129,71 +129,27 @@ namespace polyfem::assembler
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
-		assert(data.x.cols() == 1);
+		AutoDiffVect local_disp;
+		get_local_disp(data, size(), local_disp);
 
-		const int n_pts = data.da.size();
+		AutoDiffGradMat disp_grad(size(), size());
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(data.vals.basis_values.size() * size(), 1);
-		local_dispv.setZero();
-		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		{
-			const auto &bs = data.vals.basis_values[i];
-			for (size_t ii = 0; ii < bs.global.size(); ++ii)
-			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_dispv(i * size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-				}
-			}
-		}
-
-		DiffScalarBase::setVariableCount(local_dispv.rows());
-		AutoDiffVect local_disp(local_dispv.rows(), 1);
 		T energy = T(0.0);
 
-		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
-
-		for (long i = 0; i < local_dispv.rows(); ++i)
-		{
-			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
-		}
-
-		AutoDiffGradMat def_grad(size(), size());
-
+		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
-			for (long k = 0; k < def_grad.size(); ++k)
-				def_grad(k) = T(0);
-
-			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
-				const auto &bs = data.vals.basis_values[i];
-				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
-				assert(grad.size() == size());
-
-				for (int d = 0; d < size(); ++d)
-				{
-					for (int c = 0; c < size(); ++c)
-					{
-						def_grad(d, c) += grad(c) * local_disp(i * size() + d);
-					}
-				}
-			}
-
-			AutoDiffGradMat jac_it(size(), size());
-			for (long k = 0; k < jac_it.size(); ++k)
-				jac_it(k) = T(data.vals.jac_it[p](k));
-			def_grad = def_grad * jac_it;
+			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
 
 			// // Id + grad d
 			// for (int d = 0; d < size(); ++d)
-			// 	def_grad(d, d) += T(1);
+			// 	disp_grad(d, d) += T(1);
 
-			const T log_det_j = log(polyfem::utils::determinant(def_grad));
-			const T val = c1_ * ((def_grad.transpose() * def_grad).trace() - size()) + c2_ * ((def_grad.transpose() * def_grad * def_grad.transpose() * def_grad).trace() - size()) + k_/2 * (log_det_j * log_det_j);
+			const T log_det_j = log(polyfem::utils::determinant(disp_grad));
+			const T val = c1_ * ((disp_grad.transpose() * disp_grad).trace() - size()) + c2_ * ((disp_grad.transpose() * disp_grad * disp_grad.transpose() * disp_grad).trace() - size()) + k_ / 2 * (log_det_j * log_det_j);
 
 			energy += val * data.da(p);
 		}
 		return energy;
 	}
-} // namespace polyfem
+} // namespace polyfem::assembler
