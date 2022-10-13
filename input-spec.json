@@ -1962,18 +1962,44 @@
         "type_name": "MultiscaleRB",
         "required": [
             "type",
-            "microstructure"
+            "microstructure",
+            "det_samples",
+            "amp_samples"
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "n_dir_samples",
+            "n_reduced_basis"
         ],
         "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*/microstructure",
         "type": "object",
-        "doc": "microstructure json"
+        "doc": "microstructure model configuration"
+    },
+    {
+        "pointer": "/materials/*/det_samples",
+        "type": "list",
+        "doc": "array of determinant samples"
+    },
+    {
+        "pointer": "/materials/*/amp_samples",
+        "type": "list",
+        "doc": "array of amplitude samples"
+    },
+    {
+        "pointer": "/materials/*/n_dir_samples",
+        "type": "int",
+        "default": 5,
+        "doc": "number of directional samples"
+    },
+    {
+        "pointer": "/materials/*/n_reduced_basis",
+        "type": "int",
+        "default": 5,
+        "doc": "number of reduced basis"
     },
     {
         "pointer": "/materials/*",
