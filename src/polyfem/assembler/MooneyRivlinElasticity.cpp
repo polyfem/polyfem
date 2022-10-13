@@ -30,7 +30,7 @@ namespace polyfem::assembler
 		const double c2 = c2_(p, t, el_id);
 		const double k = k_(p, t, el_id);
 
-		auto def_grad = disp_grad;
+		auto def_grad = displacement_grad;
 		for (int d = 0; d < stress_tensor.rows(); ++d)
 			def_grad(d, d) += 1;
 
