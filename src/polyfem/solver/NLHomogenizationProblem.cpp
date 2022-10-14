@@ -92,7 +92,7 @@ namespace polyfem
 			reduced_to_full(x, full);
 
 			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
-			Eigen::MatrixXd diff_field = full - test_field;
+			Eigen::MatrixXd diff_field = full + test_field;
 
 			return assembler.assemble_energy(state.formulation(), state.mesh->is_volume(), state.bases, state.geom_bases(), state.ass_vals_cache, 0, diff_field, Eigen::MatrixXd::Zero(diff_field.rows(), diff_field.cols()));
 		}
@@ -116,7 +116,7 @@ namespace polyfem
 			reduced_to_full(x, full);
 
 			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
-			Eigen::MatrixXd diff_field = full - test_field;
+			Eigen::MatrixXd diff_field = full + test_field;
 			
 			assembler.assemble_energy_gradient(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, state.geom_bases(), state.ass_vals_cache, 0, diff_field, Eigen::MatrixXd::Zero(diff_field.rows(), diff_field.cols()), grad);
 
@@ -140,7 +140,7 @@ namespace polyfem
 			reduced_to_full(x, full);
 
 			Eigen::MatrixXd test_field = state.generate_linear_field(test_strain_);
-			Eigen::MatrixXd diff_field = full - test_field;
+			Eigen::MatrixXd diff_field = full + test_field;
 
 			assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, diff_field, Eigen::MatrixXd::Zero(diff_field.rows(), diff_field.cols()), mat_cache, hessian);
 

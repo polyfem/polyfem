@@ -667,7 +667,7 @@ namespace polyfem
 			solve_homogenization();
 			compute_homogenized_tensor(C_H);
 		}
-		Eigen::MatrixXd solve_homogenized_field(const Eigen::MatrixXd &def_grad);
+		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, Eigen::MatrixXd &sol_);
 		void solve_linear_homogenization();
 		void solve_nonlinear_homogenization();
 

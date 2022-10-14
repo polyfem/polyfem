@@ -119,7 +119,7 @@ Eigen::MatrixXd State::generate_linear_field(const Eigen::MatrixXd &grad)
     return func;
 }
 
-Eigen::MatrixXd State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
+void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, Eigen::MatrixXd &sol_)
 {
     if (formulation() != "NeoHookean" && formulation() != "LinearElasticity")
     {
@@ -129,8 +129,9 @@ Eigen::MatrixXd State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
     auto homo_problem = std::make_shared<NLHomogenizationProblem>(*this);
     
     const int dim = mesh->dimension();
-    Eigen::MatrixXd sol_;
-    sol_.setZero(n_bases * dim, 1);
+    // Eigen::MatrixXd sol_;
+    if (sol_.rows() != n_bases * dim || sol_.cols() != 1)
+        sol_.setZero(n_bases * dim, 1);
     
     Eigen::VectorXd tmp_sol;
     homo_problem->full_to_reduced(sol_, tmp_sol);
@@ -143,7 +144,8 @@ Eigen::MatrixXd State::solve_homogenized_field(const Eigen::MatrixXd &def_grad)
 
     Eigen::VectorXd full;
     homo_problem->reduced_to_full(tmp_sol, full);
-    return full; // - generate_linear_field(def_grad);
+    // return full; // - generate_linear_field(def_grad);
+    sol_ = full;
 }
 
 void State::solve_nonlinear_homogenization()

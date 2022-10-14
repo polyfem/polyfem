@@ -5,12 +5,17 @@
 
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/Timer.h>
-
 #include <polyfem/State.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
+
+#include <cppoptlib/problem.h>
+#include <polyfem/solver/NonlinearSolver.hpp>
+#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
+
+#include <unsupported/Eigen/KroneckerProduct>
 
 #include <unsupported/Eigen/MatrixFunctions>
 #include <finitediff.hpp>
@@ -52,6 +57,179 @@ namespace polyfem::assembler
 				basis[4] = std::pow(1./2, 1./2) * Eigen::MatrixXd{{0,0,0},{0,0,1},{0,1,0}};
 			}
 		}
+		
+		// S = sqrt(A), A is SPD, compute dS/dA
+		Eigen::MatrixXd matrix_sqrt_grad(const Eigen::MatrixXd &S)
+		{
+			const int dim = S.rows();
+			assert(S.cols() == dim);
+			Eigen::MatrixXd id = Eigen::MatrixXd::Identity(dim, dim);
+
+			return (Eigen::kroneckerProduct(S, id) + Eigen::kroneckerProduct(id, S)).inverse();
+		}
+
+		void polar_decomposition(const Eigen::MatrixXd &F, Eigen::MatrixXd &R, Eigen::MatrixXd &U)
+		{
+			const int dim = F.rows();
+			assert(F.cols() == dim);
+			Eigen::JacobiSVD<Eigen::MatrixXd> svd;
+			svd.compute(F, Eigen::ComputeThinU | Eigen::ComputeThinV);
+			R = svd.matrixU() * svd.matrixV().transpose();
+			U = R.transpose() * F;
+
+			if (svd.singularValues().minCoeff() <= 0)
+				logger().error("Negative Deformation Gradient!");
+			if (std::abs(R.determinant() - 1) > 1e-3)
+				logger().error("Polar decomposition failed!");
+		}
+
+		bool delta(int i, int j)
+		{
+			return i == j;
+		}
+
+		void my_polar_decomposition_grad(const Eigen::MatrixXd &F, const Eigen::MatrixXd &R, const Eigen::MatrixXd &U, Eigen::MatrixXd &dUdF)
+		{
+			const int dim = F.rows();
+			assert(F.cols() == dim);
+
+			Eigen::MatrixXd dU_dATA = matrix_sqrt_grad(U);
+
+			Eigen::MatrixXd dATA_dA;
+			dATA_dA.setZero(dim*dim, dim*dim);
+			for (int i = 0; i < dim; i++)
+			for (int j = 0; j < dim; j++)
+			for (int p = 0; p < dim; p++)
+			for (int q = 0; q < dim; q++)
+			{
+				dATA_dA(i + j * dim, p + q * dim) += delta(i, q) * F(p, j) + delta(j, q) * F(p, i);
+			}
+
+			dUdF = dU_dATA * dATA_dA;
+
+			{
+				Eigen::MatrixXd tmp = dUdF;
+				for (int i = 0; i < dim; i++)
+				for (int j = 0; j < dim; j++)
+				for (int k = 0; k < dim; k++)
+				for (int l = 0; l < dim; l++)
+					dUdF(i * dim + j, k * dim + l) = tmp(i + j * dim, k + l * dim);
+			}
+		}
+
+		bool compare_matrix(
+			const Eigen::MatrixXd& x,
+			const Eigen::MatrixXd& y,
+			const double test_eps = 1e-4)
+		{
+			assert(x.rows() == y.rows());
+
+			bool same = true;
+			double scale = std::max(x.norm(), y.norm());
+			double error = (x - y).norm();
+			
+			std::cout << "error: " << error << " scale: " << scale << "\n";
+
+			if (error > scale * test_eps)
+				same = false;
+
+			return same;
+		}
+	
+		class MultiscaleRBProblem : public cppoptlib::Problem<double>
+		{
+			public:
+				using typename cppoptlib::Problem<double>::Scalar;
+				using typename cppoptlib::Problem<double>::TVector;
+				typedef StiffnessMatrix THessian;
+
+				MultiscaleRBProblem(const Eigen::MatrixXd &reduced_basis): reduced_basis_(reduced_basis) 
+				{
+					RowVectorNd min, max;
+					state->mesh->bounding_box(min, max);
+					volume = (max - min).prod();
+				}
+				~MultiscaleRBProblem() = default;
+
+				void set_linear_disp(const Eigen::MatrixXd &linear_sol) { linear_sol_ = linear_sol; }
+
+				double value(const TVector &x) { return value(x, false); }
+				double value(const TVector &x, const bool only_elastic)
+				{
+					Eigen::MatrixXd sol = coeff_to_field(x);
+					return state->assembler.assemble_energy(
+						state->formulation(), state->mesh->is_volume(), state->bases, state->geom_bases(),
+						state->ass_vals_cache, 0, sol, sol) / volume;
+				}
+				double target_value(const TVector &x) { return value(x); }
+				void gradient(const TVector &x, TVector &gradv) { gradient(x, gradv, false); }
+				void gradient(const TVector &x, TVector &gradv, const bool only_elastic)
+				{
+					Eigen::MatrixXd sol = coeff_to_field(x);
+					Eigen::MatrixXd grad;
+					state->assembler.assemble_energy_gradient(
+						state->formulation(), state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
+						state->ass_vals_cache, 0, sol, sol, grad);
+					gradv = (reduced_basis_.transpose() * grad) / volume;
+				}
+				void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
+				void hessian(const TVector &x, THessian &hessian)
+				{
+					Eigen::MatrixXd sol = coeff_to_field(x);
+					StiffnessMatrix hessian_;
+					state->assembler.assemble_energy_hessian(
+						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
+						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache_, hessian_);
+					hessian = (reduced_basis_.transpose() * hessian_ * reduced_basis_).sparseView();
+					hessian /= volume;
+				}
+
+				Eigen::MatrixXd coeff_to_field(const TVector &x)
+				{
+					return linear_sol_ + reduced_basis_ * x;
+				}
+
+				bool is_step_valid(const TVector &x0, const TVector &x1)
+				{
+					TVector gradv;
+					gradient(x1, gradv);
+					if (std::isnan(gradv.norm()))
+						return false;
+					return true;
+				}
+				
+				void set_project_to_psd(bool val) {}
+				void save_to_file(const TVector &x0) {}
+				void solution_changed(const TVector &newX) {}
+				void line_search_begin(const TVector &x0, const TVector &x1) {}
+				void line_search_end(bool failed) {}
+				void post_step(const int iter_num, const TVector &x) {}
+				void smoothing(const TVector &x, TVector &new_x) {}
+				bool is_intersection_free(const TVector &x) { return true; }
+				bool stop(const TVector &x) { return false; }
+				bool remesh(TVector &x) { return false; }
+				TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
+				double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
+				bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
+				int n_inequality_constraints() { return 0; }
+				double inequality_constraint_val(const TVector &x, const int index)
+				{
+					assert(false);
+					return std::nan("");
+				}
+				TVector inequality_constraint_grad(const TVector &x, const int index)
+				{
+					assert(false);
+					return TVector();
+				}
+
+			private:
+
+				Eigen::MatrixXd linear_sol_;
+				const Eigen::MatrixXd &reduced_basis_;
+				utils::SpareMatrixCache mat_cache_;
+				double volume;
+		};
 	}
 
 	MultiscaleRB::MultiscaleRB()
@@ -79,30 +257,32 @@ namespace polyfem::assembler
 		sols.setZero(state->n_bases * size(), def_grads.size());
 	
 		utils::maybe_parallel_for(def_grads.size(), [&](int start, int end, int thread_id) {
+			Eigen::MatrixXd tmp;
 			for (int idx = start; idx < end; idx++)
 			// for (int idx = 0; idx < def_grads.size(); idx++)
 			{
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
-				sols.col(idx) = state->solve_homogenized_field(grad);
+				state->solve_homogenized_field(grad, tmp);
+				sols.col(idx) = tmp;
 			}
 		});
 
-		for (int i = 0; i < sols.cols(); i++)
-		{
-			state->sol = sols.col(i);
-			state->out_geom.export_data(
-				*state,
-				!state->args["time"].is_null(),
-				0, 0,
-				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-				"step_" + std::to_string(i) + ".vtu",
-				"", // nodes_path,
-				"", // solution_path,
-				"", // stress_path,
-				"", // mises_path,
-				state->is_contact_enabled(), state->solution_frames);
-		}
+		// for (int i = 0; i < sols.cols(); i++)
+		// {
+		// 	state->sol = sols.col(i);
+		// 	state->out_geom.export_data(
+		// 		*state,
+		// 		!state->args["time"].is_null(),
+		// 		0, 0,
+		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+		// 		"step_" + std::to_string(i) + ".vtu",
+		// 		"", // nodes_path,
+		// 		"", // solution_path,
+		// 		"", // stress_path,
+		// 		"", // mises_path,
+		// 		state->is_contact_enabled(), state->solution_frames);
+		// }
 
 		logger().info("Compute covarianece matrix...");
 
@@ -156,110 +336,56 @@ namespace polyfem::assembler
 				log_and_throw_error("Eigenvalues not in increase order in Schur decomposition!");
 			}
 
-		for (int i = 0; i < reduced_basis.cols(); i++)
-		{
-			state->sol = reduced_basis.col(i);
-			state->out_geom.export_data(
-				*state,
-				!state->args["time"].is_null(),
-				0, 0,
-				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-				"rb_" + std::to_string(i) + ".vtu",
-				"", // nodes_path,
-				"", // solution_path,
-				"", // stress_path,
-				"", // mises_path,
-				state->is_contact_enabled(), state->solution_frames);
-		}
-
 		logger().info("Reduced basis created!");
 	}
 
-	void MultiscaleRB::projection(const Eigen::MatrixXd &F, Eigen::VectorXd &xi) const
+	void MultiscaleRB::projection(const Eigen::MatrixXd &F, Eigen::MatrixXd &x) const
 	{
-		const int ndof = reduced_basis.cols();
+		Eigen::VectorXd xi;
+		xi.setZero(reduced_basis.cols());
 
-		xi.setZero(ndof);
+		std::shared_ptr<MultiscaleRBProblem> nl_problem = std::make_shared<MultiscaleRBProblem>(reduced_basis);
+		nl_problem->set_linear_disp(state->generate_linear_field(F));
+		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::SparseNewtonDescentSolver<MultiscaleRBProblem>>(
+				state->args["solver"]["nonlinear"], state->args["solver"]["linear"]);
+		
+		nlsolver->minimize(*nl_problem, xi);
+		x = nl_problem->coeff_to_field(xi);
 
-		Eigen::MatrixXd x0 = state->generate_linear_field(F);
-		Eigen::MatrixXd x = x0;
+		// {
+		// 	static int idx = 0;
+		// 	state->sol = x;
+		// 	state->out_geom.export_data(
+		// 		*state,
+		// 		!state->args["time"].is_null(),
+		// 		0, 0,
+		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+		// 		"proj_" + std::to_string(idx) + ".vtu",
+		// 		"", // nodes_path,
+		// 		"", // solution_path,
+		// 		"", // stress_path,
+		// 		"", // mises_path,
+		// 		state->is_contact_enabled(), state->solution_frames);
+		// 	idx++;
+		// }
 
-		Eigen::MatrixXd gradv(ndof, 1), grad;
-		utils::SpareMatrixCache mat_cache_;
-		StiffnessMatrix hessian;
-		Eigen::MatrixXd hessianv(ndof, ndof);
+		// Eigen::MatrixXd fhess;
+		// fd::finite_jacobian(
+		// 	xi,
+		// 	[this, &x0](const Eigen::VectorXd &xi_) -> Eigen::VectorXd {
+		// 		Eigen::MatrixXd grad_;
+		// 		Eigen::MatrixXd tmp = x0 + this->reduced_basis * xi_;
+		// 		state->assembler.assemble_energy_gradient(
+		// 			state->formulation(), this->size() == 3, state->n_bases, state->bases, state->geom_bases(),
+		// 			state->ass_vals_cache, 0, tmp, tmp, grad_);
+		// 		return this->reduced_basis.transpose() * grad_;
+		// 	},
+		// 	fhess);
 
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
-
-		const double eps = 1e-8;
-		const int max_iter = 100;
-		const int min_iter = 10;
-
-		state->assembler.assemble_energy_gradient(
-			state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
-			state->ass_vals_cache, 0, x, x, grad);
-		gradv = reduced_basis.transpose() * grad;
-
-		if (std::isnan(gradv.norm()))
-			log_and_throw_error("NAN initial gradient in coefficient Newton solve!");
-
-		int iter = 0;
-		while ((gradv.norm() > eps * volume || iter < min_iter) && iter < max_iter) {
-
-			// evaluate hessian
-			state->assembler.assemble_energy_hessian(
-				state->formulation(), size() == 3, state->n_bases, false, state->bases,
-				state->geom_bases(), state->ass_vals_cache, 0, x, x, mat_cache_, hessian);
-			hessianv = reduced_basis.transpose() * hessian * reduced_basis;
-
-			// Eigen::MatrixXd fhess;
-			// fd::finite_jacobian(
-			// 	xi,
-			// 	[this, &x0](const Eigen::VectorXd &xi_) -> Eigen::VectorXd {
-			// 		Eigen::MatrixXd grad_;
-			// 		Eigen::MatrixXd tmp = x0 + this->reduced_basis * xi_;
-			// 		state->assembler.assemble_energy_gradient(
-			// 			state->formulation(), this->size() == 3, state->n_bases, state->bases, state->geom_bases(),
-			// 			state->ass_vals_cache, 0, tmp, tmp, grad_);
-			// 		return this->reduced_basis.transpose() * grad_;
-			// 	},
-			// 	fhess);
-
-			// if (!fd::compare_hessian(hessianv, fhess))
-			// {
-			// 	logger().error("RB hessian doesn't match with FD!");
-			// }
-
-			// descent direction
-			Eigen::VectorXd direction;
-			{
-				direction = hessianv.ldlt().solve(-gradv);
-				if (std::isnan(direction.norm()))
-					direction = -gradv;
-			}
-
-			// newton step
-			double alpha = 1.0;
-			do
-			{
-				xi = xi + alpha * direction;
-				x = x0 + reduced_basis * xi;
-
-				state->assembler.assemble_energy_gradient(
-					state->formulation(), size() == 3, state->n_bases, state->bases, state->geom_bases(),
-					state->ass_vals_cache, 0, x, x, grad);
-				gradv = reduced_basis.transpose() * grad;
-
-				alpha /= 2;
-			} while (std::isnan(gradv.norm()) && alpha > 1e-8);
-
-			iter++;
-		}
-
-		if (gradv.norm() > eps)
-			logger().error("Newton failed to converge on finding RB coefficients!");
+		// if (!fd::compare_hessian(hessianv, fhess))
+		// {
+		// 	logger().error("RB hessian doesn't match with FD!");
+		// }
 	}
 
 	double MultiscaleRB::homogenize_energy(const Eigen::MatrixXd &x) const
@@ -273,6 +399,7 @@ namespace polyfem::assembler
 
 		return state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / volume;
 	}
+
 	void MultiscaleRB::homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const
 	{
 		RowVectorNd min, max;
@@ -301,6 +428,7 @@ namespace polyfem::assembler
 
 		stress /= volume;
 	}
+
 	void MultiscaleRB::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
 	{
 		RowVectorNd min, max;
@@ -374,19 +502,20 @@ namespace polyfem::assembler
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
 	{
 		// polar decomposition
-		Eigen::JacobiSVD<Eigen::MatrixXd> svd; // def_grad == svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
-		svd.compute(def_grad, Eigen::ComputeThinU | Eigen::ComputeThinV);
-		Eigen::MatrixXd R = Eigen::MatrixXd::Identity(size(), size()); // svd.matrixU() * svd.matrixV().transpose();
-		Eigen::MatrixXd Ubar = R.transpose() * def_grad; // svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
-		if (svd.singularValues().minCoeff() <= 0)
-			logger().error("Negative Deformation Gradient!");
+		// Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::NoQRPreconditioner> svd; // def_grad == svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
+		// svd.compute(def_grad, Eigen::ComputeThinU | Eigen::ComputeThinV);
+		// const Eigen::MatrixXd R = true ? (Eigen::MatrixXd)(svd.matrixU() * svd.matrixV().transpose()) : Eigen::MatrixXd::Identity(size(), size());
+		// const Eigen::MatrixXd Ubar = R.transpose() * def_grad; // svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
+		Eigen::MatrixXd R, Ubar;
+		polar_decomposition(def_grad, R, Ubar);
+
+		Eigen::MatrixXd dUdF;
+		my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
 
 		Eigen::MatrixXd x;
 		{
 			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
-			Eigen::VectorXd xi;
-			projection(disp_grad, xi);
-			x = state->generate_linear_field(disp_grad) + reduced_basis * xi;
+			projection(disp_grad, x);
 		}
 
 		// effective energy = average energy over unit cell
@@ -395,7 +524,8 @@ namespace polyfem::assembler
 		// effective stress = average stress over unit cell
 		Eigen::MatrixXd stress_no_rotation;
 		homogenize_stress(x, stress_no_rotation);
-		stress = R * stress_no_rotation;
+		// stress = R * stress_no_rotation; 
+		stress = utils::unflatten(dUdF.transpose() * utils::flatten(stress_no_rotation), size());
 
 		// \bar{C}^{RB} = < C^{RB} > - \sum_{i,j} (D^{-1})_{ij} < C^{RB} \cdot B^{(i)} > \cross < B^{(j)} \cdot C^{RB} >
 		// D_{ij} = < B^{(i)} \cdot C \cdot B^{(j)} >
@@ -539,10 +669,10 @@ namespace polyfem::assembler
 			// 			Eigen::MatrixXd stress, stiffness;
 			// 			this->homogenization(F, val, stress, stiffness);
 			// 			return val;
-			// 		}, fgrad);
+			// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-6);
 
 			// 	grad = utils::flatten(stress_tensor);
-			// 	if (!fd::compare_gradient(grad, fgrad))
+			// 	if (!compare_matrix(grad, fgrad))
 			// 	{
 			// 		std::cout << "Gradient: " << grad.transpose() << std::endl;
 			// 		std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
@@ -597,14 +727,6 @@ namespace polyfem::assembler
 
 			double energy = 0;
 			homogenization(def_grad, energy, stress_tensor, hessian_temp);
-			{
-				Eigen::MatrixXd hessian_temp2 = hessian_temp;
-				for (int i = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-				for (int k = 0; k < size(); k++)
-				for (int l = 0; l < size(); l++)
-					hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
-			}
 			// {
 			// 	Eigen::MatrixXd fhess;
 			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
@@ -617,9 +739,11 @@ namespace polyfem::assembler
 			// 			this->homogenization(F, val, stress, stiffness);
 			// 			return utils::flatten(stress);
 			// 		},
-			// 		fhess);
+			// 		fhess,
+			// 		fd::AccuracyOrder::SECOND,
+			// 		1e-6);
 
-			// 	if (!fd::compare_hessian(hessian_temp, fhess))
+			// 	if (!compare_matrix(hessian_temp, fhess))
 			// 	{
 			// 		std::cout << "Hessian: " << hessian_temp << std::endl;
 			// 		std::cout << "Finite hessian: " << fhess << std::endl;
@@ -631,6 +755,15 @@ namespace polyfem::assembler
 			// 		logger().info("Hessian match!");
 			// 	}
 			// }
+
+			{
+				Eigen::MatrixXd hessian_temp2 = hessian_temp;
+				for (int i = 0; i < size(); i++)
+				for (int j = 0; j < size(); j++)
+				for (int k = 0; k < size(); k++)
+				for (int l = 0; l < size(); l++)
+					hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
+			}
 
 			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
 			Eigen::MatrixXd temp;

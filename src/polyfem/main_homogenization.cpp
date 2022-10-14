@@ -117,25 +117,42 @@ int main(int argc, char **argv)
 	state.build_basis();
 
     Eigen::MatrixXd def_grad(state.mesh->dimension(), state.mesh->dimension());
-    assert(state.args["materials"]["def_grad"].is_array());
-    int i = 0, j = 0;
-    for (const auto &r : state.args["materials"]["def_grad"])
-    {
-        assert(r.is_array());
-		j = 0;
-		for (const auto &c : r)
-        {
-			def_grad(i, j) = c;
-			j++;
-		}
-        i++;
-    }
+    // assert(state.args["materials"]["def_grad"].is_array());
+    // int i = 0, j = 0;
+    // for (const auto &r : state.args["materials"]["def_grad"])
+    // {
+    //     assert(r.is_array());
+	// 	j = 0;
+	// 	for (const auto &c : r)
+    //     {
+	// 		def_grad(i, j) = c;
+	// 		j++;
+	// 	}
+    //     i++;
+    // }
 
-    state.sol = state.solve_homogenized_field(def_grad);
+	const int N = 50;
+	for (int n = 0; n < N; n++)
+	{
+		def_grad << 0, 0,
+		            0, -n/(2.0*N);
+    	state.solve_homogenized_field(def_grad, state.sol);
+		state.out_geom.export_data(
+			state,
+			!state.args["time"].is_null(),
+			0, 0,
+			io::OutGeometryData::ExportOptions(state.args, state.mesh->is_linear(), state.problem->is_scalar(), state.solve_export_to_file),
+			"step_" + std::to_string(n) + ".vtu",
+			"", // nodes_path,
+			"", // solution_path,
+			"", // stress_path,
+			"", // mises_path,
+			state.is_contact_enabled(), state.solution_frames);
+	}
 
 	logger().info("total time: {}s", state.timings.total_time());
 
-	state.export_data();
+	// state.export_data();
 
 	return EXIT_SUCCESS;
 }
