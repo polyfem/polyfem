@@ -100,6 +100,8 @@ namespace polyfem::io
 
 		/// @brief exports everytihng, txt, vtu, etc
 		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
 		/// @param[in] is_time_dependent if the sim is time dependent
 		/// @param[in] tend_in end time
 		/// @param[in] dt delta t
@@ -113,6 +115,8 @@ namespace polyfem::io
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void export_data(
 			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &pressure,
 			const bool is_time_dependent,
 			const double tend_in,
 			const double dt,
@@ -128,6 +132,8 @@ namespace polyfem::io
 		/// saves the vtu file for time t
 		/// @param[in] path filename
 		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
@@ -135,6 +141,8 @@ namespace polyfem::io
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_vtu(const std::string &path,
 					  const State &state,
+					  const Eigen::MatrixXd &sol,
+					  const Eigen::MatrixXd &pressure,
 					  const double t,
 					  const double dt,
 					  const ExportOptions &opts,
@@ -144,11 +152,15 @@ namespace polyfem::io
 		/// saves the volume vtu file
 		/// @param[in] path filename
 		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
 		/// @param[in] t time
 		/// @param[in] opts export options
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_volume(const std::string &path,
 						 const State &state,
+						 const Eigen::MatrixXd &sol,
+						 const Eigen::MatrixXd &pressure,
 						 const double t,
 						 const ExportOptions &opts,
 						 std::vector<SolutionFrame> &solution_frames) const;
@@ -156,12 +168,16 @@ namespace polyfem::io
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
 		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_surface(const std::string &export_surface,
 						  const State &state,
+						  const Eigen::MatrixXd &sol,
+						  const Eigen::MatrixXd &pressure,
 						  const double dt_in,
 						  const ExportOptions &opts,
 						  const bool is_contact_enabled,
@@ -170,11 +186,13 @@ namespace polyfem::io
 		/// saves the wireframe
 		/// @param[in] name filename
 		/// @param[in] state state to get the data
+		/// @param[in] sol solution
 		/// @param[in] t time
 		/// @param[in] opts export options
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_wire(const std::string &name,
 					   const State &state,
+					   const Eigen::MatrixXd &sol,
 					   const double t,
 					   const ExportOptions &opts,
 					   std::vector<SolutionFrame> &solution_frames) const;

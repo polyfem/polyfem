@@ -366,7 +366,7 @@ namespace polyfem
 			return args["materials"]["type"];
 	}
 
-	void State::sol_to_pressure()
+	void State::sol_to_pressure(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		if (n_pressure_bases <= 0)
 		{
@@ -576,8 +576,6 @@ namespace polyfem
 		poly_edge_to_data.clear();
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		if (formulation() == "MultiModels")
 		{
@@ -910,8 +908,6 @@ namespace polyfem
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		igl::Timer timer;
 		timer.start();
@@ -1038,8 +1034,6 @@ namespace polyfem
 		}
 
 		stiffness.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 		mass.resize(0, 0);
 		avg_mass = 1;
 
@@ -1176,8 +1170,6 @@ namespace polyfem
 
 		// stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		timer.start();
 		logger().info("Assigning rhs...");
@@ -1220,7 +1212,7 @@ namespace polyfem
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void State::solve_problem()
+	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		if (!mesh)
 		{
@@ -1244,8 +1236,8 @@ namespace polyfem
 			return;
 		}
 
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
+		// sol.resize(0, 0);
+		// pressure.resize(0, 0);
 		stats.spectrum.setZero();
 
 		igl::Timer timer;
@@ -1258,7 +1250,7 @@ namespace polyfem
 			Eigen::saveMarket(stiffness, full_mat_path);
 		}
 
-		init_solve();
+		init_solve(sol, pressure);
 
 		if (problem->is_time_dependent())
 		{
@@ -1274,28 +1266,28 @@ namespace polyfem
 			}
 
 			if (formulation() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt);
+				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
 			else if (formulation() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt);
+				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled()) // Collisions add nonlinearity to the problem
-				solve_transient_linear(time_steps, t0, dt);
+				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_transient_tensor_nonlinear(time_steps, t0, dt);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol);
 		}
 		else
 		{
 			if (formulation() == "NavierStokes")
-				solve_navier_stokes();
+				solve_navier_stokes(sol, pressure);
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
-				solve_linear();
+				solve_linear(sol, pressure);
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
 			{
-				init_nonlinear_tensor_solve();
-				solve_tensor_nonlinear();
+				init_nonlinear_tensor_solve(sol);
+				solve_tensor_nonlinear(sol);
 				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
 				if (!u_path.empty())
 					write_matrix(u_path, sol);
