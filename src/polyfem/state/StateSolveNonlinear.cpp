@@ -123,7 +123,7 @@ namespace polyfem
 		energy_file << "i,elastic_energy,body_energy,inertia,contact_form,AL_energy,total_energy" << std::endl;
 		const auto save_energy = [&](int i) {
 			energy_file << fmt::format(
-				"{},{},{},{},{},{}\n", i,
+				"{},{},{},{},{},{},{}\n", i,
 				solve_data.elastic_form->value(sol),
 				solve_data.body_form->value(sol),
 				solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,

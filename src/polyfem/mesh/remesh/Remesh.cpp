@@ -11,6 +11,74 @@
 
 namespace polyfem::mesh
 {
+	namespace
+	{
+		Eigen::MatrixXd combine_projection_quantaties(const State &state)
+		{
+			if (state.solve_data.time_integrator == nullptr)
+				return Eigen::MatrixXd();
+
+			// not including current displacement as this will be handled as positions
+			Eigen::MatrixXd projection_quantities(state.sol.size(), 3 * state.solve_data.time_integrator->steps());
+			int i = 0;
+			for (const Eigen::VectorXd &x : state.solve_data.time_integrator->x_prevs())
+				projection_quantities.col(i++) = x;
+			for (const Eigen::VectorXd &v : state.solve_data.time_integrator->v_prevs())
+				projection_quantities.col(i++) = v;
+			for (const Eigen::VectorXd &a : state.solve_data.time_integrator->a_prevs())
+				projection_quantities.col(i++) = a;
+			assert(i == projection_quantities.cols());
+
+			return projection_quantities;
+		}
+
+		void split_projection_quantaties(
+			const State &state,
+			const Eigen::MatrixXd &projected_quantities,
+			std::vector<Eigen::VectorXd> &x_prevs,
+			std::vector<Eigen::VectorXd> &v_prevs,
+			std::vector<Eigen::VectorXd> &a_prevs)
+		{
+			if (state.solve_data.time_integrator == nullptr)
+				return;
+
+			const int n_vertices = state.mesh->n_vertices();
+			const int dim = state.mesh->dimension();
+			const int n_steps = state.solve_data.time_integrator->steps();
+
+			int offset = 0;
+
+			x_prevs.clear();
+			for (int i = 0; i < n_steps; ++i)
+			{
+				x_prevs.push_back(utils::reorder_matrix(
+					projected_quantities.col(offset + i), state.in_node_to_node,
+					n_vertices, dim));
+			}
+			offset += n_steps;
+
+			v_prevs.clear();
+			for (int i = 0; i < n_steps; ++i)
+			{
+				v_prevs.push_back(utils::reorder_matrix(
+					projected_quantities.col(offset + i), state.in_node_to_node,
+					n_vertices, dim));
+			}
+			offset += n_steps;
+
+			a_prevs.clear();
+			for (int i = 0; i < n_steps; ++i)
+			{
+				a_prevs.push_back(utils::reorder_matrix(
+					projected_quantities.col(offset + i), state.in_node_to_node,
+					n_vertices, dim));
+			}
+			offset += n_steps;
+
+			assert(offset == projected_quantities.cols());
+		}
+	} // namespace
+
 	void remesh(State &state, const double time, const double dt)
 	{
 		const int dim = state.mesh->dimension();
@@ -31,14 +99,16 @@ namespace polyfem::mesh
 		const std::vector<int> &body_ids = state.mesh->get_body_ids();
 		assert(body_ids.size() == elements.rows());
 
+		// not including current displacement as this will be handled as positions
+		Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state);
+
 		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state.obstacle);
-		remeshing.create_mesh(
+		WildRemeshing2D remeshing(state.assembler, state.formulation(), state.obstacle);
+		remeshing.init(
 			rest_positions,
 			rest_positions + utils::unflatten(state.sol, dim),
-			utils::unflatten(state.solve_data.time_integrator->v_prev(), dim),
-			utils::unflatten(state.solve_data.time_integrator->a_prev(), dim),
 			elements,
+			projection_quantities,
 			edge_to_boundary_id,
 			body_ids);
 
@@ -91,32 +161,18 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		const Eigen::MatrixXd U = remeshing.displacements();
-		const Eigen::MatrixXd V = remeshing.velocities();
-		const Eigen::MatrixXd A = remeshing.accelerations();
-		Eigen::MatrixXd U_reordered, V_reordered, A_reordered;
-		U_reordered.resizeLike(U);
-		V_reordered.resizeLike(V);
-		A_reordered.resizeLike(A);
-		assert(state.in_node_to_node.size() == state.mesh->n_vertices());
-		for (int i = 0; i < state.mesh->n_vertices(); ++i)
-		{
-			U_reordered.row(state.in_node_to_node[i]) = U.row(i);
-			V_reordered.row(state.in_node_to_node[i]) = V.row(i);
-			A_reordered.row(state.in_node_to_node[i]) = A.row(i);
-		}
-		const Eigen::VectorXd displacements = utils::flatten(U_reordered);
-		const Eigen::VectorXd velocities = utils::flatten(V_reordered);
-		const Eigen::VectorXd accelerations = utils::flatten(A_reordered);
-
-		state.sol = displacements;
+		state.sol = utils::flatten(utils::reorder_matrix(
+			remeshing.displacements(), state.in_node_to_node));
 
 		state.solve_data.rhs_assembler = state.build_rhs_assembler();
 		state.init_nonlinear_tensor_solve(time);
+
 		if (state.problem->is_time_dependent())
 		{
-			state.solve_data.time_integrator->init(
-				displacements, velocities, accelerations, dt);
+			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
+			split_projection_quantaties(
+				state, remeshing.projected_quantities(), x_prevs, v_prevs, a_prevs);
+			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
 	}
 } // namespace polyfem::mesh

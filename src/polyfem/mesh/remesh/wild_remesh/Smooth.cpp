@@ -15,7 +15,7 @@ namespace polyfem::mesh
 
 	bool WildRemeshing2D::smooth_before(const Tuple &t)
 	{
-		if (vertex_attrs[t.vid(*this)].frozen)
+		if (vertex_attrs[t.vid(*this)].fixed)
 			return false;
 
 		cache_before();

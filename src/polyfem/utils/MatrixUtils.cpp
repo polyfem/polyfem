@@ -446,3 +446,64 @@ void polyfem::utils::full_to_reduced_matrix(
 	reduced.setFromTriplets(entries.begin(), entries.end());
 	reduced.makeCompressed();
 }
+
+Eigen::MatrixXd polyfem::utils::reorder_matrix(
+	const Eigen::MatrixXd &in,
+	const Eigen::VectorXi &in_to_out,
+	int out_blocks,
+	const int block_size)
+{
+	constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
+	assert(in.rows() % block_size == 0);
+	assert(in_to_out.size() == in.rows() / block_size);
+
+	if (out_blocks < 0)
+		out_blocks = in.rows() / block_size;
+
+	Eigen::MatrixXd out = Eigen::MatrixXd::Constant(
+		out_blocks * block_size, in.cols(), NaN);
+
+	const int in_blocks = in.rows() / block_size;
+	for (int i = 0; i < in_blocks; ++i)
+	{
+		const int j = in_to_out[i];
+		if (j < 0)
+			continue;
+
+		out.middleRows(block_size * j, block_size) =
+			in.middleRows(block_size * i, block_size);
+	}
+
+	return out;
+}
+
+Eigen::MatrixXd polyfem::utils::unreorder_matrix(
+	const Eigen::MatrixXd &out,
+	const Eigen::VectorXi &in_to_out,
+	int in_blocks,
+	const int block_size)
+{
+	constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
+	assert(out.rows() % block_size == 0);
+
+	if (in_blocks < 0)
+		in_blocks = out.rows() / block_size;
+	assert(in_to_out.size() == in_blocks);
+
+	Eigen::MatrixXd in = Eigen::MatrixXd::Constant(
+		in_blocks * block_size, out.cols(), NaN);
+
+	for (int i = 0; i < in_blocks; i++)
+	{
+		const int j = in_to_out[i];
+		if (j < 0)
+			continue;
+
+		in.middleRows(block_size * i, block_size) =
+			out.middleRows(block_size * j, block_size);
+	}
+
+	return in;
+}

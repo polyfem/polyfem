@@ -5,6 +5,7 @@
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
@@ -35,16 +36,19 @@ namespace polyfem::mesh
 		constexpr double nan = std::numeric_limits<double>::quiet_NaN();
 	}
 
-	void WildRemeshing2D::create_mesh(
+	void WildRemeshing2D::init(
 		const Eigen::MatrixXd &rest_positions,
 		const Eigen::MatrixXd &positions,
-		const Eigen::MatrixXd &velocities,
-		const Eigen::MatrixXd &accelerations,
 		const Eigen::MatrixXi &triangles,
+		const Eigen::MatrixXd &projection_quantities,
 		const EdgeMap &edge_to_boundary_id,
 		const std::vector<int> &body_ids)
 	{
 		assert(triangles.size() > 0);
+
+		// --------------------------------------------------------------------
+		// Determine which vertices are on the boundary
+
 		Eigen::MatrixXi boundary_edges;
 		igl::boundary_facets(triangles, boundary_edges);
 
@@ -55,14 +59,15 @@ namespace polyfem::mesh
 			is_boundary_vertex[boundary_edges(i, 1)] = true;
 		}
 
+		// --------------------------------------------------------------------
+
 		// Register attributes
 		p_vertex_attrs = &vertex_attrs;
 		p_edge_attrs = &edge_attrs;
 		p_face_attrs = &face_attrs;
 
-		// Convert from eigen to internal representation (TODO: move to utils and remove it from all app)
+		// Convert from eigen to internal representation
 		std::vector<std::array<size_t, 3>> tri(triangles.rows());
-
 		for (int i = 0; i < triangles.rows(); i++)
 			for (int j = 0; j < 3; j++)
 				tri[i][j] = (size_t)triangles(i, j);
@@ -71,39 +76,22 @@ namespace polyfem::mesh
 		wmtk::TriMesh::create_mesh(positions.rows(), tri);
 
 		// Save the vertex position in the vertex attributes
-		for (unsigned i = 0; i < positions.rows(); ++i)
-		{
-			vertex_attrs[i].rest_position = rest_positions.row(i).head<DIM>();
-			vertex_attrs[i].position = positions.row(i).head<DIM>();
-			vertex_attrs[i].velocity = velocities.row(i).head<DIM>();
-			vertex_attrs[i].acceleration = accelerations.row(i).head<DIM>();
-			vertex_attrs[i].frozen = is_boundary_vertex[i];
-		}
+		set_rest_positions(rest_positions);
+		set_positions(positions);
+		n_quantities = projection_quantities.cols();
+		set_projected_quantities(projection_quantities);
+		set_fixed(is_boundary_vertex);
 
-		for (const Tuple &e : get_edges())
-		{
-			size_t e0 = e.vid(*this);
-			size_t e1 = e.switch_vertex(*this).vid(*this);
-			if (e1 < e0)
-				std::swap(e0, e1);
-			edge_attrs[e.eid(*this)].boundary_id = edge_to_boundary_id.at(std::make_pair(e0, e1));
-		}
-
-		for (const Tuple &f : get_faces())
-		{
-			face_attrs[f.fid(*this)].body_id = body_ids.at(f.fid(*this));
-		}
+		set_boundary_ids(edge_to_boundary_id);
+		set_body_ids(body_ids);
 	}
+
+	// ========================================================================
+	// Getters
 
 	VERTEX_ATTRIBUTE_GETTER(rest_positions, rest_position)
 	VERTEX_ATTRIBUTE_GETTER(positions, position)
 	VERTEX_ATTRIBUTE_GETTER(displacements, displacement())
-	VERTEX_ATTRIBUTE_GETTER(velocities, velocity)
-	VERTEX_ATTRIBUTE_GETTER(accelerations, acceleration)
-
-	VERTEX_ATTRIBUTE_SETTER(set_positions, position)
-	VERTEX_ATTRIBUTE_SETTER(set_velocities, velocity)
-	VERTEX_ATTRIBUTE_SETTER(set_accelerations, acceleration)
 
 	Eigen::MatrixXi WildRemeshing2D::edges() const
 	{
@@ -112,27 +100,10 @@ namespace polyfem::mesh
 		for (int i = 0; i < edges.size(); ++i)
 		{
 			const Tuple &e = edges[i];
-			// E(e.eid(*this), 0) = e.vid(*this);
-			// E(e.eid(*this), 1) = e.switch_vertex(*this).vid(*this);
 			E(i, 0) = e.vid(*this);
 			E(i, 1) = e.switch_vertex(*this).vid(*this);
 		}
 		return E;
-	}
-
-	WildRemeshing2D::EdgeMap WildRemeshing2D::boundary_ids() const
-	{
-		const std::vector<Tuple> edges = get_edges();
-		EdgeMap boundary_ids;
-		for (int i = 0; i < edges.size(); ++i)
-		{
-			size_t e0 = edges[i].vid(*this);
-			size_t e1 = edges[i].switch_vertex(*this).vid(*this);
-			if (e1 < e0)
-				std::swap(e0, e1);
-			boundary_ids[std::make_pair(e0, e1)] = edge_attrs[edges[i].eid(*this)].boundary_id;
-		}
-		return boundary_ids;
 	}
 
 	Eigen::MatrixXi WildRemeshing2D::triangles() const
@@ -151,6 +122,35 @@ namespace polyfem::mesh
 		return triangles;
 	}
 
+	Eigen::MatrixXd WildRemeshing2D::projected_quantities() const
+	{
+		Eigen::MatrixXd projected_quantities =
+			Eigen::MatrixXd::Constant(DIM * vert_capacity(), n_quantities, nan);
+
+		for (const Tuple &t : get_vertices())
+		{
+			const int vi = t.vid(*this);
+			projected_quantities.middleRows<DIM>(DIM * vi) = vertex_attrs[vi].projection_quantities;
+		}
+
+		return projected_quantities;
+	}
+
+	WildRemeshing2D::EdgeMap WildRemeshing2D::boundary_ids() const
+	{
+		const std::vector<Tuple> edges = get_edges();
+		EdgeMap boundary_ids;
+		for (int i = 0; i < edges.size(); ++i)
+		{
+			size_t e0 = edges[i].vid(*this);
+			size_t e1 = edges[i].switch_vertex(*this).vid(*this);
+			if (e1 < e0)
+				std::swap(e0, e1);
+			boundary_ids[std::make_pair(e0, e1)] = edge_attrs[edges[i].eid(*this)].boundary_id;
+		}
+		return boundary_ids;
+	}
+
 	std::vector<int> WildRemeshing2D::body_ids() const
 	{
 		const std::vector<Tuple> faces = get_faces();
@@ -162,6 +162,54 @@ namespace polyfem::mesh
 		}
 		return body_ids;
 	}
+
+	// ========================================================================
+	// Setters
+
+	VERTEX_ATTRIBUTE_SETTER(set_rest_positions, rest_position)
+	VERTEX_ATTRIBUTE_SETTER(set_positions, position)
+
+	void WildRemeshing2D::set_fixed(const std::vector<bool> &fixed)
+	{
+		assert(fixed.size() == vert_capacity());
+		for (const Tuple &t : get_vertices())
+			vertex_attrs[t.vid(*this)].fixed = fixed[t.vid(*this)];
+	}
+
+	void WildRemeshing2D::set_projected_quantities(const Eigen::MatrixXd &projected_quantities)
+	{
+		assert(projected_quantities.rows() == DIM * vert_capacity());
+		assert(projected_quantities.cols() == n_quantities);
+
+		for (const Tuple &t : get_vertices())
+		{
+			const int vi = t.vid(*this);
+			vertex_attrs[vi].projection_quantities =
+				projected_quantities.middleRows<DIM>(DIM * vi);
+		}
+	}
+
+	void WildRemeshing2D::set_boundary_ids(const EdgeMap &edge_to_boundary_id)
+	{
+		for (const Tuple &e : get_edges())
+		{
+			size_t e0 = e.vid(*this);
+			size_t e1 = e.switch_vertex(*this).vid(*this);
+			if (e1 < e0)
+				std::swap(e0, e1);
+			edge_attrs[e.eid(*this)].boundary_id = edge_to_boundary_id.at(std::make_pair(e0, e1));
+		}
+	}
+
+	void WildRemeshing2D::set_body_ids(const std::vector<int> &body_ids)
+	{
+		for (const Tuple &f : get_faces())
+		{
+			face_attrs[f.fid(*this)].body_id = body_ids.at(f.fid(*this));
+		}
+	}
+
+	// ========================================================================
 
 	void WildRemeshing2D::write_obj(const std::string &path, bool deformed) const
 	{
@@ -180,6 +228,7 @@ namespace polyfem::mesh
 				vertex_attrs[its[0]].rest_position,
 				vertex_attrs[its[1]].rest_position,
 				vertex_attrs[its[2]].rest_position);
+			assert(area > 0);
 
 			const double AMIPS_energy = solver::AMIPSForm::energy(
 				vertex_attrs[its[0]].rest_position,
@@ -188,6 +237,7 @@ namespace polyfem::mesh
 				vertex_attrs[its[0]].position,
 				vertex_attrs[its[1]].position,
 				vertex_attrs[its[2]].position);
+			assert(energy >= 0);
 
 			energy += area * AMIPS_energy;
 		}
@@ -275,7 +325,7 @@ namespace polyfem::mesh
 	{
 		std::vector<int> boundary_nodes;
 		for (const Tuple &t : get_vertices())
-			if (vertex_attrs[t.vid(*this)].frozen)
+			if (vertex_attrs[t.vid(*this)].fixed)
 				boundary_nodes.push_back(t.vid(*this));
 		return boundary_nodes;
 	}
@@ -284,8 +334,7 @@ namespace polyfem::mesh
 	{
 		rest_positions_before = rest_positions();
 		positions_before = positions();
-		velocities_before = velocities();
-		accelerations_before = accelerations();
+		projected_quantities_before = projected_quantities();
 		triangles_before = triangles();
 		energy_before = compute_global_energy();
 		write_rest_obj("rest_mesh_before.obj");
@@ -353,7 +402,7 @@ namespace polyfem::mesh
 
 				for (int i = 0; i < V.rows(); i++)
 				{
-					if ((V.row(i) - v).norm() < 1e-10)
+					if ((V.row(i) - v).norm() < 1e-14)
 					{
 						if (vertex_to_basis[i] == -1)
 							vertex_to_basis[i] = basis_id;
@@ -375,8 +424,6 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		const int num_vertices_before = rest_positions_before.rows();
-
 		// Assume isoparametric
 		std::vector<polyfem::basis::ElementBases> bases_before;
 		Eigen::VectorXi vertex_to_basis_before;
@@ -385,18 +432,11 @@ namespace polyfem::mesh
 		n_bases_before += obstacle.n_vertices();
 
 		// Old values of independent variables
-		const Eigen::MatrixXd displacements_before = positions_before - rest_positions_before;
-		Eigen::MatrixXd y(n_bases_before * DIM, 3);
-		for (int i = 0; i < num_vertices_before; i++)
-		{
-			const int j = vertex_to_basis_before[i];
-			if (j < 0)
-				continue;
-
-			y.block<DIM, 1>(j * DIM, 0) = displacements_before.row(i).transpose();
-			y.block<DIM, 1>(j * DIM, 1) = velocities_before.row(i).transpose();
-			y.block<DIM, 1>(j * DIM, 2) = accelerations_before.row(i).transpose();
-		}
+		Eigen::MatrixXd y(n_bases_before * DIM, 1 + n_quantities);
+		y.col(0) = utils::flatten(utils::reorder_matrix(
+			positions_before - rest_positions_before, vertex_to_basis_before, n_bases_before));
+		y.rightCols(n_quantities) = utils::reorder_matrix(
+			projected_quantities_before, vertex_to_basis_before, n_bases_before, DIM);
 
 		// --------------------------------------------------------------------
 
@@ -436,22 +476,10 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		Eigen::MatrixXd proposed_displacements = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
-		Eigen::MatrixXd proposed_velocities = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
-		Eigen::MatrixXd proposed_accelerations = Eigen::MatrixXd::Constant(num_vertices, DIM, nan);
-		for (int i = 0; i < num_vertices; i++)
-		{
-			const int j = vertex_to_basis[i];
-			if (j < 0)
-				continue;
-			proposed_displacements.row(i) = x.block<DIM, 1>(j * DIM, 0).transpose();
-			proposed_velocities.row(i) = x.block<DIM, 1>(j * DIM, 1).transpose();
-			proposed_accelerations.row(i) = x.block<DIM, 1>(j * DIM, 2).transpose();
-		}
-
-		set_positions(proposed_rest_positions + proposed_displacements);
-		set_velocities(proposed_velocities);
-		set_accelerations(proposed_accelerations);
+		set_positions(proposed_rest_positions + utils::unreorder_matrix( //
+						  utils::unflatten(x.col(0), DIM), vertex_to_basis, num_vertices));
+		set_projected_quantities(utils::unreorder_matrix(
+			x.rightCols(n_quantities), vertex_to_basis, num_vertices, DIM));
 
 		write_rest_obj("proposed_rest_mesh.obj");
 		write_deformed_obj("proposed_deformed_mesh.obj");

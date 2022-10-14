@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/ExecutorUtils.hpp>
 
@@ -19,7 +20,7 @@ namespace polyfem::mesh
 		// if ((e1.position - e0.position).norm() < 5e-3)
 		// 	return false;
 
-		// if (e0.frozen && e1.frozen)
+		// if (e0.fixed && e1.fixed)
 		// 	return false;
 
 		edge_cache = EdgeCache(*this, t);
@@ -39,12 +40,11 @@ namespace polyfem::mesh
 		// const std::vector<Tuple> new_edges = new_edges_after(new_faces);
 
 		vertex_attrs[new_vid] = {
-			.rest_position = (v0.rest_position + v1.rest_position) / 2.0,
-			.position = (v0.position + v1.position) / 2.0,
-			.velocity = (v0.velocity + v1.velocity) / 2.0,
-			.acceleration = (v0.acceleration + v1.acceleration) / 2.0,
-			.partition_id = v0.partition_id,
-			.frozen = v0.frozen && v1.frozen,
+			(v0.rest_position + v1.rest_position) / 2.0,
+			(v0.position + v1.position) / 2.0,
+			(v0.projection_quantities + v1.projection_quantities) / 2.0,
+			v0.fixed && v1.fixed,
+			v0.partition_id,
 		};
 
 		// Assign edge attributes to the new edges
@@ -146,39 +146,73 @@ namespace polyfem::mesh
 			// 		- m.vertex_attrs[t.switch_vertex(m).vid(m)].position)
 			// 	.squaredNorm();
 
+			std::vector<std::array<Tuple, 3>> faces;
+			faces.push_back(m.oriented_tri_vertices(t));
+			if (t.switch_face(m))
+				faces.push_back(m.oriented_tri_vertices(t.switch_face(m).value()));
+
 			std::vector<polyfem::basis::ElementBases> bases;
 			Eigen::VectorXi vertex_to_basis;
-			Eigen::MatrixXi F;
+
+			std::unordered_map<int, int> vi_map;
+			Eigen::MatrixXi F(faces.size(), 3);
+			for (int fi = 0; fi < faces.size(); fi++)
 			{
-				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
-
-				F.resize(1, 3);
-				F << vs[0].vid(m), vs[1].vid(m), vs[2].vid(m);
-
-				Eigen::MatrixXd V(3, DIM);
-				V.row(0) = m.vertex_attrs[F(0, 0)].position;
-				V.row(1) = m.vertex_attrs[F(0, 1)].position;
-				V.row(2) = m.vertex_attrs[F(0, 2)].position;
-
-				WildRemeshing2D::build_bases(V, F, bases, vertex_to_basis);
+				for (int i = 0; i < 3; ++i)
+				{
+					const int vi = faces[fi][i].vid(m);
+					if (vi_map.find(vi) == vi_map.end())
+						vi_map[vi] = vi_map.size();
+					F(fi, i) = vi_map[vi];
+				}
 			}
 
-			ElementAssemblyValues vals;
-			vals.compute(
-				/*el_index=*/0, /*is_volume=*/DIM == 3, bases[0], /*gbases=*/bases[0]);
+			Eigen::MatrixXd V(vi_map.size(), DIM), U(vi_map.size(), DIM);
+			for (const auto &[vi, i] : vi_map)
+			{
+				V.row(i) = m.vertex_attrs[vi].rest_position;
+				U.row(i) = m.vertex_attrs[vi].displacement();
+			}
 
-			assert(MAX_QUAD_POINTS == -1 || vals.quadrature.weights.size() < MAX_QUAD_POINTS);
-			QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+			WildRemeshing2D::build_bases(V, F, bases, vertex_to_basis);
 
-			Eigen::VectorXd displacements(3 * DIM);
-			for (int i = 0; i < 3; i++)
-				displacements.segment<DIM>(vertex_to_basis[i] * DIM) =
-					m.vertex_attrs[F(0, i)].displacement();
+			Eigen::VectorXd displacements = utils::flatten(utils::reorder_matrix(U, vertex_to_basis));
 
-			const double energy = neo_hookean.compute_energy(NonLinearAssemblerData(
-				vals, /*dt=*/-1, displacements, /*displacement_prev=*/Eigen::MatrixXd(), da));
-			assert(std::isfinite(energy));
-			return energy;
+			// const AssemblyValsCache cache;
+			// const double energy = m.assembler.assemble_energy(
+			// 	m.assembler_formulation,
+			// 	/*is_volume=*/DIM == 3,
+			// 	bases,
+			// 	/*gbases=*/bases,
+			// 	cache,
+			// 	/*dt=*/-1,
+			// 	displacements,
+			// 	/*displacement_prev=*/Eigen::MatrixXd());
+			// assert(std::isfinite(energy));
+			// return energy / F.rows(); // average energy per face
+
+			double max_stress = -std::numeric_limits<double>::infinity();
+			for (int el_id = 0; el_id < F.rows(); el_id++)
+			{
+				Eigen::MatrixXd local_pts(1, DIM);
+				local_pts << 1 / 3.0, 1 / 3.0;
+
+				Eigen::MatrixXd stress(1, 1);
+				m.assembler.compute_scalar_value(
+					m.assembler_formulation,
+					el_id,
+					bases[el_id],
+					/*gbases=*/bases[el_id],
+					local_pts,
+					displacements,
+					stress);
+				stress *= utils::triangle_area_2D(
+					V.row(F(el_id, 0)), V.row(F(el_id, 1)), V.row(F(el_id, 2)));
+
+				max_stress = std::max(max_stress, stress(0));
+			}
+			assert(std::isfinite(max_stress));
+			return max_stress;
 		};
 
 		executor.renew_neighbor_tuples = [](const WildRemeshing2D &m, std::string op, const std::vector<Tuple> &tris) -> Operations {

@@ -115,5 +115,29 @@ namespace polyfem
 			const std::vector<int> &removed_vars,
 			const StiffnessMatrix &full,
 			StiffnessMatrix &reduced);
+
+		/// @brief Reorder row blocks in a matrix.
+		/// @param in Input matrix.
+		/// @param in_to_out Mapping from input blocks to output blocks.
+		/// @param out_blocks Number of blocks in the output matrix.
+		/// @param block_size Size of each block.
+		/// @return Reordered matrix.
+		Eigen::MatrixXd reorder_matrix(
+			const Eigen::MatrixXd &in,
+			const Eigen::VectorXi &in_to_out,
+			int out_blocks = -1,
+			const int block_size = 1);
+
+		/// @brief Undo the reordering of row blocks in a matrix.
+		/// @param out Reordered matrix.
+		/// @param in_to_out Mapping from input blocks to output blocks.
+		/// @param in_blocks Number of blocks in the input matrix.
+		/// @param block_size Size of each block.
+		/// @return Unreordered matrix.
+		Eigen::MatrixXd unreorder_matrix(
+			const Eigen::MatrixXd &out,
+			const Eigen::VectorXi &in_to_out,
+			int in_blocks = -1,
+			const int block_size = 1);
 	} // namespace utils
 } // namespace polyfem

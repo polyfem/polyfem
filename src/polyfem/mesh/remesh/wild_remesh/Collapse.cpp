@@ -1,4 +1,5 @@
 #include <polyfem/mesh/remesh/WildRemesh2D.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
 
@@ -9,8 +10,8 @@ namespace polyfem::mesh
 		if (!super::collapse_edge_before(t))
 			return false;
 
-		if (vertex_attrs[t.vid(*this)].frozen
-			|| vertex_attrs[t.switch_vertex(*this).vid(*this)].frozen)
+		if (vertex_attrs[t.vid(*this)].fixed
+			|| vertex_attrs[t.switch_vertex(*this).vid(*this)].fixed)
 		{
 			return false;
 		}
@@ -27,7 +28,7 @@ namespace polyfem::mesh
 
 		vertex_attrs[vid].rest_position = (edge_cache.v0.rest_position + edge_cache.v1.rest_position) / 2.0;
 		vertex_attrs[vid].partition_id = edge_cache.v0.partition_id;
-		vertex_attrs[vid].frozen = false;
+		vertex_attrs[vid].fixed = false;
 
 		// TODO: set the boundary_id of the new edges
 

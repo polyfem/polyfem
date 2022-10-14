@@ -1,6 +1,7 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
 
 #include <wmtk/TriMesh.h>
 #include <wmtk/ExecutionScheduler.hpp>
@@ -12,67 +13,95 @@ namespace polyfem::mesh
 	public:
 		typedef wmtk::TriMesh super;
 
-		WildRemeshing2D(const Obstacle &obstacle)
-			: wmtk::TriMesh(), obstacle(obstacle) {}
+		/// @brief Construct a new WildRemeshing2D object
+		/// @param assembler Elastic energy assembler
+		/// @param assembler_formulation Name of the assembler formulation
+		/// @param obstacle Collision obstacles (not remeshed)
+		WildRemeshing2D(
+			const assembler::AssemblerUtils &assembler,
+			const std::string &assembler_formulation,
+			const Obstacle &obstacle)
+			: wmtk::TriMesh(),
+			  assembler(assembler),
+			  assembler_formulation(assembler_formulation),
+			  obstacle(obstacle) {}
 
 		virtual ~WildRemeshing2D(){};
 
+		/// @brief Dimension of the mesh
 		static constexpr int DIM = 2;
+		/// @brief Current execuation policy (sequencial or parallel)
 		static constexpr wmtk::ExecutionPolicy EXECUTION_POLICY = wmtk::ExecutionPolicy::kSeq;
+		/// @brief Map from a (sorted) edge to an integer (ID)
 		using EdgeMap = std::unordered_map<std::pair<int, int>, int, polyfem::utils::HashPair>;
 
-		// Initializes the mesh
-		void create_mesh(
+		/// @brief Initialize the mesh
+		/// @param rest_positions Rest positions of the mesh (|V| × DIM)
+		/// @param positions Current positions of the mesh (|V| × DIM)
+		/// @param triangles Triangles of the mesh (|T| × 3)
+		/// @param projection_quantities Quantities to be projected to the new mesh (DIM rows per vertex and 1 column per quantity)
+		/// @param edge_to_boundary_id Map from edge to boundary id (of size |E|)
+		/// @param body_ids Body ids of the mesh (of size |T|)
+		void init(
 			const Eigen::MatrixXd &rest_positions,
 			const Eigen::MatrixXd &positions,
-			const Eigen::MatrixXd &velocities,
-			const Eigen::MatrixXd &accelerations,
 			const Eigen::MatrixXi &triangles,
+			const Eigen::MatrixXd &projection_quantities,
 			const EdgeMap &edge_to_boundary_id,
 			const std::vector<int> &body_ids);
 
-		/// Exports rest positions of the stored mesh
+		/// @brief Exports rest positions of the stored mesh
 		Eigen::MatrixXd rest_positions() const;
-		/// Exports positions of the stored mesh
+		/// @brief Exports positions of the stored mesh
 		Eigen::MatrixXd displacements() const;
-		/// Exports displacements of the stored mesh
+		/// @brief Exports displacements of the stored mesh
 		Eigen::MatrixXd positions() const;
-		/// Exports velocities of the stored mesh
-		Eigen::MatrixXd velocities() const;
-		/// Exports accelerations of the stored mesh
-		Eigen::MatrixXd accelerations() const;
-		/// Exports edges of the stored mesh
+		/// @brief Exports edges of the stored mesh
 		Eigen::MatrixXi edges() const;
-		/// Exports boundary ids of the stored mesh
-		EdgeMap boundary_ids() const;
-		/// Exports triangles of the stored mesh
+		/// @brief Exports triangles of the stored mesh
 		Eigen::MatrixXi triangles() const;
-		/// Exports body ids of the stored mesh
+		/// @brief Exports projected quantities of the stored mesh
+		Eigen::MatrixXd projected_quantities() const;
+		/// @brief Exports boundary ids of the stored mesh
+		EdgeMap boundary_ids() const;
+		/// @brief Exports body ids of the stored mesh
 		std::vector<int> body_ids() const;
 
-		/// Set positions of the stored mesh
+		/// @brief Set rest positions of the stored mesh
+		void set_rest_positions(const Eigen::MatrixXd &positions);
+		/// @brief Set deformed positions of the stored mesh
 		void set_positions(const Eigen::MatrixXd &positions);
-		/// Set velocities of the stored mesh
-		void set_velocities(const Eigen::MatrixXd &velocities);
-		/// Set accelerations of the stored mesh
-		void set_accelerations(const Eigen::MatrixXd &accelerations);
+		/// @brief Set projected quantities of the stored mesh
+		void set_projected_quantities(const Eigen::MatrixXd &projected_quantities);
+		/// @brief Set if a vertex is fixed
+		void set_fixed(const std::vector<bool> &fixed);
+		/// @brief Set the boundary IDs of all edges
+		void set_boundary_ids(const EdgeMap &edge_to_boundary_id);
+		/// @brief Set the body IDs of all triangles
+		void set_body_ids(const std::vector<int> &body_ids);
 
-		/// Writes a triangle mesh in OBJ format
+		/// @brief Writes a triangle mesh in OBJ format
+		/// @param path Output path
+		/// @param deformed If true, writes deformed positions, otherwise rest positions
 		void write_obj(const std::string &path, bool deformed) const;
+		/// @brief Writes a triangle mesh of the rest mesh in OBJ format
+		/// @param path Output path
 		void write_rest_obj(const std::string &path) const { write_obj(path, false); }
+		/// @brief Writes a triangle mesh of the deformed mesh in OBJ format
+		/// @param path Output path
 		void write_deformed_obj(const std::string &path) const { write_obj(path, true); }
 
-		/// Compute the global energy of the mesh
+		/// @brief Compute the global energy of the mesh
 		double compute_global_energy() const;
 		double compute_global_wicke_measure() const;
 
-		// Check if a triangle is inverted
+		/// @brief Check if a triangle is inverted
 		bool is_inverted(const Tuple &loc) const;
 
-		// Check if invariants
+		/// @brief Check if invariants are satisfied
 		bool invariants(const std::vector<Tuple> &new_tris) override;
 
-		// Update the mesh position
+		/// @brief Update the mesh positions
 		void update_positions();
 
 		// Smoothing
@@ -96,10 +125,12 @@ namespace polyfem::mesh
 		{
 			Eigen::Vector2d rest_position;
 			Eigen::Vector2d position;
-			Eigen::Vector2d velocity;
-			Eigen::Vector2d acceleration;
+
+			/// @brief Quantaties to be projected (DIM × n_quantities)
+			Eigen::MatrixXd projection_quantities;
+
+			bool fixed = false;
 			size_t partition_id = 0; // Vertices marked as fixed cannot be modified by any local operation
-			bool frozen = false;
 
 			Eigen::Vector2d displacement() const { return position - rest_position; }
 		};
@@ -107,8 +138,6 @@ namespace polyfem::mesh
 
 		struct FaceAttributes
 		{
-			// polyfem::basis::ElementBases bases;
-			// polyfem::basis::ElementBases geom_bases;
 			int body_id = 0;
 		};
 		wmtk::AttributeCollection<FaceAttributes> face_attrs;
@@ -120,27 +149,39 @@ namespace polyfem::mesh
 		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
 
 	protected:
-		/// Get the boundary nodes of the stored mesh
+		/// @brief Get the boundary nodes of the stored mesh
 		std::vector<int> boundary_nodes() const;
 
+		/// @brief Build bases for a given mesh (V, F)
+		/// @param V Matrix of vertex (rest) positions
+		/// @param F Matrix of triangle indices
+		/// @param bases Output element bases
+		/// @param vertex_to_basis Map from vertex to reordered nodes
+		/// @return Number of bases
 		static int build_bases(
 			const Eigen::MatrixXd &V,
 			const Eigen::MatrixXi &F,
 			std::vector<polyfem::basis::ElementBases> &bases,
 			Eigen::VectorXi &vertex_to_basis);
 
+		const assembler::AssemblerUtils &assembler;
+		const std::string &assembler_formulation;
+		const Obstacle &obstacle;
+		/// @brief Number of projection quantities (not including the position)
+		int n_quantities;
+
+		/// @brief Cache quantaties before applying an operation
 		void cache_before();
 
-		const Obstacle &obstacle;
-
-		// int old_n_bases;
-		// std::vector<polyfem::basis::ElementBases> old_bases;
-		// const std::vector<polyfem::basis::ElementBases> old_geom_bases;
+		/// @brief Rest positions of the mesh before an operation
 		Eigen::MatrixXd rest_positions_before;
+		/// @brief Deformed positions of the mesh before an operation
 		Eigen::MatrixXd positions_before;
-		Eigen::MatrixXd velocities_before;
-		Eigen::MatrixXd accelerations_before;
+		/// @brief Triangled before an operation
 		Eigen::MatrixXi triangles_before;
+		/// @brief DIM rows per vertex and 1 column per quantity
+		Eigen::MatrixXd projected_quantities_before;
+		/// @brief Energy before an operation
 		double energy_before;
 
 		struct EdgeCache
