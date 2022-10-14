@@ -92,8 +92,11 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.assemble_stiffness_mat();
 	state.assemble_rhs();
 
-	state.solve_problem();
-	state.compute_errors();
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
+
+	state.solve_problem(sol, pressure);
+	state.compute_errors(sol);
 
 	// state.save_vtu("debug.vtu", 1.);
 
@@ -173,8 +176,11 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	state.assemble_stiffness_mat();
 	state.assemble_rhs();
 
-	state.solve_problem();
-	state.compute_errors();
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
+
+	state.solve_problem(sol, pressure);
+	state.compute_errors(sol);
 
 	// state.save_vtu("debug.vtu", 1.);
 
