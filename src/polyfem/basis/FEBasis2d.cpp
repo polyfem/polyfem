@@ -753,8 +753,8 @@ int FEBasis2d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, discr_order * 2 + 1);
+			const int real_order = std::max(quadrature_order, (2 * discr_order - 1) * 2 + 1);
+			const int real_mass_order = std::max(mass_quadrature_order, 2 * discr_order * 2 + 1);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				QuadQuadrature quad_quadrature;
 				quad_quadrature.get_quadrature(real_order, quad);
@@ -1147,7 +1147,7 @@ int FEBasis2d::build_bases(
 
 					if (mesh.is_cube(e))
 					{
-						//TODO
+						// TODO
 						assert(false);
 					}
 					else if (mesh.is_simplex(e))
