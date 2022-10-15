@@ -199,7 +199,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 
 	utils::SpareMatrixCache mat_cache;
 
-	for (int rand = 0; rand < 5; ++rand)
+	for (int rand = 0; rand < 1; ++rand)
 	{
 		for (int p = 0; p < state.n_bases; p++)
 		{
