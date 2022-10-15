@@ -186,7 +186,7 @@ void State::solve_nonlinear_homogenization()
 
             Eigen::VectorXd full;
             homo_problem->reduced_to_full(tmp_sol, full);
-            sol.col(i * dim + j) = full;
+            sol.col(i * dim + j) = -full;
         }
     }
 }

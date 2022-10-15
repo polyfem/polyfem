@@ -2244,6 +2244,16 @@
         "doc": "Poisson's ratio"
     },
     {
+        "pointer": "/materials/*/E",
+        "type": "string",
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
+        "type": "string",
+        "doc": "Poisson's ratio"
+    },
+    {
         "pointer": "/materials/*/viscosity",
         "type": "float",
         "doc": "Fuild's viscosity"
