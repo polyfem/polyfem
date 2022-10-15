@@ -245,7 +245,10 @@ namespace polyfem
 				problem->set_parameters(tmp);
 			}
 			// important for the BC
-			problem->set_parameters(args["boundary_conditions"]);
+
+			auto bc = args["boundary_conditions"];
+			bc["root_path"] = root_path();
+			problem->set_parameters(bc);
 			problem->set_parameters(args["initial_conditions"]);
 
 			problem->set_parameters(args["output"]);

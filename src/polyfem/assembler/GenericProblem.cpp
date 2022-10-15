@@ -21,6 +21,12 @@ namespace polyfem
 				for (size_t i = 0; i < j_boundary_tmp.size(); ++i)
 				{
 					const auto &tmp = j_boundary_tmp[i];
+
+					if (tmp.is_string())
+					{
+						j_boundary.push_back(tmp);
+						continue;
+					}
 					if (!tmp.contains("id"))
 						continue;
 
