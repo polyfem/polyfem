@@ -1,7 +1,7 @@
 var searchData=
 [
   ['l2_5ferr_0',['l2_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26',1,'polyfem::io::OutStatsData']]],
-  ['lambda_5for_5fe_5f_1',['lambda_or_E_',['../classpolyfem_1_1_lame_parameters.html#a2a57d1ca9744a7335d160548da60ed20',1,'polyfem::LameParameters']]],
+  ['lambda_5for_5fe_5f_1',['lambda_or_E_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#a39e24fe063203fcaf6e9c71a9e7aed0f',1,'polyfem::assembler::LameParameters']]],
   ['lambdaa_2',['lambdaa',['../namespaceeigs.html#a4aaad36d400d8a14a1a8cfd4101d9163',1,'eigs']]],
   ['lambdas_3',['lambdas',['../namespaceeigs.html#a5183913e478c91d4dd02e2a51b21c226',1,'eigs']]],
   ['laplacian_5f_4',['laplacian_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#ac9b1ca490356d93d1d7c0070a833ee33',1,'polyfem::assembler::AssemblerUtils']]],

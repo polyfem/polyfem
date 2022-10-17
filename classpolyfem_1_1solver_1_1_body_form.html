@@ -141,9 +141,9 @@ Collaboration diagram for polyfem::solver::BodyForm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aebce643481177f0a825138837f93a85e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#aebce643481177f0a825138837f93a85e">BodyForm</a> (const int ndof, const int n_pressure_bases, const std::vector&lt; int &gt; &amp;boundary_nodes, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const int n_boundary_samples, const Eigen::MatrixXd &amp;rhs, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, const <a class="el" href="classpolyfem_1_1_density.html">Density</a> &amp;density, const bool apply_DBC, const bool is_formulation_mixed, const bool is_time_dependent)</td></tr>
-<tr class="memdesc:aebce643481177f0a825138837f93a85e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Body <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <a href="classpolyfem_1_1solver_1_1_body_form.html#aebce643481177f0a825138837f93a85e">More...</a><br /></td></tr>
-<tr class="separator:aebce643481177f0a825138837f93a85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae79c6932d834cbe1dba199ba0cbfec12"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12">BodyForm</a> (const int ndof, const int n_pressure_bases, const std::vector&lt; int &gt; &amp;boundary_nodes, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const int n_boundary_samples, const Eigen::MatrixXd &amp;rhs, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">assembler::Density</a> &amp;density, const bool apply_DBC, const bool is_formulation_mixed, const bool is_time_dependent)</td></tr>
+<tr class="memdesc:ae79c6932d834cbe1dba199ba0cbfec12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Body <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <a href="classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12">More...</a><br /></td></tr>
+<tr class="separator:ae79c6932d834cbe1dba199ba0cbfec12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59038ae41bd1beec9805dacdf2194d85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a59038ae41bd1beec9805dacdf2194d85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time dependent quantities.  <a href="classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85">More...</a><br /></td></tr>
 <tr class="separator:a59038ae41bd1beec9805dacdf2194d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -268,8 +268,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a0f22a36c134ec75dbe58436071f47524"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a0f22a36c134ec75dbe58436071f47524">rhs_assembler_</a></td></tr>
 <tr class="memdesc:a0f22a36c134ec75dbe58436071f47524"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the RHS assembler.  <a href="classpolyfem_1_1solver_1_1_body_form.html#a0f22a36c134ec75dbe58436071f47524">More...</a><br /></td></tr>
 <tr class="separator:a0f22a36c134ec75dbe58436071f47524"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad64f374df59bf5f9f6b5e0646d51dd07"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_density.html">Density</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#ad64f374df59bf5f9f6b5e0646d51dd07">density_</a></td></tr>
-<tr class="separator:ad64f374df59bf5f9f6b5e0646d51dd07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68df578bd1cb02193f22880fb21eb777"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">assembler::Density</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a68df578bd1cb02193f22880fb21eb777">density_</a></td></tr>
+<tr class="separator:a68df578bd1cb02193f22880fb21eb777"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2989697b8d56eefed718250b3ee2a3bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a2989697b8d56eefed718250b3ee2a3bd">is_formulation_mixed_</a></td></tr>
 <tr class="memdesc:a2989697b8d56eefed718250b3ee2a3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the formulation is mixed.  <a href="classpolyfem_1_1solver_1_1_body_form.html#a2989697b8d56eefed718250b3ee2a3bd">More...</a><br /></td></tr>
 <tr class="separator:a2989697b8d56eefed718250b3ee2a3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -309,8 +309,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00014">14</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aebce643481177f0a825138837f93a85e" name="aebce643481177f0a825138837f93a85e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebce643481177f0a825138837f93a85e">&#9670;&nbsp;</a></span>BodyForm()</h2>
+<a id="ae79c6932d834cbe1dba199ba0cbfec12" name="ae79c6932d834cbe1dba199ba0cbfec12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae79c6932d834cbe1dba199ba0cbfec12">&#9670;&nbsp;</a></span>BodyForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -366,7 +366,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_density.html">Density</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">assembler::Density</a> &amp;&#160;</td>
           <td class="paramname"><em>density</em>, </td>
         </tr>
         <tr>
@@ -411,7 +411,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_body_form_aebce643481177f0a825138837f93a85e_cgraph.svg" width="100%" height="507"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_body_form_ae79c6932d834cbe1dba199ba0cbfec12_cgraph.svg" width="100%" height="507"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -596,7 +596,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00057">57</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00080">apply_DBC_</a>, <a class="el" href="_body_form_8cpp_source.html#l00051">update_current_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00089">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00080">apply_DBC_</a>, <a class="el" href="_body_form_8cpp_source.html#l00051">update_current_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00052">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -839,8 +839,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ad64f374df59bf5f9f6b5e0646d51dd07" name="ad64f374df59bf5f9f6b5e0646d51dd07"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad64f374df59bf5f9f6b5e0646d51dd07">&#9670;&nbsp;</a></span>density_</h2>
+<a id="a68df578bd1cb02193f22880fb21eb777" name="a68df578bd1cb02193f22880fb21eb777"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68df578bd1cb02193f22880fb21eb777">&#9670;&nbsp;</a></span>density_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -849,7 +849,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classpolyfem_1_1_density.html">Density</a>&amp; polyfem::solver::BodyForm::density_</td>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">assembler::Density</a>&amp; polyfem::solver::BodyForm::density_</td>
         </tr>
       </table>
   </td>

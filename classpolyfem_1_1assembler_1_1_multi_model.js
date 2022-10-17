@@ -13,8 +13,10 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "set_size", "classpolyfem_1_1assembler_1_1_multi_model.html#a77ae67d7db21e6ac873e6143086f8216", null ],
     [ "size", "classpolyfem_1_1assembler_1_1_multi_model.html#ac65036006951b43451ad87a5d91becbb", null ],
     [ "linear_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a1d9d27829cc506596c73f42a0c3c7353", null ],
+    [ "mooney_rivlin_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#aef12800734d1b2a14e997087c0431237", null ],
     [ "multi_material_models_", "classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748", null ],
     [ "neo_hookean_", "classpolyfem_1_1assembler_1_1_multi_model.html#ab33d024d81442aa6811af5aced40da26", null ],
+    [ "ogden_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a563ad6dd4243245747deaf5e3cb64d4c", null ],
     [ "saint_venant_", "classpolyfem_1_1assembler_1_1_multi_model.html#a4a0a73fe6ada75c1df93f204f24c86a4", null ],
     [ "size_", "classpolyfem_1_1assembler_1_1_multi_model.html#a9c8462e9a41903ac238a77e9224a9b17", null ]
 ];

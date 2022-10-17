@@ -41,7 +41,7 @@ var searchData=
   ['is_5fghost_38',['is_ghost',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab314a2e640520eddf2323a6ad83d27a3',1,'polyfem::mesh::NCMesh2D::ncElem::is_ghost()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#af5f380137b689424eee121640e75dbf4',1,'polyfem::mesh::NCMesh3D::ncElem::is_ghost()']]],
   ['is_5finterface_5f_39',['is_interface_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#afb21854a67cdea7ef2f688aac703caf0',1,'polyfem::mesh::MeshNodes']]],
   ['is_5fk_5fregular_40',['is_k_regular',['../_spline_basis3d_8cpp.html#a49543b90a8244389a994b06f5c963ef0',1,'SplineBasis3d.cpp']]],
-  ['is_5flambda_5fmu_5f_41',['is_lambda_mu_',['../classpolyfem_1_1_lame_parameters.html#a6e1e8149ed2a2559bd81455af95a6474',1,'polyfem::LameParameters']]],
+  ['is_5flambda_5fmu_5f_41',['is_lambda_mu_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#ae5f40bf462a1f67383932a158d1caa08',1,'polyfem::assembler::LameParameters']]],
   ['is_5flinear_42',['is_linear',['../structpolyfem_1_1assembler_1_1_formulation_properties.html#a31536f93a2dfd21f80cf3f6fa948241c',1,'polyfem::assembler::FormulationProperties']]],
   ['is_5fmixed_43',['is_mixed',['../structpolyfem_1_1assembler_1_1_formulation_properties.html#a72ec8686811bce0e432ea08cdaebaf2a',1,'polyfem::assembler::FormulationProperties']]],
   ['is_5frational_5f_44',['is_rational_',['../classpolyfem_1_1mesh_1_1_mesh.html#a263112318a0c41066f9bffa9be039fe8',1,'polyfem::mesh::Mesh']]],

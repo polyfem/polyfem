@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 549;
+var viewWidth = 541;
 var viewHeight = 50;
 var sectionId = 'dynsection-1';
 </script>
@@ -68,34 +68,35 @@ var sectionId = 'dynsection-1';
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1_lame_parameters.html#a24738aaf4ef62f65e51eae229592acd1" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="213,-6 213,-36 359,-36 359,-6 213,-6"/>
-<text text-anchor="start" x="221" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::LameParameters</text>
-<text text-anchor="middle" x="286" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">::add_multimaterial</text>
+<g id="a_node2"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#a63487676bbd607b2407518111f79b956" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="213,-0.5 213,-41.5 342,-41.5 342,-0.5 213,-0.5"/>
+<text text-anchor="start" x="221" y="-29.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="start" x="221" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LameParameters::add</text>
+<text text-anchor="middle" x="277.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_multimaterial</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="midnightblue" d="M177.24,-21C185.69,-21 194.23,-21 202.62,-21"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="202.76,-24.5 212.76,-21 202.76,-17.5 202.76,-24.5"/>
+<path fill="none" stroke="midnightblue" d="M177.25,-21C185.82,-21 194.45,-21 202.86,-21"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="202.98,-24.5 212.98,-21 202.98,-17.5 202.98,-24.5"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1_lame_parameters.html#a92cd01f97ebb70081fe931ce85cd0854" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="395,-6 395,-36 541,-36 541,-6 395,-6"/>
-<text text-anchor="start" x="403" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::LameParameters</text>
-<text text-anchor="middle" x="468" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">::set_e_nu</text>
+<g id="a_node3"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#aa62a84acc8db0c299f223a74fbcd7ebf" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="378,-6 378,-36 533,-36 533,-6 378,-6"/>
+<text text-anchor="start" x="386" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="middle" x="455.5" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">::LameParameters::set_e_nu</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node2&#45;&gt;Node3</title>
-<path fill="none" stroke="midnightblue" d="M359.18,-21C367.52,-21 376.08,-21 384.54,-21"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="384.81,-24.5 394.81,-21 384.81,-17.5 384.81,-24.5"/>
+<path fill="none" stroke="midnightblue" d="M342.04,-21C350.39,-21 359.06,-21 367.72,-21"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="367.85,-24.5 377.85,-21 367.85,-17.5 367.85,-24.5"/>
 </g>
 </g>
 </svg>

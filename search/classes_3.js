@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['density_0',['Density',['../classpolyfem_1_1_density.html',1,'polyfem']]],
+  ['density_0',['Density',['../classpolyfem_1_1assembler_1_1_density.html',1,'polyfem::assembler']]],
   ['diffscalarbase_1',['DiffScalarBase',['../struct_diff_scalar_base.html',1,'']]],
   ['doubletorsionelasticproblem_2',['DoubleTorsionElasticProblem',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html',1,'polyfem::problem']]],
   ['drivencavity_3',['DrivenCavity',['../classpolyfem_1_1problem_1_1_driven_cavity.html',1,'polyfem::problem']]],

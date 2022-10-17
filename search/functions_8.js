@@ -16,7 +16,7 @@ var searchData=
   ['hex_5flocal_5fnode_5fcoordinates_5ffrom_5fface_13',['hex_local_node_coordinates_from_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a7d837e24efe5b9e75db8487e39f4c8a9',1,'polyfem::utils::BoundarySampler']]],
   ['hexquadrature_14',['HexQuadrature',['../classpolyfem_1_1quadrature_1_1_hex_quadrature.html#ae035e4d3b2e454b06c6cd5f95e5e22d4',1,'polyfem::quadrature::HexQuadrature']]],
   ['hooke_15',['hooke',['../namespaceelasticity__rhs.html#ac9ddcfd900a82f06105f1b39539b32b5',1,'elasticity_rhs']]],
-  ['hooke_5f2d_5ffunction_16',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a306ab3d5653385f3debab954cb237d5f',1,'polyfem::autogen']]],
-  ['hooke_5f3d_5ffunction_17',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#afb2847614459eb7fce5ba97b0bbd8ceb',1,'polyfem::autogen']]],
+  ['hooke_5f2d_5ffunction_16',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a7cfb20309ff20334970285eb319b7f0a',1,'polyfem::autogen']]],
+  ['hooke_5f3d_5ffunction_17',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#a5ff9f85f23fe2bbffa4586b636e86e71',1,'polyfem::autogen']]],
   ['hookelinearelasticity_18',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a10b5f798ac54f0f315b79024e144d11c',1,'polyfem::assembler::HookeLinearElasticity']]]
 ];

@@ -2,7 +2,7 @@ var searchData=
 [
   ['laggedregform_0',['LaggedRegForm',['../classpolyfem_1_1solver_1_1_lagged_reg_form.html',1,'polyfem::solver']]],
   ['lagrange_1',['Lagrange',['../classp__bases_1_1_lagrange.html',1,'p_bases.Lagrange'],['../classq__bases_1_1_lagrange.html',1,'q_bases.Lagrange']]],
-  ['lameparameters_2',['LameParameters',['../classpolyfem_1_1_lame_parameters.html',1,'polyfem']]],
+  ['lameparameters_2',['LameParameters',['../classpolyfem_1_1assembler_1_1_lame_parameters.html',1,'polyfem::assembler']]],
   ['laplacian_3',['Laplacian',['../classpolyfem_1_1assembler_1_1_laplacian.html',1,'polyfem::assembler']]],
   ['lbfgssolver_4',['LBFGSSolver',['../classcppoptlib_1_1_l_b_f_g_s_solver.html',1,'cppoptlib']]],
   ['linearassemblerdata_5',['LinearAssemblerData',['../classpolyfem_1_1assembler_1_1_linear_assembler_data.html',1,'polyfem::assembler']]],
