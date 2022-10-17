@@ -137,7 +137,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;numeric&gt;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">//TODO carefull with simplices</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">// TODO carefull with simplices</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
@@ -443,7 +443,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>                {</div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>                    std::vector&lt;int&gt; ids;</div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>                    mesh.get_edge_elements_neighs(index.edge, ids);</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>                    <span class="comment">//irregular edge</span></div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>                    <span class="comment">// irregular edge</span></div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
 <div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>                    assert(!space.is_k_regular);</div>
 <div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>                    space.is_k_regular = <span class="keyword">true</span>;</div>
@@ -512,7 +512,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>                space(1, 1, 1) = node_id;</div>
 <div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>                <span class="comment">// node(1, 1, 1) = mesh_nodes.node_position(node_id);</span></div>
 <div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>                LocalBoundary lb(el_index, BoundaryType::Quad);</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>                LocalBoundary lb(el_index, BoundaryType::QUAD);</div>
 <div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span> </div>
 <div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>                index = to_face[1](start_index);</div>
 <div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>                explore_face(index, mesh, mesh_nodes, 1, 1, 0, space, lb, poly_face_to_data);</div>
@@ -598,21 +598,21 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00484" name="l00484"></a><span class="lineno">  484</span> </div>
 <div class="line"><a id="l00485" name="l00485"></a><span class="lineno">  485</span>            <span class="keywordtype">void</span> setup_knots_vectors(MeshNodes &amp;mesh_nodes, <span class="keyword">const</span> SpaceMatrix &amp;space, std::array&lt;std::array&lt;double, 4&gt;, 3&gt; &amp;h_knots, std::array&lt;std::array&lt;double, 4&gt;, 3&gt; &amp;v_knots, std::array&lt;std::array&lt;double, 4&gt;, 3&gt; &amp;w_knots)</div>
 <div class="line"><a id="l00486" name="l00486"></a><span class="lineno">  486</span>            {</div>
-<div class="line"><a id="l00487" name="l00487"></a><span class="lineno">  487</span>                <span class="comment">//left and right neigh are absent</span></div>
+<div class="line"><a id="l00487" name="l00487"></a><span class="lineno">  487</span>                <span class="comment">// left and right neigh are absent</span></div>
 <div class="line"><a id="l00488" name="l00488"></a><span class="lineno">  488</span>                <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(0, 1, 1)) &amp;&amp; mesh_nodes.is_boundary_or_interface(space(2, 1, 1)))</div>
 <div class="line"><a id="l00489" name="l00489"></a><span class="lineno">  489</span>                {</div>
 <div class="line"><a id="l00490" name="l00490"></a><span class="lineno">  490</span>                    h_knots[0] = {{0, 0, 0, 1}};</div>
 <div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>                    h_knots[1] = {{0, 0, 1, 1}};</div>
 <div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>                    h_knots[2] = {{0, 1, 1, 1}};</div>
 <div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>                }</div>
-<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                <span class="comment">//left neigh is absent</span></div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                <span class="comment">// left neigh is absent</span></div>
 <div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(0, 1, 1)))</div>
 <div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>                {</div>
 <div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>                    h_knots[0] = {{0, 0, 0, 1}};</div>
 <div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>                    h_knots[1] = {{0, 0, 1, 2}};</div>
 <div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>                    h_knots[2] = {{0, 1, 2, 3}};</div>
 <div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>                }</div>
-<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>                <span class="comment">//right neigh is absent</span></div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>                <span class="comment">// right neigh is absent</span></div>
 <div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(2, 1, 1)))</div>
 <div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>                {</div>
 <div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>                    h_knots[0] = {{-2, -1, 0, 1}};</div>
@@ -626,21 +626,21 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>                    h_knots[2] = {{0, 1, 2, 3}};</div>
 <div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>                }</div>
 <div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span> </div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>                <span class="comment">//top and bottom neigh are absent</span></div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>                <span class="comment">// top and bottom neigh are absent</span></div>
 <div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>                <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(1, 0, 1)) &amp;&amp; mesh_nodes.is_boundary_or_interface(space(1, 2, 1)))</div>
 <div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>                {</div>
 <div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>                    v_knots[0] = {{0, 0, 0, 1}};</div>
 <div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>                    v_knots[1] = {{0, 0, 1, 1}};</div>
 <div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>                    v_knots[2] = {{0, 1, 1, 1}};</div>
 <div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>                }</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>                <span class="comment">//bottom neigh is absent</span></div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>                <span class="comment">// bottom neigh is absent</span></div>
 <div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(1, 0, 1)))</div>
 <div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>                {</div>
 <div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>                    v_knots[0] = {{0, 0, 0, 1}};</div>
 <div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>                    v_knots[1] = {{0, 0, 1, 2}};</div>
 <div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>                    v_knots[2] = {{0, 1, 2, 3}};</div>
 <div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>                }</div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>                <span class="comment">//top neigh is absent</span></div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>                <span class="comment">// top neigh is absent</span></div>
 <div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(1, 2, 1)))</div>
 <div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>                {</div>
 <div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>                    v_knots[0] = {{-2, -1, 0, 1}};</div>
@@ -654,21 +654,21 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                    v_knots[2] = {{0, 1, 2, 3}};</div>
 <div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>                }</div>
 <div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span> </div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                <span class="comment">//front and back neigh are absent</span></div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                <span class="comment">// front and back neigh are absent</span></div>
 <div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(1, 1, 0)) &amp;&amp; mesh_nodes.is_boundary_or_interface(space(1, 1, 2)))</div>
 <div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                {</div>
 <div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                    w_knots[0] = {{0, 0, 0, 1}};</div>
 <div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>                    w_knots[1] = {{0, 0, 1, 1}};</div>
 <div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>                    w_knots[2] = {{0, 1, 1, 1}};</div>
 <div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                }</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                <span class="comment">//back neigh is absent</span></div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                <span class="comment">// back neigh is absent</span></div>
 <div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(1, 1, 0)))</div>
 <div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>                {</div>
 <div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>                    w_knots[0] = {{0, 0, 0, 1}};</div>
 <div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>                    w_knots[1] = {{0, 0, 1, 2}};</div>
 <div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>                    w_knots[2] = {{0, 1, 2, 3}};</div>
 <div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                }</div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                <span class="comment">//front neigh is absent</span></div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                <span class="comment">// front neigh is absent</span></div>
 <div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mesh_nodes.is_boundary_or_interface(space(1, 1, 2)))</div>
 <div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>                {</div>
 <div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>                    w_knots[0] = {{-2, -1, 0, 1}};</div>
@@ -691,7 +691,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>                    {</div>
 <div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0; <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; 3; ++<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</div>
 <div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                        {</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                            <span class="keywordflow">if</span> (space.is_regular(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)) <span class="comment">//space(1, y, z).size() &lt;= 1 &amp;&amp; space(x, 1, z).size() &lt;= 1 &amp;&amp; space(x, y, 1).size() &lt;= 1)</span></div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                            <span class="keywordflow">if</span> (space.is_regular(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)) <span class="comment">// space(1, y, z).size() &lt;= 1 &amp;&amp; space(x, 1, z).size() &lt;= 1 &amp;&amp; space(x, y, 1).size() &lt;= 1)</span></div>
 <div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                            {</div>
 <div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>                                <span class="keyword">const</span> <span class="keywordtype">int</span> local_index = 9 * <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + 3 * <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> + <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
 <div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>                                <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = space(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
@@ -718,7 +718,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                    {</div>
 <div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>                        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0; <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; 3; ++<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</div>
 <div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>                        {</div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>                            <span class="keywordflow">if</span> (!space.is_regular(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)) <span class="comment">//space(1, y, z).size() &gt; 1 || space(x, 1, z).size() &gt; 1 || space(x, y, 1).size() &gt; 1)</span></div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>                            <span class="keywordflow">if</span> (!space.is_regular(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)) <span class="comment">// space(1, y, z).size() &gt; 1 || space(x, 1, z).size() &gt; 1 || space(x, y, 1).size() &gt; 1)</span></div>
 <div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>                            {</div>
 <div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>                                <span class="keyword">const</span> <span class="keywordtype">int</span> local_index = 9 * <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + 3 * <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> + <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
 <div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span> </div>
@@ -869,7 +869,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>                std::array&lt;std::function&lt;Navigation3D::Index(Navigation3D::Index)&gt;, 8&gt; to_vertex;</div>
 <div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>                mesh.to_vertex_functions(to_vertex);</div>
 <div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span> </div>
-<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>                LocalBoundary lb(el_index, BoundaryType::Quad);</div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>                LocalBoundary lb(el_index, BoundaryType::QUAD);</div>
 <div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span> </div>
 <div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>                <span class="keyword">const</span> Navigation3D::Index start_index = mesh.get_index_from_element(el_index);</div>
 <div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 8; ++j)</div>
@@ -881,7 +881,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>                    <span class="keywordtype">int</span> current_vertex_node_id = -1;</div>
 <div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>                    Eigen::MatrixXd current_vertex_node;</div>
 <div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span> </div>
-<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>                    <span class="comment">//if the edge/vertex is boundary the it is a Q2 edge</span></div>
+<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>                    <span class="comment">// if the edge/vertex is boundary the it is a Q2 edge</span></div>
 <div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>                    <span class="keywordtype">bool</span> is_vertex_q2 = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span> </div>
 <div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span>                    std::vector&lt;int&gt; vertex_neighs;</div>
@@ -911,7 +911,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>                        }</div>
 <div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>                    }</div>
 <div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span> </div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>                    <span class="comment">//init new Q2 nodes</span></div>
+<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>                    <span class="comment">// init new Q2 nodes</span></div>
 <div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>                    <span class="keywordflow">if</span> (current_vertex_node_id &gt;= 0)</div>
 <div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>                        b.bases[loc_index].init(2, current_vertex_node_id, loc_index, current_vertex_node);</div>
 <div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span> </div>
@@ -957,7 +957,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>                        }</div>
 <div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>                    }</div>
 <div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span> </div>
-<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>                    <span class="comment">//init new Q2 nodes</span></div>
+<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>                    <span class="comment">// init new Q2 nodes</span></div>
 <div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>                    <span class="keywordflow">if</span> (current_edge_node_id &gt;= 0)</div>
 <div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>                        b.bases[loc_index].init(2, current_edge_node_id, loc_index, current_edge_node);</div>
 <div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span> </div>
@@ -996,7 +996,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>                        }</div>
 <div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>                    }</div>
 <div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span> </div>
-<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>                    <span class="comment">//init new Q2 nodes</span></div>
+<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>                    <span class="comment">// init new Q2 nodes</span></div>
 <div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>                    <span class="keywordflow">if</span> (current_face_node_id &gt;= 0)</div>
 <div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>                        b.bases[loc_index].init(2, current_face_node_id, loc_index, current_face_node);</div>
 <div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span> </div>
@@ -1015,7 +1015,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span> </div>
 <div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>            <span class="keywordtype">void</span> insert_into_global(<span class="keyword">const</span> <span class="keywordtype">int</span> el_index, <span class="keyword">const</span> Local2Global &amp;data, std::vector&lt;Local2Global&gt; &amp;<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, <span class="keyword">const</span> <span class="keywordtype">int</span> size)</div>
 <div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>            {</div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>                <span class="comment">//ignore small weights</span></div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>                <span class="comment">// ignore small weights</span></div>
 <div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>                <span class="keywordflow">if</span> (fabs(data.val) &lt; 1e-10)</div>
 <div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>                    <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span> </div>
@@ -1087,7 +1087,7 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>                        <span class="comment">// other_b.basis(param_p, eval_p);</span></div>
 <div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>                        assert(eval_p[i].<a class="code hl_variable" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>.size() == 9);</div>
 <div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span> </div>
-<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>                        <span class="comment">//basis i of element opposite element is zero on this elements</span></div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>                        <span class="comment">// basis i of element opposite element is zero on this elements</span></div>
 <div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>                        <span class="keywordflow">if</span> (eval_p[i].<a class="code hl_variable" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>.cwiseAbs().maxCoeff() &lt;= 1e-10)</div>
 <div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>                            <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span> </div>
@@ -1195,14 +1195,14 @@ $(document).ready(function(){initNavTree('_spline_basis3d_8cpp_source.html','');
 <div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span>                    assert(index.face == primitive_id);</div>
 <div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span> </div>
 <div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>                    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::array&lt;std::array&lt;int, 9&gt;, 6&gt; face_to_index = {{</div>
-<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>                        {{2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 1 * 3 + 1, 2 * 9 + 2 * 3 + 1, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, <span class="comment">//0</span></div>
-<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>                        {{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 1 * 3 + 1, 0 * 9 + 2 * 3 + 1, 0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2}}, <span class="comment">//1</span></div>
+<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>                        {{2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 1 * 3 + 1, 2 * 9 + 2 * 3 + 1, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, <span class="comment">// 0</span></div>
+<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>                        {{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 1 * 3 + 1, 0 * 9 + 2 * 3 + 1, 0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2}}, <span class="comment">// 1</span></div>
 <div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span> </div>
-<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>                        {{0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2, 1 * 9 + 0 * 3 + 2, 1 * 9 + 1 * 3 + 2, 1 * 9 + 2 * 3 + 2, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, <span class="comment">//2</span></div>
-<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>                        {{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 1 * 9 + 0 * 3 + 0, 1 * 9 + 1 * 3 + 0, 1 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0}}, <span class="comment">//3</span></div>
+<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>                        {{0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2, 1 * 9 + 0 * 3 + 2, 1 * 9 + 1 * 3 + 2, 1 * 9 + 2 * 3 + 2, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, <span class="comment">// 2</span></div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>                        {{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 1 * 9 + 0 * 3 + 0, 1 * 9 + 1 * 3 + 0, 1 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0}}, <span class="comment">// 3</span></div>
 <div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span> </div>
-<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>                        {{0 * 9 + 2 * 3 + 0, 0 * 9 + 2 * 3 + 1, 0 * 9 + 2 * 3 + 2, 1 * 9 + 2 * 3 + 0, 1 * 9 + 2 * 3 + 1, 1 * 9 + 2 * 3 + 2, 2 * 9 + 2 * 3 + 0, 2 * 9 + 2 * 3 + 1, 2 * 9 + 2 * 3 + 2}}, <span class="comment">//4</span></div>
-<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>                        {{0 * 9 + 0 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 0 * 3 + 2, 1 * 9 + 0 * 3 + 0, 1 * 9 + 0 * 3 + 1, 1 * 9 + 0 * 3 + 2, 2 * 9 + 0 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 0 * 3 + 2}}, <span class="comment">//5</span></div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>                        {{0 * 9 + 2 * 3 + 0, 0 * 9 + 2 * 3 + 1, 0 * 9 + 2 * 3 + 2, 1 * 9 + 2 * 3 + 0, 1 * 9 + 2 * 3 + 1, 1 * 9 + 2 * 3 + 2, 2 * 9 + 2 * 3 + 0, 2 * 9 + 2 * 3 + 1, 2 * 9 + 2 * 3 + 2}}, <span class="comment">// 4</span></div>
+<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>                        {{0 * 9 + 0 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 0 * 3 + 2, 1 * 9 + 0 * 3 + 0, 1 * 9 + 0 * 3 + 1, 1 * 9 + 0 * 3 + 2, 2 * 9 + 0 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 0 * 3 + 2}}, <span class="comment">// 5</span></div>
 <div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>                    }};</div>
 <div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span> </div>
 <div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>                    Eigen::VectorXi res(9);</div>

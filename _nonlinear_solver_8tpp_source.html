@@ -179,7 +179,7 @@ $(document).ready(function(){initNavTree('_nonlinear_solver_8tpp_source.html',''
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            this-&gt;m_status = Status::UserDefined;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            polyfem::logger().error(&quot;[{}] Initial gradient is nan; stopping&quot;, name());</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            m_error_code = ErrorCode::NanEncountered;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            m_error_code = ErrorCode::NAN_ENCOUNTERED;</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            throw std::runtime_error(&quot;Gradient is nan; stopping&quot;);</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            return;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        }</div>
@@ -222,7 +222,7 @@ $(document).ready(function(){initNavTree('_nonlinear_solver_8tpp_source.html',''
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            {</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                this-&gt;m_status = Status::UserDefined;</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                polyfem::logger().error(&quot;[{}] f(x) is nan or inf; stopping&quot;, name());</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                m_error_code = ErrorCode::NanEncountered;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                m_error_code = ErrorCode::NAN_ENCOUNTERED;</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                throw std::runtime_error(&quot;f(x) is nan or inf; stopping&quot;);</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                break;</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            }</div>
@@ -237,7 +237,7 @@ $(document).ready(function(){initNavTree('_nonlinear_solver_8tpp_source.html',''
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            {</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                this-&gt;m_status = Status::UserDefined;</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                polyfem::logger().error(&quot;[{}] Gradient is nan; stopping&quot;, name());</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                m_error_code = ErrorCode::NanEncountered;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                m_error_code = ErrorCode::NAN_ENCOUNTERED;</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                throw std::runtime_error(&quot;Gradient is nan; stopping&quot;);</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                break;</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            }</div>
@@ -324,7 +324,7 @@ $(document).ready(function(){initNavTree('_nonlinear_solver_8tpp_source.html',''
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            //  if (objFunc.stop(x))</div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            //  {</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            //      this-&gt;m_status = Status::UserDefined;</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            //      m_error_code = ErrorCode::Success;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            //      m_error_code = ErrorCode::SUCCESS;</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            //      polyfem::logger().debug(&quot;[{}] Objective decided to stop&quot;, name());</div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            //  }</div>
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
@@ -408,7 +408,7 @@ $(document).ready(function(){initNavTree('_nonlinear_solver_8tpp_source.html',''
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    {</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        this-&gt;m_current.reset();</div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        descent_strategy = default_descent_strategy();</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        m_error_code = ErrorCode::Success;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        m_error_code = ErrorCode::SUCCESS;</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        const std::string line_search_name = solver_info[&quot;line_search&quot;];</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        solver_info = polyfem::json();</div>

@@ -44,8 +44,7 @@ var NAVTREE =
         [ "Functions", "namespacemembers_func.html", "namespacemembers_func" ],
         [ "Variables", "namespacemembers_vars.html", null ],
         [ "Typedefs", "namespacemembers_type.html", null ],
-        [ "Enumerations", "namespacemembers_enum.html", null ],
-        [ "Enumerator", "namespacemembers_eval.html", null ]
+        [ "Enumerations", "namespacemembers_enum.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -58,7 +57,6 @@ var NAVTREE =
         [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
         [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -103,11 +101,11 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_axis_plane_selection.html",
 "classpolyfem_1_1utils_1_1_ref_element_sampler.html#a80b41e801c0ba5bd41dc3b8d61bd4cd2",
 "dir_10fb13321304f63ea5f7ee0a82e63ce8.html",
-"namespacemembers_func_t.html",
-"namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#aab32642b5afb67dded8ac3de524f5451",
-"raster_8hpp.html",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#ac16e0de350b469da83afa7b501b00ed9",
-"structpolyfem_1_1mesh_1_1_vertex.html#a32d66ad4bb8a50d6ba6734277165eeb9"
+"namespacemembers_func_v.html",
+"namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#afb7ad06ae12fc5b116c4a57a9c82b6cb",
+"raster_8hpp_source.html",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#ad641b3e1b20a711b0ff15f9cc1b18bcc",
+"structpolyfem_1_1mesh_1_1_vertex.html#a4addda86740ef529091c4935e4a62fa2"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

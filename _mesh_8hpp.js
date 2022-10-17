@@ -5,16 +5,16 @@ var _mesh_8hpp =
     [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes" ],
     [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes" ],
     [ "ElementType", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2", [
-      [ "Simplex", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a02a335cb56996b16f7bece70be215789", null ],
-      [ "RegularInteriorCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ae38cb4ba5fe9ef406de581b29ed85dba", null ],
-      [ "SimpleSingularInteriorCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a8b0ab3bbc7eff9a7f2cb5c2b55e5eeaf", null ],
-      [ "MultiSingularInteriorCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a5ce89c0d26dcc6af45bfe5002fcd3d64", null ],
-      [ "RegularBoundaryCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a357bd1c8b060739c8fef502d46aed97f", null ],
-      [ "SimpleSingularBoundaryCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2abaf3184986c79f23f99cfc4faa826fc5", null ],
-      [ "MultiSingularBoundaryCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ac8474f7aab6df7b49f4bd4f2b92acdbb", null ],
-      [ "InterfaceCube", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65", null ],
-      [ "InteriorPolytope", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af", null ],
-      [ "BoundaryPolytope", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a80bef825f0fa4713f4bdc23033e25fe0", null ],
-      [ "Undefined", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360", null ]
+      [ "SIMPLEX", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2abc424b28fbff73745ea330d848bcc668", null ],
+      [ "REGULAR_INTERIOR_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a06a31270a48e44a5e035df59c8731fcf", null ],
+      [ "SIMPLE_SINGULAR_INTERIOR_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a50cb75a4050af11bcddde17556ccd160", null ],
+      [ "MULTI_SINGULAR_INTERIOR_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a31e4ef24e79a7f6f42adc39e066d9521", null ],
+      [ "REGULAR_BOUNDARY_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a15d5722ae72faa6e963405389543bafa", null ],
+      [ "SIMPLE_SINGULAR_BOUNDARY_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ade6243a674d768aba43e703f85cfcabd", null ],
+      [ "MULTI_SINGULAR_BOUNDARY_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a16296527365f66f9abb8e41bd6e83c2d", null ],
+      [ "INTERFACE_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1", null ],
+      [ "INTERIOR_POLYTOPE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a", null ],
+      [ "BOUNDARY_POLYTOPE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965", null ],
+      [ "UNDEFINED", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3", null ]
     ] ]
 ];

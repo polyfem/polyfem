@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['interfacecube_0',['InterfaceCube',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abc88e6a23d386795b4d2d0039bdd6f65',1,'polyfem::mesh']]],
-  ['interiorpolytope_1',['InteriorPolytope',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a08324bb1398b4fd2d5ba3a6a37c3b7af',1,'polyfem::mesh']]],
-  ['invalid_2',['Invalid',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a4bbb8f967da6d1a610596d7257179c2b',1,'polyfem::mesh']]]
+  ['interface_5fcube_0',['INTERFACE_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1',1,'polyfem::mesh']]],
+  ['interior_5fpolytope_1',['INTERIOR_POLYTOPE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a',1,'polyfem::mesh']]],
+  ['invalid_2',['INVALID',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826accc0377a8afbf50e7094f5c23a8af223',1,'polyfem::mesh']]]
 ];

@@ -714,7 +714,7 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>                    <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>                }</div>
 <div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>                <span class="comment">// No boundary polytope</span></div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                <span class="comment">// assert(element_type[e] != ElementType::BoundaryPolytope);</span></div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                <span class="comment">// assert(element_type[e] != ElementType::BOUNDARY_POLYTOPE);</span></div>
 <div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span> </div>
 <div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>                <span class="comment">// Kernel distance to polygon boundary</span></div>
 <div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>                <span class="keyword">const</span> <span class="keywordtype">double</span> eps = <a class="code hl_function" href="namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482">compute_epsilon</a>(mesh, e);</div>
@@ -736,7 +736,7 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>                                 triangulated_faces, tmp_quadrature, scaling, translation);</div>
 <div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span> </div>
 <div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>                b.<a class="code hl_function" href="classpolyfem_1_1basis_1_1_element_bases.html#a2f199c4f37379930fb492028060f9a1c">set_quadrature</a>([tmp_quadrature](<a class="code hl_class" href="classpolyfem_1_1quadrature_1_1_quadrature.html">Quadrature</a> &amp;quad) { quad = tmp_quadrature; });</div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>                <span class="comment">//TODO</span></div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>                <span class="comment">// TODO</span></div>
 <div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>                b.<a class="code hl_function" href="classpolyfem_1_1basis_1_1_element_bases.html#ae914f65d4ff93b4c3f78f06a339ef843">set_mass_quadrature</a>([tmp_quadrature](<a class="code hl_class" href="classpolyfem_1_1quadrature_1_1_quadrature.html">Quadrature</a> &amp;quad) { quad = tmp_quadrature; });</div>
 <div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>                <span class="comment">// b.scaling_ = scaling;</span></div>
 <div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>                <span class="comment">// b.translation_ = translation;</span></div>

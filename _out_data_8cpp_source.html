@@ -398,30 +398,30 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            {</div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                <span class="keywordflow">switch</span> (lb.type())</div>
 <div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                {</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                <span class="keywordflow">case</span> BoundaryType::TriLine:</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                <span class="keywordflow">case</span> BoundaryType::TRI_LINE:</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a3cb05c15f577e549c9ec1aff534bfccf">utils::BoundarySampler::normal_for_tri_edge</a>(lb[k], tmp_n);</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#aedbf480f1e32d3fad5ee6e2946b91099">utils::BoundarySampler::sample_parametric_tri_edge</a>(lb[k], n_samples, uv, local_pts);</div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                <span class="keywordflow">case</span> BoundaryType::QuadLine:</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                <span class="keywordflow">case</span> BoundaryType::QUAD_LINE:</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a2fe4e23eb3764fe8f7b25db3e4209fad">utils::BoundarySampler::normal_for_quad_edge</a>(lb[k], tmp_n);</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#ac12965de419a6fe6b793263d39d94895">utils::BoundarySampler::sample_parametric_quad_edge</a>(lb[k], n_samples, uv, local_pts);</div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordflow">case</span> BoundaryType::Quad:</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordflow">case</span> BoundaryType::QUAD:</div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a58d1aa4acd871a4a38e5197f9dcdf13b">utils::BoundarySampler::normal_for_quad_face</a>(lb[k], tmp_n);</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a9fb7f42d906df7cd9332811512fef43d">utils::BoundarySampler::sample_parametric_quad_face</a>(lb[k], n_samples, uv, local_pts);</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7">BoundaryType::Tri</a>:</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                <span class="keywordflow">case</span> BoundaryType::TRI:</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a9ba642e0745173decb0b36d4af7e7d17">utils::BoundarySampler::normal_for_tri_face</a>(lb[k], tmp_n);</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#a762ea74cf87bbaff2f6877765eea7821">utils::BoundarySampler::sample_parametric_tri_face</a>(lb[k], n_samples, uv, local_pts);</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                <span class="keywordflow">case</span> BoundaryType::Polygon:</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                <span class="keywordflow">case</span> BoundaryType::POLYGON:</div>
 <div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5">utils::BoundarySampler::normal_for_polygon_edge</a>(lb[k], lb.global_primitive_id(k), mesh, tmp_n);</div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                    <a class="code hl_function" href="classpolyfem_1_1utils_1_1_boundary_sampler.html#acb587c61b43b393260dba4a5a95c090b">utils::BoundarySampler::sample_polygon_edge</a>(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);</div>
 <div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                <span class="keywordflow">case</span> BoundaryType::Polyhedron:</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                <span class="keywordflow">case</span> BoundaryType::POLYHEDRON:</div>
 <div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                    assert(<span class="keyword">false</span>);</div>
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>                <span class="keywordflow">case</span> BoundaryType::Invalid:</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>                <span class="keywordflow">case</span> BoundaryType::INVALID:</div>
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>                    assert(<span class="keyword">false</span>);</div>
 <div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>                    <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>                <span class="keywordflow">default</span>:</div>
@@ -438,7 +438,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>                <span class="keywordflow">if</span> (mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">is_volume</a>())</div>
 <div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                {</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                    <span class="keywordflow">if</span> (lb.type() == BoundaryType::Quad)</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                    <span class="keywordflow">if</span> (lb.type() == BoundaryType::QUAD)</div>
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                    {</div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>                        <span class="keyword">const</span> <span class="keyword">auto</span> map = [n_samples, size](<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j) { <span class="keywordflow">return</span> j * n_samples + i + size; };</div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
@@ -451,7 +451,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>                            }</div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>                        }</div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>                    }</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (lb.type() == <a class="code hl_enumvalue" href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7">BoundaryType::Tri</a>)</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (lb.type() == BoundaryType::TRI)</div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>                    {</div>
 <div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>                        <span class="keywordtype">int</span> index = 0;</div>
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>                        std::vector&lt;int&gt; mapp(n_samples * n_samples, -1);</div>
@@ -2260,37 +2260,37 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l02143" name="l02143"></a><span class="lineno"> 2143</span>                std::string type = <span class="stringliteral">&quot;&quot;</span>;</div>
 <div class="line"><a id="l02144" name="l02144"></a><span class="lineno"> 2144</span>                <span class="keywordflow">switch</span> (els_tag[i])</div>
 <div class="line"><a id="l02145" name="l02145"></a><span class="lineno"> 2145</span>                {</div>
-<div class="line"><a id="l02146" name="l02146"></a><span class="lineno"> 2146</span>                <span class="keywordflow">case</span> ElementType::Simplex:</div>
+<div class="line"><a id="l02146" name="l02146"></a><span class="lineno"> 2146</span>                <span class="keywordflow">case</span> ElementType::SIMPLEX:</div>
 <div class="line"><a id="l02147" name="l02147"></a><span class="lineno"> 2147</span>                    type = <span class="stringliteral">&quot;Simplex&quot;</span>;</div>
 <div class="line"><a id="l02148" name="l02148"></a><span class="lineno"> 2148</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02149" name="l02149"></a><span class="lineno"> 2149</span>                <span class="keywordflow">case</span> ElementType::RegularInteriorCube:</div>
+<div class="line"><a id="l02149" name="l02149"></a><span class="lineno"> 2149</span>                <span class="keywordflow">case</span> ElementType::REGULAR_INTERIOR_CUBE:</div>
 <div class="line"><a id="l02150" name="l02150"></a><span class="lineno"> 2150</span>                    type = <span class="stringliteral">&quot;RegularInteriorCube&quot;</span>;</div>
 <div class="line"><a id="l02151" name="l02151"></a><span class="lineno"> 2151</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02152" name="l02152"></a><span class="lineno"> 2152</span>                <span class="keywordflow">case</span> ElementType::RegularBoundaryCube:</div>
+<div class="line"><a id="l02152" name="l02152"></a><span class="lineno"> 2152</span>                <span class="keywordflow">case</span> ElementType::REGULAR_BOUNDARY_CUBE:</div>
 <div class="line"><a id="l02153" name="l02153"></a><span class="lineno"> 2153</span>                    type = <span class="stringliteral">&quot;RegularBoundaryCube&quot;</span>;</div>
 <div class="line"><a id="l02154" name="l02154"></a><span class="lineno"> 2154</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02155" name="l02155"></a><span class="lineno"> 2155</span>                <span class="keywordflow">case</span> ElementType::SimpleSingularInteriorCube:</div>
+<div class="line"><a id="l02155" name="l02155"></a><span class="lineno"> 2155</span>                <span class="keywordflow">case</span> ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:</div>
 <div class="line"><a id="l02156" name="l02156"></a><span class="lineno"> 2156</span>                    type = <span class="stringliteral">&quot;SimpleSingularInteriorCube&quot;</span>;</div>
 <div class="line"><a id="l02157" name="l02157"></a><span class="lineno"> 2157</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02158" name="l02158"></a><span class="lineno"> 2158</span>                <span class="keywordflow">case</span> ElementType::MultiSingularInteriorCube:</div>
+<div class="line"><a id="l02158" name="l02158"></a><span class="lineno"> 2158</span>                <span class="keywordflow">case</span> ElementType::MULTI_SINGULAR_INTERIOR_CUBE:</div>
 <div class="line"><a id="l02159" name="l02159"></a><span class="lineno"> 2159</span>                    type = <span class="stringliteral">&quot;MultiSingularInteriorCube&quot;</span>;</div>
 <div class="line"><a id="l02160" name="l02160"></a><span class="lineno"> 2160</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02161" name="l02161"></a><span class="lineno"> 2161</span>                <span class="keywordflow">case</span> ElementType::SimpleSingularBoundaryCube:</div>
+<div class="line"><a id="l02161" name="l02161"></a><span class="lineno"> 2161</span>                <span class="keywordflow">case</span> ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:</div>
 <div class="line"><a id="l02162" name="l02162"></a><span class="lineno"> 2162</span>                    type = <span class="stringliteral">&quot;SimpleSingularBoundaryCube&quot;</span>;</div>
 <div class="line"><a id="l02163" name="l02163"></a><span class="lineno"> 2163</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02164" name="l02164"></a><span class="lineno"> 2164</span>                <span class="keywordflow">case</span> ElementType::InterfaceCube:</div>
+<div class="line"><a id="l02164" name="l02164"></a><span class="lineno"> 2164</span>                <span class="keywordflow">case</span> ElementType::INTERFACE_CUBE:</div>
 <div class="line"><a id="l02165" name="l02165"></a><span class="lineno"> 2165</span>                    type = <span class="stringliteral">&quot;InterfaceCube&quot;</span>;</div>
 <div class="line"><a id="l02166" name="l02166"></a><span class="lineno"> 2166</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02167" name="l02167"></a><span class="lineno"> 2167</span>                <span class="keywordflow">case</span> ElementType::MultiSingularBoundaryCube:</div>
+<div class="line"><a id="l02167" name="l02167"></a><span class="lineno"> 2167</span>                <span class="keywordflow">case</span> ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:</div>
 <div class="line"><a id="l02168" name="l02168"></a><span class="lineno"> 2168</span>                    type = <span class="stringliteral">&quot;MultiSingularBoundaryCube&quot;</span>;</div>
 <div class="line"><a id="l02169" name="l02169"></a><span class="lineno"> 2169</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02170" name="l02170"></a><span class="lineno"> 2170</span>                <span class="keywordflow">case</span> ElementType::BoundaryPolytope:</div>
+<div class="line"><a id="l02170" name="l02170"></a><span class="lineno"> 2170</span>                <span class="keywordflow">case</span> ElementType::BOUNDARY_POLYTOPE:</div>
 <div class="line"><a id="l02171" name="l02171"></a><span class="lineno"> 2171</span>                    type = <span class="stringliteral">&quot;BoundaryPolytope&quot;</span>;</div>
 <div class="line"><a id="l02172" name="l02172"></a><span class="lineno"> 2172</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02173" name="l02173"></a><span class="lineno"> 2173</span>                <span class="keywordflow">case</span> ElementType::InteriorPolytope:</div>
+<div class="line"><a id="l02173" name="l02173"></a><span class="lineno"> 2173</span>                <span class="keywordflow">case</span> ElementType::INTERIOR_POLYTOPE:</div>
 <div class="line"><a id="l02174" name="l02174"></a><span class="lineno"> 2174</span>                    type = <span class="stringliteral">&quot;InteriorPolytope&quot;</span>;</div>
 <div class="line"><a id="l02175" name="l02175"></a><span class="lineno"> 2175</span>                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02176" name="l02176"></a><span class="lineno"> 2176</span>                <span class="keywordflow">case</span> ElementType::Undefined:</div>
+<div class="line"><a id="l02176" name="l02176"></a><span class="lineno"> 2176</span>                <span class="keywordflow">case</span> ElementType::UNDEFINED:</div>
 <div class="line"><a id="l02177" name="l02177"></a><span class="lineno"> 2177</span>                    type = <span class="stringliteral">&quot;Undefined&quot;</span>;</div>
 <div class="line"><a id="l02178" name="l02178"></a><span class="lineno"> 2178</span>                    <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l02179" name="l02179"></a><span class="lineno"> 2179</span>                }</div>
@@ -2504,35 +2504,35 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l02387" name="l02387"></a><span class="lineno"> 2387</span> </div>
 <div class="line"><a id="l02388" name="l02388"></a><span class="lineno"> 2388</span>            <span class="keywordflow">switch</span> (type)</div>
 <div class="line"><a id="l02389" name="l02389"></a><span class="lineno"> 2389</span>            {</div>
-<div class="line"><a id="l02390" name="l02390"></a><span class="lineno"> 2390</span>            <span class="keywordflow">case</span> ElementType::Simplex:</div>
+<div class="line"><a id="l02390" name="l02390"></a><span class="lineno"> 2390</span>            <span class="keywordflow">case</span> ElementType::SIMPLEX:</div>
 <div class="line"><a id="l02391" name="l02391"></a><span class="lineno"> 2391</span>                simplex_count++;</div>
 <div class="line"><a id="l02392" name="l02392"></a><span class="lineno"> 2392</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02393" name="l02393"></a><span class="lineno"> 2393</span>            <span class="keywordflow">case</span> ElementType::RegularInteriorCube:</div>
+<div class="line"><a id="l02393" name="l02393"></a><span class="lineno"> 2393</span>            <span class="keywordflow">case</span> ElementType::REGULAR_INTERIOR_CUBE:</div>
 <div class="line"><a id="l02394" name="l02394"></a><span class="lineno"> 2394</span>                regular_count++;</div>
 <div class="line"><a id="l02395" name="l02395"></a><span class="lineno"> 2395</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02396" name="l02396"></a><span class="lineno"> 2396</span>            <span class="keywordflow">case</span> ElementType::RegularBoundaryCube:</div>
+<div class="line"><a id="l02396" name="l02396"></a><span class="lineno"> 2396</span>            <span class="keywordflow">case</span> ElementType::REGULAR_BOUNDARY_CUBE:</div>
 <div class="line"><a id="l02397" name="l02397"></a><span class="lineno"> 2397</span>                regular_boundary_count++;</div>
 <div class="line"><a id="l02398" name="l02398"></a><span class="lineno"> 2398</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02399" name="l02399"></a><span class="lineno"> 2399</span>            <span class="keywordflow">case</span> ElementType::SimpleSingularInteriorCube:</div>
+<div class="line"><a id="l02399" name="l02399"></a><span class="lineno"> 2399</span>            <span class="keywordflow">case</span> ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:</div>
 <div class="line"><a id="l02400" name="l02400"></a><span class="lineno"> 2400</span>                simple_singular_count++;</div>
 <div class="line"><a id="l02401" name="l02401"></a><span class="lineno"> 2401</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02402" name="l02402"></a><span class="lineno"> 2402</span>            <span class="keywordflow">case</span> ElementType::MultiSingularInteriorCube:</div>
+<div class="line"><a id="l02402" name="l02402"></a><span class="lineno"> 2402</span>            <span class="keywordflow">case</span> ElementType::MULTI_SINGULAR_INTERIOR_CUBE:</div>
 <div class="line"><a id="l02403" name="l02403"></a><span class="lineno"> 2403</span>                multi_singular_count++;</div>
 <div class="line"><a id="l02404" name="l02404"></a><span class="lineno"> 2404</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02405" name="l02405"></a><span class="lineno"> 2405</span>            <span class="keywordflow">case</span> ElementType::SimpleSingularBoundaryCube:</div>
+<div class="line"><a id="l02405" name="l02405"></a><span class="lineno"> 2405</span>            <span class="keywordflow">case</span> ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:</div>
 <div class="line"><a id="l02406" name="l02406"></a><span class="lineno"> 2406</span>                boundary_count++;</div>
 <div class="line"><a id="l02407" name="l02407"></a><span class="lineno"> 2407</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02408" name="l02408"></a><span class="lineno"> 2408</span>            <span class="keywordflow">case</span> ElementType::InterfaceCube:</div>
-<div class="line"><a id="l02409" name="l02409"></a><span class="lineno"> 2409</span>            <span class="keywordflow">case</span> ElementType::MultiSingularBoundaryCube:</div>
+<div class="line"><a id="l02408" name="l02408"></a><span class="lineno"> 2408</span>            <span class="keywordflow">case</span> ElementType::INTERFACE_CUBE:</div>
+<div class="line"><a id="l02409" name="l02409"></a><span class="lineno"> 2409</span>            <span class="keywordflow">case</span> ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:</div>
 <div class="line"><a id="l02410" name="l02410"></a><span class="lineno"> 2410</span>                multi_singular_boundary_count++;</div>
 <div class="line"><a id="l02411" name="l02411"></a><span class="lineno"> 2411</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02412" name="l02412"></a><span class="lineno"> 2412</span>            <span class="keywordflow">case</span> ElementType::BoundaryPolytope:</div>
+<div class="line"><a id="l02412" name="l02412"></a><span class="lineno"> 2412</span>            <span class="keywordflow">case</span> ElementType::BOUNDARY_POLYTOPE:</div>
 <div class="line"><a id="l02413" name="l02413"></a><span class="lineno"> 2413</span>                non_regular_boundary_count++;</div>
 <div class="line"><a id="l02414" name="l02414"></a><span class="lineno"> 2414</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02415" name="l02415"></a><span class="lineno"> 2415</span>            <span class="keywordflow">case</span> ElementType::InteriorPolytope:</div>
+<div class="line"><a id="l02415" name="l02415"></a><span class="lineno"> 2415</span>            <span class="keywordflow">case</span> ElementType::INTERIOR_POLYTOPE:</div>
 <div class="line"><a id="l02416" name="l02416"></a><span class="lineno"> 2416</span>                non_regular_count++;</div>
 <div class="line"><a id="l02417" name="l02417"></a><span class="lineno"> 2417</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l02418" name="l02418"></a><span class="lineno"> 2418</span>            <span class="keywordflow">case</span> ElementType::Undefined:</div>
+<div class="line"><a id="l02418" name="l02418"></a><span class="lineno"> 2418</span>            <span class="keywordflow">case</span> ElementType::UNDEFINED:</div>
 <div class="line"><a id="l02419" name="l02419"></a><span class="lineno"> 2419</span>                undefined_count++;</div>
 <div class="line"><a id="l02420" name="l02420"></a><span class="lineno"> 2420</span>                <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l02421" name="l02421"></a><span class="lineno"> 2421</span>            }</div>
@@ -2857,7 +2857,6 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="ttc" id="anamespacepolyfem_1_1autogen_html_ae625b6539e6dfcbb11dee43af4a58bc0"><div class="ttname"><a href="namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0">polyfem::autogen::q_nodes_3d</a></div><div class="ttdeci">void q_nodes_3d(const int q, Eigen::MatrixXd &amp;val)</div><div class="ttdef"><b>Definition:</b> <a href="auto__q__bases_8cpp_source.html#l04279">auto_q_bases.cpp:4279</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1io_html"><div class="ttname"><a href="namespacepolyfem_1_1io.html">polyfem::io</a></div><div class="ttdef"><b>Definition:</b> <a href="_evaluator_8cpp_source.html#l00021">Evaluator.cpp:22</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></div><div class="ttdef"><b>Definition:</b> <a href="_geometry_reader_8cpp_source.html#l00021">GeometryReader.cpp:22</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa189920e88906221b0731b92bfb2ebcd7">polyfem::mesh::Tri</a></div><div class="ttdeci">@ Tri</div><div class="ttdef"><b>Definition:</b> <a href="_mesh3_d_storage_8hpp_source.html#l00055">Mesh3DStorage.hpp:55</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_a52d29c294eac8e3515c8c721ac4879c2"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2">polyfem::mesh::ElementType</a></div><div class="ttdeci">ElementType</div><div class="ttdoc">Type of Element, check [Poly-Spline Finite Element Method] for a complete description.</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_8hpp_source.html#l00022">Mesh.hpp:23</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a3b3a8934d13e48dc3a51ed8efe25e11e"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e">polyfem::utils::get_n_threads</a></div><div class="ttdeci">size_t get_n_threads()</div><div class="ttdef"><b>Definition:</b> <a href="par__for_8hpp_source.html#l00025">par_for.hpp:25</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a3d5616d7cdc82efc086156a883922bbf"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a3d5616d7cdc82efc086156a883922bbf">polyfem::utils::NLOHMANN_JSON_SERIALIZE_ENUM</a></div><div class="ttdeci">NLOHMANN_JSON_SERIALIZE_ENUM(PiecewiseInterpolation::Extend, {{PiecewiseInterpolation::Extend::CONSTANT, &quot;constant&quot;}, {PiecewiseInterpolation::Extend::EXTRAPOLATE, &quot;extrapolate&quot;}, {PiecewiseInterpolation::Extend::REPEAT, &quot;repeat&quot;}, {PiecewiseInterpolation::Extend::REPEAT_OFFSET, &quot;repeat_offset&quot;}})</div></div>

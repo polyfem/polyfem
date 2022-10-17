@@ -1,7 +1,7 @@
 var searchData=
 [
   ['u_5f_0',['U_',['../classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a883bf1709534c5e9cc0d67c264291a38',1,'polyfem::problem::FlowWithObstacle::U_()'],['../classpolyfem_1_1problem_1_1_corner_flow.html#a6a76b79372136edb42c5a6190fb8696d',1,'polyfem::problem::CornerFlow::U_()'],['../classpolyfem_1_1problem_1_1_lshape.html#a7c5a7aa5ec416c345daee1e7f052706a',1,'polyfem::problem::Lshape::U_()'],['../classpolyfem_1_1problem_1_1_unit_flow_with_obstacle.html#af7919e6cbdbdd462cc5c02cce08ffc2c',1,'polyfem::problem::UnitFlowWithObstacle::U_()']]],
-  ['undefined_1',['Undefined',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aec0fc0100c4fc1ce4eea230c3dc10360',1,'polyfem::mesh']]],
+  ['undefined_1',['UNDEFINED',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3',1,'polyfem::mesh']]],
   ['undefined_5fcount_2',['undefined_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#a75f951afbf3b4b99d68c32860a39123e',1,'polyfem::io::OutStatsData']]],
   ['unflatten_3',['unflatten',['../namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5',1,'polyfem::utils']]],
   ['uniformattributes_4',['UniformAttributes',['../classpolyfem_1_1renderer_1_1_uniform_attributes.html',1,'polyfem::renderer']]],
