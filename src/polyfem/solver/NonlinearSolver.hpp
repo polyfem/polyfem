@@ -14,9 +14,9 @@ namespace cppoptlib
 {
 	enum class ErrorCode
 	{
-		NanEncountered = -10,
-		StepTooSmall = -1,
-		Success = 0,
+		NAN_ENCOUNTERED = -10,
+		STEP_TOO_SMALL = -1,
+		SUCCESS = 0,
 	};
 
 	template <typename ProblemType /*, int Ord*/>

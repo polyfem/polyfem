@@ -124,7 +124,7 @@ namespace polyfem
 		// {
 		// 	mesh->compute_elements_tag();
 		// 	for(auto el_id : flipped_elements)
-		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
+		// 		mesh->set_tag(el_id, ElementType::INTERIOR_POLYTOPE);
 		// }
 
 		RowVectorNd min, max;
