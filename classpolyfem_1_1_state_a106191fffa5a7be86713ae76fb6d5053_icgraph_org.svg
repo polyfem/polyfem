@@ -53,7 +53,7 @@
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1_state.html#a8c25c95028f76537bb40abae0cb5d738" target="_top" xlink:title="computes all errors">
+<g id="a_node5"><a xlink:href="classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353" target="_top" xlink:title="computes all errors">
 <polygon fill="none" stroke="black" points="1066.5,-0.5 1066.5,-30.5 1203.5,-30.5 1203.5,-0.5 1066.5,-0.5"/>
 <text text-anchor="start" x="1074.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::compute</text>
 <text text-anchor="middle" x="1135" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_errors</text>
@@ -69,7 +69,7 @@
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#aff992cab598e340fa50273b7a9861c17" target="_top" xlink:title="exports everytihng, txt, vtu, etc">
+<g id="a_node6"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" target="_top" xlink:title="exports everytihng, txt, vtu, etc">
 <polygon fill="none" stroke="black" points="703,-104.5 703,-134.5 847,-134.5 847,-104.5 703,-104.5"/>
 <text text-anchor="start" x="711" y="-122.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="middle" x="775" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::export_data</text>
@@ -85,7 +85,7 @@
 <!-- Node8 -->
 <g id="node8" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="classpolyfem_1_1_state.html#abd851705312f4ec60428cf62dc960889" target="_top" xlink:title="initialize the nonlinear solver">
+<g id="a_node8"><a xlink:href="classpolyfem_1_1_state.html#ae0c43d17c7df4b804bd5900044a1c8d7" target="_top" xlink:title="initialize the nonlinear solver">
 <polygon fill="none" stroke="black" points="523,-202.5 523,-232.5 658,-232.5 658,-202.5 523,-202.5"/>
 <text text-anchor="start" x="531" y="-220.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
 <text text-anchor="middle" x="590.5" y="-209.5" font-family="Helvetica,sans-Serif" font-size="10.00">_nonlinear_tensor_solve</text>
@@ -101,7 +101,7 @@
 <!-- Node11 -->
 <g id="node11" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a5dbf360987cc96fabcf32ddc13b73314" target="_top" xlink:title="saves the surface vtu file for for surface quantites, eg traction forces">
+<g id="a_node11"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a3748bb6ba31dad8bd00b822e7ef12280" target="_top" xlink:title="saves the surface vtu file for for surface quantites, eg traction forces">
 <polygon fill="none" stroke="black" points="1063,-235.5 1063,-265.5 1207,-265.5 1207,-235.5 1063,-235.5"/>
 <text text-anchor="start" x="1071" y="-253.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="middle" x="1135" y="-242.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_surface</text>
@@ -117,7 +117,7 @@
 <!-- Node18 -->
 <g id="node18" class="node">
 <title>Node18</title>
-<g id="a_node18"><a xlink:href="classpolyfem_1_1_state.html#a8987d7b98af154391196ee304a613953" target="_top" xlink:title="solves transient navier stokes with FEM">
+<g id="a_node18"><a xlink:href="classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" target="_top" xlink:title="solves transient navier stokes with FEM">
 <polygon fill="none" stroke="black" points="327,-382.5 327,-412.5 465,-412.5 465,-382.5 327,-382.5"/>
 <text text-anchor="start" x="335" y="-400.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="396" y="-389.5" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_navier_stokes</text>
@@ -133,7 +133,7 @@
 <!-- Node19 -->
 <g id="node19" class="node">
 <title>Node19</title>
-<g id="a_node19"><a xlink:href="classpolyfem_1_1_state.html#aeebf24720a27fd360daed232cccae73a" target="_top" xlink:title="solves transient navier stokes with operator splitting">
+<g id="a_node19"><a xlink:href="classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" target="_top" xlink:title="solves transient navier stokes with operator splitting">
 <polygon fill="none" stroke="black" points="314,-333.5 314,-363.5 478,-363.5 478,-333.5 314,-333.5"/>
 <text text-anchor="start" x="322" y="-351.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="396" y="-340.5" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_navier_stokes_split</text>
@@ -149,7 +149,7 @@
 <!-- Node20 -->
 <g id="node20" class="node">
 <title>Node20</title>
-<g id="a_node20"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a3d16cbc6a9d9211027f46b6f064e0b93" target="_top" xlink:title="saves the volume vtu file">
+<g id="a_node20"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a55d435400a9eb85c77e6167ce0c13756" target="_top" xlink:title="saves the volume vtu file">
 <polygon fill="none" stroke="black" points="1063,-186.5 1063,-216.5 1207,-216.5 1207,-186.5 1063,-186.5"/>
 <text text-anchor="start" x="1071" y="-204.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="middle" x="1135" y="-193.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_volume</text>
@@ -165,7 +165,7 @@
 <!-- Node21 -->
 <g id="node21" class="node">
 <title>Node21</title>
-<g id="a_node21"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a3c66d8c6f4c319704fb0a98e5a0a4a47" target="_top" xlink:title="saves the wireframe">
+<g id="a_node21"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" target="_top" xlink:title="saves the wireframe">
 <polygon fill="none" stroke="black" points="1063,-137.5 1063,-167.5 1207,-167.5 1207,-137.5 1063,-137.5"/>
 <text text-anchor="start" x="1071" y="-155.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="middle" x="1135" y="-144.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_wire</text>
@@ -181,7 +181,7 @@
 <!-- Node22 -->
 <g id="node22" class="node">
 <title>Node22</title>
-<g id="a_node22"><a xlink:href="classpolyfem_1_1_state.html#a8fd3208d617028a490488bf81c6d0bba" target="_top" xlink:title="solves a navier stokes">
+<g id="a_node22"><a xlink:href="classpolyfem_1_1_state.html#a76dfcaee0e24beeab2fda9449f404fe5" target="_top" xlink:title="solves a navier stokes">
 <polygon fill="none" stroke="black" points="894.5,-415.5 894.5,-445.5 1015.5,-445.5 1015.5,-415.5 894.5,-415.5"/>
 <text text-anchor="start" x="902.5" y="-433.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="955" y="-422.5" font-family="Helvetica,sans-Serif" font-size="10.00">_navier_stokes</text>
@@ -197,7 +197,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1_state.html#aedf3207db0c8d717766f410878876cab" target="_top" xlink:title="solves the problem, call other methods">
+<g id="a_node3"><a xlink:href="classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" target="_top" xlink:title="solves the problem, call other methods">
 <polygon fill="none" stroke="black" points="0,-380 0,-399 121,-399 121,-380 0,-380"/>
 <text text-anchor="middle" x="60.5" y="-387" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 </a>
@@ -212,7 +212,7 @@
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="classpolyfem_1_1_state.html#ace95e485ec689c24e293b317da6505c3" target="_top" xlink:title="saves all data on the disk according to the input params">
+<g id="a_node7"><a xlink:href="classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" target="_top" xlink:title="saves all data on the disk according to the input params">
 <polygon fill="none" stroke="black" points="514,-110 514,-129 667,-129 667,-110 514,-110"/>
 <text text-anchor="middle" x="590.5" y="-117" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::export_data</text>
 </a>
@@ -227,7 +227,7 @@
 <!-- Node9 -->
 <g id="node9" class="node">
 <title>Node9</title>
-<g id="a_node9"><a xlink:href="classpolyfem_1_1_state.html#a5f707e0e648aa0e3ffd866f9599f39d0" target="_top" xlink:title="solves the problems">
+<g id="a_node9"><a xlink:href="classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" target="_top" xlink:title="solves the problems">
 <polygon fill="none" stroke="black" points="157,-284.5 157,-314.5 278,-314.5 278,-284.5 157,-284.5"/>
 <text text-anchor="start" x="165" y="-302.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="217.5" y="-291.5" font-family="Helvetica,sans-Serif" font-size="10.00">_problem</text>
@@ -243,7 +243,7 @@
 <!-- Node10 -->
 <g id="node10" class="node">
 <title>Node10</title>
-<g id="a_node10"><a xlink:href="classpolyfem_1_1_state.html#adad1ddc955ed74e3bbb706ea2e0fa8b8" target="_top" xlink:title="solves transient tensor nonlinear problem">
+<g id="a_node10"><a xlink:href="classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" target="_top" xlink:title="solves transient tensor nonlinear problem">
 <polygon fill="none" stroke="black" points="320,-186.5 320,-216.5 472,-216.5 472,-186.5 320,-186.5"/>
 <text text-anchor="start" x="328" y="-204.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="396" y="-193.5" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_tensor_nonlinear</text>
@@ -271,7 +271,7 @@
 <!-- Node12 -->
 <g id="node12" class="node">
 <title>Node12</title>
-<g id="a_node12"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a842de4f9d003ca9df072545938091f69" target="_top" xlink:title="saves the vtu file for time t">
+<g id="a_node12"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" target="_top" xlink:title="saves the vtu file for time t">
 <polygon fill="none" stroke="black" points="883,-178.5 883,-208.5 1027,-208.5 1027,-178.5 883,-178.5"/>
 <text text-anchor="start" x="891" y="-196.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="middle" x="955" y="-185.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::save_vtu</text>
@@ -293,7 +293,7 @@
 <!-- Node13 -->
 <g id="node13" class="node">
 <title>Node13</title>
-<g id="a_node13"><a xlink:href="classpolyfem_1_1_state.html#ab534982a851902f70eb6601f739241e7" target="_top" xlink:title="saves a subsolve when save_solve_sequence_debug is true">
+<g id="a_node13"><a xlink:href="classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" target="_top" xlink:title="saves a subsolve when save_solve_sequence_debug is true">
 <polygon fill="none" stroke="black" points="716,-162.5 716,-192.5 834,-192.5 834,-162.5 716,-162.5"/>
 <text text-anchor="start" x="724" y="-180.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::save</text>
 <text text-anchor="middle" x="775" y="-169.5" font-family="Helvetica,sans-Serif" font-size="10.00">_subsolve</text>
@@ -309,7 +309,7 @@
 <!-- Node15 -->
 <g id="node15" class="node">
 <title>Node15</title>
-<g id="a_node15"><a xlink:href="classpolyfem_1_1_state.html#a61ff1981be991580c3c68c323145d4e6" target="_top" xlink:title="saves a timestep">
+<g id="a_node15"><a xlink:href="classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" target="_top" xlink:title="saves a timestep">
 <polygon fill="none" stroke="black" points="531.5,-286.5 531.5,-316.5 649.5,-316.5 649.5,-286.5 531.5,-286.5"/>
 <text text-anchor="start" x="539.5" y="-304.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::save</text>
 <text text-anchor="middle" x="590.5" y="-293.5" font-family="Helvetica,sans-Serif" font-size="10.00">_timestep</text>
@@ -325,7 +325,7 @@
 <!-- Node14 -->
 <g id="node14" class="node">
 <title>Node14</title>
-<g id="a_node14"><a xlink:href="classpolyfem_1_1_state.html#afb78d1df43d732318dd15a370d96360d" target="_top" xlink:title="solves nonlinear problems">
+<g id="a_node14"><a xlink:href="classpolyfem_1_1_state.html#a1e33ea69bab62bbb5b6f9a02cb2a2402" target="_top" xlink:title="solves nonlinear problems">
 <polygon fill="none" stroke="black" points="530,-153.5 530,-183.5 651,-183.5 651,-153.5 530,-153.5"/>
 <text text-anchor="start" x="538" y="-171.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="590.5" y="-160.5" font-family="Helvetica,sans-Serif" font-size="10.00">_tensor_nonlinear</text>
@@ -359,7 +359,7 @@
 <!-- Node16 -->
 <g id="node16" class="node">
 <title>Node16</title>
-<g id="a_node16"><a xlink:href="classpolyfem_1_1_state.html#ac206e46b9e10eed613f8e20e0317b540" target="_top" xlink:title="initialize solver">
+<g id="a_node16"><a xlink:href="classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" target="_top" xlink:title="initialize solver">
 <polygon fill="none" stroke="black" points="341,-235.5 341,-265.5 451,-265.5 451,-235.5 341,-235.5"/>
 <text text-anchor="start" x="349" y="-253.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
 <text text-anchor="middle" x="396" y="-242.5" font-family="Helvetica,sans-Serif" font-size="10.00">_solve</text>
@@ -375,7 +375,7 @@
 <!-- Node17 -->
 <g id="node17" class="node">
 <title>Node17</title>
-<g id="a_node17"><a xlink:href="classpolyfem_1_1_state.html#a300265f0645d258fe96a04a95f1837ed" target="_top" xlink:title="solves transient linear problem">
+<g id="a_node17"><a xlink:href="classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" target="_top" xlink:title="solves transient linear problem">
 <polygon fill="none" stroke="black" points="335.5,-284.5 335.5,-314.5 456.5,-314.5 456.5,-284.5 335.5,-284.5"/>
 <text text-anchor="start" x="343.5" y="-302.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="396" y="-291.5" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_linear</text>

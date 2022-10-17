@@ -25,7 +25,7 @@ var searchData=
   ['post_5fsubsolve_22',['post_subsolve',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a7489c829f3486531fdfecb24519e2cc9',1,'polyfem::solver::ALSolver']]],
   ['precond_5ftype_23',['precond_type',['../classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a83bb56bea2377973ef9a300d545d8b96',1,'polyfem::solver::NavierStokesSolver::precond_type()'],['../classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a09ced5cb398c7812949a9e8d36dc8ceb',1,'polyfem::solver::TransientNavierStokesSolver::precond_type()']]],
   ['preconditioner_5f_24',['preconditioner_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0e7f15c317f4cce8a96bc9e9459645d4',1,'polyfem::assembler::RhsAssembler']]],
-  ['pressure_25',['pressure',['../classpolyfem_1_1io_1_1_solution_frame.html#afd5733ca713a8d5904618048a6f36f24',1,'polyfem::io::SolutionFrame::pressure()'],['../classpolyfem_1_1_state.html#a45c6de3b79a7b1040be114cf3cdd5d5d',1,'polyfem::State::pressure()']]],
+  ['pressure_25',['pressure',['../classpolyfem_1_1io_1_1_solution_frame.html#afd5733ca713a8d5904618048a6f36f24',1,'polyfem::io::SolutionFrame']]],
   ['pressure_5fass_5fvals_5fcache_26',['pressure_ass_vals_cache',['../classpolyfem_1_1_state.html#aa8ecaf8f1d265e0b1d35d774d1511056',1,'polyfem::State']]],
   ['pressure_5fbases_27',['pressure_bases',['../classpolyfem_1_1_state.html#a4432596c5287d85e6954d71483757840',1,'polyfem::State']]],
   ['pressure_5fboundary_5fids_5f_28',['pressure_boundary_ids_',['../classpolyfem_1_1assembler_1_1_problem.html#a971bc9ef3c5fee60af0aef112b85b09f',1,'polyfem::assembler::Problem']]],

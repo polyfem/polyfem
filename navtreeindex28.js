@@ -1,9 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a7981f693a60ec02573977df905b4a400":[3,0,6,4,0,4],
-"namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a847e9739d2404e59d7720542e7ea3cfa":[3,0,6,4,0,1],
-"namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a973fa48488e4b472eefcfb966abaed2b":[3,0,6,4,0,13],
-"namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a9e7226a476a286a41ca81d04b358d12f":[3,0,6,4,0,5],
 "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#aab32642b5afb67dded8ac3de524f5451":[3,0,6,4,0,2],
 "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#ada71b5b3764571b9d2703420b626bd9c":[3,0,6,4,0,9],
 "namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#afb7ad06ae12fc5b116c4a57a9c82b6cb":[3,0,6,4,0,6],
@@ -249,5 +245,9 @@ var NAVTREEINDEX28 =
 "q__bases_8py.html#aefd408e88c0ce2b95ed824841f6cb539":[5,0,1,0,1,17,22],
 "q__bases_8py.html#af0fe99b4361a802ac7ae1d0d9a9daed0":[5,0,1,0,1,17,21],
 "q__bases_8py.html#af9ee1db492ab9311fe8a9a6e72eb862a":[5,0,1,0,1,17,10],
-"q__bases_8py.html#afee1ddc28f4ec93a9aff452e3570b6b4":[5,0,1,0,1,17,5]
+"q__bases_8py.html#afee1ddc28f4ec93a9aff452e3570b6b4":[5,0,1,0,1,17,5],
+"q__bases_8py_source.html":[5,0,1,0,1,17],
+"raster_8cpp.html":[5,0,1,0,11,31],
+"raster_8cpp.html#a30b9d8b7f7d2f4cd16cc4bb5a3926499":[5,0,1,0,11,31,0],
+"raster_8cpp_source.html":[5,0,1,0,11,31]
 };

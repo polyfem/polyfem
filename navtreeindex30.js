@@ -1,9 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#a6b1791cb578ae2c493c776d2ffc1204b":[4,0,3,3,14,1,3],
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#abd3df3b6ab0123a03350026fadbe2745":[4,0,3,3,14,1,2],
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#abd3df3b6ab0123a03350026fadbe2745":[3,0,6,4,16,1,2],
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#ac16e0de350b469da83afa7b501b00ed9":[3,0,6,4,16,1,1],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#ac16e0de350b469da83afa7b501b00ed9":[4,0,3,3,14,1,1],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#ad641b3e1b20a711b0ff15f9cc1b18bcc":[3,0,6,4,16,1,0],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html#ad641b3e1b20a711b0ff15f9cc1b18bcc":[4,0,3,3,14,1,0],
@@ -249,5 +245,9 @@ var NAVTREEINDEX30 =
 "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8":[3,0,6,4,1,0,1],
 "structpolyfem_1_1mesh_1_1_vertex.html":[3,0,6,4,19],
 "structpolyfem_1_1mesh_1_1_vertex.html":[4,0,3,3,17],
-"structpolyfem_1_1mesh_1_1_vertex.html#a114ec4dc4447a1eb759799bba1c4db08":[3,0,6,4,19,0]
+"structpolyfem_1_1mesh_1_1_vertex.html#a114ec4dc4447a1eb759799bba1c4db08":[3,0,6,4,19,0],
+"structpolyfem_1_1mesh_1_1_vertex.html#a114ec4dc4447a1eb759799bba1c4db08":[4,0,3,3,17,0],
+"structpolyfem_1_1mesh_1_1_vertex.html#a19072cc78292ed9af85fe27247f485a2":[4,0,3,3,17,3],
+"structpolyfem_1_1mesh_1_1_vertex.html#a19072cc78292ed9af85fe27247f485a2":[3,0,6,4,19,3],
+"structpolyfem_1_1mesh_1_1_vertex.html#a32d66ad4bb8a50d6ba6734277165eeb9":[3,0,6,4,19,2]
 };

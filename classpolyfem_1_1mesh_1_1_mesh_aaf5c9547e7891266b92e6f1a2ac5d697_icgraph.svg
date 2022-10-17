@@ -128,18 +128,18 @@ var sectionId = 'dynsection-53';
 <path fill="none" stroke="midnightblue" d="M808.5,-590.41C798.93,-587.92 789.22,-585.4 780,-583 768.92,-580.12 757.09,-577.05 745.73,-574.1"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="807.83,-593.85 818.38,-592.99 809.59,-587.08 807.83,-593.85"/>
 </g>
-<!-- Node41 -->
-<g id="node41" class="node">
-<title>Node41</title>
-<g id="a_node41"><a xlink:href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda" target="_top" xlink:title="Converts a hex mesh to a Geogram mesh.">
+<!-- Node43 -->
+<g id="node43" class="node">
+<title>Node43</title>
+<g id="a_node43"><a xlink:href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda" target="_top" xlink:title="Converts a hex mesh to a Geogram mesh.">
 <polygon fill="none" stroke="black" points="593,-505.5 593,-524.5 780,-524.5 780,-505.5 593,-505.5"/>
 <text text-anchor="middle" x="686.5" y="-512.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::to_geogram_mesh</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node41 -->
-<g id="edge44" class="edge">
-<title>Node1&#45;&gt;Node41</title>
+<!-- Node1&#45;&gt;Node43 -->
+<g id="edge46" class="edge">
+<title>Node1&#45;&gt;Node43</title>
 <path fill="none" stroke="midnightblue" d="M853.41,-585.73C835.11,-568.97 807.87,-546.77 780,-534 771.5,-530.11 762.21,-527.01 752.88,-524.54"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="851.47,-588.71 861.16,-593 856.26,-583.61 851.47,-588.71"/>
 </g>
@@ -498,8 +498,8 @@ var sectionId = 'dynsection-53';
 <!-- Node8&#45;&gt;Node36 -->
 <g id="edge39" class="edge">
 <title>Node8&#45;&gt;Node36</title>
-<path fill="none" stroke="midnightblue" d="M615.58,-566.96C606.95,-570.67 599.06,-575.84 593,-583 533.38,-653.52 613.69,-924.1 557,-997 550.88,-1004.86 542.57,-1010.67 533.51,-1014.97"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="616.96,-570.18 625.17,-563.48 614.57,-563.6 616.96,-570.18"/>
+<path fill="none" stroke="midnightblue" d="M615.58,-566.96C606.95,-570.67 599.06,-575.84 593,-583 533.51,-653.35 613.18,-922.99 557,-996 550.9,-1003.92 542.6,-1009.83 533.54,-1014.22"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="616.96,-570.18 625.17,-563.48 614.58,-563.6 616.96,-570.18"/>
 </g>
 <!-- Node38 -->
 <g id="node38" class="node">
@@ -656,7 +656,7 @@ var sectionId = 'dynsection-53';
 <!-- Node25 -->
 <g id="node25" class="node">
 <title>Node25</title>
-<g id="a_node25"><a xlink:href="classpolyfem_1_1_state.html#aedf3207db0c8d717766f410878876cab" target="_top" xlink:title="solves the problem, call other methods">
+<g id="a_node25"><a xlink:href="classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" target="_top" xlink:title="solves the problem, call other methods">
 <polygon fill="none" stroke="black" points="207.5,-432.5 207.5,-451.5 328.5,-451.5 328.5,-432.5 207.5,-432.5"/>
 <text text-anchor="middle" x="268" y="-439.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 </a>
@@ -671,7 +671,7 @@ var sectionId = 'dynsection-53';
 <!-- Node27 -->
 <g id="node27" class="node">
 <title>Node27</title>
-<g id="a_node27"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#aff992cab598e340fa50273b7a9861c17" target="_top" xlink:title="exports everytihng, txt, vtu, etc">
+<g id="a_node27"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" target="_top" xlink:title="exports everytihng, txt, vtu, etc">
 <polygon fill="none" stroke="black" points="196,-372 196,-402 340,-402 340,-372 196,-372"/>
 <text text-anchor="start" x="204" y="-390" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="middle" x="268" y="-379" font-family="Helvetica,sans-Serif" font-size="10.00">Data::export_data</text>
@@ -687,7 +687,7 @@ var sectionId = 'dynsection-53';
 <!-- Node28 -->
 <g id="node28" class="node">
 <title>Node28</title>
-<g id="a_node28"><a xlink:href="classpolyfem_1_1_state.html#ace95e485ec689c24e293b317da6505c3" target="_top" xlink:title="saves all data on the disk according to the input params">
+<g id="a_node28"><a xlink:href="classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" target="_top" xlink:title="saves all data on the disk according to the input params">
 <polygon fill="none" stroke="black" points="0,-377.5 0,-396.5 153,-396.5 153,-377.5 0,-377.5"/>
 <text text-anchor="middle" x="76.5" y="-384.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::export_data</text>
 </a>
@@ -719,7 +719,7 @@ var sectionId = 'dynsection-53';
 <!-- Node40 -->
 <g id="node40" class="node">
 <title>Node40</title>
-<g id="a_node40"><a xlink:href="classpolyfem_1_1_state.html#a1b51101cfaa31b6a3b0f701923b4716e" target="_top" xlink:title="saves the output statistic to a stream">
+<g id="a_node40"><a xlink:href="classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f" target="_top" xlink:title="saves the output statistic to a stream">
 <polygon fill="none" stroke="black" points="196.5,-1006.5 196.5,-1025.5 339.5,-1025.5 339.5,-1006.5 196.5,-1006.5"/>
 <text text-anchor="middle" x="268" y="-1013.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::save_json</text>
 </a>
@@ -728,8 +728,38 @@ var sectionId = 'dynsection-53';
 <!-- Node39&#45;&gt;Node40 -->
 <g id="edge43" class="edge">
 <title>Node39&#45;&gt;Node40</title>
-<path fill="none" stroke="midnightblue" d="M390.01,-942.6C387.59,-943.97 385.25,-945.43 383,-947 360.55,-962.67 369.71,-981.7 347,-997 341.22,-1000.89 334.72,-1003.99 328.01,-1006.46"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="391.71,-945.66 399.06,-938.04 388.56,-939.41 391.71,-945.66"/>
+<path fill="none" stroke="midnightblue" d="M390.03,-942.62C387.61,-943.99 385.25,-945.44 383,-947 360.77,-962.36 369.39,-980.87 347,-996 340.51,-1000.38 333.13,-1003.8 325.56,-1006.48"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="391.72,-945.69 399.1,-938.09 388.59,-939.43 391.72,-945.69"/>
+</g>
+<!-- Node41 -->
+<g id="node41" class="node">
+<title>Node41</title>
+<g id="a_node41"><a xlink:href="classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534" target="_top" xlink:title="gets the output log as json this is not what gets printed but more informative information,...">
+<polygon fill="none" stroke="black" points="11,-1025.5 11,-1044.5 142,-1044.5 142,-1025.5 11,-1025.5"/>
+<text text-anchor="middle" x="76.5" y="-1032.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::get_log</text>
+</a>
+</g>
+</g>
+<!-- Node40&#45;&gt;Node41 -->
+<g id="edge44" class="edge">
+<title>Node40&#45;&gt;Node41</title>
+<path fill="none" stroke="midnightblue" d="M186.32,-1024.09C171.58,-1025.57 156.37,-1027.09 142.17,-1028.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="186.84,-1027.56 196.44,-1023.07 186.14,-1020.59 186.84,-1027.56"/>
+</g>
+<!-- Node42 -->
+<g id="node42" class="node">
+<title>Node42</title>
+<g id="a_node42"><a xlink:href="classpolyfem_1_1_state.html#a8e4831838628c59b209c7fa60f70f657" target="_top" xlink:title="saves the output statistic to disc accoding to params">
+<polygon fill="none" stroke="black" points="5,-987.5 5,-1006.5 148,-1006.5 148,-987.5 5,-987.5"/>
+<text text-anchor="middle" x="76.5" y="-994.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::save_json</text>
+</a>
+</g>
+</g>
+<!-- Node40&#45;&gt;Node42 -->
+<g id="edge45" class="edge">
+<title>Node40&#45;&gt;Node42</title>
+<path fill="none" stroke="midnightblue" d="M186.34,-1007.91C173.63,-1006.64 160.58,-1005.33 148.12,-1004.08"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="186.14,-1011.41 196.44,-1008.93 186.84,-1004.44 186.14,-1011.41"/>
 </g>
 </g>
 </svg>

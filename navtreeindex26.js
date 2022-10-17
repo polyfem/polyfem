@@ -1,9 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classq__bases_1_1_reference_simplex.html#af7af26f99435442fc8fc24576e6ea015":[3,0,8,1,2],
-"classq__bases_1_1_reference_simplex.html#af7af26f99435442fc8fc24576e6ea015":[4,0,4,1,2],
-"dir_02b5be155cc4b176060eb5eeb551f9cc.html":[5,0,1,0,8,1],
-"dir_0dea85a4cc0a13ac5889fb898e038943.html":[5,0,1,0,4,0],
 "dir_10fb13321304f63ea5f7ee0a82e63ce8.html":[5,0,1,0,8],
 "dir_12817abd2662fe40efba8355c1386b9e.html":[5,0,1,0,0],
 "dir_13510bfc8d6c882cc83f48e81fc78b9e.html":[5,0,1,0,2],
@@ -249,5 +245,9 @@ var NAVTREEINDEX26 =
 "namespacemembers_func_l.html":[3,1,1,9],
 "namespacemembers_func_m.html":[3,1,1,10],
 "namespacemembers_func_n.html":[3,1,1,11],
-"namespacemembers_func_o.html":[3,1,1,12]
+"namespacemembers_func_o.html":[3,1,1,12],
+"namespacemembers_func_p.html":[3,1,1,13],
+"namespacemembers_func_q.html":[3,1,1,14],
+"namespacemembers_func_r.html":[3,1,1,15],
+"namespacemembers_func_s.html":[3,1,1,16]
 };
