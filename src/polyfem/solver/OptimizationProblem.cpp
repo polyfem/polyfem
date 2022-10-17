@@ -154,7 +154,7 @@ namespace polyfem
 		// debug
 		if (opt_nonlinear_params["debug_fd"].get<bool>())
 		{
-			double t = 1e-6;
+			double t = opt_nonlinear_params["debug_fd_eps"].get<double>();
 			TVector new_x = x0 + descent_direction * t;
 
 			solution_changed(new_x);

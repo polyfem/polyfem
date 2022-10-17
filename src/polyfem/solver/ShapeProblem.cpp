@@ -194,7 +194,7 @@ namespace polyfem
 		has_volume_constraint = false;
 		for (const auto &param : opt_params["functionals"])
 		{
-			if (param["type"] == "stress")
+			if (param["type"] == "stress" || param["type"] == "trajectory")
 			{
 				target_weight = param.value("weight", 1.0);
 			}
@@ -275,6 +275,11 @@ namespace polyfem
 		build_fixed_nodes();
 		build_tied_nodes();
 
+		if (shape_params["dimensions"].is_array())
+			free_dimension = shape_params["dimensions"].get<std::vector<bool>>();
+		if (free_dimension.size() < this->dim)
+			free_dimension.assign(this->dim, true);
+
 		// constraints on optimization
 		x_to_param = [this](const TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
 			V.setZero(x.size() / this->dim, this->dim);
@@ -297,6 +302,12 @@ namespace polyfem
 			for (int b : this->fixed_nodes)
 				for (int d = 0; d < this->dim; d++)
 					grad_x(b * this->dim + d) = 0;
+
+			const int size = grad_v.size() / this->dim;
+			for (int d = 0; d < this->dim; d++)
+				if (!free_dimension[d])
+					for (int i = 0; i < size; i++)
+						grad_x(i * this->dim + d) = 0;
 
 			for (const auto &pair : this->tied_nodes)
 			{
@@ -576,9 +587,9 @@ namespace polyfem
 		descent_direction = x1 - x0;
 
 		// debug
-		if (opt_nonlinear_params.contains("debug_fd") && opt_nonlinear_params["debug_fd"].get<bool>())
+		if (opt_nonlinear_params["debug_fd"].get<bool>())
 		{
-			double t = 1e-6;
+			double t = opt_nonlinear_params["debug_fd_eps"].get<double>();
 			TVector new_x = x0 + descent_direction * t;
 
 			solution_changed(new_x);

@@ -1486,6 +1486,7 @@
             "solver",
             "f_delta",
             "debug_fd",
+            "debug_fd_eps",
             "max_step_size",
             "max_change",
             "better_initial_guess",
@@ -1525,6 +1526,12 @@
         "pointer": "/optimization/solver/nonlinear/debug_fd",
         "default": false,
         "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/optimization/solver/nonlinear/debug_fd_eps",
+        "default": 1e-7,
+        "type": "float",
         "doc": "Use finite difference to verify gradient in optimization"
     },
     {
@@ -2839,8 +2846,20 @@
             "restriction",
             "smoothing_paramters",
             "remesh",
-            "spline_specification"
+            "spline_specification",
+            "dimensions"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/dimensions",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/dimensions/*",
+        "type": "bool",
         "doc": "TODO"
     },
     {
@@ -3203,6 +3222,7 @@
         "options": [
             "exact-center",
             "sine",
+            "sine3",
             "exact",
             "sdf",
             "center-data",

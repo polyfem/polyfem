@@ -202,6 +202,7 @@ namespace polyfem
 		Eigen::MatrixXi elements;
 
 		std::set<int> fixed_nodes;
+		std::vector<bool> free_dimension;
 
 		std::vector<bool> tied_nodes_mask;
 		std::vector<std::array<int, 2>> tied_nodes;
