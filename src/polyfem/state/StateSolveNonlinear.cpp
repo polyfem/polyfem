@@ -277,17 +277,27 @@ namespace polyfem
 			}
 		}
 
-		// TODO: expose this thorugh JSON args and make it optional
-		forms.push_back(std::make_shared<RayleighDampingForm>(
-			*solve_data.elastic_form,
-			*solve_data.time_integrator,
-			/*stiffness_ratio=*/0.01,
-			/*n_lagging_iters=*/1));
-		forms.push_back(std::make_shared<RayleighDampingForm>(
-			*solve_data.contact_form,
-			*solve_data.time_integrator,
-			/*stiffness_ratio=*/0.1,
-			/*n_lagging_iters=*/1));
+		assert(args["solver"]["rayleigh_damping"].is_array());
+		std::vector<json> rayleigh_damping_jsons = args["solver"]["rayleigh_damping"];
+		if (problem->is_time_dependent())
+		{
+			// Map from form name to form so RayleighDampingForm::create can get the correct form to damp
+			const std::unordered_map<std::string, std::shared_ptr<Form>> possible_forms_to_damp = {
+				{"elasticity", solve_data.elastic_form},
+				{"contact", solve_data.contact_form},
+			};
+
+			for (const json &params : rayleigh_damping_jsons)
+			{
+				forms.push_back(RayleighDampingForm::create(
+					params, possible_forms_to_damp,
+					*solve_data.time_integrator));
+			}
+		}
+		else if (rayleigh_damping_jsons.size() > 0)
+		{
+			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
+		}
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems

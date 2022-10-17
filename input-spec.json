@@ -1147,6 +1147,7 @@
             "nonlinear",
             "augmented_lagrangian",
             "contact",
+            "rayleigh_damping",
             "ignore_inertia",
             "advanced"
         ],
@@ -1755,6 +1756,58 @@
         "pointer": "/solver/contact/barrier_stiffness",
         "type": "float",
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
+    },
+    {
+        "pointer": "/solver/rayleigh_damping",
+        "type": "list",
+        "default": [],
+        "doc": "Apply Rayleigh damping."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness_ratio"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness ratio."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/form",
+        "type": "string",
+        "options": [
+            "elasticity",
+            "contact",
+            "friction"
+        ],
+        "doc": "Form to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness_ratio",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp (stiffness = 0.75 * stiffness_ratio * Δt³)."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness/lagging_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagging."
     },
     {
         "pointer": "/solver/ignore_inertia",
