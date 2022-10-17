@@ -1823,6 +1823,22 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "MooneyRivlin",
+        "required": [
+            "type",
+            "c1",
+            "c2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "k"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "NeoHookean",
         "required": [
             "type",
@@ -2094,6 +2110,7 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
+            "MooneyRivlin",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2112,6 +2129,16 @@
         "pointer": "/materials/*/lambda",
         "type": "float",
         "doc": "Second Lamé parameter"
+    },
+    {
+        "pointer": "/materials/*/c1",
+        "type": "float",
+        "doc": "First Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c2",
+        "type": "float",
+        "doc": "Second Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/boundary_conditions",

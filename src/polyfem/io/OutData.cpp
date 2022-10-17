@@ -1019,7 +1019,7 @@ namespace polyfem::io
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.assembler.density();
+		const auto &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1315,7 +1315,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const LameParameters &params = assembler.lame_params();
+			const auto &params = assembler.lame_params();
 
 			Eigen::MatrixXd lambdas(points.rows(), 1);
 			Eigen::MatrixXd mus(points.rows(), 1);
@@ -1507,7 +1507,7 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.assembler.density();
+		const auto &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1695,7 +1695,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const LameParameters &params = assembler.lame_params();
+			const auto &params = assembler.lame_params();
 
 			Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
 			Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
