@@ -108,15 +108,15 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt)
+	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
 	{
-		init_nonlinear_tensor_solve(t0 + dt);
+		init_nonlinear_tensor_solve(sol, t0 + dt);
 
-		save_timestep(t0, 0, t0, dt);
+		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			solve_tensor_nonlinear(t);
+			solve_tensor_nonlinear(sol, t);
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
@@ -129,7 +129,7 @@ namespace polyfem
 				solve_data.updated_barrier_stiffness(sol);
 			}
 
-			save_timestep(t0 + dt * t, t, t0, dt);
+			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
@@ -140,7 +140,7 @@ namespace polyfem
 			resolve_output_path(args["output"]["data"]["a_path"]));
 	}
 
-	void State::init_nonlinear_tensor_solve(const double t)
+	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t)
 	{
 		assert(!assembler.is_linear(formulation()) || is_contact_enabled()); // non-linear
 		assert(!problem->is_scalar());                                       // tensor
@@ -193,8 +193,11 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
-			forms.push_back(solve_data.inertia_form);
+			if (!args["solver"]["ignore_inertia"])
+			{
+				solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
+				forms.push_back(solve_data.inertia_form);
+			}
 			if (assembler.has_damping())
 			{
 				solve_data.damping_form = std::make_shared<ElasticForm>(
@@ -318,7 +321,7 @@ namespace polyfem
 		stats.solver_info = json::array();
 	}
 
-	void State::solve_tensor_nonlinear(const int t)
+	void State::solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t)
 	{
 
 		assert(solve_data.nl_problem != nullptr);
@@ -337,7 +340,7 @@ namespace polyfem
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
-		save_subsolve(subsolve_count, t);
+		save_subsolve(subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 
 		// ---------------------------------------------------------------------
 
@@ -360,7 +363,7 @@ namespace polyfem
 				 {"info", info}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
@@ -417,7 +420,7 @@ namespace polyfem
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
 				 {"info", info}});
-			save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		}
 	}
 

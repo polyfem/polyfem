@@ -7,7 +7,7 @@
 
 namespace polyfem
 {
-	void State::compute_errors()
+	void State::compute_errors(const Eigen::MatrixXd &sol)
 	{
 		if (!args["output"]["advanced"]["compute_error"])
 			return;
@@ -45,7 +45,7 @@ namespace polyfem
 		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
 	}
 
-	void State::save_timestep(const double time, const int t, const double t0, const double dt)
+	void State::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
 		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
 		{
@@ -58,7 +58,7 @@ namespace polyfem
 
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
-				*this, time, dt,
+				*this, sol, pressure, time, dt,
 				io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
 				is_contact_enabled(), solution_frames);
 
@@ -69,7 +69,7 @@ namespace polyfem
 		}
 	}
 
-	void State::save_json()
+	void State::save_json(const Eigen::MatrixXd &sol)
 	{
 		const std::string out_path = resolve_output_path(args["output"]["json"]);
 		if (!out_path.empty())
@@ -80,12 +80,12 @@ namespace polyfem
 				logger().error("Unable to save simulation JSON to {}", out_path);
 				return;
 			}
-			save_json(out);
+			save_json(sol, out);
 			out.close();
 		}
 	}
 
-	void State::save_json(std::ostream &out)
+	void State::save_json(const Eigen::MatrixXd &sol, std::ostream &out)
 	{
 		if (!mesh)
 		{
@@ -109,7 +109,7 @@ namespace polyfem
 		out << j.dump(4) << std::endl;
 	}
 
-	void State::save_subsolve(const int i, const int t)
+	void State::save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
 		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
 			return;
@@ -123,12 +123,12 @@ namespace polyfem
 
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
-			*this, t, dt,
+			*this, sol, pressure, t, dt,
 			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
 			is_contact_enabled(), solution_frames);
 	}
 
-	void State::export_data()
+	void State::export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
 		if (!mesh)
 		{
@@ -166,7 +166,7 @@ namespace polyfem
 			dt = args["time"]["dt"];
 
 		out_geom.export_data(
-			*this,
+			*this, sol, pressure,
 			!args["time"].is_null(),
 			tend, dt,
 			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),

@@ -9,7 +9,7 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	void State::init_solve()
+	void State::init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		POLYFEM_SCOPED_TIMER("Setup RHS");
 
@@ -27,11 +27,11 @@ namespace polyfem
 			sol.middleRows(n_bases * mesh->dimension(), n_pressure_bases).setZero();
 			sol(sol.size() - 1) = 0;
 
-			sol_to_pressure();
+			sol_to_pressure(sol, pressure);
 		}
 
 		if (problem->is_time_dependent())
-			save_timestep(0, 0, 0, 0);
+			save_timestep(0, 0, 0, 0, sol, pressure);
 	}
 
 	void State::initial_solution(Eigen::MatrixXd &solution) const

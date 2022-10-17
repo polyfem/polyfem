@@ -17,20 +17,7 @@ namespace polyfem::time_integrator
 
 		/// @brief Set the number of steps parameters from a json object.
 		/// @param params json containing `{"steps": 1}`
-		void set_parameters(const nlohmann::json &params) override;
-
-		using ImplicitTimeIntegrator::init;
-
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
-		/// @param x_prevs vector of previous solutions
-		/// @param v_prevs vector of previous velocities
-		/// @param a_prevs vector of previous accelerations
-		/// @param dt time step
-		void init(
-			const std::vector<Eigen::VectorXd> &x_prevs,
-			const std::vector<Eigen::VectorXd> &v_prevs,
-			const std::vector<Eigen::VectorXd> &a_prevs,
-			double dt);
+		void set_parameters(const json &params) override;
 
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
@@ -87,7 +74,11 @@ namespace polyfem::time_integrator
 		Eigen::VectorXd weighted_sum_v_prevs() const;
 
 	protected:
-		int steps = 1;
+		/// @brief Get the maximum number of steps to use for integration.
+		int max_steps() const override { return max_steps_; }
+
+		/// @brief The maximum number of steps to use for integration.
+		int max_steps_ = 1;
 
 		/// @brief Retrieve the alphas used for BDF with `i` steps.
 		/// @param i number of steps

@@ -3,9 +3,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <Eigen/Dense>
 
@@ -46,79 +46,90 @@ namespace polyfem
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress);
 	void compute_diplacement_grad(const int size, const basis::ElementBases &bs, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
 
-	double convert_to_lambda(const bool is_volume, const double E, const double nu);
-	double convert_to_mu(const double E, const double nu);
-
-	class ElasticityTensor
+	template <typename AutoDiffVect>
+	void get_local_disp(
+		const assembler::NonLinearAssemblerData &data,
+		const int size,
+		AutoDiffVect &local_disp)
 	{
-	public:
-		void resize(const int size);
+		typedef typename AutoDiffVect::Scalar T;
 
-		double operator()(int i, int j) const;
-		double &operator()(int i, int j);
+		assert(data.x.cols() == 1);
 
-		void set_from_entries(const std::vector<double> &entries);
-		void set_from_lambda_mu(const double lambda, const double mu);
-		void set_from_young_poisson(const double young, const double poisson);
-
-		void set_orthotropic(
-			double Ex, double Ey, double Ez,
-			double nuYX, double nuZX, double nuZY,
-			double muYZ, double muZX, double muXY);
-		void set_orthotropic(double Ex, double Ey, double nuYX, double muXY);
-
-		template <int DIM>
-		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
-
-	private:
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
-		int size_;
-	};
-
-	class LameParameters
-	{
-	public:
-		LameParameters();
-
-		void add_multimaterial(const int index, const json &params, const bool is_volume);
-
-		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const;
-		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu) const
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(data.vals.basis_values.size() * size, 1);
+		local_dispv.setZero();
+		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
-			assert(param.size() == p.size());
-			lambda_mu(
-				param(0), param(1), param.size() == 2 ? 0. : param(2),
-				p(0), p(1), p.size() ? 0. : p(2),
-				el_id, lambda, mu);
+			const auto &bs = data.vals.basis_values[i];
+			for (size_t ii = 0; ii < bs.global.size(); ++ii)
+			{
+				for (int d = 0; d < size; ++d)
+				{
+					local_dispv(i * size + d) += bs.global[ii].val * data.x(bs.global[ii].index * size + d);
+				}
+			}
 		}
 
-	private:
-		void set_e_nu(const int index, const json &E, const json &nu);
+		DiffScalarBase::setVariableCount(local_dispv.rows());
+		local_disp.resize(local_dispv.rows(), 1);
 
-		int size_;
-		std::vector<utils::ExpressionValue> lambda_or_E_, mu_or_nu_;
-		bool is_lambda_mu_;
-	};
+		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
 
-	class Density
-	{
-	public:
-		Density();
-
-		void add_multimaterial(const int index, const json &params);
-
-		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
-		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
+		for (long i = 0; i < local_dispv.rows(); ++i)
 		{
-			assert(param.size() == p.size());
-			return (*this)(param(0), param(1), param.size() == 2 ? 0. : param(2),
-						   p(0), p(1), p.size() ? 0. : p(2),
-						   el_id);
+			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
+		}
+	}
+
+	template <typename AutoDiffVect, typename AutoDiffGradMat>
+	void compute_disp_grad_at_quad(
+		const assembler::NonLinearAssemblerData &data,
+		const AutoDiffVect &local_disp,
+		const int p, const int size,
+		AutoDiffGradMat &def_grad)
+	{
+		typedef typename AutoDiffVect::Scalar T;
+
+		for (long k = 0; k < def_grad.size(); ++k)
+			def_grad(k) = T(0);
+
+		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+		{
+			const auto &bs = data.vals.basis_values[i];
+			const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
+			assert(grad.size() == size);
+
+			for (int d = 0; d < size; ++d)
+			{
+				for (int c = 0; c < size; ++c)
+				{
+					def_grad(d, c) += grad(c) * local_disp(i * size + d);
+				}
+			}
 		}
 
-	private:
-		void set_rho(const json &rho);
+		AutoDiffGradMat jac_it(size, size);
+		for (long k = 0; k < jac_it.size(); ++k)
+			jac_it(k) = T(data.vals.jac_it[p](k));
+		def_grad = def_grad * jac_it;
+	}
 
-		std::vector<utils::ExpressionValue> rho_;
-	};
+	// https://en.wikipedia.org/wiki/Invariants_of_tensors
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar first_invariant(const AutoDiffGradMat &B)
+	{
+		return B.trace();
+	}
+
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar second_invariant(const AutoDiffGradMat &B)
+	{
+		return 0.5 * (B.trace() * B.trace() - (B * B).trace());
+	}
+
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar third_invariant(const AutoDiffGradMat &B)
+	{
+		return polyfem::utils::determinant(B);
+	}
 } // namespace polyfem

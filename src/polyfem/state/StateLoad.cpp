@@ -31,8 +31,6 @@ namespace polyfem
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		n_bases = 0;
 		n_pressure_bases = 0;

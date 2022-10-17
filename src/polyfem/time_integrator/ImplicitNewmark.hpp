@@ -17,7 +17,7 @@ namespace polyfem::time_integrator
 
 		/// @brief Set the `gamma` and `beta` parameters from a json object.
 		/// @param params json containing `{"gamma": 0.5, "beta": 0.25}`
-		void set_parameters(const nlohmann::json &params) override;
+		void set_parameters(const json &params) override;
 
 		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
@@ -61,14 +61,14 @@ namespace polyfem::time_integrator
 		double dv_dx() const override;
 
 		/// @brief \f$\beta\f$ parameter for blending accelerations in the solution update.
-		double beta() const { return m_beta; }
+		double beta() const { return beta_; }
 		/// @brief \f$\gamma\f$ parameter for blending accelerations in the velocity update.
-		double gamma() const { return m_gamma; }
+		double gamma() const { return gamma_; }
 
 	protected:
 		/// @brief \f$\beta\f$ parameter for blending accelerations in the solution update.
-		double m_beta = 0.25;
+		double beta_ = 0.25;
 		/// @brief \f$\gamma\f$ parameter for blending accelerations in the velocity update.
-		double m_gamma = 0.5;
+		double gamma_ = 0.5;
 	};
 } // namespace polyfem::time_integrator

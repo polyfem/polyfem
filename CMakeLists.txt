@@ -253,6 +253,14 @@ target_link_libraries(polyfem PUBLIC hdf5::hdf5)
 include(high_five)
 target_link_libraries(polyfem PUBLIC HighFive::HighFive)
 
+# natsort library
+include(natsort)
+target_link_libraries(polyfem PUBLIC natsort::natsort)
+
+# GLOB library
+include(glob)
+target_link_libraries(polyfem PUBLIC Glob::Glob)
+
 # Extra warnings (include this at the end to have highest priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
 

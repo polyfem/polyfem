@@ -8,24 +8,24 @@ namespace polyfem
 		{
 			res.resize(2);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = helper_0.getHessian()(0, 0);
 			const auto helper_2 = 2.0 * mu;
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_3 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_4 = helper_3.getHessian()(0, 1);
 			const auto helper_5 = 1.0 * lambda;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_6 = helper_3.getHessian()(1, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_7 = helper_0.getHessian()(0, 1);
 			// Not supported in C:
 			//
@@ -38,42 +38,42 @@ namespace polyfem
 		{
 			res.resize(3);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = helper_0.getHessian()(0, 0);
 			const auto helper_2 = 2.0 * mu;
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_3 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_4 = helper_3.getHessian()(0, 1);
 			const auto // Not supported in C:
-				// f2
+					   // f2
 				helper_5 = pt(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_6 = helper_5.getHessian()(0, 2);
 			const auto helper_7 = 1.0 * lambda;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_8 = helper_3.getHessian()(1, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_9 = helper_0.getHessian()(0, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_10 = helper_5.getHessian()(1, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_11 = helper_5.getHessian()(2, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_12 = helper_0.getHessian()(0, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_13 = helper_3.getHessian()(1, 2);
 			// Not supported in C:
 			//
@@ -87,43 +87,43 @@ namespace polyfem
 			res(2) = helper_11 * helper_2 + helper_7 * (helper_11 + helper_12 + helper_13) + mu * (helper_12 + helper_5.getHessian()(0, 0)) + mu * (helper_13 + helper_5.getHessian()(1, 1));
 		}
 
-		void hooke_2d_function(const AutodiffHessianPt &pt, const ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
+		void hooke_2d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
 		{
 			res.resize(2);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = 1.0 * helper_0.getHessian()(0, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_2 = C(2, 1);
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_3 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_4 = 1.0 * helper_3.getHessian()(1, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_5 = helper_3.getHessian()(0, 1);
 			const auto helper_6 = 1.0 * helper_5;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_7 = C(2, 0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_8 = helper_0.getHessian()(0, 1);
 			const auto helper_9 = 1.0 * helper_8;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_10 = C(2, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_11 = helper_5 + helper_0.getHessian()(1, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_12 = helper_8 + helper_3.getHessian()(0, 0);
 			// Not supported in C:
 			// C
@@ -136,134 +136,134 @@ namespace polyfem
 			res(1) = helper_1 * helper_7 + helper_10 * helper_12 + helper_11 * C(1, 2) + helper_2 * helper_6 + helper_4 * C(1, 1) + helper_9 * C(1, 0);
 		}
 
-		void hooke_3d_function(const AutodiffHessianPt &pt, const ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
+		void hooke_3d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
 		{
 			res.resize(3);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = 1.0 * helper_0.getHessian()(0, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_2 = C(4, 2);
 			const auto // Not supported in C:
-				// f2
+					   // f2
 				helper_3 = pt(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_4 = 1.0 * helper_3.getHessian()(2, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_5 = C(5, 1);
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_6 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_7 = 1.0 * helper_6.getHessian()(1, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_8 = helper_6.getHessian()(0, 1);
 			const auto helper_9 = 1.0 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_10 = helper_3.getHessian()(0, 2);
 			const auto helper_11 = 1.0 * helper_10;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_12 = C(4, 0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_13 = helper_0.getHessian()(0, 2);
 			const auto helper_14 = 1.0 * helper_13;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_15 = C(4, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_16 = helper_6.getHessian()(1, 2);
 			const auto helper_17 = 1.0 * helper_16;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_18 = C(5, 0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_19 = helper_0.getHessian()(0, 1);
 			const auto helper_20 = 1.0 * helper_19;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_21 = C(5, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_22 = helper_3.getHessian()(1, 2);
 			const auto helper_23 = 1.0 * helper_22;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_24 = C(5, 5);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_25 = helper_8 + helper_0.getHessian()(1, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_26 = C(4, 4);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_27 = helper_10 + helper_0.getHessian()(2, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_28 = helper_19 + helper_6.getHessian()(0, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_29 = C(4, 3);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_30 = helper_22 + helper_6.getHessian()(2, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_31 = helper_13 + helper_3.getHessian()(0, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_32 = C(5, 3);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_33 = helper_16 + helper_3.getHessian()(1, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_34 = C(4, 5);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_35 = helper_0.getHessian()(1, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_36 = helper_6.getHessian()(0, 2);
 			const auto helper_37 = helper_35 + helper_36;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_38 = C(5, 4);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_39 = helper_3.getHessian()(0, 1);
 			const auto helper_40 = helper_35 + helper_39;
 			const auto helper_41 = helper_36 + helper_39;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_42 = C(3, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_43 = C(3, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_44 = C(3, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_45 = C(3, 4);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_46 = C(3, 3);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_47 = C(3, 5);
 			// Not supported in C:
 			// C
@@ -289,75 +289,75 @@ namespace polyfem
 			res(2) = helper_1 * helper_12 + helper_11 * helper_2 + helper_14 * C(2, 0) + helper_15 * helper_9 + helper_17 * C(2, 1) + helper_20 * helper_43 + helper_23 * helper_42 + helper_25 * helper_47 + helper_26 * helper_31 + helper_27 * C(2, 4) + helper_28 * helper_34 + helper_29 * helper_41 + helper_30 * C(2, 3) + helper_33 * helper_46 + helper_37 * C(2, 5) + helper_4 * C(2, 2) + helper_40 * helper_45 + helper_44 * helper_7;
 		}
 
-		void saint_venant_2d_function(const AutodiffHessianPt &pt, const ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
+		void saint_venant_2d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
 		{
 			res.resize(2);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = helper_0.getHessian()(0, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_2 = C(0, 0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_3 = helper_0.getGradient()(0);
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_4 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_5 = helper_4.getGradient()(0);
 			const auto helper_6 = 0.5 * pow(helper_3, 2) + 1.0 * helper_3 + 0.5 * pow(helper_5, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_7 = C(0, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_8 = helper_4.getGradient()(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_9 = helper_0.getGradient()(1);
 			const auto helper_10 = 0.5 * pow(helper_8, 2) + 1.0 * helper_8 + 0.5 * pow(helper_9, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_11 = C(0, 2);
 			const auto helper_12 = helper_3 * helper_9 + helper_5 * helper_8 + helper_5 + helper_9;
 			const auto helper_13 = helper_10 * helper_7 + helper_11 * helper_12 + helper_2 * helper_6;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_14 = helper_0.getHessian()(1, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_15 = C(1, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_16 = C(1, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_17 = C(1, 2);
 			const auto helper_18 = helper_10 * helper_16 + helper_12 * helper_17 + helper_15 * helper_6;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_19 = helper_0.getHessian()(0, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_20 = C(2, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_21 = C(2, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_22 = C(2, 2);
 			const auto helper_23 = 2 * helper_10 * helper_21 + 2 * helper_12 * helper_22 + 2 * helper_20 * helper_6;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_24 = helper_4.getHessian()(0, 0);
 			const auto helper_25 = 1.0 * helper_1 * helper_3 + 1.0 * helper_1 + 1.0 * helper_24 * helper_5;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_26 = helper_4.getHessian()(0, 1);
 			const auto helper_27 = helper_19 * helper_9 + helper_26 * helper_8 + helper_26;
 			const auto helper_28 = 1.0 * helper_27;
@@ -365,7 +365,7 @@ namespace polyfem
 			const auto helper_30 = helper_1 * helper_9 + helper_24 * helper_8 + helper_24 + helper_29;
 			const auto helper_31 = helper_20 * helper_25 + helper_21 * helper_28 + helper_22 * helper_30;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_32 = helper_4.getHessian()(1, 1);
 			const auto helper_33 = 1.0 * helper_14 * helper_9 + 1.0 * helper_32 * helper_8 + 1.0 * helper_32;
 			const auto helper_34 = 1.0 * helper_29;
@@ -379,203 +379,203 @@ namespace polyfem
 			res(1) = helper_13 * helper_24 + helper_18 * helper_32 + helper_23 * helper_26 + helper_31 * helper_40 + helper_36 * helper_40 + helper_38 * helper_5 + helper_39 * helper_5;
 		}
 
-		void saint_venant_3d_function(const AutodiffHessianPt &pt, const ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
+		void saint_venant_3d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)
 		{
 			res.resize(3);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = helper_0.getHessian()(0, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_2 = C(0, 0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_3 = helper_0.getGradient()(0);
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_4 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_5 = helper_4.getGradient()(0);
 			const auto // Not supported in C:
-				// f2
+					   // f2
 				helper_6 = pt(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_7 = helper_6.getGradient()(0);
 			const auto helper_8 = 0.5 * pow(helper_3, 2) + 1.0 * helper_3 + 0.5 * pow(helper_5, 2) + 0.5 * pow(helper_7, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_9 = C(0, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_10 = helper_4.getGradient()(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_11 = helper_0.getGradient()(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_12 = helper_6.getGradient()(1);
 			const auto helper_13 = 0.5 * pow(helper_10, 2) + 1.0 * helper_10 + 0.5 * pow(helper_11, 2) + 0.5 * pow(helper_12, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_14 = C(0, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_15 = helper_6.getGradient()(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_16 = helper_0.getGradient()(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_17 = helper_4.getGradient()(2);
 			const auto helper_18 = 0.5 * pow(helper_15, 2) + 1.0 * helper_15 + 0.5 * pow(helper_16, 2) + 0.5 * pow(helper_17, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_19 = C(0, 5);
 			const auto helper_20 = helper_10 * helper_5 + helper_11 * helper_3 + helper_11 + helper_12 * helper_7 + helper_5;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_21 = C(0, 4);
 			const auto helper_22 = helper_15 * helper_7 + helper_16 * helper_3 + helper_16 + helper_17 * helper_5 + helper_7;
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_23 = C(0, 3);
 			const auto helper_24 = helper_10 * helper_17 + helper_11 * helper_16 + helper_12 * helper_15 + helper_12 + helper_17;
 			const auto helper_25 = helper_13 * helper_9 + helper_14 * helper_18 + helper_19 * helper_20 + helper_2 * helper_8 + helper_21 * helper_22 + helper_23 * helper_24;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_26 = helper_0.getHessian()(1, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_27 = C(1, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_28 = C(1, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_29 = C(1, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_30 = C(1, 5);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_31 = C(1, 4);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_32 = C(1, 3);
 			const auto helper_33 = helper_13 * helper_28 + helper_18 * helper_29 + helper_20 * helper_30 + helper_22 * helper_31 + helper_24 * helper_32 + helper_27 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_34 = helper_0.getHessian()(2, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_35 = C(2, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_36 = C(2, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_37 = C(2, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_38 = C(2, 5);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_39 = C(2, 4);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_40 = C(2, 3);
 			const auto helper_41 = helper_13 * helper_36 + helper_18 * helper_37 + helper_20 * helper_38 + helper_22 * helper_39 + helper_24 * helper_40 + helper_35 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_42 = helper_0.getHessian()(1, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_43 = C(3, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_44 = C(3, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_45 = C(3, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_46 = C(3, 5);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_47 = C(3, 4);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_48 = C(3, 3);
 			const auto helper_49 = 2 * helper_13 * helper_44 + 2 * helper_18 * helper_45 + 2 * helper_20 * helper_46 + 2 * helper_22 * helper_47 + 2 * helper_24 * helper_48 + 2 * helper_43 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_50 = helper_0.getHessian()(0, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_51 = C(4, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_52 = C(4, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_53 = C(4, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_54 = C(4, 5);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_55 = C(4, 4);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_56 = C(4, 3);
 			const auto helper_57 = 2 * helper_13 * helper_52 + 2 * helper_18 * helper_53 + 2 * helper_20 * helper_54 + 2 * helper_22 * helper_55 + 2 * helper_24 * helper_56 + 2 * helper_51 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_58 = helper_0.getHessian()(0, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_59 = C(5, 0);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_60 = C(5, 1);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_61 = C(5, 2);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_62 = C(5, 5);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_63 = C(5, 4);
 			const auto // Not supported in C:
-				// C
+					   // C
 				helper_64 = C(5, 3);
 			const auto helper_65 = 2 * helper_13 * helper_60 + 2 * helper_18 * helper_61 + 2 * helper_20 * helper_62 + 2 * helper_22 * helper_63 + 2 * helper_24 * helper_64 + 2 * helper_59 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_66 = helper_4.getHessian()(0, 0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_67 = helper_6.getHessian()(0, 0);
 			const auto helper_68 = 1.0 * helper_1 * helper_3 + 1.0 * helper_1 + 1.0 * helper_5 * helper_66 + 1.0 * helper_67 * helper_7;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_69 = helper_4.getHessian()(0, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_70 = helper_6.getHessian()(0, 1);
 			const auto helper_71 = helper_10 * helper_69 + helper_11 * helper_58 + helper_12 * helper_70 + helper_69;
 			const auto helper_72 = 1.0 * helper_71;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_73 = helper_6.getHessian()(0, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_74 = helper_4.getHessian()(0, 2);
 			const auto helper_75 = helper_15 * helper_73 + helper_16 * helper_50 + helper_17 * helper_74 + helper_73;
 			const auto helper_76 = 1.0 * helper_75;
@@ -589,18 +589,18 @@ namespace polyfem
 			const auto helper_84 = helper_51 * helper_68 + helper_52 * helper_72 + helper_53 * helper_76 + helper_54 * helper_78 + helper_55 * helper_80 + helper_56 * helper_83;
 			const auto helper_85 = helper_59 * helper_68 + helper_60 * helper_72 + helper_61 * helper_76 + helper_62 * helper_78 + helper_63 * helper_80 + helper_64 * helper_83;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_86 = helper_4.getHessian()(1, 1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_87 = helper_6.getHessian()(1, 1);
 			const auto helper_88 = 1.0 * helper_10 * helper_86 + 1.0 * helper_11 * helper_26 + 1.0 * helper_12 * helper_87 + 1.0 * helper_86;
 			const auto helper_89 = 1.0 * helper_77;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_90 = helper_6.getHessian()(1, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_91 = helper_4.getHessian()(1, 2);
 			const auto helper_92 = helper_15 * helper_90 + helper_16 * helper_42 + helper_17 * helper_91 + helper_90;
 			const auto helper_93 = 1.0 * helper_92;
@@ -612,10 +612,10 @@ namespace polyfem
 			const auto helper_99 = helper_27 * helper_89 + helper_28 * helper_88 + helper_29 * helper_93 + helper_30 * helper_94 + helper_31 * helper_98 + helper_32 * helper_96;
 			const auto helper_100 = helper_43 * helper_89 + helper_44 * helper_88 + helper_45 * helper_93 + helper_46 * helper_94 + helper_47 * helper_98 + helper_48 * helper_96;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_101 = helper_6.getHessian()(2, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_102 = helper_4.getHessian()(2, 2);
 			const auto helper_103 = 1.0 * helper_101 * helper_15 + 1.0 * helper_101 + 1.0 * helper_102 * helper_17 + 1.0 * helper_16 * helper_34;
 			const auto helper_104 = 1.0 * helper_79;
@@ -640,50 +640,50 @@ namespace polyfem
 		{
 			res.resize(2);
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_0 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = helper_0.getGradient()(0);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_2 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_3 = helper_2.getGradient()(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_4 = helper_2.getGradient()(0) + 1;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_5 = helper_0.getGradient()(1) + 1;
 			const auto helper_6 = -helper_1 * helper_3 + helper_4 * helper_5;
 			const auto helper_7 = pow(helper_6, -2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_8 = helper_2.getHessian()(1, 1);
 			const auto helper_9 = helper_1 * helper_8;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_10 = helper_0.getHessian()(1, 1);
 			const auto helper_11 = helper_10 * helper_4;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_12 = helper_0.getHessian()(0, 1);
 			const auto helper_13 = helper_12 * helper_3;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_14 = helper_2.getHessian()(0, 1);
 			const auto helper_15 = helper_14 * helper_5;
 			const auto helper_16 = helper_7 * (helper_11 - helper_13 + helper_15 - helper_9);
 			const auto helper_17 = helper_1 * helper_16;
 			const auto helper_18 = helper_17 * lambda;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_19 = helper_0.getHessian()(0, 0);
 			const auto helper_20 = helper_19 * helper_3;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_21 = helper_2.getHessian()(0, 0);
 			const auto helper_22 = helper_21 * helper_5;
 			const auto helper_23 = helper_1 * helper_14;
@@ -706,51 +706,51 @@ namespace polyfem
 		{
 			res.resize(3);
 			const auto // Not supported in C:
-				// f0
+					   // f0
 				helper_0 = pt(0);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_1 = helper_0.getGradient()(2);
 			const auto // Not supported in C:
-				// f1
+					   // f1
 				helper_2 = pt(1);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_3 = helper_2.getGradient()(0);
 			const auto helper_4 = helper_1 * helper_3;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_5 = helper_2.getGradient()(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_6 = helper_0.getGradient()(0) + 1;
 			const auto helper_7 = helper_5 * helper_6;
 			const auto helper_8 = -helper_4 + helper_7;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_9 = helper_0.getGradient()(1);
 			const auto // Not supported in C:
-				// f2
+					   // f2
 				helper_10 = pt(2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_11 = helper_10.getGradient()(0);
 			const auto helper_12 = helper_11 * helper_9;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_13 = helper_10.getGradient()(1);
 			const auto helper_14 = helper_13 * helper_6;
 			const auto helper_15 = -helper_12 + helper_14;
 			const auto helper_16 = helper_15 * helper_8;
 			const auto helper_17 = helper_3 * helper_9;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_18 = helper_2.getGradient()(1) + 1;
 			const auto helper_19 = helper_18 * helper_6;
 			const auto helper_20 = -helper_17 + helper_19;
 			const auto helper_21 = helper_1 * helper_11;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_22 = helper_10.getGradient()(2) + 1;
 			const auto helper_23 = helper_22 * helper_6;
 			const auto helper_24 = -helper_21 + helper_23;
@@ -758,21 +758,21 @@ namespace polyfem
 			const auto helper_26 = -helper_16 + helper_25;
 			const auto helper_27 = 1.0 / helper_26;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_28 = helper_2.getHessian()(0, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_29 = helper_10.getHessian()(0, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_30 = helper_0.getHessian()(0, 2);
 			const auto helper_31 = helper_13 * helper_30;
 			const auto helper_32 = helper_29 * helper_9;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_33 = helper_10.getHessian()(1, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_34 = helper_0.getHessian()(1, 2);
 			const auto helper_35 = helper_11 * helper_34;
 			const auto helper_36 = helper_33 * helper_6 - helper_35;
@@ -780,7 +780,7 @@ namespace polyfem
 			const auto helper_38 = helper_18 * helper_30;
 			const auto helper_39 = helper_28 * helper_9;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_40 = helper_2.getHessian()(1, 2);
 			const auto helper_41 = helper_40 * helper_6;
 			const auto helper_42 = helper_3 * helper_34;
@@ -790,7 +790,7 @@ namespace polyfem
 			const auto helper_46 = helper_12 * helper_5 + helper_13 * helper_4 - helper_13 * helper_7 - helper_17 * helper_22 - helper_18 * helper_21 + helper_19 * helper_22;
 			const auto helper_47 = lambda * log(helper_46);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_48 = helper_0.getHessian()(0, 1);
 			const auto helper_49 = helper_11 * helper_20 - helper_15 * helper_3;
 			const auto helper_50 = helper_26 * helper_3 - helper_49 * helper_8;
@@ -800,15 +800,15 @@ namespace polyfem
 			const auto helper_54 = helper_51 * helper_53;
 			const auto helper_55 = helper_48 * helper_50 * helper_54;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_56 = helper_0.getHessian()(1, 1);
 			const auto helper_57 = helper_3 * helper_56;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_58 = helper_2.getHessian()(1, 1);
 			const auto helper_59 = helper_58 * helper_6;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_60 = helper_2.getHessian()(0, 1);
 			const auto helper_61 = helper_60 * helper_9;
 			const auto helper_62 = helper_18 * helper_48;
@@ -816,7 +816,7 @@ namespace polyfem
 			const auto helper_64 = helper_27 / pow(helper_20, 2);
 			const auto helper_65 = helper_50 * helper_63 * helper_64;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_66 = helper_0.getHessian()(0, 0);
 			const auto helper_67 = helper_8 * helper_9;
 			const auto helper_68 = helper_1 * helper_20;
@@ -824,7 +824,7 @@ namespace polyfem
 			const auto helper_70 = helper_19 * helper_26 + helper_49 * helper_69;
 			const auto helper_71 = helper_53 * helper_66 * helper_70 / pow(helper_6, 2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_72 = helper_2.getHessian()(0, 0);
 			const auto helper_73 = helper_72 * helper_9;
 			const auto helper_74 = helper_18 * helper_66;
@@ -835,18 +835,18 @@ namespace polyfem
 			const auto helper_79 = helper_64 * helper_77 * helper_78;
 			const auto helper_80 = pow(helper_26, -2);
 			const auto // Not supported in C:
-				//
+					   //
 				helper_81 = helper_0.getHessian()(2, 2);
 			const auto helper_82 = helper_3 * helper_81;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_83 = helper_2.getHessian()(2, 2);
 			const auto helper_84 = helper_6 * helper_83;
 			const auto helper_85 = helper_30 * helper_5;
 			const auto helper_86 = helper_1 * helper_28;
 			const auto helper_87 = helper_11 * helper_81;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_88 = helper_10.getHessian()(2, 2);
 			const auto helper_89 = helper_1 * helper_29;
 			const auto helper_90 = helper_20 * (helper_22 * helper_30 + helper_6 * helper_88 - helper_87 - helper_89) + helper_24 * helper_44;
@@ -857,11 +857,11 @@ namespace polyfem
 			const auto helper_95 = helper_27 * helper_94;
 			const auto helper_96 = helper_11 * helper_56;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_97 = helper_10.getHessian()(1, 1);
 			const auto helper_98 = helper_13 * helper_48;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_99 = helper_10.getHessian()(0, 1);
 			const auto helper_100 = helper_9 * helper_99;
 			const auto helper_101 = -helper_100 + helper_6 * helper_97 - helper_96 + helper_98;
@@ -880,7 +880,7 @@ namespace polyfem
 			const auto helper_114 = helper_113 * helper_94;
 			const auto helper_115 = helper_13 * helper_66;
 			const auto // Not supported in C:
-				//
+					   //
 				helper_116 = helper_10.getHessian()(0, 0);
 			const auto helper_117 = helper_116 * helper_9;
 			const auto helper_118 = helper_11 * helper_48;

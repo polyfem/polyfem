@@ -736,6 +736,8 @@ namespace polyfem::io
 
 	void OutGeometryData::export_data(
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const bool is_time_dependent,
 		const double tend_in,
 		const double dt,
@@ -758,7 +760,6 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
 		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
-		const Eigen::MatrixXd &sol = state.sol;
 		const Eigen::MatrixXd &rhs = state.rhs;
 		const assembler::Problem &problem = *state.problem;
 
@@ -825,7 +826,7 @@ namespace polyfem::io
 		if (!vis_mesh_path.empty() && !is_time_dependent)
 		{
 			save_vtu(
-				vis_mesh_path, state,
+				vis_mesh_path, state, sol, pressure,
 				tend, dt, opts,
 				is_contact_enabled, solution_frames);
 		}
@@ -901,6 +902,8 @@ namespace polyfem::io
 	void OutGeometryData::save_vtu(
 		const std::string &path,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const double t,
 		const double dt,
 		const ExportOptions &opts,
@@ -913,7 +916,6 @@ namespace polyfem::io
 			return;
 		}
 		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::MatrixXd &sol = state.sol;
 		const Eigen::MatrixXd &rhs = state.rhs;
 
 		if (state.n_bases <= 0)
@@ -939,18 +941,18 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(path, state, t, opts, solution_frames);
+			save_volume(path, state, sol, pressure, t, opts, solution_frames);
 		}
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf.vtu", state, dt, opts,
+			save_surface(base_path + "_surf.vtu", state, sol, pressure, dt, opts,
 						 is_contact_enabled, solution_frames);
 		}
 
 		if (opts.wire)
 		{
-			save_wire(base_path + "_wire.vtu", state, t, opts, solution_frames);
+			save_wire(base_path + "_wire.vtu", state, sol, t, opts, solution_frames);
 		}
 
 		if (!opts.solve_export_to_file)
@@ -1014,12 +1016,14 @@ namespace polyfem::io
 	void OutGeometryData::save_volume(
 		const std::string &path,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const double t,
 		const ExportOptions &opts,
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.assembler.density();
+		const auto &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1030,8 +1034,6 @@ namespace polyfem::io
 		const std::string &formulation = state.formulation();
 		const mesh::Mesh &mesh = *state.mesh;
 		const mesh::Obstacle &obstacle = state.obstacle;
-		const Eigen::MatrixXd &sol = state.sol;
-		const Eigen::MatrixXd &pressure = state.pressure;
 		const assembler::Problem &problem = *state.problem;
 
 		Eigen::MatrixXd points;
@@ -1139,18 +1141,6 @@ namespace polyfem::io
 
 		io::VTUWriter writer;
 
-		if (opts.solve_export_to_file && fun.cols() != 1 && !mesh.is_volume())
-		{
-			fun.conservativeResize(fun.rows(), 3);
-			fun.col(2).setZero();
-
-			if (problem.has_exact_sol())
-			{
-				exact_fun.conservativeResize(exact_fun.rows(), 3);
-				exact_fun.col(2).setZero();
-			}
-		}
-
 		if (opts.solve_export_to_file)
 			writer.add_field("solution", fun);
 		else
@@ -1180,12 +1170,6 @@ namespace polyfem::io
 					obstacle.set_zero(interp_vel); // TODO
 				}
 
-				if (opts.solve_export_to_file && interp_vel.cols() == 2)
-				{
-					interp_vel.conservativeResize(interp_vel.rows(), 3);
-					interp_vel.col(2).setZero();
-				}
-
 				if (opts.solve_export_to_file)
 				{
 					writer.add_field("velocity", interp_vel);
@@ -1211,12 +1195,6 @@ namespace polyfem::io
 				{
 					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
 					obstacle.set_zero(interp_acc); // TODO
-				}
-
-				if (opts.solve_export_to_file && interp_acc.cols() == 2)
-				{
-					interp_acc.conservativeResize(interp_acc.rows(), 3);
-					interp_acc.col(2).setZero();
 				}
 
 				if (opts.solve_export_to_file)
@@ -1339,7 +1317,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const LameParameters &params = assembler.lame_params();
+			const auto &params = assembler.lame_params();
 
 			Eigen::MatrixXd lambdas(points.rows(), 1);
 			Eigen::MatrixXd mus(points.rows(), 1);
@@ -1524,6 +1502,8 @@ namespace polyfem::io
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const double dt_in,
 		const ExportOptions &opts,
 		const bool is_contact_enabled,
@@ -1531,7 +1511,7 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.assembler.density();
+		const auto &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1545,8 +1525,6 @@ namespace polyfem::io
 		const double epsv = state.args["contact"]["epsv"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
-		const Eigen::MatrixXd &sol = state.sol;
-		const Eigen::MatrixXd &pressure = state.pressure;
 		const assembler::Problem &problem = *state.problem;
 
 		Eigen::MatrixXd boundary_vis_vertices;
@@ -1719,7 +1697,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const LameParameters &params = assembler.lame_params();
+			const auto &params = assembler.lame_params();
 
 			Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
 			Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
@@ -1779,13 +1757,13 @@ namespace polyfem::io
 	void OutGeometryData::save_wire(
 		const std::string &name,
 		const State &state,
+		const Eigen::MatrixXd &sol,
 		const double t,
 		const ExportOptions &opts,
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::MatrixXd &sol = state.sol;
 		const assembler::Problem &problem = *state.problem;
 
 		if (!opts.solve_export_to_file) // TODO?
@@ -1899,21 +1877,6 @@ namespace polyfem::io
 		{
 			problem.exact(points, t, exact_fun);
 			err = (fun - exact_fun).eval().rowwise().norm();
-		}
-
-		if (fun.cols() != 1 && !mesh.is_volume())
-		{
-			fun.conservativeResize(fun.rows(), 3);
-			fun.col(2).setZero();
-
-			exact_fun.conservativeResize(exact_fun.rows(), 3);
-			exact_fun.col(2).setZero();
-		}
-
-		if (!mesh.is_volume())
-		{
-			points.conservativeResize(points.rows(), 3);
-			points.col(2).setZero();
 		}
 
 		io::VTUWriter writer;
