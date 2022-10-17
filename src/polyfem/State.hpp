@@ -146,10 +146,10 @@ namespace polyfem
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
 		/// information, eg it contains runtimes, errors, etc.
-		std::string get_log()
+		std::string get_log(const Eigen::MatrixXd &sol)
 		{
 			std::stringstream ss;
-			save_json(ss);
+			save_json(sol, ss);
 			return ss.str();
 		}
 
@@ -206,11 +206,6 @@ namespace polyfem
 		/// System righ-hand side.
 		Eigen::MatrixXd rhs;
 
-		/// solution
-		Eigen::MatrixXd sol;
-		/// pressure solution, if the problem is not mixed, pressure is empty
-		Eigen::MatrixXd pressure;
-
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
@@ -262,7 +257,9 @@ namespace polyfem
 
 	private:
 		/// splits the solution in solution and pressure for mixed problems
-		void sol_to_pressure();
+		/// @param[in/out] sol solution
+		/// @param[out] pressure pressure
+		void sol_to_pressure(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
@@ -275,9 +272,13 @@ namespace polyfem
 
 	public:
 		/// solves the problems
-		void solve_problem();
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves the problem, call other methods
-		void solve()
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 		{
 			if (!mesh)
 			{
@@ -293,43 +294,58 @@ namespace polyfem
 
 			solve_export_to_file = false;
 			solution_frames.clear();
-			solve_problem();
+			solve_problem(sol, pressure);
 			solve_export_to_file = true;
 		}
 
 		/// timedependent stuff cached
 		SolveData solve_data;
 		/// initialize solver
-		void init_solve();
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt);
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt);
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		void solve_transient_linear(const int time_steps, const double t0, const double dt);
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt);
+		/// @param[out] sol solution
+		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
 		/// initialize the nonlinear solver
+		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(const double t = 1.0);
+		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0);
 		/// solves a linear problem
-		void solve_linear();
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves a navier stokes
-		void solve_navier_stokes();
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
+		void solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// solves nonlinear problems
+		/// @param[out] sol solution
 		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(const int t = 0);
+		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0);
 
 		/// factory to create the nl solver depdending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
@@ -352,11 +368,14 @@ namespace polyfem
 		/// @param A Linear system matrix.
 		/// @param b Right-hand side.
 		/// @param compute_spectrum If true, compute the spectrum.
+		/// @param[out] sol solution
+		/// @param[out] pressure pressure
 		void solve_linear(
 			const std::unique_ptr<polysolve::LinearSolver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
-			const bool compute_spectrum);
+			const bool compute_spectrum,
+			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------
@@ -497,29 +516,37 @@ namespace polyfem
 		io::OutStatsData stats;
 
 		/// saves all data on the disk according to the input params
-		void export_data();
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
+		void export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
 		/// saves a timestep
 		/// @param[in] time time in secs
 		/// @param[in] t time index
 		/// @param[in] t0 initial time
 		/// @param[in] dt delta t
-		void save_timestep(const double time, const int t, const double t0, const double dt);
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
+		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
 		/// saves a subsolve when save_solve_sequence_debug is true
 		/// @param[in] i sub solve index
 		/// @param[in] t time index
-		void save_subsolve(const int i, const int t);
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
+		void save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
 		/// saves the output statistic to a stream
-		/// @param[in] out stream to write output
-		void save_json(std::ostream &out);
+		/// @param[in] sol solution
+		/// @param[out] out stream to write output
+		void save_json(const Eigen::MatrixXd &sol, std::ostream &out);
 
 		/// saves the output statistic to disc accoding to params
-		void save_json();
+		/// @param[in] sol solution
+		void save_json(const Eigen::MatrixXd &sol);
 
 		/// @brief computes all errors
-		void compute_errors();
+		void compute_errors(const Eigen::MatrixXd &sol);
 
 		//-----------PATH management
 		/// Get the root path for the state (e.g., args["root_path"] or ".")
