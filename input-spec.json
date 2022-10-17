@@ -1770,6 +1770,9 @@
             "form",
             "stiffness_ratio"
         ],
+        "optional": [
+            "lagging_iterations"
+        ],
         "doc": "Apply Rayleigh damping to the given Form with a stiffness ratio."
     },
     {
@@ -1778,6 +1781,9 @@
         "required": [
             "form",
             "stiffness"
+        ],
+        "optional": [
+            "lagging_iterations"
         ],
         "doc": "Apply Rayleigh damping to the given Form with a stiffness."
     },
@@ -1804,7 +1810,7 @@
         "doc": "Ratio of to damp."
     },
     {
-        "pointer": "/solver/rayleigh_damping/*/stiffness/lagging_iterations",
+        "pointer": "/solver/rayleigh_damping/*/lagging_iterations",
         "default": 1,
         "type": "int",
         "doc": "Maximum number of update iterations for lagging."

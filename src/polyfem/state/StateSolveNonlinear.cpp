@@ -277,8 +277,11 @@ namespace polyfem
 			}
 		}
 
-		assert(args["solver"]["rayleigh_damping"].is_array());
-		std::vector<json> rayleigh_damping_jsons = args["solver"]["rayleigh_damping"];
+		std::vector<json> rayleigh_damping_jsons;
+		if (args["solver"]["rayleigh_damping"].is_array())
+			rayleigh_damping_jsons = args["solver"]["rayleigh_damping"].get<std::vector<json>>();
+		else
+			rayleigh_damping_jsons.push_back(args["solver"]["rayleigh_damping"]);
 		if (problem->is_time_dependent())
 		{
 			// Map from form name to form so RayleighDampingForm::create can get the correct form to damp
