@@ -431,7 +431,7 @@ namespace
 			{
 				quad_local_to_global(serendipity, discr_order, mesh, f, discr_orders, element_nodes_id[f], nodes);
 
-				LocalBoundary lb(f, BoundaryType::QuadLine);
+				LocalBoundary lb(f, BoundaryType::QUAD_LINE);
 
 				auto v = quad_vertices_local_to_global(mesh, f);
 				Eigen::Matrix<int, 4, 2> ev;
@@ -465,7 +465,7 @@ namespace
 				ev.row(1) << v[1], v[2];
 				ev.row(2) << v[2], v[0];
 
-				LocalBoundary lb(f, BoundaryType::TriLine);
+				LocalBoundary lb(f, BoundaryType::TRI_LINE);
 
 				for (int i = 0; i < int(ev.rows()); ++i)
 				{
@@ -1147,7 +1147,7 @@ int FEBasis2d::build_bases(
 
 					if (mesh.is_cube(e))
 					{
-						//TODO
+						// TODO
 						assert(false);
 					}
 					else if (mesh.is_simplex(e))

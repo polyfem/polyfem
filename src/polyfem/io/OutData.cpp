@@ -281,30 +281,30 @@ namespace polyfem::io
 			{
 				switch (lb.type())
 				{
-				case BoundaryType::TriLine:
+				case BoundaryType::TRI_LINE:
 					utils::BoundarySampler::normal_for_tri_edge(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_tri_edge(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::QuadLine:
+				case BoundaryType::QUAD_LINE:
 					utils::BoundarySampler::normal_for_quad_edge(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_quad_edge(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::Quad:
+				case BoundaryType::QUAD:
 					utils::BoundarySampler::normal_for_quad_face(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_quad_face(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::Tri:
+				case BoundaryType::TRI:
 					utils::BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::Polygon:
+				case BoundaryType::POLYGON:
 					utils::BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), mesh, tmp_n);
 					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);
 					break;
-				case BoundaryType::Polyhedron:
+				case BoundaryType::POLYHEDRON:
 					assert(false);
 					break;
-				case BoundaryType::Invalid:
+				case BoundaryType::INVALID:
 					assert(false);
 					break;
 				default:
@@ -321,7 +321,7 @@ namespace polyfem::io
 
 				if (mesh.is_volume())
 				{
-					if (lb.type() == BoundaryType::Quad)
+					if (lb.type() == BoundaryType::QUAD)
 					{
 						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
 
@@ -334,7 +334,7 @@ namespace polyfem::io
 							}
 						}
 					}
-					else if (lb.type() == BoundaryType::Tri)
+					else if (lb.type() == BoundaryType::TRI)
 					{
 						int index = 0;
 						std::vector<int> mapp(n_samples * n_samples, -1);
@@ -2143,37 +2143,37 @@ namespace polyfem::io
 				std::string type = "";
 				switch (els_tag[i])
 				{
-				case ElementType::Simplex:
+				case ElementType::SIMPLEX:
 					type = "Simplex";
 					break;
-				case ElementType::RegularInteriorCube:
+				case ElementType::REGULAR_INTERIOR_CUBE:
 					type = "RegularInteriorCube";
 					break;
-				case ElementType::RegularBoundaryCube:
+				case ElementType::REGULAR_BOUNDARY_CUBE:
 					type = "RegularBoundaryCube";
 					break;
-				case ElementType::SimpleSingularInteriorCube:
+				case ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:
 					type = "SimpleSingularInteriorCube";
 					break;
-				case ElementType::MultiSingularInteriorCube:
+				case ElementType::MULTI_SINGULAR_INTERIOR_CUBE:
 					type = "MultiSingularInteriorCube";
 					break;
-				case ElementType::SimpleSingularBoundaryCube:
+				case ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:
 					type = "SimpleSingularBoundaryCube";
 					break;
-				case ElementType::InterfaceCube:
+				case ElementType::INTERFACE_CUBE:
 					type = "InterfaceCube";
 					break;
-				case ElementType::MultiSingularBoundaryCube:
+				case ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:
 					type = "MultiSingularBoundaryCube";
 					break;
-				case ElementType::BoundaryPolytope:
+				case ElementType::BOUNDARY_POLYTOPE:
 					type = "BoundaryPolytope";
 					break;
-				case ElementType::InteriorPolytope:
+				case ElementType::INTERIOR_POLYTOPE:
 					type = "InteriorPolytope";
 					break;
-				case ElementType::Undefined:
+				case ElementType::UNDEFINED:
 					type = "Undefined";
 					break;
 				}
@@ -2387,35 +2387,35 @@ namespace polyfem::io
 
 			switch (type)
 			{
-			case ElementType::Simplex:
+			case ElementType::SIMPLEX:
 				simplex_count++;
 				break;
-			case ElementType::RegularInteriorCube:
+			case ElementType::REGULAR_INTERIOR_CUBE:
 				regular_count++;
 				break;
-			case ElementType::RegularBoundaryCube:
+			case ElementType::REGULAR_BOUNDARY_CUBE:
 				regular_boundary_count++;
 				break;
-			case ElementType::SimpleSingularInteriorCube:
+			case ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:
 				simple_singular_count++;
 				break;
-			case ElementType::MultiSingularInteriorCube:
+			case ElementType::MULTI_SINGULAR_INTERIOR_CUBE:
 				multi_singular_count++;
 				break;
-			case ElementType::SimpleSingularBoundaryCube:
+			case ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:
 				boundary_count++;
 				break;
-			case ElementType::InterfaceCube:
-			case ElementType::MultiSingularBoundaryCube:
+			case ElementType::INTERFACE_CUBE:
+			case ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:
 				multi_singular_boundary_count++;
 				break;
-			case ElementType::BoundaryPolytope:
+			case ElementType::BOUNDARY_POLYTOPE:
 				non_regular_boundary_count++;
 				break;
-			case ElementType::InteriorPolytope:
+			case ElementType::INTERIOR_POLYTOPE:
 				non_regular_count++;
 				break;
-			case ElementType::Undefined:
+			case ElementType::UNDEFINED:
 				undefined_count++;
 				break;
 			}

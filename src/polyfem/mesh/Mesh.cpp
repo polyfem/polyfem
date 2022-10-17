@@ -328,17 +328,17 @@ namespace polyfem::mesh
 	{
 		if (is_volume())
 		{
-			return elements_tag_[el_id] == ElementType::RegularInteriorCube
-				   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
-			// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
-			// || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+			return elements_tag_[el_id] == ElementType::REGULAR_INTERIOR_CUBE
+				   || elements_tag_[el_id] == ElementType::REGULAR_BOUNDARY_CUBE;
+			// || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE
+			// || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE;
 		}
 		else
 		{
-			return elements_tag_[el_id] == ElementType::RegularInteriorCube
-				   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
-			// || elements_tag_[el_id] == ElementType::InterfaceCube
-			// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+			return elements_tag_[el_id] == ElementType::REGULAR_INTERIOR_CUBE
+				   || elements_tag_[el_id] == ElementType::REGULAR_BOUNDARY_CUBE;
+			// || elements_tag_[el_id] == ElementType::INTERFACE_CUBE
+			// || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE;
 		}
 	}
 
@@ -346,21 +346,21 @@ namespace polyfem::mesh
 
 	bool Mesh::is_cube(const int el_id) const
 	{
-		return elements_tag_[el_id] == ElementType::InterfaceCube
-			   || elements_tag_[el_id] == ElementType::RegularInteriorCube
-			   || elements_tag_[el_id] == ElementType::RegularBoundaryCube
-			   || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
-			   || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube
-			   || elements_tag_[el_id] == ElementType::MultiSingularInteriorCube
-			   || elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+		return elements_tag_[el_id] == ElementType::INTERFACE_CUBE
+			   || elements_tag_[el_id] == ElementType::REGULAR_INTERIOR_CUBE
+			   || elements_tag_[el_id] == ElementType::REGULAR_BOUNDARY_CUBE
+			   || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE
+			   || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE
+			   || elements_tag_[el_id] == ElementType::MULTI_SINGULAR_INTERIOR_CUBE
+			   || elements_tag_[el_id] == ElementType::MULTI_SINGULAR_BOUNDARY_CUBE;
 	}
 
 	// -----------------------------------------------------------------------------
 
 	bool Mesh::is_polytope(const int el_id) const
 	{
-		return elements_tag_[el_id] == ElementType::InteriorPolytope
-			   || elements_tag_[el_id] == ElementType::BoundaryPolytope;
+		return elements_tag_[el_id] == ElementType::INTERIOR_POLYTOPE
+			   || elements_tag_[el_id] == ElementType::BOUNDARY_POLYTOPE;
 	}
 
 	void Mesh::load_boundary_ids(const std::string &path)
@@ -388,7 +388,7 @@ namespace polyfem::mesh
 
 	bool Mesh::is_simplex(const int el_id) const
 	{
-		return elements_tag_[el_id] == ElementType::Simplex;
+		return elements_tag_[el_id] == ElementType::SIMPLEX;
 	}
 
 	std::vector<std::pair<int, int>> Mesh::edges() const

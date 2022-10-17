@@ -498,7 +498,7 @@ namespace polyfem
 
 			const int n_v = n_vertices();
 			const int n_f = n_faces();
-			
+
 			vertices.reserve(n_v + mesh2d.n_vertices());
 			for (int i = 0; i < mesh2d.n_vertices(); i++)
 			{
@@ -697,11 +697,11 @@ namespace polyfem
 
 		void NCMesh2D::compute_elements_tag()
 		{
-			elements_tag_.assign(n_faces(), ElementType::Simplex);
+			elements_tag_.assign(n_faces(), ElementType::SIMPLEX);
 		}
 		void NCMesh2D::update_elements_tag()
 		{
-			elements_tag_.assign(n_faces(), ElementType::Simplex);
+			elements_tag_.assign(n_faces(), ElementType::SIMPLEX);
 		}
 
 		void NCMesh2D::set_point(const int global_index, const RowVectorNd &p)
