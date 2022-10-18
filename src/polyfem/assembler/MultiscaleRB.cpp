@@ -79,8 +79,6 @@ namespace polyfem::assembler
 
 			if (svd.singularValues().minCoeff() <= 0)
 				logger().error("Negative Deformation Gradient!");
-			if (std::abs(R.determinant() - 1) > 1e-3)
-				logger().error("Polar decomposition failed!");
 		}
 
 		bool delta(int i, int j)
@@ -251,6 +249,10 @@ namespace polyfem::assembler
 		state->stats.compute_mesh_stats(*state->mesh);
 		state->build_basis();
 
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		const double volume = (max - min).prod();
+
 		logger().info("Compute deformation gradient dataset, in total {} solves...", def_grads.size());
 
 		Eigen::MatrixXd sols;
@@ -265,6 +267,23 @@ namespace polyfem::assembler
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
 				state->solve_homogenized_field(grad, tmp);
 				sols.col(idx) = tmp;
+
+				// Eigen::VectorXd avgs;
+				// avgs.setZero(size() * size());
+				// for (int e = 0; e < state->bases.size(); e++)
+				// {
+				// 	assembler::ElementAssemblyValues vals;
+				// 	state->ass_vals_cache.compute(e, size() == 3, state->bases[e], state->geom_bases()[e], vals);
+
+				// 	Eigen::MatrixXd u, grad_u;
+				// 	io::Evaluator::interpolate_at_local_vals(e, size(), size(), vals, tmp, u, grad_u);
+
+				// 	const quadrature::Quadrature &quadrature = vals.quadrature;
+				// 	Eigen::VectorXd da = quadrature.weights * vals.det;
+				// 	avgs += grad_u.transpose() * da;
+				// }
+
+				// logger().warn("average grad: {}", avgs.transpose() / volume);
 			}
 		});
 
@@ -284,15 +303,11 @@ namespace polyfem::assembler
 		// 		state->is_contact_enabled(), state->solution_frames);
 		// }
 
-		logger().info("Compute covarianece matrix...");
+		logger().info("Compute covariance matrix...");
 
 		// compute covariance matrix
 		StiffnessMatrix laplacian;
 		state->assembler.assemble_problem("Laplacian", state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(), state->ass_vals_cache, laplacian);
-
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
 
 		Eigen::MatrixXd covariance;
 		// covariance = Eigen::MatrixXd::Identity(def_grads.size(), def_grads.size());
@@ -524,20 +539,45 @@ namespace polyfem::assembler
 		// effective stress = average stress over unit cell
 		Eigen::MatrixXd stress_no_rotation;
 		homogenize_stress(x, stress_no_rotation);
-		// stress = R * stress_no_rotation; 
-		stress = utils::unflatten(dUdF.transpose() * utils::flatten(stress_no_rotation), size());
+		stress_no_rotation = utils::flatten(stress_no_rotation);
 
+		// effective stiffness
 		// \bar{C}^{RB} = < C^{RB} > - \sum_{i,j} (D^{-1})_{ij} < C^{RB} \cdot B^{(i)} > \cross < B^{(j)} \cdot C^{RB} >
 		// D_{ij} = < B^{(i)} \cdot C \cdot B^{(j)} >
 		Eigen::MatrixXd stiffness_no_rotation;
 		homogenize_stiffness(x, stiffness_no_rotation);
-		stiffness.setZero(size()*size(), size()*size());
-		for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
-		for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
-		for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
+
+		// paper version
+		// stress = R * stress_no_rotation;
+		// stiffness.setZero(size()*size(), size()*size());
+		// for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
+		// for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
+		// for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
+		// {
+		// 	stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
+		// }
+		
+		// my version
+		stress = utils::unflatten(dUdF.transpose() * stress_no_rotation, size());
+		stiffness = dUdF.transpose() * stiffness_no_rotation * dUdF;
 		{
-			stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
+			Eigen::MatrixXd fjacobian;
+			fd::finite_jacobian(
+			utils::flatten(def_grad),
+			[this, &stress_no_rotation](const Eigen::VectorXd &x) -> Eigen::VectorXd {
+				Eigen::MatrixXd F = utils::unflatten(x, this->size());
+				Eigen::MatrixXd R, Ubar, dUdF;
+				polar_decomposition(F, R, Ubar);
+				my_polar_decomposition_grad(F, R, Ubar, dUdF);
+				Eigen::VectorXd tmp = dUdF.transpose() * stress_no_rotation;
+				return tmp;
+			},
+			fjacobian);
+
+			stiffness += fjacobian;
 		}
+
+		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
 	}
 
 	void MultiscaleRB::sample_def_grads(std::vector<Eigen::MatrixXd> &def_grads) const
@@ -612,7 +652,6 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
 
 		double lambda, mu;
-		// TODO!
 		params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 		if (size() == 2)
