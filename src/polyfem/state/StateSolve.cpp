@@ -123,81 +123,91 @@ namespace polyfem
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
 		}
-		else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean")
+		else if (assembler.is_solution_displacement(formulation()))
 		{
 			Eigen::MatrixXd test_func;
-			if (problem_dim == 2)
+			if (!has_periodic_bc()) 
 			{
-				test_func.setZero(n_bases * problem_dim, 3);
-				
-				// (1, 0)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 0, 0) = 1;
-
-				// (0, 1)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 1, 1) = 1;
-
-				// (y, -x)
-				for (int i = 0; i < n_bases; i++)
+				if (problem_dim == 2)
 				{
-					test_func(i * problem_dim + 0, 2) = mesh_nodes->node_position(i)(1);
-					test_func(i * problem_dim + 1, 2) = -mesh_nodes->node_position(i)(0);
+					test_func.setZero(n_bases * problem_dim, 3);
+					
+					// (1, 0)
+					for (int i = 0; i < n_bases; i++)
+						test_func(i * problem_dim + 0, 0) = 1;
+
+					// (0, 1)
+					for (int i = 0; i < n_bases; i++)
+						test_func(i * problem_dim + 1, 1) = 1;
+
+					// (y, -x)
+					for (int i = 0; i < n_bases; i++)
+					{
+						test_func(i * problem_dim + 0, 2) = mesh_nodes->node_position(i)(1);
+						test_func(i * problem_dim + 1, 2) = -mesh_nodes->node_position(i)(0);
+					}
 				}
+				else if (problem_dim == 3)
+				{
+					test_func.setZero(n_bases * problem_dim, 6);
+					
+					// (1, 0, 0)
+					for (int i = 0; i < n_bases; i++)
+						test_func(i * problem_dim + 0, 0) = 1;
+
+					// (0, 1, 0)
+					for (int i = 0; i < n_bases; i++)
+						test_func(i * problem_dim + 1, 1) = 1;
+
+					// (0, 0, 1)
+					for (int i = 0; i < n_bases; i++)
+						test_func(i * problem_dim + 2, 2) = 1;
+
+					// (y, -x, 0)
+					for (int i = 0; i < n_bases; i++)
+					{
+						test_func(i * problem_dim + 0, 3) = mesh_nodes->node_position(i)(1);
+						test_func(i * problem_dim + 1, 3) = -mesh_nodes->node_position(i)(0);
+					}
+
+					// (z, 0, -x)
+					for (int i = 0; i < n_bases; i++)
+					{
+						test_func(i * problem_dim + 0, 4) = mesh_nodes->node_position(i)(2);
+						test_func(i * problem_dim + 2, 4) = -mesh_nodes->node_position(i)(0);
+					}
+
+					// (0, z, -y)
+					for (int i = 0; i < n_bases; i++)
+					{
+						test_func(i * problem_dim + 1, 5) = mesh_nodes->node_position(i)(2);
+						test_func(i * problem_dim + 2, 5) = -mesh_nodes->node_position(i)(1);
+					}
+				}
+				else
+					assert(false);
 			}
-			else if (problem_dim == 3)
+			else 
 			{
-				test_func.setZero(n_bases * problem_dim, 6);
+				test_func.setZero(n_bases * problem_dim, problem_dim);
 				
-				// (1, 0, 0)
 				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 0, 0) = 1;
-
-				// (0, 1, 0)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 1, 1) = 1;
-
-				// (0, 0, 1)
-				for (int i = 0; i < n_bases; i++)
-					test_func(i * problem_dim + 2, 2) = 1;
-
-				// (y, -x, 0)
-				for (int i = 0; i < n_bases; i++)
-				{
-					test_func(i * problem_dim + 0, 3) = mesh_nodes->node_position(i)(1);
-					test_func(i * problem_dim + 1, 3) = -mesh_nodes->node_position(i)(0);
-				}
-
-				// (z, 0, -x)
-				for (int i = 0; i < n_bases; i++)
-				{
-					test_func(i * problem_dim + 0, 4) = mesh_nodes->node_position(i)(2);
-					test_func(i * problem_dim + 2, 4) = -mesh_nodes->node_position(i)(0);
-				}
-
-				// (0, z, -y)
-				for (int i = 0; i < n_bases; i++)
-				{
-					test_func(i * problem_dim + 1, 5) = mesh_nodes->node_position(i)(2);
-					test_func(i * problem_dim + 2, 5) = -mesh_nodes->node_position(i)(1);
-				}
+					for (int d = 0; d < problem_dim; d++)
+						test_func(i * problem_dim + d, d) = 1;
 			}
-			else
-				assert(false);
 
 			Eigen::MatrixXd coeffs(n_bases * problem_dim, test_func.cols());
 			coeffs.setZero();
 
 			// coeffs = mass * test_func;
 
+			Eigen::MatrixXd result;
 			for (int k = 0; k < test_func.cols(); k++)
 			{
 				for (int e = 0; e < bases.size(); e++)
 				{
 					ElementAssemblyValues vals;
-					vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-
-					Eigen::MatrixXd result;
+					ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
 					result.setZero(vals.val.rows(), mesh->dimension());
 
 					const int n_loc_bases = int(vals.basis_values.size());
@@ -249,7 +259,7 @@ namespace polyfem
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
 		}
-		else if (formulation() == "Stokes" || formulation() == "NavierStokes")
+		else if (assembler.is_fluid(formulation()))
 		{
 			Eigen::MatrixXd coeffs(n_bases * problem_dim, problem_dim);
 			coeffs.setZero();

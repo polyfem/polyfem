@@ -366,16 +366,13 @@ namespace polyfem
 		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
 		Eigen::VectorXi periodic_reduce_map;
 		int n_periodic_dependent_dofs;
+		std::vector<bool> periodic_dimensions;
 		bool has_periodic_bc() const
 		{
-			int i = 0;
-			for (const bool &r : args["boundary_conditions"]["periodic_boundary"])
+			for (const bool &r : periodic_dimensions)
 			{
 				if (r)
 					return true;
-				i++;
-				if (i >= mesh->dimension())
-					break;
 			}
 			return false;
 		}
@@ -386,17 +383,17 @@ namespace polyfem
 			if (boundary_nodes.size() > 0 || problem->is_time_dependent())
 				return 0;
 			
-			if (formulation() == "Stokes" || formulation() == "NavierStokes")
+			if (assembler.is_fluid(formulation()))
 				return mesh->dimension();
 			else if (formulation() == "Laplacian")
 				return 1;
-			else if (formulation() == "LinearElasticity" || formulation() == "NeoHookean")
-				return 3 * (mesh->dimension() - 1);
+			else if (assembler.is_solution_displacement(formulation()))
+				if (!has_periodic_bc()) // pure neumann
+					return 3 * (mesh->dimension() - 1);
+				else
+					return std::accumulate(periodic_dimensions.begin(), periodic_dimensions.end(), (int)0);
 			else
-			{
-				assert(false);
 				return 0;
-			}
 		}
 		void apply_lagrange_multipliers(StiffnessMatrix &A) const;
 		void apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const;
