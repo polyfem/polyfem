@@ -712,6 +712,10 @@ namespace polyfem
 				displacements_interpolation_.resize(offset + j_boundary.size());
 				dirichlet_dimensions_.resize(offset + j_boundary.size());
 
+				// TODO: remove me, hack Teseo!
+				nodal_dirichlet_[1] = NodalDirichlet();
+				nodal_dirichlet_[3] = NodalDirichlet();
+
 				for (size_t i = offset; i < boundary_ids_.size(); ++i)
 				{
 					if (j_boundary[i - offset].is_string())

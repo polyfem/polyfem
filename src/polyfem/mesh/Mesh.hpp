@@ -378,6 +378,11 @@ namespace polyfem
 			/// @param[in] type type of the element
 			void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 
+			/// @brief computes boundary selections based on a function
+			///
+			/// @param[in] marker lambda function that takes the node id, the position, and true/false if the element is on the boundary and returns an integer
+			void compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker);
+
 			/// @brief loads the boundary selections for a file
 			///
 			/// @param[in] path file's path
@@ -441,9 +446,16 @@ namespace polyfem
 			/// @return label of node
 			virtual int get_node_id(const int node_id) const
 			{
-				// TODO add node selection, teseo
-				return -1; // default for no boundary
+				if (has_node_ids())
+					return node_ids_.at(node_id);
+				else
+					return -1; // default for no boundary
 			}
+
+			/// @brief Update the node ids to reorder them
+			///
+			/// @param[in] in_node_to_node mapping from input nodes to polyfem nodes
+			void update_nodes(const Eigen::VectorXi &in_node_to_node);
 
 			/// @brief Get the volume selection of an element (cell in 3d, face in 2d)
 			///
@@ -462,6 +474,10 @@ namespace polyfem
 			{
 				return body_ids_;
 			}
+			/// @brief checks if points selections are available
+			///
+			/// @return points selections are available
+			bool has_node_ids() const { return !node_ids_.empty(); }
 			/// @brief checks if surface selections are available
 			///
 			/// @return surface selections are available
@@ -586,6 +602,8 @@ namespace polyfem
 
 			/// list of element types
 			std::vector<ElementType> elements_tag_;
+			/// list of node labels
+			std::vector<int> node_ids_;
 			/// list of surface labels
 			std::vector<int> boundary_ids_;
 			/// list of volume labels

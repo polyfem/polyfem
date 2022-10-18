@@ -132,11 +132,24 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		if (!j_mesh["point_selection"].is_null())
-			log_and_throw_error("Geometry point seleections are not implemented nor used!");
+		std::vector<std::shared_ptr<Selection>> node_selections =
+			Selection::build_selections(j_mesh["point_selection"], bbox, root_path);
+
+		mesh->compute_node_ids([&](const size_t n_id, const RowVectorNd &p, bool is_boundary) {
+			if (!is_boundary)
+				return -1;
+
+			const std::vector<int> tmp = {int(n_id)};
+			for (const auto &selection : node_selections)
+			{
+				if (selection->inside(n_id, tmp, p))
+					return selection->id(n_id, tmp, p);
+			}
+			return std::numeric_limits<int>::max(); // default for no selected boundary
+		});
 
 		if (!j_mesh["curve_selection"].is_null())
-			log_and_throw_error("Geometry point seleections are not implemented nor used!");
+			log_and_throw_error("Geometry point selections are not implemented nor used!");
 
 		// --------------------------------------------------------------------
 

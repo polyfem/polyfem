@@ -818,7 +818,7 @@ namespace polyfem
 			timer2.start();
 			build_node_mapping();
 			problem->update_nodes(in_node_to_node);
-			// TODO add update nodes for mesh teseo
+			mesh->update_nodes(in_node_to_node);
 			timer2.stop();
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}

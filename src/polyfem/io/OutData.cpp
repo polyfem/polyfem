@@ -881,6 +881,7 @@ namespace polyfem::io
 		volume = args["output"]["paraview"]["volume"];
 		surface = args["output"]["paraview"]["surface"];
 		wire = args["output"]["paraview"]["wireframe"];
+		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
 
@@ -955,6 +956,11 @@ namespace polyfem::io
 			save_wire(base_path + "_wire.vtu", state, sol, t, opts, solution_frames);
 		}
 
+		if (opts.points)
+		{
+			save_points(base_path + "_points.vtu", state, sol, opts, solution_frames);
+		}
+
 		if (!opts.solve_export_to_file)
 			return;
 
@@ -1003,6 +1009,16 @@ namespace polyfem::io
 			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
 			dataset->SetAttribute("name", "data");
 			dataset->SetAttribute("file", (path_stem + "_wire.vtu").c_str());
+		}
+
+		if (opts.points)
+		{
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Points");
+
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "data");
+			dataset->SetAttribute("file", (path_stem + "_points.vtu").c_str());
 		}
 
 		tinyxml2::XMLElement *data_array = root->InsertNewChildElement("FieldData")->InsertNewChildElement("DataArray");
@@ -1899,6 +1915,56 @@ namespace polyfem::io
 		}
 
 		writer.write_mesh(name, points, edges);
+	}
+
+	void OutGeometryData::save_points(
+		const std::string &path,
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const ExportOptions &opts,
+		std::vector<SolutionFrame> &solution_frames) const
+	{
+		const auto &dirichlet_nodes = state.dirichlet_nodes;
+		const auto &dirichlet_nodes_position = state.dirichlet_nodes_position;
+		const mesh::Mesh &mesh = *state.mesh;
+		const assembler::Problem &problem = *state.problem;
+
+		int actual_dim = 1;
+		if (!problem.is_scalar())
+			actual_dim = mesh.dimension();
+
+		Eigen::MatrixXd fun(dirichlet_nodes_position.size(), actual_dim);
+		Eigen::MatrixXd b_sidesets(dirichlet_nodes_position.size(), 1);
+		b_sidesets.setZero();
+		Eigen::MatrixXd points(dirichlet_nodes_position.size(), mesh.dimension());
+		std::vector<std::vector<int>> cells(dirichlet_nodes_position.size());
+
+		for (int i = 0; i < dirichlet_nodes_position.size(); ++i)
+		{
+			const int n_id = dirichlet_nodes[i];
+			const auto s_id = mesh.get_node_id(n_id);
+			if (s_id > 0)
+			{
+				b_sidesets(i) = s_id;
+			}
+
+			for (int j = 0; j < actual_dim; ++j)
+			{
+				fun(i, j) = sol(n_id * actual_dim + j);
+			}
+
+			points.row(i) = dirichlet_nodes_position[i];
+			cells[i].push_back(i);
+		}
+
+		io::VTUWriter writer;
+
+		if (opts.solve_export_to_file)
+		{
+			writer.add_field("solution", fun);
+			writer.add_field("sidesets", b_sidesets);
+			writer.write_mesh(path, points, cells, false);
+		}
 	}
 
 	void OutGeometryData::save_pvd(
