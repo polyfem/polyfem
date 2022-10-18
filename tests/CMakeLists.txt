@@ -18,6 +18,7 @@ set(test_sources
 	test_utils.cpp
   test_form_derivatives.cpp
   test_interpolation.cpp
+  test_time_integrators.cpp
   verify_run.cpp
 )
 

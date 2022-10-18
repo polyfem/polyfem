@@ -33,7 +33,8 @@ namespace polyfem::time_integrator
 		/// @brief Compute the current velocity given the current solution and using the stored previous solution(s).
 		/// \f[
 		/// 	a^{t+1} = \frac{x - (x^t + \Delta t v^t + \Delta t^2 (0.5 - \beta) a^t)}{\beta \Delta t^2}\newline
-		/// 	v = v^t + \Delta t (1 - \gamma) a^t + \gamma a^{t+1}
+		/// 	v = v^t + \Delta t (1 - \gamma) a^t + \Delta t \gamma a^{t+1}
+		///       = (\gamma / \beta) / \Delta t (x - x^t) + (1 - \gamma / \beta) v^t + (1 - \gamma / \beta / 2) \Delta t a^t
 		/// \f]
 		/// @param x current solution vector
 		/// @return value for \f$v\f$
@@ -52,6 +53,12 @@ namespace polyfem::time_integrator
 		/// 	\beta \Delta t^2
 		/// \f]
 		double acceleration_scaling() const override;
+
+		/// @brief Compute the derivative of the velocity with respect to the solution.
+		/// \f[
+		/// 	\frac{\partial v}{\partial x} = \frac{\gamma}{\beta\Delta t}
+		/// \f]
+		double dv_dx() const override;
 
 		/// @brief \f$\beta\f$ parameter for blending accelerations in the solution update.
 		double beta() const { return beta_; }
