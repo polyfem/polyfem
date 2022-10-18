@@ -1,24 +1,12 @@
-////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polyfem/solver/forms/LaggedRegForm.hpp>
-#include <polyfem/solver/forms/RayleighDampingForm.hpp>
-
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
 #include <finitediff.hpp>
 
-#include <polyfem/State.hpp>
-
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <memory>
-////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
 using namespace polyfem::time_integrator;
