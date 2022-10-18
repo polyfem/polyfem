@@ -1823,6 +1823,22 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "MooneyRivlin",
+        "required": [
+            "type",
+            "c1",
+            "c2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "k"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "NeoHookean",
         "required": [
             "type",
@@ -2094,6 +2110,7 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
+            "MooneyRivlin",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2112,6 +2129,16 @@
         "pointer": "/materials/*/lambda",
         "type": "float",
         "doc": "Second Lamé parameter"
+    },
+    {
+        "pointer": "/materials/*/c1",
+        "type": "float",
+        "doc": "First Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c2",
+        "type": "float",
+        "doc": "Second Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/boundary_conditions",
@@ -2257,12 +2284,42 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/type",
         "type": "string",
         "options": [
             "none",
             "linear",
-            "linear_ramp"
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -2276,6 +2333,38 @@
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/to",
         "type": "float",
         "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",
@@ -2351,12 +2440,42 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/type",
         "type": "string",
         "options": [
             "none",
             "linear",
-            "linear_ramp"
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -2370,6 +2489,38 @@
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/to",
         "type": "float",
         "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary",
@@ -2458,12 +2609,42 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/type",
         "type": "string",
         "options": [
             "none",
             "linear",
-            "linear_ramp"
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -2477,6 +2658,38 @@
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/to",
         "type": "float",
         "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",
@@ -2552,12 +2765,42 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/type",
         "type": "string",
         "options": [
             "none",
             "linear",
-            "linear_ramp"
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -2571,6 +2814,38 @@
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/to",
         "type": "float",
         "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
     },
     {
         "pointer": "/initial_conditions",

@@ -20,6 +20,8 @@ set(SOURCES
 	Logger.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
+	Interpolation.cpp
+	Interpolation.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
 	MatrixUtils.cpp

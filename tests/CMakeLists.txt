@@ -17,6 +17,7 @@ set(test_sources
 	test_tbb.cpp
 	test_utils.cpp
   test_form_derivatives.cpp
+  test_interpolation.cpp
   verify_run.cpp
 )
 

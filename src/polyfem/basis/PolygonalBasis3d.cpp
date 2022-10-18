@@ -600,7 +600,7 @@ namespace polyfem
 					continue;
 				}
 				// No boundary polytope
-				// assert(element_type[e] != ElementType::BoundaryPolytope);
+				// assert(element_type[e] != ElementType::BOUNDARY_POLYTOPE);
 
 				// Kernel distance to polygon boundary
 				const double eps = compute_epsilon(mesh, e);
@@ -622,7 +622,7 @@ namespace polyfem
 								 triangulated_faces, tmp_quadrature, scaling, translation);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
-				//TODO
+				// TODO
 				b.set_mass_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				// b.scaling_ = scaling;
 				// b.translation_ = translation;

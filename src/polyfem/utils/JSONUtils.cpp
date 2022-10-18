@@ -23,7 +23,7 @@ namespace polyfem
 
 			std::ifstream file(common_params_path);
 			if (!file.is_open())
-				log_and_throw_error(fmt::format("Unable to open common params {} file", common_params_path));
+				log_and_throw_error("Unable to open common params {} file", common_params_path);
 
 			json common_params;
 			file >> common_params;

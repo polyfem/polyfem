@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AssemblerData.hpp"
+#include "MatParams.hpp"
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
