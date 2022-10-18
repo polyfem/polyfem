@@ -681,7 +681,7 @@ namespace polyfem
 				}
 			}
 
-			// TODO add nodal neumann, teseo
+			// TODO add nodal neumann
 		}
 
 		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const Eigen::MatrixXd &displacement, const double t) const
