@@ -17,11 +17,11 @@ namespace polyfem
 		void gradient(const TVector &x, TVector &gradv) override { target_gradient(x, gradv); }
 		void target_gradient(const TVector &x, TVector &gradv) override;
 
-		bool is_step_valid(const TVector &x0, const TVector &x1) { return (x1 - x0).cwiseAbs().maxCoeff() <= max_change; };
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; };
+		bool is_step_valid(const TVector &x0, const TVector &x1) override { return (x1 - x0).cwiseAbs().maxCoeff() <= max_change; };
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) override { return true; }
 
-		void line_search_end(bool failed);
-		bool remesh(TVector &x) { return false; };
+		void line_search_end(bool failed) override;
+		bool remesh(TVector &x) override { return false; }
 
 		int optimization_dim() override { return 0; }
 

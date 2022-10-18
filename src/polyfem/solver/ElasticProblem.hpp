@@ -12,16 +12,16 @@ namespace polyfem
 		using OptimizationProblem::gradient;
 		using OptimizationProblem::value;
 
-		double target_value(const TVector &x);
+		double target_value(const TVector &x) override;
 		double smooth_value(const TVector &x);
 
-		void target_gradient(const TVector &x, TVector &gradv);
+		void target_gradient(const TVector &x, TVector &gradv) override;
 		void smooth_gradient(const TVector &x, TVector &gradv);
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		bool is_step_valid(const TVector &x0, const TVector &x1);
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
 
 		void set_optimization_dim(const int optimization_dim) { optimization_dim_ = optimization_dim; }
 		int optimization_dim() override 
@@ -31,8 +31,8 @@ namespace polyfem
 			return optimization_dim_; 
 		}
 
-		void line_search_end(bool failed);
-		bool remesh(TVector &x) { return false; }
+		void line_search_end(bool failed) override;
+		bool remesh(TVector &x) override { return false; }
 
 		bool solution_changed_pre(const TVector &newX) override;
 

@@ -170,13 +170,13 @@ namespace polyfem
 		};
 
 		void smoothing(const TVector &x, TVector &new_x) override;
-		bool is_step_valid(const TVector &x0, const TVector &x1);
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		bool is_intersection_free(const TVector &x) override;
-		bool is_step_collision_free(const TVector &x0, const TVector &x1);
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
 		double max_step_size(const TVector &x0, const TVector &x1) override;
 
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
-		void line_search_end(bool failed);
+		void line_search_end(bool failed) override;
 		void post_step(const int iter_num, const TVector &x0) override;
 
 		void set_optimization_dim(const int optimization_dim) { optimization_dim_ = optimization_dim; }
@@ -185,7 +185,7 @@ namespace polyfem
 		bool solution_changed_pre(const TVector &newX) override;
 		void solution_changed_post(const TVector &newX) override;
 
-		bool remesh(TVector &x);
+		bool remesh(TVector &x) override;
 		void build_fixed_nodes();
 		void build_tied_nodes();
 

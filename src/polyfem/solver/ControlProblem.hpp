@@ -12,19 +12,19 @@ namespace polyfem
 		using OptimizationProblem::gradient;
 		using OptimizationProblem::value;
 
-		double target_value(const TVector &x) { return target_weight * j->energy(state); }
+		double target_value(const TVector &x) override { return target_weight * j->energy(state); }
 		double smooth_value(const TVector &x);
 
-		void target_gradient(const TVector &x, TVector &gradv);
+		void target_gradient(const TVector &x, TVector &gradv) override;
 		void smooth_gradient(const TVector &x, TVector &gradv);
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		bool is_step_valid(const TVector &x0, const TVector &x1);
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; };
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) override { return true; };
 
-		void line_search_end(bool failed);
+		void line_search_end(bool failed) override;
 		bool remesh(TVector &x) override { return false; };
 		int optimization_dim() override { return time_steps * optimize_boundary_ids_to_position.size() * state.mesh->dimension(); }
 

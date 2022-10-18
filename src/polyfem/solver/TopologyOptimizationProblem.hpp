@@ -12,14 +12,14 @@ namespace polyfem
 		using OptimizationProblem::gradient;
 		using OptimizationProblem::value;
 
-		double target_value(const TVector &x) { return j->energy(state) * target_weight; }
+		double target_value(const TVector &x) override { return j->energy(state) * target_weight; }
 
-		void target_gradient(const TVector &x, TVector &gradv);
+		void target_gradient(const TVector &x, TVector &gradv) override;
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 
-		bool is_step_valid(const TVector &x0, const TVector &x1);
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		TVector force_inequality_constraint(const TVector &x0, const TVector &dx) override;
 		bool remesh(TVector &x) override { return false; };
 
@@ -48,7 +48,7 @@ namespace polyfem
 			return max;
 		}
 
-		void line_search_end(bool failed);
+		void line_search_end(bool failed) override;
 
 		bool solution_changed_pre(const TVector &newX) override;
 
