@@ -14,6 +14,7 @@
 #include <cppoptlib/problem.h>
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
+#include <polyfem/solver/DenseNewtonDescentSolver.hpp>
 
 #include <unsupported/Eigen/KroneckerProduct>
 
@@ -184,6 +185,14 @@ namespace polyfem::assembler
 						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
 						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, tmp);
 					hessian = tmp.sparseView();
+					hessian /= volume;
+				}
+				void hessian(const TVector &x, Eigen::MatrixXd &hessian)
+				{
+					Eigen::MatrixXd sol = coeff_to_field(x);
+					state->assembler.assemble_energy_hessian(
+						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
+						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, hessian);
 					hessian /= volume;
 				}
 
@@ -366,7 +375,7 @@ namespace polyfem::assembler
 
 		std::shared_ptr<MultiscaleRBProblem> nl_problem = std::make_shared<MultiscaleRBProblem>(reduced_basis);
 		nl_problem->set_linear_disp(state->generate_linear_field(F));
-		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::SparseNewtonDescentSolver<MultiscaleRBProblem>>(
+		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::DenseNewtonDescentSolver<MultiscaleRBProblem>>(
 				state->args["solver"]["nonlinear"], state->args["solver"]["linear"]);
 		
 		nlsolver->minimize(*nl_problem, xi);

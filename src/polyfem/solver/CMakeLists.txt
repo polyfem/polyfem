@@ -42,6 +42,8 @@ set(SOURCES
 	GeneralOptimizationProblem.hpp
 	SparseNewtonDescentSolver.hpp
 	SparseNewtonDescentSolver.tpp
+	DenseNewtonDescentSolver.hpp
+	DenseNewtonDescentSolver.tpp
 	TransientNavierStokesSolver.cpp
 	TransientNavierStokesSolver.hpp
 )
