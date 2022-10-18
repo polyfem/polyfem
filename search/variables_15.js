@@ -12,5 +12,6 @@ var searchData=
   ['use_5fgradient_5fnorm_9',['use_gradient_norm',['../classcppoptlib_1_1_nonlinear_solver.html#a88fc44fd970ccb961b97091c59b39316',1,'cppoptlib::NonlinearSolver']]],
   ['use_5fsampler_10',['use_sampler',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['use_5fsecond_5fcache_5f_11',['use_second_cache_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a3d356cafa2c150c0a58aef1735add8b8',1,'polyfem::utils::SpareMatrixCache']]],
-  ['use_5fspline_12',['use_spline',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f',1,'polyfem::io::OutGeometryData::ExportOptions']]]
+  ['use_5fspline_12',['use_spline',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['use_5fstiffness_5fas_5fratio_5f_13',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
 ];

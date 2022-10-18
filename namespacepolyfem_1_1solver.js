@@ -14,5 +14,6 @@ var namespacepolyfem_1_1solver =
     [ "NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html", "classpolyfem_1_1solver_1_1_navier_stokes_solver" ],
     [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", "classpolyfem_1_1solver_1_1_n_l_problem" ],
     [ "OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html", "classpolyfem_1_1solver_1_1_operator_splitting_solver" ],
+    [ "RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", "classpolyfem_1_1solver_1_1_rayleigh_damping_form" ],
     [ "TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver" ]
 ];

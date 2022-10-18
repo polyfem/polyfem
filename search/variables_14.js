@@ -9,7 +9,7 @@ var searchData=
   ['tfunc_5f_6',['tfunc_',['../classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d',1,'polyfem::utils::ExpressionValue']]],
   ['tfunc_5fcoo_5f_7',['tfunc_coo_',['../classpolyfem_1_1utils_1_1_expression_value.html#a4fc6c8daab0ed01e76542d310e873b20',1,'polyfem::utils::ExpressionValue']]],
   ['time_5fintegrator_8',['time_integrator',['../classpolyfem_1_1_solve_data.html#acf48031cea9e8e69f41b60e94296aaad',1,'polyfem::SolveData']]],
-  ['time_5fintegrator_5f_9',['time_integrator_',['../classpolyfem_1_1solver_1_1_inertia_form.html#ae5f799eb2704dc1b3e64e07f6ebe1e7b',1,'polyfem::solver::InertiaForm']]],
+  ['time_5fintegrator_5f_9',['time_integrator_',['../classpolyfem_1_1solver_1_1_inertia_form.html#ae5f799eb2704dc1b3e64e07f6ebe1e7b',1,'polyfem::solver::InertiaForm::time_integrator_()'],['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#ac68a59984a06d53e9f14457722914ac4',1,'polyfem::solver::RayleighDampingForm::time_integrator_()']]],
   ['timings_10',['timings',['../classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc',1,'polyfem::State']]],
   ['tmp_11',['tmp',['../namespaceq__bases.html#aa9656e17bbd1e348385800ca316b200c',1,'q_bases.tmp()'],['../namespacep__bases.html#a545f876b401f1042d3b57d92fb694df8',1,'p_bases.tmp()']]],
   ['tmp_5f_12',['tmp_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#aefe878143492a4b8f11533004f547413',1,'polyfem::utils::SpareMatrixCache']]],

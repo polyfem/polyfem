@@ -28,6 +28,7 @@ var classpolyfem_1_1solver_1_1_form =
     [ "uses_lagging", "classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7", null ],
     [ "value", "classpolyfem_1_1solver_1_1_form.html#a14d2ee6928c73fc77eb7a7fa1542d27a", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92", null ],
+    [ "weight", "classpolyfem_1_1solver_1_1_form.html#a85aceba87c663b1ba6f62f86609e2acd", null ],
     [ "enabled_", "classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae", null ],
     [ "project_to_psd_", "classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2", null ],
     [ "weight_", "classpolyfem_1_1solver_1_1_form.html#a489fc22d15e5e6fdfc4e05c804632339", null ]
