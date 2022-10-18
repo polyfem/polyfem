@@ -112,7 +112,7 @@ namespace polyfem
 				}
 			}
 
-			if (has_nodal_dirichlet() || has_nodal_neumann())
+			if (mesh.has_node_ids() && (has_nodal_dirichlet() || has_nodal_neumann()))
 			{
 				for (int n_id = 0; n_id < n_bases; ++n_id)
 				{

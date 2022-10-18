@@ -365,8 +365,11 @@ namespace polyfem::mesh
 
 	void Mesh::update_nodes(const Eigen::VectorXi &in_node_to_node)
 	{
-		if (in_node_to_node.size() <= 0)
+		if (in_node_to_node.size() <= 0 || node_ids_.empty())
+		{
+			node_ids_.clear();
 			return;
+		}
 
 		const auto tmp = node_ids_;
 
@@ -509,6 +512,8 @@ namespace polyfem::mesh
 			for (int i = 0; i < mesh.n_vertices(); ++i)
 				node_ids_[n_vertices + i] = mesh.get_node_id(i); // results in default if node_ids_ is empty
 		}
+
+		assert(node_ids_.empty() || node_ids_.size() == n_vertices + mesh.n_vertices());
 
 		// --------------------------------------------------------------------
 

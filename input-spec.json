@@ -462,7 +462,6 @@
     {
         "pointer": "/geometry/*/point_selection",
         "type": "int",
-        "default": 0,
         "doc": "Assign specified ID to all surface elements of the geometry"
     },
     {
@@ -476,6 +475,7 @@
     {
         "pointer": "/geometry/*/point_selection",
         "type": "list",
+        "default": "skip",
         "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
@@ -648,7 +648,6 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "int",
-        "default": 0,
         "doc": "Assign specified ID to all surface elements of the geometry"
     },
     {
@@ -662,6 +661,7 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "list",
+        "default": "skip",
         "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
