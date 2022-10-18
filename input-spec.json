@@ -2232,6 +2232,16 @@
     },
     {
         "pointer": "/materials/*/nu",
+        "type": "file",
+        "doc": "Poisson's ratio"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type": "file",
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
         "type": "float",
         "doc": "Poisson's ratio"
     },

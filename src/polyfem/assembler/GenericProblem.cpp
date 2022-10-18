@@ -623,12 +623,12 @@ namespace polyfem
 
 		bool GenericTensorProblem::has_nodal_dirichlet()
 		{
-			return nodal_dirichlet_mat_.size() > 0 || nodal_dirichlet_.size() > 0;
+			return nodal_dirichlet_mat_.size() > 0;
 		}
 
 		bool GenericTensorProblem::has_nodal_neumann()
 		{
-			return nodal_neumann_.size() > 0;
+			return false; // nodal_neumann_.size() > 0;
 		}
 
 		bool GenericTensorProblem::is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const
@@ -733,12 +733,12 @@ namespace polyfem
 					if (j_boundary[i - offset].is_string())
 					{
 						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
-						if (std::filesystem::is_regular_file(path))
-						{
-							Eigen::MatrixXd tmp;
-							io::read_matrix(path, tmp);
-							nodal_dirichlet_mat_.emplace_back(tmp);
-						}
+						if (!std::filesystem::is_regular_file(path))
+							log_and_throw_error(fmt::format("unable to open {} file", path));
+
+						Eigen::MatrixXd tmp;
+						io::read_matrix(path, tmp);
+						nodal_dirichlet_mat_.emplace_back(tmp);
 
 						continue;
 					}
