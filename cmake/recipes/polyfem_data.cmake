@@ -8,18 +8,32 @@ endif()
 include(ExternalProject)
 
 set(POLYFEM_DATA_DIR "${PROJECT_SOURCE_DIR}/data/" CACHE PATH "Where should polyfem download and look for test data?")
+option(POLYFEM_USE_EXISTING_DATA_DIR "Use and existing data directory instead of downloading it" OFF)
 
-ExternalProject_Add(
-    polyfem_data_download
-    PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
-    SOURCE_DIR ${POLYFEM_DATA_DIR}
-    GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-    GIT_TAG f9d6a461a4cdc341f4623db04a34c806427b2cb4
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-)
+if(POLYFEM_USE_EXISTING_DATA_DIR)
+    ExternalProject_Add(
+        polyfem_data_download
+        PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
+        SOURCE_DIR ${POLYFEM_DATA_DIR}
+        # NOTE: No download step
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        LOG_DOWNLOAD ON
+    )
+else()
+    ExternalProject_Add(
+        polyfem_data_download
+        PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
+        SOURCE_DIR ${POLYFEM_DATA_DIR}
+        GIT_REPOSITORY https://github.com/polyfem/polyfem-data
+        GIT_TAG f9d6a461a4cdc341f4623db04a34c806427b2cb4
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        LOG_DOWNLOAD ON
+    )
+endif()
 
 # Create a dummy target for convenience
 add_library(polyfem_data INTERFACE)
