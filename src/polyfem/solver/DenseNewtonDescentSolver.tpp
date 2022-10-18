@@ -50,7 +50,6 @@ namespace cppoptlib
 	void DenseNewtonDescentSolver<ProblemType>::reset(const int ndof)
 	{
 		Superclass::reset(ndof);
-		assert(linear_solver != nullptr);
 		reg_weight = 0;
 		internal_solver_info = json::array();
 	}
