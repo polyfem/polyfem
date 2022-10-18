@@ -188,7 +188,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 	// in_args["materials"]["microstructure"]["materials"]["E"] = path + "../Es.txt";
 	// in_args["materials"]["microstructure"]["materials"]["nu"] = path + "../nus.txt";
 
-	State state(1);
+	State state;
 	state.init_logger("", spdlog::level::warn, false);
 	state.init(in_args, false);
 	state.load_mesh();

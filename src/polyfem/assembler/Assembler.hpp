@@ -104,6 +104,18 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
 			Eigen::MatrixXd &rhs) const;
+		
+		void assemble_grad(
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			const Eigen::MatrixXd &projection,
+			Eigen::MatrixXd &rhs) const;
 
 		// assemble hessian of energy (grad)
 		void assemble_hessian(
@@ -118,6 +130,19 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::SpareMatrixCache &mat_cache,
 			StiffnessMatrix &grad) const;
+
+		void assemble_hessian(
+			const bool is_volume,
+			const int n_basis,
+			const bool project_to_psd,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			const Eigen::MatrixXd &projection,
+			Eigen::MatrixXd &grad) const;
 
 		// assemble energy
 		double assemble(

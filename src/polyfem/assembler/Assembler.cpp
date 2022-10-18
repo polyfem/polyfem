@@ -838,6 +838,83 @@ namespace polyfem::assembler
 	}
 
 	template <class LocalAssembler>
+	void NLAssembler<LocalAssembler>::assemble_grad(
+		const bool is_volume,
+		const int n_basis,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double dt,
+		const Eigen::MatrixXd &displacement,
+		const Eigen::MatrixXd &displacement_prev,
+		const Eigen::MatrixXd &projection,
+		Eigen::MatrixXd &rhs) const
+	{
+		rhs.resize(projection.cols(), 1);
+		rhs.setZero();
+
+		auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
+
+		const int n_bases = int(bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+			for (int e = start; e < end; ++e)
+			{
+				// igl::Timer timer; timer.start();
+
+				ElementAssemblyValues &vals = local_storage.vals;
+				// vals.compute(e, is_volume, bases[e], gbases[e]);
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals.basis_values.size());
+
+				const auto val = local_assembler_.assemble_grad(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				assert(val.size() == n_loc_bases * local_assembler_.size());
+
+				for (int j = 0; j < n_loc_bases; ++j)
+				{
+					const auto &global_j = vals.basis_values[j].global;
+
+					// igl::Timer t1; t1.start();
+					for (int m = 0; m < local_assembler_.size(); ++m)
+					{
+						const double local_value = val(j * local_assembler_.size() + m);
+						if (std::abs(local_value) < 1e-30)
+						{
+							continue;
+						}
+
+						for (size_t jj = 0; jj < global_j.size(); ++jj)
+						{
+							const auto gj = global_j[jj].index * local_assembler_.size() + m;
+							const auto wj = global_j[jj].val;
+
+							for (int p = 0; p < projection.cols(); p++)
+								local_storage.vec(p) += local_value * wj * projection(gj, p);
+						}
+					}
+
+					// t1.stop();
+					// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+				}
+
+				// timer.stop();
+				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
+			}
+		});
+
+		// Serially merge local storages
+		for (const LocalThreadVecStorage &local_storage : storage)
+			rhs += local_storage.vec;
+	}
+
+	template <class LocalAssembler>
 	void NLAssembler<LocalAssembler>::assemble_hessian(
 		const bool is_volume,
 		const int n_basis,
@@ -964,6 +1041,99 @@ namespace polyfem::assembler
 			mat_cache += local_storage.cache;
 		}
 		grad = mat_cache.get_matrix();
+
+		timerg.stop();
+		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
+	}
+
+	template <class LocalAssembler>
+	void NLAssembler<LocalAssembler>::assemble_hessian(
+		const bool is_volume,
+		const int n_basis,
+		const bool project_to_psd,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double dt,
+		const Eigen::MatrixXd &displacement,
+		const Eigen::MatrixXd &displacement_prev,
+		const Eigen::MatrixXd &projection,
+		Eigen::MatrixXd &grad) const
+	{
+		grad.setZero(projection.cols() * projection.cols(), 1);
+
+		auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
+
+		const int n_bases = int(bases.size());
+		igl::Timer timerg;
+		timerg.start();
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+			for (int e = start; e < end; ++e)
+			{
+				ElementAssemblyValues &vals = local_storage.vals;
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals.basis_values.size());
+
+				auto stiffness_val = local_assembler_.assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
+				assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
+
+				if (project_to_psd)
+					stiffness_val = ipc::project_to_psd(stiffness_val);
+
+				for (int i = 0; i < n_loc_bases; ++i)
+				{
+					const auto &global_i = vals.basis_values[i].global;
+
+					for (int j = 0; j < n_loc_bases; ++j)
+					{
+						const auto &global_j = vals.basis_values[j].global;
+
+						for (int n = 0; n < local_assembler_.size(); ++n)
+						{
+							for (int m = 0; m < local_assembler_.size(); ++m)
+							{
+								const double local_value = stiffness_val(i * local_assembler_.size() + m, j * local_assembler_.size() + n);
+
+								for (size_t ii = 0; ii < global_i.size(); ++ii)
+								{
+									const auto gi = global_i[ii].index * local_assembler_.size() + m;
+									const auto wi = global_i[ii].val;
+
+									for (size_t jj = 0; jj < global_j.size(); ++jj)
+									{
+										const auto gj = global_j[jj].index * local_assembler_.size() + n;
+										const auto wj = global_j[jj].val;
+
+										for (int p = 0; p < projection.cols(); p++)
+											for (int q = 0; q < projection.cols(); q++)
+												local_storage.vec(p * projection.cols() + q) += local_value * wi * wj * projection(gi, p) * projection(gj, q);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+
+		timerg.stop();
+		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+
+		timerg.start();
+
+		// Serially merge local storages
+		for (const LocalThreadVecStorage &local_storage : storage)
+			grad += local_storage.vec;
+		grad = utils::unflatten(grad, projection.cols());
 
 		timerg.stop();
 		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());

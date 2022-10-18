@@ -133,6 +133,17 @@ namespace polyfem
 										  const Eigen::MatrixXd &displacement,
 										  const Eigen::MatrixXd &displacement_prev,
 										  Eigen::MatrixXd &grad) const;
+			void assemble_energy_gradient(const std::string &assembler,
+										  const bool is_volume,
+										  const int n_basis,
+										  const std::vector<basis::ElementBases> &bases,
+										  const std::vector<basis::ElementBases> &gbases,
+										  const AssemblyValsCache &cache,
+										  const double dt,
+										  const Eigen::MatrixXd &displacement,
+										  const Eigen::MatrixXd &displacement_prev,
+										  const Eigen::MatrixXd &projection,
+										  Eigen::MatrixXd &grad) const;
 			// non-linear hessian, assembler is the name of the formulation
 			void assemble_energy_hessian(const std::string &assembler,
 										 const bool is_volume,
@@ -146,6 +157,18 @@ namespace polyfem
 										 const Eigen::MatrixXd &displacement_prev,
 										 utils::SpareMatrixCache &mat_cache,
 										 StiffnessMatrix &hessian) const;
+			void assemble_energy_hessian(const std::string &assembler,
+										 const bool is_volume,
+										 const int n_basis,
+										 const bool project_to_psd,
+										 const std::vector<basis::ElementBases> &bases,
+										 const std::vector<basis::ElementBases> &gbases,
+										 const AssemblyValsCache &cache,
+										 const double dt,
+										 const Eigen::MatrixXd &displacement,
+										 const Eigen::MatrixXd &displacement_prev,
+										 const Eigen::MatrixXd &projection,
+										 Eigen::MatrixXd &hessian) const;
 
 			// plotting (eg von mises), assembler is the name of the formulation
 			void compute_scalar_value(const std::string &assembler,

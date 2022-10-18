@@ -385,6 +385,40 @@ namespace polyfem
 				return;
 		}
 
+		void AssemblerUtils::assemble_energy_gradient(const std::string &assembler,
+													  const bool is_volume,
+													  const int n_basis,
+													  const std::vector<ElementBases> &bases,
+													  const std::vector<ElementBases> &gbases,
+													  const AssemblyValsCache &cache,
+													  const double dt,
+													  const Eigen::MatrixXd &displacement,
+													  const Eigen::MatrixXd &displacement_prev,
+													  const Eigen::MatrixXd &projection,
+													  Eigen::MatrixXd &grad) const
+		{
+			if (assembler == "SaintVenant")
+				saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "NeoHookean")
+				neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "MultiModels")
+				multi_models_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "Damping")
+				damping_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "MultiscaleRB")
+				multiscale_reduced_basis_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "DampingPrev")
+				damping_prev_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "NavierStokes")
+				navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "LinearElasticity")
+				linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			// else if(assembler == "Ogden")
+			//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else
+				return;
+		}
+
 		void AssemblerUtils::assemble_energy_hessian(const std::string &assembler,
 													 const bool is_volume,
 													 const int n_basis,
@@ -419,6 +453,44 @@ namespace polyfem
 
 			// else if(assembler == "Ogden")
 			//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			else
+				return;
+		}
+
+		void AssemblerUtils::assemble_energy_hessian(const std::string &assembler,
+													 const bool is_volume,
+													 const int n_basis,
+													 const bool project_to_psd,
+													 const std::vector<ElementBases> &bases,
+													 const std::vector<ElementBases> &gbases,
+													 const AssemblyValsCache &cache,
+													 const double dt,
+													 const Eigen::MatrixXd &displacement,
+													 const Eigen::MatrixXd &displacement_prev,
+													 const Eigen::MatrixXd &projection,
+													 Eigen::MatrixXd &hessian) const
+		{
+			if (assembler == "SaintVenant")
+				saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "NeoHookean")
+				neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "MultiModels")
+				multi_models_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "Damping")
+				damping_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "MultiscaleRB")
+				multiscale_reduced_basis_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "DampingPrev")
+				damping_prev_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "NavierStokesPicard")
+				navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "NavierStokes")
+				navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "LinearElasticity")
+				linear_elasticity_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+
+			// else if(assembler == "Ogden")
+			//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
 			else
 				return;
 		}

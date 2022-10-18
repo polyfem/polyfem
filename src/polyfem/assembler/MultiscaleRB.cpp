@@ -167,18 +167,23 @@ namespace polyfem::assembler
 					Eigen::MatrixXd grad;
 					state->assembler.assemble_energy_gradient(
 						state->formulation(), state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
-						state->ass_vals_cache, 0, sol, sol, grad);
-					gradv = (reduced_basis_.transpose() * grad) / volume;
+						state->ass_vals_cache, 0, sol, sol, reduced_basis_, grad);
+					gradv = grad / volume;
 				}
 				void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 				void hessian(const TVector &x, THessian &hessian)
 				{
 					Eigen::MatrixXd sol = coeff_to_field(x);
-					StiffnessMatrix hessian_;
+					// StiffnessMatrix hessian_;
+					// state->assembler.assemble_energy_hessian(
+					// 	state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
+					// 	state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache_, hessian_);
+					// hessian = (reduced_basis_.transpose() * hessian_ * reduced_basis_).sparseView();
+					Eigen::MatrixXd tmp;
 					state->assembler.assemble_energy_hessian(
 						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache_, hessian_);
-					hessian = (reduced_basis_.transpose() * hessian_ * reduced_basis_).sparseView();
+						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, tmp);
+					hessian = tmp.sparseView();
 					hessian /= volume;
 				}
 
