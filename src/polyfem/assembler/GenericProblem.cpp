@@ -752,7 +752,7 @@ namespace polyfem
 					else
 					{
 						boundary_ids_[i] = j_boundary[i - offset]["id"];
-						nodal_dirichlet_[boundary_ids_[i]] = TensorBCValue();
+						nodal_dirichlet_[boundary_ids_.empty() ? -1 : boundary_ids_[i]] = TensorBCValue();
 					}
 
 					auto ff = j_boundary[i - offset]["value"];
