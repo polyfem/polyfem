@@ -1018,7 +1018,7 @@ namespace polyfem
 
 			nodal_dirichlet_.clear();
 			nodal_neumann_.clear();
-			nodal_dirichlet_mat_.resize(0, 0);
+			nodal_dirichlet_mat_.clear();
 
 			initial_position_.clear();
 			initial_velocity_.clear();
