@@ -743,16 +743,20 @@ namespace polyfem
 						continue;
 					}
 
+					int current_id = -1;
+
 					if (j_boundary[i - offset]["id"] == "all")
 					{
 						assert(boundary_ids_.size() == 1);
 						boundary_ids_.clear();
 						is_all_ = true;
+						nodal_dirichlet_[current_id] = TensorBCValue();
 					}
 					else
 					{
 						boundary_ids_[i] = j_boundary[i - offset]["id"];
-						nodal_dirichlet_[boundary_ids_.empty() ? -1 : boundary_ids_[i]] = TensorBCValue();
+						current_id = boundary_ids_[i];
+						nodal_dirichlet_[current_id] = TensorBCValue();
 					}
 
 					auto ff = j_boundary[i - offset]["value"];
@@ -761,7 +765,7 @@ namespace polyfem
 						for (size_t k = 0; k < ff.size(); ++k)
 						{
 							displacements_[i].value[k].init(ff[k]);
-							nodal_dirichlet_[boundary_ids_[i]].value[k].init(ff[k]);
+							nodal_dirichlet_[current_id].value[k].init(ff[k]);
 						}
 					}
 					else
@@ -773,7 +777,7 @@ namespace polyfem
 					}
 
 					displacements_[i].dirichlet_dimension.setConstant(true);
-					nodal_dirichlet_[boundary_ids_[i]].dirichlet_dimension.setConstant(true);
+					nodal_dirichlet_[current_id].dirichlet_dimension.setConstant(true);
 					if (j_boundary[i - offset].contains("dimension"))
 					{
 						all_dimensions_dirichlet_ = false;
@@ -782,7 +786,7 @@ namespace polyfem
 						for (size_t k = 0; k < tmp.size(); ++k)
 						{
 							displacements_[i].dirichlet_dimension[k] = tmp[k];
-							nodal_dirichlet_[boundary_ids_[i]].dirichlet_dimension[k] = tmp[k];
+							nodal_dirichlet_[current_id].dirichlet_dimension[k] = tmp[k];
 						}
 					}
 
@@ -791,7 +795,7 @@ namespace polyfem
 					else
 						displacements_[i].interpolation = std::make_shared<NoInterpolation>();
 
-					nodal_dirichlet_[boundary_ids_[i]].interpolation = displacements_[i].interpolation;
+					nodal_dirichlet_[current_id].interpolation = displacements_[i].interpolation;
 				}
 			}
 
@@ -1011,6 +1015,10 @@ namespace polyfem
 			forces_.clear();
 			displacements_.clear();
 			pressures_.clear();
+
+			nodal_dirichlet_.clear();
+			nodal_neumann_.clear();
+			nodal_dirichlet_mat_.resize(0, 0);
 
 			initial_position_.clear();
 			initial_velocity_.clear();
