@@ -156,7 +156,7 @@ namespace polyfem
 				node(1, 1) = mesh_nodes.node_position(el_node_id);
 				// (mesh.node_from_face(el_index));
 
-				LocalBoundary lb(el_index, BoundaryType::QuadLine);
+				LocalBoundary lb(el_index, BoundaryType::QUAD_LINE);
 
 				//////////////////////////////////////////
 				index = mesh.get_index_from_face(el_index);
@@ -425,7 +425,7 @@ namespace polyfem
 			{
 				b.bases.resize(9);
 
-				LocalBoundary lb(el_index, BoundaryType::QuadLine);
+				LocalBoundary lb(el_index, BoundaryType::QUAD_LINE);
 
 				Navigation::Index index = mesh.get_index_from_face(el_index);
 				for (int j = 0; j < 4; ++j)

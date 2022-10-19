@@ -109,9 +109,12 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
 
-	state.solve_problem();
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
 
-	state.compute_errors();
+	state.solve_problem(sol, pressure);
+
+	state.compute_errors(sol);
 
 	json out = json({});
 	out["err_l2"] = state.stats.l2_err;

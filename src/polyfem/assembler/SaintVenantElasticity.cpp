@@ -222,63 +222,19 @@ namespace polyfem::assembler
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
-		assert(data.x.cols() == 1);
+		AutoDiffVect local_disp;
+		get_local_disp(data, size(), local_disp);
 
-		const int n_pts = data.da.size();
+		AutoDiffGradMat disp_grad(size(), size());
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(data.vals.basis_values.size() * size(), 1);
-		local_dispv.setZero();
-		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		{
-			const auto &bs = data.vals.basis_values[i];
-			for (size_t ii = 0; ii < bs.global.size(); ++ii)
-			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_dispv(i * size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-				}
-			}
-		}
-
-		DiffScalarBase::setVariableCount(local_dispv.rows());
-		AutoDiffVect local_disp(local_dispv.rows(), 1);
 		T energy = T(0.0);
 
-		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
-
-		for (long i = 0; i < local_dispv.rows(); ++i)
-		{
-			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
-		}
-
-		AutoDiffGradMat displacement_grad(size(), size());
-
+		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
-			for (long k = 0; k < displacement_grad.size(); ++k)
-				displacement_grad(k) = T(0);
+			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
 
-			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
-				const auto &bs = data.vals.basis_values[i];
-				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
-				assert(grad.size() == size());
-
-				for (int d = 0; d < size(); ++d)
-				{
-					for (int c = 0; c < size(); ++c)
-					{
-						displacement_grad(d, c) += grad(c) * local_disp(i * size() + d);
-					}
-				}
-			}
-
-			AutoDiffGradMat jac_it(size(), size());
-			for (long k = 0; k < jac_it.size(); ++k)
-				jac_it(k) = T(data.vals.jac_it[p](k));
-			displacement_grad = displacement_grad * jac_it;
-
-			AutoDiffGradMat strain = strain_from_disp_grad(displacement_grad);
+			AutoDiffGradMat strain = strain_from_disp_grad(disp_grad);
 			AutoDiffGradMat stress_tensor(size(), size());
 
 			if (size() == 2)

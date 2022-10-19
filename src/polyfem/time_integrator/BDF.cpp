@@ -111,6 +111,11 @@ namespace polyfem::time_integrator
 		return beta * beta * dt() * dt();
 	}
 
+	double BDF::dv_dx() const
+	{
+		return 1 / beta_dt();
+	}
+
 	double BDF::beta_dt() const
 	{
 		const double beta = betas(steps() - 1);

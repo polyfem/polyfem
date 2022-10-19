@@ -19,8 +19,8 @@ using namespace std;
 
 void polyfem::mesh::Navigation3D::prepare_mesh(Mesh3DStorage &M)
 {
-	if (M.type != MeshType::Tet)
-		M.type = MeshType::Hyb;
+	if (M.type != MeshType::TET)
+		M.type = MeshType::HYB;
 	MeshProcessing3D::build_connectivity(M);
 	MeshProcessing3D::global_orientation_hexes(M);
 }
@@ -30,7 +30,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	// igl::Timer timer; timer.start();
 
 	Index idx;
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		idx.element = hi;
 		idx.element_patch = 0;
@@ -110,8 +110,8 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	if (M.elements[hi].fs_flag[idx.element_patch])
 		ei = (idx.face_corner + M.faces[idx.face].vs.size() - 1) % M.faces[idx.face].vs.size();
 	idx.edge = M.faces[idx.face].es[ei];
-	//timer.stop();
-	// get_index_from_element_face_time += timer.getElapsedTime();
+	// timer.stop();
+	//  get_index_from_element_face_time += timer.getElapsedTime();
 
 	return idx;
 }
@@ -126,7 +126,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 		std::swap(v0, v1);
 	assert(v0 < v1);
 
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -212,7 +212,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	assert(v0 < v2);
 	assert(v1 < v2);
 
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -269,7 +269,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_vertex(co
 {
 	// igl::Timer timer; timer.start();
 
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		if (idx.vertex == M.EV(0, idx.edge))
 			idx.vertex = M.EV(1, idx.edge);
@@ -304,7 +304,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_edge(cons
 {
 	// igl::Timer timer; timer.start();
 
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		if (idx.edge == M.FE(idx.face_corner, idx.face))
 			idx.edge = M.FE((idx.face_corner + 2) % 3, idx.face);
@@ -326,7 +326,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_edge(cons
 polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx)
 {
 	// igl::Timer timer; timer.start();
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -382,7 +382,7 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_element(c
 {
 	// igl::Timer timer; timer.start();
 
-	if (M.type == MeshType::Tet)
+	if (M.type == MeshType::TET)
 	{
 		if (M.FH(1, idx.face) == -1)
 		{

@@ -395,7 +395,7 @@ namespace polyfem
 				space(1, 1, 1) = node_id;
 				// node(1, 1, 1) = mesh_nodes.node_position(node_id);
 
-				LocalBoundary lb(el_index, BoundaryType::Quad);
+				LocalBoundary lb(el_index, BoundaryType::QUAD);
 
 				///////////////////////
 				index = to_face[1](start_index);
@@ -755,7 +755,7 @@ namespace polyfem
 				std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
 				mesh.to_vertex_functions(to_vertex);
 
-				LocalBoundary lb(el_index, BoundaryType::Quad);
+				LocalBoundary lb(el_index, BoundaryType::QUAD);
 
 				const Navigation3D::Index start_index = mesh.get_index_from_element(el_index);
 				for (int j = 0; j < 8; ++j)

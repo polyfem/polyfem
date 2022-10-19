@@ -366,7 +366,7 @@ namespace polyfem
 					continue;
 				}
 				// No boundary polytope
-				// assert(element_type[e] != ElementType::BoundaryPolytope);
+				// assert(element_type[e] != ElementType::BOUNDARY_POLYTOPE);
 
 				// Kernel distance to polygon boundary
 				const double eps = compute_epsilon(mesh, e);

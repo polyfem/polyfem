@@ -281,30 +281,30 @@ namespace polyfem::io
 			{
 				switch (lb.type())
 				{
-				case BoundaryType::TriLine:
+				case BoundaryType::TRI_LINE:
 					utils::BoundarySampler::normal_for_tri_edge(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_tri_edge(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::QuadLine:
+				case BoundaryType::QUAD_LINE:
 					utils::BoundarySampler::normal_for_quad_edge(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_quad_edge(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::Quad:
+				case BoundaryType::QUAD:
 					utils::BoundarySampler::normal_for_quad_face(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_quad_face(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::Tri:
+				case BoundaryType::TRI:
 					utils::BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
-				case BoundaryType::Polygon:
+				case BoundaryType::POLYGON:
 					utils::BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), mesh, tmp_n);
 					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);
 					break;
-				case BoundaryType::Polyhedron:
+				case BoundaryType::POLYHEDRON:
 					assert(false);
 					break;
-				case BoundaryType::Invalid:
+				case BoundaryType::INVALID:
 					assert(false);
 					break;
 				default:
@@ -321,7 +321,7 @@ namespace polyfem::io
 
 				if (mesh.is_volume())
 				{
-					if (lb.type() == BoundaryType::Quad)
+					if (lb.type() == BoundaryType::QUAD)
 					{
 						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
 
@@ -334,7 +334,7 @@ namespace polyfem::io
 							}
 						}
 					}
-					else if (lb.type() == BoundaryType::Tri)
+					else if (lb.type() == BoundaryType::TRI)
 					{
 						int index = 0;
 						std::vector<int> mapp(n_samples * n_samples, -1);
@@ -736,6 +736,8 @@ namespace polyfem::io
 
 	void OutGeometryData::export_data(
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const bool is_time_dependent,
 		const double tend_in,
 		const double dt,
@@ -758,7 +760,6 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
 		const Eigen::VectorXi &in_node_to_node = state.in_node_to_node;
-		const Eigen::MatrixXd &sol = state.sol;
 		const Eigen::MatrixXd &rhs = state.rhs;
 		const assembler::Problem &problem = *state.problem;
 
@@ -825,7 +826,7 @@ namespace polyfem::io
 		if (!vis_mesh_path.empty() && !is_time_dependent)
 		{
 			save_vtu(
-				vis_mesh_path, state,
+				vis_mesh_path, state, sol, pressure,
 				tend, dt, opts,
 				is_contact_enabled, solution_frames);
 		}
@@ -901,6 +902,8 @@ namespace polyfem::io
 	void OutGeometryData::save_vtu(
 		const std::string &path,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const double t,
 		const double dt,
 		const ExportOptions &opts,
@@ -913,7 +916,6 @@ namespace polyfem::io
 			return;
 		}
 		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::MatrixXd &sol = state.sol;
 		const Eigen::MatrixXd &rhs = state.rhs;
 
 		if (state.n_bases <= 0)
@@ -939,18 +941,18 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(path, state, t, opts, solution_frames);
+			save_volume(path, state, sol, pressure, t, opts, solution_frames);
 		}
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf.vtu", state, dt, opts,
+			save_surface(base_path + "_surf.vtu", state, sol, pressure, dt, opts,
 						 is_contact_enabled, solution_frames);
 		}
 
 		if (opts.wire)
 		{
-			save_wire(base_path + "_wire.vtu", state, t, opts, solution_frames);
+			save_wire(base_path + "_wire.vtu", state, sol, t, opts, solution_frames);
 		}
 
 		if (!opts.solve_export_to_file)
@@ -1014,12 +1016,14 @@ namespace polyfem::io
 	void OutGeometryData::save_volume(
 		const std::string &path,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const double t,
 		const ExportOptions &opts,
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.assembler.density();
+		const auto &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1030,8 +1034,6 @@ namespace polyfem::io
 		const std::string &formulation = state.formulation();
 		const mesh::Mesh &mesh = *state.mesh;
 		const mesh::Obstacle &obstacle = state.obstacle;
-		const Eigen::MatrixXd &sol = state.sol;
-		const Eigen::MatrixXd &pressure = state.pressure;
 		const assembler::Problem &problem = *state.problem;
 
 		Eigen::MatrixXd points;
@@ -1315,7 +1317,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const LameParameters &params = assembler.lame_params();
+			const auto &params = assembler.lame_params();
 
 			Eigen::MatrixXd lambdas(points.rows(), 1);
 			Eigen::MatrixXd mus(points.rows(), 1);
@@ -1500,6 +1502,8 @@ namespace polyfem::io
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
 		const double dt_in,
 		const ExportOptions &opts,
 		const bool is_contact_enabled,
@@ -1507,7 +1511,7 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const Density &density = state.assembler.density();
+		const auto &density = state.assembler.density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1521,8 +1525,6 @@ namespace polyfem::io
 		const double epsv = state.args["contact"]["epsv"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
-		const Eigen::MatrixXd &sol = state.sol;
-		const Eigen::MatrixXd &pressure = state.pressure;
 		const assembler::Problem &problem = *state.problem;
 
 		Eigen::MatrixXd boundary_vis_vertices;
@@ -1695,7 +1697,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const LameParameters &params = assembler.lame_params();
+			const auto &params = assembler.lame_params();
 
 			Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
 			Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
@@ -1755,13 +1757,13 @@ namespace polyfem::io
 	void OutGeometryData::save_wire(
 		const std::string &name,
 		const State &state,
+		const Eigen::MatrixXd &sol,
 		const double t,
 		const ExportOptions &opts,
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const mesh::Mesh &mesh = *state.mesh;
-		const Eigen::MatrixXd &sol = state.sol;
 		const assembler::Problem &problem = *state.problem;
 
 		if (!opts.solve_export_to_file) // TODO?
@@ -2141,37 +2143,37 @@ namespace polyfem::io
 				std::string type = "";
 				switch (els_tag[i])
 				{
-				case ElementType::Simplex:
+				case ElementType::SIMPLEX:
 					type = "Simplex";
 					break;
-				case ElementType::RegularInteriorCube:
+				case ElementType::REGULAR_INTERIOR_CUBE:
 					type = "RegularInteriorCube";
 					break;
-				case ElementType::RegularBoundaryCube:
+				case ElementType::REGULAR_BOUNDARY_CUBE:
 					type = "RegularBoundaryCube";
 					break;
-				case ElementType::SimpleSingularInteriorCube:
+				case ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:
 					type = "SimpleSingularInteriorCube";
 					break;
-				case ElementType::MultiSingularInteriorCube:
+				case ElementType::MULTI_SINGULAR_INTERIOR_CUBE:
 					type = "MultiSingularInteriorCube";
 					break;
-				case ElementType::SimpleSingularBoundaryCube:
+				case ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:
 					type = "SimpleSingularBoundaryCube";
 					break;
-				case ElementType::InterfaceCube:
+				case ElementType::INTERFACE_CUBE:
 					type = "InterfaceCube";
 					break;
-				case ElementType::MultiSingularBoundaryCube:
+				case ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:
 					type = "MultiSingularBoundaryCube";
 					break;
-				case ElementType::BoundaryPolytope:
+				case ElementType::BOUNDARY_POLYTOPE:
 					type = "BoundaryPolytope";
 					break;
-				case ElementType::InteriorPolytope:
+				case ElementType::INTERIOR_POLYTOPE:
 					type = "InteriorPolytope";
 					break;
-				case ElementType::Undefined:
+				case ElementType::UNDEFINED:
 					type = "Undefined";
 					break;
 				}
@@ -2385,35 +2387,35 @@ namespace polyfem::io
 
 			switch (type)
 			{
-			case ElementType::Simplex:
+			case ElementType::SIMPLEX:
 				simplex_count++;
 				break;
-			case ElementType::RegularInteriorCube:
+			case ElementType::REGULAR_INTERIOR_CUBE:
 				regular_count++;
 				break;
-			case ElementType::RegularBoundaryCube:
+			case ElementType::REGULAR_BOUNDARY_CUBE:
 				regular_boundary_count++;
 				break;
-			case ElementType::SimpleSingularInteriorCube:
+			case ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:
 				simple_singular_count++;
 				break;
-			case ElementType::MultiSingularInteriorCube:
+			case ElementType::MULTI_SINGULAR_INTERIOR_CUBE:
 				multi_singular_count++;
 				break;
-			case ElementType::SimpleSingularBoundaryCube:
+			case ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:
 				boundary_count++;
 				break;
-			case ElementType::InterfaceCube:
-			case ElementType::MultiSingularBoundaryCube:
+			case ElementType::INTERFACE_CUBE:
+			case ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:
 				multi_singular_boundary_count++;
 				break;
-			case ElementType::BoundaryPolytope:
+			case ElementType::BOUNDARY_POLYTOPE:
 				non_regular_boundary_count++;
 				break;
-			case ElementType::InteriorPolytope:
+			case ElementType::INTERIOR_POLYTOPE:
 				non_regular_count++;
 				break;
-			case ElementType::Undefined:
+			case ElementType::UNDEFINED:
 				undefined_count++;
 				break;
 			}

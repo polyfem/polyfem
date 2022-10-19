@@ -6,8 +6,12 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 
 #include "LinearElasticity.hpp"
+//#include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "GenericElastic.hpp"
+#include "MooneyRivlinElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include <Eigen/Dense>
 #include <array>
@@ -50,6 +54,7 @@ namespace polyfem::assembler
 		{
 			neo_hookean_.set_params(params);
 			linear_elasticity_.set_params(params);
+			// TODO set params
 		}
 
 	private:
@@ -59,5 +64,8 @@ namespace polyfem::assembler
 		SaintVenantElasticity saint_venant_;
 		NeoHookeanElasticity neo_hookean_;
 		LinearElasticity linear_elasticity_;
+		// HookeLinearElasticity hooke_;
+		GenericElastic<MooneyRivlinElasticity> mooney_rivlin_elasticity_;
+		GenericElastic<OgdenElasticity> ogden_elasticity_;
 	};
 } // namespace polyfem::assembler

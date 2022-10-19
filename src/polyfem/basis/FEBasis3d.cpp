@@ -577,7 +577,7 @@ namespace
 				fv.row(4) << v[0], v[1], v[2], v[3];
 				fv.row(5) << v[4], v[5], v[6], v[7];
 
-				LocalBoundary lb(c, BoundaryType::Quad);
+				LocalBoundary lb(c, BoundaryType::QUAD);
 				for (int i = 0; i < fv.rows(); ++i)
 				{
 					const int f = find_quad_face(mesh, c, fv(i, 0), fv(i, 1), fv(i, 2), fv(i, 3)).face;
@@ -603,7 +603,7 @@ namespace
 				fv.row(2) << v[1], v[2], v[3];
 				fv.row(3) << v[2], v[0], v[3];
 
-				LocalBoundary lb(c, BoundaryType::Tri);
+				LocalBoundary lb(c, BoundaryType::TRI);
 				for (long i = 0; i < fv.rows(); ++i)
 				{
 					const int f = mesh.get_index_from_element_face(c, fv(i, 0), fv(i, 1), fv(i, 2)).face;

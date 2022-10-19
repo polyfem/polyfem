@@ -1147,6 +1147,7 @@
             "nonlinear",
             "augmented_lagrangian",
             "contact",
+            "rayleigh_damping",
             "ignore_inertia",
             "advanced"
         ],
@@ -1757,6 +1758,64 @@
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
     },
     {
+        "pointer": "/solver/rayleigh_damping",
+        "type": "list",
+        "default": [],
+        "doc": "Apply Rayleigh damping."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness_ratio"
+        ],
+        "optional": [
+            "lagging_iterations"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness ratio."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness"
+        ],
+        "optional": [
+            "lagging_iterations"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/form",
+        "type": "string",
+        "options": [
+            "elasticity",
+            "contact",
+            "friction"
+        ],
+        "doc": "Form to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness_ratio",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp (stiffness = 0.75 * stiffness_ratio * Δt³)."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/lagging_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagging."
+    },
+    {
         "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
@@ -1819,6 +1878,22 @@
             "psi"
         ],
         "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin",
+        "required": [
+            "type",
+            "c1",
+            "c2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "k"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*",
@@ -2094,6 +2169,7 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
+            "MooneyRivlin",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2112,6 +2188,16 @@
         "pointer": "/materials/*/lambda",
         "type": "float",
         "doc": "Second Lamé parameter"
+    },
+    {
+        "pointer": "/materials/*/c1",
+        "type": "float",
+        "doc": "First Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c2",
+        "type": "float",
+        "doc": "Second Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/boundary_conditions",

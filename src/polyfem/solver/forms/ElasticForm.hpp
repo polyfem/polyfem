@@ -52,6 +52,7 @@ namespace polyfem::solver
 		/// @param t Current time
 		/// @param x Current solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
+
 	private:
 		const int n_bases_;
 		const std::vector<basis::ElementBases> &bases_;

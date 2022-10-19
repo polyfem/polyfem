@@ -31,7 +31,7 @@ namespace polyfem
 				const int n_edges = mesh.n_face_vertices(element_index);
 
 				std::vector<int> local_to_global(n_edges);
-				LocalBoundary lb(element_index, BoundaryType::Polygon);
+				LocalBoundary lb(element_index, BoundaryType::POLYGON);
 
 				Navigation::Index index = mesh.get_index_from_face(element_index);
 				for (int i = 0; i < n_edges; ++i)
