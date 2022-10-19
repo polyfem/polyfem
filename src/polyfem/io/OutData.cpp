@@ -256,7 +256,8 @@ namespace polyfem::io
 		Eigen::MatrixXi &boundary_vis_elements,
 		Eigen::MatrixXi &boundary_vis_elements_ids,
 		Eigen::MatrixXi &boundary_vis_primitive_ids,
-		Eigen::MatrixXd &boundary_vis_normals) const
+		Eigen::MatrixXd &boundary_vis_normals,
+		std::unordered_map<int, int> &boundary_primitive_to_samples) const
 	{
 		using namespace polyfem::mesh;
 
@@ -267,6 +268,7 @@ namespace polyfem::io
 		const auto &sampler = ref_element_sampler;
 		const int n_samples = sampler.num_samples();
 		int size = 0;
+		boundary_primitive_to_samples.clear();
 
 		std::vector<std::pair<int, int>> edges;
 		std::vector<std::tuple<int, int, int>> tris;
@@ -318,6 +320,7 @@ namespace polyfem::io
 				gbs.eval_geom_mapping(local_pts, vertices.back());
 				vals.compute(lb.element_id(), mesh.is_volume(), local_pts, bs, gbs);
 				const int tris_start = tris.size();
+				int samples = 0;
 
 				if (mesh.is_volume())
 				{
@@ -331,6 +334,7 @@ namespace polyfem::io
 							{
 								tris.emplace_back(map(i, j), map(i + 1, j), map(i, j + 1));
 								tris.emplace_back(map(i + 1, j + 1), map(i, j + 1), map(i + 1, j));
+								samples += 2;
 							}
 						}
 					}
@@ -357,10 +361,16 @@ namespace polyfem::io
 							for (int i = 0; i < n_samples - j; ++i)
 							{
 								if (map(i, j) >= 0 && map(i + 1, j) >= 0 && map(i, j + 1) >= 0)
+								{
 									tris.emplace_back(map(i, j) + size, map(i + 1, j) + size, map(i, j + 1) + size);
+									samples++;
+								}
 
 								if (map(i + 1, j + 1) >= 0 && map(i, j + 1) >= 0 && map(i + 1, j) >= 0)
+								{
 									tris.emplace_back(map(i + 1, j + 1) + size, map(i, j + 1) + size, map(i + 1, j) + size);
+									samples++;
+								}
 							}
 						}
 					}
@@ -372,8 +382,13 @@ namespace polyfem::io
 				else
 				{
 					for (int i = 0; i < vertices.back().rows() - 1; ++i)
+					{
 						edges.emplace_back(i + size, i + size + 1);
+						samples++;
+					}
 				}
+
+				boundary_primitive_to_samples[lb.global_primitive_id(k)] = samples;
 
 				normals.resize(vals.jac_it.size(), tmp_n.cols());
 
@@ -732,6 +747,75 @@ namespace polyfem::io
 			logger().warn(error_msg);
 
 		assert(pts_index == points.rows());
+	}
+
+	void OutGeometryData::build_traction_force_integral(const mesh::Mesh &mesh,
+														const std::vector<basis::ElementBases> &bases,
+														const std::vector<basis::ElementBases> &gbases,
+														const std::vector<mesh::LocalBoundary> &total_local_boundary,
+														const assembler::AssemblerUtils &assembler,
+														const Eigen::MatrixXd &sol,
+														const std::string &formulation,
+														const int actual_dim,
+														const int resolution,
+														std::unordered_map<int, Eigen::VectorXd> &primitive_to_traction_force_integral) const
+	{
+		primitive_to_traction_force_integral.clear();
+
+		Eigen::MatrixXd uv, samples, gtmp;
+		Eigen::VectorXi global_primitive_ids;
+		Eigen::MatrixXd points, normals;
+		Eigen::VectorXd weights;
+
+		assembler::ElementAssemblyValues vals;
+
+		Eigen::VectorXd integral;
+
+		for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
+		{
+
+			const auto &lb = *it;
+			const int e = lb.element_id();
+
+			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh, false, uv, points, normals, weights, global_primitive_ids);
+
+			if (!has_samples)
+				continue;
+
+			const basis::ElementBases &gbs = gbases[e];
+			const basis::ElementBases &bs = bases[e];
+
+			vals.compute(e, mesh.is_volume(), points, bs, gbs);
+
+			const Eigen::VectorXd da = weights.array();
+
+			for (int n = 0; n < vals.jac_it.size(); ++n)
+			{
+				normals.row(n) = normals.row(n) * vals.jac_it[n];
+				normals.row(n).normalize();
+			}
+
+			const int n_samples_per_surface = da.size() / lb.size();
+
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh);
+
+				integral.setZero(actual_dim);
+
+				for (int q = n_samples_per_surface * i; q < n_samples_per_surface * (i + 1); ++q)
+				{
+					Eigen::MatrixXd tensor_flat;
+					assembler.compute_tensor_value(formulation, e, bs, gbs, points.row(q), sol, tensor_flat);
+					assert(tensor_flat.size() == actual_dim * actual_dim);
+					Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat.data(), actual_dim, actual_dim);
+					integral += normals.row(q) * tensor * da(q);
+				}
+
+				primitive_to_traction_force_integral[primitive_global_id] = integral;
+			}
+		}
 	}
 
 	void OutGeometryData::export_data(
@@ -1523,6 +1607,7 @@ namespace polyfem::io
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
 		const double epsv = state.args["contact"]["epsv"];
+		int resolution = state.args["space"]["advanced"]["quadrature_order"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
 		const assembler::Problem &problem = *state.problem;
@@ -1533,23 +1618,31 @@ namespace polyfem::io
 		Eigen::MatrixXi boundary_vis_elements_ids;
 		Eigen::MatrixXi boundary_vis_primitive_ids;
 		Eigen::MatrixXd boundary_vis_normals;
-
-		build_vis_boundary_mesh(mesh, bases, gbases, state.total_local_boundary,
-								boundary_vis_vertices, boundary_vis_local_vertices, boundary_vis_elements,
-								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals);
-
-		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
-
-		Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
+		std::unordered_map<int, Eigen::VectorXd> primitive_to_traction_force_integral;
+		std::unordered_map<int, int> boundary_primitive_to_samples;
 
 		int actual_dim = 1;
 		if (!problem.is_scalar())
 			actual_dim = mesh.dimension();
 
+		build_vis_boundary_mesh(mesh, bases, gbases, state.total_local_boundary,
+								boundary_vis_vertices, boundary_vis_local_vertices, boundary_vis_elements,
+								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals,
+								boundary_primitive_to_samples);
+		build_traction_force_integral(mesh, bases, gbases, state.total_local_boundary,
+									  assembler, sol, formulation, actual_dim, resolution,
+									  primitive_to_traction_force_integral);
+
+		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets, traction_integral;
+
+		Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
+
 		discr.resize(boundary_vis_vertices.rows(), 1);
 		fun.resize(boundary_vis_vertices.rows(), actual_dim);
 		interp_p.resize(boundary_vis_vertices.rows(), 1);
 		vect.resize(boundary_vis_vertices.rows(), mesh.dimension());
+		traction_integral.resize(boundary_vis_vertices.rows(), mesh.dimension());
+		traction_integral.setZero();
 
 		b_sidesets.resize(boundary_vis_vertices.rows(), 1);
 		b_sidesets.setZero();
@@ -1575,6 +1668,8 @@ namespace polyfem::io
 				assert(lp.size() == 1);
 				interp_p(i) = lp(0);
 			}
+
+			traction_integral.row(i) = primitive_to_traction_force_integral[boundary_vis_primitive_ids(i)] / boundary_primitive_to_samples[boundary_vis_primitive_ids(i)];
 
 			discr(i) = disc_orders(el_index);
 			for (int j = 0; j < actual_dim; ++j)
@@ -1687,6 +1782,7 @@ namespace polyfem::io
 				writer.add_field("solution_grad", vect);
 			else
 				writer.add_field("traction_force", vect);
+			writer.add_field("traction_force_integral", traction_integral);
 		}
 		else
 		{

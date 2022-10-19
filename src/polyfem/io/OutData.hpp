@@ -229,6 +229,7 @@ namespace polyfem::io
 		/// @param[out] boundary_vis_elements_ids boundary visualization mesh elements ids
 		/// @param[out] boundary_vis_primitive_ids boundary visualization mesh edge/face id
 		/// @param[out] boundary_vis_normals boundary visualization mesh normals
+		/// @param[out] boundary_primitive_to_samples number of subdivision facets for vis boundary mesh per primitive
 		void build_vis_boundary_mesh(
 			const mesh::Mesh &mesh,
 			const std::vector<basis::ElementBases> &bases,
@@ -239,7 +240,8 @@ namespace polyfem::io
 			Eigen::MatrixXi &boundary_vis_elements,
 			Eigen::MatrixXi &boundary_vis_elements_ids,
 			Eigen::MatrixXi &boundary_vis_primitive_ids,
-			Eigen::MatrixXd &boundary_vis_normals) const;
+			Eigen::MatrixXd &boundary_vis_normals,
+			std::unordered_map<int, int> &boundary_primitive_to_samples) const;
 
 		/// builds visualzation mesh, upsampled mesh used for visualization
 		/// the visualization mesh is a dense mesh per element all disconnected
@@ -285,6 +287,29 @@ namespace polyfem::io
 			std::vector<std::vector<int>> &elements,
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr) const;
+
+		/// computes per surface element integral of traction force
+		/// @param[in] mesh mesh
+		/// @param[in] bases bases
+		/// @param[in] gbases gbases
+		/// @param[in] total_local_boundary vector of all boundary elements
+		/// @param[in] assembler assembler
+		/// @param[in] sol solution
+		/// @param[in] formulation formulation
+		/// @param[in] actual_dim dimension
+		/// @param[in] resolution number of quadrature nodes
+		/// @param[out] primitive_to_traction_force_integral mapping of boundary primitive to traction force integral over the element
+		void build_traction_force_integral(
+			const mesh::Mesh &mesh,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const assembler::AssemblerUtils &assembler,
+			const Eigen::MatrixXd &sol,
+			const std::string &formulation,
+			const int actual_dim,
+			const int resolution,
+			std::unordered_map<int, Eigen::VectorXd> &primitive_to_traction_force_integral) const;
 	};
 
 	/// @brief stores all runtime data
