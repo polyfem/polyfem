@@ -403,10 +403,10 @@ namespace polyfem
 
 				// Compute quadrature points for the polygon
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_quadrature);
+				poly_quadr.get_quadrature(collocation_points, std::max(quadrature_order, Quadrature::stiffness_poly_order(2, 2)), tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_mass_quadrature);
+				poly_quadr.get_quadrature(collocation_points, std::max(mass_quadrature_order, Quadrature::mass_poly_order(2, 2)), tmp_mass_quadrature);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });

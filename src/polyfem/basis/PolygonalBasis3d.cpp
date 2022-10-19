@@ -229,6 +229,7 @@ namespace polyfem
 				const int n_kernels_per_edge,
 				int n_samples_per_edge,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				const Mesh3D &mesh,
 				const std::map<int, InterfaceData> &poly_face_to_data,
 				const std::vector<ElementBases> &bases,
@@ -241,6 +242,7 @@ namespace polyfem
 				Eigen::MatrixXd &triangulated_vertices,
 				Eigen::MatrixXi &triangulated_faces,
 				Quadrature &quadrature,
+				Quadrature &mass_quadrature,
 				double &scaling,
 				Eigen::RowVector3d &translation)
 			{
@@ -374,6 +376,8 @@ namespace polyfem
 				// NV = (NV.rowwise() - translation) / scaling;
 				PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, mesh.kernel(element_index),
 													 quadrature_order, quadrature);
+				PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, mesh.kernel(element_index),
+													 mass_quadrature_order, mass_quadrature);
 
 				// Normalization
 				// collocation_points = (collocation_points.rowwise() - translation) / scaling;
@@ -613,17 +617,18 @@ namespace polyfem
 				ElementBases &b = bases[e];
 				b.has_parameterization = false;
 
-				Quadrature tmp_quadrature;
+				Quadrature tmp_quadrature, tmp_mass_quadrature;
 				double scaling;
 				Eigen::RowVector3d translation;
-				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
+				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge,
+								 std::max(quadrature_order, Quadrature::stiffness_poly_order(2, 3)),
+								 std::max(mass_quadrature_order, Quadrature::mass_poly_order(2, 3)),
 								 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 								 collocation_points, kernel_centers, rhs, triangulated_vertices,
-								 triangulated_faces, tmp_quadrature, scaling, translation);
+								 triangulated_faces, tmp_quadrature, tmp_mass_quadrature, scaling, translation);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
-				//TODO
-				b.set_mass_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
+				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });
 				// b.scaling_ = scaling;
 				// b.translation_ = translation;
 

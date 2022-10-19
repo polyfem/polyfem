@@ -1464,8 +1464,8 @@ int FEBasis3d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = std::max(quadrature_order, (3 * discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, 3 * discr_order * 2 + 1);
+			const int real_order = std::max(quadrature_order, Quadrature::stiffness_order(discr_order, 3, true));
+			const int real_mass_order = std::max(mass_quadrature_order, Quadrature::mass_order(discr_order, 3, true));
 			b.set_quadrature([real_order](Quadrature &quad) {
 				HexQuadrature hex_quadrature;
 				hex_quadrature.get_quadrature(real_order, quad);
@@ -1503,8 +1503,8 @@ int FEBasis3d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, discr_order * 2 + 1);
+			const int real_order = std::max(quadrature_order, Quadrature::stiffness_order(discr_order, 3, false));
+			const int real_mass_order = std::max(mass_quadrature_order, Quadrature::mass_order(discr_order, 3, false));
 
 			b.set_quadrature([real_order](Quadrature &quad) {
 				TetQuadrature tet_quadrature;
