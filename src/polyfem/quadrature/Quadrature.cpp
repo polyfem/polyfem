@@ -31,7 +31,7 @@ namespace polyfem::quadrature
 	int Quadrature::stiffness_order(const int basis_degree, const int dim, const bool is_hex)
 	{
 		if (is_hex)
-			return std::max((dim * basis_degree - 1) * 2, 1);
+			return std::max(basis_degree * 2, 1);
 		else
 			return std::max((basis_degree - 1) * 2, 1);
 	}
@@ -39,7 +39,7 @@ namespace polyfem::quadrature
 	int Quadrature::mass_order(const int basis_degree, const int dim, const bool is_hex)
 	{
 		if (is_hex)
-			return std::max(dim * basis_degree * 2, 1);
+			return std::max(basis_degree * 2, 1);
 		else
 			return std::max(basis_degree * 2, 1);
 	}
