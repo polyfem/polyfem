@@ -128,7 +128,7 @@ namespace
 				for (StiffnessMatrix::InnerIterator it(tmp, k); it; ++it)
 				{
 					if (fabs(it.value()) > margin)
-						spdlog::error("error={}", it.value());
+						spdlog::error("error: {} != 0", it.value());
 					REQUIRE(it.value() == val);
 				}
 			}
@@ -140,7 +140,7 @@ namespace
 				for (StiffnessMatrix::InnerIterator it(tmp, k); it; ++it)
 				{
 					if (fabs(it.value()) > margin)
-						spdlog::error("error={}", it.value());
+						spdlog::error("error: {} != 0", it.value());
 					REQUIRE(it.value() == val);
 				}
 			}
@@ -179,8 +179,8 @@ TEST_CASE("auto_quadrature", "[quadrature]")
 		{"hex.HYBRID", 0, 2, false, false},
 
 		// Spline
-		// {"quad.obj", 2, 2, true, false},
-		// {"hex.HYBRID", 0, 2, true, false},
+		{"quad.obj", 2, 2, true, false},
+		{"hex.HYBRID", 0, 2, true, false},
 
 		// serendipity
 		{"quad.obj", 2, 2, false, true},

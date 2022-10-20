@@ -200,6 +200,12 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
+		if (args["space"]["advanced"]["use_spline"])
+		{
+			logger().warn("Node ordering disabled, it dosent work for splines!");
+			return;
+		}
+
 		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
 		{
 			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
