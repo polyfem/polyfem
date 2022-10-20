@@ -50,6 +50,7 @@ namespace polyfem
 			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
 			  input_dirichlet_(input_dirichlet)
 		{
+			assert(ass_vals_cache_.is_mass());
 		}
 
 		void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const

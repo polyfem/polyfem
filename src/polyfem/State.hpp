@@ -192,6 +192,7 @@ namespace polyfem
 
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
+		assembler::AssemblyValsCache mass_ass_vals_cache;
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
@@ -240,7 +241,7 @@ namespace polyfem
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
 		{
-			return build_rhs_assembler(n_bases, bases, ass_vals_cache);
+			return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
 		}
 
 		/// quadrature used for projecting boundary conditions

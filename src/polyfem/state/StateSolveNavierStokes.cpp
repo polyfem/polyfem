@@ -161,7 +161,7 @@ namespace polyfem
 
 		StiffnessMatrix velocity_mass;
 		assembler.assemble_mass_matrix(
-			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, velocity_mass);
+			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, mass_ass_vals_cache, velocity_mass);
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
