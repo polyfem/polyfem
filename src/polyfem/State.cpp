@@ -730,9 +730,6 @@ namespace polyfem
 				logger().error("p refinement not supported in mixed formulation!");
 				return;
 			}
-
-			// same quadrature order as solution basis
-			quadrature_order = std::max(quadrature_order, (disc_order - 1) * 2 + 1);
 		}
 
 		if (mesh->is_volume())

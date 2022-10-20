@@ -701,8 +701,8 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				const int real_order = std::max(quadrature_order, Quadrature::stiffness_spline_order(2, 2));
-				const int real_mass_order = std::max(mass_quadrature_order, Quadrature::mass_spline_order(2, 2));
+				const int real_order = quadrature_order > 0 ? quadrature_order : Quadrature::stiffness_spline_order(2, 2);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : Quadrature::mass_spline_order(2, 2);
 				b.set_quadrature([real_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
 					quad_quadrature.get_quadrature(real_order, quad);
@@ -770,8 +770,8 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				const int real_order = std::max(quadrature_order, Quadrature::stiffness_order(2, 2, true));
-				const int real_mass_order = std::max(mass_quadrature_order, Quadrature::mass_order(2, 2, true));
+				const int real_order = quadrature_order > 0 ? quadrature_order : Quadrature::stiffness_order(2, 2, true);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : Quadrature::mass_order(2, 2, true);
 				b.set_quadrature([real_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
 					quad_quadrature.get_quadrature(real_order, quad);
