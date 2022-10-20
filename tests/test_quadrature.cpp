@@ -110,13 +110,16 @@ namespace
 							 const int basis_order,
 							 const bool spline, const bool serendipity)
 		{
-			static const int expected_quad = 10;
+			const bool is_q = mesh.find("quad") != std::string::npos || mesh.find("hex") != std::string::npos;
+			const int expected_quad = is_q ? 20 : 14;
+			static const double margin = 1e-10;
+			// spdlog::info("Reference quad={}", expected_quad);
 
 			auto state = get_state(mesh, n_refs, basis_order, -1, -1, spline, serendipity);
 			auto expected = get_state(mesh, n_refs, basis_order, expected_quad, expected_quad, spline, serendipity);
 
 			StiffnessMatrix tmp = state->stiffness - expected->stiffness;
-			const auto val = Approx(0).margin(1e-12);
+			const auto val = Approx(0).margin(margin);
 
 			REQUIRE(tmp.rows() > 8);
 
@@ -124,6 +127,8 @@ namespace
 			{
 				for (StiffnessMatrix::InnerIterator it(tmp, k); it; ++it)
 				{
+					if (fabs(it.value()) > margin)
+						spdlog::error("error={}", it.value());
 					REQUIRE(it.value() == val);
 				}
 			}
@@ -134,6 +139,8 @@ namespace
 			{
 				for (StiffnessMatrix::InnerIterator it(tmp, k); it; ++it)
 				{
+					if (fabs(it.value()) > margin)
+						spdlog::error("error={}", it.value());
 					REQUIRE(it.value() == val);
 				}
 			}
@@ -157,14 +164,15 @@ TEST_CASE("auto_quadrature", "[quadrature]")
 
 	std::vector<data> tests = {
 		// P
-		{"tri.obj", 1, 1, false, false},
+		{"tri.obj", 2, 1, false, false},
 		{"tri.obj", 1, 2, false, false},
+		{"tri.obj", 1, 3, false, false},
 
 		{"tet.msh", 0, 1, false, false},
 		{"tet.msh", 0, 2, false, false},
 
 		// Q
-		{"quad.obj", 2, 1, false, false},
+		{"quad.obj", 3, 1, false, false},
 		{"quad.obj", 2, 2, false, false},
 
 		{"hex.HYBRID", 0, 1, false, false},
@@ -174,9 +182,9 @@ TEST_CASE("auto_quadrature", "[quadrature]")
 		// {"quad.obj", 2, 2, true, false},
 		// {"hex.HYBRID", 0, 2, true, false},
 
-		// // serendipity
-		// {"quad.obj", 2, 2, false, true},
-		// {"hex.HYBRID", 0, 2, false, true},
+		// serendipity
+		{"quad.obj", 2, 2, false, true},
+		{"hex.HYBRID", 0, 2, false, true},
 	};
 
 	for (const auto &d : tests)
