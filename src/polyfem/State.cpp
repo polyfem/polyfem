@@ -795,6 +795,18 @@ namespace polyfem
 				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
+
+		if (assembler.is_mixed(formulation()))
+		{
+			assert(bases.size() == pressure_bases.size());
+			for (int i = 0; i < pressure_bases.size(); ++i)
+			{
+				quadrature::Quadrature b_quad;
+				bases[i].compute_quadrature(b_quad);
+				pressure_bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
+			}
+		}
+
 		timer.stop();
 
 		build_polygonal_basis();
