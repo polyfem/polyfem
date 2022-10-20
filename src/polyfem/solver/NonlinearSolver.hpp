@@ -41,6 +41,8 @@ namespace cppoptlib
 
 		void get_info(polyfem::json &params) { params = solver_info; }
 
+		void disable_logging() { disable_log = true; }
+
 		ErrorCode error_code() const { return m_error_code; }
 
 	protected:
@@ -105,6 +107,8 @@ namespace cppoptlib
 		std::string export_energy_path;
 
 		ErrorCode m_error_code;
+
+		bool disable_log = false;
 
 		// ====================================================================
 		//                                 END

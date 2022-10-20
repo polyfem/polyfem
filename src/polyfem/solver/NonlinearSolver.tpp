@@ -85,9 +85,10 @@ namespace cppoptlib
 		{
 			POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 			this->m_current.fDelta = objFunc.value(x);
-			polyfem::logger().info(
-				"[{}] Not even starting, grad is small enough (f={} ||∇f||={} g={} tol={})",
-				name(), this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
+			if (!disable_log)
+				polyfem::logger().info(
+					"[{}] Not even starting, grad is small enough (f={} ||∇f||={} g={} tol={})",
+					name(), this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
 			update_solver_info();
 			return;
 		}
@@ -284,10 +285,13 @@ namespace cppoptlib
 			throw std::runtime_error(msg);
 			level = spdlog::level::err;
 		}
-		polyfem::logger().log(
-			level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
-			name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
-			delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
+		// if (!disable_log)
+		// {
+		// 	polyfem::logger().log(
+		// 		level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
+		// 		name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
+		// 		delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
+		// }
 
 		log_times();
 		update_solver_info();
@@ -306,8 +310,9 @@ namespace cppoptlib
 		if (std::isnan(rate) && descent_strategy < 2) // 2 is the max, grad descent
 		{
 			increase_descent_strategy();
-			polyfem::logger().warn(
-				"[{}] Line search failed; reverting to {}", name(), descent_strategy_name());
+			if (!disable_log)
+				polyfem::logger().warn(
+					"[{}] Line search failed; reverting to {}", name(), descent_strategy_name());
 			this->m_status = Status::Continue; // Try the step again with gradient descent
 		}
 		else if (std::isnan(rate))
