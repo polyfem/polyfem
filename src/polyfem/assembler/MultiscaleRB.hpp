@@ -45,6 +45,8 @@ namespace polyfem::assembler
 		LameParameters &lame_params() { return params_; }
 		const LameParameters &lame_params() const { return params_; }
 
+		void test_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads, Eigen::VectorXd &energy_errors, Eigen::VectorXd &stress_errors);
+
 	private:
 		int size_ = -1;
 
@@ -62,18 +64,19 @@ namespace polyfem::assembler
 		// microstructure
 		json unit_cell_args;
 		Eigen::MatrixXd reduced_basis; // (n_bases*dim) * N
-		void sample_def_grads(std::vector<Eigen::MatrixXd> &def_grads) const;
+		void sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const;
 		void create_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads);
 		void projection(const Eigen::MatrixXd &F, Eigen::MatrixXd &x) const;
 		
+		void homogenization(const Eigen::MatrixXd &def_grad, double &energy) const;
+		void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const;
 		void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
+		void brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const;
+
 		double homogenize_energy(const Eigen::MatrixXd &x) const;
 		void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;
 		void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const;
 
-		Eigen::VectorXd sample_det;
-		Eigen::VectorXd sample_amp;
-		int n_sample_dir = 5;
 		int n_reduced_basis = 5;
 	};
 } // namespace polyfem::assembler

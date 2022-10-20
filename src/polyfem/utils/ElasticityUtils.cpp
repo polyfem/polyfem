@@ -248,6 +248,31 @@ namespace polyfem
 		return hessian;
 	}
 
+	void compute_diplacement_grad(const int size, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
+	{
+		assert(displacement.cols() == 1);
+
+		displacement_grad.setZero();
+
+		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+		{
+			const auto &loc_val = vals.basis_values[j];
+
+			assert(loc_val.grad.rows() == local_pts.rows());
+			assert(loc_val.grad.cols() == size);
+
+			for (int d = 0; d < size; ++d)
+			{
+				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
+				{
+					displacement_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * displacement(loc_val.global[ii].index * size + d);
+				}
+			}
+		}
+
+		displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
+	}
+
 	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
 	{
 		assert(displacement.cols() == 1);

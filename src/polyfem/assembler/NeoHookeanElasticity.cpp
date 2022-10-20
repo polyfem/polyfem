@@ -202,13 +202,10 @@ namespace polyfem::assembler
 		return hessian;
 	}
 	
-	void NeoHookeanElasticity::compute_stiffness_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+	void NeoHookeanElasticity::compute_stiffness_tensor(const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
 	{
 		tensor.resize(local_pts.rows(), size() * size() * size() * size());
 		assert(displacement.cols() == 1);
-
-		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
 
 		Eigen::MatrixXd displacement_grad(size(), size());
 
@@ -217,19 +214,22 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			compute_diplacement_grad(size(), vals, local_pts, p, displacement, displacement_grad);
 			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			const Eigen::VectorXd FmT_vec = utils::flatten(FmT);
 			const double J = def_grad.determinant();
-
+			const double tmp1 = mu - lambda * std::log(J);
 			for (int i = 0, idx = 0; i < size(); i++)
 			for (int j = 0; j < size(); j++)
 			for (int k = 0; k < size(); k++)
 			for (int l = 0; l < size(); l++)
 			{
-				tensor(p, idx) = mu * delta(i, k) * delta(j, l) + (mu - lambda * std::log(J)) * FmT(i, l) * FmT(k, j) + lambda * FmT(k, l) * FmT(i, j);
+				tensor(p, idx) = mu * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
 				idx++;
 			}
+
+			tensor.row(p) += lambda * utils::flatten(FmT_vec * FmT_vec.transpose());
 
 			// {
 			// 	Eigen::MatrixXd hess = utils::unflatten(tensor.row(p), size()*size());

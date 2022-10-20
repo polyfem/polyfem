@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 #include <iostream>
-
+#include <unsupported/Eigen/MatrixFunctions>
 #include <finitediff.hpp>
 
 using namespace polyfem;
@@ -72,11 +72,11 @@ double myrand(const double range = 1)
 
 Eigen::VectorXd transform(const Eigen::VectorXd &p)
 {
-	Eigen::Matrix2d A;
-	double rand1 = myrand(1);
+	Eigen::Matrix2d A, C;
+	C = std::pow(1./2, 1./2) * Eigen::MatrixXd{{1, 0}, {0, -1}};
+	double rand1 = myrand(0.02) + 1;
 	double rand2 = myrand(0.5);
-	A << 1 + rand1, rand2,
-	     rand2, 1 + rand1;
+	A = std::pow(rand1, 1./3) * (rand2 * C).exp();
 
 	double rand3 = myrand(180);
 	Eigen::Matrix2d B;
@@ -152,7 +152,9 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 					}
 				],
 				"space": {
-					"discr_order": 1
+					"advanced": {
+						"quadrature_order": 3
+					}
 				},
 				"solver": {
 					"linear": {
@@ -179,7 +181,9 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 			"amp_samples": [0.05, 0.15],
 			"n_dir_samples": 3,
 			"n_reduced_basis": 5,
-			"rho": 1
+			"rho": 1,
+			"save_reduced_basis": "",
+			"load_reduced_basis": ""
 		}
 	}
 	)"_json;
@@ -200,7 +204,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 
 	utils::SpareMatrixCache mat_cache;
 
-	for (int rand = 0; rand < 3; ++rand)
+	for (int rand = 0; rand < 2; ++rand)
 	{
 		for (int p = 0; p < state.n_bases; p++)
 		{

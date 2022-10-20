@@ -4,12 +4,13 @@
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <igl/Timer.h>
+#include <polyfem/utils/Timer.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <cppoptlib/problem.h>
 #include <polyfem/solver/NonlinearSolver.hpp>
@@ -17,11 +18,16 @@
 #include <polyfem/solver/DenseNewtonDescentSolver.hpp>
 
 #include <unsupported/Eigen/KroneckerProduct>
-
 #include <unsupported/Eigen/MatrixFunctions>
 #include <finitediff.hpp>
+#include <filesystem>
+
+#ifdef POLYSOLVE_WITH_SPECTRA
+#include <SymEigsSolver.h>
+#endif
 
 std::shared_ptr<polyfem::State> state;
+double microstructure_volume = 0;
 
 namespace polyfem::assembler
 {
@@ -32,9 +38,10 @@ namespace polyfem::assembler
 			assert(dim == 2);
 			directions.setZero(n_samples, dim);
 
+			double dtheta = 1.0 / n_samples * M_PI * 2;
 			for (int i = 0; i < n_samples; i++)
 			{
-				const int theta = (double)i / n_samples * 2 * M_PI;
+				const double theta = i * dtheta;
 				directions(i, 0) = std::cos(theta);
 				directions(i, 1) = std::sin(theta);
 			}
@@ -97,11 +104,11 @@ namespace polyfem::assembler
 			Eigen::MatrixXd dATA_dA;
 			dATA_dA.setZero(dim*dim, dim*dim);
 			for (int i = 0; i < dim; i++)
-			for (int j = 0; j < dim; j++)
 			for (int p = 0; p < dim; p++)
 			for (int q = 0; q < dim; q++)
 			{
-				dATA_dA(i + j * dim, p + q * dim) += delta(i, q) * F(p, j) + delta(j, q) * F(p, i);
+				dATA_dA(q + i * dim, p + q * dim) += F(p, i);
+				dATA_dA(i + q * dim, p + q * dim) += F(p, i);
 			}
 
 			dUdF = dU_dATA * dATA_dA;
@@ -144,9 +151,6 @@ namespace polyfem::assembler
 
 				MultiscaleRBProblem(const Eigen::MatrixXd &reduced_basis): reduced_basis_(reduced_basis) 
 				{
-					RowVectorNd min, max;
-					state->mesh->bounding_box(min, max);
-					volume = (max - min).prod();
 				}
 				~MultiscaleRBProblem() = default;
 
@@ -158,7 +162,7 @@ namespace polyfem::assembler
 					Eigen::MatrixXd sol = coeff_to_field(x);
 					return state->assembler.assemble_energy(
 						state->formulation(), state->mesh->is_volume(), state->bases, state->geom_bases(),
-						state->ass_vals_cache, 0, sol, sol) / volume;
+						state->ass_vals_cache, 0, sol, sol) / microstructure_volume;
 				}
 				double target_value(const TVector &x) { return value(x); }
 				void gradient(const TVector &x, TVector &gradv) { gradient(x, gradv, false); }
@@ -169,7 +173,7 @@ namespace polyfem::assembler
 					state->assembler.assemble_energy_gradient(
 						state->formulation(), state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
 						state->ass_vals_cache, 0, sol, sol, reduced_basis_, grad);
-					gradv = grad / volume;
+					gradv = grad / microstructure_volume;
 				}
 				void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 				void hessian(const TVector &x, THessian &hessian)
@@ -185,7 +189,7 @@ namespace polyfem::assembler
 						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
 						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, tmp);
 					hessian = tmp.sparseView();
-					hessian /= volume;
+					hessian /= microstructure_volume;
 				}
 				void hessian(const TVector &x, Eigen::MatrixXd &hessian)
 				{
@@ -193,7 +197,7 @@ namespace polyfem::assembler
 					state->assembler.assemble_energy_hessian(
 						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
 						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, hessian);
-					hessian /= volume;
+					hessian /= microstructure_volume;
 				}
 
 				Eigen::MatrixXd coeff_to_field(const TVector &x)
@@ -239,9 +243,29 @@ namespace polyfem::assembler
 
 				Eigen::MatrixXd linear_sol_;
 				const Eigen::MatrixXd &reduced_basis_;
-				utils::SpareMatrixCache mat_cache_;
-				double volume;
 		};
+	
+		Eigen::MatrixXd homogenize_def_grad(const Eigen::MatrixXd &x)
+		{
+			const int dim = state->mesh->dimension();
+			Eigen::VectorXd avgs;
+			avgs.setZero(dim * dim);
+			for (int e = 0; e < state->bases.size(); e++)
+			{
+				assembler::ElementAssemblyValues vals;
+				state->ass_vals_cache.compute(e, dim == 3, state->bases[e], state->geom_bases()[e], vals);
+
+				Eigen::MatrixXd u, grad_u;
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				Eigen::VectorXd da = quadrature.weights * vals.det;
+				avgs += grad_u.transpose() * da;
+			}
+			avgs /= microstructure_volume;
+
+			return utils::unflatten(avgs, dim);
+		}
 	}
 
 	MultiscaleRB::MultiscaleRB()
@@ -255,18 +279,6 @@ namespace polyfem::assembler
 
 	void MultiscaleRB::create_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads)
 	{
-		state = std::make_shared<polyfem::State>(utils::get_n_threads(), true);
-		state->init(unit_cell_args, false, "", false);
-		state->load_mesh(false);
-		if (state->mesh == nullptr)
-			log_and_throw_error("No microstructure mesh found!");
-		state->stats.compute_mesh_stats(*state->mesh);
-		state->build_basis();
-
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
-
 		logger().info("Compute deformation gradient dataset, in total {} solves...", def_grads.size());
 
 		Eigen::MatrixXd sols;
@@ -281,41 +293,8 @@ namespace polyfem::assembler
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
 				state->solve_homogenized_field(grad, tmp);
 				sols.col(idx) = tmp;
-
-				// Eigen::VectorXd avgs;
-				// avgs.setZero(size() * size());
-				// for (int e = 0; e < state->bases.size(); e++)
-				// {
-				// 	assembler::ElementAssemblyValues vals;
-				// 	state->ass_vals_cache.compute(e, size() == 3, state->bases[e], state->geom_bases()[e], vals);
-
-				// 	Eigen::MatrixXd u, grad_u;
-				// 	io::Evaluator::interpolate_at_local_vals(e, size(), size(), vals, tmp, u, grad_u);
-
-				// 	const quadrature::Quadrature &quadrature = vals.quadrature;
-				// 	Eigen::VectorXd da = quadrature.weights * vals.det;
-				// 	avgs += grad_u.transpose() * da;
-				// }
-
-				// logger().warn("average grad: {}", avgs.transpose() / volume);
 			}
 		});
-
-		// for (int i = 0; i < sols.cols(); i++)
-		// {
-		// 	state->sol = sols.col(i);
-		// 	state->out_geom.export_data(
-		// 		*state,
-		// 		!state->args["time"].is_null(),
-		// 		0, 0,
-		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-		// 		"step_" + std::to_string(i) + ".vtu",
-		// 		"", // nodes_path,
-		// 		"", // solution_path,
-		// 		"", // stress_path,
-		// 		"", // mises_path,
-		// 		state->is_contact_enabled(), state->solution_frames);
-		// }
 
 		logger().info("Compute covariance matrix...");
 
@@ -326,44 +305,86 @@ namespace polyfem::assembler
 		Eigen::MatrixXd covariance;
 		// covariance = Eigen::MatrixXd::Identity(def_grads.size(), def_grads.size());
 		covariance.setZero(def_grads.size(), def_grads.size());
-		for (int i = 0; i < covariance.rows(); i++)
-		{
-			Eigen::MatrixXd sol_i = utils::unflatten(sols.col(i), size());
-			for (int j = 0; j <= i; j++)
+		utils::maybe_parallel_for(covariance.rows(), [&](int start, int end, int thread_id) {
+			Eigen::MatrixXd sol_i, sol_j;
+			for (int i = start; i < end; i++)
 			{
-				Eigen::MatrixXd sol_j = utils::unflatten(sols.col(j), size());
-				for (int d = 0; d < size(); d++)
-					covariance(i, j) += sol_i.col(d).transpose() * laplacian * sol_j.col(d);
+				sol_i = utils::unflatten(sols.col(i), size());
+				for (int j = 0; j <= i; j++)
+				{
+					sol_j = utils::unflatten(sols.col(j), size());
+					for (int d = 0; d < size(); d++)
+						covariance(i, j) += sol_i.col(d).transpose() * laplacian * sol_j.col(d);
+				}
 			}
-		}
+		});
 		for (int i = 0; i < covariance.rows(); i++)
 			for (int j = i + 1; j < covariance.cols(); j++)
 				covariance(i, j) = covariance(j, i);
 
-		covariance /= volume;
+		covariance /= microstructure_volume;
+
+		logger().info("Schur decomposition...");
 
 		// Schur Decomposition
-		Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(covariance);
-		Eigen::MatrixXd ev = es.eigenvectors();
-
-		// Setup reduced basis
 		const int Ns = n_reduced_basis;
-		reduced_basis = sols * ev.rightCols(Ns);
-		for (int j = 0; j < Ns; j++)
-			reduced_basis.col(j) /= sqrt(es.eigenvalues()(ev.cols() - Ns + j));
+		Eigen::MatrixXd eigen_vectors;
+		Eigen::VectorXd eigen_values;
+		{
+#ifdef POLYSOLVE_WITH_SPECTRA
+			Spectra::DenseSymMatProd<double> op(covariance);
+			Spectra::SymEigsSolver<double, Spectra::LARGEST_MAGN, Spectra::DenseSymMatProd<double>>  eigs(&op, Ns, std::min(Ns*2, (int)covariance.rows()));
+			eigs.init();
+			int nconv = eigs.compute();
+			if(eigs.info() == Spectra::COMPUTATION_INFO::SUCCESSFUL)
+			{
+				eigen_values = eigs.eigenvalues();
+				eigen_vectors = eigs.eigenvectors();
+			}
+			else
+				log_and_throw_error("Spectra failed to converge!");
+
+			reduced_basis = sols * eigen_vectors;
+			for (int j = 0; j < Ns; j++)
+				reduced_basis.col(j) /= sqrt(eigen_values(j));
+
+			Eigen::MatrixXd residual = covariance * eigen_vectors - eigen_vectors * eigen_values.asDiagonal();
+			logger().info("eigen vector error: {}, eigen values: {}", residual.array().abs().maxCoeff(), eigen_values.transpose());
+#else
+			Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigs(covariance);
+			eigen_vectors = eigs.eigenvectors();
+			eigen_values = eigs.eigenvalues();
+
+			reduced_basis = sols * eigen_vectors.rightCols(Ns);
+			for (int j = 0; j < Ns; j++)
+				reduced_basis.col(j) /= sqrt(eigen_values(eigen_vectors.cols() - Ns + j));
+
+			for (int i = 0; i < eigen_values.size() - 1; i++)
+				if (eigen_values(i) > eigen_values(i+1))
+				{
+					std::cout << eigen_values.transpose() << "\n";
+					log_and_throw_error("Eigenvalues not in increase order in Schur decomposition!");
+				}
+#endif
+		}
 
 		if (std::isnan(reduced_basis.norm()))
 		{
-			logger().error("Covariance eigenvalues: {}", es.eigenvalues().transpose());
+			logger().error("Covariance eigenvalues: {}", eigen_values.transpose());
 			log_and_throw_error("NAN in reduced basis!");
 		}
 
-		for (int i = 0; i < es.eigenvalues().size() - 1; i++)
-			if (es.eigenvalues()(i) > es.eigenvalues()(i+1))
-			{
-				std::cout << es.eigenvalues().transpose() << "\n";
-				log_and_throw_error("Eigenvalues not in increase order in Schur decomposition!");
-			}
+		// for (int i = 0; i < reduced_basis.cols(); i++)
+		// {
+		// 	state->sol = reduced_basis.col(i);
+		// 	state->out_geom.export_data(
+		// 		*state,
+		// 		!state->args["time"].is_null(),
+		// 		0, 0,
+		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+		// 		"rb_" + std::to_string(i) + ".vtu","","","","",
+		// 		state->is_contact_enabled(), state->solution_frames);
+		// }
 
 		logger().info("Reduced basis created!");
 	}
@@ -377,25 +398,33 @@ namespace polyfem::assembler
 		nl_problem->set_linear_disp(state->generate_linear_field(F));
 		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::DenseNewtonDescentSolver<MultiscaleRBProblem>>(
 				state->args["solver"]["nonlinear"], state->args["solver"]["linear"]);
-		
+		nlsolver->disable_logging();
 		nlsolver->minimize(*nl_problem, xi);
 		x = nl_problem->coeff_to_field(xi);
 
 		// {
-		// 	static int idx = 0;
+		// 	Eigen::MatrixXd avg = homogenize_def_grad(x);
+
+		// 	double err = (F - avg).norm() / F.norm();
+		// 	if (err > 1e-6)
+		// 		logger().error("def grad err: {}", err);
+		// }
+
+		// {
+		// 	static int idx_proj = 0;
 		// 	state->sol = x;
 		// 	state->out_geom.export_data(
 		// 		*state,
 		// 		!state->args["time"].is_null(),
 		// 		0, 0,
 		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-		// 		"proj_" + std::to_string(idx) + ".vtu",
+		// 		"proj_" + std::to_string(idx_proj) + ".vtu",
 		// 		"", // nodes_path,
 		// 		"", // solution_path,
 		// 		"", // stress_path,
 		// 		"", // mises_path,
 		// 		state->is_contact_enabled(), state->solution_frames);
-		// 	idx++;
+		// 	idx_proj++;
 		// }
 
 		// Eigen::MatrixXd fhess;
@@ -419,22 +448,14 @@ namespace polyfem::assembler
 
 	double MultiscaleRB::homogenize_energy(const Eigen::MatrixXd &x) const
 	{
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
-
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
 
-		return state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / volume;
+		return state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / microstructure_volume;
 	}
 
 	void MultiscaleRB::homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const
 	{
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
-
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
 
@@ -455,14 +476,13 @@ namespace polyfem::assembler
 			stress += avg_stress;
 		}
 
-		stress /= volume;
+		stress /= microstructure_volume;
 	}
 
 	void MultiscaleRB::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
 	{
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		const double volume = (max - min).prod();
+		double time;
+		POLYFEM_SCOPED_TIMER("homogenize variables", time);
 
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
@@ -483,7 +503,7 @@ namespace polyfem::assembler
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-			state->assembler.compute_stiffness_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stiffnesses);
+			state->assembler.compute_stiffness_value(state->formulation(), vals, quadrature.points, x, stiffnesses);
 			// tmp = stiffnesses.transpose() * da;
 			// for (int i = 0, idx = 0; i < size(); i++)
 			// for (int j = 0; j < size(); j++)
@@ -509,20 +529,20 @@ namespace polyfem::assembler
 				}
 			}
 		}
-		avg_stiffness /= volume;
+		avg_stiffness /= microstructure_volume;
 
 		// compute term2 given CB
 		{
 			Eigen::MatrixXd Dinv;
 			{
-				StiffnessMatrix hessian;
-				utils::SpareMatrixCache mat_cache_;
+				Eigen::MatrixXd hessian;
 				state->assembler.assemble_energy_hessian(
 					state->formulation(), size() == 3, state->n_bases, false, state->bases,
-					state->geom_bases(), state->ass_vals_cache, 0, x, x, mat_cache_, hessian);
-				Dinv = (reduced_basis.transpose() * hessian * reduced_basis).inverse();
+					state->geom_bases(), state->ass_vals_cache, 0, x, x, reduced_basis, hessian);
+
+				Dinv = hessian.inverse();
 			}
-			term2 = CB * Dinv * CB.transpose() / volume;
+			term2 = CB * Dinv * CB.transpose() / microstructure_volume;
 		}
 
 		stiffness = avg_stiffness - term2;
@@ -530,19 +550,16 @@ namespace polyfem::assembler
 
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
 	{
-		// polar decomposition
-		// Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::NoQRPreconditioner> svd; // def_grad == svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
-		// svd.compute(def_grad, Eigen::ComputeThinU | Eigen::ComputeThinV);
-		// const Eigen::MatrixXd R = true ? (Eigen::MatrixXd)(svd.matrixU() * svd.matrixV().transpose()) : Eigen::MatrixXd::Identity(size(), size());
-		// const Eigen::MatrixXd Ubar = R.transpose() * def_grad; // svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
-		Eigen::MatrixXd R, Ubar;
-		polar_decomposition(def_grad, R, Ubar);
-
-		Eigen::MatrixXd dUdF;
-		my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+		Eigen::MatrixXd R, Ubar, dUdF;
+		{
+			polar_decomposition(def_grad, R, Ubar);
+			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+		}
 
 		Eigen::MatrixXd x;
 		{
+			double time;
+			POLYFEM_SCOPED_TIMER("coefficient newton", time);
 			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
 			projection(disp_grad, x);
 		}
@@ -594,12 +611,121 @@ namespace polyfem::assembler
 		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
 	}
 
-	void MultiscaleRB::sample_def_grads(std::vector<Eigen::MatrixXd> &def_grads) const
+	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const
 	{
+		Eigen::MatrixXd R, Ubar, dUdF;
+		{
+			polar_decomposition(def_grad, R, Ubar);
+			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+		}
+
+		Eigen::MatrixXd x;
+		{
+			double time;
+			POLYFEM_SCOPED_TIMER("coefficient newton", time);
+			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
+			projection(disp_grad, x);
+		}
+
+		// effective energy = average energy over unit cell
+		energy = homogenize_energy(x);
+
+		// effective stress = average stress over unit cell
+		Eigen::MatrixXd stress_no_rotation;
+		homogenize_stress(x, stress_no_rotation);
+		stress_no_rotation = utils::flatten(stress_no_rotation);
+		
+		// my version
+		stress = utils::unflatten(dUdF.transpose() * stress_no_rotation, size());
+
+		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
+	}
+
+	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy) const
+	{
+		Eigen::MatrixXd R, Ubar, dUdF;
+		{
+			polar_decomposition(def_grad, R, Ubar);
+			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+		}
+
+		Eigen::MatrixXd x;
+		{
+			double time;
+			POLYFEM_SCOPED_TIMER("coefficient newton", time);
+			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
+			projection(disp_grad, x);
+		}
+
+		// effective energy = average energy over unit cell
+		energy = homogenize_energy(x);
+	}
+
+	void MultiscaleRB::brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const
+	{
+		Eigen::MatrixXd R, Ubar, dUdF;
+		{
+			polar_decomposition(def_grad, R, Ubar);
+			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+		}
+
+		Eigen::MatrixXd x;
+		{
+			double time;
+			POLYFEM_SCOPED_TIMER("coefficient newton", time);
+			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
+			// projection(disp_grad, x);
+			state->solve_homogenized_field(disp_grad, x);
+			x += state->generate_linear_field(disp_grad);
+		}
+
+		// {
+		// 	static int idx_ref = 0;
+		// 	state->sol = x;
+		// 	state->out_geom.export_data(
+		// 		*state,
+		// 		!state->args["time"].is_null(),
+		// 		0, 0,
+		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+		// 		"ref_" + std::to_string(idx_ref) + ".vtu",
+		// 		"", // nodes_path,
+		// 		"", // solution_path,
+		// 		"", // stress_path,
+		// 		"", // mises_path,
+		// 		state->is_contact_enabled(), state->solution_frames);
+		// 	idx_ref++;
+		// }
+
+		// effective energy = average energy over unit cell
+		energy = homogenize_energy(x);
+
+		// effective stress = average stress over unit cell
+		Eigen::MatrixXd stress_no_rotation;
+		homogenize_stress(x, stress_no_rotation);
+		stress_no_rotation = utils::flatten(stress_no_rotation);
+
+		// paper version
+		// stress = R * stress_no_rotation;
+		// stiffness.setZero(size()*size(), size()*size());
+		// for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
+		// for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
+		// for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
+		// {
+		// 	stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
+		// }
+		
+		// my version
+		stress = utils::unflatten(dUdF.transpose() * stress_no_rotation, size());
+
+		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
+	}
+
+	void MultiscaleRB::sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const
+	{		
 		const int unit_sphere_dim = (size() == 2) ? 2 : 5;
 		Eigen::MatrixXd directions;
 		sample_on_sphere(directions, unit_sphere_dim, n_sample_dir);
-		
+
 		const int Ndir = directions.rows();
 		const int Ndet = sample_det.size();
 		const int Namp = sample_amp.size();
@@ -607,25 +733,28 @@ namespace polyfem::assembler
 		def_grads.clear();
 		def_grads.resize(Ndet * Namp * Ndir);
 
+		if (def_grads.size() == 0)
+			log_and_throw_error("Zero deformation gradient sampling!");
+
 		std::vector<Eigen::MatrixXd> Y;
 		get_orthonomal_basis(Y, size());
 		assert(Y.size() == unit_sphere_dim);
 
 		int idx = 0;
+		Eigen::MatrixXd tmp1, tmp2;
 		for (int n = 0; n < Ndir; n++)
 		{
-			Eigen::MatrixXd tmp1(size(), size());
-			tmp1.setZero();
+			tmp1.setZero(size(), size());
 			for (int d = 0; d < unit_sphere_dim; d++)
 				tmp1 += Y[d] * directions(n, d);
 			
 			for (int p = 0; p < Namp; p++)
 			{
-				Eigen::MatrixXd tmp2 = (sample_amp(p) * tmp1).exp();
+				tmp2 = (sample_amp(p) * tmp1).exp();
 				for (int m = 0; m < Ndet; m++)
 				{	
 					// equation (45)
-					def_grads[idx] = std::pow(sample_det(m), 1./3) * tmp2;
+					def_grads[idx] = std::pow(sample_det(m), 1./size()) * tmp2;
 					idx++;
 				}
 			}
@@ -640,17 +769,90 @@ namespace polyfem::assembler
 		{
 			unit_cell_args = params["microstructure"];
 
-			assert(params["det_samples"].is_array());
-			assert(params["amp_samples"].is_array());
+			{
+				state = std::make_shared<polyfem::State>(utils::get_n_threads(), true);
+				state->init(unit_cell_args, false, "", false);
+				state->load_mesh(false);
+				if (state->mesh == nullptr)
+					log_and_throw_error("No microstructure mesh found!");
+				state->stats.compute_mesh_stats(*state->mesh);
+				state->build_basis();
 
-			sample_det = params["det_samples"];
-			sample_amp = params["amp_samples"];
-			n_sample_dir = params["n_dir_samples"];
-			n_reduced_basis = params["n_reduced_basis"];
+				RowVectorNd min, max;
+				state->mesh->bounding_box(min, max);
+				microstructure_volume = (max - min).prod();
+			}
 
-			std::vector<Eigen::MatrixXd> def_grads;
-			sample_def_grads(def_grads);
-			create_reduced_basis(def_grads);
+			if (params["load_reduced_basis"] != "")
+			{
+				const auto path = std::filesystem::path(params["load_reduced_basis"].get<std::string>());
+				if (std::filesystem::is_regular_file(path))
+				{
+					polyfem::io::read_matrix(path, reduced_basis);
+					n_reduced_basis = reduced_basis.cols();
+					if (reduced_basis.rows() != state->n_bases * state->mesh->dimension())
+						log_and_throw_error("Inconsistent dof and reduced basis!");
+					logger().info("Read reduced basis from file finished!");
+				}
+			}
+			else
+			{
+				assert(params["det_samples"].is_array());
+				assert(params["amp_samples"].is_array());
+
+				const Eigen::VectorXd sample_det = params["det_samples"];
+				const Eigen::VectorXd sample_amp = params["amp_samples"];
+				const int n_sample_dir = params["n_dir_samples"];
+				
+				std::vector<Eigen::MatrixXd> def_grads;
+				sample_def_grads(sample_det, sample_amp, n_sample_dir, def_grads);
+
+				n_reduced_basis = params["n_reduced_basis"];
+				create_reduced_basis(def_grads);
+
+				if (params["save_reduced_basis"] != "")
+				{
+					const auto path = std::filesystem::path(params["save_reduced_basis"].get<std::string>());
+					polyfem::io::write_matrix(path, reduced_basis);
+					logger().info("Write reduced basis to file finished!");
+
+					exit(0);
+				}
+			}
+		
+			if (params.contains("test_det_samples") && params.contains("test_amp_samples") && params.contains("n_test_dir_samples"))
+			{
+				const Eigen::VectorXd test_sample_det = params["test_det_samples"];
+				const Eigen::VectorXd test_sample_amp = params["test_amp_samples"];
+				const int n_test_sample_dir = params["n_test_dir_samples"];
+				std::vector<Eigen::MatrixXd> def_grads;
+				sample_def_grads(test_sample_det, test_sample_amp, n_test_sample_dir, def_grads);
+				{
+					def_grads.clear();
+					Eigen::Matrix2d A;
+					for (int i = -100; i < 100; i++)
+					{
+						A << 1, i / 120.0, i / 120.0, 1;
+						def_grads.push_back(A);
+					}
+				}
+
+				logger().info("Test trained model on another dataset with {} samples!", def_grads.size());
+
+				Eigen::VectorXd energy_err, stress_err;
+				test_reduced_basis(def_grads, energy_err, stress_err);
+				
+				Eigen::MatrixXd data(def_grads.size(), def_grads[0].size() + 2);
+				for (int i = 0; i < def_grads.size(); i++)
+				{
+					data.block(i, 0, 1, def_grads[i].size()) = utils::flatten(def_grads[i]).transpose();
+					data(i, def_grads[i].size()) = energy_err(i);
+					data(i, def_grads[i].size()+1) = stress_err(i);
+				}
+				polyfem::io::write_matrix("test.txt", data);
+
+				exit(0);
+			}
 		}
 	}
 
@@ -696,7 +898,7 @@ namespace polyfem::assembler
 		G.setZero(bs.size(), size());
 
 		const int n_pts = data.da.size();
-		Eigen::MatrixXd def_grad(size(), size()), stress_tensor, stiffness_tensor;
+		Eigen::MatrixXd def_grad(size(), size()), stress_tensor;
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::MatrixXd grad(bs.size(), size());
@@ -709,7 +911,17 @@ namespace polyfem::assembler
 			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
 
 			double energy = 0;
-			homogenization(def_grad, energy, stress_tensor, stiffness_tensor);
+			homogenization(def_grad, energy, stress_tensor);
+
+			// check error of effective energy
+			{
+				double val_ref = 0;
+				Eigen::MatrixXd stress_ref;
+				brute_force_homogenization(def_grad, val_ref, stress_ref);
+
+				logger().info("RB energy: {}, ref energy: {}", energy, val_ref);
+				logger().info("RB stress err: {}", (stress_ref - stress_tensor).norm() / stress_ref.norm());
+			}
 
 			// {
 			// 	Eigen::VectorXd fgrad, grad;
@@ -917,13 +1129,37 @@ namespace polyfem::assembler
 				def_grad = def_grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
 				
 				double val = 0;
-				Eigen::MatrixXd stress_tensor, stiffness_tensor;
-				homogenization(def_grad, val, stress_tensor, stiffness_tensor);
+				homogenization(def_grad, val);
 
 				energy += val * data.da(p);
 			}
 
 			return energy;
+	}
+
+	void MultiscaleRB::test_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads, Eigen::VectorXd &energy_errors, Eigen::VectorXd &stress_errors)
+	{
+		energy_errors.setZero(def_grads.size());
+		stress_errors.setZero(def_grads.size());
+		// utils::maybe_parallel_for(def_grads.size(), [&](int start, int end, int thread_id) {
+		// 	for (int i = start; i < end; i++)
+			for (int i = 0; i < def_grads.size(); i++)
+			{
+				const auto &F = def_grads[i];
+
+				double val, val_ref;
+				Eigen::MatrixXd stress, stress_ref;
+
+				homogenization(F, val, stress);
+				brute_force_homogenization(F, val_ref, stress_ref);
+
+				if (val_ref != 0)
+				{
+					energy_errors(i) = std::abs((val - val_ref) / val_ref);
+					stress_errors(i) = (stress - stress_ref).norm() / stress_ref.norm();
+				}
+			}
+	// });
 	}
 
 } // namespace polyfem::assembler

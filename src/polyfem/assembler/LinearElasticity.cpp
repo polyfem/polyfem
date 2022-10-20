@@ -208,13 +208,10 @@ namespace polyfem
 			});
 		}
 
-		void LinearElasticity::compute_stiffness_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+		void LinearElasticity::compute_stiffness_tensor(const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
 		{
 			tensor.resize(local_pts.rows(), size() * size() * size() * size());
 			assert(displacement.cols() == 1);
-
-			ElementAssemblyValues vals;
-			vals.compute(el_id, size() == 3, local_pts, bs, gbs);
 
 			for (long p = 0; p < local_pts.rows(); ++p)
 			{
