@@ -33,7 +33,16 @@ namespace polyfem
 			common_params["root_path"] = common_params_path;
 			apply_common_params(common_params);
 
+			json patch;
+			if (args.contains("patch"))
+			{
+				patch = args["patch"];
+				args.erase("patch");
+			}
+
 			common_params.merge_patch(args);
+			if (!patch.empty())
+				common_params = common_params.patch(patch);
 			args = common_params;
 		}
 

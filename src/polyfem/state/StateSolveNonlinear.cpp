@@ -137,7 +137,9 @@ namespace polyfem
 		{
 			solve_tensor_nonlinear(t);
 
-			if (t > 18)
+			// if (t > 18)
+			if (t0 + dt * t >= 5.6)
+			// if (true)
 			{
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);

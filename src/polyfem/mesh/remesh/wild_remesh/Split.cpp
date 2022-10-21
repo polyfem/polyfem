@@ -17,8 +17,8 @@ namespace polyfem::mesh
 		const VertexAttributes &e1 = vertex_attrs[t.switch_vertex(*this).vid(*this)];
 
 		// Dont split if the edge is too small
-		// if ((e1.position - e0.position).norm() < 5e-3)
-		// 	return false;
+		if ((e1.position - e0.position).norm() < 1e-6)
+			return false;
 
 		// if (e0.fixed && e1.fixed)
 		// 	return false;
@@ -26,6 +26,8 @@ namespace polyfem::mesh
 		edge_cache = EdgeCache(*this, t);
 
 		energy_before = compute_global_energy();
+		if (!std::isfinite(energy_before))
+			return false;
 		// energy_before = compute_global_wicke_measure();
 
 		return true;
@@ -178,41 +180,41 @@ namespace polyfem::mesh
 
 			Eigen::VectorXd displacements = utils::flatten(utils::reorder_matrix(U, vertex_to_basis));
 
-			// const AssemblyValsCache cache;
-			// const double energy = m.assembler.assemble_energy(
-			// 	m.assembler_formulation,
-			// 	/*is_volume=*/DIM == 3,
-			// 	bases,
-			// 	/*gbases=*/bases,
-			// 	cache,
-			// 	/*dt=*/-1,
-			// 	displacements,
-			// 	/*displacement_prev=*/Eigen::MatrixXd());
-			// assert(std::isfinite(energy));
-			// return energy / F.rows(); // average energy per face
+			const AssemblyValsCache cache;
+			const double energy = m.assembler.assemble_energy(
+				m.assembler_formulation,
+				/*is_volume=*/DIM == 3,
+				bases,
+				/*gbases=*/bases,
+				cache,
+				/*dt=*/-1,
+				displacements,
+				/*displacement_prev=*/Eigen::MatrixXd());
+			assert(std::isfinite(energy));
+			return energy / F.rows(); // average energy per face
 
-			double max_stress = -std::numeric_limits<double>::infinity();
-			for (int el_id = 0; el_id < F.rows(); el_id++)
-			{
-				Eigen::MatrixXd local_pts(1, DIM);
-				local_pts << 1 / 3.0, 1 / 3.0;
+			// double max_stress = -std::numeric_limits<double>::infinity();
+			// for (int el_id = 0; el_id < F.rows(); el_id++)
+			// {
+			// 	Eigen::MatrixXd local_pts(1, DIM);
+			// 	local_pts << 1 / 3.0, 1 / 3.0;
 
-				Eigen::MatrixXd stress(1, 1);
-				m.assembler.compute_scalar_value(
-					m.assembler_formulation,
-					el_id,
-					bases[el_id],
-					/*gbases=*/bases[el_id],
-					local_pts,
-					displacements,
-					stress);
-				stress *= utils::triangle_area_2D(
-					V.row(F(el_id, 0)), V.row(F(el_id, 1)), V.row(F(el_id, 2)));
+			// 	Eigen::MatrixXd stress(1, 1);
+			// 	m.assembler.compute_scalar_value(
+			// 		m.assembler_formulation,
+			// 		el_id,
+			// 		bases[el_id],
+			// 		/*gbases=*/bases[el_id],
+			// 		local_pts,
+			// 		displacements,
+			// 		stress);
+			// 	stress *= utils::triangle_area_2D(
+			// 		V.row(F(el_id, 0)), V.row(F(el_id, 1)), V.row(F(el_id, 2)));
 
-				max_stress = std::max(max_stress, stress(0));
-			}
-			assert(std::isfinite(max_stress));
-			return max_stress;
+			// 	max_stress = std::max(max_stress, stress(0));
+			// }
+			// assert(std::isfinite(max_stress));
+			// return max_stress;
 		};
 
 		executor.renew_neighbor_tuples = [](const WildRemeshing2D &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
@@ -225,7 +227,7 @@ namespace polyfem::mesh
 
 		// Split 25% of edges
 		int num_splits = 0;
-		const int max_splits = std::round(1.0 * collect_all_ops.size());
+		const int max_splits = std::round(0.2 * collect_all_ops.size());
 		executor.stopping_criterion = [&](const WildRemeshing2D &m) -> bool {
 			return (++num_splits) > max_splits;
 		};

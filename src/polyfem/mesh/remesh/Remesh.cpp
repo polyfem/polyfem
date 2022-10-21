@@ -18,15 +18,18 @@ namespace polyfem::mesh
 			if (state.solve_data.time_integrator == nullptr)
 				return Eigen::MatrixXd();
 
+			const int ndof = state.mesh->n_vertices() * state.mesh->dimension();
+			assert(state.sol.size() - ndof == state.obstacle.n_vertices() * state.mesh->dimension());
+
 			// not including current displacement as this will be handled as positions
-			Eigen::MatrixXd projection_quantities(state.sol.size(), 3 * state.solve_data.time_integrator->steps());
+			Eigen::MatrixXd projection_quantities(ndof, 3 * state.solve_data.time_integrator->steps());
 			int i = 0;
 			for (const Eigen::VectorXd &x : state.solve_data.time_integrator->x_prevs())
-				projection_quantities.col(i++) = x;
+				projection_quantities.col(i++) = x.head(ndof);
 			for (const Eigen::VectorXd &v : state.solve_data.time_integrator->v_prevs())
-				projection_quantities.col(i++) = v;
+				projection_quantities.col(i++) = v.head(ndof);
 			for (const Eigen::VectorXd &a : state.solve_data.time_integrator->a_prevs())
-				projection_quantities.col(i++) = a;
+				projection_quantities.col(i++) = a.head(ndof);
 			assert(i == projection_quantities.cols());
 
 			return projection_quantities;
@@ -44,36 +47,26 @@ namespace polyfem::mesh
 
 			const int n_vertices = state.mesh->n_vertices();
 			const int dim = state.mesh->dimension();
+			const int ndof_mesh = n_vertices * dim;
+			const int ndof_obstacle = state.obstacle.n_vertices() * dim;
+
+			const std::array<std::vector<Eigen::VectorXd> *, 3> all_prevs{{&x_prevs, &v_prevs, &a_prevs}};
 			const int n_steps = state.solve_data.time_integrator->steps();
 
 			int offset = 0;
-
-			x_prevs.clear();
-			for (int i = 0; i < n_steps; ++i)
+			for (std::vector<Eigen::VectorXd> *prevs : all_prevs)
 			{
-				x_prevs.push_back(utils::reorder_matrix(
-					projected_quantities.col(offset + i), state.in_node_to_node,
-					n_vertices, dim));
+				prevs->clear();
+				for (int i = 0; i < n_steps; ++i)
+				{
+					prevs->emplace_back(ndof_mesh + ndof_obstacle);
+					prevs->back().head(ndof_mesh) = utils::reorder_matrix(
+						projected_quantities.col(offset + i), state.in_node_to_node, n_vertices, dim);
+					// TODO: Set this to the correct previous position
+					prevs->back().tail(ndof_obstacle).setZero();
+				}
+				offset += n_steps;
 			}
-			offset += n_steps;
-
-			v_prevs.clear();
-			for (int i = 0; i < n_steps; ++i)
-			{
-				v_prevs.push_back(utils::reorder_matrix(
-					projected_quantities.col(offset + i), state.in_node_to_node,
-					n_vertices, dim));
-			}
-			offset += n_steps;
-
-			a_prevs.clear();
-			for (int i = 0; i < n_steps; ++i)
-			{
-				a_prevs.push_back(utils::reorder_matrix(
-					projected_quantities.col(offset + i), state.in_node_to_node,
-					n_vertices, dim));
-			}
-			offset += n_steps;
 
 			assert(offset == projected_quantities.cols());
 		}
@@ -100,17 +93,18 @@ namespace polyfem::mesh
 		assert(body_ids.size() == elements.rows());
 
 		// not including current displacement as this will be handled as positions
-		Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state);
+		const Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state);
+		assert(projection_quantities.rows() == rest_positions.size());
+
+		// Only remesh the FE mesh
+		assert(state.sol.size() - rest_positions.size() == state.obstacle.n_vertices() * dim);
+		const Eigen::MatrixXd mesh_sol = state.sol.topRows(rest_positions.size());
+		const Eigen::MatrixXd obstacle_sol = state.sol.bottomRows(state.obstacle.n_vertices() * dim);
+		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
 
 		assert(!state.mesh->is_volume());
 		WildRemeshing2D remeshing(state.assembler, state.formulation(), state.obstacle);
-		remeshing.init(
-			rest_positions,
-			rest_positions + utils::unflatten(state.sol, dim),
-			elements,
-			projection_quantities,
-			edge_to_boundary_id,
-			body_ids);
+		remeshing.init(rest_positions, positions, elements, projection_quantities, edge_to_boundary_id, body_ids);
 
 		for (int i = 0; i < 1; ++i)
 		{
@@ -161,8 +155,14 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		state.sol = utils::flatten(utils::reorder_matrix(
+		const int ndof_mesh = state.mesh->n_vertices() * dim;
+		const int ndof_obstacle = state.obstacle.n_vertices() * dim;
+
+		state.sol.resize(ndof_mesh + ndof_obstacle, 1);
+		state.sol.topRows(ndof_mesh) = utils::flatten(utils::reorder_matrix(
 			remeshing.displacements(), state.in_node_to_node));
+		if (state.obstacle.n_vertices() > 0)
+			state.sol.bottomRows(ndof_obstacle) = obstacle_sol;
 
 		state.solve_data.rhs_assembler = state.build_rhs_assembler();
 		state.init_nonlinear_tensor_solve(time);

@@ -16,7 +16,7 @@
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                           \
 	Eigen::MatrixXd WildRemeshing2D::name() const                                          \
 	{                                                                                      \
-		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(vert_capacity(), DIM, nan); \
+		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(vert_capacity(), DIM, NaN); \
 		for (const Tuple &t : get_vertices())                                              \
 			attributes.row(t.vid(*this)) = vertex_attrs[t.vid(*this)].attribute;           \
 		return attributes;                                                                 \
@@ -33,8 +33,26 @@ namespace polyfem::mesh
 {
 	namespace
 	{
-		constexpr double nan = std::numeric_limits<double>::quiet_NaN();
-	}
+		constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
+		template <int N>
+		double harmonic_mean(const std::array<double, N> &x)
+		{
+			double inv_sum = 0;
+			for (double xi : x)
+				inv_sum += 1.0 / xi;
+			return N / inv_sum;
+		}
+
+		template <int N>
+		double root_mean_squared(const std::array<double, N> &x)
+		{
+			double RMS = 0;
+			for (double xi : x)
+				RMS += xi * xi;
+			return std::sqrt(RMS / N);
+		}
+	} // namespace
 
 	void WildRemeshing2D::init(
 		const Eigen::MatrixXd &rest_positions,
@@ -78,7 +96,6 @@ namespace polyfem::mesh
 		// Save the vertex position in the vertex attributes
 		set_rest_positions(rest_positions);
 		set_positions(positions);
-		n_quantities = projection_quantities.cols();
 		set_projected_quantities(projection_quantities);
 		set_fixed(is_boundary_vertex);
 
@@ -125,7 +142,7 @@ namespace polyfem::mesh
 	Eigen::MatrixXd WildRemeshing2D::projected_quantities() const
 	{
 		Eigen::MatrixXd projected_quantities =
-			Eigen::MatrixXd::Constant(DIM * vert_capacity(), n_quantities, nan);
+			Eigen::MatrixXd::Constant(DIM * vert_capacity(), n_quantities, NaN);
 
 		for (const Tuple &t : get_vertices())
 		{
@@ -179,7 +196,7 @@ namespace polyfem::mesh
 	void WildRemeshing2D::set_projected_quantities(const Eigen::MatrixXd &projected_quantities)
 	{
 		assert(projected_quantities.rows() == DIM * vert_capacity());
-		assert(projected_quantities.cols() == n_quantities);
+		n_quantities = projected_quantities.cols();
 
 		for (const Tuple &t : get_vertices())
 		{
@@ -243,24 +260,6 @@ namespace polyfem::mesh
 		}
 		assert(energy >= 0);
 		return energy;
-	}
-
-	template <int N>
-	double harmonic_mean(const std::array<double, N> &x)
-	{
-		double inv_sum = 0;
-		for (double xi : x)
-			inv_sum += 1.0 / xi;
-		return N / inv_sum;
-	}
-
-	template <int N>
-	double root_mean_squared(const std::array<double, N> &x)
-	{
-		double RMS = 0;
-		for (double xi : x)
-			RMS += xi * xi;
-		return std::sqrt(RMS / N);
 	}
 
 	double WildRemeshing2D::compute_global_wicke_measure() const
@@ -402,7 +401,8 @@ namespace polyfem::mesh
 
 				for (int i = 0; i < V.rows(); i++)
 				{
-					if ((V.row(i) - v).norm() < 1e-14)
+					// if ((V.row(i) - v).norm() < 1e-14)
+					if ((V.row(i).array() == v.array()).all())
 					{
 						if (vertex_to_basis[i] == -1)
 							vertex_to_basis[i] = basis_id;
@@ -489,7 +489,6 @@ namespace polyfem::mesh
 		const std::vector<Tuple> &tris) const
 	{
 		std::vector<Tuple> new_edges;
-		std::vector<size_t> one_ring_fid;
 
 		for (auto t : tris)
 		{
