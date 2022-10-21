@@ -104,11 +104,11 @@ namespace polyfem
 		solve_linear(lin_solver_cached, A, b, args["output"]["advanced"]["spectrum"]);
 	}
 
-	void State::init_linear_tensor_solve(const double t)
+	void State::init_linear_solve(const double t)
 	{
 		assert(assembler.is_linear(formulation()) && !is_contact_enabled()); // linear
 
-		if (assembler.is_mixed(formulation()) || assembler.is_scalar(formulation()))
+		if (assembler.is_mixed(formulation()))
 			return;
 
 		const int ndof = n_bases * mesh->dimension();
@@ -141,7 +141,7 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
-		if (problem->is_time_dependent())
+		if (problem->is_time_dependent() && assembler.is_tensor(formulation()))
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 

@@ -63,6 +63,17 @@ namespace polyfem::solver
 			}
 		}
 
+		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
+		/// @param[in] n_verts Number of vertices
+		/// @param[in] x Current solution
+		/// @param[in] adjoint Current adjoint solution
+		/// @param[out] term Derivative of force multiplied by the adjoint
+		void force_shape_derivative(
+		 const int n_verts,
+		 const Eigen::MatrixXd &x, 
+		 const Eigen::MatrixXd &adjoint, 
+		 Eigen::VectorXd &term);
+
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;

@@ -55,6 +55,13 @@ namespace polyfem
 			// return the formulation
 			inline const std::string &formulation() const { return formulation_; }
 
+			inline const Problem &problem() const { return problem_; }
+			inline const mesh::Mesh &mesh() const { return mesh_; }
+			inline const std::vector<basis::ElementBases> &bases() const { return bases_; }
+			inline const std::vector<basis::ElementBases> &gbases() const { return gbases_; }
+			inline const AssemblyValsCache &ass_vals_cache() const { return ass_vals_cache_; }
+			inline const AssemblerUtils &assembler() const { return assembler_; }
+
 		private:
 			// leastsquares fit bc
 			void lsq_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,

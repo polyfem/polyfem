@@ -216,6 +216,7 @@ namespace polyfem::solver
 	void ElasticForm::force_shape_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
+		const int actual_dim = assembler_.is_scalar(formulation_) ? 1 : dim;
 
 		const int n_elements = int(bases_.size());
 		term.setZero(n_geom_bases_ * dim, 1);
@@ -308,14 +309,22 @@ namespace polyfem::solver
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
 					Eigen::MatrixXd u, grad_u, p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, x, u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
 
 					for (int q = 0; q < local_storage.da.size(); ++q)
 					{
 						Eigen::MatrixXd grad_u_i, grad_p_i;
-						vector2matrix(grad_u.row(q), grad_u_i);
-						vector2matrix(grad_p.row(q), grad_p_i);
+						if (actual_dim == 1)
+						{
+							grad_u_i = grad_u.row(q);
+							grad_p_i = grad_p.row(q);
+						}
+						else
+						{
+							vector2matrix(grad_u.row(q), grad_u_i);
+							vector2matrix(grad_p.row(q), grad_p_i);
+						}
 
 						for (auto &v : gvals.basis_values)
 						{

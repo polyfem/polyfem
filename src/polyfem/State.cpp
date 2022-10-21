@@ -1585,7 +1585,7 @@ void State::build_collision_mesh(
 				solve_navier_stokes();
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
 			{
-				init_linear_tensor_solve();
+				init_linear_solve();
 				solve_linear();
 			}
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())

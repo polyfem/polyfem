@@ -1180,115 +1180,6 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_shape_derivative_rhs_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
-	{
-		const auto &gbases = geom_bases();
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		const int n_elements = int(bases.size());
-		term.setZero(n_geom_bases * mesh->dimension(), 1);
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-			for (int e = start; e < end; ++e)
-			{
-				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-				assembler::ElementAssemblyValues gvals;
-				gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd p, grad_p;
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, adjoint_sol, p, grad_p);
-
-				Eigen::MatrixXd rhs_function;
-				problem->rhs(assembler, formulation(), vals.val, 0, rhs_function);
-				rhs_function *= -1;
-				for (int q = 0; q < vals.val.rows(); q++)
-				{
-					const double rho = assembler.density()(quadrature.points.row(q), vals.val.row(q), e);
-					rhs_function.row(q) *= rho;
-				}
-
-				for (int q = 0; q < local_storage.da.size(); ++q)
-				{
-					const double value = dot(p.row(q), rhs_function.row(q)) * local_storage.da(q);
-					for (auto &v : gvals.basis_values)
-					{
-						local_storage.vec.block(v.global[0].index * mesh->dimension(), 0, mesh->dimension(), 1) += value * v.grad_t_m.row(q).transpose();
-					}
-				}
-			}
-		});
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
-	}
-
-	void State::compute_shape_derivative_laplacian_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
-	{
-		assert(assembler.is_scalar(formulation()));
-		const auto &gbases = geom_bases();
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		const int n_elements = int(bases.size());
-		term.setZero(n_geom_bases * mesh->dimension(), 1);
-
-		auto f_prime_gradu_gradv_function = assembler.get_stress_grad_multiply_mat_function(formulation());
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-			for (int e = start; e < end; ++e)
-			{
-				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-				assembler::ElementAssemblyValues gvals;
-				gvals.compute(e, mesh->is_volume(), vals.quadrature.points, gbases[e], gbases[e]);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd u, grad_u, p, grad_p;
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, solution, u, grad_u);
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, adjoint_sol, p, grad_p);
-
-				for (int q = 0; q < local_storage.da.size(); ++q)
-				{
-					Eigen::MatrixXd grad_u_i, grad_p_i;
-					grad_u_i = grad_u.row(q);
-					grad_p_i = grad_p.row(q);
-
-					for (auto &v : gvals.basis_values)
-					{
-						for (int d = 0; d < mesh->dimension(); d++)
-						{
-							Eigen::MatrixXd grad_v_i;
-							grad_v_i.setZero(mesh->dimension(), mesh->dimension());
-							grad_v_i.row(d) = v.grad_t_m.row(q);
-
-							Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
-							f_prime_gradu_gradv_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
-
-							Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(mesh->dimension(), mesh->dimension());
-							local_storage.vec(v.global[0].index * mesh->dimension() + d) += dot(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
-						}
-					}
-				}
-			}
-		});
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
-	}
-
 	void State::compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		const auto &gbases = geom_bases();
@@ -1367,11 +1258,9 @@ namespace polyfem
 
 		if (j.depend_on_u() || j.depend_on_gradu())
 		{
-			if (assembler.is_scalar(formulation()))
-				compute_shape_derivative_laplacian_term(sol, adjoint_sol, elasticity_term);
-			else
-				solve_data.elastic_form->force_shape_derivative(sol, sol, adjoint_sol, elasticity_term);
-			compute_shape_derivative_rhs_term(sol, adjoint_sol, rhs_term);
+			solve_data.elastic_form->force_shape_derivative(sol, sol, adjoint_sol, elasticity_term);
+			solve_data.body_form->force_shape_derivative(n_geom_bases, sol, adjoint_sol, rhs_term);
+			
 			if (is_contact_enabled())
 			{
 				solve_data.contact_form->force_shape_derivative(solve_data.contact_form->get_constraint_set(), sol, adjoint_sol, contact_term);
@@ -1619,7 +1508,8 @@ namespace polyfem
 			{
 				solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 				solve_data.elastic_form->force_shape_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
-				compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
+				// compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
+				solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, -adjoint_p[i], rhs_term);
 				if (solve_data.damping_form)
 					solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 				else
@@ -2054,7 +1944,8 @@ namespace polyfem
 
 			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 			solve_data.elastic_form->force_shape_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
-			compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
+			// compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
+			solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, -adjoint_p[i], rhs_term);
 			if (solve_data.damping_form)
 				solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 			else

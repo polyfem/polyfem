@@ -349,7 +349,7 @@ namespace polyfem
 		void init_nonlinear_tensor_solve(const double t = 1.0);
 		/// initialize the linear solve
 		/// @param[in] t (optional) initial time
-		void init_linear_tensor_solve(const double t = 1.0);
+		void init_linear_solve(const double t = 1.0);
 		/// solves a linear problem
 		void solve_linear();
 		/// solves a navier stokes
@@ -612,9 +612,7 @@ namespace polyfem
 		// Aux functions for computing derivatives of different forces wrt. different parameters
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
 		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
-		void compute_shape_derivative_laplacian_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 
-		void compute_shape_derivative_rhs_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 		void compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
 
 		// Derivatives wrt. an input functional J = \int j dx
