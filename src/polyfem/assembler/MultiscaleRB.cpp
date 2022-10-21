@@ -812,7 +812,7 @@ namespace polyfem::assembler
 
 				if (params["save_reduced_basis"] != "")
 				{
-					const std::string path = std::filesystem::path(params["save_reduced_basis"].get<std::string>());
+					const std::string path = params["save_reduced_basis"].get<std::string>();
 					polyfem::io::write_matrix(path, reduced_basis);
 					logger().info("Write reduced basis to file finished!");
 
