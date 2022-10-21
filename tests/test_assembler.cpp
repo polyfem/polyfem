@@ -151,11 +151,6 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 						}
 					}
 				],
-				"space": {
-					"advanced": {
-						"quadrature_order": 3
-					}
-				},
 				"solver": {
 					"linear": {
 						"solver": "Eigen::SimplicialLDLT"
@@ -163,13 +158,6 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 				},
 				"boundary_conditions": {
 					"periodic_boundary": [true, true]
-				},
-				"output": {
-					"paraview": {
-						"options": {
-							"material": true
-						}
-					}
 				},
 				"materials": {
 					"type": "NeoHookean",
