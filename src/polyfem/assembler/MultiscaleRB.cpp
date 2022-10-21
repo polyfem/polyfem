@@ -785,7 +785,7 @@ namespace polyfem::assembler
 
 			if (params["load_reduced_basis"] != "")
 			{
-				const std::string path = std::filesystem::path(params["load_reduced_basis"].get<std::string>());
+				const std::string path = params["load_reduced_basis"].get<std::string>();
 				if (std::filesystem::is_regular_file(path))
 				{
 					polyfem::io::read_matrix(path, reduced_basis);
