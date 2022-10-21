@@ -913,16 +913,6 @@ namespace polyfem::assembler
 			double energy = 0;
 			homogenization(def_grad, energy, stress_tensor);
 
-			// check error of effective energy
-			{
-				double val_ref = 0;
-				Eigen::MatrixXd stress_ref;
-				brute_force_homogenization(def_grad, val_ref, stress_ref);
-
-				logger().info("RB energy: {}, ref energy: {}", energy, val_ref);
-				logger().info("RB stress err: {}", (stress_ref - stress_tensor).norm() / stress_ref.norm());
-			}
-
 			// {
 			// 	Eigen::VectorXd fgrad, grad;
 			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
