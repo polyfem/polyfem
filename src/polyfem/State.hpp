@@ -248,9 +248,12 @@ namespace polyfem
 		/// @return the quadrature used for projecting boundary conditions
 		int n_boundary_samples() const
 		{
+			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			const int n_b_samples = std::max(n_b_samples_j, quadrature::Quadrature::bc_order(discr_order, mesh->dimension()));
+			const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
+			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
+
+			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
 
 			return n_b_samples;
 		}

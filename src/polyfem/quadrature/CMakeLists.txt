@@ -9,7 +9,6 @@ set(SOURCES
 	PolyhedronQuadrature.hpp
 	QuadQuadrature.cpp
 	QuadQuadrature.hpp
-	Quadrature.cpp
 	Quadrature.hpp
 	TetQuadrature.cpp
 	TetQuadrature.hpp

@@ -637,5 +637,34 @@ namespace polyfem
 			// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
 			// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");
 		}
+
+		int AssemblerUtils::quadrature_order(const std::string &assembler, const int basis_degree, const BasisType &b_type, const int dim)
+		{
+			if (assembler == "Mass")
+			{
+				if (b_type == BasisType::SIMPLEX_LAGRANGE || b_type == BasisType::CUBE_LAGRANGE)
+					return std::max(basis_degree * 2, 1);
+				else
+					return basis_degree * 2 + 1;
+			}
+			else if (assembler == "NavierStokes")
+			{
+				if (b_type == BasisType::SIMPLEX_LAGRANGE)
+					return std::max((basis_degree - 1) + basis_degree, 1);
+				else if (b_type == BasisType::CUBE_LAGRANGE)
+					return std::max(basis_degree * 2, 1);
+				else
+					return basis_degree * 2 + 1;
+			}
+			else
+			{
+				if (b_type == BasisType::SIMPLEX_LAGRANGE)
+					return std::max((basis_degree - 1) * 2, 1);
+				else if (b_type == BasisType::CUBE_LAGRANGE)
+					return std::max(basis_degree * 2, 1);
+				else
+					return (basis_degree - 1) * 2 + 1;
+			}
+		}
 	} // namespace assembler
 } // namespace polyfem

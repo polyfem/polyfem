@@ -621,8 +621,8 @@ namespace polyfem
 				double scaling;
 				Eigen::RowVector3d translation;
 				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge,
-								 quadrature_order > 0 ? quadrature_order : Quadrature::stiffness_poly_order(2, 3),
-								 mass_quadrature_order > 0 ? mass_quadrature_order : Quadrature::mass_poly_order(2, 3),
+								 quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 2, AssemblerUtils::BasisType::POLY, 3),
+								 mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 3),
 								 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 								 collocation_points, kernel_centers, rhs, triangulated_vertices,
 								 triangulated_faces, tmp_quadrature, tmp_mass_quadrature, scaling, translation);
