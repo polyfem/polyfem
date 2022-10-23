@@ -557,6 +557,7 @@ namespace polyfem
 				{
 					val(d) = tmp.value[d](x, y, z, t);
 				}
+				val *= tmp.interpolation->eval(t);
 
 				return;
 			}
@@ -570,6 +571,8 @@ namespace polyfem
 				{
 					val(d) = it->second.value[d](x, y, z, t);
 				}
+
+				val *= it->second.interpolation->eval(t);
 
 				return;
 			}
