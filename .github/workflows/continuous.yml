@@ -7,7 +7,7 @@ on:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 2
+  CTEST_PARALLEL_LEVEL: 1
 
 jobs:
   ####################
@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -102,7 +102,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-${{ matrix.arc }}-cache-${{ github.sha }}
@@ -141,7 +141,7 @@ jobs:
 
       - name: Tests
         if: matrix.arc == 'x86' # no ARM vm on actions yet
-        run: cd build; ctest --verbose --output-on-failure -j 1
+        run: cd build; ctest --verbose --output-on-failure
 
   ####################
   # Windows
@@ -183,7 +183,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
