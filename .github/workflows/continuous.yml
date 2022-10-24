@@ -71,6 +71,10 @@ jobs:
       - name: Tests
         run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
 
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+
   ####################
   # MacOS
   ####################
