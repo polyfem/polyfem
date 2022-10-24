@@ -141,7 +141,7 @@ jobs:
 
       - name: Tests
         if: matrix.arc == 'x86' # no ARM vm on actions yet
-        run: cd build; ctest --verbose --output-on-failure
+        run: cd build; ctest --verbose --output-on-failure -j 1
 
   ####################
   # Windows
