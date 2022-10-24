@@ -349,4 +349,56 @@ namespace polyfem::solver
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
 	}
+
+	void ElasticForm::foce_topology_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	{
+		const int dim = is_volume_ ? 3 : 2;
+		const int actual_dim = assembler_.is_scalar(formulation_) ? 1 : dim;
+
+		const int n_elements = int(bases_.size());
+		term.setZero(n_elements);
+
+		const LameParameters &params = assembler_.lame_params();
+		const auto &density_mat = params.density_mat_;
+		const double density_power = params.density_power_;
+
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+
+		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			for (int e = start; e < end; ++e)
+			{
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				Eigen::MatrixXd u, grad_u, p, grad_p;
+				io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, x, u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
+
+				for (int q = 0; q < local_storage.da.size(); ++q)
+				{
+					double lambda, mu;
+					params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
+
+					Eigen::MatrixXd grad_p_i, grad_u_i;
+					vector2matrix(grad_p.row(q), grad_p_i);
+					vector2matrix(grad_u.row(q), grad_u_i);
+
+					auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
+					auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
+
+					const double value = local_storage.da(q) * density_power * pow(density_mat(e), density_power - 1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
+
+					local_storage.vec(e) -= value;
+				}
+			}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
+	}
 } // namespace polyfem::solver

@@ -1180,58 +1180,6 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
-	{
-		const auto &gbases = geom_bases();
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		const int n_elements = int(bases.size());
-		term.setZero(n_elements, 1);
-
-		const LameParameters &params = assembler.lame_params();
-		const auto &density_mat = params.density_mat_;
-		const double density_power = params.density_power_;
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-			for (int e = start; e < end; ++e)
-			{
-				assembler::ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				Eigen::MatrixXd u, grad_u, p, grad_p;
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, solution, u, grad_u);
-				io::Evaluator::interpolate_at_local_vals(e, mesh->dimension(), actual_dim, vals, adjoint_sol, p, grad_p);
-
-				for (int q = 0; q < local_storage.da.size(); ++q)
-				{
-					double lambda, mu;
-					params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
-
-					Eigen::MatrixXd grad_p_i, grad_u_i;
-					vector2matrix(grad_p.row(q), grad_p_i);
-					vector2matrix(grad_u.row(q), grad_u_i);
-
-					auto adjoint_strain = (grad_p_i + grad_p_i.transpose()) / 2;
-					auto solution_strain = (grad_u_i + grad_u_i.transpose()) / 2;
-
-					const double value = local_storage.da(q) * density_power * pow(density_mat(e), density_power - 1) * (2 * mu * (solution_strain.array() * adjoint_strain.array()).sum() + lambda * solution_strain.trace() * adjoint_strain.trace());
-
-					local_storage.vec(e) -= value;
-				}
-			}
-		});
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
-	}
-
 	/**
 	 * @brief Computes the shape derivative in one form.
 	 *
@@ -1373,7 +1321,7 @@ namespace polyfem
 
 		Eigen::VectorXd elasticity_term, functional_term;
 		if (j.depend_on_u() || j.depend_on_gradu())
-			compute_topology_derivative_elasticity_term(sol, adjoint_sol, elasticity_term);
+			solve_data.elastic_form->foce_topology_derivative(sol, adjoint_sol, elasticity_term);
 		else
 			elasticity_term.setZero(bases.size());
 		compute_topology_derivative_functional_term(sol, j, functional_term);

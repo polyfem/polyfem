@@ -616,8 +616,6 @@ namespace polyfem
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
 		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
 
-		void compute_topology_derivative_elasticity_term(const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term);
-
 		// Derivatives wrt. an input functional J = \int j dx
 		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
