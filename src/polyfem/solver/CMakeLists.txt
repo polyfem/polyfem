@@ -11,8 +11,6 @@ set(SOURCES
 	MMASolverAux.hpp
 	MMASolverAux.cpp
 	GradientDescentSolver.hpp
-	NLHomogenizationProblem.cpp
-	NLHomogenizationProblem.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	NLProblem.cpp

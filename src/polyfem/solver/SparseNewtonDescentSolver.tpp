@@ -82,12 +82,15 @@ namespace cppoptlib
 			std::vector<Eigen::Triplet<double>> entries;
 			for (int k=0; k<hessian.outerSize(); ++k)
 			{
+				double diagonal = 0;
 				for (polyfem::StiffnessMatrix::InnerIterator it(hessian,k); it; ++it)
 				{
 					if (it.row() >= x.size() || it.col() >= x.size())
 						entries.emplace_back(it.row(), it.col(), it.value());
+					if (it.row() == it.col())
+						diagonal = it.value();
 				}
-				if (k < x.size())
+				if (diagonal != 0)
 					entries.emplace_back(k, k, 1);
 			}
 			hessian.setZero();
@@ -122,8 +125,6 @@ namespace cppoptlib
 			objFunc.set_project_to_psd(true);
 		else if (this->descent_strategy == 0)
 			objFunc.set_project_to_psd(false);
-		else
-			assert(false);
 
 		objFunc.hessian(x, hessian);
 
@@ -169,13 +170,17 @@ namespace cppoptlib
 			return false;
 		}
 
-		b.conservativeResize(hessian.rows());
-		b.segment(grad.size(), b.size() - grad.size()).setZero();
-		direction.conservativeResize(b.size());
+		if (hessian.rows() != b.size())
+		{
+			b.conservativeResize(hessian.rows());
+			b.segment(grad.size(), b.size() - grad.size()).setZero();
+			direction.conservativeResize(b.size());
+		}
 		linear_solver->solve(b, direction); // H Δx = -g
-		
+
 		const double residual = (hessian * direction - b).norm(); // H Δx + g = 0
-		direction.conservativeResizeLike(grad);
+		if (hessian.rows() > grad.size())
+			direction.conservativeResize(grad.size());
 		if (std::isnan(residual) || residual > std::max(1e-8 * b.norm(), 1e-5))
 		{
 			increase_descent_strategy();

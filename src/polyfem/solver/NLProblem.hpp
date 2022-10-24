@@ -79,9 +79,11 @@ namespace polyfem::solver
 		}
 
 		template <class FullMat, class ReducedMat>
-		static void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);
+		void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 
 		template <class ReducedMat, class FullMat>
-		static void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full);
+		void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
+
+		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 	};
 } // namespace polyfem::solver

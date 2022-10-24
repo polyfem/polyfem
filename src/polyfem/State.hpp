@@ -65,6 +65,7 @@ namespace polyfem
 		class ALForm;
 		class InertiaForm;
 		class ElasticForm;
+		class ElasticHomogenizationForm;
 	} // namespace solver
 
 	namespace time_integrator
@@ -86,6 +87,8 @@ namespace polyfem
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
+
+		std::shared_ptr<solver::ElasticHomogenizationForm> elastic_homo_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 

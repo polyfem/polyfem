@@ -34,7 +34,7 @@ namespace polyfem::solver
 		  state_(state),
 		  t_(t),
 		  full_size_(full_size),
-		  reduced_size_(full_size_ - boundary_nodes.size())
+		  reduced_size_(((state.has_periodic_bc() && !state.args["space"]["advanced"]["periodic_basis"]) ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - boundary_nodes.size())
 	{
 		// assert(!state.assembler.is_mixed(formulation));
 		use_reduced_size();
@@ -95,10 +95,9 @@ namespace polyfem::solver
 	{
 		THessian full_hessian;
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
-		assert(full_hessian.rows() == full_size());
-		assert(full_hessian.cols() == full_size());
+
 		state_.apply_lagrange_multipliers(full_hessian);
-		utils::full_to_reduced_matrix(full_size() + state_.n_lagrange_multipliers(), current_size() + state_.n_lagrange_multipliers(), boundary_nodes_, full_hessian, hessian);
+		full_hessian_to_reduced_hessian(full_hessian, hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -140,7 +139,7 @@ namespace polyfem::solver
 		TVector full;
 		Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size(), 1);
 
-		if (current_size() != full_size())
+		if (boundary_nodes_.size() > 0)
 		{
 			// rhs_assembler.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, tmp, t_);
 			rhs_assembler_.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
@@ -150,7 +149,7 @@ namespace polyfem::solver
 	}
 
 	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
 	{
 		using namespace polyfem;
 
@@ -165,9 +164,13 @@ namespace polyfem::solver
 		assert(full.cols() == 1);
 		reduced.resize(reduced_size, 1);
 
+		Eigen::MatrixXd tmp = full;
+		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+			state_.full_to_periodic(tmp);
+
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < full.size(); ++i)
+		for (int i = 0; i < tmp.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
@@ -175,13 +178,12 @@ namespace polyfem::solver
 				continue;
 			}
 
-			reduced(j++) = full(i);
+			reduced(j++) = tmp(i);
 		}
-		assert(j == reduced.size());
 	}
 
 	template <class ReducedMat, class FullMat>
-	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
+	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const
 	{
 		using namespace polyfem;
 
@@ -198,18 +200,36 @@ namespace polyfem::solver
 
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < full.size(); ++i)
+		Eigen::MatrixXd tmp(reduced_size + state_.boundary_nodes.size(), 1);
+		for (int i = 0; i < tmp.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
 				++k;
-				full(i) = rhs(i);
+				tmp(i) = rhs(i);
 				continue;
 			}
 
-			full(i) = reduced(j++);
+			tmp(i) = reduced(j++);
 		}
 
-		assert(j == reduced.size());
+		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+			full = state_.periodic_to_full(full_size, tmp);
+		else
+			full = tmp;
+	}
+
+	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
+	{
+		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
+
+		THessian tmp = full;
+		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+			state_.full_to_periodic(tmp);
+
+		if (current_size() < full_size())
+			utils::full_to_reduced_matrix(tmp.rows(), tmp.rows() - boundary_nodes_.size(), boundary_nodes_, tmp, reduced);
+		else
+			reduced = tmp;
 	}
 } // namespace polyfem::solver

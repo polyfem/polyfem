@@ -6,6 +6,8 @@ set(SOURCES
 	BodyForm.cpp
 	ElasticForm.hpp
 	ElasticForm.cpp
+	ElasticHomogenizationForm.hpp
+	ElasticHomogenizationForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
 	InertiaForm.hpp
