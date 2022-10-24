@@ -584,25 +584,7 @@ namespace polyfem
 
 	void ShapeProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
-		descent_direction = x1 - x0;
-
-		// debug
-		if (opt_nonlinear_params["debug_fd"].get<bool>())
-		{
-			double t = opt_nonlinear_params["debug_fd_eps"].get<double>();
-			TVector new_x = x0 + descent_direction * t;
-
-			solution_changed(new_x);
-			double J2 = target_value(new_x);
-
-			solution_changed(x0);
-			double J1 = target_value(x0);
-			TVector gradv;
-			target_gradient(x0, gradv);
-
-			logger().debug("step size: {}, finite difference: {}, derivative: {}", t, (J2 - J1) / t, gradv.dot(descent_direction));
-		}
-		state.descent_direction = descent_direction;
+		OptimizationProblem::line_search_begin(x0, x1);
 
 		x_at_ls_begin = x0;
 		if (!state.problem->is_time_dependent())
