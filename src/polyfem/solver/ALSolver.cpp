@@ -29,9 +29,17 @@ namespace polyfem::solver
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
+		std::vector<double> initial_weight;
+		for (const auto &f : nl_problem.forms())
+		{
+			initial_weight.push_back(f->weight());
+		}
+
 		// --------------------------------------------------------------------
 
-		double al_weight = initial_al_weight;
+		double al_weight = 0.5;
+		int max_al_steps = 35; // TODO
+		int al_steps = 0;
 
 		nl_problem.line_search_begin(sol, tmp_sol);
 		while (force_al
@@ -42,7 +50,7 @@ namespace polyfem::solver
 			force_al = false;
 			nl_problem.line_search_end();
 
-			set_al_weight(nl_problem, sol, al_weight);
+			set_al_weight(nl_problem, sol, al_weight, initial_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			nl_problem.init(sol);
@@ -51,13 +59,13 @@ namespace polyfem::solver
 			nl_solver->minimize(nl_problem, tmp_sol);
 
 			sol = tmp_sol;
-			set_al_weight(nl_problem, sol, -1);
+			set_al_weight(nl_problem, sol, -1, initial_weight);
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
-			al_weight *= 2;
+			al_weight /= 2.0;
 
-			if (al_weight >= max_al_weight)
+			if (al_steps >= max_al_steps)
 			{
 				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
 				break;
@@ -78,19 +86,28 @@ namespace polyfem::solver
 		post_subsolve(0);
 	}
 
-	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
+	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight, std::vector<double> &initial_weight)
 	{
 		if (al_form == nullptr)
 			return;
 		if (weight > 0)
 		{
+			for (int i = 0; i < nl_problem.forms().size(); ++i)
+			{
+				nl_problem.forms()[i]->set_weight(initial_weight[i] * weight);
+			}
 			al_form->enable();
-			al_form->set_weight(weight);
+			al_form->set_weight(1 - weight);
 			nl_problem.use_full_size();
 			nl_problem.set_apply_DBC(x, false);
 		}
 		else
 		{
+			for (int i = 0; i < nl_problem.forms().size(); ++i)
+			{
+				nl_problem.forms()[i]->set_weight(initial_weight[i]);
+			}
+
 			al_form->disable();
 			nl_problem.use_reduced_size();
 			nl_problem.set_apply_DBC(x, true);
