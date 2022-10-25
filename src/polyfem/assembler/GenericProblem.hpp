@@ -16,7 +16,7 @@ namespace polyfem
 		struct TensorBCValue
 		{
 			std::array<utils::ExpressionValue, 3> value;
-			std::shared_ptr<utils::Interpolation> interpolation;
+			std::vector<std::shared_ptr<utils::Interpolation>> interpolation;
 			Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
 		};
 
