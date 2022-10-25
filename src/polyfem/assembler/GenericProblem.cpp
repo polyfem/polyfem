@@ -106,17 +106,9 @@ namespace polyfem
 				if (is_all_)
 				{
 					assert(displacements_.size() == 1);
-					double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 					for (int d = 0; d < val.cols(); ++d)
 					{
-						val(i, d) = displacements_[0].value[d](x, y, z, t);
-					}
-					if (displacements_[0].interpolation.size() == 1)
-						val.row(i) *= displacements_[0].interpolation[0]->eval(t);
-					else
-					{
-						for (int ii = 0; ii < displacements_[0].interpolation.size(); ++ii)
-							val(i, ii) *= displacements_[0].interpolation[ii]->eval(t);
+						val(i, d) = displacements_[0].eval(pts.row(i), d, t);
 					}
 				}
 				else
@@ -126,18 +118,11 @@ namespace polyfem
 					{
 						if (id == boundary_ids_[b])
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 							for (int d = 0; d < val.cols(); ++d)
 							{
-								val(i, d) = displacements_[b].value[d](x, y, z, t);
+								val(i, d) = displacements_[b].eval(pts.row(i), d, t);
 							}
-							if (displacements_[b].interpolation.size() == 1)
-								val.row(i) *= displacements_[b].interpolation[0]->eval(t);
-							else
-							{
-								for (int ii = 0; ii < displacements_[b].interpolation.size(); ++ii)
-									val(i, ii) *= displacements_[b].interpolation[ii]->eval(t);
-							}
+
 							break;
 						}
 					}
@@ -159,16 +144,9 @@ namespace polyfem
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-							val(i, d) = forces_[b].value[d](x, y, z, t);
+							val(i, d) = forces_[b].eval(pts.row(i), d, t);
 						}
-						if (forces_[b].interpolation.size() == 1)
-							val.row(i) *= forces_[b].interpolation[0]->eval(t);
-						else
-						{
-							for (int ii = 0; ii < forces_[b].interpolation.size(); ++ii)
-								val(i, ii) *= forces_[b].interpolation[ii]->eval(t);
-						}
+
 						break;
 					}
 				}
@@ -179,10 +157,8 @@ namespace polyfem
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-							val(i, d) = pressures_[b].value(x, y, z, t) * normals(i, d);
+							val(i, d) = pressures_[b].eval(pts.row(i), t) * normals(i, d);
 						}
-						val.row(i) *= pressures_[b].interpolation->eval(t);
 						break;
 					}
 				}
@@ -564,22 +540,12 @@ namespace polyfem
 
 			if (is_all_)
 			{
-				double x = pt(0), y = pt(1), z = pt.size() == 2 ? 0 : pt(2);
-
 				assert(nodal_dirichlet_.size() == 1);
 				const auto &tmp = nodal_dirichlet_.begin()->second;
 
 				for (int d = 0; d < val.cols(); ++d)
 				{
-					val(d) = tmp.value[d](x, y, z, t);
-				}
-
-				if (tmp.interpolation.size() == 1)
-					val *= tmp.interpolation[0]->eval(t);
-				else
-				{
-					for (int ii = 0; ii < tmp.interpolation.size(); ++ii)
-						val(ii) *= tmp.interpolation[ii]->eval(t);
+					val(d) = tmp.eval(pt, d, t);
 				}
 
 				return;
@@ -588,19 +554,9 @@ namespace polyfem
 			const auto it = nodal_dirichlet_.find(tag);
 			if (it != nodal_dirichlet_.end())
 			{
-				double x = pt(0), y = pt(1), z = pt.size() == 2 ? 0 : pt(2);
-
 				for (int d = 0; d < val.cols(); ++d)
 				{
-					val(d) = it->second.value[d](x, y, z, t);
-				}
-
-				if (it->second.interpolation.size() == 1)
-					val *= it->second.interpolation[0]->eval(t);
-				else
-				{
-					for (int ii = 0; ii < it->second.interpolation.size(); ++ii)
-						val(ii) *= it->second.interpolation[ii]->eval(t);
+					val(d) = it->second.eval(pt, d, t);
 				}
 
 				return;
@@ -1103,9 +1059,7 @@ namespace polyfem
 				if (is_all_)
 				{
 					assert(dirichlet_.size() == 1);
-					double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-					val(i) = dirichlet_[0].value(x, y, z, t);
-					val(i) *= dirichlet_[0].interpolation->eval(t);
+					val(i) = dirichlet_[0].eval(pts.row(i), t);
 				}
 				else
 				{
@@ -1113,9 +1067,7 @@ namespace polyfem
 					{
 						if (id == boundary_ids_[b])
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-							val(i) = dirichlet_[b].value(x, y, z, t);
-							val(i) *= dirichlet_[b].interpolation->eval(t);
+							val(i) = dirichlet_[b].eval(pts.row(i), t);
 							break;
 						}
 					}
@@ -1136,8 +1088,7 @@ namespace polyfem
 					if (id == neumann_boundary_ids_[b])
 					{
 						double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-						val(i) = neumann_[b].value(x, y, z, t);
-						val(i) *= neumann_[b].interpolation->eval(t);
+						val(i) = neumann_[b].eval(pts.row(i), t);
 						break;
 					}
 				}
