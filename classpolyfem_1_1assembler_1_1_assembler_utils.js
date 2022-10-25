@@ -1,5 +1,11 @@
 var classpolyfem_1_1assembler_1_1_assembler_utils =
 [
+    [ "BasisType", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93c", [
+      [ "SIMPLEX_LAGRANGE", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caafefc7ae5fe3420e0323b2a46660b139", null ],
+      [ "CUBE_LAGRANGE", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caa2f055a3bf84437b39b826e3d3479e89", null ],
+      [ "SPLINE", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93cadd309e5586dd9ab277c7e1afa9c34bb6", null ],
+      [ "POLY", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93ca711f44effcbd8619148b829b6aa2ed4f", null ]
+    ] ],
     [ "AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a5ccbedc128d08706b8e53db7a2600072", null ],
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a68b9c1cc03f0b68e8e67e4bb8ff74764", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_assembler_utils.html#af74c43b895b7ac9684b2450598b147c8", null ],

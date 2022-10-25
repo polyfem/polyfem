@@ -19,5 +19,6 @@ var searchData=
   ['quadrature_5ffor_5fquad_5fedge_16',['quadrature_for_quad_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a282676a00275bf4a0e51d8638f9558f8',1,'polyfem::utils::BoundarySampler']]],
   ['quadrature_5ffor_5fquad_5fface_17',['quadrature_for_quad_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a14b39f9323abc114920975d012d11511',1,'polyfem::utils::BoundarySampler']]],
   ['quadrature_5ffor_5ftri_5fedge_18',['quadrature_for_tri_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#aec92b1bb3ff635fb517a2c26882d98a9',1,'polyfem::utils::BoundarySampler']]],
-  ['quadrature_5ffor_5ftri_5fface_19',['quadrature_for_tri_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a4f92b1c04be7c25cbb65f7c40bce8a4d',1,'polyfem::utils::BoundarySampler']]]
+  ['quadrature_5ffor_5ftri_5fface_19',['quadrature_for_tri_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a4f92b1c04be7c25cbb65f7c40bce8a4d',1,'polyfem::utils::BoundarySampler']]],
+  ['quadrature_5forder_20',['quadrature_order',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc',1,'polyfem::assembler::AssemblerUtils']]]
 ];

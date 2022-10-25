@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 521;
+var viewWidth = 678;
 var viewHeight = 198;
 var sectionId = 'dynsection-12';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-12';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#bfbfbf" stroke="black" points="389,-82.5 389,-112.5 513,-112.5 513,-82.5 389,-82.5"/>
-<text text-anchor="start" x="397" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::maybe</text>
-<text text-anchor="middle" x="451" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">_parallel_for</text>
+<polygon fill="#bfbfbf" stroke="black" points="546,-82.5 546,-112.5 670,-112.5 670,-82.5 546,-82.5"/>
+<text text-anchor="start" x="554" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::maybe</text>
+<text text-anchor="middle" x="608" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">_parallel_for</text>
 </a>
 </g>
 </g>
@@ -68,82 +68,113 @@ var sectionId = 'dynsection-12';
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#aaf9342f91977f7c657cdee3eed06c61c" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="198.5,-159.5 198.5,-189.5 339.5,-189.5 339.5,-159.5 198.5,-159.5"/>
-<text text-anchor="start" x="206.5" y="-177.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="middle" x="269" y="-166.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler::assemble</text>
+<polygon fill="none" stroke="black" points="355.5,-159.5 355.5,-189.5 496.5,-189.5 496.5,-159.5 355.5,-159.5"/>
+<text text-anchor="start" x="363.5" y="-177.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="middle" x="426" y="-166.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler::assemble</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="midnightblue" d="M417.17,-117.78C398.79,-128.53 375.16,-141.37 353,-150.5 345.09,-153.76 336.59,-156.75 328.16,-159.44"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="419.2,-120.65 426.01,-112.54 415.63,-114.63 419.2,-120.65"/>
+<path fill="none" stroke="midnightblue" d="M574.17,-117.78C555.79,-128.53 532.16,-141.37 510,-150.5 502.09,-153.76 493.59,-156.75 485.16,-159.44"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="576.2,-120.65 583.01,-112.54 572.63,-114.63 576.2,-120.65"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
 <g id="a_node3"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a1aefacbb7a04749e12dbfcb114032998" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="185,-110.5 185,-140.5 353,-140.5 353,-110.5 185,-110.5"/>
-<text text-anchor="start" x="193" y="-128.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="middle" x="269" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler::assemble_grad</text>
+<polygon fill="none" stroke="black" points="342,-110.5 342,-140.5 510,-140.5 510,-110.5 342,-110.5"/>
+<text text-anchor="start" x="350" y="-128.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="middle" x="426" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler::assemble_grad</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="midnightblue" d="M378.67,-108.6C370.24,-109.91 361.59,-111.25 353.02,-112.59"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="379.47,-112.01 388.81,-107.02 378.39,-105.1 379.47,-112.01"/>
+<path fill="none" stroke="midnightblue" d="M535.67,-108.6C527.24,-109.91 518.59,-111.25 510.02,-112.59"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="536.47,-112.01 545.81,-107.02 535.39,-105.1 536.47,-112.01"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
 <g id="a_node4"><a xlink:href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="198.5,-50 198.5,-91 339.5,-91 339.5,-50 198.5,-50"/>
-<text text-anchor="start" x="206.5" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="start" x="206.5" y="-68" font-family="Helvetica,sans-Serif" font-size="10.00">::RhsAssembler::compute</text>
-<text text-anchor="middle" x="269" y="-57" font-family="Helvetica,sans-Serif" font-size="10.00">_energy</text>
+<polygon fill="none" stroke="black" points="355.5,-50 355.5,-91 496.5,-91 496.5,-50 355.5,-50"/>
+<text text-anchor="start" x="363.5" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="start" x="363.5" y="-68" font-family="Helvetica,sans-Serif" font-size="10.00">::RhsAssembler::compute</text>
+<text text-anchor="middle" x="426" y="-57" font-family="Helvetica,sans-Serif" font-size="10.00">_energy</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="midnightblue" d="M378.66,-86.8C365.83,-84.87 352.47,-82.87 339.69,-80.95"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="378.4,-90.3 388.81,-88.32 379.44,-83.38 378.4,-90.3"/>
+<path fill="none" stroke="midnightblue" d="M535.66,-86.8C522.83,-84.87 509.47,-82.87 496.69,-80.95"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="535.4,-90.3 545.81,-88.32 536.44,-83.38 535.4,-90.3"/>
 </g>
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a9ce23aed8cb14ca35995702052fcdd26" target="_top" xlink:title=" ">
-<polygon fill="none" stroke="black" points="197.5,-0.5 197.5,-30.5 340.5,-30.5 340.5,-0.5 197.5,-0.5"/>
-<text text-anchor="start" x="205.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="middle" x="269" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">::AssemblyValsCache::init</text>
+<g id="a_node6"><a xlink:href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" target="_top" xlink:title=" ">
+<polygon fill="none" stroke="black" points="354.5,-0.5 354.5,-30.5 497.5,-30.5 497.5,-0.5 354.5,-0.5"/>
+<text text-anchor="start" x="362.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="middle" x="426" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">::AssemblyValsCache::init</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
 <g id="edge5" class="edge">
 <title>Node1&#45;&gt;Node6</title>
-<path fill="none" stroke="midnightblue" d="M419.08,-76.76C400.5,-64.96 376.07,-50.58 353,-40.5 344.59,-36.82 335.47,-33.48 326.47,-30.52"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="417.39,-79.83 427.69,-82.31 421.18,-73.95 417.39,-79.83"/>
+<path fill="none" stroke="midnightblue" d="M576.08,-76.76C557.5,-64.96 533.07,-50.58 510,-40.5 501.59,-36.82 492.47,-33.48 483.47,-30.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="574.39,-79.83 584.69,-82.31 578.18,-73.95 574.39,-79.83"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
 <g id="a_node5"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0" target="_top" xlink:title="Compute the value of the body force form.">
-<polygon fill="none" stroke="black" points="0,-55.5 0,-85.5 149,-85.5 149,-55.5 0,-55.5"/>
-<text text-anchor="start" x="8" y="-73.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
-<text text-anchor="middle" x="74.5" y="-62.5" font-family="Helvetica,sans-Serif" font-size="10.00">::value_unweighted</text>
+<polygon fill="none" stroke="black" points="157,-55.5 157,-85.5 306,-85.5 306,-55.5 157,-55.5"/>
+<text text-anchor="start" x="165" y="-73.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
+<text text-anchor="middle" x="231.5" y="-62.5" font-family="Helvetica,sans-Serif" font-size="10.00">::value_unweighted</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node4&#45;&gt;Node5</title>
-<path fill="none" stroke="midnightblue" d="M188.03,-70.5C175.19,-70.5 161.94,-70.5 149.25,-70.5"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="188.23,-74 198.23,-70.5 188.23,-67 188.23,-74"/>
+<path fill="none" stroke="midnightblue" d="M345.03,-70.5C332.19,-70.5 318.94,-70.5 306.25,-70.5"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="345.23,-74 355.23,-70.5 345.23,-67 345.23,-74"/>
+</g>
+<!-- Node7 -->
+<g id="node7" class="node">
+<title>Node7</title>
+<g id="a_node7"><a xlink:href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" target="_top" xlink:title="builds the bases step 2 of solve">
+<polygon fill="none" stroke="black" points="172,-0.5 172,-30.5 291,-30.5 291,-0.5 172,-0.5"/>
+<text text-anchor="start" x="180" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::build</text>
+<text text-anchor="middle" x="231.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_basis</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node7 -->
+<g id="edge6" class="edge">
+<title>Node6&#45;&gt;Node7</title>
+<path fill="none" stroke="midnightblue" d="M344.05,-15.5C326.27,-15.5 307.77,-15.5 291.08,-15.5"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="344.41,-19 354.41,-15.5 344.41,-12 344.41,-19"/>
+</g>
+<!-- Node8 -->
+<g id="node8" class="node">
+<title>Node8</title>
+<g id="a_node8"><a xlink:href="classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" target="_top" xlink:title="solves the problem, call other methods">
+<polygon fill="none" stroke="black" points="0,-6 0,-25 121,-25 121,-6 0,-6"/>
+<text text-anchor="middle" x="60.5" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
+</a>
+</g>
+</g>
+<!-- Node7&#45;&gt;Node8 -->
+<g id="edge7" class="edge">
+<title>Node7&#45;&gt;Node8</title>
+<path fill="none" stroke="midnightblue" d="M161.72,-15.5C148.28,-15.5 134.29,-15.5 121.18,-15.5"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="161.87,-19 171.87,-15.5 161.87,-12 161.87,-19"/>
 </g>
 </g>
 </svg>

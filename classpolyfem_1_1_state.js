@@ -75,6 +75,7 @@ var classpolyfem_1_1_state =
     [ "local_boundary", "classpolyfem_1_1_state.html#aafae62c42880f4d00b0ed6046f4eb820", null ],
     [ "local_neumann_boundary", "classpolyfem_1_1_state.html#aeec27af1f0de1cf2b5e6b2b7b33304a5", null ],
     [ "mass", "classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663", null ],
+    [ "mass_ass_vals_cache", "classpolyfem_1_1_state.html#accd0a9edb699ad586baac3759745cda0", null ],
     [ "mesh", "classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9", null ],
     [ "mesh_nodes", "classpolyfem_1_1_state.html#a6e3564e25632010bfdf4bc7b9f3406e2", null ],
     [ "n_bases", "classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd", null ],
