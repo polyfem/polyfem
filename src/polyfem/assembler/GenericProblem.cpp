@@ -1264,10 +1264,17 @@ namespace polyfem
 					auto ff = j_boundary[i - offset]["value"];
 					dirichlet_[i].value.init(ff);
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					if (j_boundary[i - offset]["interpolation"].is_array())
+					{
+						if (j_boundary[i - offset]["interpolation"].size() == 0)
+							dirichlet_[i].interpolation = std::make_shared<NoInterpolation>();
+						else if (j_boundary[i - offset]["interpolation"].size() == 1)
+							dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"][0]);
+						else
+							log_and_throw_error("Only one Dirichlet interpolation supported");
+					}
 					else
-						dirichlet_[i].interpolation = std::make_shared<NoInterpolation>();
+						dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				}
 			}
 
@@ -1288,10 +1295,17 @@ namespace polyfem
 					auto ff = j_boundary[i - offset]["value"];
 					neumann_[i].value.init(ff);
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					if (j_boundary[i - offset]["interpolation"].is_array())
+					{
+						if (j_boundary[i - offset]["interpolation"].size() == 0)
+							neumann_[i].interpolation = std::make_shared<NoInterpolation>();
+						else if (j_boundary[i - offset]["interpolation"].size() == 1)
+							neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"][0]);
+						else
+							log_and_throw_error("Only one Neumann interpolation supported");
+					}
 					else
-						neumann_[i].interpolation = std::make_shared<NoInterpolation>();
+						neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				}
 			}
 
