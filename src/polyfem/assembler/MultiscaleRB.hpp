@@ -71,7 +71,7 @@ namespace polyfem::assembler
 		void homogenization(const Eigen::MatrixXd &def_grad, double &energy) const;
 		void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const;
 		void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
-		void brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const;
+		void brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &fluctuated) const;
 
 		double homogenize_energy(const Eigen::MatrixXd &x) const;
 		void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;

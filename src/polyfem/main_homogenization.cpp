@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 	{
 		def_grad << 0, 0,
 		            0, -n/(2.0*N);
-    	state.solve_homogenized_field(def_grad, state.sol);
+    	state.solve_homogenized_field(def_grad, Eigen::MatrixXd(), state.sol);
 		state.out_geom.export_data(
 			state,
 			!state.args["time"].is_null(),

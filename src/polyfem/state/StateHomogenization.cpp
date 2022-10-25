@@ -9,9 +9,11 @@
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 
 #include <polyfem/solver/forms/ElasticHomogenizationForm.hpp>
+#include <polyfem/solver/forms/LeastSquareForm.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
+#include <unsupported/Eigen/SparseExtra>
 
 namespace polyfem {
 
@@ -119,14 +121,21 @@ Eigen::MatrixXd State::generate_linear_field(const Eigen::MatrixXd &grad)
     return func;
 }
 
-void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, Eigen::MatrixXd &sol_)
+void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path)
 {
     if (formulation() != "NeoHookean" && formulation() != "LinearElasticity")
     {
         log_and_throw_error("Nonlinear homogenization only supports NeoHookean and linear elasticity!");
     }
 
+    const int dim = mesh->dimension();
+    const int ndof = n_bases * dim;
+
+    if (sol_.rows() != ndof || sol_.cols() != 1)
+        sol_.setZero(ndof, 1);
+
     std::vector<std::shared_ptr<Form>> forms;
+
     std::shared_ptr<ElasticHomogenizationForm> homo_form = std::make_shared<ElasticHomogenizationForm>(
         n_bases, n_geom_bases, bases, geom_bases(),
         assembler, ass_vals_cache,
@@ -135,30 +144,47 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, Eigen::Matr
         mesh->is_volume());
     forms.push_back(homo_form);
 
+    std::shared_ptr<LeastSquareForm> least_square_form = std::make_shared<LeastSquareForm>(mass);
+    if (target.size() == sol_.size())
+    {
+        // std::cout << (target - generate_linear_field(def_grad)).transpose() << "\n";
+        least_square_form->set_target(target - generate_linear_field(def_grad));
+    }
+    forms.push_back(least_square_form);
+
     std::shared_ptr<NLProblem> homo_problem = std::make_shared<NLProblem>(
-        n_bases * mesh->dimension(),
+        ndof,
         formulation(),
         boundary_nodes,
         local_boundary,
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
     
-    const int dim = mesh->dimension();
-    // Eigen::MatrixXd sol_;
-    if (sol_.rows() != n_bases * dim || sol_.cols() != 1)
-        sol_.setZero(n_bases * dim, 1);
-    
-    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_);
     homo_form->set_macro_field(generate_linear_field(def_grad));
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
-    nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
+    
+    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_);
+    if (target.size() == sol_.size())
+    {
+        homo_form->set_weight(0); least_square_form->set_weight(1e5);
+        homo_problem->init(tmp_sol);
+        nl_solver->minimize(*homo_problem, tmp_sol);
+        // std::cout << tmp_sol.transpose() << "\n";
+        // sol_ = homo_problem->reduced_to_full(tmp_sol);
+    }
+
+    homo_form->set_weight(1); least_square_form->set_weight(0);
     homo_problem->init(tmp_sol);
     nl_solver->minimize(*homo_problem, tmp_sol);
+    sol_ = homo_problem->reduced_to_full(tmp_sol);
 
-    Eigen::VectorXd full;
-    full = homo_problem->reduced_to_full(tmp_sol);
-    sol_ = full;
+    if (hessian_path != "")
+    {
+        StiffnessMatrix hessian;
+        homo_problem->hessian(tmp_sol, hessian);
+        Eigen::saveMarket(hessian, hessian_path);
+    }
 }
 
 void State::solve_nonlinear_homogenization()
@@ -208,7 +234,6 @@ void State::solve_nonlinear_homogenization()
             solve_data.elastic_homo_form->set_macro_field(generate_linear_field(unit_grad));
 
             std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
-            nl_solver->set_line_search(args["solver"]["nonlinear"]["line_search"]["method"]);
             solve_data.nl_problem->init(tmp_sol);
             nl_solver->minimize(*solve_data.nl_problem, tmp_sol);
 

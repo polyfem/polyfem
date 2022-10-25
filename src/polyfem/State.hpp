@@ -66,6 +66,7 @@ namespace polyfem
 		class InertiaForm;
 		class ElasticForm;
 		class ElasticHomogenizationForm;
+		class LeastSquareForm;
 	} // namespace solver
 
 	namespace time_integrator
@@ -89,6 +90,7 @@ namespace polyfem
 		std::shared_ptr<solver::ElasticForm> elastic_form;
 
 		std::shared_ptr<solver::ElasticHomogenizationForm> elastic_homo_form;
+		// std::shared_ptr<solver::LeastSquareForm> least_square_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
@@ -261,7 +263,7 @@ namespace polyfem
 		/// compute rhs, step 3 of solve
 		void assemble_rhs();
 		/// assemble matrices, step 4 of solve
-		void assemble_stiffness_mat();
+		void assemble_stiffness_mat(bool assemble_mass = false);
 
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
@@ -663,7 +665,7 @@ namespace polyfem
 			solve_homogenization();
 			compute_homogenized_tensor(C_H);
 		}
-		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, Eigen::MatrixXd &sol_);
+		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
 		void solve_linear_homogenization();
 		void solve_nonlinear_homogenization();
 
