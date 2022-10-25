@@ -44,6 +44,7 @@ namespace polyfem::io
 			bool volume;
 			bool surface;
 			bool wire;
+			bool points;
 			bool contact_forces;
 			bool friction_forces;
 
@@ -196,6 +197,19 @@ namespace polyfem::io
 					   const double t,
 					   const ExportOptions &opts,
 					   std::vector<SolutionFrame> &solution_frames) const;
+
+		/// saves the nodal values
+		/// @param[in] path filename
+		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] opts export options
+		/// @param[out] solution_frames saves the output here instead of vtu
+		void save_points(
+			const std::string &path,
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const ExportOptions &opts,
+			std::vector<SolutionFrame> &solution_frames) const;
 
 		/// save a PVD of a time dependent simulation
 		/// @param[in] name filename

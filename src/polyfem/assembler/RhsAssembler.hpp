@@ -24,7 +24,9 @@ namespace polyfem
 			// size of the problem, bases
 			// formulation, problem
 			// and solver used internally
-			RhsAssembler(const AssemblerUtils &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichlet,
+			RhsAssembler(const AssemblerUtils &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
+						 const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
+						 const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 						 const int n_basis, const int size,
 						 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 						 const std::string &formulation, const Problem &problem,
@@ -74,7 +76,8 @@ namespace polyfem
 			void set_bc(
 				const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 				const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
-				const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &rhs) const;
+				const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				const Eigen::MatrixXd &displacement, const double t, Eigen::MatrixXd &rhs) const;
 
 			// sets the time (initial) boundary condition
 			// the lambda depeneds if soltuion, velocity, or acceleration
@@ -94,7 +97,10 @@ namespace polyfem
 			const std::string bc_method_;
 			const std::string solver_, preconditioner_;
 			const json solver_params_;
-			const std::vector<Eigen::MatrixXd> &input_dirichlet_;
+			const std::vector<int> &dirichlet_nodes_;
+			const std::vector<RowVectorNd> &dirichlet_nodes_position_;
+			const std::vector<int> &neumann_nodes_;
+			const std::vector<RowVectorNd> &neumann_nodes_position_;
 		};
 	} // namespace assembler
 } // namespace polyfem

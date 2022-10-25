@@ -36,7 +36,9 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle, const std::vector<Eigen::MatrixXd> &input_dirichlet,
+		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
+								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
+								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const std::string &formulation, const Problem &problem,
@@ -48,7 +50,8 @@ namespace polyfem
 			  formulation_(formulation), problem_(problem),
 			  bc_method_(bc_method),
 			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
-			  input_dirichlet_(input_dirichlet)
+			  dirichlet_nodes_(dirichlet_nodes), neumann_nodes_(neumann_nodes),
+			  dirichlet_nodes_position_(dirichlet_nodes_position), neumann_nodes_position_(neumann_nodes_position)
 		{
 		}
 
@@ -557,7 +560,7 @@ namespace polyfem
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
 			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes,
 			const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary,
-			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement, const double t,
 			Eigen::MatrixXd &rhs) const
 		{
 			if (bc_method_ == "sample")
@@ -569,19 +572,22 @@ namespace polyfem
 
 			if (bounday_nodes.size() > 0)
 			{
-				for (const auto &m : input_dirichlet_)
+				Eigen::MatrixXd tmp_val;
+				for (int n = 0; n < dirichlet_nodes_.size(); ++n)
 				{
-					assert(m.cols() == size_ + 1);
-					for (int n = 0; n < m.rows(); ++n)
+					const auto &n_id = dirichlet_nodes_[n];
+					const auto &pt = dirichlet_nodes_position_[n];
+
+					const int tag = mesh_.get_node_id(n_id);
+					problem_.dirichlet_nodal_value(mesh_, n_id, pt, t, tmp_val);
+					assert(tmp_val.size() == size_);
+
+					for (int d = 0; d < size_; ++d)
 					{
-						const int n_id = m(n, 0);
-						for (int d = 0; d < size_; ++d)
-						{
-							if (std::isnan(m(n, d + 1)))
-								continue;
-							const int g_index = n_id * size_ + d;
-							rhs(g_index) = m(n, d + 1);
-						}
+						if (!problem_.is_nodal_dimension_dirichlet(n_id, tag, d))
+							continue;
+						const int g_index = n_id * size_ + d;
+						rhs(g_index) = tmp_val(d);
 					}
 				}
 			}
@@ -674,6 +680,8 @@ namespace polyfem
 					}
 				}
 			}
+
+			// TODO add nodal neumann
 		}
 
 		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const Eigen::MatrixXd &displacement, const double t) const
@@ -685,7 +693,7 @@ namespace polyfem
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
 					problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
 				},
-				local_boundary, bounday_nodes, resolution, local_neumann_boundary, displacement, rhs);
+				local_boundary, bounday_nodes, resolution, local_neumann_boundary, displacement, t, rhs);
 
 			obstacle_.update_displacement(t, rhs);
 		}
