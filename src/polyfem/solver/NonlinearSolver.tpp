@@ -285,13 +285,13 @@ namespace cppoptlib
 			throw std::runtime_error(msg);
 			level = spdlog::level::err;
 		}
-		// if (!disable_log)
-		// {
-		// 	polyfem::logger().log(
-		// 		level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
-		// 		name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
-		// 		delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
-		// }
+		if (!disable_log)
+		{
+			polyfem::logger().log(
+				level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} gtol={} fdelta={} ftol={})",
+				name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
+				delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm, this->m_current.fDelta, this->m_stop.fDelta);
+		}
 
 		log_times();
 		update_solver_info();
