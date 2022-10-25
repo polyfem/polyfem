@@ -19,6 +19,7 @@ set(test_sources
 	test_tbb.cpp
 	test_utils.cpp
   test_diff.cpp
+  test_opt.cpp
   test_form_derivatives.cpp
   verify_run.cpp
 )
