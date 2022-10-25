@@ -38,6 +38,14 @@ namespace polyfem
 		class AssemblerUtils
 		{
 		public:
+			enum class BasisType
+			{
+				SIMPLEX_LAGRANGE,
+				CUBE_LAGRANGE,
+				SPLINE,
+				POLY
+			};
+
 			AssemblerUtils();
 
 			// Linear, assembler is the name of the formulation
@@ -180,6 +188,8 @@ namespace polyfem
 				const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 				const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 				StiffnessMatrix &stiffness);
+
+			static int quadrature_order(const std::string &assembler, const int basis_degree, const BasisType &b_type, const int dim);
 
 		private:
 			// all assemblers

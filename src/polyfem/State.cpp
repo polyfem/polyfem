@@ -200,6 +200,12 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
+		if (args["space"]["advanced"]["use_spline"])
+		{
+			logger().warn("Node ordering disabled, it dosent work for splines!");
+			return;
+		}
+
 		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
 		{
 			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
@@ -725,9 +731,6 @@ namespace polyfem
 				logger().error("p refinement not supported in mixed formulation!");
 				return;
 			}
-
-			// same quadrature order as solution basis
-			quadrature_order = std::max(quadrature_order, (disc_order - 1) * 2 + 1);
 		}
 
 		if (mesh->is_volume())
@@ -742,7 +745,7 @@ namespace polyfem
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -750,15 +753,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		else
@@ -774,7 +777,7 @@ namespace polyfem
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -782,17 +785,29 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
+
+		if (assembler.is_mixed(formulation()))
+		{
+			assert(bases.size() == pressure_bases.size());
+			for (int i = 0; i < pressure_bases.size(); ++i)
+			{
+				quadrature::Quadrature b_quad;
+				bases[i].compute_quadrature(b_quad);
+				pressure_bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
+			}
+		}
+
 		timer.stop();
 
 		build_polygonal_basis();
@@ -935,11 +950,13 @@ namespace polyfem
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
 		ass_vals_cache.clear();
+		mass_ass_vals_cache.clear();
 		if (n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
 			timer.start();
 			logger().info("Building cache...");
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
+			mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
 			if (assembler.is_mixed(formulation()))
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
@@ -1121,7 +1138,7 @@ namespace polyfem
 				if (problem->is_time_dependent())
 				{
 					StiffnessMatrix velocity_mass;
-					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, velocity_mass);
+					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), mass_ass_vals_cache, velocity_mass);
 
 					std::vector<Eigen::Triplet<double>> mass_blocks;
 					mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1146,7 +1163,7 @@ namespace polyfem
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), mass_ass_vals_cache, mass);
 			}
 		}
 

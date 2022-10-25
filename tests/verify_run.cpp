@@ -89,6 +89,28 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		}
 		args["root_path"] = json_file;
 	}
+	if (json_file.find("navier") == std::string::npos)
+	{
+		if (args.contains("solver"))
+		{
+			if (args["solver"].contains("linear"))
+			{
+				args["solver"]["linear"]["solver"] = "Eigen::SimplicialLDLT";
+			}
+			else
+			{
+				args["solver"]["linear"] = {};
+				args["solver"]["linear"]["solver"] = "Eigen::SimplicialLDLT";
+			}
+		}
+		else
+		{
+			args["solver"] = R"(
+		{"linear": {
+            "solver": "Eigen::SimplicialLDLT"
+        }})"_json;
+		}
+	}
 
 	State state(/*max_threads=*/1);
 	state.init_logger("", spdlog::level::err, false);

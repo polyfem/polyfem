@@ -3,6 +3,8 @@
 #include "function/QuadraticBSpline3d.hpp"
 #include <polyfem/quadrature/HexQuadrature.hpp>
 
+#include <polyfem/assembler/AssemblerUtils.hpp>
+
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
@@ -1020,7 +1022,9 @@ namespace polyfem
 			}
 		} // namespace
 
-		int SplineBasis3d::build_bases(const Mesh3D &mesh, const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_face_to_data)
+		int SplineBasis3d::build_bases(const Mesh3D &mesh,
+									   const std::string &assembler,
+									   const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_face_to_data)
 		{
 			using std::max;
 			assert(mesh.is_volume());
@@ -1049,8 +1053,9 @@ namespace polyfem
 				build_local_space(mesh, mesh_nodes, e, space, local_boundary, poly_face_to_data);
 
 				ElementBases &b = bases[e];
-				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
-				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::SPLINE, 3);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::SPLINE, 3);
+
 				b.set_quadrature([real_order](Quadrature &quad) {
 					HexQuadrature hex_quadrature;
 					hex_quadrature.get_quadrature(real_order, quad);
@@ -1119,8 +1124,9 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 
-				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
-				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+
 				// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
 				b.set_quadrature([real_order](Quadrature &quad) {
 					HexQuadrature hex_quadrature;
