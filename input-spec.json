@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1274,7 +1275,17 @@
         "pointer": "/solver/linear/Pardiso/mtype",
         "default": 11,
         "type": "int",
-        "options": [1, 2, -2, 3, 4, -4, 6, 11, 13],
+        "options": [
+            1,
+            2,
+            -2,
+            3,
+            4,
+            -4,
+            6,
+            11,
+            13
+        ],
         "doc": "Matrix type."
     },
     {
@@ -2569,7 +2580,11 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
         "type": "list",
-        "default": [true, true, true],
+        "default": [
+            true,
+            true,
+            true
+        ],
         "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
     },
     {
@@ -2810,6 +2825,28 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/optimization/parameters/*/surface_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/surface_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/volume_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/volume_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
         "pointer": "/optimization/parameters/*/restriction",
         "type": "string",
         "default": "",
@@ -2863,7 +2900,8 @@
             "smoothing_paramters",
             "remesh",
             "spline_specification",
-            "dimensions"
+            "dimensions",
+            "surface_selection"
         ],
         "doc": "TODO"
     },
@@ -2887,35 +2925,55 @@
     {
         "pointer": "/optimization/parameters/*/spline_specification/*",
         "type": "object",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/parameters/*/remesh",
-        "type": "object",
-        "default": null,
+        "required": [
+            "id",
+            "control_point",
+            "tangent"
+        ],
         "optional": [
-            "remesh_exe",
-            "period",
-            "tolerance"
+            "sampling"
         ],
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/remesh/remesh_exe",
-        "type": "string",
-        "default": "",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/parameters/*/remesh/tolerance",
-        "type": "float",
-        "default": 0,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/parameters/*/remesh/period",
+        "pointer": "/optimization/parameters/*/spline_specification/*/id",
         "type": "int",
-        "default": 1000000,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/control_point",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/control_point/*",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/control_point/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/tangent",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/tangent/*",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/tangent/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/parameters/*/spline_specification/*/sampling",
+        "type": "int",
+        "default": 10,
         "doc": "TODO"
     },
     {
@@ -3041,17 +3099,6 @@
         "optional": [
             "surface_selection"
         ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/parameters/*/surface_selection",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/parameters/*/surface_selection/*",
-        "type": "int",
         "doc": "TODO"
     },
     {

@@ -6,7 +6,8 @@
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 
 		class LocalThreadVecStorage
 		{
@@ -34,7 +35,7 @@ namespace polyfem::solver
 				for (int j = 0; j < size; j++)
 					mat(i, j) = vec(i * size + j);
 		}
-	}
+	} // namespace
 	ElasticForm::ElasticForm(const int n_bases,
 							 const int n_geom_bases,
 							 const std::vector<basis::ElementBases> &bases,

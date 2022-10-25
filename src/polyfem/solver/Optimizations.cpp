@@ -572,8 +572,8 @@ namespace polyfem
 
 						if (!body_id_map.count(body_id))
 							continue;
-						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * jacobian(0,0) + dparams(e + dof) * jacobian(1,0);
-						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e) * jacobian(0,1) + dparams(e + dof) * jacobian(1,1);
+						dx(body_id_map.at(body_id)[1] * 2 + 0) += dparams(e) * jacobian(0, 0) + dparams(e + dof) * jacobian(1, 0);
+						dx(body_id_map.at(body_id)[1] * 2 + 1) += dparams(e) * jacobian(0, 1) + dparams(e + dof) * jacobian(1, 1);
 					}
 				};
 			}
@@ -913,7 +913,7 @@ namespace polyfem
 
 	std::shared_ptr<OptimizationProblem> setup_optimization(const std::string &type, State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
-		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)> > setup_functions{{"shape", setup_shape_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
+		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)>> setup_functions{{"shape", setup_shape_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
 
 		return setup_functions[type](state, j, x_initial);
 	}

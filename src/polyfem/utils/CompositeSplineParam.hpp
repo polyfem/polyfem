@@ -16,9 +16,9 @@ namespace polyfem
 			// Deduce the t parameter of all of the points in the spline sections
 			int index = 0;
 			double tol = 1e-4;
-			std::vector<int> unused;
 			for (const auto &kv : boundary_id_to_node_id_)
 			{
+				std::vector<int> unused;
 				boundary_id_to_spline_count_[kv.first] = control_point.at(kv.first).rows() - 1;
 				for (const auto &b : kv.second)
 				{
@@ -44,6 +44,8 @@ namespace polyfem
 				for (const auto &i : unused)
 				{
 					auto loc = std::find(boundary_id_to_node_id_[kv.first].begin(), boundary_id_to_node_id_[kv.first].end(), i);
+					if (loc == boundary_id_to_node_id_[kv.first].end())
+						logger().error("Error removing unused node.");
 					boundary_id_to_node_id_[kv.first].erase(loc);
 				}
 				logger().info("Number of useful boundary nodes in spline parametrization: {}", boundary_id_to_node_id_[kv.first].size());
