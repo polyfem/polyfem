@@ -145,12 +145,12 @@ namespace polyfem
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
-				mesh::remesh(*this, t0 + dt * (t + 0), dt);
+				mesh::remesh(*this, sol, t0 + dt * (t + 0), dt);
 
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
-				solve_tensor_nonlinear(t); // solve the scene again after remeshing
+				solve_tensor_nonlinear(sol, t); // solve the scene again after remeshing
 
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure

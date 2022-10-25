@@ -367,6 +367,7 @@ namespace polyfem::mesh
 	int WildRemeshing2D::build_bases(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
+		const std::string &assembler_formulation,
 		std::vector<polyfem::basis::ElementBases> &bases,
 		Eigen::VectorXi &vertex_to_basis)
 	{
@@ -379,6 +380,7 @@ namespace polyfem::mesh
 		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
 		const int n_bases = FEBasis2d::build_bases(
 			mesh,
+			assembler_formulation,
 			/*quadrature_order=*/1,
 			/*mass_quadrature_order=*/2,
 			/*discr_order=*/1,
@@ -427,7 +429,9 @@ namespace polyfem::mesh
 		// Assume isoparametric
 		std::vector<polyfem::basis::ElementBases> bases_before;
 		Eigen::VectorXi vertex_to_basis_before;
-		int n_bases_before = build_bases(rest_positions_before, triangles_before, bases_before, vertex_to_basis_before);
+		int n_bases_before = build_bases(
+			rest_positions_before, triangles_before, assembler_formulation,
+			bases_before, vertex_to_basis_before);
 		const std::vector<polyfem::basis::ElementBases> &geom_bases_before = bases_before;
 		n_bases_before += obstacle.n_vertices();
 
@@ -444,7 +448,9 @@ namespace polyfem::mesh
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;
-		int n_bases = build_bases(proposed_rest_positions, proposed_triangles, bases, vertex_to_basis);
+		int n_bases = build_bases(
+			proposed_rest_positions, proposed_triangles, assembler_formulation,
+			bases, vertex_to_basis);
 		const std::vector<polyfem::basis::ElementBases> &geom_bases = bases;
 		n_bases += obstacle.n_vertices();
 

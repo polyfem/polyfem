@@ -176,11 +176,12 @@ namespace polyfem::mesh
 				U.row(i) = m.vertex_attrs[vi].displacement();
 			}
 
-			WildRemeshing2D::build_bases(V, F, bases, vertex_to_basis);
+			WildRemeshing2D::build_bases(
+				V, F, m.assembler_formulation, bases, vertex_to_basis);
 
 			Eigen::VectorXd displacements = utils::flatten(utils::reorder_matrix(U, vertex_to_basis));
 
-			const AssemblyValsCache cache;
+			AssemblyValsCache cache;
 			const double energy = m.assembler.assemble_energy(
 				m.assembler_formulation,
 				/*is_volume=*/DIM == 3,

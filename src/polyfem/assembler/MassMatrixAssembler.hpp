@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -10,7 +10,7 @@
 #include <cmath>
 #include <memory>
 
-//mass matrix assembler
+// mass matrix assembler
 namespace polyfem::assembler
 {
 	class MassMatrixAssembler

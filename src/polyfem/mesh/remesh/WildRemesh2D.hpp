@@ -161,6 +161,7 @@ namespace polyfem::mesh
 		static int build_bases(
 			const Eigen::MatrixXd &V,
 			const Eigen::MatrixXi &F,
+			const std::string &assembler_formulation,
 			std::vector<polyfem::basis::ElementBases> &bases,
 			Eigen::VectorXi &vertex_to_basis);
 

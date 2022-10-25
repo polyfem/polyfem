@@ -4,5 +4,5 @@
 
 namespace polyfem::mesh
 {
-	void remesh(State &state, const double time, const double dt);
+	void remesh(State &state, Eigen::MatrixXd &sol, const double time, const double dt);
 } // namespace polyfem::mesh
