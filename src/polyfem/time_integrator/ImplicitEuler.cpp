@@ -29,4 +29,9 @@ namespace polyfem::time_integrator
 	{
 		return dt() * dt();
 	}
+
+	double ImplicitEuler::dv_dx() const
+	{
+		return 1.0 / dt();
+	}
 } // namespace polyfem::time_integrator

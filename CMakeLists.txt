@@ -36,15 +36,6 @@ endif()
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")
 ################################################################################
 
-if(INPUT_POLYFEM_DATA_ROOT)
-    set(POLYFEM_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_POLYFEM_DATA_ROOT}/")
-else()
-    set(POLYFEM_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/data/")
-endif()
-if(NOT DEFINED FETCHCONTENT_SOURCE_DIR_POLYFEM_DATA AND NOT EXISTS ${POLYFEM_DATA_ROOT})
-    file(MAKE_DIRECTORY ${POLYFEM_DATA_ROOT})
-endif()
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 
@@ -70,7 +61,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ################################################################################
-
 
 # Polyfem options
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")

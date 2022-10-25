@@ -11,13 +11,13 @@ namespace polyfem
 	{
 		enum class BoundaryType
 		{
-			TriLine,
-			QuadLine,
-			Tri,
-			Quad,
-			Polygon,
-			Polyhedron,
-			Invalid
+			TRI_LINE,
+			QUAD_LINE,
+			TRI,
+			QUAD,
+			POLYGON,
+			POLYHEDRON,
+			INVALID
 		};
 
 		class LocalBoundary

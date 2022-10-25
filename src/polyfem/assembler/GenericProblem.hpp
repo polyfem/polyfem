@@ -13,6 +13,19 @@ namespace polyfem
 {
 	namespace assembler
 	{
+		struct TensorBCValue
+		{
+			std::array<utils::ExpressionValue, 3> value;
+			std::shared_ptr<utils::Interpolation> interpolation;
+			Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
+		};
+
+		struct ScalarBCValue
+		{
+			utils::ExpressionValue value;
+			std::shared_ptr<utils::Interpolation> interpolation;
+		};
+
 		class GenericTensorProblem : public Problem
 		{
 		public:
@@ -31,6 +44,15 @@ namespace polyfem
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+
+			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const override;
+			bool is_nodal_dirichlet_boundary(const int n_id, const int tag) override;
+			bool is_nodal_neumann_boundary(const int n_id, const int tag) override;
+			bool has_nodal_dirichlet() override;
+			bool has_nodal_neumann() override;
+			bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const override;
+			void update_nodes(const Eigen::VectorXi &in_node_to_node) override;
 
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return false; }
@@ -86,22 +108,22 @@ namespace polyfem
 			bool is_time_dept_ = false;
 			// bool is_mixed_ = false;
 
-			std::vector<std::array<utils::ExpressionValue, 3>> forces_;
-			std::vector<std::shared_ptr<utils::Interpolation>> forces_interpolation_;
-			std::vector<std::array<utils::ExpressionValue, 3>> displacements_;
-			std::vector<std::shared_ptr<utils::Interpolation>> displacements_interpolation_;
-			std::vector<utils::ExpressionValue> pressures_;
-			std::vector<std::shared_ptr<utils::Interpolation>> pressure_interpolation_;
+			std::vector<TensorBCValue> forces_;
+			std::vector<TensorBCValue> displacements_;
+			std::vector<ScalarBCValue> pressures_;
 
 			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_position_;
 			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_velocity_;
 			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_acceleration_;
 
-			std::vector<Eigen::Matrix<bool, 1, 3>> dirichlet_dimensions_;
-
 			std::array<utils::ExpressionValue, 3> rhs_;
 			std::array<utils::ExpressionValue, 3> exact_;
 			std::array<utils::ExpressionValue, 9> exact_grad_;
+
+			std::map<int, TensorBCValue> nodal_dirichlet_;
+			std::map<int, TensorBCValue> nodal_neumann_;
+			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
+
 			bool is_all_;
 		};
 
@@ -150,12 +172,9 @@ namespace polyfem
 			void clear() override;
 
 		private:
-			std::vector<utils::ExpressionValue> neumann_;
-			std::vector<utils::ExpressionValue> dirichlet_;
+			std::vector<ScalarBCValue> neumann_;
+			std::vector<ScalarBCValue> dirichlet_;
 			std::vector<std::pair<int, utils::ExpressionValue>> initial_solution_;
-
-			std::vector<std::shared_ptr<utils::Interpolation>> neumann_interpolation_;
-			std::vector<std::shared_ptr<utils::Interpolation>> dirichlet_interpolation_;
 
 			utils::ExpressionValue rhs_;
 			utils::ExpressionValue exact_;

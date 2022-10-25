@@ -10,8 +10,10 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "GenericElastic.hpp"
+#include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
-// #include "OgdenElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include "ViscousDamping.hpp"
 
@@ -123,6 +125,7 @@ namespace polyfem::assembler
 			const int n_bases = int(bases.size());
 			igl::Timer timerg;
 			timerg.start();
+			assert(cache.is_mass() == is_mass);
 
 			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
@@ -132,13 +135,7 @@ namespace polyfem::assembler
 					ElementAssemblyValues &vals = local_storage.vals;
 					// igl::Timer timer; timer.start();
 					// vals.compute(e, is_volume, bases[e], gbases[e]);
-					if (is_mass)
-					{
-						bases[e].compute_mass_quadrature(vals.quadrature);
-						vals.compute(e, is_volume, vals.quadrature.points, bases[e], gbases[e]);
-					}
-					else
-						cache.compute(e, is_volume, bases[e], gbases[e], vals);
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 
@@ -684,8 +681,9 @@ namespace polyfem::assembler
 	template class Assembler<HookeLinearElasticity>;
 	template class NLAssembler<SaintVenantElasticity>;
 	template class NLAssembler<NeoHookeanElasticity>;
+	template class NLAssembler<GenericElastic<MooneyRivlinElasticity>>;
 	template class NLAssembler<MultiModel>;
-	// template class NLAssembler<OgdenElasticity>;
+	template class NLAssembler<GenericElastic<OgdenElasticity>>;
 
 	template class NLAssembler<ViscousDamping>;
 

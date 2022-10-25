@@ -50,14 +50,14 @@ namespace polyfem
 			std::vector<double> v_in_Kernel;
 		};
 
-		enum MeshType
+		enum class MeshType
 		{
-			Tri = 0,
-			Qua,
-			HSur,
-			Tet,
-			Hyb,
-			Hex
+			TRI = 0,
+			QUA,
+			H_SUR,
+			TET,
+			HYB,
+			HEX
 		};
 
 		class Mesh3DStorage
@@ -77,7 +77,7 @@ namespace polyfem
 			void append(const Mesh3DStorage &other)
 			{
 				if (other.type != type)
-					type = MeshType::Hyb;
+					type = MeshType::HYB;
 
 				const int n_v = points.cols();
 				const int n_e = edges.size();

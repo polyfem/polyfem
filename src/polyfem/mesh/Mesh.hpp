@@ -21,17 +21,17 @@ namespace polyfem
 		/// are tagged as boundary, and vertices incident to a polytope are also considered as boundary.
 		enum class ElementType
 		{
-			Simplex,                    /// Triangle/tet element
-			RegularInteriorCube,        /// Regular quad/hex inside a 3^n patch
-			SimpleSingularInteriorCube, /// Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
-			MultiSingularInteriorCube,  /// Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
-			RegularBoundaryCube,        /// Boundary quad/hex, where all boundary vertices/edges are incident to at most 2 quads/hexes
-			SimpleSingularBoundaryCube, /// Quad incident to exactly 1 singular vertex (in 2D); hex incident to exactly 1 singular interior edge, 0 singular boundary edge, 1 boundary face (in 3D)
-			MultiSingularBoundaryCube,  /// Boundary hex that is not regular nor SimpleSingularBoundaryCube
-			InterfaceCube,              /// Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface)
-			InteriorPolytope,           /// Interior polytope
-			BoundaryPolytope,           /// Boundary polytope
-			Undefined                   /// For invalid configurations
+			SIMPLEX,                       /// Triangle/tet element
+			REGULAR_INTERIOR_CUBE,         /// Regular quad/hex inside a 3^n patch
+			SIMPLE_SINGULAR_INTERIOR_CUBE, /// Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
+			MULTI_SINGULAR_INTERIOR_CUBE,  /// Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
+			REGULAR_BOUNDARY_CUBE,         /// Boundary quad/hex, where all boundary vertices/edges are incident to at most 2 quads/hexes
+			SIMPLE_SINGULAR_BOUNDARY_CUBE, /// Quad incident to exactly 1 singular vertex (in 2D); hex incident to exactly 1 singular interior edge, 0 singular boundary edge, 1 boundary face (in 3D)
+			MULTI_SINGULAR_BOUNDARY_CUBE,  /// Boundary hex that is not regular nor SimpleSingularBoundaryCube
+			INTERFACE_CUBE,                /// Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface)
+			INTERIOR_POLYTOPE,             /// Interior polytope
+			BOUNDARY_POLYTOPE,             /// Boundary polytope
+			UNDEFINED,                     /// For invalid configurations
 		};
 
 		/// Abstract mesh class to capture 2d/3d conforming and non-conforming meshes
@@ -388,6 +388,11 @@ namespace polyfem
 			/// @param[in] type type of the element
 			void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 
+			/// @brief computes boundary selections based on a function
+			///
+			/// @param[in] marker lambda function that takes the node id, the position, and true/false if the element is on the boundary and returns an integer
+			void compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker);
+
 			/// @brief loads the boundary selections for a file
 			///
 			/// @param[in] path file's path
@@ -444,6 +449,24 @@ namespace polyfem
 				else
 					return -1; // default for no boundary
 			}
+
+			/// @brief Get the boundary selection of a node
+			///
+			/// @param[in] node_id node id
+			/// @return label of node
+			virtual int get_node_id(const int node_id) const
+			{
+				if (has_node_ids())
+					return node_ids_.at(node_id);
+				else
+					return -1; // default for no boundary
+			}
+
+			/// @brief Update the node ids to reorder them
+			///
+			/// @param[in] in_node_to_node mapping from input nodes to polyfem nodes
+			void update_nodes(const Eigen::VectorXi &in_node_to_node);
+
 			/// @brief Get the volume selection of an element (cell in 3d, face in 2d)
 			///
 			/// @param[in] primitive element id
@@ -461,6 +484,10 @@ namespace polyfem
 			{
 				return body_ids_;
 			}
+			/// @brief checks if points selections are available
+			///
+			/// @return points selections are available
+			bool has_node_ids() const { return !node_ids_.empty(); }
 			/// @brief checks if surface selections are available
 			///
 			/// @return surface selections are available
@@ -585,6 +612,8 @@ namespace polyfem
 
 			/// list of element types
 			std::vector<ElementType> elements_tag_;
+			/// list of node labels
+			std::vector<int> node_ids_;
 			/// list of surface labels
 			std::vector<int> boundary_ids_;
 			/// list of volume labels

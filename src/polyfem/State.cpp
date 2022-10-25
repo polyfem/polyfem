@@ -200,6 +200,12 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
+		if (args["space"]["advanced"]["use_spline"])
+		{
+			logger().warn("Node ordering disabled, it dosent work for splines!");
+			return;
+		}
+
 		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
 		{
 			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
@@ -347,15 +353,32 @@ namespace polyfem
 					current = tmp;
 				else if (current != tmp)
 				{
-					if (current == "LinearElasticity" || current == "NeoHookean" || current == "MultiModels")
+					if (
+						current == "LinearElasticity" || //
+						current == "NeoHookean" ||       //
+						current == "SaintVenant" ||
+						// current == "HookeLinearElasticity" ||
+						current == "MooneyRivlin" || //
+						current == "Ogden" ||        //
+						current == "MultiModels")
 					{
-						if (tmp == "LinearElasticity" || tmp == "NeoHookean")
+						if (tmp == "LinearElasticity" || //
+							tmp == "NeoHookean" ||       //
+							tmp == "SaintVenant" ||
+							// tmp == "HookeLinearElasticity" ||
+							tmp == "MooneyRivlin" || //
+							tmp == "Ogden")
 							current = "MultiModels";
 						else
 						{
 							logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
 							throw "invalid input";
 						}
+					}
+					else
+					{
+						logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
+						throw "invalid input";
 					}
 				}
 			}
@@ -366,7 +389,7 @@ namespace polyfem
 			return args["materials"]["type"];
 	}
 
-	void State::sol_to_pressure()
+	void State::sol_to_pressure(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		if (n_pressure_bases <= 0)
 		{
@@ -568,7 +591,8 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
-		input_dirichlet.clear();
+		dirichlet_nodes.clear();
+		neumann_nodes.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -576,8 +600,6 @@ namespace polyfem
 		poly_edge_to_data.clear();
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		if (formulation() == "MultiModels")
 		{
@@ -709,9 +731,6 @@ namespace polyfem
 				logger().error("p refinement not supported in mixed formulation!");
 				return;
 			}
-
-			// same quadrature order as solution basis
-			quadrature_order = std::max(quadrature_order, (disc_order - 1) * 2 + 1);
 		}
 
 		if (mesh->is_volume())
@@ -726,7 +745,7 @@ namespace polyfem
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -734,15 +753,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = basis::FEBasis3d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		else
@@ -758,7 +777,7 @@ namespace polyfem
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -766,17 +785,29 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
+
+		if (assembler.is_mixed(formulation()))
+		{
+			assert(bases.size() == pressure_bases.size());
+			for (int i = 0; i < pressure_bases.size(); ++i)
+			{
+				quadrature::Quadrature b_quad;
+				bases[i].compute_quadrature(b_quad);
+				pressure_bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
+			}
+		}
+
 		timer.stop();
 
 		build_polygonal_basis();
@@ -801,41 +832,84 @@ namespace polyfem
 			logger().debug("Building node mapping...");
 			timer2.start();
 			build_node_mapping();
+			problem->update_nodes(in_node_to_node);
+			mesh->update_nodes(in_node_to_node);
 			timer2.stop();
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
 
 		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
+		problem->setup_bc(*mesh, n_bases,
+						  bases, pressure_bases,
+						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+						  dirichlet_nodes, neumann_nodes);
+
+		// setp nodal values
+		{
+			dirichlet_nodes_position.resize(dirichlet_nodes.size());
+			for (int n = 0; n < dirichlet_nodes.size(); ++n)
+			{
+				const int n_id = dirichlet_nodes[n];
+				bool found = false;
+				for (const auto &bs : bases)
+				{
+					for (const auto &b : bs.bases)
+					{
+						for (const auto &lg : b.global())
+						{
+							if (lg.index == n_id)
+							{
+								dirichlet_nodes_position[n] = lg.node;
+								found = true;
+								break;
+							}
+						}
+
+						if (found)
+							break;
+					}
+
+					if (found)
+						break;
+				}
+
+				assert(found);
+			}
+
+			neumann_nodes_position.resize(neumann_nodes.size());
+			for (int n = 0; n < neumann_nodes.size(); ++n)
+			{
+				const int n_id = neumann_nodes[n];
+				bool found = false;
+				for (const auto &bs : bases)
+				{
+					for (const auto &b : bs.bases)
+					{
+						for (const auto &lg : b.global())
+						{
+							if (lg.index == n_id)
+							{
+								neumann_nodes_position[n] = lg.node;
+								found = true;
+								break;
+							}
+						}
+
+						if (found)
+							break;
+					}
+
+					if (found)
+						break;
+				}
+
+				assert(found);
+			}
+		}
+
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		for (int b = 0; b < args["boundary_conditions"]["dirichlet_boundary"].size(); ++b)
-		{
-			if (!args["boundary_conditions"]["dirichlet_boundary"][b].is_string())
-				continue;
-			const std::string path = resolve_input_path(args["boundary_conditions"]["dirichlet_boundary"][b]);
-			if (std::filesystem::is_regular_file(path))
-			{
-				Eigen::MatrixXd tmp;
-				read_matrix(path, tmp);
-
-				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
-				for (int n = 0; n < nodes.size(); ++n)
-				{
-					const int node_id = in_node_to_node[nodes[n]];
-					tmp(n, 0) = node_id;
-					for (int d = 0; d < problem_dim; ++d)
-					{
-						if (!std::isnan(tmp(n, d + 1)))
-							boundary_nodes.push_back(node_id * problem_dim + d);
-					}
-				}
-
-				input_dirichlet.emplace_back(tmp);
-			}
-		}
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
@@ -876,11 +950,13 @@ namespace polyfem
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
 		ass_vals_cache.clear();
+		mass_ass_vals_cache.clear();
 		if (n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
 			timer.start();
 			logger().info("Building cache...");
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
+			mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
 			if (assembler.is_mixed(formulation()))
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
@@ -910,8 +986,6 @@ namespace polyfem
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		igl::Timer timer;
 		timer.start();
@@ -1038,8 +1112,6 @@ namespace polyfem
 		}
 
 		stiffness.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 		mass.resize(0, 0);
 		avg_mass = 1;
 
@@ -1066,7 +1138,7 @@ namespace polyfem
 				if (problem->is_time_dependent())
 				{
 					StiffnessMatrix velocity_mass;
-					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, velocity_mass);
+					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), mass_ass_vals_cache, velocity_mass);
 
 					std::vector<Eigen::Triplet<double>> mass_blocks;
 					mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1091,7 +1163,7 @@ namespace polyfem
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), mass_ass_vals_cache, mass);
 			}
 		}
 
@@ -1139,7 +1211,10 @@ namespace polyfem
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
 		return std::make_shared<RhsAssembler>(
-			assembler, *mesh, obstacle, input_dirichlet, n_bases, size, bases, geom_bases(), ass_vals_cache, formulation(), *problem,
+			assembler, *mesh, obstacle,
+			dirichlet_nodes, neumann_nodes,
+			dirichlet_nodes_position, neumann_nodes_position,
+			n_bases, size, bases, geom_bases(), ass_vals_cache, formulation(), *problem,
 			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 	}
 
@@ -1163,6 +1238,7 @@ namespace polyfem
 
 		json p_params = {};
 		p_params["formulation"] = formulation();
+		p_params["root_path"] = root_path();
 		{
 			RowVectorNd min, max, delta;
 			mesh->bounding_box(min, max);
@@ -1176,8 +1252,6 @@ namespace polyfem
 
 		// stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		timer.start();
 		logger().info("Assigning rhs...");
@@ -1220,7 +1294,7 @@ namespace polyfem
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void State::solve_problem()
+	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		if (!mesh)
 		{
@@ -1244,8 +1318,8 @@ namespace polyfem
 			return;
 		}
 
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
+		// sol.resize(0, 0);
+		// pressure.resize(0, 0);
 		stats.spectrum.setZero();
 
 		igl::Timer timer;
@@ -1258,7 +1332,7 @@ namespace polyfem
 			Eigen::saveMarket(stiffness, full_mat_path);
 		}
 
-		init_solve();
+		init_solve(sol, pressure);
 
 		if (problem->is_time_dependent())
 		{
@@ -1274,28 +1348,28 @@ namespace polyfem
 			}
 
 			if (formulation() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt);
+				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
 			else if (formulation() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt);
+				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled()) // Collisions add nonlinearity to the problem
-				solve_transient_linear(time_steps, t0, dt);
+				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_transient_tensor_nonlinear(time_steps, t0, dt);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol);
 		}
 		else
 		{
 			if (formulation() == "NavierStokes")
-				solve_navier_stokes();
+				solve_navier_stokes(sol, pressure);
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
-				solve_linear();
+				solve_linear(sol, pressure);
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
 			{
-				init_nonlinear_tensor_solve();
-				solve_tensor_nonlinear();
+				init_nonlinear_tensor_solve(sol);
+				solve_tensor_nonlinear(sol);
 				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
 				if (!u_path.empty())
 					write_matrix(u_path, sol);

@@ -7,6 +7,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/ALForm.hpp>
+#include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
@@ -109,14 +110,14 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt)
+	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
 	{
-		init_nonlinear_tensor_solve(t0 + dt);
+		init_nonlinear_tensor_solve(sol, t0 + dt);
 
 		const double save_dt = dt / 3; // dt;
 		int save_i = 0;
 
-		save_timestep(t0, save_i++, t0, save_dt);
+		save_timestep(t0, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 		// Write the total energy to a CSV file
 		std::ofstream energy_file(resolve_output_path("energy.csv"));
@@ -135,33 +136,33 @@ namespace polyfem
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			solve_tensor_nonlinear(t);
+			solve_tensor_nonlinear(sol, t);
 
 			// if (t > 18)
 			if (t0 + dt * t >= 5.6)
 			// if (true)
 			{
 				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 				mesh::remesh(*this, t0 + dt * (t + 0), dt);
 
 				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 				solve_tensor_nonlinear(t); // solve the scene again after remeshing
 
 				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
 			else
 			{
 				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt);
+				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
 
 			{
@@ -184,7 +185,7 @@ namespace polyfem
 			resolve_output_path(args["output"]["data"]["a_path"]));
 	}
 
-	void State::init_nonlinear_tensor_solve(const double t)
+	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t)
 	{
 		assert(!assembler.is_linear(formulation()) || is_contact_enabled()); // non-linear
 		assert(!problem->is_scalar());                                       // tensor
@@ -321,6 +322,31 @@ namespace polyfem
 			}
 		}
 
+		std::vector<json> rayleigh_damping_jsons;
+		if (args["solver"]["rayleigh_damping"].is_array())
+			rayleigh_damping_jsons = args["solver"]["rayleigh_damping"].get<std::vector<json>>();
+		else
+			rayleigh_damping_jsons.push_back(args["solver"]["rayleigh_damping"]);
+		if (problem->is_time_dependent())
+		{
+			// Map from form name to form so RayleighDampingForm::create can get the correct form to damp
+			const std::unordered_map<std::string, std::shared_ptr<Form>> possible_forms_to_damp = {
+				{"elasticity", solve_data.elastic_form},
+				{"contact", solve_data.contact_form},
+			};
+
+			for (const json &params : rayleigh_damping_jsons)
+			{
+				forms.push_back(RayleighDampingForm::create(
+					params, possible_forms_to_damp,
+					*solve_data.time_integrator));
+			}
+		}
+		else if (rayleigh_damping_jsons.size() > 0)
+		{
+			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
+		}
+
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
 		solve_data.nl_problem = std::make_shared<NLProblem>(
@@ -349,7 +375,7 @@ namespace polyfem
 		stats.solver_info = json::array();
 	}
 
-	void State::solve_tensor_nonlinear(const int t)
+	void State::solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t)
 	{
 
 		assert(solve_data.nl_problem != nullptr);
@@ -368,7 +394,7 @@ namespace polyfem
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
-		save_subsolve(subsolve_count, t);
+		save_subsolve(subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 
 		// ---------------------------------------------------------------------
 
@@ -391,7 +417,7 @@ namespace polyfem
 				 {"info", info}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
@@ -448,7 +474,7 @@ namespace polyfem
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
 				 {"info", info}});
-			save_subsolve(++subsolve_count, t);
+			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		}
 	}
 

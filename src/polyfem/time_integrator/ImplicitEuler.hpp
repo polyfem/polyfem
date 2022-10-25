@@ -51,5 +51,11 @@ namespace polyfem::time_integrator
 		/// 	\Delta t^2
 		/// \f]
 		double acceleration_scaling() const override;
+
+		/// @brief Compute the derivative of the velocity with respect to the solution.
+		/// \f[
+		/// 	\frac{\partial v}{\partial x} = \frac{1}{\Delta t}
+		/// \f]
+		double dv_dx() const override;
 	};
 } // namespace polyfem::time_integrator

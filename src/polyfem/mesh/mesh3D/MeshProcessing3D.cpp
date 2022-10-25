@@ -18,7 +18,7 @@ using namespace Eigen;
 void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 {
 	hmi.edges.clear();
-	if (hmi.type == MeshType::Tri || hmi.type == MeshType::Qua || hmi.type == MeshType::HSur)
+	if (hmi.type == MeshType::TRI || hmi.type == MeshType::QUA || hmi.type == MeshType::H_SUR)
 	{
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t>> temp;
 		temp.reserve(hmi.faces.size() * 3);
@@ -55,7 +55,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 
 			hmi.faces[std::get<2>(temp[i])].es[std::get<3>(temp[i])] = E_num - 1;
 		}
-		//boundary
+		// boundary
 		for (auto &v : hmi.vertices)
 			v.boundary = false;
 		for (uint32_t i = 0; i < hmi.edges.size(); ++i)
@@ -64,7 +64,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 				hmi.vertices[hmi.edges[i].vs[0]].boundary = hmi.vertices[hmi.edges[i].vs[1]].boundary = true;
 			}
 	}
-	else if (hmi.type == MeshType::Hex)
+	else if (hmi.type == MeshType::HEX)
 	{
 
 		std::vector<std::vector<uint32_t>> total_fs(hmi.elements.size() * 6);
@@ -133,7 +133,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			}
 			hmi.faces[std::get<2>(temp[i])].es[std::get<3>(temp[i])] = E_num - 1;
 		}
-		//boundary
+		// boundary
 		for (auto &v : hmi.vertices)
 			v.boundary = false;
 		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
@@ -145,7 +145,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 					hmi.vertices[hmi.edges[eid].vs[0]].boundary = hmi.vertices[hmi.edges[eid].vs[1]].boundary = true;
 				}
 	}
-	else if (hmi.type == MeshType::Hyb || hmi.type == MeshType::Tet)
+	else if (hmi.type == MeshType::HYB || hmi.type == MeshType::TET)
 	{
 		vector<bool> bf_flag(hmi.faces.size(), false);
 		for (auto h : hmi.elements)
@@ -185,7 +185,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			}
 			hmi.faces[std::get<2>(temp[i])].es[std::get<3>(temp[i])] = E_num - 1;
 		}
-		//boundary
+		// boundary
 		for (auto &v : hmi.vertices)
 			v.boundary = false;
 		for (uint32_t i = 0; i < hmi.faces.size(); ++i)
@@ -197,7 +197,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 					hmi.vertices[hmi.faces[i].vs[j]].boundary = true;
 				}
 	}
-	//f_nhs;
+	// f_nhs;
 	for (auto &f : hmi.faces)
 		f.neighbor_hs.clear();
 	for (uint32_t i = 0; i < hmi.elements.size(); i++)
@@ -207,7 +207,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 			hmi.faces[hmi.elements[i].fs[j]].neighbor_hs.push_back(i);
 		}
 	}
-	//e_nfs, v_nfs
+	// e_nfs, v_nfs
 	for (auto &e : hmi.edges)
 		e.neighbor_fs.clear();
 	for (auto &v : hmi.vertices)
@@ -219,7 +219,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		for (uint32_t j = 0; j < hmi.faces[i].vs.size(); j++)
 			hmi.vertices[hmi.faces[i].vs[j]].neighbor_fs.push_back(i);
 	}
-	//v_nes, v_nvs
+	// v_nes, v_nvs
 	for (auto &v : hmi.vertices)
 	{
 		v.neighbor_es.clear();
@@ -233,7 +233,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		hmi.vertices[v0].neighbor_vs.push_back(v1);
 		hmi.vertices[v1].neighbor_vs.push_back(v0);
 	}
-	//e_nhs
+	// e_nhs
 	for (auto &e : hmi.edges)
 		e.neighbor_hs.clear();
 	for (auto &ele : hmi.elements)
@@ -252,8 +252,8 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		for (auto nhid : nhs)
 			hmi.elements[nhid].es.push_back(i);
 	}
-	//v_nhs; ordering fs for hex
-	if (hmi.type != MeshType::Hyb && hmi.type != MeshType::Tet)
+	// v_nhs; ordering fs for hex
+	if (hmi.type != MeshType::HYB && hmi.type != MeshType::TET)
 		return;
 
 	for (auto &v : hmi.vertices)
@@ -382,8 +382,8 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		for (uint32_t j = 0; j < hmi.elements[i].vs.size(); j++)
 			hmi.vertices[hmi.elements[i].vs[j]].neighbor_hs.push_back(i);
 	}
-	//matrix representation of tet mesh
-	if (hmi.type == MeshType::Tet)
+	// matrix representation of tet mesh
+	if (hmi.type == MeshType::TET)
 	{
 		hmi.EV.resize(2, hmi.edges.size());
 		for (const auto &e : hmi.edges)
@@ -436,7 +436,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 		}
 	}
 
-	//boundary flags for hybrid mesh
+	// boundary flags for hybrid mesh
 	std::vector<bool> bv_flag(hmi.vertices.size(), false), be_flag(hmi.edges.size(), false), bf_flag(hmi.faces.size(), false);
 	for (auto f : hmi.faces)
 		if (f.boundary && hmi.elements[f.neighbor_hs[0]].hex)
@@ -455,7 +455,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 				be_flag[eid] = true;
 				bv_flag[hmi.faces[i].vs[j]] = true;
 			}
-	//boundary_hex for hybrid mesh
+	// boundary_hex for hybrid mesh
 	for (auto &v : hmi.vertices)
 		v.boundary_hex = false;
 	for (auto &e : hmi.edges)
@@ -491,7 +491,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi)
 }
 void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 {
-	//connected components
+	// connected components
 	vector<bool> H_tag(hmi.elements.size(), false);
 	vector<vector<uint32_t>> Groups;
 	while (true)
@@ -575,13 +575,13 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 		}
 		Groups.push_back(group);
 	}
-	//direction
-	// cout << "correct orientation " << endl;
+	// direction
+	//  cout << "correct orientation " << endl;
 	for (auto group : Groups)
 	{
 		Mesh_Quality mq1, mq2;
 		Mesh3DStorage m1, m2;
-		m2.type = m1.type = MeshType::Hex;
+		m2.type = m1.type = MeshType::HEX;
 
 		m2.points = m1.points = hmi.points;
 		for (auto hid : group)
@@ -607,7 +607,7 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 }
 bool MeshProcessing3D::scaled_jacobian(Mesh3DStorage &hmi, Mesh_Quality &mq)
 {
-	if (hmi.type != MeshType::Hex)
+	if (hmi.type != MeshType::HEX)
 		return false;
 
 	mq.ave_Jacobian = 0;
@@ -669,7 +669,7 @@ double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Ve
 	double scaled_jacobian = Jacobian.determinant();
 	if (std::abs(norm1) < Jacobian_Precision || std::abs(norm2) < Jacobian_Precision || std::abs(norm3) < Jacobian_Precision)
 	{
-		//std::cout << "Potential Bug, check!" << endl; //system("PAUSE");
+		// std::cout << "Potential Bug, check!" << endl; //system("PAUSE");
 		return scaled_jacobian;
 	}
 	scaled_jacobian /= norm1 * norm2 * norm3;
@@ -679,7 +679,7 @@ double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Ve
 void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi)
 {
 	Mesh3DStorage mesh;
-	mesh.type = MeshType::Hex;
+	mesh.type = MeshType::HEX;
 	mesh.points = hmi.points;
 	mesh.vertices.resize(hmi.vertices.size());
 	for (const auto &v : hmi.vertices)
@@ -721,7 +721,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 		ele_subdivison_levels(M, Refinement_Levels);
 
 		Mesh3DStorage M_;
-		M_.type = MeshType::Hyb;
+		M_.type = MeshType::HYB;
 
 		vector<int> E2V(M.edges.size()), F2V(M.faces.size()), Ele2V(M.elements.size());
 
@@ -781,7 +781,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 			M_.vertices.push_back(v);
 			Ele2V[ele.id] = v.id;
 		}
-		//new elements
+		// new elements
 		std::vector<std::vector<uint32_t>> total_fs;
 		total_fs.reserve(M.elements.size() * 8 * 6);
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF;
@@ -795,7 +795,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 			{
 				for (auto vid : ele.vs)
 				{
-					//top 4 vs
+					// top 4 vs
 					vector<int> top_vs(4);
 					top_vs[0] = vid;
 					int fid = -1;
@@ -813,7 +813,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					int e_aft = M.faces[fid].es[v_ind];
 					top_vs[1] = E2V[e_pre];
 					top_vs[3] = E2V[e_aft];
-					//bottom 4 vs
+					// bottom 4 vs
 					vector<int> bottom_vs(4);
 
 					auto nvs = M.vertices[vid].neighbor_vs;
@@ -870,7 +870,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 
 					vector<int> ele_vs = top_vs;
 					ele_vs.insert(ele_vs.end(), bottom_vs.begin(), bottom_vs.end());
-					//fs
+					// fs
 					for (short j = 0; j < 6; j++)
 					{
 						for (short k = 0; k < 4; k++)
@@ -879,7 +879,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						std::sort(vs.begin(), vs.end());
 						tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, j));
 					}
-					//new ele
+					// new ele
 					Element ele_;
 					ele_.id = elen++;
 					ele_.fs.resize(6, -1);
@@ -906,7 +906,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 				int level = Refinement_Levels[ele.id];
 				if (reverse)
 					level = 1;
-				//local_V2V
+				// local_V2V
 				std::vector<std::vector<int>> local_V2Vs;
 				std::map<int, int> local_vi_map;
 				for (auto vid : ele.vs)
@@ -934,7 +934,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					local_vi_map[vid] = local_V2Vs.size();
 					local_V2Vs.push_back(v2v);
 				}
-				//local_E2V
+				// local_E2V
 				vector<uint32_t> es;
 				for (auto fid : ele.fs)
 					es.insert(es.end(), M.faces[fid].es.begin(), M.faces[fid].es.end());
@@ -968,7 +968,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					local_ei_map[eid] = local_E2Vs.size();
 					local_E2Vs.push_back(e2v);
 				}
-				//local_F2V
+				// local_F2V
 				std::vector<std::vector<int>> local_F2Vs;
 				std::map<int, int> local_fi_map;
 				for (auto fid : ele.fs)
@@ -996,7 +996,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					local_fi_map[fid] = local_F2Vs.size();
 					local_F2Vs.push_back(f2v);
 				}
-				//polyhedron fs
+				// polyhedron fs
 				int local_fn = 0;
 				for (auto fid : ele.fs)
 				{
@@ -1023,7 +1023,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, local_fn++));
 					}
 				}
-				//polyhedron
+				// polyhedron
 				Element ele_;
 				ele_.id = elen++;
 				ele_.fs.resize(local_fn, -1);
@@ -1033,7 +1033,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 				ele_.v_in_Kernel = ele.v_in_Kernel;
 				M_.elements.push_back(ele_);
 				Parents.push_back(ele.id);
-				//hex
+				// hex
 				for (int r = 0; r < level; r++)
 				{
 					for (auto fid : ele.fs)
@@ -1054,7 +1054,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 							ele_vs[6] = local_E2Vs[local_ei_map[fes[j]]][r];
 							ele_vs[7] = local_F2Vs[local_fi_map[fid]][r];
 
-							//fs
+							// fs
 							for (short j = 0; j < 6; j++)
 							{
 								for (short k = 0; k < 4; k++)
@@ -1063,7 +1063,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 								std::sort(vs.begin(), vs.end());
 								tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, j));
 							}
-							//hex
+							// hex
 							Element ele_;
 							ele_.id = elen++;
 							ele_.fs.resize(6, -1);
@@ -1086,7 +1086,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 				}
 			}
 		}
-		//Fs
+		// Fs
 		std::sort(tempF.begin(), tempF.end());
 		M_.faces.reserve(tempF.size() / 3);
 		Face f;
@@ -1137,7 +1137,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 	{
 
 		Mesh3DStorage M_;
-		M_.type = MeshType::Tet;
+		M_.type = MeshType::TET;
 
 		vector<int> E2V(M.edges.size());
 
@@ -1205,10 +1205,10 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 		std::vector<bool> e_flag(M.edges.size(), false);
 
 		for (const auto &ele : M.elements)
-		{ //1 --> 8
+		{ // 1 --> 8
 
 			for (short i = 0; i < 4; i++)
-			{ //four corners
+			{ // four corners
 				Element ele_;
 				ele_.id = M_.elements.size();
 				ele_.fs.resize(4, -1);
@@ -1239,7 +1239,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 				M_.elements.push_back(ele_);
 			}
 
-			//6 edges
+			// 6 edges
 			std::vector<int> edges(6);
 			for (int i = 0; i < 6; i++)
 			{
@@ -1248,12 +1248,12 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 				if (shared_edge(v0, v1, e))
 					edges[i] = e;
 			}
-			//the longest edge
+			// the longest edge
 			int lv0 = E2V[edges[0]], lv1 = E2V[edges[5]];
 			e_flag[edges[0]] = true;
 			e_flag[edges[5]] = true;
 			for (short i = 0; i < 4; i++)
-			{ //four faces
+			{ // four faces
 				Element ele_;
 				ele_.id = M_.elements.size();
 				ele_.fs.resize(4, -1);
@@ -1290,7 +1290,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 			for (int j = 0; j < 3; j++)
 				M_.points(j, v.id) = v.v[j];
 
-		//orient tets
+		// orient tets
 		const auto &t = M.elements[0].vs;
 		Vector3d c0 = M.points.col(t[0]);
 		Vector3d c1 = M.points.col(t[1]);
@@ -1309,7 +1309,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 				std::swap(ele.vs[1], ele.vs[3]);
 		}
 
-		//Fs
+		// Fs
 		std::vector<std::vector<uint32_t>> total_fs;
 		total_fs.reserve(M.elements.size() * 4);
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF;
@@ -1375,7 +1375,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 		logger().error("invalid sweeping direction!");
 		return;
 	}
-	if (Mi.type != MeshType::HSur && Mi.type != MeshType::Tri && Mi.type != MeshType::Qua)
+	if (Mi.type != MeshType::H_SUR && Mi.type != MeshType::TRI && Mi.type != MeshType::QUA)
 	{
 		logger().error("invalid planar surface!");
 		return;
@@ -1391,8 +1391,8 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 	Mo.edges.clear();
 	Mo.faces.clear();
 	Mo.elements.clear();
-	Mo.type = MeshType::Hyb;
-	//v, layers
+	Mo.type = MeshType::HYB;
+	// v, layers
 	std::vector<std::vector<int>> Vlayers(nlayer + 1);
 	std::vector<double> interval(3, 0);
 	interval[sweep_coord] = height / nlayer;
@@ -1413,7 +1413,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 		}
 		Vlayers[i] = a_layer;
 	}
-	//f
+	// f
 	std::vector<std::vector<int>> Flayers(nlayer + 1);
 	for (int i = 0; i < nlayer + 1; i++)
 	{
@@ -1430,7 +1430,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 		}
 		Flayers[i] = a_layer;
 	}
-	//ef
+	// ef
 	std::vector<std::vector<int>> EFlayers(nlayer);
 	for (int i = 0; i < nlayer; i++)
 	{
@@ -1450,7 +1450,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 		}
 		EFlayers[i] = a_layer;
 	}
-	//ele
+	// ele
 	for (int i = 0; i < nlayer; i++)
 	{
 		for (auto f : Mi.faces)
@@ -1552,9 +1552,9 @@ void MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi)
 }
 void MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi)
 {
-	//surface orienting
+	// surface orienting
 	Mesh3DStorage M_sur;
-	M_sur.type = MeshType::HSur;
+	M_sur.type = MeshType::H_SUR;
 	int bvn = 0;
 	for (auto v : hmi.vertices)
 		if (v.boundary)
@@ -1597,15 +1597,15 @@ void MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi)
 				f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
 			fn_++;
 		}
-	//volume orienting
+	// volume orienting
 	vector<bool> F_tag(hmi.faces.size(), true);
-	std::vector<short> F_visit(hmi.faces.size(), 0); //0 un-visited, 1 visited once, 2 visited twice
+	std::vector<short> F_visit(hmi.faces.size(), 0); // 0 un-visited, 1 visited once, 2 visited twice
 	for (uint32_t j = 0; j < hmi.faces.size(); j++)
 		if (hmi.faces[j].boundary)
 		{
 			F_visit[j]++;
 		}
-	std::vector<bool> F_state(hmi.faces.size(), false); //false is the reverse direction, true is the same direction
+	std::vector<bool> F_state(hmi.faces.size(), false); // false is the reverse direction, true is the same direction
 	std::vector<bool> P_visit(hmi.elements.size(), false);
 	while (true)
 	{
@@ -1732,12 +1732,12 @@ void MeshProcessing3D::ele_subdivison_levels(const Mesh3DStorage &hmi, std::vect
 		}
 }
 
-//template<typename T>
-//void MeshProcessing3D::set_intersection_own(const std::vector<T> &A, const std::vector<T> &B, std::vector<T> &C, const int &num){
+// template<typename T>
+// void MeshProcessing3D::set_intersection_own(const std::vector<T> &A, const std::vector<T> &B, std::vector<T> &C, const int &num){
 void MeshProcessing3D::set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::array<uint32_t, 2> &C, int &num)
 {
-	//void MeshProcessing3D::set_intersection_own( std::vector<uint32_t> &A,  std::vector<uint32_t> &B, std::vector<uint32_t> &C, int &num)
-	// C.resize(num);
+	// void MeshProcessing3D::set_intersection_own( std::vector<uint32_t> &A,  std::vector<uint32_t> &B, std::vector<uint32_t> &C, int &num)
+	//  C.resize(num);
 	int n = 0;
 	for (auto &a : A)
 	{

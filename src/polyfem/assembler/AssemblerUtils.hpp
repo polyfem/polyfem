@@ -14,9 +14,11 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "GenericElastic.hpp"
+#include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
 #include "ViscousDamping.hpp"
-// #include "OgdenElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include "Stokes.hpp"
 #include "NavierStokes.hpp"
@@ -36,6 +38,14 @@ namespace polyfem
 		class AssemblerUtils
 		{
 		public:
+			enum class BasisType
+			{
+				SIMPLEX_LAGRANGE,
+				CUBE_LAGRANGE,
+				SPLINE,
+				POLY
+			};
+
 			AssemblerUtils();
 
 			// Linear, assembler is the name of the formulation
@@ -166,7 +176,7 @@ namespace polyfem
 
 			bool has_damping() const;
 
-			//gets the names of all assemblers
+			// gets the names of all assemblers
 			static std::vector<std::string> scalar_assemblers();
 			static std::vector<std::string> tensor_assemblers();
 			// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
@@ -178,6 +188,8 @@ namespace polyfem
 				const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 				const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 				StiffnessMatrix &stiffness);
+
+			static int quadrature_order(const std::string &assembler, const int basis_degree, const BasisType &b_type, const int dim);
 
 		private:
 			// all assemblers
@@ -197,8 +209,9 @@ namespace polyfem
 
 			NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
+			NLAssembler<GenericElastic<MooneyRivlinElasticity>> mooney_rivlin_elasticity_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
-			// NLAssembler<OgdenElasticity> ogden_elasticity_;
+			NLAssembler<GenericElastic<OgdenElasticity>> ogden_elasticity_;
 
 			NLAssembler<ViscousDamping> damping_;
 
