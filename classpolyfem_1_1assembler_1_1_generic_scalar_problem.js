@@ -28,8 +28,7 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "update_neumann_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#af4850e48307a1b3cb1ce7a96249839b9", null ],
     [ "update_neumann_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#afde49726f79a595096c727b4b489d586", null ],
     [ "update_neumann_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1c453daf52436dd6dda5dbf778382dbf", null ],
-    [ "dirichlet_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7285fe398d7345c989a5c1c90fa9df2c", null ],
-    [ "dirichlet_interpolation_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#abdff9581b08cc8073be6b3b5fd481a07", null ],
+    [ "dirichlet_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aeef2772d66a6bc593b96c5dfd255e304", null ],
     [ "exact_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6365da4bb42d2c5b47d82682818ffb0b", null ],
     [ "exact_grad_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6eeadd2af638293255d87291f3b77741", null ],
     [ "has_exact_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa70fa25584fd328d8369c401d50bd1f9", null ],
@@ -37,7 +36,6 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "initial_solution_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a147a22030df98953f5a3383b1724abbf", null ],
     [ "is_all_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1936f4cde5f7bfa72cd3208c5a8b5c4b", null ],
     [ "is_time_dept_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a27828c7c08fc39927b850f9cb11833b3", null ],
-    [ "neumann_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a9a78702a34492dbc4a48ca3880e4b692", null ],
-    [ "neumann_interpolation_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a8a2f9d99ed18cd3d9e0c2d9dc80ede24", null ],
+    [ "neumann_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a28cfb6a36775e7633c9494660d743a7c", null ],
     [ "rhs_", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae347a586d5f85f4a65e12f364604226a", null ]
 ];

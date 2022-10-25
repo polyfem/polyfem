@@ -27,6 +27,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a33528f94d714d562fc736567c63a5a82", null ],
     [ "compute_element_barycenters", "classpolyfem_1_1mesh_1_1_mesh.html#a04f6350c32dae56eab1571c2af9d06c3", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_mesh.html#a46596119e02dda1e34dac2f448eb87dc", null ],
+    [ "compute_node_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a5dcf305d137e8cda1d1d8b7e301d0aab", null ],
     [ "dimension", "classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6", null ],
     [ "edge_barycenter", "classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731", null ],
     [ "edge_barycenters", "classpolyfem_1_1mesh_1_1_mesh.html#aef8b5354d06a6e77b14ade524abda3e4", null ],
@@ -46,8 +47,10 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "get_boundary_id", "classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141", null ],
     [ "get_edges", "classpolyfem_1_1mesh_1_1_mesh.html#a1bbd6a108623834041041c6278c49a92", null ],
     [ "get_edges", "classpolyfem_1_1mesh_1_1_mesh.html#a2ea0bc3e6fc5b76774b835fe9542ef9f", null ],
+    [ "get_node_id", "classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6", null ],
     [ "has_body_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a6714c8e53f6fdfae01933119d8ad152c", null ],
     [ "has_boundary_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1", null ],
+    [ "has_node_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a4addd001329243170f8a5f292739227e", null ],
     [ "has_poly", "classpolyfem_1_1mesh_1_1_mesh.html#aa9e6bd69e6a7dff10d11a335390c1062", null ],
     [ "in_ordered_edges", "classpolyfem_1_1mesh_1_1_mesh.html#a0e08accc7bbd612362513562937d44d6", null ],
     [ "in_ordered_faces", "classpolyfem_1_1mesh_1_1_mesh.html#aec6b2ba4a32c51cc8999ccd0c79d54e2", null ],
@@ -91,6 +94,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "tri_area", "classpolyfem_1_1mesh_1_1_mesh.html#a2a5bdc005a8069814c63f87bd00b8bdd", null ],
     [ "triangulate_faces", "classpolyfem_1_1mesh_1_1_mesh.html#a61552f3bfd14586834855334677a11b5", null ],
     [ "update_elements_tag", "classpolyfem_1_1mesh_1_1_mesh.html#a42eacd6c5a9ca45ff6c38e70351c1f8a", null ],
+    [ "update_nodes", "classpolyfem_1_1mesh_1_1_mesh.html#a9a79b43d572291b2e13395d999ae96e3", null ],
     [ "body_ids_", "classpolyfem_1_1mesh_1_1_mesh.html#aac2647ece338c19ad8dfe2629a29c6a7", null ],
     [ "boundary_ids_", "classpolyfem_1_1mesh_1_1_mesh.html#a78140f52fc2f13195f915a62825e30d9", null ],
     [ "cell_nodes_", "classpolyfem_1_1mesh_1_1_mesh.html#a8c37bb829ba87ab978e1e9d569bf58ec", null ],
@@ -102,5 +106,6 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "in_ordered_faces_", "classpolyfem_1_1mesh_1_1_mesh.html#a5927c8f688b914c66609bfdd0d8cf004", null ],
     [ "in_ordered_vertices_", "classpolyfem_1_1mesh_1_1_mesh.html#af4ebce607e7a1377500e307a9b695d48", null ],
     [ "is_rational_", "classpolyfem_1_1mesh_1_1_mesh.html#a263112318a0c41066f9bffa9be039fe8", null ],
+    [ "node_ids_", "classpolyfem_1_1mesh_1_1_mesh.html#a83ef5a403268a7ff1a84143cb57b18ae", null ],
     [ "orders_", "classpolyfem_1_1mesh_1_1_mesh.html#a126480d889cb05c7a5f87dce1cec6179", null ]
 ];

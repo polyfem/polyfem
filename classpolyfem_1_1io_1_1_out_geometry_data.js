@@ -7,6 +7,7 @@ var classpolyfem_1_1io_1_1_out_geometry_data =
     [ "build_vis_mesh", "classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c", null ],
     [ "export_data", "classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320", null ],
     [ "init_sampler", "classpolyfem_1_1io_1_1_out_geometry_data.html#ade72ed17639ad9cbd72a81a458d863ea", null ],
+    [ "save_points", "classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df", null ],
     [ "save_pvd", "classpolyfem_1_1io_1_1_out_geometry_data.html#a9781d8636456b50aa8843bb2063427a5", null ],
     [ "save_surface", "classpolyfem_1_1io_1_1_out_geometry_data.html#a3748bb6ba31dad8bd00b822e7ef12280", null ],
     [ "save_volume", "classpolyfem_1_1io_1_1_out_geometry_data.html#a55d435400a9eb85c77e6167ce0c13756", null ],

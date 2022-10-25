@@ -53,9 +53,11 @@ var annotated_dup =
         [ "Problem", "classpolyfem_1_1assembler_1_1_problem.html", "classpolyfem_1_1assembler_1_1_problem" ],
         [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", "classpolyfem_1_1assembler_1_1_rhs_assembler" ],
         [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity" ],
+        [ "ScalarBCValue", "structpolyfem_1_1assembler_1_1_scalar_b_c_value.html", "structpolyfem_1_1assembler_1_1_scalar_b_c_value" ],
         [ "StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", "classpolyfem_1_1assembler_1_1_stokes_mixed" ],
         [ "StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", "classpolyfem_1_1assembler_1_1_stokes_pressure" ],
         [ "StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_stokes_velocity" ],
+        [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
         [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ]
       ] ],
       [ "basis", "namespacepolyfem_1_1basis.html", [

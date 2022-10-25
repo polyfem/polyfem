@@ -7,6 +7,7 @@ var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
     [ "contact_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4e5d3eb11e3c75f933e3331dfbcc05aa", null ],
     [ "friction_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a273b9ec341d7dffb3ac1d798ce4ef638", null ],
     [ "material_params", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#add8f502631b9410d4ef580ba0e8fe646", null ],
+    [ "points", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a77f1e5c80d3b066fe69e496e6fa1041f", null ],
     [ "reorder_output", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a686a97c450596396024cc475bc9fdcc9", null ],
     [ "sol_on_grid", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4a8fc3968f7782b38809d9bd489906fa", null ],
     [ "solve_export_to_file", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4", null ],

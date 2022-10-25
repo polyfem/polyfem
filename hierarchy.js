@@ -255,6 +255,7 @@ var hierarchy =
     [ "q_bases.ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", null ],
     [ "polyfem::assembler::RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", null ],
     [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ],
+    [ "polyfem::assembler::ScalarBCValue", "structpolyfem_1_1assembler_1_1_scalar_b_c_value.html", null ],
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [
       [ "polyfem::utils::AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", null ],
       [ "polyfem::utils::BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", null ],
@@ -275,6 +276,7 @@ var hierarchy =
     [ "polyfem::assembler::StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", null ],
     [ "polyfem::assembler::StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", null ],
     [ "polyfem::assembler::StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", null ],
+    [ "polyfem::assembler::TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", null ],
     [ "polyfem::quadrature::TetQuadrature", "classpolyfem_1_1quadrature_1_1_tet_quadrature.html", null ],
     [ "polyfem::utils::Timer", "classpolyfem_1_1utils_1_1_timer.html", null ],
     [ "polyfem::solver::TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", null ],
