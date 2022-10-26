@@ -1137,7 +1137,8 @@ namespace polyfem::io
 		if (obstacle.n_vertices() > 0)
 		{
 			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
-			obstacle.update_displacement(t, fun);
+			// obstacle.update_displacement(t, fun);
+			fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
 		}
 
 		if (problem.has_exact_sol())
@@ -1148,7 +1149,8 @@ namespace polyfem::io
 			if (obstacle.n_vertices() > 0)
 			{
 				exact_fun.conservativeResize(exact_fun.rows() + obstacle.n_vertices(), exact_fun.cols());
-				obstacle.update_displacement(t, exact_fun);
+				// obstacle.update_displacement(t, exact_fun);
+				exact_fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
 
 				err.conservativeResize(err.rows() + obstacle.n_vertices(), 1);
 				err.bottomRows(obstacle.n_vertices()).setZero();
