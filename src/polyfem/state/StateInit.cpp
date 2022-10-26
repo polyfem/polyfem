@@ -270,12 +270,6 @@ namespace polyfem
 			problem->set_parameters(args["preset_problem"]);
 		}
 
-		// TODO:
-		// if (args["use_spline"] && args["n_refs"] == 0)
-		// {
-		// 	logger().warn("n_refs > 0 with spline");
-		// }
-
 		// Save output directory and resolve output paths dynamically
 		this->output_dir = output_dir;
 	}

@@ -6,7 +6,7 @@
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/quadrature/HexQuadrature.hpp>
 
-#include <polyfem/basis/FEBasis3d.hpp>
+#include <polyfem/basis/LagrangeBasis3d.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -647,7 +647,7 @@ TEST_CASE("P1_2d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::p_nodes_2d(1, val);
 	for (int i = 0; i < 3; ++i)
 	{
@@ -678,7 +678,7 @@ TEST_CASE("P2_2d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::p_nodes_2d(2, val);
 	for (int i = 0; i < 6; ++i)
 	{
@@ -735,7 +735,7 @@ TEST_CASE("P1_3d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::p_nodes_3d(1, val);
 	for (int i = 0; i < 4; ++i)
 	{
@@ -766,7 +766,7 @@ TEST_CASE("P2_3d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::p_nodes_3d(2, val);
 	for (int i = 0; i < 10; ++i)
 	{
@@ -854,7 +854,7 @@ TEST_CASE("Q1_2d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::q_nodes_2d(1, val);
 	for (int i = 0; i < 4; ++i)
 	{
@@ -885,7 +885,7 @@ TEST_CASE("Q2_2d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::q_nodes_2d(2, val);
 	for (int i = 0; i < 9; ++i)
 	{
@@ -959,7 +959,7 @@ TEST_CASE("Q1_3d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::q_nodes_3d(1, val);
 	for (int i = 0; i < 8; ++i)
 	{
@@ -990,7 +990,7 @@ TEST_CASE("Q2_3d", "[bases]")
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
-	//Check nodes
+	// Check nodes
 	polyfem::autogen::q_nodes_3d(2, val);
 	for (int i = 0; i < 27; ++i)
 	{

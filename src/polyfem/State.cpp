@@ -200,7 +200,7 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
-		if (args["space"]["advanced"]["use_spline"])
+		if (args["space"]["basis_type"] == "Spline")
 		{
 			logger().warn("Node ordering disabled, it dosent work for splines!");
 			return;
@@ -547,7 +547,7 @@ namespace polyfem
 		if (mesh->has_poly())
 			return true;
 
-		if (args["space"]["advanced"]["use_spline"])
+		if (args["space"]["basis_type"] == "Spline")
 			return true;
 
 		if (mesh->is_rational())
@@ -736,7 +736,7 @@ namespace polyfem
 		if (mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
-			if (args["space"]["advanced"]["use_spline"])
+			if (args["space"]["basis_type"] == "Spline")
 			{
 				// if (!iso_parametric())
 				// {
@@ -755,7 +755,7 @@ namespace polyfem
 				if (!iso_parametric())
 					basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
@@ -767,7 +767,7 @@ namespace polyfem
 		else
 		{
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-			if (args["space"]["advanced"]["use_spline"])
+			if (args["space"]["basis_type"] == "Spline")
 			{
 				// TODO:
 				// if (!iso_parametric())
@@ -787,7 +787,7 @@ namespace polyfem
 				if (!iso_parametric())
 					basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
@@ -1002,13 +1002,13 @@ namespace polyfem
 		{
 			if (mesh->is_volume())
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue")
 					logger().error("MeanValue bases not supported in 3D");
 				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
 				}
@@ -1020,7 +1020,7 @@ namespace polyfem
 		{
 			if (mesh->is_volume())
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					logger().error("MeanValue bases not supported in 3D");
 					throw "not implemented";
@@ -1029,7 +1029,7 @@ namespace polyfem
 			}
 			else
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue")
 					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
 				else
 					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);

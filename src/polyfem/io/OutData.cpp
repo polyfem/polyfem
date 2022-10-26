@@ -893,7 +893,7 @@ namespace polyfem::io
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
 
-		use_spline = args["space"]["advanced"]["use_spline"];
+		use_spline = args["space"]["basis_type"] == "Spline";
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
