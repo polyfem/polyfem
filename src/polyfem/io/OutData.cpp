@@ -1652,7 +1652,11 @@ namespace polyfem::io
 
 			if (opts.friction_forces)
 			{
-				Eigen::MatrixXd displaced_surface_prev = (friction_form != nullptr) ? friction_form->displaced_surface_prev() : displaced_surface;
+				Eigen::MatrixXd displaced_surface_prev;
+				if (friction_form != nullptr)
+					displaced_surface_prev = friction_form->displaced_surface_prev();
+				if (displaced_surface_prev.size() == 0)
+					displaced_surface_prev = displaced_surface;
 
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
