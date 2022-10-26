@@ -1645,8 +1645,8 @@ namespace polyfem::io
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
-				assert(forces_reshaped.rows() == real_vertices.rows());
-				assert(forces_reshaped.cols() == real_vertices.cols());
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
@@ -1671,8 +1671,8 @@ namespace polyfem::io
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
-				assert(forces_reshaped.rows() == real_vertices.rows());
-				assert(forces_reshaped.cols() == real_vertices.cols());
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
 				writer.add_field("friction_forces", forces_reshaped);
 			}
 
