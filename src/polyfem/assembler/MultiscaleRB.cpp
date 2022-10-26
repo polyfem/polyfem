@@ -179,11 +179,6 @@ namespace polyfem::assembler
 				void hessian(const TVector &x, THessian &hessian)
 				{
 					Eigen::MatrixXd sol = coeff_to_field(x);
-					// StiffnessMatrix hessian_;
-					// state->assembler.assemble_energy_hessian(
-					// 	state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-					// 	state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache_, hessian_);
-					// hessian = (reduced_basis_.transpose() * hessian_ * reduced_basis_).sparseView();
 					Eigen::MatrixXd tmp;
 					state->assembler.assemble_energy_hessian(
 						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
