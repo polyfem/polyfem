@@ -33,6 +33,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
@@ -56,6 +57,7 @@ namespace polyfem
 	{
 		class NLProblem;
 
+		class Form;
 		class ContactForm;
 		class FrictionForm;
 		class BodyForm;
@@ -92,6 +94,8 @@ namespace polyfem
 
 		/// @brief updates the dt inside the different forms
 		void update_dt();
+
+		std::unordered_map<std::string, std::shared_ptr<solver::Form>> named_forms() const;
 	};
 
 	/// main class that contains the polyfem solver and all its state

@@ -91,6 +91,19 @@ namespace polyfem
 		}
 	}
 
+	std::unordered_map<std::string, std::shared_ptr<solver::Form>> SolveData::named_forms() const
+	{
+		return {
+			{"contact", contact_form},
+			{"body", body_form},
+			{"augmented_lagrangian", al_form},
+			{"damping", damping_form},
+			{"friction", friction_form},
+			{"inertia", inertia_form},
+			{"elastic", elastic_form},
+		};
+	}
+
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
 	{
@@ -145,7 +158,9 @@ namespace polyfem
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
+				// const double kappa_before = solve_data.contact_form->barrier_stiffness();
 				mesh::remesh(*this, sol, t0 + dt * (t + 0), dt);
+				// solve_data.updated_barrier_stiffness(sol);
 
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
@@ -386,7 +401,7 @@ namespace polyfem
 		if (nl_problem.uses_lagging())
 		{
 			POLYFEM_SCOPED_TIMER("Initializing lagging");
-			nl_problem.init_lagging(sol);
+			nl_problem.init_lagging(sol); // TODO: this should be u_prev projected
 			logger().info("Lagging iteration {:d}:", 1);
 		}
 

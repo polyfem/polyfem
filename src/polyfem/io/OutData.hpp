@@ -8,6 +8,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 
+#include <polyfem/io/VTUWriter.hpp>
+
 #include <polyfem/utils/RefElementSampler.hpp>
 
 #include <Eigen/Dense>
@@ -299,6 +301,14 @@ namespace polyfem::io
 			std::vector<std::vector<int>> &elements,
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr) const;
+
+		void save_volume_vector_field(
+			const State &state,
+			const Eigen::MatrixXd &points,
+			const ExportOptions &opts,
+			const std::string &name,
+			const Eigen::VectorXd &field,
+			VTUWriter &writer) const;
 	};
 
 	/// @brief stores all runtime data

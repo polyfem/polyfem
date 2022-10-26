@@ -174,5 +174,9 @@ namespace polyfem::mesh
 				state, remeshing.projected_quantities(), x_prevs, v_prevs, a_prevs);
 			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
+
+		// initialize the problem so contact force show up correctly in the output
+		state.solve_data.nl_problem->init(sol);
+		state.solve_data.updated_barrier_stiffness(sol);
 	}
 } // namespace polyfem::mesh

@@ -18,8 +18,6 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 
-#include <polyfem/io/VTUWriter.hpp>
-
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -1046,7 +1044,7 @@ namespace polyfem::io
 		const std::map<int, Eigen::MatrixXd> &polys = state.polys;
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = state.polys_3d;
 		const assembler::AssemblerUtils &assembler = state.assembler;
-		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> &time_integrator = state.solve_data.time_integrator;
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator = state.solve_data.time_integrator;
 		const std::string &formulation = state.formulation();
 		const mesh::Mesh &mesh = *state.mesh;
 		const mesh::Obstacle &obstacle = state.obstacle;
@@ -1157,7 +1155,7 @@ namespace polyfem::io
 			}
 		}
 
-		io::VTUWriter writer;
+		VTUWriter writer;
 
 		if (opts.solve_export_to_file)
 			writer.add_field("solution", fun);
@@ -1167,60 +1165,41 @@ namespace polyfem::io
 		if (problem.is_time_dependent())
 		{
 			bool is_time_integrator_valid = time_integrator != nullptr;
-			const Eigen::VectorXd zero_tmp = Eigen::VectorXd::Zero(sol.rows());
+
 			if (opts.velocity)
 			{
-				Eigen::VectorXd vel = zero_tmp;
-				if (is_time_integrator_valid)
-				{
-					const auto &tmp_ti = *static_cast<time_integrator::ImplicitTimeIntegrator *>(time_integrator.get());
-					vel = tmp_ti.v_prev();
-				}
-
-				Eigen::MatrixXd interp_vel;
-				Evaluator::interpolate_function(
-					mesh, problem.is_scalar(), bases, state.disc_orders,
-					state.polys, state.polys_3d, ref_element_sampler,
-					points.rows(), vel, interp_vel, opts.use_sampler, opts.boundary_only);
-				if (obstacle.n_vertices() > 0)
-				{
-					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
-					obstacle.set_zero(interp_vel); // TODO
-				}
-
-				if (opts.solve_export_to_file)
-				{
-					writer.add_field("velocity", interp_vel);
-				}
-				// TODO: else save to solution frames
+				const Eigen::VectorXd velocity =
+					is_time_integrator_valid ? (time_integrator->v_prev()) : Eigen::VectorXd::Zero(sol.size());
+				save_volume_vector_field(state, points, opts, "velocity", velocity, writer);
 			}
 
 			if (opts.acceleration)
 			{
-				Eigen::VectorXd acc = zero_tmp;
-				if (is_time_integrator_valid)
-				{
-					const auto &tmp_ti = *static_cast<time_integrator::ImplicitTimeIntegrator *>(time_integrator.get());
-					acc = tmp_ti.a_prev();
-				}
-
-				Eigen::MatrixXd interp_acc;
-				Evaluator::interpolate_function(
-					mesh, problem.is_scalar(), bases, state.disc_orders,
-					state.polys, state.polys_3d, ref_element_sampler,
-					points.rows(), acc, interp_acc, opts.use_sampler, opts.boundary_only);
-				if (obstacle.n_vertices() > 0)
-				{
-					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
-					obstacle.set_zero(interp_acc); // TODO
-				}
-
-				if (opts.solve_export_to_file)
-				{
-					writer.add_field("acceleration", interp_acc);
-				}
-				// TODO: else save to solution frames
+				const Eigen::VectorXd acceleration =
+					is_time_integrator_valid ? (time_integrator->a_prev()) : Eigen::VectorXd::Zero(sol.size());
+				save_volume_vector_field(state, points, opts, "acceleration", acceleration, writer);
 			}
+		}
+
+		// TODO: wrap this in an if (opts.all_forces)
+		for (const auto &[name, form] : state.solve_data.named_forms())
+		{
+			// NOTE: Assumes this form will be null for the entire sim
+			if (form == nullptr)
+				continue;
+
+			Eigen::VectorXd force;
+			if (form->enabled())
+			{
+				form->first_derivative(sol, force);
+				force *= -1.0;
+			}
+			else
+			{
+				force.setZero(sol.size());
+			}
+
+			save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
 		}
 
 		// if(problem->is_mixed())
@@ -1517,6 +1496,35 @@ namespace polyfem::io
 		}
 	}
 
+	void OutGeometryData::save_volume_vector_field(
+		const State &state,
+		const Eigen::MatrixXd &points,
+		const ExportOptions &opts,
+		const std::string &name,
+		const Eigen::VectorXd &field,
+		VTUWriter &writer) const
+	{
+		Eigen::MatrixXd inerpolated_field;
+		Evaluator::interpolate_function(
+			*state.mesh, state.problem->is_scalar(), state.bases, state.disc_orders,
+			state.polys, state.polys_3d, ref_element_sampler,
+			points.rows(), field, inerpolated_field, opts.use_sampler, opts.boundary_only);
+
+		if (state.obstacle.n_vertices() > 0)
+		{
+			inerpolated_field.conservativeResize(
+				inerpolated_field.rows() + state.obstacle.n_vertices(), inerpolated_field.cols());
+			inerpolated_field.bottomRows(state.obstacle.n_vertices()) =
+				utils::unflatten(field.tail(state.obstacle.ndof()), inerpolated_field.cols());
+		}
+
+		if (opts.solve_export_to_file)
+		{
+			writer.add_field(name, inerpolated_field);
+		}
+		// TODO: else save to solution frames
+	}
+
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
 		const State &state,
@@ -1623,7 +1631,7 @@ namespace polyfem::io
 
 		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces) && opts.solve_export_to_file)
 		{
-			io::VTUWriter writer;
+			VTUWriter writer;
 
 			const int problem_dim = mesh.dimension();
 			Eigen::MatrixXd displaced = utils::unflatten(sol, problem_dim);
@@ -1689,7 +1697,7 @@ namespace polyfem::io
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
-		io::VTUWriter writer;
+		VTUWriter writer;
 
 		if (opts.solve_export_to_file)
 		{
@@ -1897,7 +1905,7 @@ namespace polyfem::io
 			err = (fun - exact_fun).eval().rowwise().norm();
 		}
 
-		io::VTUWriter writer;
+		VTUWriter writer;
 		writer.add_field("solution", fun);
 		if (problem.has_exact_sol())
 		{
@@ -1959,7 +1967,7 @@ namespace polyfem::io
 			cells[i].push_back(i);
 		}
 
-		io::VTUWriter writer;
+		VTUWriter writer;
 
 		if (opts.solve_export_to_file)
 		{
