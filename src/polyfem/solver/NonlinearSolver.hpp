@@ -41,8 +41,8 @@ namespace cppoptlib
 
 		void get_info(polyfem::json &params) { params = solver_info; }
 
-		void disable_logging() { disable_log = true; }
-		void enable_logging() { disable_log = false; }
+		void disable_logging() { disable_log = true; m_line_search->disable_log = true; }
+		void enable_logging() { disable_log = false; m_line_search->disable_log = false; }
 
 		ErrorCode error_code() const { return m_error_code; }
 
