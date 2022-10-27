@@ -2805,6 +2805,12 @@
         "doc": "Cache transient solutions for differentiability of PDE solution."
     },
     {
+        "pointer": "/optimization/parameters/*/remesh",
+        "type": "object",
+        "default": null,
+        "doc": "TODO"
+    },
+    {
         "pointer": "/optimization/parameters",
         "type": "list",
         "default": [],
@@ -2897,7 +2903,7 @@
         ],
         "optional": [
             "restriction",
-            "smoothing_paramters",
+            "smoothing_parameters",
             "remesh",
             "spline_specification",
             "dimensions",
@@ -2977,31 +2983,31 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/smoothing_paramters",
+        "pointer": "/optimization/parameters/*/smoothing_parameters",
         "type": "object",
         "default": null,
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/smoothing_paramters/exp_factor",
+        "pointer": "/optimization/parameters/*/smoothing_parameters/exp_factor",
         "type": "float",
         "default": 5,
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/smoothing_paramters/soft_p",
+        "pointer": "/optimization/parameters/*/smoothing_parameters/soft_p",
         "type": "float",
         "default": 1e5,
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/smoothing_paramters/tol",
+        "pointer": "/optimization/parameters/*/smoothing_parameters/tol",
         "type": "float",
         "default": 1e-8,
         "doc": "TODO"
     },
     {
-        "pointer": "/optimization/parameters/*/smoothing_paramters/min_iter",
+        "pointer": "/optimization/parameters/*/smoothing_parameters/min_iter",
         "type": "int",
         "default": 2,
         "doc": "TODO"

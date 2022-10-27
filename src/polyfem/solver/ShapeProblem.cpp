@@ -687,6 +687,8 @@ namespace polyfem
 		bool should_remesh = false;
 
 		json remesh_args = shape_params["remesh"];
+		if (remesh_args.size() == 0)
+			return true;
 
 		if (min_quality < remesh_args["tolerance"].get<double>())
 		{
