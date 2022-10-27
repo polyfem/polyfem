@@ -338,25 +338,26 @@ namespace polyfem
 											   const AssemblyValsCache &cache,
 											   const double dt,
 											   const Eigen::MatrixXd &displacement,
-											   const Eigen::MatrixXd &displacement_prev) const
+											   const Eigen::MatrixXd &displacement_prev,
+								   			   bool serial) const
 		{
 			if (assembler == "SaintVenant")
-				return saint_venant_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return saint_venant_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "NeoHookean")
-				return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "MooneyRivlin")
-				return mooney_rivlin_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return mooney_rivlin_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "MultiModels")
-				return multi_models_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return multi_models_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "Damping")
-				return damping_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return damping_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "MultiscaleRB")
-				return multiscale_reduced_basis_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return multiscale_reduced_basis_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 
 			else if (assembler == "Ogden")
-				return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "LinearElasticity")
-				return linear_elasticity_energy_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+				return linear_elasticity_energy_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else
 				return 0;
 		}

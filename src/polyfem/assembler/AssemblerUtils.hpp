@@ -130,7 +130,8 @@ namespace polyfem
 								   const AssemblyValsCache &cache,
 								   const double dt,
 								   const Eigen::MatrixXd &displacement,
-								   const Eigen::MatrixXd &displacement_prev) const;
+								   const Eigen::MatrixXd &displacement_prev,
+								   bool serial = false) const;
 
 			// non linear gradient, assembler is the name of the formulation
 			void assemble_energy_gradient(const std::string &assembler,

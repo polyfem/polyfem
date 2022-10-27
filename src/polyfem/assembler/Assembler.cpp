@@ -1148,33 +1148,54 @@ namespace polyfem::assembler
 		const AssemblyValsCache &cache,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
-		const Eigen::MatrixXd &displacement_prev) const
+		const Eigen::MatrixXd &displacement_prev,
+		bool serial) const
 	{
-		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		double res = 0;
 		const int n_bases = int(bases.size());
+		if (serial)
+		{
+			ElementAssemblyValues vals;
 
-		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &vals = local_storage.vals;
-
-			for (int e = start; e < end; ++e)
+			for (int e = 0; e < n_bases; ++e)
 			{
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-				local_storage.da = vals.det.array() * quadrature.weights.array();
+				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-				const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
-				local_storage.val += val;
+				const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, da));
+				res += val;
 			}
-		});
+		}
+		else
+		{
+			auto storage = create_thread_storage(LocalThreadScalarStorage());
+			
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+				ElementAssemblyValues &vals = local_storage.vals;
 
-		double res = 0;
-		// Serially merge local storages
-		for (const LocalThreadScalarStorage &local_storage : storage)
-			res += local_storage.val;
+				for (int e = start; e < end; ++e)
+				{
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+					const Quadrature &quadrature = vals.quadrature;
+
+					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+					local_storage.val += val;
+				}
+			});
+
+			// Serially merge local storages
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				res += local_storage.val;
+		}
 		return res;
 	}
 

@@ -1060,7 +1060,7 @@
     },
     {
         "pointer": "/space/advanced/bc_method",
-        "default": "lsq",
+        "default": "sample",
         "options": [
             "lsq",
             "sample"
@@ -2634,16 +2634,6 @@
     {
         "pointer": "/materials/*/nu",
         "type": "float",
-        "doc": "Poisson's ratio"
-    },
-    {
-        "pointer": "/materials/*/E",
-        "type": "string",
-        "doc": "Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/nu",
-        "type": "string",
         "doc": "Poisson's ratio"
     },
     {
