@@ -395,7 +395,7 @@ namespace polyfem
 					Eigen::MatrixXd u, grad_u;
 					if (j.depend_on_u() || j.depend_on_gradu())
 						// io::Evaluator::interpolate_at_local_vals(*mesh, e, reference_points, sol, u, grad_u);
-						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, sol, u, grad_u);
+						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[0].u, u, grad_u);
 					else
 					{
 						u.setZero(reference_points.rows(), actual_dim);
@@ -419,7 +419,7 @@ namespace polyfem
 					Eigen::MatrixXd u, grad_u;
 					if (j.depend_on_u() || j.depend_on_gradu())
 						// io::Evaluator::interpolate_at_local_vals(*mesh, e, reference_points, sol, u, grad_u);
-						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, sol, u, grad_u);
+						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[0].u, u, grad_u);
 					else
 					{
 						u.setZero(reference_points.rows(), actual_dim);
@@ -513,25 +513,28 @@ namespace polyfem
 		return result;
 	}
 
-	void State::cache_transient_adjoint_quantities(const int current_step)
+	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol)
 	{
-		const auto &gbases = geom_bases();
+		StiffnessMatrix gradu_h(sol.size(), sol.size()), gradu_h_prev(sol.size(), sol.size());
+		if (current_step == 0)
+			diff_cached.clear();
+		if (problem->is_time_dependent())
+		{
+			if (current_step > 0)
+				compute_force_hessian(sol, gradu_h, gradu_h_prev);
 
-		int bdf_order = get_bdf_order();
-
-		StiffnessMatrix gradu_h;
-		StiffnessMatrix gradu_h_prev;
-		if (args["optimization"]["enabled"] && current_step > 0)
-			compute_force_hessian(gradu_h, gradu_h_prev, std::min(current_step, bdf_order));
-
-		StiffnessMatrix gradu_h_next(gradu_h.rows(), gradu_h.cols());
-
-		if (diff_cached.size() > 0)
-			diff_cached.back().gradu_h_next = gradu_h_prev;
-		diff_cached.push_back({gradu_h, gradu_h_next, sol, 1, solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints(), solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints()});
+			if (diff_cached.size() > 0)
+				diff_cached.back().gradu_h_next = gradu_h_prev;
+		}
+		else
+			compute_force_hessian(sol, gradu_h, gradu_h_prev);
+		
+		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
+		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
+		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set});
 	}
 
-	void State::compute_force_hessian(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
+	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev)
 	{
 		if (assembler.is_linear(formulation()) && !is_contact_enabled())
 		{
@@ -541,11 +544,11 @@ namespace polyfem
 		else
 		{
 			solve_data.nl_problem->FullNLProblem::solution_changed(sol);
-			compute_force_hessian_nonlinear(hessian, hessian_prev, bdf_order);
+			compute_force_hessian_nonlinear(sol, hessian, hessian_prev);
 		}
 	}
 
-	void State::compute_force_hessian_nonlinear(StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev, const int bdf_order)
+	void State::compute_force_hessian_nonlinear(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev)
 	{
 		solve_data.nl_problem->FullNLProblem::hessian(sol, hessian);
 		if (problem->is_time_dependent())
@@ -555,42 +558,40 @@ namespace polyfem
 		}
 
 		hessian_prev = StiffnessMatrix(sol.size(), sol.size());
-		if (solve_data.friction_form)
+		if (problem->is_time_dependent() && diff_cached.size() > 0)
 		{
-			Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(sol, mesh->dimension());
-
-			Eigen::MatrixXd displaced_prev;
-			if (diff_cached.size())
-				displaced_prev = boundary_nodes_pos + utils::unflatten(diff_cached.back().u, mesh->dimension());
-			else
-				displaced_prev = displaced;
-
-			Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(displaced_prev - boundary_nodes_pos);
-			Eigen::MatrixXd surface_solution = collision_mesh.vertices(displaced - boundary_nodes_pos);
-
-			hessian_prev = -ipc::compute_friction_force_jacobian(
-				collision_mesh,
-				collision_mesh.vertices_at_rest(),
-				surface_solution_prev,
-				surface_solution,
-				solve_data.friction_form->get_friction_constraint_set(),
-				solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt(),
-				ipc::FrictionConstraint::DiffWRT::Ut);
-			hessian_prev = collision_mesh.to_full_dof(hessian_prev);
-
-			if (problem->is_time_dependent())
+			if (solve_data.friction_form)
 			{
-				hessian_prev /= solve_data.time_integrator->acceleration_scaling();
+				Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(sol, mesh->dimension());
+
+				Eigen::MatrixXd displaced_prev;
+				if (diff_cached.size())
+					displaced_prev = boundary_nodes_pos + utils::unflatten(diff_cached.back().u, mesh->dimension());
+				else
+					displaced_prev = displaced;
+
+				Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(displaced_prev - boundary_nodes_pos);
+				Eigen::MatrixXd surface_solution = collision_mesh.vertices(displaced - boundary_nodes_pos);
+
+				hessian_prev = -ipc::compute_friction_force_jacobian(
+					collision_mesh,
+					collision_mesh.vertices_at_rest(),
+					surface_solution_prev,
+					surface_solution,
+					solve_data.friction_form->get_friction_constraint_set(),
+					solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt(),
+					ipc::FrictionConstraint::DiffWRT::Ut);
+				hessian_prev = collision_mesh.to_full_dof(hessian_prev) / solve_data.time_integrator->acceleration_scaling();
 			}
-		}
 
-		if (problem->is_time_dependent() && assembler.has_damping() && diff_cached.size() > 0)
-		{
-			utils::SpareMatrixCache mat_cache;
-			StiffnessMatrix damping_hessian_prev(sol.size(), sol.size());
-			assembler.assemble_energy_hessian("DampingPrev", mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, solve_data.time_integrator->dt(), sol, diff_cached.back().u, mat_cache, damping_hessian_prev);
+			if (assembler.has_damping())
+			{
+				utils::SpareMatrixCache mat_cache;
+				StiffnessMatrix damping_hessian_prev(sol.size(), sol.size());
+				assembler.assemble_energy_hessian("DampingPrev", mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, solve_data.time_integrator->dt(), sol, diff_cached.back().u, mat_cache, damping_hessian_prev);
 
-			hessian_prev += damping_hessian_prev;
+				hessian_prev += damping_hessian_prev;
+			}
 		}
 	}
 
@@ -600,7 +601,7 @@ namespace polyfem
 		const auto &gbases = geom_bases();
 		json param;
 		double energy = 0;
-		Eigen::MatrixXd solution = utils::unflatten(sol, mesh->dimension());
+		Eigen::MatrixXd solution = utils::unflatten(diff_cached[0].u, mesh->dimension());
 		for (int e = 0; e < bases.size(); e++)
 		{
 			const auto &bs = bases[e];
@@ -667,8 +668,8 @@ namespace polyfem
 		}
 
 		StiffnessMatrix unused;
-		compute_force_hessian(A, unused);
-		compute_adjoint_rhs(j, sol, b);
+		compute_force_hessian(diff_cached[0].u, A, unused);
+		compute_adjoint_rhs(j, diff_cached[0].u, b);
 
 		solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
 	}
@@ -822,16 +823,6 @@ namespace polyfem
 		}
 	}
 
-	void State::setup_adjoint(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, StiffnessMatrix &A, Eigen::VectorXd &b, bool only_surface)
-	{
-		StiffnessMatrix unused;
-		compute_force_hessian(A, unused);
-		if (!problem->is_time_dependent())
-			A += unused;
-
-		compute_adjoint_rhs(grad_j, sol, b, only_surface);
-	}
-
 	void State::solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution)
 	{
 		StiffnessMatrix A;
@@ -844,8 +835,16 @@ namespace polyfem
 			return;
 		}
 
-		auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) { return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params); };
-		setup_adjoint(grad_j_func, A, b, j.is_surface_integral());
+		{
+			StiffnessMatrix unused;
+			compute_force_hessian(diff_cached[0].u, A, unused);
+		}
+
+		compute_adjoint_rhs(
+			[&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) 
+			{
+				return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params); 
+			}, diff_cached[0].u, b, j.is_surface_integral());
 
 		if (lin_solver_cached)
 		{
@@ -920,7 +919,7 @@ namespace polyfem
 						{
 							double coeff = 0;
 							for (const auto &g : v.global)
-								coeff += sol(g.index * dim + d) * g.val;
+								coeff += solution(g.index * dim + d) * g.val;
 							grad_u_q.row(d) += v.grad_t_m.row(q) * coeff;
 						}
 
@@ -1201,17 +1200,17 @@ namespace polyfem
 
 		Eigen::VectorXd functional_term, elasticity_term, rhs_term, contact_term, friction_term;
 
-		compute_shape_derivative_functional_term(sol, j, functional_term);
+		compute_shape_derivative_functional_term(diff_cached[0].u, j, functional_term);
 		one_form = functional_term;
 
 		if (j.depend_on_u() || j.depend_on_gradu())
 		{
-			solve_data.elastic_form->force_shape_derivative(sol, sol, adjoint_sol, elasticity_term);
-			solve_data.body_form->force_shape_derivative(n_geom_bases, sol, adjoint_sol, rhs_term);
+			solve_data.elastic_form->force_shape_derivative(n_geom_bases, diff_cached[0].u, diff_cached[0].u, adjoint_sol, elasticity_term);
+			solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[0].u, adjoint_sol, rhs_term);
 			
 			if (is_contact_enabled())
 			{
-				solve_data.contact_form->force_shape_derivative(solve_data.contact_form->get_constraint_set(), sol, adjoint_sol, contact_term);
+				solve_data.contact_form->force_shape_derivative(solve_data.contact_form->get_constraint_set(), diff_cached[0].u, adjoint_sol, contact_term);
 				contact_term = down_sampling_mat * contact_term;
 			}
 			else
@@ -1232,7 +1231,7 @@ namespace polyfem
 		one_form.setZero(bases.size() * 2, 1);
 		if (j.depend_on_u())
 		{
-			solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint_sol, one_form);
+			solve_data.elastic_form->foce_material_derivative(diff_cached[0].u, diff_cached[0].u, adjoint_sol, one_form);
 		}
 	}
 
@@ -1305,7 +1304,7 @@ namespace polyfem
 		solve_adjoint(j, adjoint_sol);
 
 		Eigen::VectorXd elasticity_term;
-		solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint_sol, elasticity_term);
+		solve_data.elastic_form->foce_material_derivative(diff_cached[0].u, diff_cached[0].u, adjoint_sol, elasticity_term);
 
 		one_form = elasticity_term;
 		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());
@@ -1321,10 +1320,10 @@ namespace polyfem
 
 		Eigen::VectorXd elasticity_term, functional_term;
 		if (j.depend_on_u() || j.depend_on_gradu())
-			solve_data.elastic_form->foce_topology_derivative(sol, adjoint_sol, elasticity_term);
+			solve_data.elastic_form->foce_topology_derivative(diff_cached[0].u, adjoint_sol, elasticity_term);
 		else
 			elasticity_term.setZero(bases.size());
-		compute_topology_derivative_functional_term(sol, j, functional_term);
+		compute_topology_derivative_functional_term(diff_cached[0].u, j, functional_term);
 
 		one_form = elasticity_term + functional_term;
 		logger().debug("topology derivative: elasticity: {}, functional: {}", elasticity_term.norm(), functional_term.norm());
@@ -1455,11 +1454,11 @@ namespace polyfem
 			if (j.depend_on_u() || j.depend_on_gradu())
 			{
 				solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
-				solve_data.elastic_form->force_shape_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
+				solve_data.elastic_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 				// compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 				solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, -adjoint_p[i], rhs_term);
 				if (solve_data.damping_form)
-					solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
+					solve_data.damping_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 				else
 					damping_term.setZero(mass_term.size());
 				if (is_contact_enabled())
@@ -1522,8 +1521,8 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 		const auto &gbases = geom_bases();
 
-		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
-		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
+		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
+		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 
 		if (!j.depend_on_u() && !j.depend_on_gradu())
 			return;
@@ -1629,8 +1628,8 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 		const auto &gbases = geom_bases();
 
-		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
-		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(sol.size(), 1));
+		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
+		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 
 		// set dirichlet rows of mass to identity
 		StiffnessMatrix reduced_mass;
@@ -1891,11 +1890,11 @@ namespace polyfem
 			}
 
 			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
-			solve_data.elastic_form->force_shape_derivative(diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
+			solve_data.elastic_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			// compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 			solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, -adjoint_p[i], rhs_term);
 			if (solve_data.damping_form)
-				solve_data.damping_form->force_shape_derivative(diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
+				solve_data.damping_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, diff_cached[i - 1].u, -adjoint_p[i], damping_term);
 			else
 				damping_term.setZero(mass_term.size());
 			if (is_contact_enabled())

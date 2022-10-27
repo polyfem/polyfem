@@ -175,10 +175,10 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 		}
 	}
 	)"_json;
-	in_args["geometry"][0]["mesh"] = path + "../square.msh";
-	in_args["materials"]["microstructure"]["geometry"][0]["mesh"] = path + "../micro30.msh";
-	// in_args["materials"]["microstructure"]["materials"]["E"] = path + "../Es.txt";
-	// in_args["materials"]["microstructure"]["materials"]["nu"] = path + "../nus.txt";
+	in_args["geometry"][0]["mesh"] = path + "/../square.msh";
+	in_args["materials"]["microstructure"]["geometry"][0]["mesh"] = path + "/../micro30.msh";
+	// in_args["materials"]["microstructure"]["materials"]["E"] = path + "/../Es.txt";
+	// in_args["materials"]["microstructure"]["materials"]["nu"] = path + "/../nus.txt";
 
 	State state;
 	state.init_logger("", spdlog::level::err, false);

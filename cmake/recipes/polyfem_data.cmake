@@ -1,18 +1,44 @@
 # data
 # License: MIT
 
-message(STATUS "Third-party: fetching 'polyfem data'")
-
-include(FetchContent)
-FetchContent_Declare(
-    polyfem_data
-    GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-    GIT_TAG f9d6a461a4cdc341f4623db04a34c806427b2cb4
-    GIT_SHALLOW FALSE
-    SOURCE_DIR ${POLYFEM_DATA_ROOT}
-)
-FetchContent_GetProperties(polyfem_data)
-if(NOT polyfem_data_POPULATED)
-  FetchContent_Populate(polyfem_data)
-  SET(POLYFEM_DATA_DIR ${polyfem_data_SOURCE_DIR})
+if(TARGET polyfem::data)
+    return()
 endif()
+
+include(ExternalProject)
+
+set(POLYFEM_DATA_DIR "${PROJECT_SOURCE_DIR}/data/" CACHE PATH "Where should polyfem download and look for test data?")
+option(POLYFEM_USE_EXISTING_DATA_DIR "Use and existing data directory instead of downloading it" OFF)
+
+if(POLYFEM_USE_EXISTING_DATA_DIR)
+    ExternalProject_Add(
+        polyfem_data_download
+        PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
+        SOURCE_DIR ${POLYFEM_DATA_DIR}
+        # NOTE: No download step
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        LOG_DOWNLOAD ON
+    )
+else()
+    ExternalProject_Add(
+        polyfem_data_download
+        PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
+        SOURCE_DIR ${POLYFEM_DATA_DIR}
+        GIT_REPOSITORY https://github.com/polyfem/polyfem-data
+        GIT_TAG f343e00cd3ee927e9a6442f935ed0c0d6f8b3510
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        LOG_DOWNLOAD ON
+    )
+endif()
+
+# Create a dummy target for convenience
+add_library(polyfem_data INTERFACE)
+add_library(polyfem::data ALIAS polyfem_data)
+
+add_dependencies(polyfem_data polyfem_data_download)
+
+target_compile_definitions(polyfem_data INTERFACE  POLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")

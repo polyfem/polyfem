@@ -3,6 +3,8 @@
 #include "function/QuadraticBSpline3d.hpp"
 #include <polyfem/quadrature/HexQuadrature.hpp>
 
+#include <polyfem/assembler/AssemblerUtils.hpp>
+
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
@@ -20,7 +22,7 @@
 #include <map>
 #include <numeric>
 
-//TODO carefull with simplices
+// TODO carefull with simplices
 
 namespace polyfem
 {
@@ -326,7 +328,7 @@ namespace polyfem
 				{
 					std::vector<int> ids;
 					mesh.get_edge_elements_neighs(index.edge, ids);
-					//irregular edge
+					// irregular edge
 
 					assert(!space.is_k_regular);
 					space.is_k_regular = true;
@@ -395,7 +397,7 @@ namespace polyfem
 				space(1, 1, 1) = node_id;
 				// node(1, 1, 1) = mesh_nodes.node_position(node_id);
 
-				LocalBoundary lb(el_index, BoundaryType::Quad);
+				LocalBoundary lb(el_index, BoundaryType::QUAD);
 
 				///////////////////////
 				index = to_face[1](start_index);
@@ -484,21 +486,21 @@ namespace polyfem
 
 			void setup_knots_vectors(MeshNodes &mesh_nodes, const SpaceMatrix &space, std::array<std::array<double, 4>, 3> &h_knots, std::array<std::array<double, 4>, 3> &v_knots, std::array<std::array<double, 4>, 3> &w_knots)
 			{
-				//left and right neigh are absent
+				// left and right neigh are absent
 				if (mesh_nodes.is_boundary_or_interface(space(0, 1, 1)) && mesh_nodes.is_boundary_or_interface(space(2, 1, 1)))
 				{
 					h_knots[0] = {{0, 0, 0, 1}};
 					h_knots[1] = {{0, 0, 1, 1}};
 					h_knots[2] = {{0, 1, 1, 1}};
 				}
-				//left neigh is absent
+				// left neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(0, 1, 1)))
 				{
 					h_knots[0] = {{0, 0, 0, 1}};
 					h_knots[1] = {{0, 0, 1, 2}};
 					h_knots[2] = {{0, 1, 2, 3}};
 				}
-				//right neigh is absent
+				// right neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(2, 1, 1)))
 				{
 					h_knots[0] = {{-2, -1, 0, 1}};
@@ -512,21 +514,21 @@ namespace polyfem
 					h_knots[2] = {{0, 1, 2, 3}};
 				}
 
-				//top and bottom neigh are absent
+				// top and bottom neigh are absent
 				if (mesh_nodes.is_boundary_or_interface(space(1, 0, 1)) && mesh_nodes.is_boundary_or_interface(space(1, 2, 1)))
 				{
 					v_knots[0] = {{0, 0, 0, 1}};
 					v_knots[1] = {{0, 0, 1, 1}};
 					v_knots[2] = {{0, 1, 1, 1}};
 				}
-				//bottom neigh is absent
+				// bottom neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(1, 0, 1)))
 				{
 					v_knots[0] = {{0, 0, 0, 1}};
 					v_knots[1] = {{0, 0, 1, 2}};
 					v_knots[2] = {{0, 1, 2, 3}};
 				}
-				//top neigh is absent
+				// top neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(1, 2, 1)))
 				{
 					v_knots[0] = {{-2, -1, 0, 1}};
@@ -540,21 +542,21 @@ namespace polyfem
 					v_knots[2] = {{0, 1, 2, 3}};
 				}
 
-				//front and back neigh are absent
+				// front and back neigh are absent
 				if (mesh_nodes.is_boundary_or_interface(space(1, 1, 0)) && mesh_nodes.is_boundary_or_interface(space(1, 1, 2)))
 				{
 					w_knots[0] = {{0, 0, 0, 1}};
 					w_knots[1] = {{0, 0, 1, 1}};
 					w_knots[2] = {{0, 1, 1, 1}};
 				}
-				//back neigh is absent
+				// back neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(1, 1, 0)))
 				{
 					w_knots[0] = {{0, 0, 0, 1}};
 					w_knots[1] = {{0, 0, 1, 2}};
 					w_knots[2] = {{0, 1, 2, 3}};
 				}
-				//front neigh is absent
+				// front neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(1, 1, 2)))
 				{
 					w_knots[0] = {{-2, -1, 0, 1}};
@@ -577,7 +579,7 @@ namespace polyfem
 					{
 						for (int x = 0; x < 3; ++x)
 						{
-							if (space.is_regular(x, y, z)) //space(1, y, z).size() <= 1 && space(x, 1, z).size() <= 1 && space(x, y, 1).size() <= 1)
+							if (space.is_regular(x, y, z)) // space(1, y, z).size() <= 1 && space(x, 1, z).size() <= 1 && space(x, y, 1).size() <= 1)
 							{
 								const int local_index = 9 * z + 3 * y + x;
 								const int global_index = space(x, y, z);
@@ -604,7 +606,7 @@ namespace polyfem
 					{
 						for (int x = 0; x < 3; ++x)
 						{
-							if (!space.is_regular(x, y, z)) //space(1, y, z).size() > 1 || space(x, 1, z).size() > 1 || space(x, y, 1).size() > 1)
+							if (!space.is_regular(x, y, z)) // space(1, y, z).size() > 1 || space(x, 1, z).size() > 1 || space(x, y, 1).size() > 1)
 							{
 								const int local_index = 9 * z + 3 * y + x;
 
@@ -755,7 +757,7 @@ namespace polyfem
 				std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
 				mesh.to_vertex_functions(to_vertex);
 
-				LocalBoundary lb(el_index, BoundaryType::Quad);
+				LocalBoundary lb(el_index, BoundaryType::QUAD);
 
 				const Navigation3D::Index start_index = mesh.get_index_from_element(el_index);
 				for (int j = 0; j < 8; ++j)
@@ -767,7 +769,7 @@ namespace polyfem
 					int current_vertex_node_id = -1;
 					Eigen::MatrixXd current_vertex_node;
 
-					//if the edge/vertex is boundary the it is a Q2 edge
+					// if the edge/vertex is boundary the it is a Q2 edge
 					bool is_vertex_q2 = true;
 
 					std::vector<int> vertex_neighs;
@@ -797,7 +799,7 @@ namespace polyfem
 						}
 					}
 
-					//init new Q2 nodes
+					// init new Q2 nodes
 					if (current_vertex_node_id >= 0)
 						b.bases[loc_index].init(2, current_vertex_node_id, loc_index, current_vertex_node);
 
@@ -843,7 +845,7 @@ namespace polyfem
 						}
 					}
 
-					//init new Q2 nodes
+					// init new Q2 nodes
 					if (current_edge_node_id >= 0)
 						b.bases[loc_index].init(2, current_edge_node_id, loc_index, current_edge_node);
 
@@ -882,7 +884,7 @@ namespace polyfem
 						}
 					}
 
-					//init new Q2 nodes
+					// init new Q2 nodes
 					if (current_face_node_id >= 0)
 						b.bases[loc_index].init(2, current_face_node_id, loc_index, current_face_node);
 
@@ -901,7 +903,7 @@ namespace polyfem
 
 			void insert_into_global(const int el_index, const Local2Global &data, std::vector<Local2Global> &vec, const int size)
 			{
-				//ignore small weights
+				// ignore small weights
 				if (fabs(data.val) < 1e-10)
 					return;
 
@@ -973,7 +975,7 @@ namespace polyfem
 						// other_b.basis(param_p, eval_p);
 						assert(eval_p[i].val.size() == 9);
 
-						//basis i of element opposite element is zero on this elements
+						// basis i of element opposite element is zero on this elements
 						if (eval_p[i].val.cwiseAbs().maxCoeff() <= 1e-10)
 							continue;
 
@@ -1020,7 +1022,9 @@ namespace polyfem
 			}
 		} // namespace
 
-		int SplineBasis3d::build_bases(const Mesh3D &mesh, const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_face_to_data)
+		int SplineBasis3d::build_bases(const Mesh3D &mesh,
+									   const std::string &assembler,
+									   const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_face_to_data)
 		{
 			using std::max;
 			assert(mesh.is_volume());
@@ -1049,8 +1053,9 @@ namespace polyfem
 				build_local_space(mesh, mesh_nodes, e, space, local_boundary, poly_face_to_data);
 
 				ElementBases &b = bases[e];
-				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
-				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::SPLINE, 3);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::SPLINE, 3);
+
 				b.set_quadrature([real_order](Quadrature &quad) {
 					HexQuadrature hex_quadrature;
 					hex_quadrature.get_quadrature(real_order, quad);
@@ -1081,14 +1086,14 @@ namespace polyfem
 					assert(index.face == primitive_id);
 
 					static constexpr std::array<std::array<int, 9>, 6> face_to_index = {{
-						{{2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 1 * 3 + 1, 2 * 9 + 2 * 3 + 1, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, //0
-						{{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 1 * 3 + 1, 0 * 9 + 2 * 3 + 1, 0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2}}, //1
+						{{2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 1 * 3 + 1, 2 * 9 + 2 * 3 + 1, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, // 0
+						{{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 1 * 3 + 1, 0 * 9 + 2 * 3 + 1, 0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2}}, // 1
 
-						{{0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2, 1 * 9 + 0 * 3 + 2, 1 * 9 + 1 * 3 + 2, 1 * 9 + 2 * 3 + 2, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, //2
-						{{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 1 * 9 + 0 * 3 + 0, 1 * 9 + 1 * 3 + 0, 1 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0}}, //3
+						{{0 * 9 + 0 * 3 + 2, 0 * 9 + 1 * 3 + 2, 0 * 9 + 2 * 3 + 2, 1 * 9 + 0 * 3 + 2, 1 * 9 + 1 * 3 + 2, 1 * 9 + 2 * 3 + 2, 2 * 9 + 0 * 3 + 2, 2 * 9 + 1 * 3 + 2, 2 * 9 + 2 * 3 + 2}}, // 2
+						{{0 * 9 + 0 * 3 + 0, 0 * 9 + 1 * 3 + 0, 0 * 9 + 2 * 3 + 0, 1 * 9 + 0 * 3 + 0, 1 * 9 + 1 * 3 + 0, 1 * 9 + 2 * 3 + 0, 2 * 9 + 0 * 3 + 0, 2 * 9 + 1 * 3 + 0, 2 * 9 + 2 * 3 + 0}}, // 3
 
-						{{0 * 9 + 2 * 3 + 0, 0 * 9 + 2 * 3 + 1, 0 * 9 + 2 * 3 + 2, 1 * 9 + 2 * 3 + 0, 1 * 9 + 2 * 3 + 1, 1 * 9 + 2 * 3 + 2, 2 * 9 + 2 * 3 + 0, 2 * 9 + 2 * 3 + 1, 2 * 9 + 2 * 3 + 2}}, //4
-						{{0 * 9 + 0 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 0 * 3 + 2, 1 * 9 + 0 * 3 + 0, 1 * 9 + 0 * 3 + 1, 1 * 9 + 0 * 3 + 2, 2 * 9 + 0 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 0 * 3 + 2}}, //5
+						{{0 * 9 + 2 * 3 + 0, 0 * 9 + 2 * 3 + 1, 0 * 9 + 2 * 3 + 2, 1 * 9 + 2 * 3 + 0, 1 * 9 + 2 * 3 + 1, 1 * 9 + 2 * 3 + 2, 2 * 9 + 2 * 3 + 0, 2 * 9 + 2 * 3 + 1, 2 * 9 + 2 * 3 + 2}}, // 4
+						{{0 * 9 + 0 * 3 + 0, 0 * 9 + 0 * 3 + 1, 0 * 9 + 0 * 3 + 2, 1 * 9 + 0 * 3 + 0, 1 * 9 + 0 * 3 + 1, 1 * 9 + 0 * 3 + 2, 2 * 9 + 0 * 3 + 0, 2 * 9 + 0 * 3 + 1, 2 * 9 + 0 * 3 + 2}}, // 5
 					}};
 
 					Eigen::VectorXi res(9);
@@ -1119,8 +1124,9 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 
-				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
-				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+
 				// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
 				b.set_quadrature([real_order](Quadrature &quad) {
 					HexQuadrature hex_quadrature;

@@ -17,14 +17,13 @@ namespace polyfem::solver
 		/// @brief Construct a new Elastic Form object
 		/// @param state Reference to the simulation state
 		ElasticHomogenizationForm(const int n_bases,
-					const int n_geom_bases,
 					const std::vector<basis::ElementBases> &bases,
 					const std::vector<basis::ElementBases> &geom_bases,
 					const assembler::AssemblerUtils &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
 					const std::string &formulation,
 					const double dt,
-					const bool is_volume): ElasticForm(n_bases, n_geom_bases, bases, geom_bases, assembler, ass_vals_cache, formulation, dt, is_volume) {}
+					const bool is_volume): ElasticForm(n_bases, bases, geom_bases, assembler, ass_vals_cache, formulation, dt, is_volume) {}
 
         void set_macro_field(const Eigen::VectorXd &macro_field) { macro_field_ = macro_field; }
 

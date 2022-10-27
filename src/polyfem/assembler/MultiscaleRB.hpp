@@ -4,7 +4,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
-
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 
 #include <polyfem/utils/AutodiffTypes.hpp>

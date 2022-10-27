@@ -19,7 +19,7 @@ namespace polyfem
 
 		bool state_has_solution(State &state)
 		{
-			if ((state.problem->is_time_dependent() && state.diff_cached.size() > 0) || (!state.problem->is_time_dependent() && state.sol.size() > 0))
+			if ((state.problem->is_time_dependent() && state.diff_cached.size() > 0) || (!state.problem->is_time_dependent() && state.diff_cached[0].u.size() > 0))
 				return true;
 			else
 				return false;
@@ -240,7 +240,7 @@ namespace polyfem
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
+				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->diff_cached[0].u;
 				io::Evaluator::interpolate_at_local_vals(*(state_ref_->mesh), state_ref_->problem->is_scalar(), state_ref_->bases, state_ref_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
@@ -264,7 +264,7 @@ namespace polyfem
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
+				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->diff_cached[0].u;
 				io::Evaluator::interpolate_at_local_vals(*(state_ref_->mesh), state_ref_->problem->is_scalar(), state_ref_->bases, state_ref_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)
@@ -289,7 +289,7 @@ namespace polyfem
 				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->sol;
+				const Eigen::MatrixXd &sol_ref = state_ref_->problem->is_time_dependent() ? state_ref_->diff_cached[params["step"].get<int>()].u : state_ref_->diff_cached[0].u;
 				io::Evaluator::interpolate_at_local_vals(*(state_ref_->mesh), state_ref_->problem->is_scalar(), state_ref_->bases, state_ref_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				for (int q = 0; q < u.rows(); q++)

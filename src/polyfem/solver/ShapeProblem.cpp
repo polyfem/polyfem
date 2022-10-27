@@ -588,7 +588,7 @@ namespace polyfem
 
 		x_at_ls_begin = x0;
 		if (!state.problem->is_time_dependent())
-			sol_at_ls_begin = state.sol;
+			sol_at_ls_begin = state.diff_cached[0].u;
 
 		if (!has_collision)
 			return;
@@ -864,7 +864,6 @@ namespace polyfem
 		state.stats.compute_mesh_stats(*state.mesh);
 		state.build_basis();
 
-		state.sol.resize(0, 0);
 		state.descent_direction.resize(0);
 
 		state.get_vf(V_rest, elements);

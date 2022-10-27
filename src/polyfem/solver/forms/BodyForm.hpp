@@ -26,7 +26,7 @@ namespace polyfem::solver
 				 const int n_boundary_samples,
 				 const Eigen::MatrixXd &rhs,
 				 const assembler::RhsAssembler &rhs_assembler,
-				 const Density &density,
+				 const assembler::Density &density,
 				 const bool apply_DBC,
 				 const bool is_formulation_mixed,
 				 const bool is_time_dependent);
@@ -81,7 +81,7 @@ namespace polyfem::solver
 		const int n_boundary_samples_;
 
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
-		const Density &density_;
+		const assembler::Density &density_;
 		bool is_formulation_mixed_; ///< True if the formulation is mixed
 
 		double t_;       ///< Current time

@@ -132,13 +132,14 @@ int main(int argc, char **argv)
     // }
 
 	const int N = 50;
+	Eigen::MatrixXd sol, pressure;
 	for (int n = 0; n < N; n++)
 	{
 		def_grad << 0, 0,
 		            0, -n/(2.0*N);
-    	state.solve_homogenized_field(def_grad, Eigen::MatrixXd(), state.sol);
+    	state.solve_homogenized_field(def_grad, Eigen::MatrixXd(), sol);
 		state.out_geom.export_data(
-			state,
+			state, sol, pressure,
 			!state.args["time"].is_null(),
 			0, 0,
 			io::OutGeometryData::ExportOptions(state.args, state.mesh->is_linear(), state.problem->is_scalar(), state.solve_export_to_file),

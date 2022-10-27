@@ -36,8 +36,8 @@ namespace polyfem::assembler
 		else
 			assert(false);
 
-			return res;
-		}
+		return res;
+	}
 
 	void Laplacian::compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
 	{

@@ -5,7 +5,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
-
+#include <polyfem/assembler/MatParams.hpp>
 #include <Eigen/Sparse>
 #include <vector>
 #include <iostream>

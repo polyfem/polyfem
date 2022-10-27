@@ -31,7 +31,7 @@ namespace polyfem
 				const int n_edges = mesh.n_face_vertices(element_index);
 
 				std::vector<int> local_to_global(n_edges);
-				LocalBoundary lb(element_index, BoundaryType::Polygon);
+				LocalBoundary lb(element_index, BoundaryType::POLYGON);
 
 				Navigation::Index index = mesh.get_index_from_face(element_index);
 				for (int i = 0; i < n_edges; ++i)
@@ -140,7 +140,7 @@ namespace polyfem
 
 				radii(i) = segments.row(i).norm();
 
-				//we are on the vertex
+				// we are on the vertex
 				if (radii(i) < tol)
 				{
 					b(i) = 1;
@@ -159,7 +159,7 @@ namespace polyfem
 				areas(i) = mat.determinant();
 				products(i) = segments.row(i).dot(segments.row(ip1));
 
-				//we are on the edge
+				// we are on the edge
 				if (fabs(areas[i]) < tol && products(i) < 0)
 				{
 					const double denominator = 1.0 / (radii(i) + radii(ip1));
@@ -221,7 +221,7 @@ namespace polyfem
 
 				radii(i) = segments.row(i).norm();
 
-				//we are on the vertex
+				// we are on the vertex
 				if (radii(i) < tol)
 				{
 					assert(false);
@@ -243,7 +243,7 @@ namespace polyfem
 				areas(i) = mat.determinant();
 				products(i) = segments.row(i).dot(segments.row(ip1));
 
-				//we are on the edge
+				// we are on the edge
 				if (fabs(areas[i]) < tol && products(i) < 0)
 				{
 					// const double denominator = 1.0/(radii(i) + radii(ip1));
@@ -404,10 +404,10 @@ namespace polyfem
 
 				// Compute quadrature points for the polygon
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(polygon, quadrature_order, tmp_quadrature);
+				poly_quadr.get_quadrature(polygon, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 1, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
-				poly_quadr.get_quadrature(polygon, mass_quadrature_order, tmp_mass_quadrature);
+				poly_quadr.get_quadrature(polygon, mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 1, AssemblerUtils::BasisType::POLY, 2), tmp_mass_quadrature);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });

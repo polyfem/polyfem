@@ -12,7 +12,7 @@ namespace polyfem
 	using namespace solver;
 	using namespace time_integrator;
 
-	void State::solve_navier_stokes()
+	void State::solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(!problem->is_time_dependent());
 		assert(formulation() == "NavierStokes");
@@ -37,10 +37,10 @@ namespace polyfem
 						   rhs, x);
 
 		sol = x;
-		sol_to_pressure();
+		sol_to_pressure(sol, pressure);
 	}
 
-	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt)
+	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
 
@@ -148,11 +148,11 @@ namespace polyfem
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* export to vtu */
-			save_timestep(time, t, 0, dt);
+			save_timestep(time, t, 0, dt, sol, pressure);
 		}
 	}
 
-	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt)
+	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
 
@@ -161,7 +161,7 @@ namespace polyfem
 
 		StiffnessMatrix velocity_mass;
 		assembler.assemble_mass_matrix(
-			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, velocity_mass);
+			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, mass_ass_vals_cache, velocity_mass);
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
@@ -220,9 +220,9 @@ namespace polyfem
 				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
 			sol = tmp_sol;
 			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));
-			sol_to_pressure();
+			sol_to_pressure(sol, pressure);
 
-			save_timestep(time, t, t0, dt);
+			save_timestep(time, t, t0, dt, sol, pressure);
 		}
 	}
 } // namespace polyfem

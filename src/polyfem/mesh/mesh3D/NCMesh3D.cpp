@@ -98,11 +98,11 @@ namespace polyfem
 
 		void NCMesh3D::compute_elements_tag()
 		{
-			elements_tag_.assign(n_cells(), ElementType::Simplex);
+			elements_tag_.assign(n_cells(), ElementType::SIMPLEX);
 		}
 		void NCMesh3D::update_elements_tag()
 		{
-			elements_tag_.assign(n_cells(), ElementType::Simplex);
+			elements_tag_.assign(n_cells(), ElementType::SIMPLEX);
 		}
 		double NCMesh3D::edge_length(const int gid) const
 		{

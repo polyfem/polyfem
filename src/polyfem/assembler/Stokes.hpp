@@ -68,11 +68,7 @@ namespace polyfem::assembler
 		assemble(const LinearAssemblerData &data) const;
 
 		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
-		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
+		compute_rhs(const AutodiffHessianPt &pt) const;
 
 		inline int size() const { return 1; }
 

@@ -33,9 +33,9 @@ namespace polyfem::solver
 
 	int FullNLProblem::max_lagging_iterations() const
 	{
-		int max_lagging_iterations = std::numeric_limits<int>::max();
+		int max_lagging_iterations = 1;
 		for (auto &f : forms_)
-			max_lagging_iterations = std::min(max_lagging_iterations, f->max_lagging_iterations());
+			max_lagging_iterations = std::max(max_lagging_iterations, f->max_lagging_iterations());
 		return max_lagging_iterations;
 	}
 

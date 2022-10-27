@@ -5,6 +5,8 @@
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
+#include <polyfem/assembler/AssemblerUtils.hpp>
+
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -20,7 +22,7 @@
 #include <array>
 #include <map>
 
-//TODO carefull with simplices
+// TODO carefull with simplices
 
 namespace polyfem
 {
@@ -156,7 +158,7 @@ namespace polyfem
 				node(1, 1) = mesh_nodes.node_position(el_node_id);
 				// (mesh.node_from_face(el_index));
 
-				LocalBoundary lb(el_index, BoundaryType::QuadLine);
+				LocalBoundary lb(el_index, BoundaryType::QUAD_LINE);
 
 				//////////////////////////////////////////
 				index = mesh.get_index_from_face(el_index);
@@ -261,21 +263,21 @@ namespace polyfem
 
 			void setup_knots_vectors(MeshNodes &mesh_nodes, const SpaceMatrix &space, std::array<std::array<double, 4>, 3> &h_knots, std::array<std::array<double, 4>, 3> &v_knots)
 			{
-				//left and right neigh are absent
+				// left and right neigh are absent
 				if (mesh_nodes.is_boundary_or_interface(space(0, 1).front()) && mesh_nodes.is_boundary_or_interface(space(2, 1).front()))
 				{
 					h_knots[0] = {{0, 0, 0, 1}};
 					h_knots[1] = {{0, 0, 1, 1}};
 					h_knots[2] = {{0, 1, 1, 1}};
 				}
-				//left neigh is absent
+				// left neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(0, 1).front()))
 				{
 					h_knots[0] = {{0, 0, 0, 1}};
 					h_knots[1] = {{0, 0, 1, 2}};
 					h_knots[2] = {{0, 1, 2, 3}};
 				}
-				//right neigh is absent
+				// right neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(2, 1).front()))
 				{
 					h_knots[0] = {{-2, -1, 0, 1}};
@@ -289,21 +291,21 @@ namespace polyfem
 					h_knots[2] = {{0, 1, 2, 3}};
 				}
 
-				//top and bottom neigh are absent
+				// top and bottom neigh are absent
 				if (mesh_nodes.is_boundary_or_interface(space(1, 0).front()) && mesh_nodes.is_boundary_or_interface(space(1, 2).front()))
 				{
 					v_knots[0] = {{0, 0, 0, 1}};
 					v_knots[1] = {{0, 0, 1, 1}};
 					v_knots[2] = {{0, 1, 1, 1}};
 				}
-				//bottom neigh is absent
+				// bottom neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(1, 0).front()))
 				{
 					v_knots[0] = {{0, 0, 0, 1}};
 					v_knots[1] = {{0, 0, 1, 2}};
 					v_knots[2] = {{0, 1, 2, 3}};
 				}
-				//top neigh is absent
+				// top neigh is absent
 				else if (mesh_nodes.is_boundary_or_interface(space(1, 2).front()))
 				{
 					v_knots[0] = {{-2, -1, 0, 1}};
@@ -425,7 +427,7 @@ namespace polyfem
 			{
 				b.bases.resize(9);
 
-				LocalBoundary lb(el_index, BoundaryType::QuadLine);
+				LocalBoundary lb(el_index, BoundaryType::QUAD_LINE);
 
 				Navigation::Index index = mesh.get_index_from_face(el_index);
 				for (int j = 0; j < 4; ++j)
@@ -443,7 +445,7 @@ namespace polyfem
 
 					const int opposite_face = mesh.switch_face(index).face;
 
-					//if the edge/vertex is boundary the it is a Q2 edge
+					// if the edge/vertex is boundary the it is a Q2 edge
 					bool is_vertex_q2 = true;
 					bool is_vertex_boundary = false;
 
@@ -518,14 +520,14 @@ namespace polyfem
 						}
 					}
 
-					//init new Q2 nodes
+					// init new Q2 nodes
 					if (current_vertex_node_id >= 0)
 						b.bases[vertex_basis_id].init(2, current_vertex_node_id, vertex_basis_id, current_vertex_node);
 
 					if (current_edge_node_id >= 0)
 						b.bases[edge_basis_id].init(2, current_edge_node_id, edge_basis_id, current_edge_node);
 
-					//set the basis functions
+					// set the basis functions
 					b.bases[vertex_basis_id].set_basis([vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_2d(2, vertex_basis_id, uv, val); });
 					b.bases[vertex_basis_id].set_grad([vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_grad_basis_value_2d(2, vertex_basis_id, uv, val); });
 
@@ -535,7 +537,7 @@ namespace polyfem
 					index = mesh.next_around_face(index);
 				}
 
-				//central node always present
+				// central node always present
 				const int face_basis_id = 8;
 				b.bases[face_basis_id].init(2, n_bases++, face_basis_id, mesh.face_barycenter(el_index));
 				b.bases[face_basis_id].set_basis([face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_2d(2, face_basis_id, uv, val); });
@@ -547,7 +549,7 @@ namespace polyfem
 
 			void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
 			{
-				//ignore small weights
+				// ignore small weights
 				if (fabs(data.val) < 1e-10)
 					return;
 
@@ -618,7 +620,7 @@ namespace polyfem
 
 						assert(eval_p[i].val.size() == 3);
 
-						//basis i of element opposite face is zero on this elements
+						// basis i of element opposite face is zero on this elements
 						if (eval_p[i].val.cwiseAbs().maxCoeff() <= 1e-10)
 							continue;
 
@@ -673,7 +675,9 @@ namespace polyfem
 			}
 		} // namespace
 
-		int SplineBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data)
+		int SplineBasis2d::build_bases(const Mesh2D &mesh,
+									   const std::string &assembler,
+									   const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data)
 		{
 			using std::max;
 			assert(!mesh.is_volume());
@@ -701,8 +705,9 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
-				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::SPLINE, 2);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::SPLINE, 2);
+
 				b.set_quadrature([real_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
 					quad_quadrature.get_quadrature(real_order, quad);
@@ -770,8 +775,9 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				const int real_order = std::max(quadrature_order, (2 - 1) * 2 + 1);
-				const int real_mass_order = std::max(mass_quadrature_order, 2 * 2 + 1);
+				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
+
 				b.set_quadrature([real_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
 					quad_quadrature.get_quadrature(real_order, quad);

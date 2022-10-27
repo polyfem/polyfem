@@ -70,7 +70,7 @@ namespace cppoptlib
 		{
 			this->m_status = Status::UserDefined;
 			polyfem::logger().error("[{}] Initial gradient is nan; stopping", name());
-			m_error_code = ErrorCode::NanEncountered;
+			m_error_code = ErrorCode::NAN_ENCOUNTERED;
 			throw std::runtime_error("Gradient is nan; stopping");
 			return;
 		}
@@ -119,7 +119,7 @@ namespace cppoptlib
 			{
 				this->m_status = Status::UserDefined;
 				polyfem::logger().error("[{}] f(x) is nan or inf; stopping", name());
-				m_error_code = ErrorCode::NanEncountered;
+				m_error_code = ErrorCode::NAN_ENCOUNTERED;
 				throw std::runtime_error("f(x) is nan or inf; stopping");
 				break;
 			}
@@ -134,7 +134,7 @@ namespace cppoptlib
 			{
 				this->m_status = Status::UserDefined;
 				polyfem::logger().error("[{}] Gradient is nan; stopping", name());
-				m_error_code = ErrorCode::NanEncountered;
+				m_error_code = ErrorCode::NAN_ENCOUNTERED;
 				throw std::runtime_error("Gradient is nan; stopping");
 				break;
 			}
@@ -236,7 +236,7 @@ namespace cppoptlib
 			//  if (objFunc.stop(x))
 			//  {
 			//  	this->m_status = Status::UserDefined;
-			//  	m_error_code = ErrorCode::Success;
+			//  	m_error_code = ErrorCode::SUCCESS;
 			//  	polyfem::logger().debug("[{}] Objective decided to stop", name());
 			//  }
 
@@ -333,7 +333,7 @@ namespace cppoptlib
 	{
 		this->m_current.reset();
 		descent_strategy = default_descent_strategy();
-		m_error_code = ErrorCode::Success;
+		m_error_code = ErrorCode::SUCCESS;
 
 		const std::string line_search_name = solver_info["line_search"];
 		solver_info = polyfem::json();

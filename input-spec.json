@@ -137,7 +137,54 @@
             "enabled",
             "is_obstacle"
         ],
+        "#type_name": "mesh",
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "type",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "plane",
+        "doc": "Plane geometry object defined by its origin and normal."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "height"
+        ],
+        "optional": [
+            "type",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "ground",
+        "doc": "Plane orthogonal to gravity defined by its height."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh_sequence",
+            "fps"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "transformation",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "mesh_sequence",
+        "doc": "Mesh sequence."
     },
     {
         "pointer": "/geometry/*/mesh",
@@ -155,7 +202,10 @@
         "pointer": "/geometry/*/type",
         "type": "string",
         "options": [
-            "mesh"
+            "mesh",
+            "plane",
+            "ground",
+            "mesh_sequence"
         ],
         "default": "mesh",
         "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
@@ -251,7 +301,7 @@
         "optional": [
             "id_offset"
         ],
-        "typename": "id_offset",
+        "#type_name": "id_offset",
         "default": null,
         "doc": "Offsets the volume IDs loaded from the mesh."
     },
@@ -285,7 +335,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "box",
+        "#type_name": "box",
         "doc": "Assign the ID to all volume elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
@@ -300,7 +350,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "sphere",
+        "#type_name": "sphere",
         "doc": "Assign the ID to all volume elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
@@ -316,7 +366,7 @@
             "offset"
         ],
         "default": null,
-        "typename": "plane",
+        "#type_name": "plane",
         "doc": "Assign the ID to all volume elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
@@ -331,7 +381,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "axis",
+        "#type_name": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
     },
     {
@@ -413,9 +463,183 @@
     },
     {
         "pointer": "/geometry/*/point_selection",
+        "type": "int",
+        "doc": "Assign specified ID to all surface elements of the geometry"
+    },
+    {
+        "pointer": "/geometry/*/point_selection",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one ID for each; each triple must correspond to a surface element"
+    },
+    {
+        "pointer": "/geometry/*/point_selection",
+        "type": "list",
+        "default": "skip",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
         "type": "object",
+        "required": [
+            "id",
+            "box"
+        ],
+        "optional": [
+            "relative"
+        ],
         "default": null,
-        "doc": "Selection of points"
+        "#type_name": "box",
+        "doc": "Assign the ID to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "radius",
+            "center"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "sphere",
+        "doc": "Assign the ID to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "relative",
+            "offset"
+        ],
+        "default": null,
+        "#type_name": "plane",
+        "doc": "Assign the ID to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "id",
+            "axis",
+            "position"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "axis",
+        "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "threshold"
+        ],
+        "optional": [
+            "id_offset"
+        ],
+        "default": null,
+        "#type_name": "box_side",
+        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/id",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/center",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/axis",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/axis",
+        "type": "string"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/offset",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/position",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/relative",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/point",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/normal",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/normal/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/box",
+        "type": "list",
+        "min": 2,
+        "max": 2
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/box/*",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "default": []
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/box/*/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/threshold",
+        "type": "float",
+        "doc": "Threshold for box side selection."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "ID offset of box side selection."
     },
     {
         "pointer": "/geometry/*/curve_selection",
@@ -426,7 +650,6 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "int",
-        "default": null,
         "doc": "Assign specified ID to all surface elements of the geometry"
     },
     {
@@ -440,6 +663,7 @@
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "list",
+        "default": "skip",
         "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
     },
     {
@@ -453,7 +677,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "box",
+        "#type_name": "box",
         "doc": "Assign the ID to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
@@ -468,7 +692,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "sphere",
+        "#type_name": "sphere",
         "doc": "Assign the ID to all surface elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
     },
     {
@@ -484,7 +708,7 @@
             "offset"
         ],
         "default": null,
-        "typename": "plane",
+        "#type_name": "plane",
         "doc": "Assign the ID to all surface elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
@@ -499,7 +723,7 @@
             "relative"
         ],
         "default": null,
-        "typename": "axis",
+        "#type_name": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
     },
     {
@@ -512,7 +736,7 @@
             "id_offset"
         ],
         "default": null,
-        "typename": "box_side",
+        "#type_name": "box_side",
         "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
     },
     {
@@ -656,6 +880,56 @@
         "type": "bool",
         "default": true,
         "doc": "Skips the geometry if false"
+    },
+    {
+        "pointer": "/geometry/*/point",
+        "type": "list",
+        "doc": "Point on plane (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/normal",
+        "type": "list",
+        "doc": "Normal of plane (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/height",
+        "type": "float",
+        "doc": "Height of ground plane."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence",
+        "type": "string",
+        "doc": "Directory (or GLOB) of meshes for the mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence",
+        "type": "list",
+        "doc": "List of mesh files for the mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence/*",
+        "type": "file",
+        "extensions": [
+            ".obj",
+            ".msh",
+            ".stl",
+            ".ply",
+            ".mesh"
+        ],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/*/fps",
+        "type": "int",
+        "doc": "Frames of the mesh sequence per second."
     },
     {
         "pointer": "/space",
@@ -1048,6 +1322,7 @@
             "nonlinear",
             "augmented_lagrangian",
             "contact",
+            "rayleigh_damping",
             "ignore_inertia",
             "advanced"
         ],
@@ -1928,6 +2203,64 @@
         "doc": "The support size of barrier function"
     },
     {
+        "pointer": "/solver/rayleigh_damping",
+        "type": "list",
+        "default": [],
+        "doc": "Apply Rayleigh damping."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness_ratio"
+        ],
+        "optional": [
+            "lagging_iterations"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness ratio."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness"
+        ],
+        "optional": [
+            "lagging_iterations"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/form",
+        "type": "string",
+        "options": [
+            "elasticity",
+            "contact",
+            "friction"
+        ],
+        "doc": "Form to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness_ratio",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp (stiffness = 0.75 * stiffness_ratio * Δt³)."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/lagging_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagging."
+    },
+    {
         "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
@@ -2051,6 +2384,22 @@
             "psi"
         ],
         "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin",
+        "required": [
+            "type",
+            "c1",
+            "c2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "k"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*",
@@ -2274,6 +2623,16 @@
     },
     {
         "pointer": "/materials/*/nu",
+        "type": "file",
+        "doc": "Poisson's ratio"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type": "file",
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
         "type": "float",
         "doc": "Poisson's ratio"
     },
@@ -2337,6 +2696,7 @@
             "SaintVenant",
             "NeoHookean",
             "MultiscaleRB",
+            "MooneyRivlin",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2355,6 +2715,16 @@
         "pointer": "/materials/*/lambda",
         "type": "float",
         "doc": "Second Lamé parameter"
+    },
+    {
+        "pointer": "/materials/*/c1",
+        "type": "float",
+        "doc": "First Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c2",
+        "type": "float",
+        "doc": "Second Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/boundary_conditions",
@@ -2424,7 +2794,8 @@
         ],
         "optional": [
             "dimension",
-            "time_reference"
+            "time_reference",
+            "interpolation"
         ],
         "doc": "Dirichlet boundary condition."
     },
@@ -2499,6 +2870,123 @@
         "doc": "Values of Dirichlet boundary condition for timestep"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "none",
+        "default": {
+            "type": "none"
+        },
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "to"
+        ],
+        "optional": [
+            "from"
+        ],
+        "type_name": "linear_ramp",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/type",
+        "type": "string",
+        "options": [
+            "none",
+            "linear",
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
+        ],
+        "doc": "type of interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/from",
+        "type": "float",
+        "default": 0,
+        "doc": "interpolation starting time"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/to",
+        "type": "float",
+        "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
+    },
+    {
         "pointer": "/boundary_conditions/neumann_boundary",
         "default": [],
         "type": "list",
@@ -2508,35 +2996,151 @@
         "pointer": "/boundary_conditions/neumann_boundary/*",
         "type": "object",
         "default": null,
-        "optional": [
+        "required": [
             "id",
             "value"
+        ],
+        "optional": [
+            "interpolation"
         ],
         "doc": "Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
-        "default": 1,
         "doc": "ID of Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value",
         "type": "list",
-        "default": [],
         "doc": "Values of Neumann boundary condition for each dimension"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
         "type": "string",
-        "default": "",
         "doc": "Values of Neumann boundary condition for each dimension as function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/value/*",
         "type": "float",
-        "default": 0,
         "doc": "Values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "none",
+        "default": {
+            "type": "none"
+        },
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "to"
+        ],
+        "optional": [
+            "from"
+        ],
+        "type_name": "linear_ramp",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/type",
+        "type": "string",
+        "options": [
+            "none",
+            "linear",
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
+        ],
+        "doc": "type of interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/from",
+        "type": "float",
+        "default": 0,
+        "doc": "interpolation starting time"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/to",
+        "type": "float",
+        "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary",
@@ -2553,6 +3157,7 @@
             "value"
         ],
         "optional": [
+            "interpolation",
             "dimension"
         ],
         "doc": "pressure BC entry"
@@ -2594,6 +3199,123 @@
         "doc": "value"
     },
     {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "none",
+        "default": {
+            "type": "none"
+        },
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "to"
+        ],
+        "optional": [
+            "from"
+        ],
+        "type_name": "linear_ramp",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/type",
+        "type": "string",
+        "options": [
+            "none",
+            "linear",
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
+        ],
+        "doc": "type of interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/from",
+        "type": "float",
+        "default": 0,
+        "doc": "interpolation starting time"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/to",
+        "type": "float",
+        "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
@@ -2606,6 +3328,9 @@
         "required": [
             "id",
             "value"
+        ],
+        "optional": [
+            "interpolation"
         ],
         "doc": "Obstacle displacements"
     },
@@ -2628,6 +3353,123 @@
         "pointer": "/boundary_conditions/obstacle_displacements/*/value/*",
         "type": "float",
         "doc": "Values of Obstacle displacements for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "none",
+        "default": {
+            "type": "none"
+        },
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "to"
+        ],
+        "optional": [
+            "from"
+        ],
+        "type_name": "linear_ramp",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/type",
+        "type": "string",
+        "options": [
+            "none",
+            "linear",
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear"
+        ],
+        "doc": "type of interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/from",
+        "type": "float",
+        "default": 0,
+        "doc": "interpolation starting time"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/to",
+        "type": "float",
+        "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
     },
     {
         "pointer": "/initial_conditions",
@@ -3411,6 +4253,7 @@
             "volume",
             "surface",
             "wireframe",
+            "points",
             "options"
         ],
         "doc": "Output in paraview format"
@@ -3456,6 +4299,12 @@
         "default": false,
         "type": "bool",
         "doc": "Export the wireframe of the mesh"
+    },
+    {
+        "pointer": "/output/paraview/points",
+        "default": false,
+        "type": "bool",
+        "doc": "Export the Dirichlet points"
     },
     {
         "pointer": "/output/paraview/options",

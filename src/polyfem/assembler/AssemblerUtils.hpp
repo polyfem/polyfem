@@ -15,9 +15,11 @@
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "MultiscaleRB.hpp"
+#include "GenericElastic.hpp"
+#include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
 #include "ViscousDamping.hpp"
-// #include "OgdenElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include "Stokes.hpp"
 #include "NavierStokes.hpp"
@@ -37,6 +39,14 @@ namespace polyfem
 		class AssemblerUtils
 		{
 		public:
+			enum class BasisType
+			{
+				SIMPLEX_LAGRANGE,
+				CUBE_LAGRANGE,
+				SPLINE,
+				POLY
+			};
+
 			AssemblerUtils();
 
 			// Linear, assembler is the name of the formulation
@@ -225,7 +235,7 @@ namespace polyfem
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_dstress_dmu_dlambda_function(const std::string& assembler) const;
 
 			const Density &density() const { return mass_mat_.local_assembler().density(); }
-			//checks if assembler is linear
+			// checks if assembler is linear
 			static bool is_linear(const std::string &assembler);
 
 			// checks if assembler solution is displacement (true for elasticty)
@@ -242,7 +252,7 @@ namespace polyfem
 
 			bool has_damping() const;
 
-			//gets the names of all assemblers
+			// gets the names of all assemblers
 			static std::vector<std::string> scalar_assemblers();
 			static std::vector<std::string> tensor_assemblers();
 			// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
@@ -254,6 +264,8 @@ namespace polyfem
 				const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 				const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 				StiffnessMatrix &stiffness);
+
+			static int quadrature_order(const std::string &assembler, const int basis_degree, const BasisType &b_type, const int dim);
 
 		private:
 			// all assemblers
@@ -274,8 +286,9 @@ namespace polyfem
 			NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 			NLAssembler<MultiscaleRB> multiscale_reduced_basis_;
+			NLAssembler<GenericElastic<MooneyRivlinElasticity>> mooney_rivlin_elasticity_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
-			// NLAssembler<OgdenElasticity> ogden_elasticity_;
+			NLAssembler<GenericElastic<OgdenElasticity>> ogden_elasticity_;
 
 			NLAssembler<ViscousDamping> damping_;
 			NLAssembler<ViscousDampingPrev> damping_prev_;

@@ -110,7 +110,8 @@ namespace polyfem
 
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();
-		state.solve_problem();
+		Eigen::MatrixXd sol, pressure;
+		state.solve_problem(sol, pressure);
 
 		if (utils::StringUtils::startswith(j->get_functional_name(), "Center"))
 		{
@@ -126,7 +127,7 @@ namespace polyfem
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
 			state.get_vf(V, F, false);
-			V.block(0, 0, V.rows(), state.mesh->dimension()) += utils::unflatten(state.sol, state.mesh->dimension());
+			V.block(0, 0, V.rows(), state.mesh->dimension()) += utils::unflatten(sol, state.mesh->dimension());
 			print_markers(V, f.get_active_vertex_mask());
 		}
 
@@ -185,6 +186,8 @@ namespace polyfem
 
 			state.out_geom.export_data(
 				state,
+				state.diff_cached[0].u,
+				Eigen::MatrixXd::Zero(state.n_pressure_bases, 1),
 				!state.args["time"].is_null(),
 				tend, dt,
 				io::OutGeometryData::ExportOptions(state.args, state.mesh->is_linear(), state.problem->is_scalar(), state.solve_export_to_file),
