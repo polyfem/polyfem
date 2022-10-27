@@ -119,10 +119,11 @@ namespace polyfem
 						POLYFEM_SCOPED_TIMER("LS end");
 						objFunc.line_search_end(false);
 					}
-
-					logger().debug(
-						"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
-						nan_free_step_size, collision_free_step_size, descent_step_size, step_size);
+					
+					if (!this->disable_log)
+						logger().debug(
+							"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
+							nan_free_step_size, collision_free_step_size, descent_step_size, step_size);
 
 					return step_size;
 				}
@@ -185,10 +186,11 @@ namespace polyfem
 
 					if (this->cur_iter >= this->max_step_size_iter || step_size <= this->min_step_size)
 					{
-						logger().warn(
-							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
-							old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),
-							is_step_valid ? "true" : "false", this->cur_iter);
+						if (!this->disable_log)
+							logger().warn(
+								"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
+								old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),
+								is_step_valid ? "true" : "false", this->cur_iter);
 						objFunc.line_search_end(true);
 						return std::nan("");
 					}

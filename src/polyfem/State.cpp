@@ -1279,7 +1279,7 @@ void State::build_collision_mesh(
 		};
 	}
 
-	void State::assemble_stiffness_mat()
+	void State::assemble_stiffness_mat(bool assemble_mass)
 	{
 		if (!mesh)
 		{
@@ -1324,7 +1324,7 @@ void State::build_collision_mesh(
 													 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 													 stiffness);
 
-				if (problem->is_time_dependent())
+				if (problem->is_time_dependent() || assemble_mass)
 				{
 					StiffnessMatrix velocity_mass;
 					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, velocity_mass);
@@ -1350,7 +1350,7 @@ void State::build_collision_mesh(
 		{
 			if (!is_contact_enabled()) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
-			if (problem->is_time_dependent())
+			if (problem->is_time_dependent() || assemble_mass)
 			{
 				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, true, bases, geom_bases(), ass_vals_cache, mass);
 			}

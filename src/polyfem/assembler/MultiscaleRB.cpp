@@ -179,11 +179,6 @@ namespace polyfem::assembler
 				void hessian(const TVector &x, THessian &hessian)
 				{
 					Eigen::MatrixXd sol = coeff_to_field(x);
-					// StiffnessMatrix hessian_;
-					// state->assembler.assemble_energy_hessian(
-					// 	state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-					// 	state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache_, hessian_);
-					// hessian = (reduced_basis_.transpose() * hessian_ * reduced_basis_).sparseView();
 					Eigen::MatrixXd tmp;
 					state->assembler.assemble_energy_hessian(
 						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
@@ -291,7 +286,7 @@ namespace polyfem::assembler
 			{
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
-				state->solve_homogenized_field(grad, tmp);
+				state->solve_homogenized_field(grad, Eigen::MatrixXd(), tmp);
 				sols.col(idx) = tmp;
 			}
 		});
@@ -661,7 +656,7 @@ namespace polyfem::assembler
 		energy = homogenize_energy(x);
 	}
 
-	void MultiscaleRB::brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const
+	void MultiscaleRB::brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &fluctuated) const
 	{
 		Eigen::MatrixXd R, Ubar, dUdF;
 		{
@@ -669,19 +664,24 @@ namespace polyfem::assembler
 			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
 		}
 
-		Eigen::MatrixXd x;
+		
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("coefficient newton", time);
 			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
 			// projection(disp_grad, x);
-			state->solve_homogenized_field(disp_grad, x);
-			x += state->generate_linear_field(disp_grad);
+			static int hess_idx = 0;
+			Eigen::MatrixXd x;
+			state->solve_homogenized_field(disp_grad, fluctuated, x); // , "hess_" + std::to_string(hess_idx) + ".mat");
+			fluctuated = x + state->generate_linear_field(disp_grad);
+			hess_idx++;
 		}
-
+		
+		
+		// only for serial
 		// {
 		// 	static int idx_ref = 0;
-		// 	state->sol = x;
+		// 	state->sol = fluctuated;
 		// 	state->out_geom.export_data(
 		// 		*state,
 		// 		!state->args["time"].is_null(),
@@ -697,11 +697,11 @@ namespace polyfem::assembler
 		// }
 
 		// effective energy = average energy over unit cell
-		energy = homogenize_energy(x);
+		energy = homogenize_energy(fluctuated);
 
 		// effective stress = average stress over unit cell
 		Eigen::MatrixXd stress_no_rotation;
-		homogenize_stress(x, stress_no_rotation);
+		homogenize_stress(fluctuated, stress_no_rotation);
 		stress_no_rotation = utils::flatten(stress_no_rotation);
 
 		// paper version
@@ -777,6 +777,7 @@ namespace polyfem::assembler
 					log_and_throw_error("No microstructure mesh found!");
 				state->stats.compute_mesh_stats(*state->mesh);
 				state->build_basis();
+				state->assemble_stiffness_mat(true);
 
 				RowVectorNd min, max;
 				state->mesh->bounding_box(min, max);
@@ -830,9 +831,9 @@ namespace polyfem::assembler
 				{
 					def_grads.clear();
 					Eigen::Matrix2d A;
-					for (int i = -100; i < 100; i++)
+					for (int i = 0; i >= -100; i--)
 					{
-						A << 1, i / 120.0, i / 120.0, 1;
+						A << 1 + i / 120., 0, 0, 1 + i / 120.; // 1, i / 120.0, i / 120.0, 1;
 						def_grads.push_back(A);
 					}
 				}
@@ -1131,6 +1132,7 @@ namespace polyfem::assembler
 	{
 		energy_errors.setZero(def_grads.size());
 		stress_errors.setZero(def_grads.size());
+		Eigen::MatrixXd fluctuated;
 		// utils::maybe_parallel_for(def_grads.size(), [&](int start, int end, int thread_id) {
 		// 	for (int i = start; i < end; i++)
 			for (int i = 0; i < def_grads.size(); i++)
@@ -1141,7 +1143,7 @@ namespace polyfem::assembler
 				Eigen::MatrixXd stress, stress_ref;
 
 				homogenization(F, val, stress);
-				brute_force_homogenization(F, val_ref, stress_ref);
+				brute_force_homogenization(F, val_ref, stress_ref, fluctuated);
 
 				if (val_ref != 0)
 				{

@@ -210,9 +210,10 @@ namespace cppoptlib
 		if (grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
-			polyfem::logger().log(
-				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-				name(), direction.dot(grad), descent_strategy_name());
+			if (!this->disable_log)
+				polyfem::logger().log(
+					log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					name(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 

@@ -853,28 +853,29 @@ namespace polyfem::assembler
 		rhs.resize(projection.cols(), 1);
 		rhs.setZero();
 
-		auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
+		// auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
 
 		const int n_bases = int(bases.size());
 
-		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+		// maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			// LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
-			for (int e = start; e < end; ++e)
+			// for (int e = start; e < end; ++e)
+			for (int e = 0; e < n_bases; ++e)
 			{
 				// igl::Timer timer; timer.start();
 
-				ElementAssemblyValues &vals = local_storage.vals;
+				ElementAssemblyValues vals;
 				// vals.compute(e, is_volume, bases[e], gbases[e]);
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-				local_storage.da = vals.det.array() * quadrature.weights.array();
+				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = local_assembler_.assemble_grad(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = local_assembler_.assemble_grad(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, da));
 				assert(val.size() == n_loc_bases * local_assembler_.size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
@@ -896,7 +897,7 @@ namespace polyfem::assembler
 							const auto wj = global_j[jj].val;
 
 							for (int p = 0; p < projection.cols(); p++)
-								local_storage.vec(p) += local_value * wj * projection(gj, p);
+								rhs(p) += local_value * wj * projection(gj, p);
 						}
 					}
 
@@ -907,11 +908,11 @@ namespace polyfem::assembler
 				// timer.stop();
 				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 			}
-		});
+		// });
 
 		// Serially merge local storages
-		for (const LocalThreadVecStorage &local_storage : storage)
-			rhs += local_storage.vec;
+		// for (const LocalThreadVecStorage &local_storage : storage)
+		// 	rhs += local_storage.vec;
 	}
 
 	template <class LocalAssembler>
@@ -1062,27 +1063,28 @@ namespace polyfem::assembler
 	{
 		grad.setZero(projection.cols() * projection.cols(), 1);
 
-		auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
+		// auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
 
 		const int n_bases = int(bases.size());
 		igl::Timer timerg;
 		timerg.start();
 
-		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+		// maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+		// 	LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
-			for (int e = start; e < end; ++e)
+			// for (int e = start; e < end; ++e)
+			for (int e = 0; e < n_bases; ++e)
 			{
-				ElementAssemblyValues &vals = local_storage.vals;
+				ElementAssemblyValues vals;
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-				local_storage.da = vals.det.array() * quadrature.weights.array();
+				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				auto stiffness_val = local_assembler_.assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				auto stiffness_val = local_assembler_.assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, da));
 				assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 				assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
@@ -1115,7 +1117,7 @@ namespace polyfem::assembler
 
 										for (int p = 0; p < projection.cols(); p++)
 											for (int q = 0; q < projection.cols(); q++)
-												local_storage.vec(p * projection.cols() + q) += local_value * wi * wj * projection(gi, p) * projection(gj, q);
+												grad(p * projection.cols() + q) += local_value * wi * wj * projection(gi, p) * projection(gj, q);
 									}
 								}
 							}
@@ -1123,7 +1125,7 @@ namespace polyfem::assembler
 					}
 				}
 			}
-		});
+		// });
 
 		timerg.stop();
 		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
@@ -1131,8 +1133,8 @@ namespace polyfem::assembler
 		timerg.start();
 
 		// Serially merge local storages
-		for (const LocalThreadVecStorage &local_storage : storage)
-			grad += local_storage.vec;
+		// for (const LocalThreadVecStorage &local_storage : storage)
+		// 	grad += local_storage.vec;
 		grad = utils::unflatten(grad, projection.cols());
 
 		timerg.stop();

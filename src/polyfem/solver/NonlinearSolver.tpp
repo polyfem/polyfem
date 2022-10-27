@@ -163,10 +163,11 @@ namespace cppoptlib
 			if (grad_norm != 0 && delta_x.dot(grad) >= 0)
 			{
 				increase_descent_strategy();
-				polyfem::logger().log(
-					spdlog::level::debug,
-					"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-					name(), delta_x.dot(grad), descent_strategy_name());
+				if (!disable_log)
+					polyfem::logger().log(
+						spdlog::level::debug,
+						"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+						name(), delta_x.dot(grad), descent_strategy_name());
 				this->m_status = Status::Continue;
 				continue;
 			}
@@ -241,10 +242,11 @@ namespace cppoptlib
 
 			objFunc.post_step(this->m_current.iterations, x);
 
-			polyfem::logger().debug(
-				"[{}] iter={:} f={} ‖∇f‖={} ‖Δx‖={} Δx⋅∇f(x)={} g={} tol={} rate={} ‖step‖={}",
-				name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
-				this->m_current.gradNorm, this->m_stop.gradNorm, rate, step);
+			if (!disable_log)
+				polyfem::logger().debug(
+					"[{}] iter={:} f={} ‖∇f‖={} ‖Δx‖={} Δx⋅∇f(x)={} g={} gtol={} fdelta={} ftol={} rate={} ‖step‖={}",
+					name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
+					this->m_current.gradNorm, this->m_stop.gradNorm, this->m_current.fDelta, this->m_stop.fDelta, rate, step);
 			++this->m_current.iterations;
 
 			update_solver_info();
@@ -404,16 +406,17 @@ namespace cppoptlib
 	template <typename ProblemType>
 	void NonlinearSolver<ProblemType>::log_times()
 	{
-		polyfem::logger().debug(
-			"[timing] grad {:.3g}s, assembly {:.3g}s, inverting {:.3g}s, "
-			"line_search {:.3g}s, constraint_set_update {:.3g}s, "
-			"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "
-			"broad_phase_ccd {:.3g}s, ccd {:.3g}s, "
-			"classical_line_search {:.3g}s",
-			grad_time, assembly_time, inverting_time, line_search_time,
-			constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
-			obj_fun_time, m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
-			m_line_search ? m_line_search->broad_phase_ccd_time : 0, m_line_search ? m_line_search->ccd_time : 0,
-			m_line_search ? m_line_search->classical_line_search_time : 0);
+		if (!disable_log)
+			polyfem::logger().debug(
+				"[timing] grad {:.3g}s, assembly {:.3g}s, inverting {:.3g}s, "
+				"line_search {:.3g}s, constraint_set_update {:.3g}s, "
+				"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "
+				"broad_phase_ccd {:.3g}s, ccd {:.3g}s, "
+				"classical_line_search {:.3g}s",
+				grad_time, assembly_time, inverting_time, line_search_time,
+				constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
+				obj_fun_time, m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
+				m_line_search ? m_line_search->broad_phase_ccd_time : 0, m_line_search ? m_line_search->ccd_time : 0,
+				m_line_search ? m_line_search->classical_line_search_time : 0);
 	}
 } // namespace cppoptlib
