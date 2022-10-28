@@ -1,52 +1,52 @@
 <map id="polyfem::State::solve_transient_tensor_nonlinear" name="polyfem::State::solve_transient_tensor_nonlinear">
-<area shape="rect" id="node1" title="solves transient tensor nonlinear problem" alt="" coords="5,1033,208,1074"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#ae0c43d17c7df4b804bd5900044a1c8d7" title="initialize the nonlinear solver" alt="" coords="489,546,669,587"/>
-<area shape="rect" id="node4" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1579,793,1704,820"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a" title="Resolve output path relative to output_dir if the path is not absolute." alt="" coords="766,902,941,943"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1_solve_data.html#a22c789be0d51dc9b560d200593171295" title="updates the dt inside the different forms" alt="" coords="778,837,929,878"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="500,1033,657,1074"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1_state.html#a1e33ea69bab62bbb5b6f9a02cb2a2402" title="solves nonlinear problems" alt="" coords="256,1653,417,1694"/>
-<area shape="rect" id="node49" href="$classpolyfem_1_1_solve_data.html#a20dcd85c7e65018d6d6cc12827124349" title="update the barrier stiffness for the forms" alt="" coords="481,2025,676,2066"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2f90eeb189f31e345957c60aed5e30cc" title="Factory method for constructing implicit time integrators from the name of the integrator." alt="" coords="1291,335,1490,391"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1c36fda333a6ed5b32d89a5eac0f0016" title=" " alt="" coords="759,517,948,558"/>
-<area shape="rect" id="node6" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="1039,582,1217,623"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a0acace118edf344b90d3a56691abd115" title=" " alt="" coords="1298,910,1483,951"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and delas with multiphisics)" alt="" coords="1289,976,1492,1003"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="1309,1027,1472,1069"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a8e8f0ffad83b13e274fd537b6f8e1e7e" title=" " alt="" coords="773,5,933,61"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a8de28566e6b24a8d31e5b4b043956a06" title="Load or compute the initial velocity." alt="" coords="772,86,935,127"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="785,967,922,1009"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#abcfa6090f0372684251202ca9b01383f" title=" " alt="" coords="777,152,929,208"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#afe174814a2a7d78b076b71acc6982138" title=" " alt="" coords="1293,845,1488,886"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="752,233,955,274"/>
-<area shape="rect" id="node21" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="1301,720,1480,747"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1io_1_1_o_b_j_writer.html#a953e0ea82590a93accc6a715dce9f0ca" title=" " alt="" coords="770,298,937,339"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" title="Get the stiffness of the form." alt="" coords="1033,517,1223,558"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="1569,1027,1714,1069"/>
-<area shape="rect" id="node14" href="$namespacepolyfem_1_1io.html#a6df7335d979eed828279c7cf0ba02ef2" title=" " alt="" coords="1055,54,1201,95"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="1041,119,1215,161"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9781d8636456b50aa8843bb2063427a5" title="save a PVD of a time dependent simulation" alt="" coords="757,1033,949,1074"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="757,1201,949,1242"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df" title="saves the nodal values" alt="" coords="1032,1086,1224,1127"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3748bb6ba31dad8bd00b822e7ef12280" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1032,851,1224,893"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a55d435400a9eb85c77e6167ce0c13756" title="saves the volume vtu file" alt="" coords="1032,969,1224,1010"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="1032,1151,1224,1193"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a7000e6d7044be55a8bdb4db462f95d91" title=" " alt="" coords="1027,1889,1229,1930"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a727281312b26149dbbce7d9e4f283d58" title=" " alt="" coords="752,1974,955,2015"/>
-<area shape="rect" id="node38" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a887440705d78e1fe9ae808e053e3210b" title=" " alt="" coords="1027,1715,1229,1757"/>
-<area shape="rect" id="node41" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a093eb80c38c650815f30545de870ae49" title=" " alt="" coords="740,1755,967,1797"/>
-<area shape="rect" id="node42" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a77c70b1fa956d5dcd24e4f4fb214cee9" title=" " alt="" coords="477,1471,680,1513"/>
-<area shape="rect" id="node44" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a8a1cf6caf3eb9e8ce1cbbd1b95f41a5d" title=" " alt="" coords="465,1406,692,1447"/>
-<area shape="rect" id="node45" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="500,967,657,1009"/>
-<area shape="rect" id="node46" href="$classpolyfem_1_1solver_1_1_a_l_solver.html#a7c0a22e768625967a23702241a0a6595" title=" " alt="" coords="484,1582,673,1623"/>
-<area shape="rect" id="node48" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a95e034a58eb88d93767df43d46691746" title=" " alt="" coords="477,1802,680,1843"/>
-<area shape="rect" id="node50" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a2160af0b5e54c4c57cd7ea99d3bc38d7" title=" " alt="" coords="465,1653,692,1694"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a4bb4f627d02af65c8b32b50ea19e13c2" title=" " alt="" coords="1289,1810,1492,1851"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a6ca59190bb00c6cb186c3e87f24c6983" title=" " alt="" coords="1540,1777,1743,1818"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a203d0a565a01b4075a8aac1e93a922b6" title=" " alt="" coords="1289,1927,1492,1969"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#aa05408a71fb2ce3ecc27591d73154b68" title=" " alt="" coords="1015,1974,1241,2015"/>
-<area shape="rect" id="node39" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#aa1c6070db825c4830242808e26908ce0" title=" " alt="" coords="1289,1745,1492,1786"/>
-<area shape="rect" id="node40" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28" title=" " alt="" coords="1304,1627,1477,1669"/>
-<area shape="rect" id="node43" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0e3b514d6a956fd5121b7c67f2af6d75" title=" " alt="" coords="740,1318,967,1359"/>
-<area shape="rect" id="node47" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a7e513a5bf53df67973b32848b43223c0" title=" " alt="" coords="752,1638,955,1679"/>
+<area shape="rect" id="node1" title="solves transient tensor nonlinear problem" alt="" coords="5,876,208,916"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#ae0c43d17c7df4b804bd5900044a1c8d7" title="initialize the nonlinear solver" alt="" coords="489,575,669,615"/>
+<area shape="rect" id="node4" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1573,674,1698,699"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a" title="Resolve output path relative to output_dir if the path is not absolute." alt="" coords="766,876,941,916"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1_solve_data.html#a22c789be0d51dc9b560d200593171295" title="updates the dt inside the different forms" alt="" coords="778,812,929,852"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="500,1001,657,1041"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#a1e33ea69bab62bbb5b6f9a02cb2a2402" title="solves nonlinear problems" alt="" coords="256,1449,417,1489"/>
+<area shape="rect" id="node49" href="$classpolyfem_1_1_solve_data.html#a20dcd85c7e65018d6d6cc12827124349" title="update the barrier stiffness for the forms" alt="" coords="481,1813,676,1853"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2f90eeb189f31e345957c60aed5e30cc" title="Factory method for constructing implicit time integrators from the name of the integrator." alt="" coords="1314,229,1513,283"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1c36fda333a6ed5b32d89a5eac0f0016" title=" " alt="" coords="759,545,948,585"/>
+<area shape="rect" id="node6" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="1050,609,1229,649"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a0acace118edf344b90d3a56691abd115" title=" " alt="" coords="1321,991,1506,1031"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and delas with multiphisics)" alt="" coords="1312,1055,1515,1081"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="1332,1105,1495,1145"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a8e8f0ffad83b13e274fd537b6f8e1e7e" title=" " alt="" coords="773,337,933,391"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a8de28566e6b24a8d31e5b4b043956a06" title="Load or compute the initial velocity." alt="" coords="772,208,935,248"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="785,940,922,980"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#abcfa6090f0372684251202ca9b01383f" title=" " alt="" coords="777,415,929,470"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#afe174814a2a7d78b076b71acc6982138" title=" " alt="" coords="1316,927,1511,967"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="752,272,955,312"/>
+<area shape="rect" id="node22" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="1324,826,1503,851"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_o_b_j_writer.html#a953e0ea82590a93accc6a715dce9f0ca" title=" " alt="" coords="770,144,937,184"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" title="Get the stiffness of the form." alt="" coords="1045,545,1234,585"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="1563,1105,1708,1145"/>
+<area shape="rect" id="node14" href="$namespacepolyfem_1_1io.html#a6df7335d979eed828279c7cf0ba02ef2" title=" " alt="" coords="1066,208,1213,248"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="1052,144,1227,184"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title=" " alt="" coords="1015,272,1264,312"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9781d8636456b50aa8843bb2063427a5" title="save a PVD of a time dependent simulation" alt="" coords="757,1055,949,1095"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="757,1220,949,1260"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df" title="saves the nodal values" alt="" coords="1043,1220,1235,1260"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3748bb6ba31dad8bd00b822e7ef12280" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1043,927,1235,967"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a55d435400a9eb85c77e6167ce0c13756" title="saves the volume vtu file" alt="" coords="1043,991,1235,1031"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="1043,1105,1235,1145"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a7000e6d7044be55a8bdb4db462f95d91" title=" " alt="" coords="752,1500,955,1540"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a727281312b26149dbbce7d9e4f283d58" title=" " alt="" coords="477,1507,680,1547"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a887440705d78e1fe9ae808e053e3210b" title=" " alt="" coords="752,1692,955,1732"/>
+<area shape="rect" id="node42" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a093eb80c38c650815f30545de870ae49" title=" " alt="" coords="740,1335,967,1375"/>
+<area shape="rect" id="node43" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a77c70b1fa956d5dcd24e4f4fb214cee9" title=" " alt="" coords="477,1571,680,1611"/>
+<area shape="rect" id="node45" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a8a1cf6caf3eb9e8ce1cbbd1b95f41a5d" title=" " alt="" coords="465,1328,692,1368"/>
+<area shape="rect" id="node46" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="500,937,657,977"/>
+<area shape="rect" id="node47" href="$classpolyfem_1_1solver_1_1_a_l_solver.html#a7c0a22e768625967a23702241a0a6595" title=" " alt="" coords="484,1392,673,1432"/>
+<area shape="rect" id="node48" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a95e034a58eb88d93767df43d46691746" title=" " alt="" coords="477,1749,680,1789"/>
+<area shape="rect" id="node50" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a2160af0b5e54c4c57cd7ea99d3bc38d7" title=" " alt="" coords="465,1635,692,1675"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a4bb4f627d02af65c8b32b50ea19e13c2" title=" " alt="" coords="1038,1615,1241,1655"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a6ca59190bb00c6cb186c3e87f24c6983" title=" " alt="" coords="1312,1585,1515,1625"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a203d0a565a01b4075a8aac1e93a922b6" title=" " alt="" coords="1038,1500,1241,1540"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#aa05408a71fb2ce3ecc27591d73154b68" title=" " alt="" coords="740,1564,967,1604"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#aa1c6070db825c4830242808e26908ce0" title=" " alt="" coords="1038,1743,1241,1783"/>
+<area shape="rect" id="node41" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28" title=" " alt="" coords="1053,1679,1226,1719"/>
+<area shape="rect" id="node44" href="$classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0e3b514d6a956fd5121b7c67f2af6d75" title=" " alt="" coords="740,1628,967,1668"/>
 </map>

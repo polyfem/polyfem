@@ -1,5 +1,9 @@
 var NAVTREEINDEX29 =
 {
+"namespacetriangle.html#adcf65ae719fff4d8b035827b8d81490b":[3,0,10,4],
+"namespacetriangle.html#ae663a34e14694bc30ccae2ff67495fb2":[3,0,10,2],
+"namespacetriangle.html#af3e669535dc671e9fe47822527f1dc22":[3,0,10,0],
+"p__bases_8py.html":[5,0,1,0,1,13],
 "p__bases_8py.html#a0060aea233b3c7fe464a1bdac10de02a":[5,0,1,0,1,13,29],
 "p__bases_8py.html#a1374c68a4746b3ec849750f402501036":[5,0,1,0,1,13,12],
 "p__bases_8py.html#a264ccd2c332799ad0378505bef7386e4":[5,0,1,0,1,13,11],
@@ -245,9 +249,5 @@ var NAVTREEINDEX29 =
 "structpolyfem_1_1assembler_1_1_formulation_properties.html#a8b2c30b52f5836c7bf1134a35e070245":[4,0,3,0,10,0],
 "structpolyfem_1_1assembler_1_1_formulation_properties.html#ab1eae08931a7d3a2b6686ebf7a8c1938":[4,0,3,0,10,6],
 "structpolyfem_1_1assembler_1_1_formulation_properties.html#ab1eae08931a7d3a2b6686ebf7a8c1938":[3,0,6,0,10,6],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#af861b22fb478d0327a9f1edb92bdde94":[3,0,6,0,10,1],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#af861b22fb478d0327a9f1edb92bdde94":[4,0,3,0,10,1],
-"structpolyfem_1_1assembler_1_1_scalar_b_c_value.html":[4,0,3,0,37],
-"structpolyfem_1_1assembler_1_1_scalar_b_c_value.html":[3,0,6,0,37],
-"structpolyfem_1_1assembler_1_1_scalar_b_c_value.html#a5f3b3bee6d35bfab0c8ff0b33a064f64":[3,0,6,0,37,0]
+"structpolyfem_1_1assembler_1_1_formulation_properties.html#af861b22fb478d0327a9f1edb92bdde94":[3,0,6,0,10,1]
 };

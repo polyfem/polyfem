@@ -1,52 +1,52 @@
 <map id="polyfem::State::solve_transient_linear" name="polyfem::State::solve_transient_linear">
-<area shape="rect" id="node1" title="solves transient linear problem" alt="" coords="5,460,167,502"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2f90eeb189f31e345957c60aed5e30cc" title="Factory method for constructing implicit time integrators from the name of the integrator." alt="" coords="1237,92,1436,148"/>
-<area shape="rect" id="node3" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1519,554,1644,581"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a0acace118edf344b90d3a56691abd115" title=" " alt="" coords="968,2051,1153,2092"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and delas with multiphisics)" alt="" coords="959,605,1162,632"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#a9d3e2c1bbf7f78250330eb30019de100" title="Load or compute the initial acceleration." alt="" coords="225,75,387,116"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#a8de28566e6b24a8d31e5b4b043956a06" title="Load or compute the initial velocity." alt="" coords="225,140,387,182"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="478,438,615,479"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a982f943fd80803d8bee2dc196d222aa2" title=" " alt="" coords="215,490,397,531"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#abcfa6090f0372684251202ca9b01383f" title=" " alt="" coords="471,190,623,246"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#afe174814a2a7d78b076b71acc6982138" title=" " alt="" coords="963,2371,1158,2412"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="445,372,648,414"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a" title="Resolve output path relative to output_dir if the path is not absolute." alt="" coords="459,620,634,662"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="227,555,385,596"/>
-<area shape="rect" id="node50" href="$classpolyfem_1_1_state.html#adf4f18ec45057c04a84f30367424319a" title="solves a linear problem" alt="" coords="225,315,387,356"/>
-<area shape="rect" id="node7" href="$namespacepolyfem_1_1io.html#a6df7335d979eed828279c7cf0ba02ef2" title=" " alt="" coords="473,124,620,166"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="459,59,634,100"/>
-<area shape="rect" id="node8" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="969,329,1152,356"/>
-<area shape="rect" id="node9" href="$namespacepolyfem_1_1io.html#a9b84370fb8325fed647d02c0cf45b207" title=" " alt="" coords="1245,322,1428,363"/>
-<area shape="rect" id="node10" href="$namespacepolyfem_1_1io.html#a3902e7a61e7b7af5da5c629e92af9008" title=" " alt="" coords="1245,387,1428,428"/>
-<area shape="rect" id="node12" href="$namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" title=" " alt="" coords="696,117,900,144"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="704,66,892,93"/>
-<area shape="rect" id="node14" href="$namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" title=" " alt="" coords="995,59,1126,100"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9781d8636456b50aa8843bb2063427a5" title="save a PVD of a time dependent simulation" alt="" coords="451,555,643,596"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="451,1316,643,1358"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df" title="saves the nodal values" alt="" coords="702,1600,894,1642"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3748bb6ba31dad8bd00b822e7ef12280" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="702,1771,894,1812"/>
-<area shape="rect" id="node41" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a55d435400a9eb85c77e6167ce0c13756" title="saves the volume vtu file" alt="" coords="702,1360,894,1402"/>
-<area shape="rect" id="node49" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="702,1274,894,1315"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_v_t_u_writer.html#ad81262a6b782af9c3e3734a9f1cd91f1" title=" " alt="" coords="975,1567,1146,1608"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="1255,1291,1418,1332"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6" title="Get the boundary selection of a node." alt="" coords="979,1934,1142,1975"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="985,1632,1137,1674"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_v_t_u_writer.html#ab707baa6e2436c11c6f9a517419463bb" title=" " alt="" coords="975,1502,1146,1543"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="1500,1240,1663,1282"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a8867f92a6f5370d8ccc88fda2ff5dee1" title="builds the boundary mesh for visualization" alt="" coords="1221,2320,1452,2362"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#addd752547163ac089167266b4895bf4a" title=" " alt="" coords="1239,757,1434,813"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="979,1371,1142,1412"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef" title="Get the volume selection of an element (cell in 3d, face in 2d)" alt="" coords="979,1698,1142,1739"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="1255,1827,1418,1868"/>
-<area shape="rect" id="node38" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="964,1868,1157,1910"/>
-<area shape="rect" id="node39" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13" title=" " alt="" coords="975,1764,1146,1820"/>
-<area shape="rect" id="node40" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="971,2168,1150,2194"/>
-<area shape="rect" id="node42" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" title="Get the most recent previous acceleration value." alt="" coords="968,941,1153,997"/>
-<area shape="rect" id="node43" href="$classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ..." alt="" coords="948,1072,1173,1114"/>
-<area shape="rect" id="node44" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a1ad796fa6abb25be642f87f788f750b9" title="builds high&#45;der visualzation mesh per element all disconnected it also retuns the mapping to element ..." alt="" coords="965,1138,1157,1194"/>
-<area shape="rect" id="node45" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c" title="builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mes..." alt="" coords="965,1436,1157,1478"/>
-<area shape="rect" id="node46" href="$classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="1249,838,1425,879"/>
-<area shape="rect" id="node47" href="$classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="971,656,1150,698"/>
-<area shape="rect" id="node48" href="$classpolyfem_1_1assembler_1_1_problem.html#add068e57938271170ec204f843611cca" title=" " alt="" coords="985,824,1137,866"/>
+<area shape="rect" id="node1" title="solves transient linear problem" alt="" coords="5,450,167,490"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2f90eeb189f31e345957c60aed5e30cc" title="Factory method for constructing implicit time integrators from the name of the integrator." alt="" coords="1283,22,1481,77"/>
+<area shape="rect" id="node3" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1564,418,1689,444"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a0acace118edf344b90d3a56691abd115" title=" " alt="" coords="1013,2095,1199,2135"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and delas with multiphisics)" alt="" coords="1005,533,1207,558"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#a9d3e2c1bbf7f78250330eb30019de100" title="Load or compute the initial acceleration." alt="" coords="225,150,387,190"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#a8de28566e6b24a8d31e5b4b043956a06" title="Load or compute the initial velocity." alt="" coords="225,86,387,126"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="478,500,615,540"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a982f943fd80803d8bee2dc196d222aa2" title=" " alt="" coords="215,478,397,518"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#abcfa6090f0372684251202ca9b01383f" title=" " alt="" coords="471,370,623,425"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#afe174814a2a7d78b076b71acc6982138" title=" " alt="" coords="1009,1778,1203,1818"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="445,204,648,244"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a" title="Resolve output path relative to output_dir if the path is not absolute." alt="" coords="459,794,634,834"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="227,655,385,695"/>
+<area shape="rect" id="node50" href="$classpolyfem_1_1_state.html#adf4f18ec45057c04a84f30367424319a" title="solves a linear problem" alt="" coords="225,312,387,352"/>
+<area shape="rect" id="node7" href="$namespacepolyfem_1_1io.html#a6df7335d979eed828279c7cf0ba02ef2" title=" " alt="" coords="473,140,620,180"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="459,76,634,116"/>
+<area shape="rect" id="node8" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="1015,154,1197,180"/>
+<area shape="rect" id="node9" href="$namespacepolyfem_1_1io.html#a9b84370fb8325fed647d02c0cf45b207" title=" " alt="" coords="1291,138,1473,178"/>
+<area shape="rect" id="node10" href="$namespacepolyfem_1_1io.html#a3902e7a61e7b7af5da5c629e92af9008" title=" " alt="" coords="1291,202,1473,242"/>
+<area shape="rect" id="node12" href="$namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" title=" " alt="" coords="719,52,923,77"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="727,101,915,126"/>
+<area shape="rect" id="node14" href="$namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" title=" " alt="" coords="1041,90,1171,130"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title=" " alt="" coords="696,202,945,242"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9781d8636456b50aa8843bb2063427a5" title="save a PVD of a time dependent simulation" alt="" coords="451,730,643,770"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="451,666,643,706"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df" title="saves the nodal values" alt="" coords="725,678,917,718"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3748bb6ba31dad8bd00b822e7ef12280" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="725,1706,917,1746"/>
+<area shape="rect" id="node42" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a55d435400a9eb85c77e6167ce0c13756" title="saves the volume vtu file" alt="" coords="725,1230,917,1270"/>
+<area shape="rect" id="node49" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="725,742,917,782"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1io_1_1_v_t_u_writer.html#ad81262a6b782af9c3e3734a9f1cd91f1" title=" " alt="" coords="1021,786,1191,826"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="1301,1128,1463,1168"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6" title="Get the boundary selection of a node." alt="" coords="1025,468,1187,508"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="1030,850,1182,890"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1io_1_1_v_t_u_writer.html#ab707baa6e2436c11c6f9a517419463bb" title=" " alt="" coords="1021,914,1191,954"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="1545,1342,1708,1382"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a8867f92a6f5370d8ccc88fda2ff5dee1" title="builds the boundary mesh for visualization" alt="" coords="1267,2098,1497,2138"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#addd752547163ac089167266b4895bf4a" title=" " alt="" coords="1285,1193,1479,1248"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="1025,1431,1187,1471"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef" title="Get the volume selection of an element (cell in 3d, face in 2d)" alt="" coords="1025,1634,1187,1674"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="1301,1738,1463,1778"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="1009,1570,1203,1610"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13" title=" " alt="" coords="1021,1698,1191,1753"/>
+<area shape="rect" id="node41" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="1017,2045,1195,2070"/>
+<area shape="rect" id="node43" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" title="Get the most recent previous acceleration value." alt="" coords="1013,1106,1199,1161"/>
+<area shape="rect" id="node44" href="$classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ..." alt="" coords="993,978,1219,1018"/>
+<area shape="rect" id="node45" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a1ad796fa6abb25be642f87f788f750b9" title="builds high&#45;der visualzation mesh per element all disconnected it also retuns the mapping to element ..." alt="" coords="1010,1288,1202,1342"/>
+<area shape="rect" id="node46" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c" title="builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mes..." alt="" coords="1010,1367,1202,1407"/>
+<area shape="rect" id="node47" href="$classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="1294,867,1470,907"/>
+<area shape="rect" id="node48" href="$classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="1017,1042,1195,1082"/>
 </map>
