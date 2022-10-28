@@ -937,6 +937,7 @@
             "discr_order",
             "pressure_discr_order",
             "use_p_ref",
+            "remesh",
             "advanced"
         ],
         "doc": "Options related to the FE space."
@@ -1001,6 +1002,21 @@
         "default": false,
         "type": "bool",
         "doc": "Perform a priori p-refinement based on element shape, as described in 'Decoupling..' paper."
+    },
+    {
+        "pointer": "/space/remesh",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "t0"
+        ],
+        "doc": "Settings for adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/t0",
+        "default": 0.0,
+        "type": "float",
+        "doc": "Time at which to start adaptive remeshing"
     },
     {
         "pointer": "/space/advanced",

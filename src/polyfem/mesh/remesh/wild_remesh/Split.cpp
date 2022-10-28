@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/ExecutorUtils.hpp>
@@ -99,13 +100,15 @@ namespace polyfem::mesh
 #endif
 		}
 
-		double energy_after = compute_global_energy();
+		// double energy_after = compute_global_energy();
 		// double energy_after = compute_global_wicke_measure();
 
 		// logger().critical("energy_before={} energy_after={} accept={}", energy_before, energy_after, energy_after < energy_before);
 		// return energy_after < energy_before;
 		// return energy_after < energy_before - 1e-14;
-		return true;
+		const double rel_energy = local_relaxation(t, 3);
+		logger().critical("rel_energy={}", rel_energy);
+		return rel_energy <= -1e-4; // accept if energy decreased by at least 1%
 	}
 
 	void WildRemeshing2D::split_all_edges()
@@ -148,42 +151,28 @@ namespace polyfem::mesh
 			// 		- m.vertex_attrs[t.switch_vertex(m).vid(m)].position)
 			// 	.squaredNorm();
 
-			std::vector<std::array<Tuple, 3>> faces;
-			faces.push_back(m.oriented_tri_vertices(t));
-			if (t.switch_face(m))
-				faces.push_back(m.oriented_tri_vertices(t.switch_face(m).value()));
+			Eigen::MatrixXd V, U;
+			Eigen::MatrixXi F;
+			std::unordered_map<size_t, size_t> vi_map;
+			std::vector<int> body_ids;
+			{
+				std::vector<Tuple> tris{{t}};
+				if (t.switch_face(m))
+					tris.push_back(t.switch_face(m).value());
+				m.build_local_matricies(tris, V, U, F, vi_map, body_ids);
+			}
 
 			std::vector<polyfem::basis::ElementBases> bases;
 			Eigen::VectorXi vertex_to_basis;
-
-			std::unordered_map<int, int> vi_map;
-			Eigen::MatrixXi F(faces.size(), 3);
-			for (int fi = 0; fi < faces.size(); fi++)
-			{
-				for (int i = 0; i < 3; ++i)
-				{
-					const int vi = faces[fi][i].vid(m);
-					if (vi_map.find(vi) == vi_map.end())
-						vi_map[vi] = vi_map.size();
-					F(fi, i) = vi_map[vi];
-				}
-			}
-
-			Eigen::MatrixXd V(vi_map.size(), DIM), U(vi_map.size(), DIM);
-			for (const auto &[vi, i] : vi_map)
-			{
-				V.row(i) = m.vertex_attrs[vi].rest_position;
-				U.row(i) = m.vertex_attrs[vi].displacement();
-			}
-
 			WildRemeshing2D::build_bases(
-				V, F, m.assembler_formulation, bases, vertex_to_basis);
+				V, F, m.state.formulation(), bases, vertex_to_basis);
 
 			Eigen::VectorXd displacements = utils::flatten(utils::reorder_matrix(U, vertex_to_basis));
 
 			AssemblyValsCache cache;
-			const double energy = m.assembler.assemble_energy(
-				m.assembler_formulation,
+			// TODO: set the material parameters
+			const double energy = m.state.assembler.assemble_energy(
+				m.state.formulation(),
 				/*is_volume=*/DIM == 3,
 				bases,
 				/*gbases=*/bases,
@@ -201,7 +190,7 @@ namespace polyfem::mesh
 			// 	local_pts << 1 / 3.0, 1 / 3.0;
 
 			// 	Eigen::MatrixXd stress(1, 1);
-			// 	m.assembler.compute_scalar_value(
+			// 	m.state.assembler.compute_scalar_value(
 			// 		m.assembler_formulation,
 			// 		el_id,
 			// 		bases[el_id],

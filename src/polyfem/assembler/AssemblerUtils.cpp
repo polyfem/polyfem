@@ -538,6 +538,62 @@ namespace polyfem
 			multi_models_elasticity_.local_assembler().init_multimodels(materials);
 		}
 
+		void AssemblerUtils::set_materials(const std::vector<int> &body_ids, const json &body_params)
+		{
+			if (!body_params.is_array())
+			{
+				this->add_multimaterial(0, body_params);
+				return;
+			}
+
+			std::map<int, json> materials;
+			for (int i = 0; i < body_params.size(); ++i)
+			{
+				json mat = body_params[i];
+				json id = mat["id"];
+				if (id.is_array())
+				{
+					for (int j = 0; j < id.size(); ++j)
+						materials[id[j]] = mat;
+				}
+				else
+				{
+					const int mid = id;
+					materials[mid] = mat;
+				}
+			}
+
+			std::set<int> missing;
+
+			std::map<int, int> body_element_count;
+			std::vector<int> eid_to_eid_in_body(body_ids.size());
+			for (int e = 0; e < body_ids.size(); ++e)
+			{
+				const int bid = body_ids[e];
+				body_element_count.try_emplace(bid, 0);
+				eid_to_eid_in_body[e] = body_element_count[bid]++;
+			}
+
+			for (int e = 0; e < body_ids.size(); ++e)
+			{
+				const int bid = body_ids[e];
+				const auto it = materials.find(bid);
+				if (it == materials.end())
+				{
+					missing.insert(bid);
+					continue;
+				}
+
+				const json &tmp = it->second;
+				this->add_multimaterial(e, tmp);
+			}
+
+			for (int bid : missing)
+			{
+				logger().warn("Missing material parameters for body {}", bid);
+			}
+		}
+
 		void AssemblerUtils::add_multimaterial(const int index, const json &params)
 		{
 			mass_mat_.local_assembler().add_multimaterial(index, params);

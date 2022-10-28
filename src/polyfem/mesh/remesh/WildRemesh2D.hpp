@@ -1,7 +1,6 @@
 #pragma once
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/State.hpp>
 
 #include <wmtk/TriMesh.h>
 #include <wmtk/ExecutionScheduler.hpp>
@@ -14,17 +13,8 @@ namespace polyfem::mesh
 		typedef wmtk::TriMesh super;
 
 		/// @brief Construct a new WildRemeshing2D object
-		/// @param assembler Elastic energy assembler
-		/// @param assembler_formulation Name of the assembler formulation
-		/// @param obstacle Collision obstacles (not remeshed)
-		WildRemeshing2D(
-			const assembler::AssemblerUtils &assembler,
-			const std::string &assembler_formulation,
-			const Obstacle &obstacle)
-			: wmtk::TriMesh(),
-			  assembler(assembler),
-			  assembler_formulation(assembler_formulation),
-			  obstacle(obstacle) {}
+		/// @param state Simulation current state
+		WildRemeshing2D(const State &state) : wmtk::TriMesh(), state(state) {}
 
 		virtual ~WildRemeshing2D(){};
 
@@ -149,6 +139,18 @@ namespace polyfem::mesh
 		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
 
 	protected:
+		std::vector<Tuple> get_n_ring_tris_for_vertex(const Tuple &root, int n) const;
+
+		double local_relaxation(const Tuple &t, const int n_ring);
+
+		void build_local_matricies(
+			const std::vector<Tuple> &tris,
+			Eigen::MatrixXd &V, // rest positions
+			Eigen::MatrixXd &U, // displacement
+			Eigen::MatrixXi &F, // triangles as vertex indices
+			std::unordered_map<size_t, size_t> &local_to_global,
+			std::vector<int> &body_ids) const;
+
 		/// @brief Get the boundary nodes of the stored mesh
 		std::vector<int> boundary_nodes() const;
 
@@ -165,9 +167,10 @@ namespace polyfem::mesh
 			std::vector<polyfem::basis::ElementBases> &bases,
 			Eigen::VectorXi &vertex_to_basis);
 
-		const assembler::AssemblerUtils &assembler;
-		const std::string &assembler_formulation;
-		const Obstacle &obstacle;
+		assembler::AssemblerUtils create_assembler(const std::vector<int> &body_ids) const;
+
+		const State &state;
+
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities;
 

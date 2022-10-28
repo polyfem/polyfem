@@ -103,7 +103,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
 
 		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state.assembler, state.formulation(), state.obstacle);
+		WildRemeshing2D remeshing(state);
 		remeshing.init(rest_positions, positions, elements, projection_quantities, edge_to_boundary_id, body_ids);
 
 		for (int i = 0; i < 1; ++i)

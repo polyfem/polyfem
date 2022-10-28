@@ -18,6 +18,7 @@
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/io/OutData.hpp>
@@ -271,8 +272,16 @@ namespace polyfem
 		void build_polygonal_basis();
 
 	public:
-		/// set the multimaterial, this is mean for internal usage.
-		void set_materials();
+		/// set the multimaterial
+		void set_materials()
+		{
+			if (!utils::is_param_valid(args, "materials"))
+				return;
+			std::vector<int> body_ids(mesh->n_elements());
+			for (int i = 0; i < mesh->n_elements(); ++i)
+				body_ids[i] = mesh->get_body_id(i);
+			assembler.set_materials(body_ids, args["materials"]);
+		}
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------

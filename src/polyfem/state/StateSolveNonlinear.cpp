@@ -151,9 +151,7 @@ namespace polyfem
 		{
 			solve_tensor_nonlinear(sol, t);
 
-			// if (t > 18)
-			if (t0 + dt * t >= 5.6)
-			// if (true)
+			if (t0 + dt * t >= args["space"]["remesh"]["t0"].get<double>())
 			{
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure

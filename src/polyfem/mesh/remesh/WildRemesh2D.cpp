@@ -4,14 +4,20 @@
 #include <polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
+#include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
 
 #include <igl/boundary_facets.h>
 #include <igl/predicates/predicates.h>
+
+#include <unordered_set>
 
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                           \
 	Eigen::MatrixXd WildRemeshing2D::name() const                                          \
@@ -430,10 +436,10 @@ namespace polyfem::mesh
 		std::vector<polyfem::basis::ElementBases> bases_before;
 		Eigen::VectorXi vertex_to_basis_before;
 		int n_bases_before = build_bases(
-			rest_positions_before, triangles_before, assembler_formulation,
+			rest_positions_before, triangles_before, state.formulation(),
 			bases_before, vertex_to_basis_before);
 		const std::vector<polyfem::basis::ElementBases> &geom_bases_before = bases_before;
-		n_bases_before += obstacle.n_vertices();
+		n_bases_before += state.obstacle.n_vertices();
 
 		// Old values of independent variables
 		Eigen::MatrixXd y(n_bases_before * DIM, 1 + n_quantities);
@@ -449,10 +455,10 @@ namespace polyfem::mesh
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;
 		int n_bases = build_bases(
-			proposed_rest_positions, proposed_triangles, assembler_formulation,
+			proposed_rest_positions, proposed_triangles, state.formulation(),
 			bases, vertex_to_basis);
 		const std::vector<polyfem::basis::ElementBases> &geom_bases = bases;
-		n_bases += obstacle.n_vertices();
+		n_bases += state.obstacle.n_vertices();
 
 		Eigen::MatrixXd target_x = Eigen::MatrixXd::Zero(n_bases, DIM);
 		for (int i = 0; i < num_vertices; i++)
@@ -477,7 +483,7 @@ namespace polyfem::mesh
 			/*is_volume=*/DIM == 3, /*size=*/DIM,
 			n_bases_before, bases_before, geom_bases_before, // from
 			n_bases, bases, geom_bases,                      // to
-			boundary_nodes, obstacle, target_x,
+			boundary_nodes, state.obstacle, target_x,
 			y, x, /*lump_mass_matrix=*/false);
 
 		// --------------------------------------------------------------------
@@ -505,6 +511,263 @@ namespace polyfem::mesh
 		}
 		wmtk::unique_edge_tuples(*this, new_edges);
 		return new_edges;
+	}
+
+	std::vector<WildRemeshing2D::Tuple> WildRemeshing2D::get_n_ring_tris_for_vertex(
+		const Tuple &root, int n) const
+	{
+		std::vector<Tuple> n_ring{{root}};
+		std::vector<int> depths{{0}};
+		std::unordered_set<size_t> visited{{root.fid(*this)}};
+
+		// Loop around a vertex until we return to the starting triangle or hit a boundary.
+		const auto helper = [&](const int depth, std::optional<Tuple> &nav) -> void {
+			assert(nav);
+			const size_t start_fid = nav->fid(*this);
+			do
+			{
+				nav = nav->switch_edge(*this);
+				if (visited.find(nav->fid(*this)) == visited.end())
+				{
+					n_ring.push_back(nav->switch_vertex(*this));
+					depths.push_back(depth + 1);
+					visited.insert(nav->fid(*this));
+				}
+				nav = nav->switch_face(*this);
+			} while (nav && nav->fid(*this) != start_fid);
+		};
+
+		int i = 0;
+		while (i < n_ring.size())
+		{
+			const Tuple t = n_ring[i];
+			const int depth = depths[i];
+			i++;
+
+			if (depth > n)
+				continue;
+
+			// NOTE: This only works for manifold meshes.
+			std::optional<Tuple> nav = t;
+			helper(depth, nav);
+			if (!nav) // Hit a boundary, so loop in the opposite direction.
+			{
+				// Switch edge to cause the helper loop to go the opposite direction
+				nav = t.switch_edge(*this);
+				helper(depth, nav);
+			}
+		}
+
+		return n_ring;
+	}
+
+	void WildRemeshing2D::build_local_matricies(
+		const std::vector<Tuple> &tris,
+		Eigen::MatrixXd &V, // rest positions
+		Eigen::MatrixXd &U, // displacement
+		Eigen::MatrixXi &F, // triangles as vertex indices
+		std::unordered_map<size_t, size_t> &global_to_local,
+		std::vector<int> &body_ids) const
+	{
+		F.resize(tris.size(), 3);
+
+		// for (int i = 0; i < element_ids.size(); ++i)
+		// 	body_ids[i] = face_attrs[element_ids[i]].body_id;
+		for (int fi = 0; fi < tris.size(); fi++)
+		{
+			const std::array<Tuple, 3> face = this->oriented_tri_vertices(tris[fi]);
+			for (int i = 0; i < 3; ++i)
+			{
+				const size_t vi = face[i].vid(*this);
+				if (global_to_local.find(vi) == global_to_local.end())
+					global_to_local[vi] = global_to_local.size();
+				F(fi, i) = global_to_local[vi];
+			}
+			body_ids.push_back(face_attrs[tris[fi].fid(*this)].body_id);
+		}
+
+		V.resize(global_to_local.size(), DIM);
+		U.resize(global_to_local.size(), DIM);
+		for (const auto &[glob_vi, loc_vi] : global_to_local)
+		{
+			V.row(loc_vi) = vertex_attrs[glob_vi].rest_position;
+			U.row(loc_vi) = vertex_attrs[glob_vi].displacement();
+		}
+	}
+
+	assembler::AssemblerUtils WildRemeshing2D::create_assembler(
+		const std::vector<int> &body_ids) const
+	{
+		assembler::AssemblerUtils new_assembler = state.assembler;
+		assert(utils::is_param_valid(state.args, "materials"));
+		new_assembler.set_materials(body_ids, state.args["materials"]);
+		return new_assembler;
+	}
+
+	double WildRemeshing2D::local_relaxation(const Tuple &t, const int n_ring)
+	{
+		using namespace polyfem::solver;
+
+		// 1. Get the n-ring of triangles around the vertex.
+		const std::vector<Tuple> n_ring_tris = get_n_ring_tris_for_vertex(t, n_ring);
+
+		Eigen::MatrixXd V, U;
+		Eigen::MatrixXi F;
+		std::unordered_map<size_t, size_t> global_to_local;
+		std::vector<int> body_ids;
+		build_local_matricies(n_ring_tris, V, U, F, global_to_local, body_ids);
+		// V = rest_positions();
+		// F = triangles();
+		// U = displacements();
+		// for (int i = 0; i < V.rows(); i++)
+		// 	global_to_local[i] = i;
+		// static int __out_i = 0;
+		// io::OBJWriter::write(fmt::format("../output/local_mesh_{:03d}.obj", __out_i++), V, F);
+		// write_rest_obj("../output/global_mesh.obj");
+
+		std::vector<polyfem::basis::ElementBases> bases;
+		Eigen::VectorXi vertex_to_basis;
+		const int n_bases = WildRemeshing2D::build_bases(
+			V, F, state.formulation(), bases, vertex_to_basis);
+
+#ifndef NDEBUG
+		for (const int basis_id : vertex_to_basis)
+			assert(basis_id >= 0);
+#endif
+
+		// --------------------------------------------------------------------
+
+		Eigen::MatrixXi boundary_edges;
+		igl::boundary_facets(F, boundary_edges);
+
+		std::vector<int> boundary_nodes;
+		for (int i = 0; i < boundary_edges.rows(); ++i)
+		{
+			for (int j = 0; j < boundary_edges.cols(); ++j)
+			{
+				const int basis_id = vertex_to_basis[boundary_edges(i, j)];
+				assert(basis_id >= 0);
+				for (int d = 0; d < DIM; ++d)
+				{
+					boundary_nodes.push_back(DIM * basis_id + d);
+				}
+			}
+		}
+		// Sort and remove the duplicate boundary_nodes.
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		auto new_end = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.erase(new_end, boundary_nodes.end());
+
+		// std::vector<int> boundary_nodes = this->boundary_nodes();
+		// const size_t n_boundary_nodes = boundary_nodes.size();
+		// for (int i = 0; i < n_boundary_nodes; i++)
+		// {
+		// 	int &boundary_node = boundary_nodes[i];
+		// 	boundary_node = 2 * vertex_to_basis[boundary_node];
+		// 	boundary_nodes.push_back(boundary_node + 1); // fix the y component
+		// }
+		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
+
+		const Eigen::MatrixXd target_x = utils::flatten(utils::reorder_matrix(U, vertex_to_basis));
+		// Eigen::MatrixXd target_x = Eigen::MatrixXd::Zero(n_bases, DIM);
+		// for (int i = 0; i < U.rows(); i++)
+		// {
+		// 	const int j = vertex_to_basis[i];
+		// 	if (j < 0)
+		// 		continue;
+		// 	target_x.row(j) = U.row(i).transpose();
+		// }
+		// target_x = utils::flatten(target_x);
+
+		// --------------------------------------------------------------------
+
+		// 2. Perform "relaxation" by minimizing the elastic energy of the n-ring
+		// with the boundary fixed.
+
+		std::vector<std::shared_ptr<Form>> forms;
+
+		assembler::AssemblerUtils assembler = create_assembler(body_ids);
+
+		assembler::AssemblyValsCache ass_vals_cache;
+		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/false);
+		std::shared_ptr<ElasticForm> elastic_form = std::make_shared<ElasticForm>(
+			n_bases, bases, bases, assembler, ass_vals_cache, state.formulation(),
+			/*dt=*/0, /*is_volume=*/DIM == 3);
+		forms.push_back(elastic_form);
+
+		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/true);
+		Eigen::SparseMatrix<double> M;
+		assembler.assemble_mass_matrix(
+			/*assembler_formulation=*/"", /*is_volume=*/DIM == 3, n_bases,
+			/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, M);
+		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
+			n_bases * DIM, boundary_nodes, M, Obstacle(), target_x);
+		forms.push_back(al_form);
+
+		// --------------------------------------------------------------------
+
+		StaticBoundaryNLProblem nl_problem(
+			n_bases * DIM, boundary_nodes, target_x, forms);
+
+		// --------------------------------------------------------------------
+
+		// Create Newton solver
+		std::shared_ptr<cppoptlib::NonlinearSolver<decltype(nl_problem)>> nl_solver;
+		{
+			// TODO: expose these parameters
+			const json newton_args = R"({
+				"f_delta": 1e-10,
+				"grad_norm": 1e-5,
+				"use_grad_norm": true,
+				"first_grad_norm_tol": 1e-10,
+				"max_iterations": 1000,
+				"relative_gradient": false,
+				"line_search": {
+					"method": "backtracking",
+					"use_grad_norm_tol": 0.0001
+				}
+			})"_json;
+			const json linear_solver_args = R"({
+				"solver": "Eigen::PardisoLDLT",
+				"precond": "Eigen::IdentityPreconditioner"
+			})"_json;
+			using NewtonSolver = cppoptlib::SparseNewtonDescentSolver<decltype(nl_problem)>;
+			nl_solver = std::make_shared<NewtonSolver>(newton_args, linear_solver_args);
+		}
+
+		// --------------------------------------------------------------------
+
+		// TODO: Make these parameters
+		const double al_initial_weight = 1e6;
+		const double al_max_weight = 1e11;
+		const bool force_al = false;
+
+		// Create augmented Lagrangian solver
+		ALSolver al_solver(
+			nl_solver, al_form, al_initial_weight, al_max_weight,
+			[](const Eigen::MatrixXd &) {});
+
+		Eigen::MatrixXd sol = target_x;
+		al_solver.solve(nl_problem, sol, force_al);
+
+		// --------------------------------------------------------------------
+
+		for (const auto &[glob_vi, loc_vi] : global_to_local)
+		{
+			const long basis_vi = vertex_to_basis[loc_vi];
+
+			if (basis_vi < 0)
+				continue;
+
+			const Eigen::Vector2d u = sol.middleRows<DIM>(DIM * basis_vi);
+			vertex_attrs[glob_vi].position = V.row(loc_vi).transpose() + u;
+		}
+
+		// 3. Return the energy of the relaxed mesh.
+		const double energy_before = elastic_form->value(target_x);
+		const double energy_after = elastic_form->value(sol);
+		assert(energy_before != 0.0);
+		return (energy_after - energy_before) / energy_before;
 	}
 
 } // namespace polyfem::mesh
