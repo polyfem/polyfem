@@ -367,9 +367,11 @@ namespace polyfem
 		// update assembly cache
 		ass_vals_cache.clear();
 		pressure_ass_vals_cache.clear();
+		mass_ass_vals_cache.clear();
 		if (n_bases <= args["cache_size"])
 		{
 			ass_vals_cache.init(mesh->is_volume(), bases, gbases);
+			mass_ass_vals_cache.init(mesh->is_volume(), bases, bases, true);
 			if (assembler.is_mixed(formulation()))
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, gbases);
 		}
@@ -1453,7 +1455,7 @@ namespace polyfem
 
 			if (j.depend_on_u() || j.depend_on_gradu())
 			{
-				solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
+				solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, mass_ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 				solve_data.elastic_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 				// compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 				solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, -adjoint_p[i], rhs_term);
@@ -1499,7 +1501,7 @@ namespace polyfem
 			double beta;
 			Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 			get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, initial_velocity_cache, sum_alpha_p, mass_term);
+			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, mass_ass_vals_cache, initial_velocity_cache, sum_alpha_p, mass_term);
 		}
 		else
 		{
@@ -1889,7 +1891,7 @@ namespace polyfem
 				functional_term += functional_term_k * outer_grad(k);
 			}
 
-			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, velocity, adjoint_nu[i], mass_term);
+			solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, mass_ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 			solve_data.elastic_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, diff_cached[i].u, -adjoint_p[i], elasticity_term);
 			// compute_shape_derivative_rhs_term(diff_cached[i].u, -adjoint_p[i], rhs_term);
 			solve_data.body_form->force_shape_derivative(n_geom_bases, diff_cached[i].u, -adjoint_p[i], rhs_term);
@@ -1923,7 +1925,7 @@ namespace polyfem
 		double beta;
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-		solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, ass_vals_cache, initial_velocity_cache, sum_alpha_p, mass_term);
+		solve_data.inertia_form->force_shape_derivative(mesh->is_volume(), n_geom_bases, bases, geom_bases(), assembler, mass_ass_vals_cache, initial_velocity_cache, sum_alpha_p, mass_term);
 
 		Eigen::VectorXd integrals(js.size());
 		for (int k = 0; k < js.size(); k++)
