@@ -178,6 +178,9 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 	in_args["optimization"] = R"(
         {
             "enabled": true,
+            "output": {
+                "solve_log_level": 4
+            },
             "parameters": [
                 {
                     "type": "shape",
