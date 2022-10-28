@@ -171,8 +171,10 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
             }
         }
 	)"_json;
+    target_args["geometry"][0]["mesh"] = path + "/../spline_3.obj";
+    target_args["geometry"][1]["mesh"] = path + "/../rectangle.obj";
 	json in_args = target_args;
-	in_args["geometry"][0]["mesh"] = "../spline_9.obj";
+	in_args["geometry"][0]["mesh"] = path + "/../spline_9.obj";
 	in_args["optimization"] = R"(
         {
             "enabled": true,
@@ -252,7 +254,7 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 	in_args["optimization"]["solver"]["nonlinear"]["export_energy"] = "shape-trajectory-surface-opt";
 
 	State target_state;
-	target_state.init_logger("", spdlog::level::level_enum::off, false);
+	target_state.init_logger("", spdlog::level::level_enum::err, false);
 	target_state.init(target_args, false);
 	target_state.load_mesh();
 	target_state.solve();
