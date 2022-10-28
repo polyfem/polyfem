@@ -19,6 +19,8 @@
 
 using namespace polyfem;
 
+namespace {
+
 void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
 {
 	int size = sqrt(vec.size());
@@ -60,6 +62,8 @@ void solve_pde(State &state)
 	Eigen::MatrixXd sol, pressure;
 	state.solve_problem(sol, pressure);
 }
+
+} // namespace
 
 TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 {

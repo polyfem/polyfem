@@ -21,6 +21,30 @@
 
 using namespace polyfem;
 
+namespace {
+
+std::shared_ptr<State> create_state(const json &args)
+{
+	std::shared_ptr<State> state = std::make_shared<State>();
+	state->init_logger("", spdlog::level::level_enum::err, false);
+	state->init(args, false);
+	state->load_mesh();
+	Eigen::MatrixXd sol, pressure;
+	state->build_basis();
+
+	return state;
+}
+
+void solve_pde(State &state)
+{
+	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	Eigen::MatrixXd sol, pressure;
+	state.solve_problem(sol, pressure);
+}
+
+} // namespace
+
 TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 {
 
@@ -256,27 +280,17 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 	)"_json;
 	in_args["optimization"]["solver"]["nonlinear"]["export_energy"] = "shape-trajectory-surface-opt";
 
-	State target_state;
-	target_state.init_logger("", spdlog::level::level_enum::err, false);
-	target_state.init(target_args, false);
-	target_state.load_mesh();
-	target_state.solve();
+	auto target_state = create_state(target_args);
+	solve_pde(*target_state);
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
-	state.stats.compute_mesh_stats(*state.mesh);
-	state.build_basis();
-	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	auto state = create_state(in_args);
 
 	std::shared_ptr<CompositeFunctional> func = CompositeFunctional::create("Trajectory");
 	auto &f = *dynamic_cast<TrajectoryFunctional *>(func.get());
 	f.set_interested_ids({2}, {});
-	f.set_reference(&target_state, state, {2});
+	f.set_reference(target_state.get(), *state, {2});
 
-	CHECK_THROWS_WITH(general_optimization(state, func), Catch::Matchers::Contains("Reached iteration limit"));
+	CHECK_THROWS_WITH(general_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
 
 	std::ifstream energy_out("shape-trajectory-surface-opt");
 	std::vector<double> energies;
