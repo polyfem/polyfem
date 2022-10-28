@@ -86,3 +86,44 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 
 	REQUIRE(optimized_energy == Approx(0.6 * starting_energy).epsilon(0.05));
 }
+
+TEST_CASE("shape-stress-opt", "[optimization]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../optimizations/shape-stress-opt");
+	json in_args;
+	load_json(path + "/run.json", in_args);
+
+	auto state = create_state(in_args);
+
+	std::shared_ptr<CompositeFunctional> func;
+	for (const auto &param : state->args["optimization"]["functionals"])
+	{
+		if (param["type"] == "stress")
+		{
+			func = CompositeFunctional::create("Stress");
+			func->set_power(param["power"]);
+			break;
+		}
+	}
+
+	CHECK_THROWS_WITH(single_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
+
+	std::ifstream energy_out("shape-stress-opt");
+	std::vector<double> energies;
+	std::string line;
+	if (energy_out.is_open())
+	{
+		while (getline(energy_out, line))
+		{
+			energies.push_back(std::stod(line.substr(0, line.find(","))));
+		}
+	}
+	double starting_energy = energies[0];
+	double optimized_energy = energies[energies.size() - 1];
+
+	std::cout << starting_energy << std::endl;
+	std::cout << optimized_energy << std::endl;
+
+	REQUIRE(starting_energy  == Approx(12.0721).epsilon(1e-4));
+	REQUIRE(optimized_energy == Approx(11.3404).epsilon(1e-4));
+}

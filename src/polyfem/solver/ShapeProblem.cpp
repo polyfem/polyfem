@@ -989,7 +989,7 @@ namespace polyfem
 		// fix certain object
 		std::set<int> optimize_body_ids;
 		std::set<int> optimize_boundary_ids;
-		if (shape_params.contains("volume_selection"))
+		if (shape_params["volume_selection"].size() > 0)
 		{
 			for (int i : shape_params["volume_selection"])
 				optimize_body_ids.insert(i);
@@ -1003,7 +1003,7 @@ namespace polyfem
 							fixed_nodes.insert(g.index);
 			}
 		}
-		else if (shape_params.contains("surface_selection"))
+		else if (shape_params["surface_selection"].size() > 0)
 		{
 			for (int i : shape_params["surface_selection"])
 				optimize_boundary_ids.insert(i);
