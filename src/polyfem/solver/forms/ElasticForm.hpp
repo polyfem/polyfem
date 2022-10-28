@@ -17,7 +17,6 @@ namespace polyfem::solver
 		/// @brief Construct a new Elastic Form object
 		/// @param state Reference to the simulation state
 		ElasticForm(const int n_bases,
-					const int n_geom_bases,
 					const std::vector<basis::ElementBases> &bases,
 					const std::vector<basis::ElementBases> &geom_bases,
 					const assembler::AssemblerUtils &assembler,
@@ -65,7 +64,7 @@ namespace polyfem::solver
 		/// @param[in] x Current solution
 		/// @param[in] adjoint Current adjoint solution
 		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_shape_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
+		void force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
 		/// @brief Compute the derivative of the force wrt topology, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] x Current solution
@@ -75,7 +74,6 @@ namespace polyfem::solver
 		
 	private:
 		const int n_bases_;
-		const int n_geom_bases_;
 		const std::vector<basis::ElementBases> &bases_;
 		const std::vector<basis::ElementBases> &geom_bases_;
 

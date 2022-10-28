@@ -1,8 +1,12 @@
 #include "ElasticForm.hpp"
 
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+
+using namespace polyfem::assembler;
 
 namespace polyfem::solver
 {
@@ -37,7 +41,6 @@ namespace polyfem::solver
 		}
 	} // namespace
 	ElasticForm::ElasticForm(const int n_bases,
-							 const int n_geom_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
 							 const assembler::AssemblerUtils &assembler,
@@ -46,7 +49,6 @@ namespace polyfem::solver
 							 const double dt,
 							 const bool is_volume)
 		: n_bases_(n_bases),
-		  n_geom_bases_(n_geom_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
 		  assembler_(assembler),
@@ -214,13 +216,13 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::force_shape_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void ElasticForm::force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
 		const int actual_dim = assembler_.is_scalar(formulation_) ? 1 : dim;
 
 		const int n_elements = int(bases_.size());
-		term.setZero(n_geom_bases_ * dim, 1);
+		term.setZero(n_verts * dim, 1);
 
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 

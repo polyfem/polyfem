@@ -3,9 +3,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <Eigen/Dense>
 
@@ -47,32 +47,6 @@ namespace polyfem
 	void compute_diplacement_grad(const int size, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
 	void compute_diplacement_grad(const int size, const basis::ElementBases &bs, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
 
-	class ElasticityTensor
-	{
-	public:
-		void resize(const int size);
-
-		double operator()(int i, int j) const;
-		double &operator()(int i, int j);
-
-		void set_from_entries(const std::vector<double> &entries);
-		void set_from_lambda_mu(const double lambda, const double mu);
-		void set_from_young_poisson(const double young, const double poisson);
-
-		void set_orthotropic(
-			double Ex, double Ey, double Ez,
-			double nuYX, double nuZX, double nuZY,
-			double muYZ, double muZX, double muXY);
-		void set_orthotropic(double Ex, double Ey, double nuYX, double muXY);
-
-		template <int DIM>
-		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
-
-	private:
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
-		int size_;
-	};
-
 	double convert_to_lambda(const bool is_volume, const double E, const double nu);
 	double convert_to_mu(const double E, const double nu);
 	Eigen::Matrix2d d_lambda_mu_d_E_nu(const bool is_volume, const double E, const double nu);
@@ -81,69 +55,90 @@ namespace polyfem
 
 	typedef std::array<double, 2> DampingParameters;
 
-	class LameParameters
+	template <typename AutoDiffVect>
+	void get_local_disp(
+		const assembler::NonLinearAssemblerData &data,
+		const int size,
+		AutoDiffVect &local_disp)
 	{
-	public:
-		LameParameters();
+		typedef typename AutoDiffVect::Scalar T;
 
-		void add_multimaterial(const int index, const json &params, const bool is_volume);
+		assert(data.x.cols() == 1);
 
-		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu, bool has_density = true) const;
-		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu, bool has_density = true) const
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(data.vals.basis_values.size() * size, 1);
+		local_dispv.setZero();
+		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
-			assert(param.size() == p.size());
-			lambda_mu(
-				param(0), param(1), param.size() == 2 ? 0. : param(2),
-				p(0), p(1), p.size() ? 0. : p(2),
-				el_id, lambda, mu, has_density);
+			const auto &bs = data.vals.basis_values[i];
+			for (size_t ii = 0; ii < bs.global.size(); ++ii)
+			{
+				for (int d = 0; d < size; ++d)
+				{
+					local_dispv(i * size + d) += bs.global[ii].val * data.x(bs.global[ii].index * size + d);
+				}
+			}
 		}
 
-		double density(const int el_id) const
+		DiffScalarBase::setVariableCount(local_dispv.rows());
+		local_disp.resize(local_dispv.rows(), 1);
+
+		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
+
+		for (long i = 0; i < local_dispv.rows(); ++i)
 		{
-			if (density_mat_.size() > 0)
-				return density_mat_(el_id);
-			else
-				return 0;
+			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
 		}
+	}
 
-		Eigen::MatrixXd lambda_mat_, mu_mat_, density_mat_;
-		double density_power_ = 1;
-
-	private:
-		void set_e_nu(const int index, const json &E, const json &nu);
-
-		int size_;
-		std::vector<utils::ExpressionValue> lambda_or_E_, mu_or_nu_;
-		bool is_lambda_mu_;
-	};
-
-	class Density
+	template <typename AutoDiffVect, typename AutoDiffGradMat>
+	void compute_disp_grad_at_quad(
+		const assembler::NonLinearAssemblerData &data,
+		const AutoDiffVect &local_disp,
+		const int p, const int size,
+		AutoDiffGradMat &def_grad)
 	{
-	public:
-		Density();
+		typedef typename AutoDiffVect::Scalar T;
 
-		void add_multimaterial(const int index, const json &params);
-		void init_multimaterial(const Eigen::MatrixXd &mat) { rho_[0].init(mat); }
-		void get_multimaterial(Eigen::MatrixXd &mat)
+		for (long k = 0; k < def_grad.size(); ++k)
+			def_grad(k) = T(0);
+
+		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
-			assert(is_mat());
-			mat = rho_[0].get_mat();
+			const auto &bs = data.vals.basis_values[i];
+			const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
+			assert(grad.size() == size);
+
+			for (int d = 0; d < size; ++d)
+			{
+				for (int c = 0; c < size; ++c)
+				{
+					def_grad(d, c) += grad(c) * local_disp(i * size + d);
+				}
+			}
 		}
 
-		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
-		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
-		{
-			assert(param.size() == p.size());
-			return (*this)(param(0), param(1), param.size() == 2 ? 0. : param(2),
-						   p(0), p(1), p.size() ? 0. : p(2),
-						   el_id);
-		}
+		AutoDiffGradMat jac_it(size, size);
+		for (long k = 0; k < jac_it.size(); ++k)
+			jac_it(k) = T(data.vals.jac_it[p](k));
+		def_grad = def_grad * jac_it;
+	}
 
-		bool is_mat() const { return (rho_.size() == 1) && rho_[0].is_mat(); }
+	// https://en.wikipedia.org/wiki/Invariants_of_tensors
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar first_invariant(const AutoDiffGradMat &B)
+	{
+		return B.trace();
+	}
 
-	private:
-		void set_rho(const json &rho);
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar second_invariant(const AutoDiffGradMat &B)
+	{
+		return 0.5 * (B.trace() * B.trace() - (B * B).trace());
+	}
 
-		std::vector<utils::ExpressionValue> rho_;
-	};
+	template <typename AutoDiffGradMat>
+	typename AutoDiffGradMat::Scalar third_invariant(const AutoDiffGradMat &B)
+	{
+		return polyfem::utils::determinant(B);
+	}
 } // namespace polyfem

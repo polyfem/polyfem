@@ -141,14 +141,17 @@ int main(int argc, char **argv)
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
 
-	state.solve_problem();
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
 
-	state.compute_errors();
+	state.solve_problem(sol, pressure);
+
+	state.compute_errors(sol);
 
 	logger().info("total time: {}s", state.timings.total_time());
 
-	state.save_json();
-	state.export_data();
+	state.save_json(sol);
+	state.export_data(sol, pressure);
 
 	return EXIT_SUCCESS;
 }

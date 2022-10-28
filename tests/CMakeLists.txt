@@ -21,6 +21,8 @@ set(test_sources
   test_diff.cpp
   test_opt.cpp
   test_form_derivatives.cpp
+  test_interpolation.cpp
+  test_time_integrators.cpp
   verify_run.cpp
 )
 
@@ -40,12 +42,13 @@ target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
 include(finite_diff)
 target_link_libraries(unit_tests PUBLIC finitediff::finitediff)
 
+include(polyfem_data)
+target_link_libraries(unit_tests PUBLIC polyfem::data)
+
 ################################################################################
 # Compiler options
 ################################################################################
 
-include(polyfem_data)
-target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")
 target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_TEST_DIR=\"${CMAKE_SOURCE_DIR}/tests\")
 
 target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)

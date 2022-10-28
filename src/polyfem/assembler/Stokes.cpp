@@ -187,4 +187,13 @@ namespace polyfem::assembler
 
 		return res;
 	}
-} // namespace assembler
+
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	StokesMixed::compute_rhs(const AutodiffHessianPt &pt) const
+	{
+		assert(pt.size() == rows());
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(rows());
+		assert(false);
+		return res;
+	}
+} // namespace polyfem::assembler

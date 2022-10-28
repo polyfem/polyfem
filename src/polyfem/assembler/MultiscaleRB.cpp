@@ -1077,8 +1077,9 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
 
 			Eigen::MatrixXd stress_tensor, stiffness_tensor;
-			double energy = 0;
-			homogenization(def_grad, energy, stress_tensor, stiffness_tensor);
+			// double energy = 0;
+			// homogenization(def_grad, energy, stress_tensor, stiffness_tensor);
+			stress_tensor.setZero(size(),size());
 
 			all.row(p) = fun(stress_tensor);
 		}

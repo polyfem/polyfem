@@ -275,15 +275,17 @@ int main(int argc, char **argv)
 			std::filesystem::create_directories(state_reference.output_dir);
 		}
 
+		Eigen::MatrixXd sol, pressure;
+
 		state_reference.assemble_rhs();
 		state_reference.assemble_stiffness_mat();
-		state_reference.solve_problem();
+		state_reference.solve_problem(sol, pressure);
 
 		if (!state_reference.problem->is_time_dependent())
 		{
 			// state_reference.save_vtu(state_reference.resolve_output_path("target.vtu"), 0.);
 			state_reference.out_geom.export_data(
-				state_reference,
+				state_reference, sol, pressure,
 				!state_reference.args["time"].is_null(),
 				1, 1, // tend, dt,
 				io::OutGeometryData::ExportOptions(state_reference.args, state_reference.mesh->is_linear(), state_reference.problem->is_scalar(), state_reference.solve_export_to_file),

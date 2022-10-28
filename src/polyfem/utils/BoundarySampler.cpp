@@ -209,7 +209,7 @@ namespace polyfem
 			}
 
 			weights = quad.weights;
-			//2* because weights sum to 1/2 already
+			// 2 * because weights sum to 1/2 already
 			weights *= 2 * mesh.tri_area(gid);
 		}
 
@@ -474,27 +474,27 @@ namespace polyfem
 				Eigen::VectorXd tmp_w;
 				switch (local_boundary.type())
 				{
-				case BoundaryType::TriLine:
+				case BoundaryType::TRI_LINE:
 					quadrature_for_tri_edge(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_tri_edge(local_boundary[i], tmp_n);
 					break;
-				case BoundaryType::QuadLine:
+				case BoundaryType::QUAD_LINE:
 					quadrature_for_quad_edge(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_quad_edge(local_boundary[i], tmp_n);
 					break;
-				case BoundaryType::Quad:
+				case BoundaryType::QUAD:
 					quadrature_for_quad_face(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_quad_face(local_boundary[i], tmp_n);
 					break;
-				case BoundaryType::Tri:
+				case BoundaryType::TRI:
 					quadrature_for_tri_face(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_tri_face(local_boundary[i], tmp_n);
 					break;
-				case BoundaryType::Polygon:
+				case BoundaryType::POLYGON:
 					quadrature_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), order, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), mesh, tmp_n);
 					break;
-				case BoundaryType::Invalid:
+				case BoundaryType::INVALID:
 					assert(false);
 					break;
 				default:
@@ -537,22 +537,22 @@ namespace polyfem
 				Eigen::MatrixXd tmp, tmp_uv;
 				switch (local_boundary.type())
 				{
-				case BoundaryType::TriLine:
+				case BoundaryType::TRI_LINE:
 					sample_parametric_tri_edge(local_boundary[i], n_samples, tmp_uv, tmp);
 					break;
-				case BoundaryType::QuadLine:
+				case BoundaryType::QUAD_LINE:
 					sample_parametric_quad_edge(local_boundary[i], n_samples, tmp_uv, tmp);
 					break;
-				case BoundaryType::Quad:
+				case BoundaryType::QUAD:
 					sample_parametric_quad_face(local_boundary[i], n_samples, tmp_uv, tmp);
 					break;
-				case BoundaryType::Tri:
+				case BoundaryType::TRI:
 					sample_parametric_tri_face(local_boundary[i], n_samples, tmp_uv, tmp);
 					break;
-				case BoundaryType::Polygon:
+				case BoundaryType::POLYGON:
 					sample_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), n_samples, mesh, tmp_uv, tmp);
 					break;
-				case BoundaryType::Invalid:
+				case BoundaryType::INVALID:
 					assert(false);
 					break;
 				default:

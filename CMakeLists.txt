@@ -35,15 +35,6 @@ endif()
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")
 ################################################################################
 
-if(INPUT_POLYFEM_DATA_ROOT)
-    set(POLYFEM_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_POLYFEM_DATA_ROOT}/")
-else()
-    set(POLYFEM_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/data/")
-endif()
-if(NOT EXISTS ${POLYFEM_DATA_ROOT})
-    file(MAKE_DIRECTORY ${POLYFEM_DATA_ROOT})
-endif()
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 
@@ -69,7 +60,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ################################################################################
-
 
 # Polyfem options
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
@@ -252,6 +242,14 @@ target_link_libraries(polyfem PUBLIC hdf5::hdf5)
 
 include(high_five)
 target_link_libraries(polyfem PUBLIC HighFive::HighFive)
+
+# natsort library
+include(natsort)
+target_link_libraries(polyfem PUBLIC natsort::natsort)
+
+# GLOB library
+include(glob)
+target_link_libraries(polyfem PUBLIC Glob::Glob)
 
 # Extra warnings (include this at the end to have highest priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)

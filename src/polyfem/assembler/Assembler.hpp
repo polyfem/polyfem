@@ -5,7 +5,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
-
+#include <polyfem/assembler/MatParams.hpp>
 #include <Eigen/Sparse>
 #include <vector>
 #include <iostream>
@@ -152,7 +152,8 @@ namespace polyfem::assembler
 			const AssemblyValsCache &cache,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
-			const Eigen::MatrixXd &displacement_prev) const;
+			const Eigen::MatrixXd &displacement_prev,
+			bool serial = false) const;
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }

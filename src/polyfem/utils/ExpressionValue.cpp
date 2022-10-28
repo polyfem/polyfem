@@ -139,7 +139,19 @@ namespace polyfem
 		{
 			clear();
 
-			sfunc_ = [func](double x, double y, double z, double t) { return func(x, y, z); };
+			sfunc_ = [func](double x, double y, double z, double t, int index) { return func(x, y, z); };
+		}
+
+		void ExpressionValue::init(const std::function<double(double x, double y, double z, double t)> &func)
+		{
+			clear();
+			sfunc_ = [func](double x, double y, double z, double t, double index) { return func(x, y, z, t); };
+		}
+
+		void ExpressionValue::init(const std::function<double(double x, double y, double z, double t, int index)> &func)
+		{
+			clear();
+			sfunc_ = func;
 		}
 
 		void ExpressionValue::init(const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const int coo)
@@ -148,12 +160,6 @@ namespace polyfem
 
 			tfunc_ = [func](double x, double y, double z, double t) { return func(x, y, z); };
 			tfunc_coo_ = coo;
-		}
-
-		void ExpressionValue::init(const std::function<double(double x, double y, double z, double t)> &func)
-		{
-			clear();
-			sfunc_ = func;
 		}
 
 		void ExpressionValue::init(const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const int coo)
@@ -200,7 +206,7 @@ namespace polyfem
 					return mat_(index);
 
 				if (sfunc_)
-					return sfunc_(x, y, z, t);
+					return sfunc_(x, y, z, t, index);
 
 				if (tfunc_)
 					return tfunc_(x, y, z, t)(tfunc_coo_);

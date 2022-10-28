@@ -46,8 +46,8 @@ namespace polyfem::solver
 		int full_size() const { return full_size_; }
 		int reduced_size() const { return reduced_size_; }
 
-		void use_full_size() { current_size_ = FULL_SIZE; }
-		void use_reduced_size() { current_size_ = REDUCED_SIZE; }
+		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
+		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
 		TVector full_to_reduced(const TVector &full) const;
 		TVector reduced_to_full(const TVector &reduced) const;
@@ -75,7 +75,7 @@ namespace polyfem::solver
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
 		int current_size() const
 		{
-			return current_size_ == FULL_SIZE ? full_size() : reduced_size();
+			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}
 
 		template <class FullMat, class ReducedMat>

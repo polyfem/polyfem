@@ -6,9 +6,6 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/Timer.h>
 
-#include <finitediff.hpp>
-#include <polyfem/utils/Logger.hpp>
-
 namespace polyfem::assembler
 {
 	namespace {
@@ -17,7 +14,7 @@ namespace polyfem::assembler
 			return (i == j) ? true : false;
 		}
 	}
-
+	
 	NeoHookeanElasticity::NeoHookeanElasticity()
 	{
 	}
@@ -124,6 +121,59 @@ namespace polyfem::assembler
 		return gradient;
 	}
 
+	void NeoHookeanElasticity::compute_stiffness_tensor(const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+	{
+		tensor.resize(local_pts.rows(), size() * size() * size() * size());
+		assert(displacement.cols() == 1);
+
+		Eigen::MatrixXd displacement_grad(size(), size());
+
+		for (long p = 0; p < local_pts.rows(); ++p)
+		{
+			double lambda, mu;
+			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+
+			compute_diplacement_grad(size(), vals, local_pts, p, displacement, displacement_grad);
+			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
+			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			const Eigen::VectorXd FmT_vec = utils::flatten(FmT);
+			const double J = def_grad.determinant();
+			const double tmp1 = mu - lambda * std::log(J);
+			for (int i = 0, idx = 0; i < size(); i++)
+			for (int j = 0; j < size(); j++)
+			for (int k = 0; k < size(); k++)
+			for (int l = 0; l < size(); l++)
+			{
+				tensor(p, idx) = mu * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
+				idx++;
+			}
+
+			tensor.row(p) += lambda * utils::flatten(FmT_vec * FmT_vec.transpose());
+
+			// {
+			// 	Eigen::MatrixXd hess = utils::unflatten(tensor.row(p), size()*size());
+			// 	Eigen::MatrixXd fhess;
+			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
+			// 	fd::finite_jacobian(
+			// 		x0, [this, lambda, mu](const Eigen::VectorXd &x1) -> Eigen::VectorXd 
+			// 		{ 
+			// 			Eigen::MatrixXd def_grad = utils::unflatten(x1, this->size());
+			// 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			// 			const double J = def_grad.determinant();
+			// 			Eigen::MatrixXd stress_tensor = mu * (def_grad - FmT) + lambda * std::log(J) * FmT;
+			// 			return utils::flatten(stress_tensor);
+			// 		}, fhess);
+
+			// 	if (!fd::compare_hessian(hess, fhess))
+			// 	{
+			// 		std::cout << "Hessian: " << hess << std::endl;
+			// 		std::cout << "Finite hessian: " << fhess << std::endl;
+			// 		log_and_throw_error("Hessian in Neohookean mismatch");
+			// 	}
+			// }
+		}
+	}
+	
 	Eigen::MatrixXd
 	NeoHookeanElasticity::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
@@ -201,59 +251,6 @@ namespace polyfem::assembler
 
 		return hessian;
 	}
-	
-	void NeoHookeanElasticity::compute_stiffness_tensor(const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
-	{
-		tensor.resize(local_pts.rows(), size() * size() * size() * size());
-		assert(displacement.cols() == 1);
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			double lambda, mu;
-			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
-
-			compute_diplacement_grad(size(), vals, local_pts, p, displacement, displacement_grad);
-			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
-			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-			const Eigen::VectorXd FmT_vec = utils::flatten(FmT);
-			const double J = def_grad.determinant();
-			const double tmp1 = mu - lambda * std::log(J);
-			for (int i = 0, idx = 0; i < size(); i++)
-			for (int j = 0; j < size(); j++)
-			for (int k = 0; k < size(); k++)
-			for (int l = 0; l < size(); l++)
-			{
-				tensor(p, idx) = mu * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
-				idx++;
-			}
-
-			tensor.row(p) += lambda * utils::flatten(FmT_vec * FmT_vec.transpose());
-
-			// {
-			// 	Eigen::MatrixXd hess = utils::unflatten(tensor.row(p), size()*size());
-			// 	Eigen::MatrixXd fhess;
-			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);
-			// 	fd::finite_jacobian(
-			// 		x0, [this, lambda, mu](const Eigen::VectorXd &x1) -> Eigen::VectorXd 
-			// 		{ 
-			// 			Eigen::MatrixXd def_grad = utils::unflatten(x1, this->size());
-			// 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-			// 			const double J = def_grad.determinant();
-			// 			Eigen::MatrixXd stress_tensor = mu * (def_grad - FmT) + lambda * std::log(J) * FmT;
-			// 			return utils::flatten(stress_tensor);
-			// 		}, fhess);
-
-			// 	if (!fd::compare_hessian(hess, fhess))
-			// 	{
-			// 		std::cout << "Hessian: " << hess << std::endl;
-			// 		std::cout << "Finite hessian: " << fhess << std::endl;
-			// 		log_and_throw_error("Hessian in Neohookean mismatch");
-			// 	}
-			// }
-		}
-	}
 
 	void NeoHookeanElasticity::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
@@ -318,61 +315,17 @@ namespace polyfem::assembler
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
-		assert(data.x.cols() == 1);
-
-		const int n_pts = data.da.size();
-
-		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(data.vals.basis_values.size() * size(), 1);
-		local_dispv.setZero();
-		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		{
-			const auto &bs = data.vals.basis_values[i];
-			for (size_t ii = 0; ii < bs.global.size(); ++ii)
-			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_dispv(i * size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-				}
-			}
-		}
-
-		DiffScalarBase::setVariableCount(local_dispv.rows());
-		AutoDiffVect local_disp(local_dispv.rows(), 1);
-		T energy = T(0.0);
-
-		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
-
-		for (long i = 0; i < local_dispv.rows(); ++i)
-		{
-			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
-		}
+		AutoDiffVect local_disp;
+		get_local_disp(data, size(), local_disp);
 
 		AutoDiffGradMat def_grad(size(), size());
 
+		T energy = T(0.0);
+
+		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
-			for (long k = 0; k < def_grad.size(); ++k)
-				def_grad(k) = T(0);
-
-			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
-				const auto &bs = data.vals.basis_values[i];
-				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
-				assert(grad.size() == size());
-
-				for (int d = 0; d < size(); ++d)
-				{
-					for (int c = 0; c < size(); ++c)
-					{
-						def_grad(d, c) += grad(c) * local_disp(i * size() + d);
-					}
-				}
-			}
-
-			AutoDiffGradMat jac_it(size(), size());
-			for (long k = 0; k < jac_it.size(); ++k)
-				jac_it(k) = T(data.vals.jac_it[p](k));
-			def_grad = def_grad * jac_it;
+			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
 			// Id + grad d
 			for (int d = 0; d < size(); ++d)

@@ -2,7 +2,10 @@
 
 #include <functional>
 #include <Eigen/Dense>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+
+using namespace polyfem::assembler;
 
 namespace polyfem
 {

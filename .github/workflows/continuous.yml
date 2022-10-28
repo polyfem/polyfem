@@ -7,7 +7,7 @@ on:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 2
+  CTEST_PARALLEL_LEVEL: 1
 
 jobs:
   ####################
@@ -38,7 +38,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -64,6 +64,10 @@ jobs:
 
       - name: Tests
         run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
+
+      # - name: Setup tmate session
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
 
   ####################
   # MacOS
@@ -96,7 +100,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-${{ matrix.arc }}-cache-${{ github.sha }}
@@ -177,7 +181,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: D:\sccache
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}

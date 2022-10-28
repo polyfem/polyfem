@@ -5,6 +5,7 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
+#include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 
@@ -186,7 +187,6 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 	const auto state_ptr = get_state();
 	ElasticForm form(
 		state_ptr->n_bases,
-		state_ptr->n_geom_bases,
 		state_ptr->bases,
 		state_ptr->geom_bases(),
 		state_ptr->assembler,
@@ -235,7 +235,6 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 
 	ElasticForm form(
 		state_ptr->n_bases,
-		state_ptr->n_geom_bases,
 		state_ptr->bases,
 		state_ptr->geom_bases(),
 		state_ptr->assembler,
@@ -271,6 +270,33 @@ TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][la
 	const double weight = 1e3;
 	LaggedRegForm form(/*n_lagging_iters=*/-1);
 	form.set_weight(weight);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleigh_damping_form]")
+{
+	const auto state_ptr = get_state();
+	ElasticForm elastic_form(
+		state_ptr->n_bases,
+		state_ptr->bases,
+		state_ptr->geom_bases(),
+		state_ptr->assembler,
+		state_ptr->ass_vals_cache,
+		state_ptr->formulation(),
+		state_ptr->args["time"]["dt"],
+		state_ptr->mesh->is_volume());
+
+	const double dt = 1e-3;
+	ImplicitEuler time_integrator;
+	time_integrator.init(
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		dt);
+
+	RayleighDampingForm form(
+		elastic_form, time_integrator, true, 0.1, 1);
 
 	test_form(form, *state_ptr);
 }

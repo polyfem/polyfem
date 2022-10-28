@@ -149,10 +149,11 @@ namespace cppoptlib
 		{
 			increase_descent_strategy();
 
-			polyfem::logger().log(
-				log_level(),
-				"[{}] large (or nan) linear solve residual {} (||∇f||={}); reverting to {}",
-				name(), residual, grad.norm(), this->descent_strategy_name());
+			if (!this->disable_log)
+				polyfem::logger().log(
+					log_level(),
+					"[{}] large (or nan) linear solve residual {} (||∇f||={}); reverting to {}",
+					name(), residual, grad.norm(), this->descent_strategy_name());
 
 			return false;
 		}

@@ -117,23 +117,9 @@ namespace polyfem
 
 		// to get the initial velocity
 		{
-			const auto &gbases = state.geom_bases();
-			json rhs_solver_params = state.args["solver"]["linear"];
-			if (!rhs_solver_params.contains("Pardiso"))
-				rhs_solver_params["Pardiso"] = {};
-			rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
-			state.solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
-				state.assembler, *state.mesh, state.obstacle, state.input_dirichlet,
-				state.n_bases, state.problem->is_scalar() ? 1 : state.mesh->dimension(),
-				state.bases, gbases, state.ass_vals_cache,
-				state.formulation(), *state.problem,
-				state.args["space"]["advanced"]["bc_method"],
-				state.args["solver"]["linear"]["solver"], state.args["solver"]["linear"]["precond"], rhs_solver_params);
-
-			assembler::RhsAssembler &rhs_assembler = *state.solve_data.rhs_assembler;
-			rhs_assembler.initial_solution(state.initial_sol_update);
-			rhs_assembler.initial_velocity(state.initial_vel_update);
+			state.solve_data.rhs_assembler = state.build_rhs_assembler();
+			state.solve_data.rhs_assembler->initial_solution(state.initial_sol_update);
+			state.solve_data.rhs_assembler->initial_velocity(state.initial_vel_update);
 		}
 		auto initial_guess_vel = state.initial_vel_update, initial_guess_sol = state.initial_sol_update;
 

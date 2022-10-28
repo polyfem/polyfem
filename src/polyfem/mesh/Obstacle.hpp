@@ -1,8 +1,9 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/Interpolation.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 
@@ -22,7 +23,13 @@ namespace polyfem
 				const Eigen::MatrixXi &codim_edges,
 				const Eigen::MatrixXi &faces,
 				const json &displacement);
-			void append_plane(const VectorNd &origin, const VectorNd &normal);
+			void append_mesh_sequence(
+				const std::vector<Eigen::MatrixXd> &vertices,
+				const Eigen::VectorXi &codim_vertices,
+				const Eigen::MatrixXi &codim_edges,
+				const Eigen::MatrixXi &faces,
+				const int fps);
+			void append_plane(const VectorNd &point, const VectorNd &normal);
 
 			inline int n_vertices() const { return v_.rows(); }
 			inline int dim() const { return dim_; }
@@ -36,9 +43,9 @@ namespace polyfem
 			inline const Eigen::MatrixXi &get_edge_connectivity() const { return in_e_; }
 			inline const Eigen::VectorXi &get_vertex_connectivity() const { return in_v_; }
 
-			void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<assembler::Interpolation> &interp = std::make_shared<assembler::NoInterpolation>());
-			void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<assembler::Interpolation> &interp = std::make_shared<assembler::NoInterpolation>());
-			void change_displacement(const int oid, const json &val, const std::shared_ptr<assembler::Interpolation> &interp = std::make_shared<assembler::NoInterpolation>());
+			void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			void change_displacement(const int oid, const json &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 
 			void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::string &interp = "");
 			void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::string &interp = "");
@@ -53,6 +60,12 @@ namespace polyfem
 			inline const std::vector<Plane> &planes() const { return planes_; };
 
 		private:
+			void append_mesh(
+				const Eigen::MatrixXd &vertices,
+				const Eigen::VectorXi &codim_vertices,
+				const Eigen::MatrixXi &codim_edges,
+				const Eigen::MatrixXi &faces);
+
 			int dim_;
 			Eigen::MatrixXd v_;
 			Eigen::VectorXi codim_v_;
@@ -64,7 +77,7 @@ namespace polyfem
 			Eigen::MatrixXi in_e_;
 
 			std::vector<std::array<utils::ExpressionValue, 3>> displacements_;
-			std::vector<std::shared_ptr<assembler::Interpolation>> displacements_interpolation_;
+			std::vector<std::shared_ptr<utils::Interpolation>> displacements_interpolation_;
 
 			std::vector<int> endings_;
 
@@ -74,16 +87,16 @@ namespace polyfem
 		class Obstacle::Plane
 		{
 		public:
-			Plane(const VectorNd &origin, const VectorNd &normal)
-				: dim_(origin.size()), origin_(origin), normal_(normal)
+			Plane(const VectorNd &point, const VectorNd &normal)
+				: dim_(point.size()), point_(point), normal_(normal)
 			{
-				assert(origin.size() == normal.size());
+				assert(point.size() == normal.size());
 				assert(!normal.isZero());
 				normal_.normalize();
 				construct_vis_mesh();
 			}
 
-			inline const VectorNd &origin() const { return origin_; }
+			inline const VectorNd &point() const { return point_; }
 			inline const VectorNd &normal() const { return normal_; }
 
 			inline const Eigen::MatrixXd &vis_v() const { return vis_v_; }
@@ -95,7 +108,7 @@ namespace polyfem
 
 			int dim_;
 
-			VectorNd origin_;
+			VectorNd point_;
 			VectorNd normal_;
 
 			Eigen::MatrixXd vis_v_;

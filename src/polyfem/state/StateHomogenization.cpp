@@ -137,7 +137,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen
     std::vector<std::shared_ptr<Form>> forms;
 
     std::shared_ptr<ElasticHomogenizationForm> homo_form = std::make_shared<ElasticHomogenizationForm>(
-        n_bases, n_geom_bases, bases, geom_bases(),
+        n_bases, bases, geom_bases(),
         assembler, ass_vals_cache,
         formulation(),
         problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
@@ -187,7 +187,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen
     }
 }
 
-void State::solve_nonlinear_homogenization()
+void State::solve_nonlinear_homogenization(Eigen::MatrixXd &sol)
 {
     assert(!assembler.is_linear(formulation())); // non-linear
     assert(!problem->is_scalar());               // tensor
@@ -201,7 +201,7 @@ void State::solve_nonlinear_homogenization()
 
     std::vector<std::shared_ptr<Form>> forms;
     solve_data.elastic_homo_form = std::make_shared<ElasticHomogenizationForm>(
-        n_bases, n_geom_bases, bases, geom_bases(),
+        n_bases, bases, geom_bases(),
         assembler, ass_vals_cache,
         formulation(),
         problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
@@ -243,7 +243,7 @@ void State::solve_nonlinear_homogenization()
     }
 }
 
-void State::solve_linear_homogenization()
+void State::solve_linear_homogenization(Eigen::MatrixXd &sol)
 {
     if (stiffness.rows() <= 0)
     {
@@ -347,7 +347,8 @@ void State::solve_linear_homogenization()
 
     if (assembler.is_mixed(formulation()))
     {
-        sol_to_pressure();
+        Eigen::MatrixXd pressure;
+        sol_to_pressure(sol, pressure);
     }
 }
 
@@ -475,7 +476,7 @@ void State::solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_so
         adjoint_solution = periodic_to_full(full_size, adjoint_solution);
 }
 
-void State::compute_homogenized_tensor(Eigen::MatrixXd &C_H)
+void State::compute_homogenized_tensor(Eigen::MatrixXd &sol, Eigen::MatrixXd &C_H)
 {
     if (stiffness.size() <= 0 && assembler.is_linear(formulation()))
     {
@@ -739,12 +740,15 @@ void State::homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H)
     w.conservativeResize(n_bases * dim, w.cols());
 
     // auto diff = unit_disp - w;
+    Eigen::MatrixXd sol;
     for (int id = 0; id < unit_disp_ids.size(); id++)
     {       
         sol = w.col(id);
         // out_geom.save_vtu("homo_" + std::to_string(unit_disp_ids[id].first) + std::to_string(unit_disp_ids[id].second) + ".vtu", *this, 0, 0, io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file), is_contact_enabled(), solution_frames);
 		out_geom.export_data(
 			*this,
+            sol,
+            Eigen::MatrixXd::Zero(n_pressure_bases, 1),
 			!args["time"].is_null(),
 			1, 1, // tend, dt,
 			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
@@ -835,10 +839,10 @@ void State::homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen:
     }
 
     const int dim = mesh->dimension();
-
+    Eigen::MatrixXd sol;
     assemble_stiffness_mat();
-    solve_homogenization();
-    compute_homogenized_tensor(C_H);
+    solve_homogenization(sol);
+    compute_homogenized_tensor(sol, C_H);
     std::cout << "\n" << C_H << "\n";
 
     std::vector<std::pair<int, int>> unit_disp_ids;
@@ -868,7 +872,7 @@ void State::homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen:
     Eigen::VectorXd term;
     for (int a = 0; a < unit_disp_ids.size(); a++)
     {
-        solve_data.elastic_form->force_shape_derivative(sol.col(a), sol.col(a), adjoint.col(a), term); // ignored the rhs contribution
+        solve_data.elastic_form->force_shape_derivative(n_geom_bases, sol.col(a), sol.col(a), adjoint.col(a), term); // ignored the rhs contribution
 
         for (int b = 0; b <= a; b++)
         {
@@ -1265,6 +1269,8 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     const int dim = mesh->dimension();
     const auto &gbases = geom_bases();
 
+    Eigen::MatrixXd sol, pressure;
+
     // assemble stiffness
     {
         Density solid_density;
@@ -1349,12 +1355,12 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     w.conservativeResize(n_bases * dim, w.cols());
 
     for (int id = 0; id < w.cols(); id++)
-    {       
-        sol = w.col(id);
-        pressure.setZero(n_pressure_bases, 1);
+    {
         // save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
 		out_geom.export_data(
 			*this,
+            w.col(id),
+            Eigen::MatrixXd::Zero(n_pressure_bases, 1),
 			!args["time"].is_null(),
 			1, 1, // tend, dt,
 			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
@@ -1514,12 +1520,12 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
         logger().debug("Solver error: {}", error);
 
     for (int id = 0; id < w.cols(); id++)
-    {       
-        sol = w.block(0, id, n_bases * dim, 1);
-        pressure = w.block(n_bases * dim, id, n_pressure_bases, 1);
+    {
         // save_vtu("homo_" + std::to_string(id) + ".vtu", 1.);
 		out_geom.export_data(
 			*this,
+            w.block(0, id, n_bases * dim, 1),
+            w.block(n_bases * dim, id, n_pressure_bases, 1),
 			!args["time"].is_null(),
 			1, 1, // tend, dt,
 			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
