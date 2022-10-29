@@ -125,6 +125,8 @@ void run_trajectory_opt(const std::string &name)
 	CHECK_THROWS_WITH(general_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
+#if defined(__linux__)
+
 TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 {
 	run_trajectory_opt("shape-trajectory-surface-opt");
@@ -212,3 +214,5 @@ TEST_CASE("material-opt", "[optimization]")
 	REQUIRE(starting_energy  == Approx(0.00143472).epsilon(1e-4));
 	REQUIRE(optimized_energy == Approx(1.10657e-05).epsilon(1e-4));
 }
+
+#endif
