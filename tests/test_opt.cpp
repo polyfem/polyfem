@@ -215,4 +215,28 @@ TEST_CASE("material-opt", "[optimization]")
 	REQUIRE(optimized_energy == Approx(1.10657e-05).epsilon(1e-4));
 }
 
+TEST_CASE("initial-opt", "[optimization]")
+{
+	run_trajectory_opt("initial-opt");
+
+	std::ifstream energy_out("initial-opt");
+	std::vector<double> energies;
+	std::string line;
+	if (energy_out.is_open())
+	{
+		while (getline(energy_out, line))
+		{
+			energies.push_back(std::stod(line.substr(0, line.find(","))));
+		}
+	}
+	double starting_energy = energies[0];
+	double optimized_energy = energies[energies.size() - 1];
+
+	std::cout << starting_energy << std::endl;
+	std::cout << optimized_energy << std::endl;
+
+	REQUIRE(starting_energy  == Approx(0.147092).epsilon(1e-4));
+	REQUIRE(optimized_energy == Approx(0.109971).epsilon(1e-4));
+}
+
 #endif

@@ -340,6 +340,7 @@ namespace polyfem
 			};
 		}
 		initial_problem->param_to_x(x_initial, state.initial_sol_update, state.initial_vel_update, state);
+		initial_problem->set_optimization_dim(x_initial.size());
 
 		return initial_problem;
 	}
@@ -898,7 +899,7 @@ namespace polyfem
 
 	std::shared_ptr<OptimizationProblem> setup_optimization(const std::string &type, State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
-		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)>> setup_functions{{"shape", setup_shape_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
+		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)>> setup_functions{{"shape", setup_shape_optimization}, {"initial", setup_initial_condition_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
 
 		return setup_functions[type](state, j, x_initial);
 	}

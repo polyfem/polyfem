@@ -23,11 +23,15 @@ namespace polyfem
 		void line_search_end(bool failed) override;
 		bool remesh(TVector &x) override { return false; }
 
-		int optimization_dim() override { return 0; }
+		int optimization_dim() override { return optimization_dim_; }
+        void set_optimization_dim(const int optimization_dim) { optimization_dim_ = optimization_dim; }
 
 		bool solution_changed_pre(const TVector &newX) override;
 
 		std::function<void(const TVector &x, Eigen::MatrixXd &init_sol, Eigen::MatrixXd &init_vel, State &state)> x_to_param;
 		std::function<void(TVector &x, const Eigen::MatrixXd &init_sol, const Eigen::MatrixXd &init_vel, State &state)> param_to_x, dparam_to_dx;
+	
+	private:
+		int optimization_dim_ = 0;
 	};
 } // namespace polyfem
