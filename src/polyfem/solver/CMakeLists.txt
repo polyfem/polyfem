@@ -48,6 +48,13 @@ set(SOURCES
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
 	Parameter.hpp
+	ControlParameter.hpp
+	ShapeParameter.hpp
+	DampingParameter.hpp
+	FrictionParameter.hpp
+	ElasticParameter.hpp
+	InitialConditionParameter.hpp
+	TopologyOptimizationParameter.hpp
 )
 
 prepend_current_path(SOURCES)
