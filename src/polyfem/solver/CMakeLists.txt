@@ -44,6 +44,10 @@ set(SOURCES
 	DenseNewtonDescentSolver.tpp
 	TransientNavierStokesSolver.cpp
 	TransientNavierStokesSolver.hpp
+	AdjointForm.hpp
+	AdjointNLProblem.hpp
+	AdjointNLProblem.cpp
+	Parameter.hpp
 )
 
 prepend_current_path(SOURCES)

@@ -16,7 +16,7 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value
-		inline double value(const Eigen::VectorXd &x) const
+		inline virtual double value(const Eigen::VectorXd &x) const
 		{
 			return weight_ * value_unweighted(x);
 		}
@@ -24,7 +24,7 @@ namespace polyfem::solver
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		inline void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		inline virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(x, gradv);
 			gradv *= weight_;
@@ -34,7 +34,7 @@ namespace polyfem::solver
 		/// @note This is not marked const because ElasticForm needs to cache the matrix assembly.
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		inline virtual void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
 			second_derivative_unweighted(x, hessian);
 			hessian *= weight_;
