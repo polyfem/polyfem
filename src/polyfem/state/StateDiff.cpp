@@ -988,13 +988,8 @@ namespace polyfem
 						{
 							for (int d = 0; d < mesh->dimension(); d++)
 							{
-								Eigen::MatrixXd grad_v_q;
-								grad_v_q.setZero(mesh->dimension(), mesh->dimension());
-								grad_v_q.row(d) = v.grad_t_m.row(q);
 
-								double velocity_div = grad_v_q.trace();
-
-								local_storage.vec(v.global[0].index * mesh->dimension() + d) += j_value(q) * velocity_div * local_storage.da(q);
+								local_storage.vec(v.global[0].index * mesh->dimension() + d) += j_value(q) * v.grad_t_m(q, d) * local_storage.da(q);
 								if (j.depend_on_x())
 								{
 									local_storage.vec(v.global[0].index * mesh->dimension() + d) += (v.val(q) * dj_dx(q, d)) * local_storage.da(q);
@@ -1012,7 +1007,7 @@ namespace polyfem
 										vector2matrix(grad_u.row(q), grad_u_q);
 									else
 										grad_u_q = grad_u.row(q);
-									local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_q, grad_u_q * grad_v_q) * local_storage.da(q);
+									local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_q, grad_u_q.col(d) * v.grad_t_m.row(q)) * local_storage.da(q);
 								}
 							}
 						}
@@ -1102,7 +1097,7 @@ namespace polyfem
 							// integrate j * div(gbases) over the whole boundary
 							for (int q = n_samples_per_surface * i; q < n_samples_per_surface * (i + 1); ++q)
 							{
-								Eigen::MatrixXd grad_u_i, grad_p_i;
+								Eigen::MatrixXd grad_u_i;
 								if (mesh->dimension() == actual_dim)
 									vector2matrix(grad_u.row(q), grad_u_i);
 								else
@@ -1110,10 +1105,6 @@ namespace polyfem
 
 								for (int d = 0; d < mesh->dimension(); d++)
 								{
-									Eigen::MatrixXd grad_v_i;
-									grad_v_i.setZero(mesh->dimension(), mesh->dimension());
-									grad_v_i.row(d) = v.grad_t_m.row(q);
-
 									double velocity_div = 0;
 									if (mesh->is_volume())
 									{
@@ -1167,7 +1158,7 @@ namespace polyfem
 											vector2matrix(grad_j_value.row(q), tau_i);
 										else
 											tau_i = grad_j_value.row(q);
-										local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_i, grad_u_i * grad_v_i) * da(q);
+										local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_i, grad_u_i.col(d) * v.grad_t_m.row(q)) * da(q);
 									}
 								}
 							}
