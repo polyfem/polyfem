@@ -212,10 +212,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a63bdd32bf085c3733b0f5dbe9089c3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa35cc8ae04c53128557cd9fbaef0ebab"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#aa35cc8ae04c53128557cd9fbaef0ebab">in_e_</a></td></tr>
 <tr class="separator:aa35cc8ae04c53128557cd9fbaef0ebab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5606d8566048007aa908dd850389ce3b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::array&lt; <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>, 3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a5606d8566048007aa908dd850389ce3b">displacements_</a></td></tr>
-<tr class="separator:a5606d8566048007aa908dd850389ce3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad724cb00101b8554935735967501f77f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_interpolation.html">utils::Interpolation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#ad724cb00101b8554935735967501f77f">displacements_interpolation_</a></td></tr>
-<tr class="separator:ad724cb00101b8554935735967501f77f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf187844b625e545eeebaf937b560744"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structpolyfem_1_1assembler_1_1_tensor_b_c_value.html">assembler::TensorBCValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#abf187844b625e545eeebaf937b560744">displacements_</a></td></tr>
+<tr class="separator:abf187844b625e545eeebaf937b560744"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2cd9c7a670deec1fb861da3aa6559ca"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#ad2cd9c7a670deec1fb861da3aa6559ca">endings_</a></td></tr>
 <tr class="separator:ad2cd9c7a670deec1fb861da3aa6559ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14aadf9d021f34032e52291a0a0a262d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html">Plane</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a14aadf9d021f34032e52291a0a0a262d">planes_</a></td></tr>
@@ -223,7 +221,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00014">14</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00016">16</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a608e002241d405ed009eea7e5772a8fc" name="a608e002241d405ed009eea7e5772a8fc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a608e002241d405ed009eea7e5772a8fc">&#9670;&#160;</a></span>Obstacle()</h2>
@@ -324,9 +322,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00041">41</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00040">40</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">codim_v_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00073">e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00082">endings_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00072">f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00077">in_e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00076">in_f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00075">in_v_</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00070">v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00073">codim_v_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00075">e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00083">endings_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00074">f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00079">in_e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00078">in_f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00077">in_v_</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00072">v_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -380,11 +378,11 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00098">98</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00097">97</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00098">append_mesh()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00079">displacements_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00080">displacements_interpolation_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00097">append_mesh()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00081">displacements_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00098">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00120">append_mesh_sequence()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00380">polyfem::mesh::read_obstacle_geometry()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00097">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00125">append_mesh_sequence()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00380">polyfem::mesh::read_obstacle_geometry()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -444,9 +442,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00120">120</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00125">125</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00098">append_mesh()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00079">displacements_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00080">displacements_interpolation_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">z</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00097">append_mesh()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00081">displacements_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">z</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00380">polyfem::mesh::read_obstacle_geometry()</a>.</p>
 <div class="dynheader">
@@ -490,9 +488,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00161">161</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00164">164</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00084">planes_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00085">planes_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00380">polyfem::mesh::read_obstacle_geometry()</a>.</p>
 <div class="dynheader">
@@ -536,7 +534,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00170">change_displacement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00173">change_displacement()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -578,7 +576,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00170">170</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00173">173</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a1868118c996c3eb06c9e92ae7a8e17f3">change_displacement()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
 <div class="dynheader">
@@ -656,7 +654,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00178">178</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00181">181</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a1868118c996c3eb06c9e92ae7a8e17f3">change_displacement()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
 <div class="dynheader">
@@ -734,7 +732,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00174">174</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00177">177</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html#a1868118c996c3eb06c9e92ae7a8e17f3">change_displacement()</a>.</p>
 <div class="dynheader">
@@ -763,7 +761,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00022">22</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00079">displacements_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00080">displacements_interpolation_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00073">e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00082">endings_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00072">f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00077">in_e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00076">in_f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00075">in_v_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00084">planes_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00070">v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00081">displacements_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00075">e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00083">endings_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00074">f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00079">in_e_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00078">in_f_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00077">in_v_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00085">planes_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00072">v_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00017">Obstacle()</a>, and <a class="el" href="_state_load_8cpp_source.html#l00020">polyfem::State::reset_mesh()</a>.</p>
 <div class="dynheader">
@@ -798,9 +796,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00038">38</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00040">40</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">codim_v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00073">codim_v_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01046">polyfem::State::build_collision_mesh()</a>.</p>
 <div class="dynheader">
@@ -835,11 +833,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00035">35</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00037">37</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8hpp_source.html#l00036">ndof()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8hpp_source.html#l00038">ndof()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -872,9 +870,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00040">40</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00042">42</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00073">e_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00075">e_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01046">polyfem::State::build_collision_mesh()</a>.</p>
 <div class="dynheader">
@@ -909,9 +907,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00039">39</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00041">41</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00072">f_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00074">f_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01046">polyfem::State::build_collision_mesh()</a>.</p>
 <div class="dynheader">
@@ -946,9 +944,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00043">43</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00045">45</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00077">in_e_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00079">in_e_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -983,9 +981,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00042">42</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00044">44</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00076">in_f_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00078">in_f_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -1020,9 +1018,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00044">44</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00046">46</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00075">in_v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00077">in_v_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -1057,11 +1055,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00034">34</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00036">36</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00070">v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00072">v_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">polyfem::solver::ALForm::ALForm()</a>, <a class="el" href="_state_8cpp_source.html#l00580">polyfem::State::build_basis()</a>, <a class="el" href="_state_8cpp_source.html#l01046">polyfem::State::build_collision_mesh()</a>, <a class="el" href="_state_8hpp_source.html#l00493">polyfem::State::is_obstacle_vertex()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00036">ndof()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">polyfem::solver::ALForm::ALForm()</a>, <a class="el" href="_state_8cpp_source.html#l00580">polyfem::State::build_basis()</a>, <a class="el" href="_state_8cpp_source.html#l01046">polyfem::State::build_collision_mesh()</a>, <a class="el" href="_state_8hpp_source.html#l00493">polyfem::State::is_obstacle_vertex()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00038">ndof()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1094,9 +1092,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00036">36</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00038">38</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00035">dim()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00034">n_vertices()</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00037">dim()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00036">n_vertices()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">polyfem::solver::ALForm::ALForm()</a>.</p>
 <div class="dynheader">
@@ -1137,9 +1135,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00060">60</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00062">62</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00084">planes_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00085">planes_</a>.</p>
 
 </div>
 </div>
@@ -1159,9 +1157,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00235">235</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00240">240</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00070">v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00072">v_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -1199,9 +1197,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00204">204</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8cpp_source.html#l00213">213</a> of file <a class="el" href="_obstacle_8cpp_source.html">Obstacle.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00069">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00079">displacements_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00080">displacements_interpolation_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00082">endings_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00070">v_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00054">z</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00071">dim_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00081">displacements_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00083">endings_</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00072">v_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -1236,9 +1234,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00037">37</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00039">39</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00070">v_</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8hpp_source.html#l00072">v_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01046">polyfem::State::build_collision_mesh()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01032">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -1271,9 +1269,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00071">71</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00073">73</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00038">codim_v()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00040">codim_v()</a>.</p>
 
 </div>
 </div>
@@ -1297,14 +1295,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00069">69</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00071">71</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00120">append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00161">append_plane()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00035">dim()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00235">set_zero()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00204">update_displacement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00125">append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00164">append_plane()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00037">dim()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00240">set_zero()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00213">update_displacement()</a>.</p>
 
 </div>
 </div>
-<a id="a5606d8566048007aa908dd850389ce3b" name="a5606d8566048007aa908dd850389ce3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5606d8566048007aa908dd850389ce3b">&#9670;&#160;</a></span>displacements_</h2>
+<a id="abf187844b625e545eeebaf937b560744" name="abf187844b625e545eeebaf937b560744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf187844b625e545eeebaf937b560744">&#9670;&#160;</a></span>displacements_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1313,7 +1311,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;std::array&lt;<a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>, 3&gt; &gt; polyfem::mesh::Obstacle::displacements_</td>
+          <td class="memname">std::vector&lt;<a class="el" href="structpolyfem_1_1assembler_1_1_tensor_b_c_value.html">assembler::TensorBCValue</a>&gt; polyfem::mesh::Obstacle::displacements_</td>
         </tr>
       </table>
   </td>
@@ -1323,35 +1321,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00079">79</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00081">81</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00098">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00120">append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00204">update_displacement()</a>.</p>
-
-</div>
-</div>
-<a id="ad724cb00101b8554935735967501f77f" name="ad724cb00101b8554935735967501f77f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad724cb00101b8554935735967501f77f">&#9670;&#160;</a></span>displacements_interpolation_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1utils_1_1_interpolation.html">utils::Interpolation</a>&gt; &gt; polyfem::mesh::Obstacle::displacements_interpolation_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00080">80</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00098">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00120">append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00204">update_displacement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00097">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00125">append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00213">update_displacement()</a>.</p>
 
 </div>
 </div>
@@ -1375,9 +1347,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00073">73</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00075">75</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00040">e()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00042">e()</a>.</p>
 
 </div>
 </div>
@@ -1401,9 +1373,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00082">82</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00083">83</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00204">update_displacement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00213">update_displacement()</a>.</p>
 
 </div>
 </div>
@@ -1427,9 +1399,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00072">72</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00074">74</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00039">f()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00041">f()</a>.</p>
 
 </div>
 </div>
@@ -1453,9 +1425,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00077">77</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00079">79</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00043">get_edge_connectivity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00045">get_edge_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -1479,9 +1451,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00076">76</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00078">78</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00042">get_face_connectivity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00044">get_face_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -1505,9 +1477,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00075">75</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00077">77</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00044">get_vertex_connectivity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00046">get_vertex_connectivity()</a>.</p>
 
 </div>
 </div>
@@ -1531,9 +1503,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00084">84</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00085">85</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00161">append_plane()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00060">planes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00164">append_plane()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00062">planes()</a>.</p>
 
 </div>
 </div>
@@ -1557,9 +1529,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00070">70</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_obstacle_8hpp_source.html#l00072">72</a> of file <a class="el" href="_obstacle_8hpp_source.html">Obstacle.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00041">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00034">n_vertices()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00235">set_zero()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00204">update_displacement()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00037">v()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_obstacle_8cpp_source.html#l00040">append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00022">clear()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00036">n_vertices()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00240">set_zero()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00213">update_displacement()</a>, and <a class="el" href="_obstacle_8hpp_source.html#l00039">v()</a>.</p>
 
 </div>
 </div>

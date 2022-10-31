@@ -1,7 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"namespacepolyfem_1_1io.html#a19c5ba77a26666b0d3476295d2d96324":[3,0,6,3,26],
-"namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09":[3,0,6,3,13],
 "namespacepolyfem_1_1io.html#a37cd60f0908d667b28bbb4dfddc798ca":[3,0,6,3,30],
 "namespacepolyfem_1_1io.html#a3902e7a61e7b7af5da5c629e92af9008":[3,0,6,3,19],
 "namespacepolyfem_1_1io.html#a3b19ada658b7d8203d3f6399c9b34812":[3,0,6,3,11],
@@ -249,5 +247,7 @@ var NAVTREEINDEX28 =
 "namespacetriangle.html#a49dcfd2994a0296f5ecf2157ea14f8e5":[3,0,10,5],
 "namespacetriangle.html#a72919946fd8d7cdd07d68f2d0588ee94":[3,0,10,6],
 "namespacetriangle.html#a93eb19f077204c6aa8e5025b11665270":[3,0,10,3],
-"namespacetriangle.html#acda244d5711f4eda7dd1faa09ecd9e81":[3,0,10,1]
+"namespacetriangle.html#acda244d5711f4eda7dd1faa09ecd9e81":[3,0,10,1],
+"namespacetriangle.html#adcf65ae719fff4d8b035827b8d81490b":[3,0,10,4],
+"namespacetriangle.html#ae663a34e14694bc30ccae2ff67495fb2":[3,0,10,2]
 };
