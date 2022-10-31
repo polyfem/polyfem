@@ -14,38 +14,22 @@ namespace polyfem::solver
 
 		double value(
 			const State &state,
+			const IntegrableFunctional &j,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const bool is_volume_integral,
-			const std::string &transient_integral_type = "")
-		{
-			if (state.problem->is_time_dependent())
-				return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral);
-			else
-				return integrate_objective_transient(state, j, interested_ids, is_volume_integral, transient_integral_type);
-		}
+			const std::string &transient_integral_type = "");
 
 		void gradient(
 			const State &state,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const bool is_volume_integral,
+			const IntegrableFunctional &j,
 			const std::string &param,
 			Eigen::VectorXd &grad,
-			const std::string &transient_integral_type = "")
-		{
-			if (param == "material") {}
-			else if (param == "shape") {}
-			else if (param == "friction") {}
-			else if (param == "damping") {}
-			else if (param == "initial") {}
-			else if (param == "dirichlet") {}
-			else
-				log_and_throw_error("Unknown design parameter!");
-		}
+			const std::set<int> &interested_ids, // either body id or surface id
+			const bool is_volume_integral,
+			const std::string &transient_integral_type = "");
 
-	private:
-		IntegrableFunctional j;
+	protected:
 
-	private:
 		static double integrate_objective(
 			const State &state, 
 			const IntegrableFunctional &j, 
@@ -53,6 +37,14 @@ namespace polyfem::solver
 			const std::set<int> &interested_ids, // either body id or surface id
 			const bool is_volume_integral,
 			const int cur_step = 0);
+		static void dJ_du_step(
+			const State &state,
+			const IntegrableFunctional &j, 
+			const Eigen::MatrixXd &solution,
+			const std::set<int> &interested_ids,
+			const bool is_volume_integral,
+			const int cur_step,
+			Eigen::VectorXd &term);
 		static double integrate_objective_transient(
 			const State &state, 
 			const IntegrableFunctional &j,
@@ -113,10 +105,6 @@ namespace polyfem::solver
 			const State &state,
 			const std::vector<Eigen::MatrixXd> &adjoint_nu,
 			const std::vector<Eigen::MatrixXd> &adjoint_p,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids,
-			const bool is_volume_integral,
-			const std::string &transient_integral_type,
 			Eigen::VectorXd &one_form);
 	};
 } // namespace polyfem::solver

@@ -81,6 +81,21 @@ namespace polyfem
 					mat(i, j) = vec(i * size + j);
 		}
 
+		void solve_zero_dirichlet(const json &args, StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)
+		{
+			auto solver = polysolve::LinearSolver::create(args["solver"], args["precond"]);
+			solver->setParameters(args);
+			const int precond_num = A.rows();
+
+			for (int i : indices)
+				b(i) = 0;
+
+			Eigen::Vector4d adjoint_spectrum;
+			Eigen::VectorXd x;
+			adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, "", "", false, false);
+			adjoint_solution = x;
+		}
+
 		void volume_integral(
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
@@ -536,7 +551,7 @@ namespace polyfem
 		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set});
 	}
 
-	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev)
+	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const
 	{
 		if (assembler.is_linear(formulation()) && !is_contact_enabled())
 		{
@@ -550,13 +565,13 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_force_hessian_nonlinear(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev)
+	void State::compute_force_hessian_nonlinear(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const
 	{
 		solve_data.nl_problem->FullNLProblem::hessian(sol, hessian);
 		if (problem->is_time_dependent())
 		{
 			hessian -= mass;
-			hessian /= solve_data.time_integrator->acceleration_scaling();
+			hessian /= sqrt(solve_data.time_integrator->acceleration_scaling());
 		}
 
 		hessian_prev = StiffnessMatrix(sol.size(), sol.size());
@@ -673,7 +688,7 @@ namespace polyfem
 		compute_force_hessian(diff_cached[0].u, A, unused);
 		compute_adjoint_rhs(j, diff_cached[0].u, b);
 
-		solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
+		solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, adjoint_solution);
 	}
 
 	void State::compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface)
@@ -804,11 +819,8 @@ namespace polyfem
 							{
 								for (int q = 0; q < da.size(); ++q)
 								{
-									Eigen::Matrix<double, -1, -1, Eigen::RowMajor> grad_phi;
-									grad_phi.setZero(actual_dim, mesh->dimension());
-									grad_phi.row(d) = v.grad_t_m.row(q);
-									for (int k = 0; k < result_.cols(); k++)
-										val += result_(q, k) * grad_phi(k) * da(q);
+									for (int k = 0; k < mesh->dimension(); k++)
+										val += result_(q, d * mesh->dimension() + k) * v.grad_t_m(q, k) * da(q);
 								}
 							}
 							// j = j(x, u)
@@ -823,6 +835,28 @@ namespace polyfem
 				}
 			}
 		}
+	}
+
+	void State::solve_adjoint(const Eigen::VectorXd &adjoint_rhs, Eigen::MatrixXd &adjoint_solution) const
+	{
+		StiffnessMatrix A;
+		Eigen::VectorXd b = adjoint_rhs;
+
+		{
+			StiffnessMatrix unused;
+			compute_force_hessian(diff_cached[0].u, A, unused);
+		}
+		
+		if (lin_solver_cached)
+		{
+			for (int i : boundary_nodes)
+				b(i) = 0;
+			Eigen::VectorXd x;
+			dirichlet_solve_prefactorized(*lin_solver_cached, A, b, boundary_nodes, x);
+			adjoint_solution = x;
+		}
+		else
+			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, adjoint_solution);
 	}
 
 	void State::solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution)
@@ -857,26 +891,7 @@ namespace polyfem
 			adjoint_solution = x;
 		}
 		else
-			solve_zero_dirichlet(A, b, boundary_nodes, adjoint_solution);
-	}
-
-	void State::solve_zero_dirichlet(StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)
-	{
-		if (!args["solver"].contains("adjoint_linear"))
-			args["solver"]["adjoint_linear"] = args["solver"]["linear"];
-
-		auto solver = polysolve::LinearSolver::create(args["solver"]["adjoint_linear"]["solver"], args["solver"]["adjoint_linear"]["precond"]);
-		solver->setParameters(args["solver"]["adjoint_linear"]);
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int precond_num = A.rows();
-
-		for (int i : indices)
-			b(i) = 0;
-
-		Eigen::Vector4d adjoint_spectrum;
-		Eigen::VectorXd x;
-		adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], false, false);
-		adjoint_solution = x;
+			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, adjoint_solution);
 	}
 
 	void State::compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term)
@@ -1322,53 +1337,6 @@ namespace polyfem
 		logger().debug("topology derivative: elasticity: {}, functional: {}", elasticity_term.norm(), functional_term.norm());
 	}
 
-	void State::sample_field(std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order)
-	{
-		Eigen::MatrixXd tmp;
-		tmp.setZero(1, mesh->dimension());
-		tmp = field(tmp);
-		const int actual_dim = tmp.cols();
-
-		if (order >= 1)
-		{
-			const bool use_bases = order > 1;
-			const int n_current_bases = use_bases ? n_bases : n_geom_bases;
-			const auto &current_bases = use_bases ? bases : geom_bases();
-			discrete_field.setZero(n_current_bases * actual_dim, 1);
-
-			for (int e = 0; e < bases.size(); e++)
-			{
-				Eigen::MatrixXd local_pts, pts;
-				if (!mesh->is_volume())
-					autogen::p_nodes_2d(current_bases[e].bases.front().order(), local_pts);
-				else
-					autogen::p_nodes_3d(current_bases[e].bases.front().order(), local_pts);
-
-				current_bases[e].eval_geom_mapping(local_pts, pts);
-				Eigen::MatrixXd result = field(pts);
-				for (int i = 0; i < local_pts.rows(); i++)
-				{
-					assert(current_bases[e].bases[i].global().size() == 1);
-					for (int d = 0; d < actual_dim; d++)
-						discrete_field(current_bases[e].bases[i].global()[0].index * actual_dim + d) = result(i, d);
-				}
-			}
-		}
-		else if (order == 0)
-		{
-			discrete_field.setZero(bases.size() * actual_dim, 1);
-			Eigen::MatrixXd centers;
-			if (mesh->is_volume())
-				mesh->cell_barycenters(centers);
-			else
-				mesh->face_barycenters(centers);
-			Eigen::MatrixXd result = field(centers);
-			for (int e = 0; e < bases.size(); e++)
-				for (int d = 0; d < actual_dim; d++)
-					discrete_field(e * actual_dim + d) = result(e, d);
-		}
-	}
-
 	void State::dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
 	{
 		assert(problem->is_time_dependent());
@@ -1503,13 +1471,9 @@ namespace polyfem
 		one_form += weights[0] * functional_term + mass_term;
 	}
 
-	void State::solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative)
+	void State::solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative) const
 	{
-		assert(problem->is_time_dependent());
-		assert(!problem->is_scalar());
-
-		int bdf_order = get_bdf_order();
-
+		const int bdf_order = get_bdf_order();
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 		const auto &gbases = geom_bases();
@@ -1517,15 +1481,10 @@ namespace polyfem
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 
-		if (!j.depend_on_u() && !j.depend_on_gradu())
-			return;
-
 		// set dirichlet rows of mass to identity
 		StiffnessMatrix reduced_mass;
 		replace_rows_by_identity(reduced_mass, mass, boundary_nodes);
 
-		std::vector<double> weights;
-		j.get_transient_quadrature_weights(time_steps, dt, weights);
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		for (int i = time_steps; i >= 0; --i)
 		{
@@ -1536,21 +1495,12 @@ namespace polyfem
 			StiffnessMatrix gradu_h_next;
 			replace_rows_by_zero(gradu_h_next, -beta_dt * diff_cached[i].gradu_h_next, boundary_nodes);
 
-			auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
-				json params_extended = params;
-				params_extended["step"] = i;
-				params_extended["t"] = i * args["time"]["dt"].get<double>();
-				return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params_extended);
-			};
-			Eigen::VectorXd gradu_j;
-			compute_adjoint_rhs(grad_j_func, diff_cached[i].u, gradu_j, j.is_surface_integral());
-
 			if (i > 0)
 			{
 				StiffnessMatrix gradu_h;
-				replace_rows_by_zero(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
+				replace_rows_by_zero(gradu_h, -diff_cached[i].gradu_h, boundary_nodes);
 				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
-				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - weights[i] * gradu_j;
+				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - adjoint_rhs[i];
 				for (const auto &b : boundary_nodes)
 				{
 					rhs_(b) += (1. / beta_dt) * (-2 * adjoint_p[i + 1](b));
@@ -1561,7 +1511,7 @@ namespace polyfem
 				{
 					StiffnessMatrix A_tmp = A;
 					Eigen::VectorXd b_ = rhs_;
-					solve_zero_dirichlet(A_tmp, b_, boundary_nodes, adjoint_nu[i]);
+					solve_zero_dirichlet(args["solver"]["linear"], A_tmp, b_, boundary_nodes, adjoint_nu[i]);
 				}
 
 				if (dirichlet_derivative)
@@ -1577,9 +1527,35 @@ namespace polyfem
 			else
 			{
 				adjoint_p[i] = -reduced_mass.transpose() * sum_alpha_p;
-				adjoint_nu[i] = -weights[i] * gradu_j - reduced_mass.transpose() * sum_alpha_nu + beta_dt * diff_cached[i].gradu_h_next.transpose() * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
+				adjoint_nu[i] = -adjoint_rhs[i] - reduced_mass.transpose() * sum_alpha_nu + beta_dt * diff_cached[i].gradu_h_next.transpose() * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
 			}
 		}
+	}
+
+	void State::solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative)
+	{
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
+
+		std::vector<Eigen::VectorXd> adjoint_rhs;
+		adjoint_rhs.resize(time_steps + 1);
+
+		std::vector<double> weights;
+		j.get_transient_quadrature_weights(time_steps, dt, weights);
+		for (int i = time_steps; i >= 0; --i)
+		{
+			auto grad_j_func = [&](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const json &params) {
+				json params_extended = params;
+				params_extended["step"] = i;
+				params_extended["t"] = i * dt;
+				return j.grad_j(assembler.lame_params(), local_pts, pts, u, grad_u, params_extended);
+			};
+			Eigen::VectorXd gradu_j;
+			compute_adjoint_rhs(grad_j_func, diff_cached[i].u, gradu_j, j.is_surface_integral());
+			adjoint_rhs[i] = gradu_j * weights[i];
+		}
+
+		solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, dirichlet_derivative);
 	}
 
 	void State::dJ_dirichlet_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
@@ -1674,10 +1650,10 @@ namespace polyfem
 			if (i > 0)
 			{
 				StiffnessMatrix gradu_h;
-				replace_rows_by_identity(gradu_h, -beta_dt * diff_cached[i].gradu_h, boundary_nodes);
+				replace_rows_by_identity(gradu_h, -diff_cached[i].gradu_h, boundary_nodes);
 				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
 				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - dJ_du;
-				solve_zero_dirichlet(A, rhs_, boundary_nodes, adjoint_nu[i]);
+				solve_zero_dirichlet(args["solver"]["linear"], A, rhs_, boundary_nodes, adjoint_nu[i]);
 				adjoint_p[i] = beta_dt * adjoint_nu[i] - sum_alpha_p;
 			}
 			else

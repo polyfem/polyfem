@@ -125,6 +125,69 @@ namespace {
 				mat(i, j) = vec(i * size + j);
 	}
 }
+
+	double AdjointForm::value(
+		const State &state,
+		const IntegrableFunctional &j,
+		const std::set<int> &interested_ids, // either body id or surface id
+		const bool is_volume_integral,
+		const std::string &transient_integral_type)
+	{
+		if (state.problem->is_time_dependent())
+			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral);
+		else
+			return integrate_objective_transient(state, j, interested_ids, is_volume_integral, transient_integral_type);
+	}
+
+	void AdjointForm::gradient(
+		const State &state,
+		const IntegrableFunctional &j,
+		const std::string &param,
+		Eigen::VectorXd &grad,
+		const std::set<int> &interested_ids, // either body id or surface id
+		const bool is_volume_integral,
+		const std::string &transient_integral_type)
+	{
+		if (state.problem->is_time_dependent())
+		{
+			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
+			// TODO: assemble adjoint rhs
+			std::vector<Eigen::VectorXd> adjoint_rhs;
+			state.solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, param == "dirichlet");
+			if (param == "material")
+				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "shape")
+				dJ_shape_transient(state, adjoint_nu, adjoint_p, j, interested_ids, is_volume_integral, transient_integral_type, grad);
+			else if (param == "friction")
+				dJ_friction_transient(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "damping")
+				dJ_damping_transient(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "initial")
+				dJ_initial_condition(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "dirichlet")
+				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, grad);
+			else
+				log_and_throw_error("Unknown design parameter!");
+		}
+		else
+		{
+			Eigen::MatrixXd adjoint;
+			// TODO: assemble adjoint rhs
+			Eigen::VectorXd adjoint_rhs;
+			state.solve_adjoint(adjoint_rhs, adjoint);
+			if (param == "material")
+				dJ_material_static(state, state.diff_cached[0].u, adjoint, grad);
+			else if (param == "shape")
+				dJ_shape_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, is_volume_integral, grad);
+			else if (param == "friction")
+				log_and_throw_error("Static friction coefficient grad not implemented!");
+			else if (param == "dirichlet")
+				log_and_throw_error("Static Dirichlet BC grad not implemented!");
+			else
+				log_and_throw_error("Unknown design parameter!");
+		}
+	}
+
     double AdjointForm::integrate_objective(
         const State &state, 
         const IntegrableFunctional &j, 
@@ -728,10 +791,6 @@ namespace {
 		const State &state,
 		const std::vector<Eigen::MatrixXd> &adjoint_nu,
 		const std::vector<Eigen::MatrixXd> &adjoint_p,
-		const IntegrableFunctional &j,
-		const std::set<int> &interested_ids,
-		const bool is_volume_integral,
-        const std::string &transient_integral_type,
 		Eigen::VectorXd &one_form)
 	{
 		const double dt = state.args["time"]["dt"];
@@ -747,5 +806,169 @@ namespace {
 			for (int b = 0; b < state.boundary_nodes.size(); ++b)
 				one_form((i - 1) * state.boundary_nodes.size() + b) = -(1. / beta_dt) * adjoint_p[i](state.boundary_nodes[b]);
 		}
+	}
+
+	void AdjointForm::dJ_du_step(
+		const State &state,
+		const IntegrableFunctional &j, 
+		const Eigen::MatrixXd &solution,
+		const std::set<int> &interested_ids,
+		const bool is_volume_integral,
+        const int cur_step,
+		Eigen::VectorXd &term)
+	{
+        const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+
+        const int dim = state.mesh->dimension();
+		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
+        const int n_elements = int(bases.size());
+        const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
+
+		term = Eigen::MatrixXd::Zero(state.n_bases * actual_dim, 1);
+
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+		if (is_volume_integral)
+		{
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+                Eigen::MatrixXd u, grad_u;
+                Eigen::MatrixXd lambda, mu;
+                Eigen::MatrixXd result;
+
+                json params = {};
+                params["t"] = dt * cur_step;
+                params["step"] = cur_step;
+
+				for (int e = start; e < end; ++e)
+				{
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
+
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					const int n_loc_bases_ = int(vals.basis_values.size());
+					
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
+					
+					params["elem"] = e;
+					params["body_id"] = state.mesh->get_body_id(e);
+					result = j.grad_j(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params);
+					for (int q = 0; q < result.rows(); q++)
+						result.row(q) *= local_storage.da(q);
+
+					for (int i = 0; i < n_loc_bases_; ++i)
+					{
+						const assembler::AssemblyValues &v = vals.basis_values[i];
+						assert(v.global.size() == 1);
+						for (int d = 0; d < actual_dim; d++)
+						{
+							double val = 0;
+
+							// j = j(x, grad u)
+							if (result.cols() == grad_u.cols())
+							{
+								for (int q = 0; q < local_storage.da.size(); ++q)
+									val += dot(result.block(q, d * dim, 1, dim), v.grad_t_m.row(q));
+							}
+							// j = j(x, u)
+							else
+							{
+								for (int q = 0; q < local_storage.da.size(); ++q)
+									val += result(q, d) * v.val(q);
+							}
+							local_storage.vec(v.global[0].index * actual_dim + d) += val;
+						}
+					}
+				}
+			});
+		}
+		else
+		{
+            utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
+                LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+                Eigen::MatrixXd uv, samples, gtmp;
+                Eigen::MatrixXd points, normal;
+                Eigen::VectorXd weights;
+
+                Eigen::MatrixXd u, grad_u;
+                Eigen::MatrixXd lambda, mu;
+                Eigen::MatrixXd result;
+                json params = {};
+                params["t"] = dt * cur_step;
+                params["step"] = cur_step;
+
+                for (int lb_id = start; lb_id < end; ++lb_id)
+                {
+					const auto &lb = state.total_local_boundary[lb_id];
+					const int e = lb.element_id();
+
+                    for (int i = 0; i < lb.size(); i++)
+                    {
+                        const int global_primitive_id = lb.global_primitive_id(i);
+                        if (interested_ids.find(global_primitive_id) == interested_ids.end())
+                            continue;
+                            
+                        utils::BoundarySampler::boundary_quadrature(lb, state.args["space"]["advanced"]["n_boundary_samples"], *state.mesh, i, false, uv, points, normal, weights);
+
+						assembler::ElementAssemblyValues &vals = local_storage.vals;
+                        vals.compute(e, state.mesh->is_volume(), points, bases[e], gbases[e]);
+                        io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
+
+                        normal = normal * vals.jac_it[0]; // assuming linear geometry
+
+						const int n_loc_bases_ = int(vals.basis_values.size());
+
+                        params["elem"] = e;
+                        params["body_id"] = state.mesh->get_body_id(e);
+                        params["boundary_id"] = global_primitive_id;
+						result = j.grad_j(state.assembler.lame_params(), points, vals.val, u, grad_u, params);
+						for (int q = 0; q < result.rows(); q++)
+							result.row(q) *= weights(q);
+
+						for (int j = 0; j < lb.size(); ++j)
+						{
+							const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(j), *state.mesh);
+
+							for (long n = 0; n < nodes.size(); ++n)
+							{
+								const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
+								assert(v.global.size() == 1);
+								for (int d = 0; d < actual_dim; d++)
+								{
+									double val = 0;
+
+									// j = j(x, grad u)
+									if (result.cols() == grad_u.cols())
+									{
+										for (int q = 0; q < weights.size(); ++q)
+										{
+											Eigen::Matrix<double, -1, -1, Eigen::RowMajor> grad_phi;
+											grad_phi.setZero(actual_dim, dim);
+											grad_phi.row(d) = v.grad_t_m.row(q);
+											for (int k = d * dim; k < (d + 1) * dim; k++)
+												val += result(q, k) * grad_phi(k);
+										}
+									}
+									// j = j(x, u)
+									else
+									{
+										for (int q = 0; q < weights.size(); ++q)
+											val += result(q, d) * v.val(q);
+									}
+									local_storage.vec(v.global[0].index * actual_dim + d) += val;
+								}
+							}
+						}
+					}
+				}
+			});
+		}
+	
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
 	}
 }

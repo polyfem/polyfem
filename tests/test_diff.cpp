@@ -6,6 +6,8 @@
 #include <fstream>
 #include <cmath>
 
+#include <polyfem/autogen/auto_p_bases.hpp>
+
 #include <catch2/catch.hpp>
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +58,52 @@ void solve_pde(State &state)
 	state.solve_problem(sol, pressure);
 }
 
+void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+{
+	Eigen::MatrixXd tmp;
+	tmp.setZero(1, state.mesh->dimension());
+	tmp = field(tmp);
+	const int actual_dim = tmp.cols();
+
+	if (order >= 1)
+	{
+		const bool use_bases = order > 1;
+		const int n_current_bases = use_bases ? state.n_bases : state.n_geom_bases;
+		const auto &current_bases = use_bases ? state.bases : state.geom_bases();
+		discrete_field.setZero(n_current_bases * actual_dim, 1);
+
+		for (int e = 0; e < state.bases.size(); e++)
+		{
+			Eigen::MatrixXd local_pts, pts;
+			if (!state.mesh->is_volume())
+				autogen::p_nodes_2d(current_bases[e].bases.front().order(), local_pts);
+			else
+				autogen::p_nodes_3d(current_bases[e].bases.front().order(), local_pts);
+
+			current_bases[e].eval_geom_mapping(local_pts, pts);
+			Eigen::MatrixXd result = field(pts);
+			for (int i = 0; i < local_pts.rows(); i++)
+			{
+				assert(current_bases[e].bases[i].global().size() == 1);
+				for (int d = 0; d < actual_dim; d++)
+					discrete_field(current_bases[e].bases[i].global()[0].index * actual_dim + d) = result(i, d);
+			}
+		}
+	}
+	else if (order == 0)
+	{
+		discrete_field.setZero(state.bases.size() * actual_dim, 1);
+		Eigen::MatrixXd centers;
+		if (state.mesh->is_volume())
+			state.mesh->cell_barycenters(centers);
+		else
+			state.mesh->face_barycenters(centers);
+		Eigen::MatrixXd result = field(centers);
+		for (int e = 0; e < state.bases.size(); e++)
+			for (int d = 0; d < actual_dim; d++)
+				discrete_field(e * actual_dim + d) = result(e, d);
+	}
+}
 } // namespace
 
 TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
@@ -129,7 +177,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 	double functional_val = state.J_static(j);
 
 	Eigen::MatrixXd velocity_discrete;
-	state.sample_field(velocity, velocity_discrete);
+	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form;
 	state.dJ_shape(j, one_form);
@@ -259,7 +307,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	double functional_val = state.J_static(j);
 
 	Eigen::MatrixXd velocity_discrete;
-	state.sample_field(velocity, velocity_discrete);
+	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form;
 	state.dJ_shape(j, one_form);
@@ -382,7 +430,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	double functional_val = state.J_static(j);
 
 	Eigen::MatrixXd velocity_discrete;
-	state.sample_field(velocity, velocity_discrete);
+	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form;
 	state.dJ_shape(j, one_form);
@@ -562,7 +610,7 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 		return vel;
 	};
 	Eigen::MatrixXd velocity_discrete;
-	state.sample_field(velocity, velocity_discrete);
+	sample_field(state, velocity, velocity_discrete);
 	Eigen::VectorXd one_form = func.gradient(state, "shape");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
@@ -700,7 +748,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	};
 
 	Eigen::MatrixXd velocity_discrete;
-	state.sample_field(velocity, velocity_discrete);
+	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form = func.gradient(state, "shape");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
@@ -821,7 +869,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	};
 
 	Eigen::MatrixXd velocity_discrete;
-	state.sample_field(velocity, velocity_discrete, 0);
+	sample_field(state, velocity, velocity_discrete, 0);
 
 	Eigen::VectorXd one_form = j.gradient(state, "material");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
