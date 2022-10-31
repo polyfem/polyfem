@@ -16,14 +16,39 @@ namespace polyfem
 		struct TensorBCValue
 		{
 			std::array<utils::ExpressionValue, 3> value;
-			std::shared_ptr<utils::Interpolation> interpolation;
+			std::vector<std::shared_ptr<utils::Interpolation>> interpolation;
 			Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
+
+			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const
+			{
+				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
+				double val = value[dim](x, y, z, t, el_id);
+
+				if (interpolation.empty())
+				{
+				}
+				else if (interpolation.size() == 1)
+					val *= interpolation[0]->eval(t);
+				else
+				{
+					assert(dim < interpolation.size());
+					val *= interpolation[dim]->eval(t);
+				}
+
+				return val;
+			}
 		};
 
 		struct ScalarBCValue
 		{
 			utils::ExpressionValue value;
 			std::shared_ptr<utils::Interpolation> interpolation;
+
+			double eval(const RowVectorNd &pts, const double t) const
+			{
+				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
+				return value(x, y, z, t) * interpolation->eval(t);
+			}
 		};
 
 		class GenericTensorProblem : public Problem

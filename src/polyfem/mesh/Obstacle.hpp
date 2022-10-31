@@ -5,6 +5,8 @@
 #include <polyfem/utils/Interpolation.hpp>
 #include <polyfem/utils/Types.hpp>
 
+#include <polyfem/assembler/GenericProblem.hpp>
+
 #include <Eigen/Dense>
 
 namespace polyfem
@@ -76,8 +78,7 @@ namespace polyfem
 			Eigen::MatrixXi in_f_;
 			Eigen::MatrixXi in_e_;
 
-			std::vector<std::array<utils::ExpressionValue, 3>> displacements_;
-			std::vector<std::shared_ptr<utils::Interpolation>> displacements_interpolation_;
+			std::vector<assembler::TensorBCValue> displacements_;
 
 			std::vector<int> endings_;
 
