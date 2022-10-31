@@ -1,6 +1,5 @@
 #pragma once
 
-#include <polyfem/utils/CompositeFunctional.hpp>
 #include "OptimizationProblem.hpp"
 
 namespace polyfem

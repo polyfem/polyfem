@@ -17,14 +17,6 @@ namespace polyfem
 					mat(i, j) = vec(i * size + j);
 		}
 
-		bool state_has_solution(State &state)
-		{
-			if ((state.problem->is_time_dependent() && state.diff_cached.size() > 0) || (!state.problem->is_time_dependent() && state.diff_cached[0].u.size() > 0))
-				return true;
-			else
-				return false;
-		}
-
 		bool is_interested(const std::set<int> &interested_body_ids, const std::set<int> &interested_boundary_ids, const int body_id, const std::vector<int> &boundary_id, Eigen::MatrixXd &boundary_points)
 		{
 			boundary_points = Eigen::MatrixXd::Identity(boundary_id.size(), boundary_id.size());

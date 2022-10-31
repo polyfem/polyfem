@@ -670,8 +670,6 @@ namespace polyfem
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
 		StiffnessMatrix down_sampling_mat;
 
-		void project_to_lower_order(Eigen::MatrixXd &y);
-
 		// homogenization study of unit cell
 		void homogenization(Eigen::MatrixXd &C_H)
 		{

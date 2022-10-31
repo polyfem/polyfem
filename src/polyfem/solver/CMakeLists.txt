@@ -44,7 +44,9 @@ set(SOURCES
 	DenseNewtonDescentSolver.tpp
 	TransientNavierStokesSolver.cpp
 	TransientNavierStokesSolver.hpp
+	AdjointForm.cpp
 	AdjointForm.hpp
+	Objective.hpp
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
 	Parameter.hpp
