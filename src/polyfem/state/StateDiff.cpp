@@ -317,7 +317,7 @@ namespace polyfem
 		assembler.update_lame_params(cur_lambdas + lambda_update, cur_mus + mu_update);
 	}
 
-	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric)
+	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric) const
 	{
 		const auto &cur_bases = geometric ? geom_bases() : bases;
 		const int n_elements = int(cur_bases.size());
@@ -954,7 +954,7 @@ namespace polyfem
 			logger().error("Not supported functional type in topology optimization!");
 	}
 
-	void State::compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step)
+	void State::compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step) const
 	{
 		const auto &gbases = geom_bases();
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -1037,10 +1037,6 @@ namespace polyfem
 		{
 			assert(!iso_parametric() || disc_orders[0] == 1);
 
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			get_vf(V, F);
-
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
 			utils::maybe_parallel_for(total_local_boundary.size(), [&](int start, int end, int thread_id) {
@@ -1091,7 +1087,7 @@ namespace polyfem
 					j.evaluate(assembler.lame_params(), points, vals.val, u, grad_u, params, j_value);
 
 					Eigen::MatrixXd grad_j_value;
-					if (j.depend_on_u() || j.depend_on_gradu())
+					if (j.depend_on_gradu())
 						grad_j_value = j.grad_j(assembler.lame_params(), points, vals.val, u, grad_u, params);
 
 					Eigen::MatrixXd dj_dx;
@@ -1110,57 +1106,51 @@ namespace polyfem
 						{
 							const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 							// integrate j * div(gbases) over the whole boundary
-							for (int q = n_samples_per_surface * i; q < n_samples_per_surface * (i + 1); ++q)
+							for (int d = 0; d < mesh->dimension(); d++)
 							{
-								Eigen::MatrixXd grad_u_i;
-								if (mesh->dimension() == actual_dim)
-									vector2matrix(grad_u.row(q), grad_u_i);
-								else
-									grad_u_i = grad_u.row(q);
-
-								for (int d = 0; d < mesh->dimension(); d++)
+								double velocity_div = 0;
+								if (mesh->is_volume())
 								{
-									double velocity_div = 0;
-									if (mesh->is_volume())
+									Eigen::Vector3d dr_du = gbs.bases[nodes(1)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
+									Eigen::Vector3d dr_dv = gbs.bases[nodes(2)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
+
+									// compute dtheta
+									Eigen::Vector3d dtheta_du, dtheta_dv;
+									dtheta_du.setZero();
+									dtheta_dv.setZero();
+									if (0 == n)
 									{
-										Eigen::Vector3d dr_du = gbs.bases[nodes(1)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
-										Eigen::Vector3d dr_dv = gbs.bases[nodes(2)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
-
-										// compute dtheta
-										Eigen::Vector3d dtheta_du, dtheta_dv;
-										dtheta_du.setZero();
-										dtheta_dv.setZero();
-										if (0 == n)
-										{
-											dtheta_du(d) = -1;
-											dtheta_dv(d) = -1;
-										}
-										else if (1 == n)
-											dtheta_du(d) = 1;
-										else if (2 == n)
-											dtheta_dv(d) = 1;
-										else
-											assert(false);
-
-										velocity_div = (dr_du.cross(dr_dv)).dot(dtheta_du.cross(dr_dv) + dr_du.cross(dtheta_dv)) / (dr_du.cross(dr_dv)).squaredNorm();
+										dtheta_du(d) = -1;
+										dtheta_dv(d) = -1;
 									}
+									else if (1 == n)
+										dtheta_du(d) = 1;
+									else if (2 == n)
+										dtheta_dv(d) = 1;
 									else
-									{
-										Eigen::VectorXd dr = gbs.bases[nodes(1)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
+										assert(false);
 
-										// compute dtheta
-										Eigen::VectorXd dtheta;
-										dtheta.setZero(dr.rows(), dr.cols());
-										if (0 == n)
-											dtheta(d) = -1;
-										else if (1 == n)
-											dtheta(d) = 1;
-										else
-											assert(false);
+									velocity_div = (dr_du.cross(dr_dv)).dot(dtheta_du.cross(dr_dv) + dr_du.cross(dtheta_dv)) / (dr_du.cross(dr_dv)).squaredNorm();
+								}
+								else
+								{
+									Eigen::VectorXd dr = gbs.bases[nodes(1)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
 
-										velocity_div = dr.dot(dtheta) / dr.squaredNorm();
-									}
+									// compute dtheta
+									Eigen::VectorXd dtheta;
+									dtheta.setZero(dr.rows(), dr.cols());
+									if (0 == n)
+										dtheta(d) = -1;
+									else if (1 == n)
+										dtheta(d) = 1;
+									else
+										assert(false);
 
+									velocity_div = dr.dot(dtheta) / dr.squaredNorm();
+								}
+
+								for (int q = n_samples_per_surface * i; q < n_samples_per_surface * (i + 1); ++q)
+								{
 									local_storage.vec(v.global[0].index * mesh->dimension() + d) += j_value(q) * velocity_div * da(q);
 									if (j.depend_on_x())
 									{
@@ -1173,6 +1163,11 @@ namespace polyfem
 											vector2matrix(grad_j_value.row(q), tau_i);
 										else
 											tau_i = grad_j_value.row(q);
+										Eigen::MatrixXd grad_u_i;
+										if (mesh->dimension() == actual_dim)
+											vector2matrix(grad_u.row(q), grad_u_i);
+										else
+											grad_u_i = grad_u.row(q);
 										local_storage.vec(v.global[0].index * mesh->dimension() + d) += -dot(tau_i, grad_u_i.col(d) * v.grad_t_m.row(q)) * da(q);
 									}
 								}

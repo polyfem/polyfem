@@ -616,7 +616,7 @@ namespace polyfem
 		void solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false) const;
 		// Change geometric node positions
 		void set_v(const Eigen::MatrixXd &vertices);
-		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true);
+		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
 		// Computes the integral of a given functional J = \int j dx
 		double J(const IntegrableFunctional &j)
 		{
@@ -628,7 +628,7 @@ namespace polyfem
 		double J_transient(const IntegrableFunctional &j);
 		double J_transient_step(const IntegrableFunctional &j, const int step);
 		// Aux functions for computing derivatives of different forces wrt. different parameters
-		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0);
+		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0) const;
 		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
 
 		// Derivatives wrt. an input functional J = \int j dx

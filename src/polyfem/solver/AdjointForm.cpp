@@ -134,9 +134,9 @@ namespace {
 		const std::string &transient_integral_type)
 	{
 		if (state.problem->is_time_dependent())
-			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral);
-		else
 			return integrate_objective_transient(state, j, interested_ids, is_volume_integral, transient_integral_type);
+		else
+			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral);
 	}
 
 	void AdjointForm::gradient(
@@ -151,8 +151,8 @@ namespace {
 		if (state.problem->is_time_dependent())
 		{
 			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
-			// TODO: assemble adjoint rhs
 			std::vector<Eigen::VectorXd> adjoint_rhs;
+			dJ_du_transient(state, j, interested_ids, is_volume_integral, transient_integral_type, adjoint_rhs);
 			state.solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, param == "dirichlet");
 			if (param == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
@@ -172,8 +172,8 @@ namespace {
 		else
 		{
 			Eigen::MatrixXd adjoint;
-			// TODO: assemble adjoint rhs
 			Eigen::VectorXd adjoint_rhs;
+			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral, 0, adjoint_rhs);
 			state.solve_adjoint(adjoint_rhs, adjoint);
 			if (param == "material")
 				dJ_material_static(state, state.diff_cached[0].u, adjoint, grad);
@@ -222,7 +222,7 @@ namespace {
 
                 for (int e = start; e < end; ++e)
                 {
-                    if (interested_ids.find(e) == interested_ids.end())
+                    if (interested_ids.size() != 0 && interested_ids.find(e) == interested_ids.end())
                         continue;
 
                     assembler::ElementAssemblyValues &vals = local_storage.vals;
@@ -264,7 +264,7 @@ namespace {
                     for (int i = 0; i < lb.size(); i++)
                     {
                         const int global_primitive_id = lb.global_primitive_id(i);
-                        if (interested_ids.find(global_primitive_id) == interested_ids.end())
+                        if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_boundary_id(global_primitive_id)) == interested_ids.end())
                             continue;
                             
                         utils::BoundarySampler::boundary_quadrature(lb, state.args["space"]["advanced"]["n_boundary_samples"], *state.mesh, i, false, uv, points, normal, weights);
@@ -277,7 +277,7 @@ namespace {
 
                         params["elem"] = e;
                         params["body_id"] = state.mesh->get_body_id(e);
-                        params["boundary_id"] = global_primitive_id;
+                        params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
 						j.evaluate(state.assembler.lame_params(), points, vals.val, u, grad_u, params, result);
 
                         local_storage.val += dot(result, weights);
@@ -346,7 +346,7 @@ namespace {
 
 				for (int e = start; e < end; ++e)
 				{
-                    if (interested_ids.find(e) == interested_ids.end())
+                    if (interested_ids.size() != 0 && interested_ids.find(e) == interested_ids.end())
                         continue;
 					
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
@@ -405,7 +405,6 @@ namespace {
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-				Eigen::VectorXi global_primitive_ids;
 				Eigen::MatrixXd uv, points, normal;
 				Eigen::VectorXd &weights = local_storage.da;
 
@@ -419,39 +418,41 @@ namespace {
 					const auto &lb = state.total_local_boundary[lb_id];
 					const int e = lb.element_id();
 
-					const basis::ElementBases &gbs = gbases[e];
-					const basis::ElementBases &bs = bases[e];
-
                     for (int i = 0; i < lb.size(); i++)
                     {
                         const int global_primitive_id = lb.global_primitive_id(i);
-                        if (interested_ids.find(global_primitive_id) == interested_ids.end())
+                        if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_boundary_id(global_primitive_id)) == interested_ids.end())
                             continue;
                             
                         utils::BoundarySampler::boundary_quadrature(lb, state.args["space"]["advanced"]["n_boundary_samples"], *state.mesh, i, false, uv, points, normal, weights);
 
 						assembler::ElementAssemblyValues &vals = local_storage.vals;
-						vals.compute(e, state.mesh->is_volume(), points, bases[e], gbases[e]);
-                        io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
+						io::Evaluator::interpolate_at_local_vals(*state.mesh, state.problem->is_scalar(), bases, gbases, e, points, solution, u, grad_u);
+
+						vals.compute(e, state.mesh->is_volume(), points, gbases[e], gbases[e]);
 
 						normal = normal * vals.jac_it[0]; // assuming linear geometry
 
-						assembler::ElementAssemblyValues gvals;
-						gvals.compute(e, state.mesh->is_volume(), points, gbases[e], gbases[e]);
-
                         params["elem"] = e;
                         params["body_id"] = state.mesh->get_body_id(e);
-                        params["boundary_id"] = global_primitive_id;
+                        params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
 						
 						j.evaluate(state.assembler.lame_params(), points, vals.val, u, grad_u, params, j_val);
+						j_val = j_val.array().colwise() * weights.array();
 
-						if (j.depend_on_gradu() || j.depend_on_u())
+						if (j.depend_on_gradu())
+						{
 							dj_du = j.grad_j(state.assembler.lame_params(), points, vals.val, u, grad_u, params);
+							dj_du = dj_du.array().colwise() * weights.array();
+						}
 
 						if (j.depend_on_x())
+						{
 							j.dj_dx(state.assembler.lame_params(), points, vals.val, u, grad_u, params, dj_dx);
+							dj_dx = dj_dx.array().colwise() * weights.array();
+						}
 
-						const auto nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, *state.mesh);
+						const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *state.mesh);
 
 						if (nodes.size() != dim)
 							log_and_throw_error("Only linear geometry is supported in differentiable surface integral functional!");
@@ -459,15 +460,15 @@ namespace {
 						Eigen::MatrixXd grad_u_q, tau_q;
 						for (long n = 0; n < nodes.size(); ++n)
 						{
-							const assembler::AssemblyValues &v = gvals.basis_values[nodes(n)];
+							const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 							// integrate j * div(gbases) over the whole boundary
 							for (int d = 0; d < dim; d++)
 							{
 								double velocity_div = 0;
 								if (state.mesh->is_volume())
 								{
-									Eigen::Vector3d dr_du = gbs.bases[nodes(1)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
-									Eigen::Vector3d dr_dv = gbs.bases[nodes(2)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
+									Eigen::Vector3d dr_du = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
+									Eigen::Vector3d dr_dv = gbases[e].bases[nodes(2)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
 
 									// compute dtheta
 									Eigen::Vector3d dtheta_du, dtheta_dv;
@@ -489,7 +490,7 @@ namespace {
 								}
 								else
 								{
-									Eigen::VectorXd dr = gbs.bases[nodes(1)].global()[0].node - gbs.bases[nodes(0)].global()[0].node;
+									Eigen::VectorXd dr = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
 
 									// compute dtheta
 									Eigen::VectorXd dtheta;
@@ -506,10 +507,10 @@ namespace {
 
 								for (int q = 0; q < weights.size(); ++q)
 								{
-									local_storage.vec.block(v.global[0].index * dim, 0, dim, 1) += (j_val(q) * local_storage.da(q)) * v.grad_t_m.row(q).transpose();
+									local_storage.vec(v.global[0].index * dim + d) += j_val(q) * velocity_div;
 
 									if (j.depend_on_x())
-										local_storage.vec.block(v.global[0].index * dim, 0, dim, 1) += (v.val(q) * local_storage.da(q)) * dj_dx.row(q).transpose();
+										local_storage.vec(v.global[0].index * dim + d) += v.val(q) * dj_dx(q, d);
 
 									if (j.depend_on_gradu())
 									{
@@ -524,7 +525,7 @@ namespace {
 											tau_q = dj_du.row(q);
 										}
 											
-										local_storage.vec(v.global[0].index * dim + d) += -dot(tau_q, grad_u_q.col(d) * v.grad_t_m.row(q)) * weights(q);
+										local_storage.vec(v.global[0].index * dim + d) += -dot(tau_q, grad_u_q.col(d) * v.grad_t_m.row(q));
 									}
 								}
 							}
@@ -909,7 +910,7 @@ namespace {
                     for (int i = 0; i < lb.size(); i++)
                     {
                         const int global_primitive_id = lb.global_primitive_id(i);
-                        if (interested_ids.find(global_primitive_id) == interested_ids.end())
+                        if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_boundary_id(global_primitive_id)) == interested_ids.end())
                             continue;
                             
                         utils::BoundarySampler::boundary_quadrature(lb, state.args["space"]["advanced"]["n_boundary_samples"], *state.mesh, i, false, uv, points, normal, weights);
@@ -924,7 +925,7 @@ namespace {
 
                         params["elem"] = e;
                         params["body_id"] = state.mesh->get_body_id(e);
-                        params["boundary_id"] = global_primitive_id;
+                        params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
 						result = j.grad_j(state.assembler.lame_params(), points, vals.val, u, grad_u, params);
 						for (int q = 0; q < result.rows(); q++)
 							result.row(q) *= weights(q);
@@ -970,5 +971,27 @@ namespace {
 	
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
+	}
+
+	void AdjointForm::dJ_du_transient(
+		const State &state,
+		const IntegrableFunctional &j,
+		const std::set<int> &interested_ids,
+		const bool is_volume_integral,
+		const std::string &transient_integral_type,
+		std::vector<Eigen::VectorXd> &terms)
+	{
+		const double dt = state.args["time"]["dt"];
+		const int time_steps = state.args["time"]["time_steps"];
+
+		terms.resize(time_steps + 1);
+
+		std::vector<double> weights;
+		get_transient_quadrature_weights(transient_integral_type, time_steps, dt, weights);
+		for (int i = time_steps; i >= 0; --i)
+		{
+			dJ_du_step(state, j, state.diff_cached[i].u, interested_ids, is_volume_integral, i, terms[i]);
+			terms[i] *= weights[i];
+		}
 	}
 }

@@ -1,6 +1,7 @@
 #include <polyfem/utils/CompositeFunctional.hpp>
 #include <polyfem/utils/CompositeSplineParam.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/solver/AdjointForm.hpp>
 
 namespace polyfem
 {
@@ -314,14 +315,17 @@ namespace polyfem
 	{
 		IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "");
 
-		return state.J(j);
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+
+		return val;
 	}
 
 	Eigen::VectorXd SDFTrajectoryFunctional::gradient(State &state, const std::string &type)
 	{
 		IntegrableFunctional j = get_trajectory_functional(type);
 
-		Eigen::VectorXd grad = state.integral_gradient(j, type);
+		Eigen::VectorXd grad;
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
 
 		return grad;
 	}
@@ -452,9 +456,6 @@ namespace polyfem
 		{
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
-				Eigen::MatrixXd boundary_points;
-				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
-					return;
 
 				for (int q = 0; q < u.rows(); q++)
 				{
@@ -463,14 +464,10 @@ namespace polyfem
 					evaluate(u.row(q) + pts.row(q), distance, unused_grad);
 					val(q) = pow(distance, p);
 				}
-				val = boundary_points * val;
 			};
 
 			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				Eigen::MatrixXd boundary_points;
-				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
-					return;
 
 				for (int q = 0; q < u.rows(); q++)
 				{
@@ -479,7 +476,6 @@ namespace polyfem
 					evaluate(u.row(q) + pts.row(q), distance, grad);
 					val.row(q) = p * pow(distance, p - 1) * grad.transpose();
 				}
-				val = boundary_points * val;
 			};
 
 			j.set_j(j_func);
@@ -692,15 +688,19 @@ namespace polyfem
 	{
 		IntegrableFunctional j = get_stress_functional(state.formulation(), p);
 
-		return pow(state.J(j), 1. / p);
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+
+		return pow(val, 1. / p);
 	}
 
 	Eigen::VectorXd StressFunctional::gradient(State &state, const std::string &type)
 	{
 		IntegrableFunctional j = get_stress_functional(state.formulation(), p);
 
-		Eigen::VectorXd grad = state.integral_gradient(j, type);
-		double val = state.J(j);
+		Eigen::VectorXd grad;
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
 
 		return (pow(val, 1. / p - 1) / p) * grad;
 	}
@@ -708,13 +708,10 @@ namespace polyfem
 	IntegrableFunctional StressFunctional::get_stress_functional(const std::string &formulation, const int power)
 	{
 		assert(!surface_integral);
-		IntegrableFunctional j(surface_integral);
+		IntegrableFunctional j;
 		j.set_name("Stress");
-		j.set_transient_integral_type(transient_integral_type);
-		j.set_j([formulation, power, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation, power](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
-			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-				return;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
 				Eigen::MatrixXd grad_u_q, stress;
@@ -735,10 +732,8 @@ namespace polyfem
 			}
 		});
 
-		j.set_dj_dgradu([formulation, power, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([formulation, power](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
-			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-				return;
 			const int dim = sqrt(grad_u.cols());
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
