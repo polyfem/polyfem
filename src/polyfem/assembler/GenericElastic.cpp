@@ -2,6 +2,7 @@
 
 #include "MooneyRivlinElasticity.hpp"
 #include "OgdenElasticity.hpp"
+#include "NeoHookeanElasticityAutodiff.hpp"
 
 #include <polyfem/basis/Basis.hpp>
 
@@ -25,7 +26,7 @@ namespace polyfem::assembler
 	{
 		assert(size_ == 2 || size_ == 3);
 
-		formulation_.add_multimaterial(index, params);
+		formulation_.add_multimaterial(index, params, size());
 	}
 
 	template <typename ElasticFormulation>
@@ -64,10 +65,16 @@ namespace polyfem::assembler
 	void GenericElastic<ElasticFormulation>::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());
+		Eigen::MatrixXd stress_tensor(size(), size());
+
+		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
 
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
+		DiffScalarBase::setVariableCount(displacement_grad.size());
+
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> disp_grad(size(), size());
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -76,8 +83,19 @@ namespace polyfem::assembler
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
-			Eigen::MatrixXd stress_tensor;
-			formulation_.stress_from_disp_grad(size(), local_pts.row(p), vals.element_id, displacement_grad, stress_tensor);
+			for (int d1 = 0; d1 < size(); ++d1)
+			{
+				for (int d2 = 0; d2 < size(); ++d2)
+					disp_grad(d1, d2) = Diff(d1 * size() + d2, displacement_grad(d1, d2));
+			}
+
+			const auto val = formulation_.elastic_energy(size(), local_pts.row(p), vals.element_id, disp_grad);
+
+			for (int d1 = 0; d1 < size(); ++d1)
+			{
+				for (int d2 = 0; d2 < size(); ++d2)
+					stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
+			}
 
 			all.row(p) = fun(stress_tensor);
 		}
@@ -128,4 +146,6 @@ namespace polyfem::assembler
 
 	template class GenericElastic<MooneyRivlinElasticity>;
 	template class GenericElastic<OgdenElasticity>;
+	// for testing
+	template class GenericElastic<NeoHookeanAutodiff>;
 } // namespace polyfem::assembler
