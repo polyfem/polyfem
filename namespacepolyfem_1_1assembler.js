@@ -30,6 +30,7 @@ var namespacepolyfem_1_1assembler =
     [ "MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity" ],
     [ "MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", "classpolyfem_1_1assembler_1_1_multi_model" ],
     [ "NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity" ],
+    [ "NeoHookeanAutodiff", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff" ],
     [ "NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity" ],
     [ "NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", "classpolyfem_1_1assembler_1_1_n_l_assembler" ],
     [ "NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data" ],

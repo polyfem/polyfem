@@ -133,10 +133,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_ogden_el
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a301aaf2ef1203301f03aaa8a43e091da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a301aaf2ef1203301f03aaa8a43e091da">OgdenElasticity</a> ()</td></tr>
 <tr class="separator:a301aaf2ef1203301f03aaa8a43e091da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc5ee7a513fe138f90139222370530d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#afc5ee7a513fe138f90139222370530d8">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:afc5ee7a513fe138f90139222370530d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a809d197efaf3d604080852ebaa0f5a3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a809d197efaf3d604080852ebaa0f5a3f">stress_from_disp_grad</a> (const int size, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p, const int el_id, const Eigen::MatrixXd &amp;displacement_grad, Eigen::MatrixXd &amp;stress_tensor) const</td></tr>
-<tr class="separator:a809d197efaf3d604080852ebaa0f5a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dfc28065c169096024843d935bedf06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a1dfc28065c169096024843d935bedf06">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const int size)</td></tr>
+<tr class="separator:a1dfc28065c169096024843d935bedf06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c425f8d0dd4d9c595cdce65bbd32ed8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1c425f8d0dd4d9c595cdce65bbd32ed8"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a1c425f8d0dd4d9c595cdce65bbd32ed8">elastic_energy</a> (const int size, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p, const int el_id, const Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt; &amp;disp_grad) const</td></tr>
 <tr class="separator:a1c425f8d0dd4d9c595cdce65bbd32ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,13 +169,13 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">18</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00084">alphas_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00086">Ds_</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00085">mus_</a>.</p>
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00078">alphas_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00080">Ds_</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00079">mus_</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="afc5ee7a513fe138f90139222370530d8" name="afc5ee7a513fe138f90139222370530d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc5ee7a513fe138f90139222370530d8">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a1dfc28065c169096024843d935bedf06" name="a1dfc28065c169096024843d935bedf06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dfc28065c169096024843d935bedf06">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -192,7 +190,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -204,7 +208,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">29</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00084">alphas_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00086">Ds_</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00085">mus_</a>.</p>
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00078">alphas_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00080">Ds_</a>, and <a class="el" href="_ogden_elasticity_8hpp_source.html#l00079">mus_</a>.</p>
 
 </div>
 </div>
@@ -256,69 +260,13 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00033">33</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00027">27</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00084">alphas_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00086">Ds_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00085">mus_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
+<p class="reference">References <a class="el" href="_ogden_elasticity_8hpp_source.html#l00078">alphas_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00080">Ds_</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00079">mus_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_ogden_elasticity_a1c425f8d0dd4d9c595cdce65bbd32ed8_cgraph.svg" width="442" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="a809d197efaf3d604080852ebaa0f5a3f" name="a809d197efaf3d604080852ebaa0f5a3f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a809d197efaf3d604080852ebaa0f5a3f">&#9670;&#160;</a></span>stress_from_disp_grad()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::OgdenElasticity::stress_from_disp_grad </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>el_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>displacement_grad</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>stress_tensor</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8cpp_source.html#l00051">51</a> of file <a class="el" href="_ogden_elasticity_8cpp_source.html">OgdenElasticity.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_ogden_elasticity_a809d197efaf3d604080852ebaa0f5a3f_cgraph.svg" width="363" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -345,9 +293,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00084">84</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00078">78</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00033">elastic_energy()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">OgdenElasticity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00027">elastic_energy()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">OgdenElasticity()</a>.</p>
 
 </div>
 </div>
@@ -371,9 +319,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00086">86</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00080">80</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00033">elastic_energy()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">OgdenElasticity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00027">elastic_energy()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">OgdenElasticity()</a>.</p>
 
 </div>
 </div>
@@ -397,9 +345,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00085">85</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ogden_elasticity_8hpp_source.html#l00079">79</a> of file <a class="el" href="_ogden_elasticity_8hpp_source.html">OgdenElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00033">elastic_energy()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">OgdenElasticity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ogden_elasticity_8cpp_source.html#l00029">add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8hpp_source.html#l00027">elastic_energy()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00018">OgdenElasticity()</a>.</p>
 
 </div>
 </div>

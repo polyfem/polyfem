@@ -156,6 +156,7 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh3D::ncElem", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html", null ],
     [ "polyfem::mesh::NCMesh2D::ncVert", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html", null ],
     [ "polyfem::mesh::NCMesh3D::ncVert", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html", null ],
+    [ "polyfem::assembler::NeoHookeanAutodiff", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html", null ],
     [ "polyfem::assembler::NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", null ],
     [ "polyfem::assembler::NLAssembler< LocalAssembler >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
     [ "polyfem::assembler::NLAssembler< polyfem::assembler::GenericElastic< polyfem::assembler::MooneyRivlinElasticity > >", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", null ],
