@@ -185,30 +185,13 @@ namespace polyfem
 		}
 	} // namespace
 
-	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr)
+	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr) : Parameter(states_ptr)
 	{
-		name_ = "shape";
+		parameter_name_ = "shape";
+
+		dim = states_ptr_[0]->mesh->dimension();
 
 		const auto &gbases = states_ptr_[0]->geom_bases();
-
-		// volume constraint
-		has_volume_constraint = false;
-		for (const auto &param : opt_params["functionals"])
-		{
-			if (param["type"] == "stress" || param["type"] == "trajectory")
-			{
-				target_weight = param.value("weight", 1.0);
-			}
-			if (param["type"] == "volume_constraint")
-			{
-				volume_params = param;
-				has_volume_constraint = true;
-				j_volume = CompositeFunctional::create("Volume");
-				auto &func_volume = *dynamic_cast<VolumeFunctional *>(j_volume.get());
-				func_volume.set_max_volume(volume_params["soft_bound"][1]);
-				func_volume.set_min_volume(volume_params["soft_bound"][0]);
-			}
-		}
 
 		// mesh topology
 		states_ptr_[0]->get_vf(V_rest, elements);
@@ -233,23 +216,7 @@ namespace polyfem
 
 		// boundary smoothing
 		has_boundary_smoothing = false;
-		for (const auto &param : opt_params["functionals"])
-		{
-			if (param["type"] == "boundary_smoothing")
-			{
-				boundary_smoothing_params = param;
-
-				if (param["scale_invariant"].get<bool>())
-					boundary_smoother.p = boundary_smoothing_params.value("power", 2);
-				boundary_smoother.dim = dim;
-				boundary_smoother.build_laplacian(states_ptr_[0]->n_geom_bases, states_ptr_[0]->mesh->dimension(), collision_mesh.edges(), states_ptr_[0]->boundary_gnodes, fixed_nodes);
-				has_boundary_smoothing = true;
-				break;
-			}
-		}
-		if (!has_boundary_smoothing)
-			logger().warn("Shape optimization without boundary smoothing!");
-
+		json opt_params;
 		// SLIM
 		for (const auto &param : opt_params["parameters"])
 		{
@@ -278,8 +245,8 @@ namespace polyfem
 
 		if (shape_params["dimensions"].is_array())
 			free_dimension = shape_params["dimensions"].get<std::vector<bool>>();
-		if (free_dimension.size() < this->dim)
-			free_dimension.assign(this->dim, true);
+		if (free_dimension.size() < dim)
+			free_dimension.assign(dim, true);
 
 		// constraints on optimization
 		x_to_param = [this](const Eigen::VectorXd &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
@@ -407,7 +374,7 @@ namespace polyfem
 
 		V_rest = new_V;
 		param_to_x(new_x, new_V);
-		solution_changed(new_x);
+		pre_solve(new_x);
 	}
 
 	bool ShapeParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -454,12 +421,6 @@ namespace polyfem
 
 	void ShapeParameter::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		OptimizationProblem::line_search_begin(x0, x1);
-
-		x_at_ls_begin = x0;
-		if (!states_ptr_[0]->problem->is_time_dependent())
-			sol_at_ls_begin = states_ptr_[0]->diff_cached[0].u;
-
 		if (!has_collision)
 			return;
 
@@ -486,17 +447,6 @@ namespace polyfem
 
 	void ShapeParameter::post_step(const int iter_num, const Eigen::VectorXd &x0)
 	{
-		if (boundary_smoothing_params.contains("adjust_weight_period"))
-			if (iter % boundary_smoothing_params["adjust_weight_period"].get<int>() == 0 && iter > 0)
-			{
-				Eigen::VectorXd target_grad, smooth_grad;
-				target_gradient(x0, target_grad);
-				smooth_gradient(x0, smooth_grad);
-				boundary_smoothing_params["weight"] = target_grad.norm() / smooth_grad.norm() * boundary_smoothing_params["adjustment_coeff"].get<double>() * boundary_smoothing_params["weight"].get<double>();
-
-				logger().info("update smoothing weight to {}", boundary_smoothing_params["weight"]);
-			}
-
 		iter++;
 
 		if (has_collision)
@@ -737,8 +687,6 @@ namespace polyfem
 			state->stats.compute_mesh_stats(*states_ptr_[0]->mesh);
 			state->build_basis();
 
-			state->descent_direction.resize(0);
-
 			state->get_vf(V_rest, elements);
 		}
 		param_to_x(x, V_rest);
@@ -748,12 +696,6 @@ namespace polyfem
 
 		build_fixed_nodes();
 		build_tied_nodes();
-
-		cur_grad.resize(0);
-		cur_val = std::nan("");
-
-		sol_at_ls_begin.resize(0, 0);
-		x_at_ls_begin.resize(0);
 
 		boundary_smoother.build_laplacian(states_ptr_[0]->n_geom_bases, states_ptr_[0]->mesh->dimension(), collision_mesh.edges(), states_ptr_[0]->boundary_gnodes, fixed_nodes);
 
@@ -995,23 +937,6 @@ namespace polyfem
 					continue;
 
 				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0]));
-			}
-		}
-
-		// fix nodes based on problem setting
-		if (opt_params.contains("name") && opt_params["name"].get<std::string>() == "door")
-		{
-			for (int i = 0; i < V.rows(); i++)
-			{
-				// the boundary that touches the door
-				// if (V(i, 0) > -0.883353 && V(i, 0) < 0.177471 && V(i, 1) < 0.824529)
-				// 	fixed_nodes.insert(i);
-				// the handle of hook
-				if (V(i, 0) > 0.7647)
-					fixed_nodes.insert(i);
-				// the left end of hook, to not let it degenerate
-				// else if (V(i, 1) < 0.471 && V(i, 0) < -0.88 && V(i, 0) > -0.95)
-				// 	fixed_nodes.insert(i);
 			}
 		}
 

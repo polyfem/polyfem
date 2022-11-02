@@ -181,7 +181,8 @@ namespace polyfem
 		const json &get_shape_params() { return shape_params; }
 
 	private:
-		std::vector<std::shared_ptr<State>> states_ptr_;
+		int iter = 0;
+		int dim;
 
 		Eigen::MatrixXd V_rest;
 		Eigen::MatrixXi elements;
@@ -199,9 +200,7 @@ namespace polyfem
 		double target_weight = 1;
 
 		// volume constraints
-		bool has_volume_constraint;
 		json volume_params;
-		std::shared_ptr<CompositeFunctional> j_volume;
 
 		// boundary smoothing
 		bool has_boundary_smoothing;

@@ -33,12 +33,17 @@ namespace polyfem
 		virtual void post_step(const int iter_num, const Eigen::VectorXd &x0) = 0;
 
 		inline virtual void set_optimization_dim(const int optimization_dim) final { optimization_dim_ = optimization_dim; }
-		inline virtual int optimization_dim() final { return optimization_dim_; }
+		inline virtual int optimization_dim() final
+		{
+			if (optimization_dim_ <= 0)
+				log_and_throw_error("Invalid optimization dimension!");
+			return optimization_dim_;
+		}
 
 		inline virtual std::string name() const { return parameter_name_; }
 
-		virtual bool pre_solve(const Eigen::VectorXd &newX) = 0;
-		virtual void post_solve(const Eigen::VectorXd &newX) = 0;
+		virtual bool pre_solve(const Eigen::VectorXd &newX) { return true; }
+		virtual void post_solve(const Eigen::VectorXd &newX) {}
 
 		inline virtual bool remesh(Eigen::VectorXd &x) { return true; };
 
@@ -68,9 +73,10 @@ namespace polyfem
 			return max;
 		}
 
-	private:
+	protected:
 		std::vector<std::shared_ptr<State>> states_ptr_;
 		int optimization_dim_;
-		const std::string parameter_name_;
+		std::string parameter_name_;
+		double max_change_;
 	};
 } // namespace polyfem
