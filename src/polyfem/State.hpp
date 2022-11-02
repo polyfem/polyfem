@@ -629,13 +629,10 @@ namespace polyfem
 		double J_transient_step(const IntegrableFunctional &j, const int step);
 		// Aux functions for computing derivatives of different forces wrt. different parameters
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0) const;
-		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
-
 		// Derivatives wrt. an input functional J = \int j dx
 		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const SummableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		// For transient problems, Derivatives wrt. an input functional J = sum_i J_i, where J_i = \int j dx at time step i
 		void dJ_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_friction_transient(const IntegrableFunctional &j, double &one_form);

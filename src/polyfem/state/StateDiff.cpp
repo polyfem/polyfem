@@ -894,66 +894,6 @@ namespace polyfem
 			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, adjoint_solution);
 	}
 
-	void State::compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term)
-	{
-		const auto &gbases = geom_bases();
-		const int dim = mesh->dimension();
-
-		term.setZero(bases.size());
-		if (j.get_name() == "Mass")
-		{
-			for (int e = 0; e < bases.size(); e++)
-			{
-				assembler::ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-
-				term(e) += (quadrature.weights.array() * vals.det.array()).sum();
-			}
-		}
-		else if (j.get_name() == "Compliance")
-		{
-			const LameParameters &params = assembler.lame_params();
-			const auto &density_mat = params.density_mat_;
-			const double density_power = params.density_power_;
-			for (int e = 0; e < bases.size(); e++)
-			{
-				assembler::ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-
-				for (int q = 0; q < quadrature.weights.size(); q++)
-				{
-					double lambda, mu;
-					assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
-
-					Eigen::MatrixXd grad_u_q(dim, dim);
-					grad_u_q.setZero();
-					for (const auto &v : vals.basis_values)
-						for (int d = 0; d < dim; d++)
-						{
-							double coeff = 0;
-							for (const auto &g : v.global)
-								coeff += solution(g.index * dim + d) * g.val;
-							grad_u_q.row(d) += v.grad_t_m.row(q) * coeff;
-						}
-
-					Eigen::MatrixXd stress;
-					if (formulation() == "LinearElasticity")
-						stress = mu * (grad_u_q + grad_u_q.transpose()) + lambda * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-					else
-						logger().error("Unknown formulation!");
-
-					term(e) += density_power * pow(density_mat(e), density_power - 1) * (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
-				}
-			}
-		}
-		else
-			logger().error("Not supported functional type in topology optimization!");
-	}
-
 	void State::compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step) const
 	{
 		const auto &gbases = geom_bases();
@@ -1311,25 +1251,6 @@ namespace polyfem
 
 		one_form = elasticity_term;
 		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());
-	}
-
-	void State::dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
-	{
-		assert(!problem->is_time_dependent());
-		const auto &gbases = geom_bases();
-
-		Eigen::MatrixXd adjoint_sol;
-		solve_adjoint(j, adjoint_sol);
-
-		Eigen::VectorXd elasticity_term, functional_term;
-		if (j.depend_on_u() || j.depend_on_gradu())
-			solve_data.elastic_form->foce_topology_derivative(diff_cached[0].u, adjoint_sol, elasticity_term);
-		else
-			elasticity_term.setZero(bases.size());
-		compute_topology_derivative_functional_term(diff_cached[0].u, j, functional_term);
-
-		one_form = elasticity_term + functional_term;
-		logger().debug("topology derivative: elasticity: {}, functional: {}", elasticity_term.norm(), functional_term.norm());
 	}
 
 	void State::dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
@@ -1940,8 +1861,6 @@ namespace polyfem
 			dJ_material(j, grad);
 		else if (type == "shape")
 			dJ_shape(j, grad);
-		else if (type == "topology")
-			dJ_topology_static(j, grad);
 		else
 		{
 			assert(problem->is_time_dependent());
@@ -1957,7 +1876,7 @@ namespace polyfem
 				dJ_initial_condition(j, tmp);
 				grad = tmp.head(tmp.size() / 2);
 			}
-			else if (type == "initial-condition")
+			else if (type == "initial")
 				dJ_initial_condition(j, grad);
 			else if (type == "friction-coefficient")
 			{
@@ -1994,7 +1913,7 @@ namespace polyfem
 			dJ_initial_condition(js, dJi_dintegrals, tmp);
 			grad = tmp.head(tmp.size() / 2);
 		}
-		else if (type == "initial-condition")
+		else if (type == "initial")
 			dJ_initial_condition(js, dJi_dintegrals, grad);
 		else if (type == "friction-coefficient")
 		{

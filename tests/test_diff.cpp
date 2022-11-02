@@ -1028,7 +1028,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	Eigen::VectorXd velocity_discrete;
 	velocity_discrete.setOnes(2);
 
-	Eigen::VectorXd one_form = func.gradient(*state, "damping-parameter");
+	Eigen::VectorXd one_form = func.gradient(*state, "damping");
 
 	const double step_size = 1e-5;
 
@@ -1623,7 +1623,8 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -1.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	one_form = one_form.tail(one_form.size() / 2);
 
 	const double step_size = 1e-5;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -1770,7 +1771,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -1.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	one_form = one_form.tail(one_form.size() / 2);
 
 	const double step_size = 1e-6;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -1919,7 +1921,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	std::vector<Eigen::VectorXd> barycenters;
 	func_aux.get_barycenter_series(*state_reference, barycenters);
 
-	CenterXYTrajectoryFunctional func;
+	CenterTrajectoryFunctional func;
+	func.set_active_dimension({true, true, false});
 	func.set_interested_ids({1}, {});
 	func.set_center_series(barycenters);
 
@@ -1935,7 +1938,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -100.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	one_form = one_form.tail(one_form.size() / 2);
 
 	const double step_size = 1e-10;
 	state.initial_vel_update += velocity_discrete * step_size;

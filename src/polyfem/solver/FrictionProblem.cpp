@@ -66,7 +66,7 @@ namespace polyfem
 
 	void FrictionProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		gradv = j->gradient(state, "friction-coefficient") * target_weight;
+		gradv = j->gradient(state, "friction") * target_weight;
 	}
 
 	void FrictionProblem::gradient(const TVector &x, TVector &gradv)

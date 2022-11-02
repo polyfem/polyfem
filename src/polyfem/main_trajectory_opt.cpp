@@ -332,11 +332,11 @@ int main(int argc, char **argv)
 		else if (matching_type == "exact-center")
 			func = CompositeFunctional::create("CenterTrajectory");
 		else if (matching_type == "last-center")
-			func = CompositeFunctional::create("CenterXZTrajectory");
+			func = CompositeFunctional::create("CenterTrajectory");
 		else if (matching_type == "sine")
 			func = CompositeFunctional::create("TargetY");
 		else if (matching_type == "center-data")
-			func = CompositeFunctional::create("CenterXYTrajectory");
+			func = CompositeFunctional::create("CenterTrajectory");
 		else if (matching_type == "marker-data")
 			func = CompositeFunctional::create("NodeTrajectory");
 		else
@@ -416,7 +416,8 @@ int main(int argc, char **argv)
 	}
 	else if (matching_type == "last-center")
 	{
-		auto &f = *dynamic_cast<CenterXZTrajectoryFunctional *>(func.get());
+		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
+		f.set_active_dimension({true, false, true});
 		f.set_transient_integral_type("final");
 		std::vector<Eigen::VectorXd> barycenters(1);
 		barycenters[0] = target_position;
@@ -434,7 +435,8 @@ int main(int argc, char **argv)
 	}
 	else if (matching_type == "center-data")
 	{
-		auto &f = *dynamic_cast<CenterXYTrajectoryFunctional *>(func.get());
+		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
+		f.set_active_dimension({true, true, false});
 		std::ifstream infile(target_path);
 		std::vector<Eigen::VectorXd> centers;
 		double x = 0, y = 0;
