@@ -1624,7 +1624,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	}
 
 	Eigen::VectorXd one_form = func.gradient(state, "initial");
-	one_form = one_form.tail(one_form.size() / 2);
+	one_form = one_form.tail(one_form.size() / 2).eval();
 
 	const double step_size = 1e-5;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -1772,7 +1772,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	}
 
 	Eigen::VectorXd one_form = func.gradient(state, "initial");
-	one_form = one_form.tail(one_form.size() / 2);
+	one_form = one_form.tail(one_form.size() / 2).eval();
 
 	const double step_size = 1e-6;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -1939,7 +1939,7 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	}
 
 	Eigen::VectorXd one_form = func.gradient(state, "initial");
-	one_form = one_form.tail(one_form.size() / 2);
+	one_form = one_form.tail(one_form.size() / 2).eval();
 
 	const double step_size = 1e-10;
 	state.initial_vel_update += velocity_discrete * step_size;
