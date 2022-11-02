@@ -12,13 +12,13 @@
 #include <iostream>
 #include <vector>
 
-// non linear MooneyRivlin material model
+/// Used for test only
 namespace polyfem::assembler
 {
-	class MooneyRivlinElasticity
+	class NeoHookeanAutodiff
 	{
 	public:
-		MooneyRivlinElasticity();
+		NeoHookeanAutodiff();
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const int size);
@@ -31,30 +31,21 @@ namespace polyfem::assembler
 		{
 			const double t = 0; // TODO
 
-			const double c1 = c1_(p, t, el_id);
-			const double c2 = c2_(p, t, el_id);
-			const double k = k_(p, t, el_id);
-
+			// Id + grad d
 			auto def_grad = disp_grad;
 			for (int d = 0; d < size; ++d)
 				def_grad(d, d) += T(1);
 
-			const T det_j = polyfem::utils::determinant(def_grad);
-			const T log_det_j = log(det_j);
+			double lambda, mu;
+			params_.lambda_mu(p, p, el_id, lambda, mu);
 
-			const auto F_tilde = def_grad / pow(det_j, 1 / 3.0);
-			const auto C_tilde = F_tilde * F_tilde.transpose();
-			const auto I1_tilde = first_invariant(C_tilde);
-			const auto I2_tilde = second_invariant(C_tilde);
-
-			const T val = c1 * (I1_tilde - size) + c2 * (I2_tilde - size) + k / 2 * (log_det_j * log_det_j);
+			const T log_det_j = log(polyfem::utils::determinant(def_grad));
+			const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 
 			return val;
 		}
 
 	private:
-		GenericMatParam c1_;
-		GenericMatParam c2_;
-		GenericMatParam k_;
+		LameParameters params_;
 	};
 } // namespace polyfem::assembler

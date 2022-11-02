@@ -26,7 +26,7 @@ namespace polyfem::assembler
 		Ds_.setOnes();
 	}
 
-	void OgdenElasticity::add_multimaterial(const int index, const json &params)
+	void OgdenElasticity::add_multimaterial(const int index, const json &params, const int size)
 	{
 		if (params.count("alphas"))
 		{

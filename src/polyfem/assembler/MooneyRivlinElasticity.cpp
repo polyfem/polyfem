@@ -9,7 +9,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void MooneyRivlinElasticity::add_multimaterial(const int index, const json &params)
+	void MooneyRivlinElasticity::add_multimaterial(const int index, const json &params, const int size)
 	{
 		c1_.add_multimaterial(index, params);
 		c2_.add_multimaterial(index, params);
