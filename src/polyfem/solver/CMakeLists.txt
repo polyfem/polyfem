@@ -51,10 +51,15 @@ set(SOURCES
 	AdjointNLProblem.cpp
 	Parameter.hpp
 	ControlParameter.hpp
+	ControlParameter.cpp
 	ShapeParameter.hpp
+	ShapeParameter.cpp
 	DampingParameter.hpp
+	DampingParameter.cpp
 	FrictionParameter.hpp
+	FrictionParameter.cpp
 	ElasticParameter.hpp
+	ElasticParameter.cpp
 	InitialConditionParameter.hpp
 	TopologyOptimizationParameter.hpp
 )
@@ -63,8 +68,8 @@ prepend_current_path(SOURCES)
 polyfem_set_source_group(${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
-################################################################################
+# ###############################################################################
 # Subfolders
-################################################################################
+# ###############################################################################
 add_subdirectory(line_search)
 add_subdirectory(forms)
