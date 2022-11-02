@@ -104,8 +104,6 @@ namespace polyfem
 
 		std::shared_ptr<CompositeFunctional> j;
 
-		TVector descent_direction;
-
 		json opt_nonlinear_params;
 		json opt_output_params;
 		json opt_params;

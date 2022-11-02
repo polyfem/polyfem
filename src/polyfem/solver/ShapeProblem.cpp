@@ -866,8 +866,6 @@ namespace polyfem
 		state.stats.compute_mesh_stats(*state.mesh);
 		state.build_basis();
 
-		state.descent_direction.resize(0);
-
 		state.get_vf(V_rest, elements);
 		param_to_x(x, V_rest);
 

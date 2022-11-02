@@ -600,8 +600,6 @@ namespace polyfem
 				return -1;
 			}
 		}
-		// one_form, for export use
-		Eigen::VectorXd descent_direction;
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian_nonlinear(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;

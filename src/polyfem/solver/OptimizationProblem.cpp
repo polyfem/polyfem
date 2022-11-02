@@ -150,6 +150,7 @@ namespace polyfem
 
 	void OptimizationProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
+		TVector descent_direction;
 		descent_direction = x1 - x0;
 
 		// debug

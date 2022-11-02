@@ -308,7 +308,7 @@ namespace {
 						continue;
 
 					params["node"] = g.index;
-					params["elem"] = -1;
+					params["elem"] = e;
 					params["body_id"] = state.mesh->get_body_id(e);
 					params["boundary_id"] = -1;
 					Eigen::MatrixXd val;
@@ -1027,7 +1027,7 @@ namespace {
 						continue;
 
 					params["node"] = g.index;
-					params["elem"] = -1;
+					params["elem"] = e;
 					params["body_id"] = state.mesh->get_body_id(e);
 					params["boundary_id"] = -1;
 					Eigen::MatrixXd val;
@@ -1144,5 +1144,162 @@ namespace {
 		compute_topology_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, spatial_integral_type, functional_term);
 
 		one_form = elasticity_term + functional_term;
+	}
+
+	double AdjointForm::value(
+		const State &state,
+		const std::vector<IntegrableFunctional> &j, 
+		const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
+		const std::set<int> &interested_ids, // either body id or surface id
+		const SpatialIntegralType spatial_integral_type,
+		const std::string &transient_integral_type)
+	{
+		if (state.problem->is_time_dependent())
+			return integrate_objective_transient(state, j, Ji, interested_ids, spatial_integral_type, transient_integral_type);
+		else
+			return integrate_objective(state, j, Ji, state.diff_cached[0].u, interested_ids, spatial_integral_type);
+	}
+
+	void AdjointForm::gradient(
+		const State &state,
+		const std::vector<IntegrableFunctional> &j, 
+		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
+		const std::string &param,
+		Eigen::VectorXd &grad,
+		const std::set<int> &interested_ids, // either body id or surface id
+		const SpatialIntegralType spatial_integral_type,
+		const std::string &transient_integral_type)
+	{
+		if (state.problem->is_time_dependent())
+		{
+			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
+			std::vector<Eigen::VectorXd> adjoint_rhs;
+			dJ_du_transient(state, j, dJi_dintegrals, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
+			state.solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, param == "dirichlet");
+			if (param == "material")
+				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "friction")
+				dJ_friction_transient(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "damping")
+				dJ_damping_transient(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "initial")
+				dJ_initial_condition(state, adjoint_nu, adjoint_p, grad);
+			else if (param == "dirichlet")
+				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, grad);
+			else
+				log_and_throw_error("Unknown design parameter!");
+		}
+		else
+		{
+			Eigen::MatrixXd adjoint;
+			Eigen::VectorXd adjoint_rhs;
+			dJ_du_step(state, j, dJi_dintegrals, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
+			state.solve_adjoint(adjoint_rhs, adjoint);
+			if (param == "material")
+				dJ_material_static(state, state.diff_cached[0].u, adjoint, grad);
+			else
+				log_and_throw_error("Unknown design parameter!");
+		}
+	}
+
+	double AdjointForm::integrate_objective(
+		const State &state, 
+		const std::vector<IntegrableFunctional> &j, 
+		const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
+		const Eigen::MatrixXd &solution,
+		const std::set<int> &interested_ids, // either body id or surface id
+		const SpatialIntegralType spatial_integral_type,
+		const int cur_step)
+	{
+        const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
+
+		json param;
+		param["t"] = cur_step * dt;
+		param["step"] = cur_step;
+
+		Eigen::VectorXd integrals(j.size());
+		for (int k = 0; k < j.size(); k++)
+			integrals(k) = integrate_objective(state, j[k], solution, interested_ids, spatial_integral_type, cur_step);
+
+		return Ji(integrals, param);
+	}
+
+	double AdjointForm::integrate_objective_transient(
+		const State &state, 
+		const std::vector<IntegrableFunctional> &j, 
+		const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
+		const std::set<int> &interested_ids,
+		const SpatialIntegralType spatial_integral_type,
+		const std::string &transient_integral_type)
+	{
+		const double dt = state.args["time"]["dt"];
+		const int n_steps = state.args["time"]["time_steps"];
+		double result = 0;
+
+		std::vector<double> weights;
+		get_transient_quadrature_weights(transient_integral_type, n_steps, dt, weights);
+		for (int i = 0; i <= n_steps; ++i)
+		{
+			if (weights[i] == 0)
+				continue;
+			result += weights[i] * integrate_objective(state, j, Ji, state.diff_cached[i].u, interested_ids, spatial_integral_type, i);
+		}
+
+		return result;
+	}
+
+	void AdjointForm::dJ_du_step(
+		const State &state,
+		const std::vector<IntegrableFunctional> &j, 
+		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
+		const Eigen::MatrixXd &solution,
+		const std::set<int> &interested_ids,
+		const SpatialIntegralType spatial_integral_type,
+		const int cur_step,
+		Eigen::VectorXd &term)
+	{
+		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
+        const int dim = state.mesh->dimension();
+		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
+
+		Eigen::VectorXd integrals(j.size());
+		for (int k = 0; k < j.size(); k++)
+			integrals(k) = integrate_objective(state, j[k], solution, interested_ids, spatial_integral_type, cur_step);
+
+		json param;
+		param["t"] = cur_step * dt;
+		param["step"] = cur_step;
+		Eigen::VectorXd outer_grad = dJi_dintegrals(integrals, param);
+
+		term = Eigen::MatrixXd::Zero(state.n_bases * actual_dim, 1);
+		Eigen::VectorXd tmp;
+		for (int k = 0; k < j.size(); k++)
+		{
+			dJ_du_step(state, j[k], solution, interested_ids, spatial_integral_type, cur_step, tmp);
+			term += outer_grad(k) * tmp;
+		}
+	}
+	
+	void AdjointForm::dJ_du_transient(
+		const State &state,
+		const std::vector<IntegrableFunctional> &j,
+		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
+		const std::set<int> &interested_ids,
+		const SpatialIntegralType spatial_integral_type,
+		const std::string &transient_integral_type,
+		std::vector<Eigen::VectorXd> &terms)
+	{
+		const double dt = state.args["time"]["dt"];
+		const int time_steps = state.args["time"]["time_steps"];
+
+		terms.resize(time_steps + 1);
+
+		std::vector<double> weights;
+		get_transient_quadrature_weights(transient_integral_type, time_steps, dt, weights);
+		for (int i = time_steps; i >= 0; --i)
+		{
+			dJ_du_step(state, j, dJi_dintegrals, state.diff_cached[i].u, interested_ids, spatial_integral_type, i, terms[i]);
+			terms[i] *= weights[i];
+		}
 	}
 }
