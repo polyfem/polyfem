@@ -74,16 +74,6 @@ void run_trajectory_opt(const std::string &name)
 			func = CompositeFunctional::create("Trajectory");
 		else if (matching_type == "sdf")
 			func = CompositeFunctional::create("SDFTrajectory");
-		else if (matching_type == "exact-center")
-			func = CompositeFunctional::create("CenterTrajectory");
-		else if (matching_type == "last-center")
-			func = CompositeFunctional::create("CenterXZTrajectory");
-		else if (matching_type == "sine")
-			func = CompositeFunctional::create("TargetY");
-		else if (matching_type == "center-data")
-			func = CompositeFunctional::create("CenterXYTrajectory");
-		else if (matching_type == "marker-data")
-			func = CompositeFunctional::create("NodeTrajectory");
 		else
 			logger().error("Invalid matching type!");
 	}

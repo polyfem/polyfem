@@ -78,7 +78,7 @@ namespace polyfem
 
 	void DampingProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		gradv = j->gradient(state, "damping-parameter") * target_weight;
+		gradv = j->gradient(state, "damping") * target_weight;
 	}
 
 	void DampingProblem::gradient(const TVector &x, TVector &gradv)

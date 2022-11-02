@@ -26,8 +26,8 @@ namespace polyfem
 		const std::set<int> &get_interested_body_ids() { return interested_body_ids_; }
 		const std::set<int> &get_interested_boundary_ids() { return interested_boundary_ids_; }
 
-		virtual double energy(State &state) = 0;
-		virtual Eigen::VectorXd gradient(State &state, const std::string &type) = 0;
+		virtual double energy(State &state);
+		virtual Eigen::VectorXd gradient(State &state, const std::string &type);
 
 	protected:
 		std::string functional_name;
@@ -37,6 +37,8 @@ namespace polyfem
 		std::string transient_integral_type = "uniform";
 		std::set<int> interested_body_ids_;
 		std::set<int> interested_boundary_ids_;
+
+		virtual IntegrableFunctional get_target_functional(const std::string &type = "") { return IntegrableFunctional(); };
 	};
 
 	class TargetYFunctional : public CompositeFunctional
@@ -54,14 +56,11 @@ namespace polyfem
 		void set_target_function(std::function<double(const double x)> target_y_) { target_y = target_y_; }
 		void set_target_function_derivative(std::function<double(const double x)> target_y_derivative_) { target_y_derivative = target_y_derivative_; }
 
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
 	private:
 		std::function<double(const double x)> target_y;
 		std::function<double(const double x)> target_y_derivative;
 
-		IntegrableFunctional get_target_y_functional();
+		IntegrableFunctional get_target_functional(const std::string &type) override;
 	};
 
 	class TrajectoryFunctional : public CompositeFunctional
@@ -75,16 +74,13 @@ namespace polyfem
 		}
 		~TrajectoryFunctional() = default;
 
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
 		void set_reference(State *state_ref, const State &state, const std::set<int> &reference_cached_body_ids);
 
 	private:
 		State *state_ref_;
 		std::map<int, int> e_to_ref_e_;
 
-		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
+		IntegrableFunctional get_target_functional(const std::string &type) override;
 	};
 
 	class SDFTrajectoryFunctional : public CompositeFunctional
@@ -115,9 +111,6 @@ namespace polyfem
 		}
 		~SDFTrajectoryFunctional() = default;
 
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
 		void set_spline_target(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &tangents, const Eigen::MatrixXd &delta)
 		{
 			control_points_ = control_points;
@@ -133,7 +126,7 @@ namespace polyfem
 		void bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
 
 	private:
-		IntegrableFunctional get_trajectory_functional(const std::string &derivative_type);
+		IntegrableFunctional get_target_functional(const std::string &type) override;
 
 		int dim;
 		double t_cached;
@@ -232,11 +225,8 @@ namespace polyfem
 		}
 		~HeightFunctional() = default;
 
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
 	private:
-		IntegrableFunctional get_height_functional();
+		IntegrableFunctional get_target_functional(const std::string &type);
 	};
 
 	class StressFunctional : public CompositeFunctional
@@ -313,6 +303,7 @@ namespace polyfem
 			functional_name = "CenterTrajectory";
 			surface_integral = false;
 			transient_integral_type = "uniform";
+			flags_.assign(3, true);
 		}
 		~CenterTrajectoryFunctional() = default;
 
@@ -320,76 +311,12 @@ namespace polyfem
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;
 
 		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
+		void set_active_dimension(const std::vector<bool> &flags) { flags_ = flags; }
 
 		void get_barycenter_series(State &state, std::vector<Eigen::VectorXd> &barycenters);
 
 	private:
-		std::vector<Eigen::VectorXd> target_series;
-		IntegrableFunctional get_volume_functional();
-		IntegrableFunctional get_center_trajectory_functional(const int d);
-	};
-
-	class CenterXYTrajectoryFunctional : public CompositeFunctional
-	{
-	public:
-		CenterXYTrajectoryFunctional()
-		{
-			functional_name = "CenterXYTrajectory";
-			surface_integral = false;
-			transient_integral_type = "uniform";
-		}
-		~CenterXYTrajectoryFunctional() = default;
-
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
-		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
-
-	private:
-		std::vector<Eigen::VectorXd> target_series;
-		IntegrableFunctional get_volume_functional();
-		IntegrableFunctional get_center_trajectory_functional(const int d);
-	};
-
-	class CenterXZTrajectoryFunctional : public CompositeFunctional
-	{
-	public:
-		CenterXZTrajectoryFunctional()
-		{
-			functional_name = "CenterXZTrajectory";
-			surface_integral = false;
-			transient_integral_type = "uniform";
-		}
-		~CenterXZTrajectoryFunctional() = default;
-
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
-		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
-
-	private:
-		std::vector<Eigen::VectorXd> target_series;
-		IntegrableFunctional get_volume_functional();
-		IntegrableFunctional get_center_trajectory_functional(const int d);
-	};
-
-	class CenterZTrajectoryFunctional : public CompositeFunctional
-	{
-	public:
-		CenterZTrajectoryFunctional()
-		{
-			functional_name = "CenterZTrajectory";
-			surface_integral = false;
-			transient_integral_type = "uniform";
-		}
-		~CenterZTrajectoryFunctional() = default;
-
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
-		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
-
-	private:
+		std::vector<bool> flags_;
 		std::vector<Eigen::VectorXd> target_series;
 		IntegrableFunctional get_volume_functional();
 		IntegrableFunctional get_center_trajectory_functional(const int d);

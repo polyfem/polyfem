@@ -394,72 +394,6 @@ namespace polyfem
 		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
 	}
 
-	/**
-	 * @brief Computes a volume integral of a given functional over the current mesh and returns it.
-	 *
-	 * @param j Functional to integrate over the volume of the mesh. Takes in the global points, solution, grad of solution and parameters.
-	 */
-	double State::J_static(const IntegrableFunctional &j)
-	{
-		const auto &gbases = geom_bases();
-		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		double result = 0;
-		if (j.is_volume_integral())
-		{
-			VolumeIntegrandTerms integrand_functions = {
-				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, Eigen::VectorXd &vec_term) {
-					Eigen::MatrixXd u, grad_u;
-					if (j.depend_on_u() || j.depend_on_gradu())
-						// io::Evaluator::interpolate_at_local_vals(*mesh, e, reference_points, sol, u, grad_u);
-						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[0].u, u, grad_u);
-					else
-					{
-						u.setZero(reference_points.rows(), actual_dim);
-						grad_u.setZero(reference_points.rows(), actual_dim * reference_points.cols());
-					}
-					Eigen::MatrixXd vec_term_mat;
-					json params = {};
-					params["elem"] = e;
-					params["body_id"] = mesh->get_body_id(e);
-					j.evaluate(assembler.lame_params(), reference_points, global_points, u, grad_u, params, vec_term_mat);
-					assert(vec_term.cols() == 1);
-					vec_term = vec_term_mat;
-				}};
-
-			volume_integral(bases, gbases, integrand_functions, *mesh, result);
-		}
-		else
-		{
-			SurfaceIntegrandTerms integrand_functions = {
-				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
-					Eigen::MatrixXd u, grad_u;
-					if (j.depend_on_u() || j.depend_on_gradu())
-						// io::Evaluator::interpolate_at_local_vals(*mesh, e, reference_points, sol, u, grad_u);
-						io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[0].u, u, grad_u);
-					else
-					{
-						u.setZero(reference_points.rows(), actual_dim);
-						grad_u.setZero(reference_points.rows(), actual_dim * reference_points.cols());
-					}
-					std::vector<int> boundary_ids = {};
-					for (int i = 0; i < global_primitive_ids.size(); ++i)
-						boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
-					json params = {};
-					params["elem"] = e;
-					params["body_id"] = mesh->get_body_id(e);
-					params["boundary_ids"] = boundary_ids;
-					Eigen::MatrixXd vec_term_mat;
-					j.evaluate(assembler.lame_params(), reference_points, global_points, u, grad_u, params, vec_term_mat);
-					assert(vec_term.cols() == 1);
-					vec_term = vec_term_mat;
-				}};
-
-			surface_integral(total_local_boundary, args["space"]["advanced"]["quadrature_order"], bases, gbases, integrand_functions, *mesh, result);
-		}
-		return result;
-	}
-
 	double State::J_transient_step(const IntegrableFunctional &j, const int step)
 	{
 		const auto &gbases = geom_bases();
@@ -507,24 +441,6 @@ namespace polyfem
 				}};
 
 			surface_integral(total_local_boundary, args["space"]["advanced"]["quadrature_order"], bases, gbases, integrand_functions, *mesh, result);
-		}
-
-		return result;
-	}
-
-	double State::J_transient(const IntegrableFunctional &j)
-	{
-		const double dt = args["time"]["dt"];
-		const int n_steps = args["time"]["time_steps"];
-		double result = 0;
-
-		std::vector<double> weights;
-		j.get_transient_quadrature_weights(n_steps, dt, weights);
-		for (int i = 0; i <= n_steps; ++i)
-		{
-			if (weights[i] == 0)
-				continue;
-			result += weights[i] * J_transient_step(j, i);
 		}
 
 		return result;
@@ -894,66 +810,6 @@ namespace polyfem
 			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, adjoint_solution);
 	}
 
-	void State::compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term)
-	{
-		const auto &gbases = geom_bases();
-		const int dim = mesh->dimension();
-
-		term.setZero(bases.size());
-		if (j.get_name() == "Mass")
-		{
-			for (int e = 0; e < bases.size(); e++)
-			{
-				assembler::ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-
-				term(e) += (quadrature.weights.array() * vals.det.array()).sum();
-			}
-		}
-		else if (j.get_name() == "Compliance")
-		{
-			const LameParameters &params = assembler.lame_params();
-			const auto &density_mat = params.density_mat_;
-			const double density_power = params.density_power_;
-			for (int e = 0; e < bases.size(); e++)
-			{
-				assembler::ElementAssemblyValues vals;
-				ass_vals_cache.compute(e, mesh->is_volume(), bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-
-				for (int q = 0; q < quadrature.weights.size(); q++)
-				{
-					double lambda, mu;
-					assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
-
-					Eigen::MatrixXd grad_u_q(dim, dim);
-					grad_u_q.setZero();
-					for (const auto &v : vals.basis_values)
-						for (int d = 0; d < dim; d++)
-						{
-							double coeff = 0;
-							for (const auto &g : v.global)
-								coeff += solution(g.index * dim + d) * g.val;
-							grad_u_q.row(d) += v.grad_t_m.row(q) * coeff;
-						}
-
-					Eigen::MatrixXd stress;
-					if (formulation() == "LinearElasticity")
-						stress = mu * (grad_u_q + grad_u_q.transpose()) + lambda * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-					else
-						logger().error("Unknown formulation!");
-
-					term(e) += density_power * pow(density_mat(e), density_power - 1) * (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
-				}
-			}
-		}
-		else
-			logger().error("Not supported functional type in topology optimization!");
-	}
-
 	void State::compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step) const
 	{
 		const auto &gbases = geom_bases();
@@ -1311,25 +1167,6 @@ namespace polyfem
 
 		one_form = elasticity_term;
 		logger().debug("material derivative: elasticity: {}", elasticity_term.norm());
-	}
-
-	void State::dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
-	{
-		assert(!problem->is_time_dependent());
-		const auto &gbases = geom_bases();
-
-		Eigen::MatrixXd adjoint_sol;
-		solve_adjoint(j, adjoint_sol);
-
-		Eigen::VectorXd elasticity_term, functional_term;
-		if (j.depend_on_u() || j.depend_on_gradu())
-			solve_data.elastic_form->foce_topology_derivative(diff_cached[0].u, adjoint_sol, elasticity_term);
-		else
-			elasticity_term.setZero(bases.size());
-		compute_topology_derivative_functional_term(diff_cached[0].u, j, functional_term);
-
-		one_form = elasticity_term + functional_term;
-		logger().debug("topology derivative: elasticity: {}, functional: {}", elasticity_term.norm(), functional_term.norm());
 	}
 
 	void State::dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form)
@@ -1933,46 +1770,6 @@ namespace polyfem
 
 		return grad;
 	}
-	Eigen::VectorXd State::integral_gradient(const IntegrableFunctional &j, const std::string &type)
-	{
-		Eigen::VectorXd grad;
-		if (type == "material")
-			dJ_material(j, grad);
-		else if (type == "shape")
-			dJ_shape(j, grad);
-		else if (type == "topology")
-			dJ_topology_static(j, grad);
-		else
-		{
-			assert(problem->is_time_dependent());
-			if (type == "initial-velocity")
-			{
-				Eigen::VectorXd tmp;
-				dJ_initial_condition(j, tmp);
-				grad = tmp.tail(tmp.size() / 2);
-			}
-			else if (type == "initial-position")
-			{
-				Eigen::VectorXd tmp;
-				dJ_initial_condition(j, tmp);
-				grad = tmp.head(tmp.size() / 2);
-			}
-			else if (type == "initial-condition")
-				dJ_initial_condition(j, grad);
-			else if (type == "friction-coefficient")
-			{
-				grad.resize(1);
-				dJ_friction_transient(j, grad(0));
-			}
-			else if (type == "damping-parameter")
-				dJ_damping_transient(j, grad);
-			else if (type == "dirichlet")
-				dJ_dirichlet_transient(j, grad);
-			else
-				log_and_throw_error("Unknown derivative type!");
-		}
-		return grad;
-	}
 	Eigen::VectorXd State::integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type)
 	{
 		assert(problem->is_time_dependent() && diff_cached.size() > 0);
@@ -1994,7 +1791,7 @@ namespace polyfem
 			dJ_initial_condition(js, dJi_dintegrals, tmp);
 			grad = tmp.head(tmp.size() / 2);
 		}
-		else if (type == "initial-condition")
+		else if (type == "initial")
 			dJ_initial_condition(js, dJi_dintegrals, grad);
 		else if (type == "friction-coefficient")
 		{

@@ -57,6 +57,13 @@ namespace polyfem::solver
 			const bool is_volume_integral,
 			const std::string &transient_integral_type,
 			std::vector<Eigen::VectorXd> &terms);
+		static void compute_topology_derivative_functional_term(
+			const State &state,
+			const Eigen::MatrixXd &solution, 
+			const IntegrableFunctional &j, 
+			const std::set<int> &interested_ids, // either body id or surface id 
+			const bool is_volume_integral,
+			Eigen::VectorXd &term);
 		static void compute_shape_derivative_functional_term(
 			const State &state,
 			const Eigen::MatrixXd &solution, 
@@ -65,6 +72,14 @@ namespace polyfem::solver
 			const bool is_volume_integral,
 			Eigen::VectorXd &term, 
 			const int cur_time_step);
+		static void dJ_topology_static(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			const IntegrableFunctional &j,
+			const std::set<int> &interested_ids,
+			const bool is_volume_integral,
+			Eigen::VectorXd &one_form);
 		static void dJ_shape_static(
 			const State &state,
 			const Eigen::MatrixXd &sol,

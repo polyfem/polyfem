@@ -51,7 +51,7 @@ namespace polyfem
 
 	void InitialConditionProblem::target_gradient(const TVector &x, TVector &gradv)
 	{
-		TVector tmp = j->gradient(state, "initial-condition");
+		TVector tmp = j->gradient(state, "initial");
 
 		Eigen::MatrixXd init_sol(tmp.size() / 2, 1), init_vel(tmp.size() / 2, 1);
 		for (int i = 0; i < init_sol.size(); i++)

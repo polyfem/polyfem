@@ -1,5 +1,5 @@
 #include "TopologyOptimizationProblem.hpp"
-
+#include <polyfem/solver/AdjointForm.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -213,12 +213,12 @@ namespace polyfem
 	{
 		IntegrableFunctional j;
 		j.set_name("Mass");
-		j.set_transient_integral_type("final");
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 			val *= params["density"].get<double>();
 		});
-		TVector grad = state.integral_gradient(j, "topology");
+		TVector grad;
+		polyfem::solver::AdjointForm::gradient(state, j, "topology", grad, {}, true, "final");
 		grad = apply_filter_to_grad(x, grad);
 		if (index == 0)
 		{

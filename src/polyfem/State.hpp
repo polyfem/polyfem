@@ -617,25 +617,15 @@ namespace polyfem
 		// Change geometric node positions
 		void set_v(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
-		// Computes the integral of a given functional J = \int j dx
-		double J(const IntegrableFunctional &j)
-		{
-			// assert((problem->is_time_dependent() && diff_cached.size() > 0) || (!problem->is_time_dependent() && sol.size() > 0));
-			return problem->is_time_dependent() ? J_transient(j) : J_static(j);
-		}
-		double J_static(const IntegrableFunctional &j);
+
 		double J_static(const SummableFunctional &j);
-		double J_transient(const IntegrableFunctional &j);
 		double J_transient_step(const IntegrableFunctional &j, const int step);
 		// Aux functions for computing derivatives of different forces wrt. different parameters
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0) const;
-		void compute_topology_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term);
-
 		// Derivatives wrt. an input functional J = \int j dx
 		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_material_static(const SummableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_topology_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		// For transient problems, Derivatives wrt. an input functional J = sum_i J_i, where J_i = \int j dx at time step i
 		void dJ_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		void dJ_friction_transient(const IntegrableFunctional &j, double &one_form);
@@ -657,7 +647,6 @@ namespace polyfem
 
 		// unify everything
 		Eigen::VectorXd sum_gradient(const SummableFunctional &j, const std::string &type);
-		Eigen::VectorXd integral_gradient(const IntegrableFunctional &j, const std::string &type);
 		Eigen::VectorXd integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type);
 
 		// Alters the mesh for a given discrete perturbation (vector) field over the vertices

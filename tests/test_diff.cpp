@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
 #include <polyfem/utils/CompositeFunctional.hpp>
-
+#include <polyfem/solver/AdjointForm.hpp>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -29,7 +29,7 @@ void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
 
 std::shared_ptr<State> create_state_and_solve(const json &args)
 {
-	std::shared_ptr<State> state = std::make_shared<State>();
+	std::shared_ptr<State> state = std::make_shared<State>(1);
 	state->init_logger("", spdlog::level::level_enum::err, false);
 	state->init(args, false);
 	state->load_mesh();
@@ -174,7 +174,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 		}
 		return vel;
 	};
-	double functional_val = state.J_static(j);
+	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, true, "");
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
@@ -190,7 +190,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = state.J_static(j);
+	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, true, "");
 
 	double finite_difference = (new_functional_val - functional_val) / t;
 
@@ -304,7 +304,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 		return vel;
 	};
 
-	double functional_val = state.J_static(j);
+	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
@@ -320,7 +320,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = state.J_static(j);
+	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
 
 	double finite_difference = (new_functional_val - functional_val) / t;
 
@@ -427,7 +427,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 		return vel;
 	};
 
-	double functional_val = state.J_static(j);
+	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
@@ -443,13 +443,13 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = state.J_static(j);
+	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
 
 	state.perturb_mesh(velocity_discrete * (-2 * t));
 
 	solve_pde(state);
 
-	double old_functional_val = state.J_static(j);
+	double old_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
 
 	double finite_difference = (new_functional_val - old_functional_val) / t / 2;
 	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << old_functional_val << " f(x+dt) " << new_functional_val << "\n";
@@ -1028,7 +1028,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	Eigen::VectorXd velocity_discrete;
 	velocity_discrete.setOnes(2);
 
-	Eigen::VectorXd one_form = func.gradient(*state, "damping-parameter");
+	Eigen::VectorXd one_form = func.gradient(*state, "damping");
 
 	const double step_size = 1e-5;
 
@@ -1623,7 +1623,8 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -1.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	one_form = one_form.tail(one_form.size() / 2);
 
 	const double step_size = 1e-5;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -1770,7 +1771,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -1.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	one_form = one_form.tail(one_form.size() / 2);
 
 	const double step_size = 1e-6;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -1919,7 +1921,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 	std::vector<Eigen::VectorXd> barycenters;
 	func_aux.get_barycenter_series(*state_reference, barycenters);
 
-	CenterXYTrajectoryFunctional func;
+	CenterTrajectoryFunctional func;
+	func.set_active_dimension({true, true, false});
 	func.set_interested_ids({1}, {});
 	func.set_center_series(barycenters);
 
@@ -1935,7 +1938,8 @@ TEST_CASE("barycenter-height", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -100.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial-velocity");
+	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	one_form = one_form.tail(one_form.size() / 2);
 
 	const double step_size = 1e-10;
 	state.initial_vel_update += velocity_discrete * step_size;
@@ -2291,21 +2295,12 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 			{
 				"mesh": "",
 				"transformation": {
-					"translation": [
-						0,
-						0
-					],
-					"rotation": 0,
 					"scale": [
 						2,
 						1
 					]
 				},
 				"volume_selection": 1,
-				"n_refs": 0,
-				"advanced": {
-					"normalize_mesh": false
-				},
 				"surface_selection": [
 					{
 						"id": 1,
@@ -2342,14 +2337,9 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 						0,
 						0.5
 					],
-					"rotation": 0,
 					"scale": 0.5
 				},
 				"volume_selection": 3,
-				"n_refs": 0,
-				"advanced": {
-					"normalize_mesh": false
-				},
 				"surface_selection": [
 					{
 						"id": 3,
@@ -2396,134 +2386,26 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 			"dirichlet_boundary": [
 				{
 					"id": 1,
-					"time_reference": [
-						0.02,
-						0.04,
-						0.06,
-						0.08,
-						0.1,
-						0.12,
-						0.14,
-						0.16,
-						0.18,
-						0.2,
-						0.22
-					],
+					"time_reference": [0.02,0.04,0.06,0.08,0.1,0.12,0.14,0.16,0.18,0.2,0.22],
 					"value": [
-						[
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0
-						],
-						[
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0
-						]
+						[0,0,0,0,0,0,0,0,0,0,0],
+						[0,0,0,0,0,0,0,0,0,0,0]
 					]
 				},
 				{
 					"id": 2,
-					"time_reference": [
-						0.02,
-						0.04,
-						0.06,
-						0.08,
-						0.1,
-						0.12,
-						0.14,
-						0.16,
-						0.18,
-						0.2,
-						0.22
-					],
+					"time_reference": [0.02,0.04,0.06,0.08,0.1,0.12,0.14,0.16,0.18,0.2,0.22],
 					"value": [
-						[
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0
-						],
-						[
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0
-						]
+						[0,0,0,0,0,0,0,0,0,0,0],
+						[0,0,0,0,0,0,0,0,0,0,0]
 					]
 				},
 				{
 					"id": 3,
-					"time_reference": [
-						0.02,
-						0.04,
-						0.06,
-						0.08,
-						0.1,
-						0.12,
-						0.14,
-						0.16,
-						0.18,
-						0.2,
-						0.22
-					],
+					"time_reference": [0.02,0.04,0.06,0.08,0.1,0.12,0.14,0.16,0.18,0.2,0.22],
 					"value": [
-						[
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0,
-							0
-						],
-						[
-							0.0,
-							-0.08,
-							-0.16,
-							-0.24,
-							-0.32,
-							-0.4,
-							-0.48,
-							-0.56,
-							-0.64,
-							-0.72,
-							-0.8
-						]
+						[0,0,0,0,0,0,0,0,0,0,0],
+						[0.0,-0.08,-0.16,-0.24,-0.32,-0.4,-0.48,-0.56,-0.64,-0.72,-0.8]
 					]
 				}
 			]
