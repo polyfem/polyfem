@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/State.hpp>
+#include "Parameter.hpp"
 
 namespace polyfem::solver
 {
@@ -11,7 +12,12 @@ namespace polyfem::solver
 		{
 		}
 
-		enum class SpatialIntegralType {VOLUME, SURFACE, VERTEX_SUM};
+		enum class SpatialIntegralType
+		{
+			VOLUME,
+			SURFACE,
+			VERTEX_SUM
+		};
 
 		static double value(
 			const State &state,
@@ -23,7 +29,16 @@ namespace polyfem::solver
 		static void gradient(
 			const State &state,
 			const IntegrableFunctional &j,
-			const std::string &param,
+			const Parameter &param,
+			Eigen::VectorXd &grad,
+			const std::set<int> &interested_ids, // either body id or surface id
+			const SpatialIntegralType spatial_integral_type,
+			const std::string &transient_integral_type = "");
+
+		static void gradient(
+			const State &state,
+			const IntegrableFunctional &j,
+			const std::string &param_name,
 			Eigen::VectorXd &grad,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
@@ -31,7 +46,7 @@ namespace polyfem::solver
 
 		static double value(
 			const State &state,
-			const std::vector<IntegrableFunctional> &j, 
+			const std::vector<IntegrableFunctional> &j,
 			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
@@ -39,33 +54,42 @@ namespace polyfem::solver
 
 		static void gradient(
 			const State &state,
-			const std::vector<IntegrableFunctional> &j, 
+			const std::vector<IntegrableFunctional> &j,
 			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-			const std::string &param,
+			const Parameter &param,
+			Eigen::VectorXd &grad,
+			const std::set<int> &interested_ids, // either body id or surface id
+			const SpatialIntegralType spatial_integral_type,
+			const std::string &transient_integral_type = "");
+
+		static void gradient(
+			const State &state,
+			const std::vector<IntegrableFunctional> &j,
+			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
+			const std::string &param_name,
 			Eigen::VectorXd &grad,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type = "");
 
 	protected:
-
 		static double integrate_objective(
-			const State &state, 
-			const IntegrableFunctional &j, 
+			const State &state,
+			const IntegrableFunctional &j,
 			const Eigen::MatrixXd &solution,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
 			const int cur_step = 0);
 		static void dJ_du_step(
 			const State &state,
-			const IntegrableFunctional &j, 
+			const IntegrableFunctional &j,
 			const Eigen::MatrixXd &solution,
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
 			const int cur_step,
 			Eigen::VectorXd &term);
 		static double integrate_objective_transient(
-			const State &state, 
+			const State &state,
 			const IntegrableFunctional &j,
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
@@ -79,18 +103,18 @@ namespace polyfem::solver
 			std::vector<Eigen::VectorXd> &terms);
 		static void compute_topology_derivative_functional_term(
 			const State &state,
-			const Eigen::MatrixXd &solution, 
-			const IntegrableFunctional &j, 
-			const std::set<int> &interested_ids, // either body id or surface id 
+			const Eigen::MatrixXd &solution,
+			const IntegrableFunctional &j,
+			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
 			Eigen::VectorXd &term);
 		static void compute_shape_derivative_functional_term(
 			const State &state,
-			const Eigen::MatrixXd &solution, 
-			const IntegrableFunctional &j, 
-			const std::set<int> &interested_ids, // either body id or surface id 
+			const Eigen::MatrixXd &solution,
+			const IntegrableFunctional &j,
+			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
-			Eigen::VectorXd &term, 
+			Eigen::VectorXd &term,
 			const int cur_time_step);
 		static void dJ_topology_static(
 			const State &state,
@@ -149,8 +173,8 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 
 		static double integrate_objective(
-			const State &state, 
-			const std::vector<IntegrableFunctional> &j, 
+			const State &state,
+			const std::vector<IntegrableFunctional> &j,
 			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
 			const Eigen::MatrixXd &solution,
 			const std::set<int> &interested_ids, // either body id or surface id
@@ -158,7 +182,7 @@ namespace polyfem::solver
 			const int cur_step = 0);
 		static void dJ_du_step(
 			const State &state,
-			const std::vector<IntegrableFunctional> &j, 
+			const std::vector<IntegrableFunctional> &j,
 			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
 			const Eigen::MatrixXd &solution,
 			const std::set<int> &interested_ids,
@@ -166,15 +190,15 @@ namespace polyfem::solver
 			const int cur_step,
 			Eigen::VectorXd &term);
 		static double integrate_objective_transient(
-			const State &state, 
-			const std::vector<IntegrableFunctional> &j, 
+			const State &state,
+			const std::vector<IntegrableFunctional> &j,
 			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type);
 		static void dJ_du_transient(
 			const State &state,
-			const std::vector<IntegrableFunctional> &j, 
+			const std::vector<IntegrableFunctional> &j,
 			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,

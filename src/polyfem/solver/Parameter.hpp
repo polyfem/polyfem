@@ -10,6 +10,14 @@ namespace polyfem
 		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr){};
 		virtual ~Parameter() = default;
 
+		inline virtual bool contains_state(const State &state) const
+		{
+			for (auto s : states_ptr_)
+				if (s.get() == &state)
+					return true;
+			return false;
+		}
+
 		virtual void update() = 0;
 
 		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) = 0;
@@ -27,7 +35,7 @@ namespace polyfem
 		inline virtual void set_optimization_dim(const int optimization_dim) final { optimization_dim_ = optimization_dim; }
 		inline virtual int optimization_dim() final { return optimization_dim_; }
 
-		inline virtual std::string name() final { return parameter_name_; }
+		inline virtual std::string name() const { return parameter_name_; }
 
 		virtual bool pre_solve(const Eigen::VectorXd &newX) = 0;
 		virtual void post_solve(const Eigen::VectorXd &newX) = 0;

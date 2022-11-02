@@ -19,7 +19,7 @@ namespace polyfem::solver
 		{
 			for (const auto o : objectives_)
 			{
-				o->first_derivative(p->name(), gradv_param);
+				o->first_derivative(*p, gradv_param);
 				gradv.segment(cumulative, p->optimization_dim()) += gradv_param;
 			}
 			cumulative += p->optimization_dim();

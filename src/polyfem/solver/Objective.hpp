@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AdjointForm.hpp"
+#include "Parameter.hpp"
 
 namespace polyfem::solver
 {
@@ -11,10 +12,10 @@ namespace polyfem::solver
 
 		inline double value() const
 		{
-            return weight_ * value_unweighted();
+			return weight_ * value_unweighted();
 		}
 
-		inline void first_derivative(const std::string &param, Eigen::VectorXd &gradv) const
+		inline void first_derivative(const Parameter &param, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(param, gradv);
 			gradv *= weight_;
@@ -28,27 +29,27 @@ namespace polyfem::solver
 		double weight() const { return weight_; }
 		void set_weight(const double weight) { weight_ = weight; }
 
-    private:
-        const State &state_;
-        
-        std::shared_ptr<AdjointForm> form_;
+	private:
+		const State &state_;
+
+		std::shared_ptr<AdjointForm> form_;
 		IntegrableFunctional j_;
 
-        bool is_volume_integral;
-        std::string transient_integral_type;
-        std::set<int> interested_ids;
+		bool is_volume_integral;
+		std::string transient_integral_type;
+		std::set<int> interested_ids;
 
 		double weight_ = 1;
 		bool enabled_ = true;
 
 		double value_unweighted() const
-        {
-            return form_->value(state_, j_, interested_ids, is_volume_integral ? AdjointForm::SpatialIntegralType::VOLUME : AdjointForm:: SpatialIntegralType::SURFACE, transient_integral_type);
-        }
-        
-		void first_derivative_unweighted(const std::string &param, Eigen::VectorXd &gradv) const
-        {
-            form_->gradient(state_, j_, param, gradv, interested_ids, is_volume_integral ? AdjointForm::SpatialIntegralType::VOLUME : AdjointForm:: SpatialIntegralType::SURFACE, transient_integral_type);
-        }
-    };
-}
+		{
+			return form_->value(state_, j_, interested_ids, is_volume_integral ? AdjointForm::SpatialIntegralType::VOLUME : AdjointForm::SpatialIntegralType::SURFACE, transient_integral_type);
+		}
+
+		void first_derivative_unweighted(const Parameter &param, Eigen::VectorXd &gradv) const
+		{
+			form_->gradient(state_, j_, param, gradv, interested_ids, is_volume_integral ? AdjointForm::SpatialIntegralType::VOLUME : AdjointForm::SpatialIntegralType::SURFACE, transient_integral_type);
+		}
+	};
+} // namespace polyfem::solver
