@@ -134,7 +134,7 @@ namespace polyfem::assembler
 			double scale = std::max(x.norm(), y.norm());
 			double error = (x - y).norm();
 			
-			std::cout << "error: " << error << " scale: " << scale << "\n";
+			// std::cout << "error: " << error << " scale: " << scale << "\n";
 
 			if (error > scale * test_eps)
 				same = false;
@@ -499,15 +499,6 @@ namespace polyfem::assembler
 			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 			state->assembler.compute_stiffness_value(state->formulation(), vals, quadrature.points, x, stiffnesses);
-			// tmp = stiffnesses.transpose() * da;
-			// for (int i = 0, idx = 0; i < size(); i++)
-			// for (int j = 0; j < size(); j++)
-			// for (int k = 0; k < size(); k++)
-			// for (int l = 0; l < size(); l++)
-			// {
-			// 	avg_stiffness(i * size() + j, k * size() + l) += tmp(idx);
-			// 	idx++;
-			// }
 			avg_stiffness += utils::unflatten(stiffnesses.transpose() * da, size()*size());
 
 			for (int i = 0; i < n_reduced_basis; i++)
@@ -658,17 +649,10 @@ namespace polyfem::assembler
 
 	void MultiscaleRB::brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &fluctuated) const
 	{
-		Eigen::MatrixXd R, Ubar, dUdF;
-		{
-			polar_decomposition(def_grad, R, Ubar);
-			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
-		}
-
-		
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("coefficient newton", time);
-			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
+			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			// projection(disp_grad, x);
 			static int hess_idx = 0;
 			Eigen::MatrixXd x;
@@ -676,48 +660,12 @@ namespace polyfem::assembler
 			fluctuated = x + state->generate_linear_field(disp_grad);
 			hess_idx++;
 		}
-		
-		
-		// only for serial
-		// {
-		// 	static int idx_ref = 0;
-		// 	state->sol = fluctuated;
-		// 	state->out_geom.export_data(
-		// 		*state,
-		// 		!state->args["time"].is_null(),
-		// 		0, 0,
-		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-		// 		"ref_" + std::to_string(idx_ref) + ".vtu",
-		// 		"", // nodes_path,
-		// 		"", // solution_path,
-		// 		"", // stress_path,
-		// 		"", // mises_path,
-		// 		state->is_contact_enabled(), state->solution_frames);
-		// 	idx_ref++;
-		// }
 
 		// effective energy = average energy over unit cell
 		energy = homogenize_energy(fluctuated);
 
 		// effective stress = average stress over unit cell
-		Eigen::MatrixXd stress_no_rotation;
-		homogenize_stress(fluctuated, stress_no_rotation);
-		stress_no_rotation = utils::flatten(stress_no_rotation);
-
-		// paper version
-		// stress = R * stress_no_rotation;
-		// stiffness.setZero(size()*size(), size()*size());
-		// for (int i = 0; i < size(); i++) for (int j = 0; j < size(); j++)
-		// for (int k = 0; k < size(); k++) for (int l = 0; l < size(); l++)
-		// for (int m = 0; m < size(); m++) for (int n = 0; n < size(); n++)
-		// {
-		// 	stiffness(i * size() + j, k * size() + l) += R(i, m) * stiffness_no_rotation(m * size() + j, n * size() + l) * R(k, n);
-		// }
-		
-		// my version
-		stress = utils::unflatten(dUdF.transpose() * stress_no_rotation, size());
-
-		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
+		homogenize_stress(fluctuated, stress);
 	}
 
 	void MultiscaleRB::sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const
@@ -922,21 +870,16 @@ namespace polyfem::assembler
 			// 		{ 
 			// 			Eigen::MatrixXd F = utils::unflatten(x, this->size());
 			// 			double val;
-			// 			Eigen::MatrixXd stress, stiffness;
-			// 			this->homogenization(F, val, stress, stiffness);
+			// 			this->homogenization(F, val);
 			// 			return val;
 			// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-6);
 
 			// 	grad = utils::flatten(stress_tensor);
-			// 	if (!compare_matrix(grad, fgrad))
+			// 	if ((grad.norm() != 0) && !compare_matrix(grad, fgrad))
 			// 	{
 			// 		std::cout << "Gradient: " << grad.transpose() << std::endl;
 			// 		std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
-			// 		log_and_throw_error("Gradient mismatch");
-			// 	}
-			// 	else
-			// 	{
-			// 		logger().info("Gradient match!");
+			// 		logger().error("Gradient mismatch");
 			// 	}
 			// }
 
@@ -991,8 +934,8 @@ namespace polyfem::assembler
 			// 		[this](const Eigen::VectorXd &x) -> Eigen::VectorXd {
 			// 			Eigen::MatrixXd F = utils::unflatten(x, this->size());
 			// 			double val;
-			// 			Eigen::MatrixXd stress, stiffness;
-			// 			this->homogenization(F, val, stress, stiffness);
+			// 			Eigen::MatrixXd stress;
+			// 			this->homogenization(F, val, stress);
 			// 			return utils::flatten(stress);
 			// 		},
 			// 		fhess,
@@ -1004,11 +947,7 @@ namespace polyfem::assembler
 			// 		std::cout << "Hessian: " << hessian_temp << std::endl;
 			// 		std::cout << "Finite hessian: " << fhess << std::endl;
 			// 		logger().error("Hessian mismatch!");
-			// 		hessian_temp = fhess;
-			// 	}
-			// 	else
-			// 	{
-			// 		logger().info("Hessian match!");
+			// 		// hessian_temp = fhess;
 			// 	}
 			// }
 
