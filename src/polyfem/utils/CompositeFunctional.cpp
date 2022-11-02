@@ -89,13 +89,13 @@ namespace polyfem
 
 	double CompositeFunctional::energy(State &state)
 	{
-		return polyfem::solver::AdjointForm::value(state, get_target_functional(), surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		return polyfem::solver::AdjointForm::value(state, get_target_functional(), surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 	}
 
 	Eigen::VectorXd CompositeFunctional::gradient(State &state, const std::string &type)
 	{
 		Eigen::VectorXd grad;
-		polyfem::solver::AdjointForm::gradient(state, get_target_functional(type), type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		polyfem::solver::AdjointForm::gradient(state, get_target_functional(type), type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		return grad;
 	}
@@ -262,7 +262,7 @@ namespace polyfem
 					boundary_ids.assign(u.rows(), params["boundary_id"].get<int>());
 					tmp_params["boundary_ids"] = boundary_ids;
 				}
-				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, tmp_params, boundary_points))
+				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
 					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
@@ -466,27 +466,28 @@ namespace polyfem
 
 	double NodeTrajectoryFunctional::energy(State &state)
 	{
-		SummableFunctional j = get_trajectory_functional();
+		IntegrableFunctional j = get_trajectory_functional();
 		if (active_vertex_mask.size() > 0 && state.n_bases != active_vertex_mask.size())
 			logger().error("vertex mask size doesn't match number of nodes!");
-		return sqrt(state.J_static(j));
+		return sqrt(polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VERTEX_SUM, transient_integral_type));
 	}
 
 	Eigen::VectorXd NodeTrajectoryFunctional::gradient(State &state, const std::string &type)
 	{
-		SummableFunctional j = get_trajectory_functional();
+		IntegrableFunctional j = get_trajectory_functional();
 		if (active_vertex_mask.size() > 0 && state.n_bases != active_vertex_mask.size())
 			logger().error("vertex mask size doesn't match number of nodes!");
-		Eigen::VectorXd grad = state.sum_gradient(j, "material");
+		Eigen::VectorXd grad;
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VERTEX_SUM, transient_integral_type);
 
 		return grad / 2 / energy(state);
 	}
 
-	SummableFunctional NodeTrajectoryFunctional::get_trajectory_functional()
+	IntegrableFunctional NodeTrajectoryFunctional::get_trajectory_functional()
 	{
-		SummableFunctional j;
+		IntegrableFunctional j;
 		{
-			auto j_func = [this](const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const json &params, Eigen::MatrixXd &val) {
+			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(1, 1);
 				const int vid = params["node"];
 				if (active_vertex_mask.size() > 0 && !active_vertex_mask[vid])
@@ -495,7 +496,7 @@ namespace polyfem
 				val(0) = (pts + u - target_vertex_positions.row(vid)).squaredNorm();
 			};
 
-			auto djdu_func = [this](const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const json &params, Eigen::MatrixXd &val) {
+			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(pts.rows(), pts.cols());
 				const int vid = params["node"];
 				if (active_vertex_mask.size() > 0 && !active_vertex_mask[vid])
@@ -516,7 +517,7 @@ namespace polyfem
 	{
 		IntegrableFunctional j = get_volume_functional();
 
-		double current_volume = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double current_volume = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 		logger().trace("Current volume: {}", current_volume);
 
 		if (current_volume > max_volume)
@@ -533,9 +534,9 @@ namespace polyfem
 		IntegrableFunctional j = get_volume_functional();
 
 		Eigen::VectorXd grad;
-		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 		
-		double current_volume = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double current_volume = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		double derivative = 0;
 		if (current_volume > max_volume)
@@ -563,7 +564,7 @@ namespace polyfem
 	{
 		IntegrableFunctional j = get_mass_functional();
 
-		double current_mass = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double current_mass = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 		logger().trace("Current mass: {}", current_mass);
 
 		if (current_mass > max_mass)
@@ -579,9 +580,9 @@ namespace polyfem
 		IntegrableFunctional j = get_mass_functional();
 
 		Eigen::VectorXd grad;
-		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
-		double current_mass = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double current_mass = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		double derivative = 0;
 		if (current_mass > max_mass)
@@ -634,7 +635,7 @@ namespace polyfem
 	{
 		IntegrableFunctional j = get_stress_functional(state.formulation(), p);
 
-		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		return pow(val, 1. / p);
 	}
@@ -644,9 +645,9 @@ namespace polyfem
 		IntegrableFunctional j = get_stress_functional(state.formulation(), p);
 
 		Eigen::VectorXd grad;
-		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
-		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		return (pow(val, 1. / p - 1) / p) * grad;
 	}
@@ -829,7 +830,7 @@ namespace polyfem
 	{
 		IntegrableFunctional j = get_compliance_functional(state.formulation());
 
-		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		return pow(val, 1. / p);
 	}
@@ -839,9 +840,9 @@ namespace polyfem
 		IntegrableFunctional j = get_compliance_functional(state.formulation());
 
 		Eigen::VectorXd grad;
-		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		polyfem::solver::AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
-		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, !surface_integral, transient_integral_type);
+		double val = polyfem::solver::AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE : polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		return (pow(val, 1. / p - 1) / p) * grad;
 	}
@@ -1053,7 +1054,7 @@ namespace polyfem
 		j_vol.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 		});
-		double volume = polyfem::solver::AdjointForm::value(state, j_vol, interested_body_ids_, true, "final");
+		double volume = polyfem::solver::AdjointForm::value(state, j_vol, interested_body_ids_, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "final");
 
 		for (auto &point : barycenters)
 			point /= volume;

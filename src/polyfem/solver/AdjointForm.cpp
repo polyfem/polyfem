@@ -6,7 +6,6 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
-#include <polyfem/utils/SummableFunctional.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -130,13 +129,13 @@ namespace {
 		const State &state,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids, // either body id or surface id
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
 		const std::string &transient_integral_type)
 	{
 		if (state.problem->is_time_dependent())
-			return integrate_objective_transient(state, j, interested_ids, is_volume_integral, transient_integral_type);
+			return integrate_objective_transient(state, j, interested_ids, spatial_integral_type, transient_integral_type);
 		else
-			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral);
+			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type);
 	}
 
 	void AdjointForm::gradient(
@@ -145,19 +144,19 @@ namespace {
 		const std::string &param,
 		Eigen::VectorXd &grad,
 		const std::set<int> &interested_ids, // either body id or surface id
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
 		const std::string &transient_integral_type)
 	{
 		if (state.problem->is_time_dependent())
 		{
 			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 			std::vector<Eigen::VectorXd> adjoint_rhs;
-			dJ_du_transient(state, j, interested_ids, is_volume_integral, transient_integral_type, adjoint_rhs);
+			dJ_du_transient(state, j, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
 			state.solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, param == "dirichlet");
 			if (param == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
 			else if (param == "shape")
-				dJ_shape_transient(state, adjoint_nu, adjoint_p, j, interested_ids, is_volume_integral, transient_integral_type, grad);
+				dJ_shape_transient(state, adjoint_nu, adjoint_p, j, interested_ids, spatial_integral_type, transient_integral_type, grad);
 			else if (param == "friction")
 				dJ_friction_transient(state, adjoint_nu, adjoint_p, grad);
 			else if (param == "damping")
@@ -173,14 +172,14 @@ namespace {
 		{
 			Eigen::MatrixXd adjoint;
 			Eigen::VectorXd adjoint_rhs;
-			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, is_volume_integral, 0, adjoint_rhs);
+			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
 			state.solve_adjoint(adjoint_rhs, adjoint);
 			if (param == "material")
 				dJ_material_static(state, state.diff_cached[0].u, adjoint, grad);
 			else if (param == "shape")
-				dJ_shape_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, is_volume_integral, grad);
+				dJ_shape_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, spatial_integral_type, grad);
 			else if (param == "topology")
-				dJ_topology_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, is_volume_integral, grad);
+				dJ_topology_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, spatial_integral_type, grad);
 			else if (param == "friction")
 				log_and_throw_error("Static friction coefficient grad not implemented!");
 			else if (param == "dirichlet")
@@ -195,7 +194,7 @@ namespace {
         const IntegrableFunctional &j, 
         const Eigen::MatrixXd &solution,
         const std::set<int> &interested_ids, // either body id or surface id
-        const bool is_volume_integral,
+        const SpatialIntegralType spatial_integral_type,
         const int cur_step) // current time step
 	{
         const auto &bases = state.bases;
@@ -206,11 +205,10 @@ namespace {
         const int n_elements = int(bases.size());
         const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
-		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
-
 		double integral = 0;
-		if (is_volume_integral)
+		if (spatial_integral_type == SpatialIntegralType::VOLUME)
 		{
+			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
             utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
                 LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -241,9 +239,12 @@ namespace {
                     local_storage.val += dot(result, local_storage.da);
                 }
             });
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				integral += local_storage.val;
 		}
-		else
+		else if (spatial_integral_type == SpatialIntegralType::SURFACE)
 		{
+			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
             utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
                 LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -286,10 +287,37 @@ namespace {
                     }
 				}
 			});
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				integral += local_storage.val;
 		}
+		else if (spatial_integral_type == SpatialIntegralType::VERTEX_SUM)
+		{
+			std::vector<bool> traversed(state.n_bases, false);
+			json params = {};
+			params["t"] = dt * cur_step;
+			params["step"] = cur_step;
+			for (int e = 0; e < bases.size(); e++)
+			{
+				const auto &bs = bases[e];
+				for (int i = 0; i < bs.bases.size(); i++)
+				{
+					const auto &b = bs.bases[i];
+					assert(b.global().size() == 1);
+					const auto &g = b.global()[0];
+					if (traversed[g.index])
+						continue;
 
-        for (const LocalThreadScalarStorage &local_storage : storage)
-            integral += local_storage.val;
+					params["node"] = g.index;
+					params["elem"] = -1;
+					params["body_id"] = state.mesh->get_body_id(e);
+					params["boundary_id"] = -1;
+					Eigen::MatrixXd val;
+					j.evaluate(state.assembler.lame_params(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, params, val);
+					integral += val(0);
+					traversed[g.index] = true;
+				}
+			}
+		}
             
 		return integral;
 	}
@@ -298,7 +326,7 @@ namespace {
         const State &state, 
         const IntegrableFunctional &j, 
         const std::set<int> &interested_ids,
-        const bool is_volume_integral,
+        const SpatialIntegralType spatial_integral_type,
         const std::string &transient_integral_type)
     {
 		const double dt = state.args["time"]["dt"];
@@ -311,7 +339,7 @@ namespace {
 		{
 			if (weights[i] == 0)
 				continue;
-			result += weights[i] * integrate_objective(state, j, state.diff_cached[i].u, interested_ids, is_volume_integral, i);
+			result += weights[i] * integrate_objective(state, j, state.diff_cached[i].u, interested_ids, spatial_integral_type, i);
 		}
 
 		return result;
@@ -322,7 +350,7 @@ namespace {
         const Eigen::MatrixXd &solution, 
 		const IntegrableFunctional &j, 
 		const std::set<int> &interested_ids, // either body id or surface id 
-        const bool is_volume_integral,
+        const SpatialIntegralType spatial_integral_type,
         Eigen::VectorXd &term, 
         const int cur_time_step)
 	{
@@ -336,7 +364,7 @@ namespace {
 
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-		if (is_volume_integral)
+		if (spatial_integral_type == SpatialIntegralType::VOLUME)
 		{
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -402,7 +430,7 @@ namespace {
 				}
 			});
 		}
-		else
+		else if (spatial_integral_type == SpatialIntegralType::SURFACE)
 		{
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -536,7 +564,10 @@ namespace {
 				}
 			});
 		}
-
+		else if (spatial_integral_type == SpatialIntegralType::VERTEX_SUM)
+		{
+			log_and_throw_error("Shape derivative of vertex sum type functional is not implemented!");
+		}
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
 	}
@@ -547,12 +578,12 @@ namespace {
 		const Eigen::MatrixXd &adjoint,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
 		Eigen::VectorXd &one_form)
 	{
 		Eigen::VectorXd functional_term, elasticity_term, rhs_term, contact_term, friction_term;
 
-		compute_shape_derivative_functional_term(state, sol, j, interested_ids, is_volume_integral, functional_term, 0);
+		compute_shape_derivative_functional_term(state, sol, j, interested_ids, spatial_integral_type, functional_term, 0);
 		one_form = functional_term;
 
 		if (j.depend_on_u() || j.depend_on_gradu())
@@ -577,7 +608,7 @@ namespace {
 		const std::vector<Eigen::MatrixXd> &adjoint_p,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
         const std::string &transient_integral_type,
 		Eigen::VectorXd &one_form)
 	{
@@ -607,7 +638,7 @@ namespace {
 			if (weights[i] == 0)
 				functional_term.setZero(one_form.rows(), one_form.cols());
 			else
-				compute_shape_derivative_functional_term(state, state.diff_cached[i].u, j, interested_ids, is_volume_integral, functional_term, i);
+				compute_shape_derivative_functional_term(state, state.diff_cached[i].u, j, interested_ids, spatial_integral_type, functional_term, i);
 
 			if (j.depend_on_u() || j.depend_on_gradu())
 			{
@@ -662,7 +693,7 @@ namespace {
 		else
 			mass_term.setZero(one_form.rows(), one_form.cols());
 
-		compute_shape_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, is_volume_integral, functional_term, 0);
+		compute_shape_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, spatial_integral_type, functional_term, 0);
 		one_form += weights[0] * functional_term + mass_term;
 	}
 
@@ -816,7 +847,7 @@ namespace {
 		const IntegrableFunctional &j, 
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids,
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
         const int cur_step,
 		Eigen::VectorXd &term)
 	{
@@ -833,9 +864,9 @@ namespace {
 		if (!j.depend_on_u() && !j.depend_on_gradu())
 			return;
 
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-		if (is_volume_integral)
+		if (spatial_integral_type == SpatialIntegralType::VOLUME)
 		{
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -890,9 +921,12 @@ namespace {
 					}
 				}
 			});
+			for (const LocalThreadVecStorage &local_storage : storage)
+				term += local_storage.vec;
 		}
-		else
+		else if (spatial_integral_type == SpatialIntegralType::SURFACE)
 		{
+			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
             utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
                 LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -972,17 +1006,44 @@ namespace {
 					}
 				}
 			});
+			for (const LocalThreadVecStorage &local_storage : storage)
+				term += local_storage.vec;
 		}
-	
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
+		else if (spatial_integral_type == SpatialIntegralType::VERTEX_SUM)
+		{
+			std::vector<bool> traversed(state.n_bases, false);
+			json params = {};
+			params["t"] = dt * cur_step;
+			params["step"] = cur_step;
+			for (int e = 0; e < bases.size(); e++)
+			{
+				const auto &bs = bases[e];
+				for (int i = 0; i < bs.bases.size(); i++)
+				{
+					const auto &b = bs.bases[i];
+					assert(b.global().size() == 1);
+					const auto &g = b.global()[0];
+					if (traversed[g.index])
+						continue;
+
+					params["node"] = g.index;
+					params["elem"] = -1;
+					params["body_id"] = state.mesh->get_body_id(e);
+					params["boundary_id"] = -1;
+					Eigen::MatrixXd val;
+					j.dj_du(state.assembler.lame_params(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, params, val);
+					term.block(g.index * actual_dim, 0, actual_dim, 1) += val.transpose();
+					traversed[g.index] = true;
+				}
+			}
+		}
 	}
 
 	void AdjointForm::dJ_du_transient(
 		const State &state,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
 		const std::string &transient_integral_type,
 		std::vector<Eigen::VectorXd> &terms)
 	{
@@ -995,7 +1056,7 @@ namespace {
 		get_transient_quadrature_weights(transient_integral_type, time_steps, dt, weights);
 		for (int i = time_steps; i >= 0; --i)
 		{
-			dJ_du_step(state, j, state.diff_cached[i].u, interested_ids, is_volume_integral, i, terms[i]);
+			dJ_du_step(state, j, state.diff_cached[i].u, interested_ids, spatial_integral_type, i, terms[i]);
 			terms[i] *= weights[i];
 		}
 	}
@@ -1005,14 +1066,14 @@ namespace {
 		const Eigen::MatrixXd &solution, 
 		const IntegrableFunctional &j, 
 		const std::set<int> &interested_ids, // either body id or surface id 
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
 		Eigen::VectorXd &term)
 	{
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
 		const int dim = state.mesh->dimension();
 
-		assert(is_volume_integral);
+		assert(spatial_integral_type == SpatialIntegralType::VOLUME);
 
 		term.setZero(bases.size());
 		if (j.get_name() == "Mass")
@@ -1075,12 +1136,12 @@ namespace {
 		const Eigen::MatrixXd &adjoint,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,
-		const bool is_volume_integral,
+		const SpatialIntegralType spatial_integral_type,
 		Eigen::VectorXd &one_form)
 	{
 		Eigen::VectorXd elasticity_term, functional_term;
 		state.solve_data.elastic_form->foce_topology_derivative(state.diff_cached[0].u, adjoint, elasticity_term);
-		compute_topology_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, is_volume_integral, functional_term);
+		compute_topology_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, spatial_integral_type, functional_term);
 
 		one_form = elasticity_term + functional_term;
 	}

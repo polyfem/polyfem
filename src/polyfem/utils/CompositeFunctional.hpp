@@ -159,7 +159,7 @@ namespace polyfem
 		Eigen::MatrixXd target_vertex_positions;
 		std::vector<bool> active_vertex_mask;
 
-		SummableFunctional get_trajectory_functional();
+		IntegrableFunctional get_trajectory_functional();
 	};
 
 	class VolumeFunctional : public CompositeFunctional

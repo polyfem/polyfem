@@ -218,7 +218,7 @@ namespace polyfem
 			val *= params["density"].get<double>();
 		});
 		TVector grad;
-		polyfem::solver::AdjointForm::gradient(state, j, "topology", grad, {}, true, "final");
+		polyfem::solver::AdjointForm::gradient(state, j, "topology", grad, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "final");
 		grad = apply_filter_to_grad(x, grad);
 		if (index == 0)
 		{

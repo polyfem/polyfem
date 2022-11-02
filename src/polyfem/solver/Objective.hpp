@@ -43,12 +43,12 @@ namespace polyfem::solver
 
 		double value_unweighted() const
         {
-            return form_->value(state_, j_, interested_ids, is_volume_integral, transient_integral_type);
+            return form_->value(state_, j_, interested_ids, is_volume_integral ? AdjointForm::SpatialIntegralType::VOLUME : AdjointForm:: SpatialIntegralType::SURFACE, transient_integral_type);
         }
         
 		void first_derivative_unweighted(const std::string &param, Eigen::VectorXd &gradv) const
         {
-            form_->gradient(state_, j_, param, gradv, interested_ids, is_volume_integral, transient_integral_type);
+            form_->gradient(state_, j_, param, gradv, interested_ids, is_volume_integral ? AdjointForm::SpatialIntegralType::VOLUME : AdjointForm:: SpatialIntegralType::SURFACE, transient_integral_type);
         }
     };
 }

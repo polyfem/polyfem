@@ -20,7 +20,6 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
-#include <polyfem/utils/SummableFunctional.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -607,10 +606,8 @@ namespace polyfem
 		void compute_force_hessian_nonlinear(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		void compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface = false);
-		void compute_adjoint_rhs(const SummableFunctional &j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b);
 		// Solves the adjoint PDE for derivatives
 		void solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution);
-		void solve_adjoint(const SummableFunctional &j, Eigen::MatrixXd &adjoint_solution);
 		void solve_adjoint(const Eigen::VectorXd &adjoint_rhs, Eigen::MatrixXd &adjoint_solution) const;
 		void solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false);
 		void solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false) const;
@@ -618,21 +615,9 @@ namespace polyfem
 		void set_v(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
 
-		double J_static(const SummableFunctional &j);
 		double J_transient_step(const IntegrableFunctional &j, const int step);
 		// Aux functions for computing derivatives of different forces wrt. different parameters
 		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0) const;
-		// Derivatives wrt. an input functional J = \int j dx
-		void dJ_shape_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_material_static(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_material_static(const SummableFunctional &j, Eigen::VectorXd &one_form);
-		// For transient problems, Derivatives wrt. an input functional J = sum_i J_i, where J_i = \int j dx at time step i
-		void dJ_material_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_friction_transient(const IntegrableFunctional &j, double &one_form);
-		void dJ_damping_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_shape_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_initial_condition(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_dirichlet_transient(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 		// More generally, J_i is some function of a vector of \int j dx at time step i
 		double J_transient(const std::vector<IntegrableFunctional> &js, const std::function<double(const Eigen::VectorXd &, const json &)> &Ji);
 		void solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
@@ -641,12 +626,8 @@ namespace polyfem
 		void dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
 		void dJ_initial_condition(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
 		void dJ_shape_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
-		// unify transient and static
-		void dJ_shape(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
-		void dJ_material(const IntegrableFunctional &j, Eigen::VectorXd &one_form);
 
 		// unify everything
-		Eigen::VectorXd sum_gradient(const SummableFunctional &j, const std::string &type);
 		Eigen::VectorXd integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type);
 
 		// Alters the mesh for a given discrete perturbation (vector) field over the vertices

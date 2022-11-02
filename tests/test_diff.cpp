@@ -174,13 +174,13 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 		}
 		return vel;
 	};
-	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, true, "");
+	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "");
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form;
-	state.dJ_shape(j, one_form);
+	solver::AdjointForm::gradient(state, j, "shape", one_form, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
@@ -190,7 +190,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, true, "");
+	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "");
 
 	double finite_difference = (new_functional_val - functional_val) / t;
 
@@ -304,13 +304,13 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 		return vel;
 	};
 
-	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
+	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form;
-	state.dJ_shape(j, one_form);
+	solver::AdjointForm::gradient(state, j, "shape", one_form, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
@@ -320,7 +320,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
+	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 
 	double finite_difference = (new_functional_val - functional_val) / t;
 
@@ -427,13 +427,13 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 		return vel;
 	};
 
-	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
+	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd one_form;
-	state.dJ_shape(j, one_form);
+	solver::AdjointForm::gradient(state, j, "shape", one_form, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
@@ -443,13 +443,13 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
+	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 
 	state.perturb_mesh(velocity_discrete * (-2 * t));
 
 	solve_pde(state);
 
-	double old_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, false, "");
+	double old_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 
 	double finite_difference = (new_functional_val - old_functional_val) / t / 2;
 	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << old_functional_val << " f(x+dt) " << new_functional_val << "\n";
