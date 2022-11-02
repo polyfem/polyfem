@@ -102,23 +102,23 @@ namespace
 			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
 		}
 	}
-}
 
-Eigen::MatrixXd State::generate_linear_field(const Eigen::MatrixXd &grad)
-{
-    const int problem_dim = grad.rows();
-    const int dim = mesh->dimension();
-    assert(dim == grad.cols());
-
-    Eigen::MatrixXd func(n_bases * problem_dim, 1);
-    func.setZero();
-
-    for (int i = 0; i < n_bases; i++)
+    Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
     {
-        func.block(i * problem_dim, 0, problem_dim, 1) = grad * mesh_nodes->node_position(i).transpose();
-    }
+        const int problem_dim = grad.rows();
+        const int dim = state.mesh->dimension();
+        assert(dim == grad.cols());
 
-    return func;
+        Eigen::MatrixXd func(state.n_bases * problem_dim, 1);
+        func.setZero();
+
+        for (int i = 0; i < state.n_bases; i++)
+        {
+            func.block(i * problem_dim, 0, problem_dim, 1) = grad * state.mesh_nodes->node_position(i).transpose();
+        }
+
+        return func;
+    }
 }
 
 void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path)
@@ -148,7 +148,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen
     if (target.size() == sol_.size())
     {
         // std::cout << (target - generate_linear_field(def_grad)).transpose() << "\n";
-        least_square_form->set_target(target - generate_linear_field(def_grad));
+        least_square_form->set_target(target - generate_linear_field(*this, def_grad));
     }
     forms.push_back(least_square_form);
 
@@ -160,7 +160,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
     
-    homo_form->set_macro_field(generate_linear_field(def_grad));
+    homo_form->set_macro_field(generate_linear_field(*this, def_grad));
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
     
@@ -231,7 +231,7 @@ void State::solve_nonlinear_homogenization(Eigen::MatrixXd &sol)
             unit_grad(i, j) = nl_homogenization_scale;
 
             // solve_data.nl_problem->set_test_strain(unit_grad);
-            solve_data.elastic_homo_form->set_macro_field(generate_linear_field(unit_grad));
+            solve_data.elastic_homo_form->set_macro_field(generate_linear_field(*this, unit_grad));
 
             std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
             solve_data.nl_problem->init(tmp_sol);
@@ -276,7 +276,7 @@ void State::solve_linear_homogenization(Eigen::MatrixXd &sol)
             unit_grad(pair.first, pair.second) = 1;
             
             // assemble_homogenization_gradient(tmp_rhs, Eigen::MatrixXd::Zero(n_bases * problem_dim, 1), unit_grad);
-			Eigen::MatrixXd test_field = generate_linear_field(unit_grad);
+			Eigen::MatrixXd test_field = generate_linear_field(*this, unit_grad);
 			
 			assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, test_field, Eigen::MatrixXd::Zero(test_field.rows(), test_field.cols()), tmp_rhs);
 
@@ -520,7 +520,7 @@ void State::compute_homogenized_tensor(Eigen::MatrixXd &sol, Eigen::MatrixXd &C_
             unit_grad.setZero();
             unit_grad(pair.first, pair.second) = 1;
 
-            test_fields.col(id) = generate_linear_field(unit_grad);
+            test_fields.col(id) = generate_linear_field(*this, unit_grad);
         }
 
         Eigen::MatrixXd diff_fields = test_fields - sol;

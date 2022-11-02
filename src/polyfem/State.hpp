@@ -601,32 +601,15 @@ namespace polyfem
 			}
 		}
 		// Aux functions for setting up adjoint equations
-		void compute_force_hessian_nonlinear(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
-		void compute_adjoint_rhs(const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params)> &grad_j, const Eigen::MatrixXd &solution, Eigen::VectorXd &b, bool only_surface = false);
 		// Solves the adjoint PDE for derivatives
-		void solve_adjoint(const IntegrableFunctional &j, Eigen::MatrixXd &adjoint_solution);
 		void solve_adjoint(const Eigen::VectorXd &adjoint_rhs, Eigen::MatrixXd &adjoint_solution) const;
-		void solve_transient_adjoint(const IntegrableFunctional &j, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false);
 		void solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false) const;
 		// Change geometric node positions
 		void set_v(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
 
 		double J_transient_step(const IntegrableFunctional &j, const int step);
-		// Aux functions for computing derivatives of different forces wrt. different parameters
-		void compute_shape_derivative_functional_term(const Eigen::MatrixXd &solution, const IntegrableFunctional &j, Eigen::VectorXd &term, const int cur_time_step = 0) const;
-		// More generally, J_i is some function of a vector of \int j dx at time step i
-		double J_transient(const std::vector<IntegrableFunctional> &js, const std::function<double(const Eigen::VectorXd &, const json &)> &Ji);
-		void solve_transient_adjoint(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p);
-		void dJ_material_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
-		void dJ_friction_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, double &one_form);
-		void dJ_damping_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
-		void dJ_initial_condition(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
-		void dJ_shape_transient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, Eigen::VectorXd &one_form);
-
-		// unify everything
-		Eigen::VectorXd integral_gradient(const std::vector<IntegrableFunctional> &js, const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals, const std::string &type);
 
 		// Alters the mesh for a given discrete perturbation (vector) field over the vertices
 		void perturb_mesh(const Eigen::MatrixXd &perturbation);
@@ -648,9 +631,6 @@ namespace polyfem
 		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
 		void solve_linear_homogenization(Eigen::MatrixXd &sol);
 		void solve_nonlinear_homogenization(Eigen::MatrixXd &sol);
-
-		// create a linear FE function with gradient equal to a constant matrix `grad`
-		Eigen::MatrixXd generate_linear_field(const Eigen::MatrixXd &grad);
 
 		void compute_homogenized_tensor(Eigen::MatrixXd &sol, Eigen::MatrixXd &C);
 
