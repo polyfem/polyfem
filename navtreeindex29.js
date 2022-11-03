@@ -1,5 +1,9 @@
 var NAVTREEINDEX29 =
 {
+"namespacetetrahedron.html#a17a7bd7db0e17083ba27e5ca1bef1853":[3,0,9,2],
+"namespacetetrahedron.html#a25c5bf7d54573feb2b7d1c6d109dc6d0":[3,0,9,5],
+"namespacetetrahedron.html#a668b9a1147d5e3431070e292760130ad":[3,0,9,4],
+"namespacetetrahedron.html#a75c9bafaad4276c08e52bc8a69cdce94":[3,0,9,3],
 "namespacetetrahedron.html#a7a30f3081ce9820ed5be706027cb7936":[3,0,9,6],
 "namespacetetrahedron.html#ad4d30e972a83032d837f134c5ebbdc3f":[3,0,9,7],
 "namespacetriangle.html":[3,0,10],
@@ -245,9 +249,5 @@ var NAVTREEINDEX29 =
 "structnlohmann_1_1adl__serializer_3_01std_1_1filesystem_1_1path_01_4.html":[4,0,1,1],
 "structpolyfem_1_1assembler_1_1_formulation_properties.html":[4,0,3,0,10],
 "structpolyfem_1_1assembler_1_1_formulation_properties.html":[3,0,6,0,10],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#a0b4757ace5ea1860b5af84d5c83a97c3":[4,0,3,0,10,2],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#a0b4757ace5ea1860b5af84d5c83a97c3":[3,0,6,0,10,2],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#a31536f93a2dfd21f80cf3f6fa948241c":[3,0,6,0,10,3],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#a31536f93a2dfd21f80cf3f6fa948241c":[4,0,3,0,10,3],
-"structpolyfem_1_1assembler_1_1_formulation_properties.html#a5de2a0b62bb288f19c5a145f5e830bfc":[4,0,3,0,10,5]
+"structpolyfem_1_1assembler_1_1_formulation_properties.html#a0b4757ace5ea1860b5af84d5c83a97c3":[4,0,3,0,10,2]
 };

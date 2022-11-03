@@ -1,5 +1,9 @@
 var NAVTREEINDEX28 =
 {
+"namespacepolyfem_1_1autogen.html#ae89cf395d9d3761482e4609e94b7947e":[3,0,6,1,25],
+"namespacepolyfem_1_1autogen.html#aeb4ebaf3fd6946d81a03e6ccd9207d88":[3,0,6,1,7],
+"namespacepolyfem_1_1autogen.html#af3ae2da6aa68917e5419e2e036a8fadc":[3,0,6,1,23],
+"namespacepolyfem_1_1autogen.html#afcc4c28102b25c1ce7cff7743aec872d":[3,0,6,1,30],
 "namespacepolyfem_1_1autogen.html#affa69accbfb13eb3669550bb6c4f2d7b":[3,0,6,1,6],
 "namespacepolyfem_1_1basis.html":[3,0,6,2],
 "namespacepolyfem_1_1basis.html#a05c9a37e7bf673cecb9e7961ec47f656":[3,0,6,2,18],
@@ -245,9 +249,5 @@ var NAVTREEINDEX28 =
 "namespaces.html":[3,0],
 "namespacetetrahedron.html":[3,0,9],
 "namespacetetrahedron.html#a06d630e86a5d3499521e2013f3325a95":[3,0,9,1],
-"namespacetetrahedron.html#a178443be14dbb93bf120d2baf6d61499":[3,0,9,0],
-"namespacetetrahedron.html#a17a7bd7db0e17083ba27e5ca1bef1853":[3,0,9,2],
-"namespacetetrahedron.html#a25c5bf7d54573feb2b7d1c6d109dc6d0":[3,0,9,5],
-"namespacetetrahedron.html#a668b9a1147d5e3431070e292760130ad":[3,0,9,4],
-"namespacetetrahedron.html#a75c9bafaad4276c08e52bc8a69cdce94":[3,0,9,3]
+"namespacetetrahedron.html#a178443be14dbb93bf120d2baf6d61499":[3,0,9,0]
 };

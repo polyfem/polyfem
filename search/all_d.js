@@ -49,7 +49,7 @@ var searchData=
   ['matrixnd_46',['MatrixNd',['../namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2',1,'polyfem']]],
   ['matrixutils_2ecpp_47',['MatrixUtils.cpp',['../_matrix_utils_8cpp.html',1,'']]],
   ['matrixutils_2ehpp_48',['MatrixUtils.hpp',['../_matrix_utils_8hpp.html',1,'']]],
-  ['max_5fal_5fweight_49',['max_al_weight',['../classpolyfem_1_1solver_1_1_a_l_solver.html#aa5ff402287e145a6b3a0741b7b77aae9',1,'polyfem::solver::ALSolver']]],
+  ['max_5fal_5fsteps_49',['max_al_steps',['../classpolyfem_1_1solver_1_1_a_l_solver.html#af75d94eb7cfbcb45fba71eb802ad6363',1,'polyfem::solver::ALSolver']]],
   ['max_5fangle_50',['max_angle',['../classpolyfem_1_1io_1_1_out_stats_data.html#a8f782730c27b59db687f8ba83597a9ed',1,'polyfem::io::OutStatsData']]],
   ['max_5fbarrier_5fstiffness_5f_51',['max_barrier_stiffness_',['../classpolyfem_1_1solver_1_1_contact_form.html#a6c460cdb21a8fc372635b45b85de154f',1,'polyfem::solver::ContactForm']]],
   ['max_5fdomain_52',['max_domain',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a744079dc4924258b61ad1d9af05800c5',1,'polyfem::solver::OperatorSplittingSolver']]],
