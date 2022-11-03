@@ -20,40 +20,6 @@ namespace polyfem
 					mat(i, j) = vec(i * size + j);
 		}
 
-		bool is_interested(const std::set<int> &interested_body_ids, const std::set<int> &interested_boundary_ids, const int body_id, const std::vector<int> &boundary_id, Eigen::MatrixXd &boundary_points)
-		{
-			boundary_points = Eigen::MatrixXd::Identity(boundary_id.size(), boundary_id.size());
-			if (interested_body_ids.size() != 0 && interested_boundary_ids.size() != 0)
-			{
-				logger().error("Cannot specify both interested body and boundaries!");
-				return false;
-			}
-			else if (interested_body_ids.size() != 0)
-			{
-				return interested_body_ids.count(body_id) != 0;
-			}
-			else if (interested_boundary_ids.size() != 0)
-			{
-				bool is_interested_boundary = false;
-				for (int i = 0; i < boundary_id.size(); ++i)
-				{
-					if (interested_boundary_ids.count(boundary_id[i]) == 0)
-						boundary_points(i, i) = 0.;
-					else
-						is_interested_boundary |= true;
-				}
-
-				return is_interested_boundary;
-			}
-			else
-				// If nothing is specified as interesting, optimize everything.
-				return true;
-		}
-
-		bool is_not_interested(const std::set<int> &interested_body_ids, const std::set<int> &interested_boundary_ids, const json &params, Eigen::MatrixXd &boundary_points)
-		{
-			return !is_interested(interested_body_ids, interested_boundary_ids, params["body_id"].get<int>(), params.contains("boundary_ids") ? params["boundary_ids"].get<std::vector<int>>() : std::vector<int>(), boundary_points);
-		}
 	} // namespace
 
 	std::shared_ptr<CompositeFunctional> CompositeFunctional::create(const std::string &functional_name_)
@@ -193,16 +159,6 @@ namespace polyfem
 		{
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
-				Eigen::MatrixXd boundary_points;
-				json tmp_params = params;
-				if (!params.contains("boundary_ids"))
-				{
-					std::vector<int> boundary_ids;
-					boundary_ids.assign(u.rows(), params["boundary_id"].get<int>());
-					tmp_params["boundary_ids"] = boundary_ids;
-				}
-				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, tmp_params, boundary_points))
-					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
 				const auto &gbase_ref = state_ref_->geom_bases()[e_ref];
@@ -218,22 +174,10 @@ namespace polyfem
 				{
 					val(q) = pow(((u_ref.row(q) + pts_ref.row(q)) - (u.row(q) + pts.row(q))).squaredNorm(), p / 2.);
 				}
-				if (boundary_points.cols() == val.size())
-					val = boundary_points * val;
 			};
 
 			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				Eigen::MatrixXd boundary_points;
-				json tmp_params = params;
-				if (!params.contains("boundary_ids"))
-				{
-					std::vector<int> boundary_ids;
-					boundary_ids.assign(u.rows(), params["boundary_id"].get<int>());
-					tmp_params["boundary_ids"] = boundary_ids;
-				}
-				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, tmp_params, boundary_points))
-					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
 				const auto &gbase_ref = state_ref_->geom_bases()[e_ref];
@@ -250,22 +194,10 @@ namespace polyfem
 					auto x = (u.row(q) + pts.row(q)) - (u_ref.row(q) + pts_ref.row(q));
 					val.row(q) = (p * pow(x.squaredNorm(), p / 2. - 1)) * x;
 				}
-				if (boundary_points.cols() == val.size())
-					val = boundary_points * val;
 			};
 
 			auto djdx_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
-				Eigen::MatrixXd boundary_points;
-				json tmp_params = params;
-				if (!params.contains("boundary_ids"))
-				{
-					std::vector<int> boundary_ids;
-					boundary_ids.assign(u.rows(), params["boundary_id"].get<int>());
-					tmp_params["boundary_ids"] = boundary_ids;
-				}
-				if (is_not_interested(interested_body_ids_, interested_boundary_ids_, params, boundary_points))
-					return;
 				const int e = params["elem"];
 				const int e_ref = e_to_ref_e_.find(e) != e_to_ref_e_.end() ? e_to_ref_e_[e] : e;
 				const auto &gbase_ref = state_ref_->geom_bases()[e_ref];
@@ -284,8 +216,6 @@ namespace polyfem
 					vector2matrix(grad_u_ref.row(q), grad_u_ref_q);
 					val.row(q) = (p * pow(x.squaredNorm(), p / 2. - 1)) * x.transpose() * grad_u_ref_q;
 				}
-				if (boundary_points.cols() == val.size())
-					val = boundary_points * val;
 			};
 
 			j.set_j(j_func);
