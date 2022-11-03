@@ -28,7 +28,7 @@ namespace polyfem::solver
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
 	protected:
-		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight, std::vector<double> &initial_weight);
+		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight, const std::vector<double> &initial_weight);
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver;
 		std::shared_ptr<ALForm> al_form;

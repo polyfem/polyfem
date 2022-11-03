@@ -88,7 +88,7 @@ namespace polyfem::solver
 		post_subsolve(0);
 	}
 
-	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight, std::vector<double> &initial_weight)
+	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight, const std::vector<double> &initial_weight)
 	{
 		if (al_form == nullptr)
 			return;
