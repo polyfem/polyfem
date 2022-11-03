@@ -25,6 +25,7 @@ namespace polyfem
 			///             PolygonalBasis2d class.
 			///
 			/// @param[in]  mesh               The input planar mesh
+			/// @param[in]  assembler          The pde to solve
 			/// @param[in]  quadrature_order   The quadrature order
 			/// @param[in]  mass_quadrature_order   The quadrature for mass matrix
 			/// @param[in]  discr_order        The order of the elements (1-4)
@@ -41,6 +42,7 @@ namespace polyfem
 			///
 			static int build_bases(
 				const mesh::Mesh2D &mesh,
+				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const int discr_order,
@@ -58,6 +60,7 @@ namespace polyfem
 			///             PolygonalBasis2d class.
 			///
 			/// @param[in]  mesh               The input planar mesh
+			/// @param[in]  assembler          The pde to solve
 			/// @param[in]  quadrature_order   The quadrature order
 			/// @param[in]  mass_quadrature_order   The quadrature for mass matrix
 			/// @param[in]  discr_order        The order for each element
@@ -74,6 +77,7 @@ namespace polyfem
 			///
 			static int build_bases(
 				const mesh::Mesh2D &mesh,
+				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const Eigen::VectorXi &discr_order,

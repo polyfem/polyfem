@@ -192,6 +192,7 @@ namespace polyfem
 
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
+		assembler::AssemblyValsCache mass_ass_vals_cache;
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
@@ -240,17 +241,19 @@ namespace polyfem
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
 		{
-			return build_rhs_assembler(n_bases, bases, ass_vals_cache);
+			return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
 		}
 
 		/// quadrature used for projecting boundary conditions
 		/// @return the quadrature used for projecting boundary conditions
 		int n_boundary_samples() const
 		{
+			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			// TODO: verify me
-			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
+			const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
+			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
+
+			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
 
 			return n_b_samples;
 		}
@@ -394,8 +397,12 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
-		/// Matrices containing the input per node dirichelt
-		std::vector<Eigen::MatrixXd> input_dirichlet;
+		/// per node dirichelt
+		std::vector<int> dirichlet_nodes;
+		std::vector<RowVectorNd> dirichlet_nodes_position;
+		/// per node neumann
+		std::vector<int> neumann_nodes;
+		std::vector<RowVectorNd> neumann_nodes_position;
 
 		/// Inpute nodes (including high-order) to polyfem nodes, only for isoparametric
 		Eigen::VectorXi in_node_to_node;

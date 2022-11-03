@@ -33,6 +33,13 @@ namespace polyfem
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
 
+			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const {}
+			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
+			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag) { return false; }
+			virtual bool is_nodal_neumann_boundary(const int n_id, const int tag) { return false; }
+			virtual bool has_nodal_dirichlet() { return false; }
+			virtual bool has_nodal_neumann() { return false; }
+
 			virtual bool has_exact_sol() const = 0;
 			virtual void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const {};
 			virtual void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const {};
@@ -51,9 +58,18 @@ namespace polyfem
 
 			virtual bool might_have_no_dirichlet() { return false; }
 			virtual bool is_dimension_dirichet(const int tag, const int dim) const { return true; }
-			virtual bool all_dimensions_dirichlet() const { return true; } //here for efficiency reasons
+			virtual bool is_nodal_dimension_dirichlet(const int n_id, const int tag, const int dim) const { return true; }
 
-			void setup_bc(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &pressure_bases, std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<mesh::LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes);
+			virtual bool all_dimensions_dirichlet() const { return true; } // here for efficiency reasons
+
+			void setup_bc(const mesh::Mesh &mesh,
+						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &pressure_bases,
+						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
+						  std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+						  std::vector<int> &pressure_boundary_nodes,
+						  std::vector<int> &dirichlet_nodes, std::vector<int> &neumann_nodes);
+
+			virtual void update_nodes(const Eigen::VectorXi &in_node_to_node) {}
 
 		protected:
 			std::vector<int> boundary_ids_;

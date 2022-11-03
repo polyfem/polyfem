@@ -20,13 +20,7 @@ namespace polyfem::assembler
 		OgdenElasticity();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params);
-
-		void stress_from_disp_grad(const int size,
-								   const RowVectorNd &p,
-								   const int el_id,
-								   const Eigen::MatrixXd &displacement_grad,
-								   Eigen::MatrixXd &stress_tensor) const;
+		void add_multimaterial(const int index, const json &params, const int size);
 
 		// http://abaqus.software.polimi.it/v6.14/books/stm/default.htm?startat=ch04s06ath123.html Ogden form
 		template <typename T>

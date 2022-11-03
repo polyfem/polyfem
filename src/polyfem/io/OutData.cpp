@@ -881,6 +881,7 @@ namespace polyfem::io
 		volume = args["output"]["paraview"]["volume"];
 		surface = args["output"]["paraview"]["surface"];
 		wire = args["output"]["paraview"]["wireframe"];
+		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
 
@@ -955,6 +956,11 @@ namespace polyfem::io
 			save_wire(base_path + "_wire.vtu", state, sol, t, opts, solution_frames);
 		}
 
+		if (opts.points)
+		{
+			save_points(base_path + "_points.vtu", state, sol, opts, solution_frames);
+		}
+
 		if (!opts.solve_export_to_file)
 			return;
 
@@ -1003,6 +1009,16 @@ namespace polyfem::io
 			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
 			dataset->SetAttribute("name", "data");
 			dataset->SetAttribute("file", (path_stem + "_wire.vtu").c_str());
+		}
+
+		if (opts.points)
+		{
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Points");
+
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "data");
+			dataset->SetAttribute("file", (path_stem + "_points.vtu").c_str());
 		}
 
 		tinyxml2::XMLElement *data_array = root->InsertNewChildElement("FieldData")->InsertNewChildElement("DataArray");
@@ -1608,13 +1624,11 @@ namespace polyfem::io
 			io::VTUWriter writer;
 
 			const int problem_dim = mesh.dimension();
-			Eigen::MatrixXd displaced = utils::unflatten(sol, problem_dim);
+			const Eigen::MatrixXd full_displacements = utils::unflatten(sol, problem_dim);
+			const Eigen::MatrixXd surface_displacements = collision_mesh.map_displacements(full_displacements);
+			writer.add_field("solution", surface_displacements);
 
-			Eigen::MatrixXd real_vertices = collision_mesh.vertices(displaced);
-			writer.add_field("solution", real_vertices);
-
-			displaced += boundary_nodes_pos;
-			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
+			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
 			ipc::Constraints constraint_set;
 			constraint_set.build(
@@ -1631,14 +1645,18 @@ namespace polyfem::io
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
-				assert(forces_reshaped.rows() == real_vertices.rows());
-				assert(forces_reshaped.cols() == real_vertices.cols());
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
 			if (opts.friction_forces)
 			{
-				Eigen::MatrixXd displaced_surface_prev = (friction_form != nullptr) ? friction_form->displaced_surface_prev() : displaced_surface;
+				Eigen::MatrixXd displaced_surface_prev;
+				if (friction_form != nullptr)
+					displaced_surface_prev = friction_form->displaced_surface_prev();
+				if (displaced_surface_prev.size() == 0)
+					displaced_surface_prev = displaced_surface;
 
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
@@ -1657,17 +1675,17 @@ namespace polyfem::io
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
-				assert(forces_reshaped.rows() == real_vertices.rows());
-				assert(forces_reshaped.cols() == real_vertices.cols());
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
 				writer.add_field("friction_forces", forces_reshaped);
 			}
 
-			assert(collision_mesh.vertices(boundary_nodes_pos).rows() == real_vertices.rows());
-			assert(collision_mesh.vertices(boundary_nodes_pos).cols() == real_vertices.cols());
+			assert(collision_mesh.vertices_at_rest().rows() == surface_displacements.rows());
+			assert(collision_mesh.vertices_at_rest().cols() == surface_displacements.cols());
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
-				collision_mesh.vertices(boundary_nodes_pos),
+				collision_mesh.vertices_at_rest(),
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
@@ -1899,6 +1917,56 @@ namespace polyfem::io
 		}
 
 		writer.write_mesh(name, points, edges);
+	}
+
+	void OutGeometryData::save_points(
+		const std::string &path,
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const ExportOptions &opts,
+		std::vector<SolutionFrame> &solution_frames) const
+	{
+		const auto &dirichlet_nodes = state.dirichlet_nodes;
+		const auto &dirichlet_nodes_position = state.dirichlet_nodes_position;
+		const mesh::Mesh &mesh = *state.mesh;
+		const assembler::Problem &problem = *state.problem;
+
+		int actual_dim = 1;
+		if (!problem.is_scalar())
+			actual_dim = mesh.dimension();
+
+		Eigen::MatrixXd fun(dirichlet_nodes_position.size(), actual_dim);
+		Eigen::MatrixXd b_sidesets(dirichlet_nodes_position.size(), 1);
+		b_sidesets.setZero();
+		Eigen::MatrixXd points(dirichlet_nodes_position.size(), mesh.dimension());
+		std::vector<std::vector<int>> cells(dirichlet_nodes_position.size());
+
+		for (int i = 0; i < dirichlet_nodes_position.size(); ++i)
+		{
+			const int n_id = dirichlet_nodes[i];
+			const auto s_id = mesh.get_node_id(n_id);
+			if (s_id > 0)
+			{
+				b_sidesets(i) = s_id;
+			}
+
+			for (int j = 0; j < actual_dim; ++j)
+			{
+				fun(i, j) = sol(n_id * actual_dim + j);
+			}
+
+			points.row(i) = dirichlet_nodes_position[i];
+			cells[i].push_back(i);
+		}
+
+		io::VTUWriter writer;
+
+		if (opts.solve_export_to_file)
+		{
+			writer.add_field("solution", fun);
+			writer.add_field("sidesets", b_sidesets);
+			writer.write_mesh(path, points, cells, false);
+		}
 	}
 
 	void OutGeometryData::save_pvd(
