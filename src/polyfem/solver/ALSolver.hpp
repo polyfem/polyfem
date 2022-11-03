@@ -19,7 +19,8 @@ namespace polyfem::solver
 			std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver,
 			std::shared_ptr<ALForm> al_form,
 			const double initial_al_weight,
-			const double max_al_weight,
+			const double scaling,
+			const int max_al_steps,
 			const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness);
 
 		void solve(NLProblem &nl_problem, Eigen::MatrixXd &sol, bool force_al = false);
@@ -31,8 +32,9 @@ namespace polyfem::solver
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver;
 		std::shared_ptr<ALForm> al_form;
-		double initial_al_weight;
-		double max_al_weight;
+		const double initial_al_weight;
+		const double scaling;
+		const int max_al_steps;
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> updated_barrier_stiffness;

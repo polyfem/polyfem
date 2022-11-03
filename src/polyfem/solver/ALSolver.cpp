@@ -9,12 +9,14 @@ namespace polyfem::solver
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver,
 		std::shared_ptr<ALForm> al_form,
 		const double initial_al_weight,
-		const double max_al_weight,
+		const double scaling,
+		const int max_al_steps,
 		const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness)
 		: nl_solver(nl_solver),
 		  al_form(al_form),
 		  initial_al_weight(initial_al_weight),
-		  max_al_weight(max_al_weight),
+		  scaling(scaling),
+		  max_al_steps(max_al_steps),
 		  updated_barrier_stiffness(updated_barrier_stiffness)
 	{
 	}
@@ -37,8 +39,7 @@ namespace polyfem::solver
 
 		// --------------------------------------------------------------------
 
-		double al_weight = 0.5;
-		int max_al_steps = 35; // TODO
+		double al_weight = initial_al_weight;
 		int al_steps = 0;
 
 		nl_problem.line_search_begin(sol, tmp_sol);
@@ -63,11 +64,11 @@ namespace polyfem::solver
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
-			al_weight /= 2.0;
+			al_weight /= scaling;
 
 			if (al_steps >= max_al_steps)
 			{
-				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
+				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
 				break;
 			}
 
