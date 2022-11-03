@@ -73,6 +73,7 @@ namespace polyfem::solver
 			}
 
 			post_subsolve(al_weight);
+			++al_steps;
 		}
 		nl_problem.line_search_end();
 
