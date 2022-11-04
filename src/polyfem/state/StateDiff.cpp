@@ -38,49 +38,6 @@ namespace polyfem
 {
 	namespace
 	{
-		typedef std::vector<std::function<void(int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> VolumeIntegrandTerms;
-		typedef std::vector<std::function<void(int, const Eigen::VectorXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::VectorXd &)>> SurfaceIntegrandTerms;
-
-		class LocalThreadVecStorage
-		{
-		public:
-			Eigen::MatrixXd vec;
-			assembler::ElementAssemblyValues vals;
-			QuadratureVector da;
-
-			LocalThreadVecStorage(const int size)
-			{
-				vec.resize(size, 1);
-				vec.setZero();
-			}
-		};
-
-		class LocalThreadScalarStorage
-		{
-		public:
-			double val;
-			assembler::ElementAssemblyValues vals;
-			QuadratureVector da;
-
-			LocalThreadScalarStorage()
-			{
-				val = 0;
-			}
-		};
-
-		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
-
-		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
-		{
-			int size = sqrt(vec.size());
-			assert(size * size == vec.size());
-
-			mat.resize(size, size);
-			for (int i = 0; i < size; i++)
-				for (int j = 0; j < size; j++)
-					mat(i, j) = vec(i * size + j);
-		}
-
 		void solve_zero_dirichlet(const json &args, StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)
 		{
 			auto solver = polysolve::LinearSolver::create(args["solver"], args["precond"]);
@@ -94,124 +51,6 @@ namespace polyfem
 			Eigen::VectorXd x;
 			adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, "", "", false, false);
 			adjoint_solution = x;
-		}
-
-		void volume_integral(
-			const std::vector<ElementBases> &bases,
-			const std::vector<ElementBases> &gbases,
-			const VolumeIntegrandTerms &integrand_functions,
-			const mesh::Mesh &mesh,
-			double &integral)
-		{
-			integral = 0;
-
-			const int n_elements = int(bases.size());
-
-			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
-
-			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				for (int e = start; e < end; ++e)
-				{
-					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
-
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					local_storage.da = vals.det.array() * quadrature.weights.array();
-
-					std::vector<Eigen::VectorXd> integrands;
-					for (const auto &integrand_function : integrand_functions)
-					{
-						Eigen::VectorXd vec_term;
-						integrand_function(e, quadrature.points, vals.val, vec_term);
-						integrands.push_back(vec_term);
-					}
-
-					for (int q = 0; q < local_storage.da.size(); ++q)
-					{
-						double integrand_product = 1;
-						for (const auto &integrand : integrands)
-						{
-							integrand_product *= integrand(q);
-						}
-						local_storage.val += integrand_product * local_storage.da(q);
-					}
-				}
-			});
-
-			for (const LocalThreadScalarStorage &local_storage : storage)
-				integral += local_storage.val;
-		}
-
-		void surface_integral(
-			const std::vector<mesh::LocalBoundary> &local_boundary,
-			const int resolution,
-			const std::vector<ElementBases> &bases,
-			const std::vector<ElementBases> &gbases,
-			const SurfaceIntegrandTerms &integrand_functions,
-			const mesh::Mesh &mesh,
-			double &integral)
-		{
-			integral = 0;
-
-			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
-
-			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
-				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				Eigen::MatrixXd uv, samples, gtmp;
-				Eigen::VectorXi global_primitive_ids;
-				Eigen::MatrixXd points, normals;
-				Eigen::VectorXd weights;
-
-				for (int lb_id = start; lb_id < end; ++lb_id)
-				{
-					const auto &lb = local_boundary[lb_id];
-					const int e = lb.element_id();
-
-					assembler::ElementAssemblyValues vals;
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh, false, uv, points, normals, weights, global_primitive_ids);
-
-					if (!has_samples)
-						continue;
-
-					const ElementBases &gbs = gbases[e];
-					const ElementBases &bs = bases[e];
-
-					vals.compute(e, mesh.is_volume(), points, bs, gbs);
-
-					const Eigen::VectorXd da = weights.array();
-					// const Eigen::VectorXd da = vals.det.array() * weights.array();
-
-					for (int n = 0; n < vals.jac_it.size(); ++n)
-					{
-						normals.row(n) = normals.row(n) * vals.jac_it[n];
-						normals.row(n).normalize();
-					}
-
-					std::vector<Eigen::VectorXd> integrands;
-					for (const auto &integrand_function : integrand_functions)
-					{
-						Eigen::VectorXd vec_term;
-						integrand_function(e, global_primitive_ids, points, vals.val, normals, vec_term);
-						integrands.push_back(vec_term);
-					}
-
-					for (int q = 0; q < da.size(); ++q)
-					{
-						double integrand_product = 1;
-						for (const auto &integrand : integrands)
-						{
-							integrand_product *= integrand(q);
-						}
-						local_storage.val += integrand_product * da(q);
-					}
-				}
-			});
-
-			for (const LocalThreadScalarStorage &local_storage : storage)
-				integral += local_storage.val;
 		}
 
 		void replace_rows_by_identity(StiffnessMatrix &reduced_mat, const StiffnessMatrix &mat, const std::vector<int> &rows)
@@ -239,8 +78,9 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
-		void replace_rows_by_zero(StiffnessMatrix &reduced_mat, const StiffnessMatrix &mat, const std::vector<int> &rows)
+		StiffnessMatrix replace_rows_by_zero(const StiffnessMatrix &mat, const std::vector<int> &rows)
 		{
+			StiffnessMatrix reduced_mat;
 			reduced_mat.resize(mat.rows(), mat.cols());
 
 			std::vector<bool> mask(mat.rows(), false);
@@ -252,15 +92,13 @@ namespace polyfem
 			{
 				for (StiffnessMatrix::InnerIterator it(mat, k); it; ++it)
 				{
-					if (mask[it.row()])
-					{
-						continue;
-					}
-					else
+					if (!mask[it.row()])
 						coeffs.emplace_back(it.row(), it.col(), it.value());
 				}
 			}
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
+
+			return reduced_mat;
 		}
 
 		void get_bdf_parts(
@@ -289,33 +127,6 @@ namespace polyfem
 				beta = std::nan("");
 		}
 	} // namespace
-
-	void State::perturb_mesh(const Eigen::MatrixXd &perturbation)
-	{
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-
-		get_vf(V, F);
-		V.conservativeResize(V.rows(), mesh->dimension());
-
-		V += utils::unflatten(perturbation, V.cols());
-
-		set_v(V);
-	}
-	void State::perturb_material(const Eigen::MatrixXd &perturbation)
-	{
-		const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
-		const auto &cur_mus = assembler.lame_params().mu_mat_;
-
-		Eigen::MatrixXd lambda_update(cur_lambdas.size(), 1), mu_update(cur_mus.size(), 1);
-		for (int i = 0; i < lambda_update.size(); i++)
-		{
-			lambda_update(i) = perturbation(i);
-			mu_update(i) = perturbation(i + lambda_update.size());
-		}
-
-		assembler.update_lame_params(cur_lambdas + lambda_update, cur_mus + mu_update);
-	}
 
 	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric) const
 	{
@@ -394,77 +205,19 @@ namespace polyfem
 		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
 	}
 
-	double State::J_transient_step(const IntegrableFunctional &j, const int step)
-	{
-		const auto &gbases = geom_bases();
-		const double dt = args["time"]["dt"];
-
-		double result = 0;
-		if (j.is_volume_integral())
-		{
-			VolumeIntegrandTerms integrand_functions = {
-				[&](int e, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, Eigen::VectorXd &vec_term) {
-					Eigen::MatrixXd u, grad_u;
-					io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[step].u, u, grad_u);
-					Eigen::MatrixXd vec_term_mat;
-					json params = {};
-					params["elem"] = e;
-					params["body_id"] = mesh->get_body_id(e);
-					params["t"] = dt * step;
-					params["step"] = step;
-					j.evaluate(assembler.lame_params(), reference_points, global_points, u, grad_u, params, vec_term_mat);
-					assert(vec_term.cols() == 1);
-					vec_term = vec_term_mat;
-				}};
-
-			volume_integral(bases, gbases, integrand_functions, *mesh, result);
-		}
-		else
-		{
-			SurfaceIntegrandTerms integrand_functions = {
-				[&](int e, const Eigen::VectorXi &global_primitive_ids, const Eigen::MatrixXd &reference_points, const Eigen::MatrixXd &global_points, const Eigen::MatrixXd &normals, Eigen::VectorXd &vec_term) {
-					Eigen::MatrixXd u, grad_u;
-					io::Evaluator::interpolate_at_local_vals(*mesh, problem->is_scalar(), bases, gbases, e, reference_points, diff_cached[step].u, u, grad_u);
-					std::vector<int> boundary_ids = {};
-					for (int i = 0; i < global_primitive_ids.size(); ++i)
-						boundary_ids.push_back(mesh->get_boundary_id(global_primitive_ids(i)));
-					json params = {};
-					params["elem"] = e;
-					params["body_id"] = mesh->get_body_id(e);
-					params["boundary_ids"] = boundary_ids;
-					params["t"] = dt * step;
-					params["step"] = step;
-					Eigen::MatrixXd vec_term_mat;
-					j.evaluate(assembler.lame_params(), reference_points, global_points, u, grad_u, params, vec_term_mat);
-					assert(vec_term.cols() == 1);
-					vec_term = vec_term_mat;
-				}};
-
-			surface_integral(total_local_boundary, args["space"]["advanced"]["quadrature_order"], bases, gbases, integrand_functions, *mesh, result);
-		}
-
-		return result;
-	}
-
 	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol)
 	{
 		StiffnessMatrix gradu_h(sol.size(), sol.size()), gradu_h_prev(sol.size(), sol.size());
 		if (current_step == 0)
 			diff_cached.clear();
-		if (problem->is_time_dependent())
-		{
-			if (current_step > 0)
-				compute_force_hessian(sol, gradu_h, gradu_h_prev);
-
-			if (diff_cached.size() > 0)
-				diff_cached.back().gradu_h_next = gradu_h_prev;
-		}
-		else
+		if (!problem->is_time_dependent() || current_step > 0)
 			compute_force_hessian(sol, gradu_h, gradu_h_prev);
-		
+		if (diff_cached.size() > 0)
+			diff_cached.back().gradu_h_next = replace_rows_by_zero(gradu_h_prev, boundary_nodes);
+
 		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
-		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set});
+		diff_cached.push_back({replace_rows_by_zero(gradu_h, boundary_nodes), StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set});
 	}
 
 	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const
@@ -525,13 +278,8 @@ namespace polyfem
 
 	void State::solve_adjoint(const Eigen::VectorXd &adjoint_rhs, Eigen::MatrixXd &adjoint_solution) const
 	{
-		StiffnessMatrix A;
+		StiffnessMatrix A = diff_cached[0].gradu_h;
 		Eigen::VectorXd b = adjoint_rhs;
-
-		{
-			StiffnessMatrix unused;
-			compute_force_hessian(diff_cached[0].u, A, unused);
-		}
 		
 		if (lin_solver_cached)
 		{
@@ -550,7 +298,6 @@ namespace polyfem
 		const int bdf_order = get_bdf_order();
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
-		const auto &gbases = geom_bases();
 
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
@@ -566,13 +313,11 @@ namespace polyfem
 			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
 			double beta_dt = beta * dt;
 
-			StiffnessMatrix gradu_h_next;
-			replace_rows_by_zero(gradu_h_next, -beta_dt * diff_cached[i].gradu_h_next, boundary_nodes);
+			StiffnessMatrix gradu_h_next = -beta_dt * diff_cached[i].gradu_h_next;
 
 			if (i > 0)
 			{
-				StiffnessMatrix gradu_h;
-				replace_rows_by_zero(gradu_h, -diff_cached[i].gradu_h, boundary_nodes);
+				StiffnessMatrix gradu_h = -diff_cached[i].gradu_h;
 				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
 				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - adjoint_rhs[i];
 				for (const auto &b : boundary_nodes)
@@ -601,7 +346,7 @@ namespace polyfem
 			else
 			{
 				adjoint_p[i] = -reduced_mass.transpose() * sum_alpha_p;
-				adjoint_nu[i] = -adjoint_rhs[i] - reduced_mass.transpose() * sum_alpha_nu + beta_dt * diff_cached[i].gradu_h_next.transpose() * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
+				adjoint_nu[i] = -adjoint_rhs[i] - reduced_mass.transpose() * sum_alpha_nu - gradu_h_next * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
 			}
 		}
 	}

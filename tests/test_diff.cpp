@@ -2,6 +2,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/utils/CompositeFunctional.hpp>
 #include <polyfem/solver/AdjointForm.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -15,6 +16,34 @@
 using namespace polyfem;
 
 namespace {
+
+void perturb_mesh(State &state, const Eigen::MatrixXd &perturbation)
+{
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+
+	state.get_vf(V, F);
+	V.conservativeResize(V.rows(), state.mesh->dimension());
+
+	V += utils::unflatten(perturbation, V.cols());
+
+	state.set_v(V);
+}
+
+void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixXd &perturbation)
+{
+	const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
+	const auto &cur_mus = assembler.lame_params().mu_mat_;
+
+	Eigen::MatrixXd lambda_update(cur_lambdas.size(), 1), mu_update(cur_mus.size(), 1);
+	for (int i = 0; i < lambda_update.size(); i++)
+	{
+		lambda_update(i) = perturbation(i);
+		mu_update(i) = perturbation(i + lambda_update.size());
+	}
+
+	assembler.update_lame_params(cur_lambdas + lambda_update, cur_mus + mu_update);
+}
 
 void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
 {
@@ -186,7 +215,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
-	state.perturb_mesh(velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 
 	solve_pde(state);
 
@@ -316,7 +345,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-7;
-	state.perturb_mesh(velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 
 	solve_pde(state);
 
@@ -439,13 +468,13 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
-	state.perturb_mesh(velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 
 	solve_pde(state);
 
 	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
 
-	state.perturb_mesh(velocity_discrete * (-2 * t));
+	perturb_mesh(state, velocity_discrete * (-2 * t));
 
 	solve_pde(state);
 
@@ -615,12 +644,12 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	const double t = 1e-6;
-	state.perturb_mesh(velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 
 	solve_pde(state);
 	double next_functional_val = func.energy(state);
 
-	state.perturb_mesh(velocity_discrete * (-2 * t));
+	perturb_mesh(state, velocity_discrete * (-2 * t));
 
 	solve_pde(state);
 	double former_functional_val = func.energy(state);
@@ -757,11 +786,11 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
 
-	state.perturb_mesh(velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 	solve_pde(state);
 	double next_functional_val = func.energy(state);
 
-	state.perturb_mesh(velocity_discrete * (-2 * t));
+	perturb_mesh(state, velocity_discrete * (-2 * t));
 	solve_pde(state);
 	double prev_functional_val = func.energy(state);
 
@@ -876,11 +905,11 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 
 	const double t = 1e-5;
 
-	state.perturb_material(velocity_discrete * t);
+	perturb_material(state.assembler, velocity_discrete * t);
 	solve_pde(state);
 	double next_functional_val = j.energy(state);
 
-	state.perturb_material(velocity_discrete * (-2 * t));
+	perturb_material(state.assembler, velocity_discrete * (-2 * t));
 	solve_pde(state);
 	double former_functional_val = j.energy(state);
 
@@ -1183,12 +1212,12 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	Eigen::VectorXd one_form = func.gradient(*state, "material");
 
 	const double step_size = 1e-5;
-	state->perturb_material(velocity_discrete * step_size);
+	perturb_material(state->assembler, velocity_discrete * step_size);
 
 	solve_pde(state);
 	double next_functional_val = func.energy(*state);
 
-	state->perturb_material(velocity_discrete * (-2) * step_size);
+	perturb_material(state->assembler, velocity_discrete * (-2) * step_size);
 
 	solve_pde(state);
 	double former_functional_val = func.energy(*state);
@@ -1312,11 +1341,11 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
-	state->perturb_mesh(velocity_discrete * t);
+	perturb_mesh(*state, velocity_discrete * t);
 	solve_pde(state);
 	double next_functional_val = func.energy(*state);
 
-	state->perturb_mesh(velocity_discrete * (-2 * t));
+	perturb_mesh(*state, velocity_discrete * (-2 * t));
 	solve_pde(state);
 	double prev_functional_val = func.energy(*state);
 
@@ -1477,12 +1506,12 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
-	state.perturb_mesh(velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 
 	solve_pde(state);
 	double next_functional_val = func.energy(state);
 
-	state.perturb_mesh(velocity_discrete * (-2 * t));
+	perturb_mesh(state, velocity_discrete * (-2 * t));
 
 	solve_pde(state);
 	double prev_functional_val = func.energy(state);

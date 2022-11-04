@@ -909,23 +909,16 @@ namespace polyfem
 		IntegrableFunctional j;
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-				val.setZero(u.rows(), 1);
-			else
-				val = u.col(d) + pts.col(d);
+			val = u.col(d) + pts.col(d);
 		});
 
 		j.set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
-			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-				return;
 			val.col(d).setOnes();
 		});
 
 		j.set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(pts.rows(), pts.cols());
-			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-				return;
 			val.col(d).setOnes();
 		});
 		return j;
@@ -936,10 +929,7 @@ namespace polyfem
 		IntegrableFunctional j;
 		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-				val.setZero(u.rows(), 1);
-			else
-				val.setOnes(u.rows(), 1);
+			val.setOnes(u.rows(), 1);
 		});
 		return j;
 	}
@@ -981,7 +971,7 @@ namespace polyfem
 		for (int step = 0; step <= n_steps; step++)
 		{
 			for (int d = 0; d < dim; d++)
-				barycenter(d) = state.J_transient_step(js[d], step);
+				barycenter(d) = AdjointForm::integrate_objective(state, js[d], state.diff_cached[step].u, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, step);
 			barycenters.push_back(barycenter);
 		}
 

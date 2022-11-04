@@ -609,12 +609,6 @@ namespace polyfem
 		void set_v(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
 
-		double J_transient_step(const IntegrableFunctional &j, const int step);
-
-		// Alters the mesh for a given discrete perturbation (vector) field over the vertices
-		void perturb_mesh(const Eigen::MatrixXd &perturbation);
-		void perturb_material(const Eigen::MatrixXd &perturbation);
-
 		// to replace the initial condition
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative

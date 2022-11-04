@@ -72,7 +72,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type = "");
 
-	protected:
 		static double integrate_objective(
 			const State &state,
 			const IntegrableFunctional &j,

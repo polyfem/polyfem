@@ -22,6 +22,8 @@ using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
 
+namespace {
+
 double five_cylinders_fluid1(double x, double y)
 {
 	if (x > 0.5)
@@ -36,6 +38,19 @@ double five_cylinders_fluid1(double x, double y)
 		return 0;
 	
 	return 1;
+}
+
+void perturb_mesh(State &state, const Eigen::MatrixXd &perturbation)
+{
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+
+	state.get_vf(V, F);
+	V.conservativeResize(V.rows(), state.mesh->dimension());
+
+	V += utils::unflatten(perturbation, V.cols());
+
+	state.set_v(V);
 }
 
 double five_cylinders_fluid2(double x, double y)
@@ -76,6 +91,8 @@ double cross_elastic2(double x, double y)
 	if (x < 0.1)
 		return 0.9;
 	return 0.1;
+}
+
 }
 
 TEST_CASE("density_elastic_homo", "[homogenization]")
@@ -322,10 +339,10 @@ TEST_CASE("shape_elastic_homo_grad", "[homogenization]")
     }
     const double dt = 1e-7;
 
-    state.perturb_mesh(theta * dt);
+    perturb_mesh(state, theta * dt);
     state.homogenization(homogenized_tensor1);
 
-    state.perturb_mesh(theta * (-2*dt));
+    perturb_mesh(state, theta * (-2*dt));
     state.homogenization(homogenized_tensor2);
     
     Eigen::MatrixXd f_diff_mat = homogenized_tensor1 - homogenized_tensor2;
