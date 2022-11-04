@@ -77,7 +77,6 @@ namespace polyfem
 		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality)
 		{
 			const int dim = F.cols() - 1;
-			assert(V.cols() == 3);
 
 			quality.setZero(F.rows());
 			if (dim == 2)
