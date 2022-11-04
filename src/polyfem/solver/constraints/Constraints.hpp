@@ -13,12 +13,19 @@ namespace polyfem
 
 		virtual void full_to_reduced(const Eigen::VectorXd &full, Eigen::VectorXd &reduced, Eigen::MatrixXd &grad)
 		{
+			if (dreduced_dfull_ != nullptr)
+			{
+				reduced = full_to_reduced_(full);
+				grad = dreduced_dfull_(full);
+				return;
+			}
+
 			DiffScalarBase::setVariableCount(reduced_size_);
 			assert(full.size() == full_size_);
 			DiffVector full_diff(full_size_);
 			for (int i = 0; i < full.size(); ++i)
 				full_diff(i) = DiffScalar(i, full(i));
-			auto reduced_diff = full_to_reduced_(full_diff);
+			auto reduced_diff = full_to_reduced_diff_(full_diff);
 			assert(reduced_diff.size() == reduced_size_);
 			reduced.resize(reduced_size_);
 			grad.resize(full_size_, reduced_size_);
@@ -38,7 +45,13 @@ namespace polyfem
 		virtual void update_state(std::shared_ptr<State> state, const Eigen::VectorXd &reduced) = 0;
 
 	protected:
-		std::function<DiffVector(const DiffVector &)> full_to_reduced_;
+		// For differentiability, either define the function with differentiable types.
+		std::function<DiffVector(const DiffVector &)> full_to_reduced_diff_;
+		// Or explicitly define the function and gradient with Eigen types.
+		std::function<Eigen::VectorXd(const Eigen::VectorXd &)> full_to_reduced_;
+		std::function<Eigen::MatrixXd(const Eigen::VectorXd &)> dreduced_dfull_;
+
+		// Must define the inverse function with Eigen types, differentiability is not needed.
 		std::function<Eigen::VectorXd(const Eigen::VectorXd &)> reduced_to_full_;
 
 		int full_size_;

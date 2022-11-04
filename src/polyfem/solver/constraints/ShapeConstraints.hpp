@@ -16,7 +16,7 @@ namespace polyfem
 		{
 			if (constraint_params["type"] == "identity")
 			{
-				full_to_reduced_ = [this](const DiffVector &full) {
+				full_to_reduced_diff_ = [this](const DiffVector &full) {
 					DiffVector reduced(reduced_size_);
 					for (int i = 0; i < reduced_size_; ++i)
 						reduced(i) = full(i);
