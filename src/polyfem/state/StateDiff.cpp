@@ -132,7 +132,7 @@ namespace polyfem
 	{
 		const auto &cur_bases = geometric ? geom_bases() : bases;
 		const int n_elements = int(cur_bases.size());
-		vertices = Eigen::MatrixXd::Zero(geometric ? n_geom_bases : n_bases, 3);
+		vertices = Eigen::MatrixXd::Zero(geometric ? n_geom_bases : n_bases, mesh->dimension());
 		faces = Eigen::MatrixXi::Zero(cur_bases.size(), cur_bases[0].bases.size());
 		assembler::ElementAssemblyValues vals;
 		for (int e = 0; e < n_elements; ++e)
@@ -143,7 +143,7 @@ namespace polyfem
 				const auto &v = cur_bases[e].bases[i];
 				assert(v.global().size() == 1);
 
-				vertices.block(v.global()[0].index, 0, 1, mesh->dimension()) = v.global()[0].node;
+				vertices.row(v.global()[0].index) = v.global()[0].node;
 				faces(e, i) = v.global()[0].index;
 			}
 		}

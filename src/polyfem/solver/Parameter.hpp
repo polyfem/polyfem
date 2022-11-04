@@ -21,6 +21,7 @@ namespace polyfem
 		virtual void update() = 0;
 
 		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) = 0;
+		virtual Eigen::VectorXd project(const Eigen::VectorXd &full_grad) const = 0;
 
 		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) = 0;
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) = 0;

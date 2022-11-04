@@ -70,8 +70,7 @@ namespace polyfem
 
 	IntegrableFunctional TargetYFunctional::get_target_functional(const std::string &type)
 	{
-		IntegrableFunctional j(surface_integral);
-		j.set_transient_integral_type(transient_integral_type);
+		IntegrableFunctional j;
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);
 			for (int q = 0; q < u.rows(); q++)
@@ -154,8 +153,7 @@ namespace polyfem
 	IntegrableFunctional TrajectoryFunctional::get_target_functional(const std::string &type)
 	{
 		assert(state_ref_);
-		IntegrableFunctional j(surface_integral);
-		j.set_transient_integral_type(transient_integral_type);
+		IntegrableFunctional j;
 		{
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
@@ -354,8 +352,7 @@ namespace polyfem
 
 	IntegrableFunctional SDFTrajectoryFunctional::get_target_functional(const std::string &type)
 	{
-		IntegrableFunctional j(surface_integral);
-		j.set_transient_integral_type(transient_integral_type);
+		IntegrableFunctional j;
 		{
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
@@ -484,8 +481,7 @@ namespace polyfem
 		assert(max_volume >= min_volume);
 		assert(!surface_integral);
 		assert(transient_integral_type == "final");
-		IntegrableFunctional j(surface_integral);
-		j.set_transient_integral_type(transient_integral_type);
+		IntegrableFunctional j;
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 		});
@@ -530,9 +526,8 @@ namespace polyfem
 		assert(max_mass >= min_mass);
 		assert(!surface_integral);
 		assert(transient_integral_type == "final");
-		IntegrableFunctional j(surface_integral);
+		IntegrableFunctional j;
 		j.set_name("Mass");
-		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 			val *= params["density"].get<double>();
@@ -543,9 +538,8 @@ namespace polyfem
 	IntegrableFunctional HeightFunctional::get_target_functional(const std::string &type)
 	{
 		assert(!surface_integral);
-		IntegrableFunctional j(surface_integral);
+		IntegrableFunctional j;
 		j.set_name("Center");
-		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val = -(u.col(1) + pts.col(1));
 		});
@@ -782,9 +776,8 @@ namespace polyfem
 	IntegrableFunctional ComplianceFunctional::get_compliance_functional(const std::string &formulation)
 	{
 		assert(!surface_integral);
-		IntegrableFunctional j(surface_integral);
+		IntegrableFunctional j;
 		j.set_name("Compliance");
-		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([formulation, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 			for (int q = 0; q < grad_u.rows(); q++)
@@ -907,7 +900,6 @@ namespace polyfem
 	IntegrableFunctional CenterTrajectoryFunctional::get_center_trajectory_functional(const int d)
 	{
 		IntegrableFunctional j;
-		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val = u.col(d) + pts.col(d);
 		});
@@ -927,7 +919,6 @@ namespace polyfem
 	IntegrableFunctional CenterTrajectoryFunctional::get_volume_functional()
 	{
 		IntegrableFunctional j;
-		j.set_transient_integral_type(transient_integral_type);
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 		});
@@ -943,7 +934,6 @@ namespace polyfem
 		std::vector<IntegrableFunctional> js(dim);
 		for (int d = 0; d < dim; d++)
 		{
-			js[d].set_transient_integral_type("uniform");
 			js[d].set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
 					val.setZero(u.rows(), 1);

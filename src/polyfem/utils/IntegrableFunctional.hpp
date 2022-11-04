@@ -14,21 +14,10 @@ namespace polyfem
 	public:
 		typedef std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const json &, Eigen::MatrixXd &)> functionalType;
 
-		IntegrableFunctional(bool is_surface_integral = false) { is_surface_integral_ = is_surface_integral; }
-
-		void set_type(bool depend_on_x, bool depend_on_u, bool depend_on_gradu)
-		{
-			has_x = depend_on_x;
-			has_u = depend_on_u;
-			has_gradu = depend_on_gradu;
-		}
+		IntegrableFunctional() = default;
 
 		void set_name(const std::string &name_) { name = name_; }
 		std::string get_name() const { return name; }
-
-		void set_surface_integral() { is_surface_integral_ = true; }
-		void set_volume_integral() { is_surface_integral_ = false; }
-		void set_transient_integral_type(const std::string &integral_type) { transient_integral_type = integral_type; }
 
 		void set_j(const functionalType &j_) { j_func = j_; }
 		void set_dj_dx(const functionalType &dj_dx_)
@@ -116,52 +105,9 @@ namespace polyfem
 			return val;
 		}
 
-		void get_transient_quadrature_weights(const int n, const double dt, std::vector<double> &weights) const
-		{
-			weights.assign(n + 1, dt);
-			if (transient_integral_type == "uniform")
-			{
-				weights[0] = 0;
-			}
-			else if (transient_integral_type == "trapezoidal")
-			{
-				weights[0] = dt / 2.;
-				weights[weights.size() - 1] = dt / 2.;
-			}
-			else if (transient_integral_type == "simpson")
-			{
-				weights[0] = dt / 3.;
-				weights[weights.size() - 1] = dt / 3.;
-				for (int i = 1; i < weights.size() - 1; i++)
-				{
-					if (i % 2)
-						weights[i] = dt * 4. / 3.;
-					else
-						weights[i] = dt * 2. / 4.;
-				}
-			}
-			else if (transient_integral_type == "final")
-			{
-				weights.assign(n + 1, 0);
-				weights[n] = 1;
-			}
-			else if (transient_integral_type.find("step_") != std::string::npos)
-			{
-				weights.assign(n + 1, 0);
-				int step = std::stoi(transient_integral_type.substr(5));
-				assert(step > 0 && step < weights.size());
-				weights[step] = 1;
-			}
-			else
-				assert(false);
-		}
-
 		bool depend_on_x() const { return has_x; }
 		bool depend_on_u() const { return has_u; }
 		bool depend_on_gradu() const { return has_gradu; }
-
-		bool is_volume_integral() const { return !is_surface_integral_; }
-		bool is_surface_integral() const { return is_surface_integral_; }
 
 		void lambda_mu(const LameParameters &lame_params, const int e, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, Eigen::MatrixXd &lambda, Eigen::MatrixXd &mu) const
 		{
@@ -173,8 +119,6 @@ namespace polyfem
 
 	private:
 		std::string name = "";
-		bool is_surface_integral_;
-		std::string transient_integral_type = "simpson";
 		bool has_x = false, has_u = false, has_gradu = false;
 		functionalType j_func, dj_dx_func, dj_du_func, dj_dgradu_func;
 	};

@@ -214,8 +214,6 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
 
-		// boundary smoothing
-		has_boundary_smoothing = false;
 		json opt_params;
 		// SLIM
 		for (const auto &param : opt_params["parameters"])
@@ -696,8 +694,6 @@ namespace polyfem
 
 		build_fixed_nodes();
 		build_tied_nodes();
-
-		boundary_smoother.build_laplacian(states_ptr_[0]->n_geom_bases, states_ptr_[0]->mesh->dimension(), collision_mesh.edges(), states_ptr_[0]->boundary_gnodes, fixed_nodes);
 
 		logger().info("Remeshing finished!");
 

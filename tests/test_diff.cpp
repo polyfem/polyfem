@@ -181,7 +181,6 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 	solve_pde(state);
 
 	IntegrableFunctional j;
-	j.set_type(false, false, true);
 	{
 		auto j_func = [](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val = (grad_u.array() * grad_u.array()).rowwise().sum();
@@ -296,9 +295,8 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 
 	solve_pde(state);
 
-	IntegrableFunctional j(true);
+	IntegrableFunctional j;
 	{
-		j.set_type(true, true, false);
 		const auto formulation = state.formulation();
 		auto j_func = [formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);
@@ -420,9 +418,8 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 
 	solve_pde(state);
 
-	IntegrableFunctional j(true);
+	IntegrableFunctional j;
 	{
-		j.set_type(true, true, false);
 		const auto formulation = state.formulation();
 		auto j_func = [formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);

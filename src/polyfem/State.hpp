@@ -588,6 +588,15 @@ namespace polyfem
 		int n_linear_solves = 0;
 		int n_nonlinear_solves = 0;
 
+		int ndof() const
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			if (!assembler.is_mixed(formulation()))
+				return actual_dim * n_bases;
+			else
+				return actual_dim * n_bases + n_pressure_bases;
+		}
+		
 		int get_bdf_order() const
 		{
 			if (args["time"]["integrator"]["type"] == "ImplicitEuler")

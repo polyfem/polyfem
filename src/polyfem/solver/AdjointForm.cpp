@@ -413,8 +413,8 @@ namespace polyfem::solver
 
 					j.evaluate(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, j_val);
 
-					if (j.depend_on_gradu() || j.depend_on_u())
-						dj_du = j.grad_j(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params);
+					if (j.depend_on_gradu())
+						j.dj_dgradu(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_du);
 
 					if (j.depend_on_x())
 						j.dj_dx(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_dx);
@@ -491,7 +491,7 @@ namespace polyfem::solver
 
 						if (j.depend_on_gradu())
 						{
-							dj_du = j.grad_j(state.assembler.lame_params(), points, vals.val, u, grad_u, params);
+							j.dj_dgradu(state.assembler.lame_params(), points, vals.val, u, grad_u, params, dj_du);
 							dj_du = dj_du.array().colwise() * weights.array();
 						}
 
