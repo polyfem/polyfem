@@ -36,8 +36,8 @@ namespace polyfem::solver
 		StaticObjective() = default;
 		virtual ~StaticObjective() = default;
 
-		void set_time_step(int time_step) { time_step_ = time_step; }
-		int  get_time_step() { return time_step_; }
+		virtual void set_time_step(int time_step) { time_step_ = time_step; }
+		int  get_time_step() const { return time_step_; }
 
 		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
 		virtual Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const = 0;
@@ -162,12 +162,12 @@ namespace polyfem::solver
 	class BarycenterTargetObjective: public StaticObjective
 	{
 	public:
-		BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		BarycenterTargetObjective(const State &state, const Eigen::MatrixXd &target, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
 		~BarycenterTargetObjective() = default;
 
 		double value() const override;
-
-		void set_target(const Eigen::VectorXd &target) { target_ = target; }
+		Eigen::VectorXd get_target() const;
+		void set_time_step(int time_step) override;
 
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
@@ -176,13 +176,13 @@ namespace polyfem::solver
 		int dim_ = -1;
 		std::vector<std::shared_ptr<PositionObjective>> objp;
 		std::shared_ptr<VolumeObjective> objv;
-		Eigen::VectorXd target_; // TODO: make it targets
+		Eigen::MatrixXd target_; // N/1 by 3/2
 	};
 
 	class TransientObjective: public Objective
 	{
 	public:
-		TransientObjective(const json &args);
+		TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type);
 		virtual ~TransientObjective() = default;
 
 		double value() const override;
@@ -204,8 +204,5 @@ namespace polyfem::solver
 	public:
 		CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets);
 		~CenterTrajectoryObjective() = default;
-
-	protected:
-		Eigen::MatrixXd targets_;
 	};
 } // namespace polyfem::solver

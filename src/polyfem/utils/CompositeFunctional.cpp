@@ -833,7 +833,7 @@ namespace polyfem
 		};
 
 		// return sqrt(state.J_transient(js, func));
-		return sqrt(AdjointForm::value(state, js, func, {}, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type));
+		return AdjointForm::value(state, js, func, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 	}
 
 	Eigen::VectorXd CenterTrajectoryFunctional::gradient(State &state, const std::string &type)
@@ -878,9 +878,9 @@ namespace polyfem
 		// return state.integral_gradient(js, func, type) / 2 / energy(state);
 
 		Eigen::VectorXd grad;
-		AdjointForm::gradient(state, js, func, type, grad, {}, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
+		AdjointForm::gradient(state, js, func, type, grad, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
-		return grad / 2 / energy(state);
+		return grad;
 	}
 
 	IntegrableFunctional CenterTrajectoryFunctional::get_center_trajectory_functional(const int d)
@@ -917,45 +917,16 @@ namespace polyfem
 		const int dim = state.mesh->dimension();
 		const int n_steps = state.args["time"]["time_steps"].get<int>();
 
-		std::vector<IntegrableFunctional> js(dim);
-		for (int d = 0; d < dim; d++)
-		{
-			js[d].set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-					val.setZero(u.rows(), 1);
-				else
-					val = u.col(d) + pts.col(d);
-			});
-
-			js[d].set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-				val.setZero(u.rows(), u.cols());
-				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-					return;
-				val.col(d).setOnes();
-			});
-
-			js[d].set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-				val.setZero(pts.rows(), pts.cols());
-				if (interested_body_ids_.size() > 0 && interested_body_ids_.count(params["body_id"].get<int>()) == 0)
-					return;
-				val.col(d).setOnes();
-			});
-		}
-
 		barycenters.clear();
 		Eigen::VectorXd barycenter(dim);
 		for (int step = 0; step <= n_steps; step++)
 		{
 			for (int d = 0; d < dim; d++)
-				barycenter(d) = AdjointForm::integrate_objective(state, js[d], state.diff_cached[step].u, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, step);
+				barycenter(d) = AdjointForm::integrate_objective(state, get_center_trajectory_functional(d), state.diff_cached[step].u, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, step);
 			barycenters.push_back(barycenter);
 		}
 
-		IntegrableFunctional j_vol;
-		j_vol.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setOnes(u.rows(), 1);
-		});
-		double volume = AdjointForm::value(state, j_vol, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, "final");
+		double volume = AdjointForm::value(state, get_volume_functional(), interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, "final");
 
 		for (auto &point : barycenters)
 			point /= volume;

@@ -426,11 +426,10 @@ namespace polyfem::solver
             return Eigen::VectorXd::Zero(param.full_dim());
     }
 
-    BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args)
+    BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const Eigen::MatrixXd &target, const std::shared_ptr<const ShapeParameter> shape_param, const json &args)
     {
-        target_ = args["target"];
         dim_ = state.mesh->dimension();
-        assert(target_.size() == dim_);
+        target_ = target;
 
         objv = std::make_shared<VolumeObjective>(shape_param, args);
         objp.resize(dim_);
@@ -440,6 +439,22 @@ namespace polyfem::solver
             objp[d]->set_dim(d);
         }
     }
+    
+    Eigen::VectorXd BarycenterTargetObjective::get_target() const
+    {
+        assert(target_.cols() == dim_);
+        if (target_.rows() > 1)
+            return target_.row(get_time_step());
+        else
+            return target_;
+    }
+
+    void BarycenterTargetObjective::set_time_step(int time_step)
+    {
+        StaticObjective::set_time_step(time_step);
+        for (auto &obj : objp)
+            obj->set_time_step(time_step);
+    }
 
     double BarycenterTargetObjective::value() const
     {
@@ -448,12 +463,14 @@ namespace polyfem::solver
         for (int d = 0; d < dim_; d++)
             center(d) = objp[d]->value() / volume;
         
-        return (center - target_).squaredNorm();
+        return (center - get_target()).squaredNorm();
     }
     Eigen::VectorXd BarycenterTargetObjective::compute_partial_gradient(const Parameter &param) const
     {
         Eigen::VectorXd term;
         term.setZero(param.full_dim());
+
+        Eigen::VectorXd target = get_target();
         
         const double volume = objv->value();
         Eigen::VectorXd center(dim_);
@@ -462,12 +479,12 @@ namespace polyfem::solver
 
         double coeffv = 0;
         for (int d = 0; d < dim_; d++)
-            coeffv += 2 * (center(d) - target_(d)) * (-center(d) / volume);
+            coeffv += 2 * (center(d) - target(d)) * (-center(d) / volume);
         
         term += coeffv * objv->compute_partial_gradient(param);
 
         for (int d = 0; d < dim_; d++)
-            term += (2.0 / volume * (center(d) - target_(d))) * objp[d]->compute_partial_gradient(param);
+            term += (2.0 / volume * (center(d) - target(d))) * objp[d]->compute_partial_gradient(param);
         
         return term;
     }
@@ -475,6 +492,8 @@ namespace polyfem::solver
     {
         Eigen::VectorXd term;
         term.setZero(state.ndof());
+
+        Eigen::VectorXd target = get_target();
         
         const double volume = objv->value();
         Eigen::VectorXd center(dim_);
@@ -482,16 +501,16 @@ namespace polyfem::solver
             center(d) = objp[d]->value() / volume;
 
         for (int d = 0; d < dim_; d++)
-            term += (2.0 / volume * (center(d) - target_(d))) * objp[d]->compute_adjoint_rhs_step(state);
+            term += (2.0 / volume * (center(d) - target(d))) * objp[d]->compute_adjoint_rhs_step(state);
         
         return term;
     }
 
-    TransientObjective::TransientObjective(const json &args)
+    TransientObjective::TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type)
     {
-        time_steps_ = args["time_steps"];
-        dt_ = args["dt"];
-        transient_integral_type_ = args["transient_integral_type"];
+        time_steps_ = time_steps;
+        dt_ = dt;
+        transient_integral_type_ = transient_integral_type;
     }
 
     std::vector<double> TransientObjective::get_transient_quadrature_weights() const
@@ -554,13 +573,11 @@ namespace polyfem::solver
         Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);
 
-        BarycenterTargetObjective &obj = *dynamic_cast<BarycenterTargetObjective *>(obj_.get());
-
 		std::vector<double> weights = get_transient_quadrature_weights();
 		for (int i = 0; i <= time_steps_; i++)
 		{
-            obj.set_time_step(i);
-            terms.col(i) = weights[i] * obj.compute_adjoint_rhs_step(state);
+            obj_->set_time_step(i);
+            terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_step(state);
 		}
 
         return terms;
@@ -571,20 +588,18 @@ namespace polyfem::solver
         Eigen::VectorXd term;
         term.setZero(param.full_dim());
 
-        BarycenterTargetObjective &obj = *dynamic_cast<BarycenterTargetObjective *>(obj_.get());
-
         std::vector<double> weights = get_transient_quadrature_weights();
         for (int i = 0; i <= time_steps_; i++)
         {
-            obj.set_time_step(i);
-            term += weights[i] * obj.compute_partial_gradient(param);
+            obj_->set_time_step(i);
+            term += weights[i] * obj_->compute_partial_gradient(param);
         }
 
         return term;
     }
 
-    CenterTrajectoryObjective::CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets): targets_(targets), TransientObjective(args)
+    CenterTrajectoryObjective::CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets): TransientObjective(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"])
     {
-        obj_ = std::make_shared<BarycenterTargetObjective>(state, shape_param, args);
+        obj_ = std::make_shared<BarycenterTargetObjective>(state, targets, shape_param, args);
     }
 }

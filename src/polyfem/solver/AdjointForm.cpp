@@ -236,7 +236,7 @@ namespace polyfem::solver
 
 				for (int e = start; e < end; ++e)
 				{
-					if (interested_ids.size() != 0 && interested_ids.find(e) == interested_ids.end())
+					if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_body_id(e)) == interested_ids.end())
 						continue;
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
@@ -390,7 +390,7 @@ namespace polyfem::solver
 
 				for (int e = start; e < end; ++e)
 				{
-					if (interested_ids.size() != 0 && interested_ids.find(e) == interested_ids.end())
+					if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_body_id(e)) == interested_ids.end())
 						continue;
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
