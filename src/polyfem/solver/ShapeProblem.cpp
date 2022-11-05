@@ -83,9 +83,9 @@ namespace polyfem
 			{
 				for (int i = 0; i < F.rows(); i++)
 				{
-					Eigen::RowVector3d e0 = V.row(F(i, 2)) - V.row(F(i, 1));
-					Eigen::RowVector3d e1 = V.row(F(i, 0)) - V.row(F(i, 2));
-					Eigen::RowVector3d e2 = V.row(F(i, 1)) - V.row(F(i, 0));
+					Eigen::RowVector3d e0; e0(2) = 0; e0.head(2) = V.row(F(i, 2)) - V.row(F(i, 1));
+					Eigen::RowVector3d e1; e1(2) = 0; e1.head(2) = V.row(F(i, 0)) - V.row(F(i, 2));
+					Eigen::RowVector3d e2; e2(2) = 0; e2.head(2) = V.row(F(i, 1)) - V.row(F(i, 0));
 
 					double l0 = e0.norm();
 					double l1 = e1.norm();
@@ -981,7 +981,6 @@ namespace polyfem
 
 		Eigen::MatrixXd V;
 		state.get_vf(V, elements);
-		V.conservativeResize(V.rows(), state.mesh->dimension());
 
 		// fix certain object
 		std::set<int> optimize_body_ids;

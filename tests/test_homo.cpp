@@ -46,8 +46,6 @@ void perturb_mesh(State &state, const Eigen::MatrixXd &perturbation)
 	Eigen::MatrixXi F;
 
 	state.get_vf(V, F);
-	V.conservativeResize(V.rows(), state.mesh->dimension());
-
 	V += utils::unflatten(perturbation, V.cols());
 
 	state.set_v(V);
