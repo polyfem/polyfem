@@ -46,6 +46,7 @@ set(SOURCES
 	TransientNavierStokesSolver.hpp
 	AdjointForm.cpp
 	AdjointForm.hpp
+	Objective.cpp
 	Objective.hpp
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp

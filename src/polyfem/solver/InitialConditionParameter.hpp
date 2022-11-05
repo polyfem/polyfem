@@ -7,7 +7,9 @@ namespace polyfem
 	class InitialConditionParameter : Parameter
 	{
 	public:
-		InitialConditionParameter(std::vector<State> states_ptr){};
+		InitialConditionParameter(std::vector<State> states_ptr): Parameter(states_ptr) 
+		{
+		}
 
 		void update() override
 		{

@@ -4,7 +4,7 @@
 
 namespace polyfem
 {
-	class ElasticParameter : Parameter
+	class ElasticParameter : public Parameter
 	{
 	public:
 		ElasticParameter(std::vector<std::shared_ptr<State>> states_ptr);

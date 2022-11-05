@@ -10,6 +10,8 @@ namespace polyfem
 		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr){};
 		virtual ~Parameter() = default;
 
+		inline const State& get_state() const { return *(states_ptr_[0]); }
+
 		inline virtual bool contains_state(const State &state) const
 		{
 			for (auto s : states_ptr_)
@@ -20,8 +22,8 @@ namespace polyfem
 
 		virtual void update() = 0;
 
-		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) = 0;
-		virtual Eigen::VectorXd project(const Eigen::VectorXd &full_grad) const = 0;
+		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) { q = x; }
+		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &full_grad) const { return full_grad; }
 
 		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) = 0;
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) = 0;
@@ -34,6 +36,11 @@ namespace polyfem
 		virtual void post_step(const int iter_num, const Eigen::VectorXd &x0) = 0;
 
 		inline virtual void set_optimization_dim(const int optimization_dim) final { optimization_dim_ = optimization_dim; }
+		inline virtual int full_dim() const // dim before projection
+		{
+			assert(false);
+			return 0;
+		}
 		inline virtual int optimization_dim() final
 		{
 			if (optimization_dim_ <= 0)

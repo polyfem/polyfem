@@ -27,7 +27,7 @@ namespace polyfem::solver
 			const std::string &transient_integral_type = "");
 
 		static void gradient(
-			const State &state,
+			State &state,
 			const IntegrableFunctional &j,
 			const Parameter &param,
 			Eigen::VectorXd &grad,
@@ -36,7 +36,7 @@ namespace polyfem::solver
 			const std::string &transient_integral_type = "");
 
 		static void gradient(
-			const State &state,
+			State &state,
 			const IntegrableFunctional &j,
 			const std::string &param_name,
 			Eigen::VectorXd &grad,
@@ -53,7 +53,7 @@ namespace polyfem::solver
 			const std::string &transient_integral_type = "");
 
 		static void gradient(
-			const State &state,
+			State &state,
 			const std::vector<IntegrableFunctional> &j,
 			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
 			const Parameter &param,
@@ -63,7 +63,7 @@ namespace polyfem::solver
 			const std::string &transient_integral_type = "");
 
 		static void gradient(
-			const State &state,
+			State &state,
 			const std::vector<IntegrableFunctional> &j,
 			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
 			const std::string &param_name,

@@ -7,6 +7,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
 using namespace polyfem::assembler;
+using namespace polyfem::utils;
 
 namespace polyfem::solver
 {
@@ -28,17 +29,6 @@ namespace polyfem::solver
 		};
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
-
-		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
-		{
-			int size = sqrt(vec.size());
-			assert(size * size == vec.size());
-
-			mat.resize(size, size);
-			for (int i = 0; i < size; i++)
-				for (int j = 0; j < size; j++)
-					mat(i, j) = vec(i * size + j);
-		}
 	} // namespace
 	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,

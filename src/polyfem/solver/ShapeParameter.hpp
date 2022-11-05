@@ -17,10 +17,6 @@ namespace polyfem
 		{
 		}
 
-		void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) override
-		{
-		}
-
 		void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		bool is_intersection_free(const Eigen::VectorXd &x) override;

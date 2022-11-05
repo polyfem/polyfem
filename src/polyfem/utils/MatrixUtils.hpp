@@ -98,6 +98,8 @@ namespace polyfem
 		/// Unflatten rowwises, so every dim elements in x become a row.
 		Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim);
 
+		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat);
+
 		/// @brief Lump each row of a matrix into the diagonal.
 		/// @param M Matrix to lump.
 		/// @return Lumped matrix.

@@ -19,7 +19,7 @@ namespace polyfem::solver
 		{
 			for (const auto o : objectives_)
 			{
-				gradv_param = o->gradient(*p);
+				gradv_param = p->map_grad(o->gradient(*p));
 				gradv.segment(cumulative, p->optimization_dim()) += gradv_param;
 			}
 			cumulative += p->optimization_dim();

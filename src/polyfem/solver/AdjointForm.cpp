@@ -16,6 +16,8 @@
 
 #include <polyfem/time_integrator/BDF.hpp>
 
+using namespace polyfem::utils;
+
 namespace polyfem::solver
 {
 	namespace
@@ -114,17 +116,6 @@ namespace polyfem::solver
 				vec.setZero();
 			}
 		};
-
-		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
-		{
-			int size = sqrt(vec.size());
-			assert(size * size == vec.size());
-
-			mat.resize(size, size);
-			for (int i = 0; i < size; i++)
-				for (int j = 0; j < size; j++)
-					mat(i, j) = vec(i * size + j);
-		}
 	} // namespace
 
 	double AdjointForm::value(
@@ -141,7 +132,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointForm::gradient(
-		const State &state,
+		State &state,
 		const IntegrableFunctional &j,
 		const Parameter &param,
 		Eigen::VectorXd &grad,
@@ -158,7 +149,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointForm::gradient(
-		const State &state,
+		State &state,
 		const IntegrableFunctional &j,
 		const std::string &param_name,
 		Eigen::VectorXd &grad,
@@ -171,7 +162,12 @@ namespace polyfem::solver
 			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 			std::vector<Eigen::VectorXd> adjoint_rhs;
 			dJ_du_transient(state, j, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
-			state.solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, param_name == "dirichlet");
+			state.solve_transient_adjoint(adjoint_rhs, param_name == "dirichlet");
+			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
+			{
+				adjoint_nu.push_back(state.diff_cached[t].nu);
+				adjoint_p.push_back(state.diff_cached[t].p);
+			}
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
 			else if (param_name == "shape")
@@ -189,16 +185,15 @@ namespace polyfem::solver
 		}
 		else
 		{
-			Eigen::MatrixXd adjoint;
 			Eigen::VectorXd adjoint_rhs;
 			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
-			state.solve_adjoint(adjoint_rhs, adjoint);
+			state.solve_adjoint(adjoint_rhs);
 			if (param_name == "material")
-				dJ_material_static(state, state.diff_cached[0].u, adjoint, grad);
+				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
 			else if (param_name == "shape")
-				dJ_shape_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, spatial_integral_type, grad);
+				dJ_shape_static(state, state.diff_cached[0].u, state.diff_cached[0].p, j, interested_ids, spatial_integral_type, grad);
 			else if (param_name == "topology")
-				dJ_topology_static(state, state.diff_cached[0].u, adjoint, j, interested_ids, spatial_integral_type, grad);
+				dJ_topology_static(state, state.diff_cached[0].u, state.diff_cached[0].p, j, interested_ids, spatial_integral_type, grad);
 			else if (param_name == "friction")
 				log_and_throw_error("Static friction coefficient grad not implemented!");
 			else if (param_name == "dirichlet")
@@ -1180,7 +1175,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointForm::gradient(
-		const State &state,
+		State &state,
 		const std::vector<IntegrableFunctional> &j,
 		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
 		const Parameter &param,
@@ -1198,7 +1193,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointForm::gradient(
-		const State &state,
+		State &state,
 		const std::vector<IntegrableFunctional> &j,
 		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
 		const std::string &param_name,
@@ -1212,7 +1207,12 @@ namespace polyfem::solver
 			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 			std::vector<Eigen::VectorXd> adjoint_rhs;
 			dJ_du_transient(state, j, dJi_dintegrals, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
-			state.solve_transient_adjoint(adjoint_rhs, adjoint_nu, adjoint_p, param_name == "dirichlet");
+			state.solve_transient_adjoint(adjoint_rhs, param_name == "dirichlet");
+			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
+			{
+				adjoint_nu.push_back(state.diff_cached[t].nu);
+				adjoint_p.push_back(state.diff_cached[t].p);
+			}
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
 			else if (param_name == "friction")
@@ -1228,12 +1228,11 @@ namespace polyfem::solver
 		}
 		else
 		{
-			Eigen::MatrixXd adjoint;
 			Eigen::VectorXd adjoint_rhs;
 			dJ_du_step(state, j, dJi_dintegrals, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
-			state.solve_adjoint(adjoint_rhs, adjoint);
+			state.solve_adjoint(adjoint_rhs);
 			if (param_name == "material")
-				dJ_material_static(state, state.diff_cached[0].u, adjoint, grad);
+				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
 			else
 				log_and_throw_error("Unknown design parameter!");
 		}

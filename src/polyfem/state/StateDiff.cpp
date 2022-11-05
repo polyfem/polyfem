@@ -217,7 +217,7 @@ namespace polyfem
 
 		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
-		diff_cached.push_back({replace_rows_by_zero(gradu_h, boundary_nodes), StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set});
+		diff_cached.push_back({replace_rows_by_zero(gradu_h, boundary_nodes), StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set, Eigen::MatrixXd(), Eigen::MatrixXd()});
 	}
 
 	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const
@@ -276,7 +276,7 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_adjoint(const Eigen::VectorXd &adjoint_rhs, Eigen::MatrixXd &adjoint_solution) const
+	void State::solve_adjoint(const Eigen::VectorXd &adjoint_rhs)
 	{
 		StiffnessMatrix A = diff_cached[0].gradu_h;
 		Eigen::VectorXd b = adjoint_rhs;
@@ -287,18 +287,19 @@ namespace polyfem
 				b(i) = 0;
 			Eigen::VectorXd x;
 			dirichlet_solve_prefactorized(*lin_solver_cached, A, b, boundary_nodes, x);
-			adjoint_solution = x;
+			diff_cached[0].p = x;
 		}
 		else
-			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, adjoint_solution);
+			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, diff_cached[0].p);
 	}
 
-	void State::solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative) const
+	void State::solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, bool dirichlet_derivative)
 	{
 		const int bdf_order = get_bdf_order();
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
 
+		std::vector<Eigen::MatrixXd> adjoint_p, adjoint_nu;
 		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
 
@@ -348,6 +349,8 @@ namespace polyfem
 				adjoint_p[i] = -reduced_mass.transpose() * sum_alpha_p;
 				adjoint_nu[i] = -adjoint_rhs[i] - reduced_mass.transpose() * sum_alpha_nu - gradu_h_next * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
 			}
+			diff_cached[i].p = adjoint_p[i];
+			diff_cached[i].nu = adjoint_nu[i];
 		}
 	}
 } // namespace polyfem

@@ -580,6 +580,8 @@ namespace polyfem
 			Eigen::MatrixXd u;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;
+			Eigen::MatrixXd p;
+			Eigen::MatrixXd nu;
 		};
 		std::vector<DiffCachedParts> diff_cached;
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached;
@@ -612,8 +614,8 @@ namespace polyfem
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		// Solves the adjoint PDE for derivatives
-		void solve_adjoint(const Eigen::VectorXd &adjoint_rhs, Eigen::MatrixXd &adjoint_solution) const;
-		void solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, std::vector<Eigen::MatrixXd> &adjoint_nu, std::vector<Eigen::MatrixXd> &adjoint_p, bool dirichlet_derivative = false) const;
+		void solve_adjoint(const Eigen::VectorXd &adjoint_rhs);
+		void solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, bool dirichlet_derivative = false);
 		// Change geometric node positions
 		void set_v(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;

@@ -4,24 +4,10 @@
 #include <polyfem/solver/AdjointForm.hpp>
 
 using namespace polyfem::solver;
+using namespace polyfem::utils;
 
 namespace polyfem
 {
-	namespace
-	{
-		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
-		{
-			int size = sqrt(vec.size());
-			assert(size * size == vec.size());
-
-			mat.resize(size, size);
-			for (int i = 0; i < size; i++)
-				for (int j = 0; j < size; j++)
-					mat(i, j) = vec(i * size + j);
-		}
-
-	} // namespace
-
 	std::shared_ptr<CompositeFunctional> CompositeFunctional::create(const std::string &functional_name_)
 	{
 		std::shared_ptr<CompositeFunctional> func;

@@ -369,6 +369,17 @@ Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 	return X;
 }
 
+void polyfem::utils::vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
+{
+	int size = sqrt(vec.size());
+	assert(size * size == vec.size());
+
+	mat.resize(size, size);
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+			mat(i, j) = vec(i * size + j);
+}
+
 Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatrix<double> &M)
 {
 	std::vector<Eigen::Triplet<double>> triplets;
