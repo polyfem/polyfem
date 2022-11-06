@@ -392,26 +392,26 @@ int main(int argc, char **argv)
 		f.set_spline_target(control_points, tangents, delta);
 		f.set_transient_integral_type("final");
 	}
-	else if (matching_type == "exact-center")
-	{
-		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
-		std::vector<Eigen::VectorXd> barycenters;
-		f.get_barycenter_series(state_reference, barycenters);
-		f.set_center_series(barycenters);
-		std::cout << "Centers: ";
-		for (auto x : barycenters)
-			std::cout << x.transpose() << ", ";
-		std::cout << "\n";
-	}
-	else if (matching_type == "last-center")
-	{
-		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
-		f.set_active_dimension({true, false, true});
-		f.set_transient_integral_type("final");
-		std::vector<Eigen::VectorXd> barycenters(1);
-		barycenters[0] = target_position;
-		f.set_center_series(barycenters);
-	}
+	// else if (matching_type == "exact-center")
+	// {
+	// 	auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
+	// 	std::vector<Eigen::VectorXd> barycenters;
+	// 	f.get_barycenter_series(state_reference, barycenters);
+	// 	f.set_center_series(barycenters);
+	// 	std::cout << "Centers: ";
+	// 	for (auto x : barycenters)
+	// 		std::cout << x.transpose() << ", ";
+	// 	std::cout << "\n";
+	// }
+	// else if (matching_type == "last-center")
+	// {
+	// 	auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
+	// 	f.set_active_dimension({true, false, true});
+	// 	f.set_transient_integral_type("final");
+	// 	std::vector<Eigen::VectorXd> barycenters(1);
+	// 	barycenters[0] = target_position;
+	// 	f.set_center_series(barycenters);
+	// }
 	else if (matching_type == "sine")
 	{
 		auto &f = *dynamic_cast<TargetYFunctional *>(func.get());
@@ -422,28 +422,28 @@ int main(int argc, char **argv)
 			return cos(x) * 0.7;
 		});
 	}
-	else if (matching_type == "center-data")
-	{
-		auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
-		f.set_active_dimension({true, true, false});
-		std::ifstream infile(target_path);
-		std::vector<Eigen::VectorXd> centers;
-		double x = 0, y = 0;
-		Eigen::VectorXd center;
-		center.setZero(3);
-		while (infile.good())
-		{
-			infile >> x;
-			infile >> y;
-			center(0) = x / 100;
-			center(1) = y / 100; // cm to m
-			centers.push_back(center);
-		}
-		infile.close();
-		f.set_center_series(centers);
-		f.set_transient_integral_type("uniform");
-		print_centers(centers);
-	}
+	// else if (matching_type == "center-data")
+	// {
+	// 	auto &f = *dynamic_cast<CenterTrajectoryFunctional *>(func.get());
+	// 	f.set_active_dimension({true, true, false});
+	// 	std::ifstream infile(target_path);
+	// 	std::vector<Eigen::VectorXd> centers;
+	// 	double x = 0, y = 0;
+	// 	Eigen::VectorXd center;
+	// 	center.setZero(3);
+	// 	while (infile.good())
+	// 	{
+	// 		infile >> x;
+	// 		infile >> y;
+	// 		center(0) = x / 100;
+	// 		center(1) = y / 100; // cm to m
+	// 		centers.push_back(center);
+	// 	}
+	// 	infile.close();
+	// 	f.set_center_series(centers);
+	// 	f.set_transient_integral_type("uniform");
+	// 	print_centers(centers);
+	// }
 	else if (matching_type == "marker-data")
 	{
 		const std::string scene = state.args["optimization"]["name"];

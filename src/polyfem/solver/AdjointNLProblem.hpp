@@ -9,7 +9,7 @@ namespace polyfem::solver
 	class AdjointNLProblem : public cppoptlib::Problem<double>
 	{
 	public:
-		AdjointNLProblem(std::vector<std::shared_ptr<Objective>> &objectives, std::vector<std::shared_ptr<Parameter>> parameters, std::vector<std::shared_ptr<State>> all_states) : objectives_(objectives), parameters_(parameters), all_states_(all_states)
+		AdjointNLProblem(std::shared_ptr<Objective> &obj, std::vector<std::shared_ptr<Parameter>> parameters, std::vector<std::shared_ptr<State>> all_states) : obj_(obj), parameters_(parameters), all_states_(all_states)
 		{
 			for (const auto p : parameters)
 				optimization_dim_ += p->optimization_dim();
@@ -48,9 +48,9 @@ namespace polyfem::solver
 
 	private:
 		int optimization_dim_;
-		std::vector<std::shared_ptr<Objective>> objectives_;
+		std::shared_ptr<Objective> 				obj_;
 		std::vector<std::shared_ptr<Parameter>> parameters_;
-		std::vector<std::shared_ptr<State>> all_states_;
+		std::vector<std::shared_ptr<State>>     all_states_;
 		Eigen::VectorXd cur_x;
 		int iter = 0;
 	};

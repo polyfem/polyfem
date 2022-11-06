@@ -4,24 +4,25 @@ namespace polyfem::solver
 {
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
-		double val = 0;
-		for (const auto o : objectives_)
-			val += o->value();
-		return val;
+		return obj_->value();
 	}
 
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 	{
 		int cumulative = 0;
 		gradv.setZero(optimization_dim_);
+
+		for (auto &state_ptr : all_states_)
+			state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr));
+
 		Eigen::VectorXd gradv_param;
 		for (const auto p : parameters_)
 		{
-			for (const auto o : objectives_)
-			{
-				gradv_param = p->map_grad(o->gradient(*p));
-				gradv.segment(cumulative, p->optimization_dim()) += gradv_param;
-			}
+			gradv_param.setZero(p->full_dim());
+			for (auto &state_ptr : all_states_)
+				gradv_param += obj_->gradient(*state_ptr, *p);
+			
+			gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(gradv_param);
 			cumulative += p->optimization_dim();
 		}
 	}

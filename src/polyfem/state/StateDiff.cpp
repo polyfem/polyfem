@@ -207,6 +207,8 @@ namespace polyfem
 
 	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol)
 	{
+		adjoint_solved = false;
+
 		StiffnessMatrix gradu_h(sol.size(), sol.size()), gradu_h_prev(sol.size(), sol.size());
 		if (current_step == 0)
 			diff_cached.clear();
@@ -276,7 +278,20 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_adjoint(const Eigen::VectorXd &adjoint_rhs)
+	void State::solve_adjoint(const Eigen::MatrixXd &rhs)
+	{
+		if (problem->is_time_dependent())
+		{
+			solve_transient_adjoint(rhs);
+		}
+		else
+		{
+			assert(rhs.cols() == 1);
+			solve_static_adjoint(Eigen::VectorXd(rhs));
+		}
+	}
+
+	void State::solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs)
 	{
 		StiffnessMatrix A = diff_cached[0].gradu_h;
 		Eigen::VectorXd b = adjoint_rhs;
@@ -291,6 +306,73 @@ namespace polyfem
 		}
 		else
 			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, diff_cached[0].p);
+
+		adjoint_solved = true;
+	}
+
+	void State::solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs)
+	{
+		const int bdf_order = get_bdf_order();
+		const double dt = args["time"]["dt"];
+		const int time_steps = args["time"]["time_steps"];
+
+		assert(adjoint_rhs.cols() == time_steps + 1);
+
+		std::vector<Eigen::MatrixXd> adjoint_p, adjoint_nu;
+		adjoint_p.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
+		adjoint_nu.assign(time_steps + 2, Eigen::MatrixXd::Zero(diff_cached[0].u.size(), 1));
+
+		// set dirichlet rows of mass to identity
+		StiffnessMatrix reduced_mass;
+		replace_rows_by_identity(reduced_mass, mass, boundary_nodes);
+
+		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
+		for (int i = time_steps; i >= 0; --i)
+		{
+			double beta;
+			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
+			double beta_dt = beta * dt;
+
+			StiffnessMatrix gradu_h_next = -beta_dt * diff_cached[i].gradu_h_next;
+
+			if (i > 0)
+			{
+				StiffnessMatrix gradu_h = -diff_cached[i].gradu_h;
+				StiffnessMatrix A = (reduced_mass - beta_dt * gradu_h).transpose();
+				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - gradu_h.transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - adjoint_rhs.col(i);
+				for (const auto &b : boundary_nodes)
+				{
+					rhs_(b) += (1. / beta_dt) * (-2 * adjoint_p[i + 1](b));
+					if ((i + 2) < adjoint_p.size() - 1)
+						rhs_(b) += (1. / beta_dt) * adjoint_p[i + 2](b);
+				}
+				
+				{
+					StiffnessMatrix A_tmp = A;
+					Eigen::VectorXd b_ = rhs_;
+					solve_zero_dirichlet(args["solver"]["linear"], A_tmp, b_, boundary_nodes, adjoint_nu[i]);
+				}
+
+				if (false) // TODO
+				{
+					Eigen::VectorXd tmp = rhs_ - A * adjoint_nu[i];
+					for (const auto &b : boundary_nodes)
+					{
+						adjoint_nu[i](b) = tmp(b);
+					}
+				}
+				adjoint_p[i] = beta_dt * adjoint_nu[i] - sum_alpha_p;
+			}
+			else
+			{
+				adjoint_p[i] = -reduced_mass.transpose() * sum_alpha_p;
+				adjoint_nu[i] = -adjoint_rhs.col(i) - reduced_mass.transpose() * sum_alpha_nu - gradu_h_next * adjoint_p[i + 1]; // adjoint_nu[0] actually stores adjoint_mu[0]
+			}
+			diff_cached[i].p = adjoint_p[i];
+			diff_cached[i].nu = adjoint_nu[i];
+		}
+
+		adjoint_solved = true;
 	}
 
 	void State::solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, bool dirichlet_derivative)

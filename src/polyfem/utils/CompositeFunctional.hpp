@@ -295,30 +295,30 @@ namespace polyfem
 		Eigen::VectorXd gradient(State &state, const std::string &type) override;
 	};
 
-	class CenterTrajectoryFunctional : public CompositeFunctional
-	{
-	public:
-		CenterTrajectoryFunctional()
-		{
-			functional_name = "CenterTrajectory";
-			surface_integral = false;
-			transient_integral_type = "uniform";
-			flags_.assign(3, true);
-		}
-		~CenterTrajectoryFunctional() = default;
+	// class CenterTrajectoryFunctional : public CompositeFunctional
+	// {
+	// public:
+	// 	CenterTrajectoryFunctional()
+	// 	{
+	// 		functional_name = "CenterTrajectory";
+	// 		surface_integral = false;
+	// 		transient_integral_type = "uniform";
+	// 		flags_.assign(3, true);
+	// 	}
+	// 	~CenterTrajectoryFunctional() = default;
 
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
+	// 	double energy(State &state) override;
+	// 	Eigen::VectorXd gradient(State &state, const std::string &type) override;
 
-		void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
-		void set_active_dimension(const std::vector<bool> &flags) { flags_ = flags; }
+	// 	void set_center_series(const std::vector<Eigen::VectorXd> &target_series_) { target_series = target_series_; }
+	// 	void set_active_dimension(const std::vector<bool> &flags) { flags_ = flags; }
 
-		void get_barycenter_series(State &state, std::vector<Eigen::VectorXd> &barycenters);
+	// 	void get_barycenter_series(State &state, std::vector<Eigen::VectorXd> &barycenters);
 
-	private:
-		std::vector<bool> flags_;
-		std::vector<Eigen::VectorXd> target_series;
-		IntegrableFunctional get_volume_functional();
-		IntegrableFunctional get_center_trajectory_functional(const int d);
-	};
+	// private:
+	// 	std::vector<bool> flags_;
+	// 	std::vector<Eigen::VectorXd> target_series;
+	// 	IntegrableFunctional get_volume_functional();
+	// 	IntegrableFunctional get_center_trajectory_functional(const int d);
+	// };
 } // namespace polyfem

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/State.hpp>
-#include "Parameter.hpp"
+#include <polyfem/solver/Parameter.hpp>
 
 namespace polyfem::solver
 {
@@ -29,35 +29,22 @@ namespace polyfem::solver
 		static void gradient(
 			State &state,
 			const IntegrableFunctional &j,
-			const Parameter &param,
-			Eigen::VectorXd &grad,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type = "");
-
-		static void gradient(
-			State &state,
-			const IntegrableFunctional &j,
 			const std::string &param_name,
 			Eigen::VectorXd &grad,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type = "");
+		
+		// assume adjoints are solved and stored in state
+		static void compute_adjoint_term(
+			const State &state,
+			const std::string &param_name,
+			Eigen::VectorXd &term);
 
 		static double value(
 			const State &state,
 			const std::vector<IntegrableFunctional> &j,
 			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type = "");
-
-		static void gradient(
-			State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-			const Parameter &param,
-			Eigen::VectorXd &grad,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type = "");
@@ -123,6 +110,11 @@ namespace polyfem::solver
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
 			Eigen::VectorXd &one_form);
+		static void dJ_topology_static_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
 		static void dJ_shape_static(
 			const State &state,
 			const Eigen::MatrixXd &sol,
@@ -130,6 +122,11 @@ namespace polyfem::solver
 			const IntegrableFunctional &j,
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
+			Eigen::VectorXd &one_form);
+		static void dJ_shape_static_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
 		static void dJ_shape_transient(
 			const State &state,
@@ -139,6 +136,11 @@ namespace polyfem::solver
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type,
+			Eigen::VectorXd &one_form);
+		static void dJ_shape_transient_adjoint_term(
+			const State &state,
+			const std::vector<Eigen::MatrixXd> &adjoint_nu,
+			const std::vector<Eigen::MatrixXd> &adjoint_p,
 			Eigen::VectorXd &one_form);
 		static void dJ_material_static(
 			const State &state,

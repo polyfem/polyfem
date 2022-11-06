@@ -169,8 +169,12 @@ namespace polyfem::solver
 		Eigen::VectorXd get_target() const;
 		void set_time_step(int time_step) override;
 
+		int dim() const { return dim_; }
+
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+
+		Eigen::VectorXd get_barycenter() const;
 
 	protected:
 		int dim_ = -1;
@@ -204,5 +208,7 @@ namespace polyfem::solver
 	public:
 		CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets);
 		~CenterTrajectoryObjective() = default;
+
+		Eigen::MatrixXd get_barycenters();
 	};
 } // namespace polyfem::solver

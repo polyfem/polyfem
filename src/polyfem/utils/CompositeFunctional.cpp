@@ -31,8 +31,8 @@ namespace polyfem
 			func = std::make_shared<HomogenizedStiffnessFunctional>();
 		else if (functional_name_ == "HomogenizedPermeability")
 			func = std::make_shared<HomogenizedPermeabilityFunctional>();
-		else if (functional_name_ == "CenterTrajectory")
-			func = std::make_shared<CenterTrajectoryFunctional>();
+		// else if (functional_name_ == "CenterTrajectory")
+		// 	func = std::make_shared<CenterTrajectoryFunctional>();
 		else if (functional_name_ == "NodeTrajectory")
 			func = std::make_shared<NodeTrajectoryFunctional>();
 		else
@@ -803,133 +803,133 @@ namespace polyfem
 		return j;
 	}
 
-	double CenterTrajectoryFunctional::energy(State &state)
-	{
-		const int dim = state.mesh->dimension();
-		std::vector<IntegrableFunctional> js(dim + 1);
-		for (int d = 0; d < dim; d++)
-			js[d] = get_center_trajectory_functional(d);
-		js[dim] = get_volume_functional();
+	// double CenterTrajectoryFunctional::energy(State &state)
+	// {
+	// 	const int dim = state.mesh->dimension();
+	// 	std::vector<IntegrableFunctional> js(dim + 1);
+	// 	for (int d = 0; d < dim; d++)
+	// 		js[d] = get_center_trajectory_functional(d);
+	// 	js[dim] = get_volume_functional();
 
-		if (transient_integral_type != "final" && target_series.size() != state.args["time"]["time_steps"].get<int>() + 1)
-			logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time"]["time_steps"].get<int>() + 1);
+	// 	if (transient_integral_type != "final" && target_series.size() != state.args["time"]["time_steps"].get<int>() + 1)
+	// 		logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time"]["time_steps"].get<int>() + 1);
 
-		auto func = [&](const Eigen::VectorXd &x, const json &param) {
-			double t = param["t"];
-			int step = param["step"];
+	// 	auto func = [&](const Eigen::VectorXd &x, const json &param) {
+	// 		double t = param["t"];
+	// 		int step = param["step"];
 
-			Eigen::VectorXd target;
-			if (transient_integral_type != "final")
-				target = target_series[step];
-			else
-				target = target_series.back();
+	// 		Eigen::VectorXd target;
+	// 		if (transient_integral_type != "final")
+	// 			target = target_series[step];
+	// 		else
+	// 			target = target_series.back();
 			
-			Eigen::VectorXd err = x.head(dim) / x(dim) - target;
-			for (int d = 0; d < dim; d++)
-				if (!flags_[d])
-					err(d) = 0;
+	// 		Eigen::VectorXd err = x.head(dim) / x(dim) - target;
+	// 		for (int d = 0; d < dim; d++)
+	// 			if (!flags_[d])
+	// 				err(d) = 0;
 
-			return err.squaredNorm();
-		};
+	// 		return err.squaredNorm();
+	// 	};
 
-		// return sqrt(state.J_transient(js, func));
-		return AdjointForm::value(state, js, func, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
-	}
+	// 	// return sqrt(state.J_transient(js, func));
+	// 	return AdjointForm::value(state, js, func, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
+	// }
 
-	Eigen::VectorXd CenterTrajectoryFunctional::gradient(State &state, const std::string &type)
-	{
-		const int dim = state.mesh->dimension();
-		std::vector<IntegrableFunctional> js(dim + 1);
-		for (int d = 0; d < dim; d++)
-			js[d] = get_center_trajectory_functional(d);
-		js[dim] = get_volume_functional();
+	// Eigen::VectorXd CenterTrajectoryFunctional::gradient(State &state, const std::string &type)
+	// {
+	// 	const int dim = state.mesh->dimension();
+	// 	std::vector<IntegrableFunctional> js(dim + 1);
+	// 	for (int d = 0; d < dim; d++)
+	// 		js[d] = get_center_trajectory_functional(d);
+	// 	js[dim] = get_volume_functional();
 
-		if (transient_integral_type != "final" && target_series.size() != state.args["time"]["time_steps"].get<int>() + 1)
-			logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time"]["time_steps"].get<int>() + 1);
+	// 	if (transient_integral_type != "final" && target_series.size() != state.args["time"]["time_steps"].get<int>() + 1)
+	// 		logger().error("Number of center series {} doesn't match with number of time steps + 1: {}!", target_series.size(), state.args["time"]["time_steps"].get<int>() + 1);
 
-		auto func = [dim, this](const Eigen::VectorXd &x, const json &param) {
-			double t = param["t"];
-			int step = param["step"];
+	// 	auto func = [dim, this](const Eigen::VectorXd &x, const json &param) {
+	// 		double t = param["t"];
+	// 		int step = param["step"];
 
-			Eigen::VectorXd target;
-			if (transient_integral_type != "final")
-				target = target_series[step];
-			else
-				target = target_series.back();
+	// 		Eigen::VectorXd target;
+	// 		if (transient_integral_type != "final")
+	// 			target = target_series[step];
+	// 		else
+	// 			target = target_series.back();
 
-			Eigen::VectorXd err = x.head(dim) / x(dim) - target;
-			for (int d = 0; d < dim; d++)
-				if (!flags_[d])
-					err(d) = 0;
-			double val = err.squaredNorm();
+	// 		Eigen::VectorXd err = x.head(dim) / x(dim) - target;
+	// 		for (int d = 0; d < dim; d++)
+	// 			if (!flags_[d])
+	// 				err(d) = 0;
+	// 		double val = err.squaredNorm();
 
-			Eigen::VectorXd grad;
-			grad.setZero(dim + 1);
-			for (int d = 0; d < dim; d++)
-			{
-				if (!flags_[d])
-					continue;
-				grad(d) = 2 / x(dim) * (x(d) / x(dim) - target(d));
-				grad(dim) += -x(d) * grad(d) / x(dim);
-			}
-			return grad;
-		};
+	// 		Eigen::VectorXd grad;
+	// 		grad.setZero(dim + 1);
+	// 		for (int d = 0; d < dim; d++)
+	// 		{
+	// 			if (!flags_[d])
+	// 				continue;
+	// 			grad(d) = 2 / x(dim) * (x(d) / x(dim) - target(d));
+	// 			grad(dim) += -x(d) * grad(d) / x(dim);
+	// 		}
+	// 		return grad;
+	// 	};
 
-		// return state.integral_gradient(js, func, type) / 2 / energy(state);
+	// 	// return state.integral_gradient(js, func, type) / 2 / energy(state);
 
-		Eigen::VectorXd grad;
-		AdjointForm::gradient(state, js, func, type, grad, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
+	// 	Eigen::VectorXd grad;
+	// 	AdjointForm::gradient(state, js, func, type, grad, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
-		return grad;
-	}
+	// 	return grad;
+	// }
 
-	IntegrableFunctional CenterTrajectoryFunctional::get_center_trajectory_functional(const int d)
-	{
-		IntegrableFunctional j;
-		j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val = u.col(d) + pts.col(d);
-		});
+	// IntegrableFunctional CenterTrajectoryFunctional::get_center_trajectory_functional(const int d)
+	// {
+	// 	IntegrableFunctional j;
+	// 	j.set_j([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+	// 		val = u.col(d) + pts.col(d);
+	// 	});
 
-		j.set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(u.rows(), u.cols());
-			val.col(d).setOnes();
-		});
+	// 	j.set_dj_du([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+	// 		val.setZero(u.rows(), u.cols());
+	// 		val.col(d).setOnes();
+	// 	});
 
-		j.set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(pts.rows(), pts.cols());
-			val.col(d).setOnes();
-		});
-		return j;
-	}
+	// 	j.set_dj_dx([d, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+	// 		val.setZero(pts.rows(), pts.cols());
+	// 		val.col(d).setOnes();
+	// 	});
+	// 	return j;
+	// }
 
-	IntegrableFunctional CenterTrajectoryFunctional::get_volume_functional()
-	{
-		IntegrableFunctional j;
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setOnes(u.rows(), 1);
-		});
-		return j;
-	}
+	// IntegrableFunctional CenterTrajectoryFunctional::get_volume_functional()
+	// {
+	// 	IntegrableFunctional j;
+	// 	j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+	// 		val.setOnes(u.rows(), 1);
+	// 	});
+	// 	return j;
+	// }
 
-	void CenterTrajectoryFunctional::get_barycenter_series(State &state, std::vector<Eigen::VectorXd> &barycenters)
-	{
-		assert(state.problem->is_time_dependent());
-		const int dim = state.mesh->dimension();
-		const int n_steps = state.args["time"]["time_steps"].get<int>();
+	// void CenterTrajectoryFunctional::get_barycenter_series(State &state, std::vector<Eigen::VectorXd> &barycenters)
+	// {
+	// 	assert(state.problem->is_time_dependent());
+	// 	const int dim = state.mesh->dimension();
+	// 	const int n_steps = state.args["time"]["time_steps"].get<int>();
 
-		barycenters.clear();
-		Eigen::VectorXd barycenter(dim);
-		for (int step = 0; step <= n_steps; step++)
-		{
-			for (int d = 0; d < dim; d++)
-				barycenter(d) = AdjointForm::integrate_objective(state, get_center_trajectory_functional(d), state.diff_cached[step].u, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, step);
-			barycenters.push_back(barycenter);
-		}
+	// 	barycenters.clear();
+	// 	Eigen::VectorXd barycenter(dim);
+	// 	for (int step = 0; step <= n_steps; step++)
+	// 	{
+	// 		for (int d = 0; d < dim; d++)
+	// 			barycenter(d) = AdjointForm::integrate_objective(state, get_center_trajectory_functional(d), state.diff_cached[step].u, interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, step);
+	// 		barycenters.push_back(barycenter);
+	// 	}
 
-		double volume = AdjointForm::value(state, get_volume_functional(), interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, "final");
+	// 	double volume = AdjointForm::value(state, get_volume_functional(), interested_body_ids_, AdjointForm::SpatialIntegralType::VOLUME, "final");
 
-		for (auto &point : barycenters)
-			point /= volume;
-	}
+	// 	for (auto &point : barycenters)
+	// 		point /= volume;
+	// }
 
 } // namespace polyfem

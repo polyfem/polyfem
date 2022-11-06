@@ -115,11 +115,11 @@ namespace polyfem
 
 		if (utils::StringUtils::startswith(j->get_functional_name(), "Center"))
 		{
-			CenterTrajectoryFunctional f;
-			f.set_interested_ids(j->get_interested_body_ids(), j->get_interested_boundary_ids());
-			std::vector<Eigen::VectorXd> barycenters;
-			f.get_barycenter_series(state, barycenters);
-			print_centers(barycenters);
+			// CenterTrajectoryFunctional f;
+			// f.set_interested_ids(j->get_interested_body_ids(), j->get_interested_boundary_ids());
+			// std::vector<Eigen::VectorXd> barycenters;
+			// f.get_barycenter_series(state, barycenters);
+			// print_centers(barycenters);
 		}
 		else if (j->get_functional_name() == "NodeTrajectory")
 		{

@@ -7,7 +7,7 @@ namespace polyfem
 	class Parameter
 	{
 	public:
-		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr){};
+		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr) {}
 		virtual ~Parameter() = default;
 
 		inline const State& get_state() const { return *(states_ptr_[0]); }
@@ -25,21 +25,20 @@ namespace polyfem
 		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) { q = x; }
 		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &full_grad) const { return full_grad; }
 
-		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) = 0;
-		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) = 0;
-		virtual bool is_intersection_free(const Eigen::VectorXd &x) = 0;
+		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) { new_x = x; }
+		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
+		virtual bool is_intersection_free(const Eigen::VectorXd &x) { return true; }
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
 
-		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) = 0;
-		virtual void line_search_end(bool failed) = 0;
-		virtual void post_step(const int iter_num, const Eigen::VectorXd &x0) = 0;
+		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
+		virtual void line_search_end(bool failed) {}
+		virtual void post_step(const int iter_num, const Eigen::VectorXd &x0) {}
 
 		inline virtual void set_optimization_dim(const int optimization_dim) final { optimization_dim_ = optimization_dim; }
 		inline virtual int full_dim() const // dim before projection
 		{
-			assert(false);
-			return 0;
+			return full_dim_;
 		}
 		inline virtual int optimization_dim() final
 		{
@@ -84,6 +83,7 @@ namespace polyfem
 	protected:
 		std::vector<std::shared_ptr<State>> states_ptr_;
 		int optimization_dim_;
+		int full_dim_;
 		std::string parameter_name_;
 		double max_change_;
 	};

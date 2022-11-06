@@ -10,15 +10,12 @@ namespace polyfem::solver
         Eigen::VectorXd term;
         term.setZero(param.full_dim());
 
-        if (state.problem->is_time_dependent())
+        if (param.contains_state(state))
         {
-            
+            assert(state.adjoint_solved);
+            AdjointForm::compute_adjoint_term(state, param.name(), term);
         }
-        else
-        {
-
-        }
-
+        
         return term;
     }
 
@@ -340,10 +337,7 @@ namespace polyfem::solver
             return term;
         }
         else
-        {
-            assert(false);
             return Eigen::VectorXd::Zero(param.full_dim());
-        }
     }
 
     PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): state_(state), shape_param_(shape_param)
@@ -458,12 +452,7 @@ namespace polyfem::solver
 
     double BarycenterTargetObjective::value() const
     {
-        const double volume = objv->value();
-        Eigen::VectorXd center(dim_);
-        for (int d = 0; d < dim_; d++)
-            center(d) = objp[d]->value() / volume;
-        
-        return (center - get_target()).squaredNorm();
+        return (get_barycenter() - get_target()).squaredNorm();
     }
     Eigen::VectorXd BarycenterTargetObjective::compute_partial_gradient(const Parameter &param) const
     {
@@ -504,6 +493,16 @@ namespace polyfem::solver
             term += (2.0 / volume * (center(d) - target(d))) * objp[d]->compute_adjoint_rhs_step(state);
         
         return term;
+    }
+
+    Eigen::VectorXd BarycenterTargetObjective::get_barycenter() const
+    {
+        const double volume = objv->value();
+        Eigen::VectorXd center(dim_);
+        for (int d = 0; d < dim_; d++)
+            center(d) = objp[d]->value() / volume;
+
+        return center;
     }
 
     TransientObjective::TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type)
@@ -601,5 +600,20 @@ namespace polyfem::solver
     CenterTrajectoryObjective::CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets): TransientObjective(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"])
     {
         obj_ = std::make_shared<BarycenterTargetObjective>(state, targets, shape_param, args);
+    }
+
+	Eigen::MatrixXd CenterTrajectoryObjective::get_barycenters()
+	{
+        BarycenterTargetObjective &obj = *dynamic_cast<BarycenterTargetObjective *>(obj_.get());
+
+        Eigen::MatrixXd barycenters;
+		barycenters.setZero(time_steps_ + 1, obj.dim());
+		for (int step = 0; step <= time_steps_; step++)
+        {
+            obj.set_time_step(step);
+            barycenters.row(step) = obj.get_barycenter();
+        }
+
+        return barycenters;
     }
 }

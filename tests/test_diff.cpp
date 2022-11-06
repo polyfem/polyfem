@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
 #include <polyfem/utils/CompositeFunctional.hpp>
+#include <polyfem/solver/InitialConditionParameter.hpp>
 #include <polyfem/solver/Objective.hpp>
 #include <polyfem/solver/AdjointForm.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -1774,8 +1775,6 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
 	State& state = *state_ptr;
 
-	CenterTrajectoryFunctional func;
-	func.set_interested_ids(state.args["optimization"]["functionals"][0]["volume_selection"], {});
 	Eigen::MatrixXd centers;
 	{
 		std::vector<Eigen::VectorXd> barycenters;
@@ -1783,19 +1782,19 @@ TEST_CASE("barycenter", "[adjoint_method]")
 		in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 		in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 		std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
-		func.get_barycenter_series(*state_reference, barycenters);
-		centers.setZero(barycenters.size(), barycenters[0].size());
-		for (int i = 0; i < centers.rows(); i++)
-			centers.row(i) = barycenters[i];
-		func.set_center_series(barycenters);
+		std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+		std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+		solver::CenterTrajectoryObjective func_aux(*state_reference, shape_param, state.args["optimization"]["functionals"][0], Eigen::MatrixXd::Zero(state_reference->diff_cached.size(), state_reference->mesh->dimension()));
+		centers = func_aux.get_barycenters();
 	}
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr);
 
-	solver::CenterTrajectoryObjective func_new(state, shape_param, state.args["optimization"]["functionals"][0], centers);
+	solver::CenterTrajectoryObjective func(state, shape_param, state.args["optimization"]["functionals"][0], centers);
 
-	double functional_val = func_new.value();
+	double functional_val = func.value();
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.n_bases * 2, 1);
@@ -1805,187 +1804,26 @@ TEST_CASE("barycenter", "[adjoint_method]")
 		velocity_discrete(i * 2 + 1) = -1.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial");
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, *initial_param);
 	one_form = one_form.tail(one_form.size() / 2).eval();
 
 	const double step_size = 1e-6;
 	state.initial_vel_update += velocity_discrete * step_size;
 
 	solve_pde(state);
-	double next_functional_val = func_new.value();
+	double next_functional_val = func.value();
 
 	state.initial_vel_update -= velocity_discrete * step_size * 2;
 
 	solve_pde(state);
-	double last_functional_val = func_new.value();
+	double last_functional_val = func.value();
 
 	double finite_difference = (next_functional_val - last_functional_val) / step_size / 2;
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << last_functional_val << " f(x+dt) " << next_functional_val << "\n";
 	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
-}
-
-TEST_CASE("barycenter-height", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR;
-	json in_args = R"(
-		{
-			"geometry": [
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							0,
-							0
-						],
-						"rotation": 0,
-						"scale": [
-							3,
-							0.02
-						]
-					},
-					"volume_selection": 3,
-					"surface_selection": 3,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
-				},
-				{
-					"mesh": "",
-					"transformation": {
-						"translation": [
-							-1.5,
-							0.3
-						],
-						"rotation": 0,
-						"scale": 0.5
-					},
-					"volume_selection": 1,
-					"surface_selection": 1,
-					"n_refs": 0,
-					"advanced": {
-						"normalize_mesh": false
-					}
-				}
-			],
-			"space": {
-				"discr_order": 1,
-				"advanced": {
-					"quadrature_order": 5
-				}
-			},
-			"time": {
-				"tend": 0.2,
-				"dt": 0.01,
-				"integrator": {
-					"type": "BDF",
-					"steps": 2
-				}
-			},
-			"contact": {
-				"enabled": true,
-				"friction_coefficient": 0.5
-			},
-			"solver": {
-				"linear": {
-					"solver": "Eigen::SimplicialLDLT"
-				},
-				"contact": {
-					"barrier_stiffness": 23216604
-				}
-			},
-			"boundary_conditions": {
-				"rhs": [
-					0,
-					9.8
-				],
-				"dirichlet_boundary": [
-					{
-						"id": 3,
-						"value": [
-							0,
-							0
-						]
-					}
-				]
-			},
-			"initial_conditions": {
-				"velocity": [
-					{
-						"id": 1,
-						"value": [
-							5,
-							0
-						]
-					}
-				]
-			},
-			"optimization": { "enabled": true },
-			"materials": {
-				"type": "NeoHookean",
-				"E": 1000000.0,
-				"nu": 0.3,
-				"rho": 1000,
-				"phi": 10,
-				"psi": 10
-			},
-			"output": {
-				"paraview": {
-					"vismesh_rel_area": 1
-				},
-				"advanced": {
-					"save_time_sequence": false
-				}
-			}
-		}
-	)"_json;
-	in_args["geometry"][0]["mesh"] = path + "/../square.obj";
-	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
-
-	// compute reference solution
-	auto in_args_ref = in_args;
-	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
-	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
-	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
-
-	CenterTrajectoryFunctional func_aux;
-	func_aux.set_interested_ids({1}, {});
-	std::vector<Eigen::VectorXd> barycenters;
-	func_aux.get_barycenter_series(*state_reference, barycenters);
-
-	CenterTrajectoryFunctional func;
-	func.set_active_dimension({true, true, false});
-	func.set_interested_ids({1}, {});
-	func.set_center_series(barycenters);
-
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
-	double functional_val = func.energy(state);
-
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_bases * 2, 1);
-	for (int i = 0; i < state.n_bases; i++)
-	{
-		velocity_discrete(i * 2 + 0) = -200.;
-		velocity_discrete(i * 2 + 1) = -100.;
-	}
-
-	Eigen::VectorXd one_form = func.gradient(state, "initial");
-	one_form = one_form.tail(one_form.size() / 2).eval();
-
-	const double step_size = 1e-10;
-	state.initial_vel_update += velocity_discrete * step_size;
-
-	solve_pde(state);
-	double next_functional_val = func.energy(state);
-
-	double finite_difference = (next_functional_val - functional_val) / step_size;
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
 
 TEST_CASE("dirichlet-sdf", "[adjoint_method]")

@@ -131,21 +131,45 @@ namespace polyfem::solver
 			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type);
 	}
 
-	void AdjointForm::gradient(
-		State &state,
-		const IntegrableFunctional &j,
-		const Parameter &param,
-		Eigen::VectorXd &grad,
-		const std::set<int> &interested_ids, // either body id or surface id
-		const SpatialIntegralType spatial_integral_type,
-		const std::string &transient_integral_type)
+	void AdjointForm::compute_adjoint_term(
+		const State &state,
+		const std::string &param_name,
+		Eigen::VectorXd &term)
 	{
-		if (!param.contains_state(state))
+		if (state.problem->is_time_dependent())
 		{
-			grad.setZero();
-			return;
+			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
+			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
+			{
+				adjoint_nu.push_back(state.diff_cached[t].nu);
+				adjoint_p.push_back(state.diff_cached[t].p);
+			}
+			if (param_name == "material")
+				dJ_material_transient(state, adjoint_nu, adjoint_p, term);
+			else if (param_name == "shape")
+				dJ_shape_transient_adjoint_term(state, adjoint_nu, adjoint_p, term);
+			else if (param_name == "friction")
+				dJ_friction_transient(state, adjoint_nu, adjoint_p, term);
+			else if (param_name == "damping")
+				dJ_damping_transient(state, adjoint_nu, adjoint_p, term);
+			else if (param_name == "initial")
+				dJ_initial_condition(state, adjoint_nu, adjoint_p, term);
+			else if (param_name == "dirichlet")
+				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, term);
+			else
+				log_and_throw_error("Unknown design parameter!");
 		}
-		gradient(state, j, param.name(), grad, interested_ids, spatial_integral_type, transient_integral_type);
+		else
+		{
+			if (param_name == "material")
+				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+			else if (param_name == "shape")
+				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+			else if (param_name == "topology")
+				dJ_topology_static_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+			else
+				log_and_throw_error("Unknown design parameter!");
+		}
 	}
 
 	void AdjointForm::gradient(
@@ -187,7 +211,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd adjoint_rhs;
 			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
-			state.solve_adjoint(adjoint_rhs);
+			state.solve_static_adjoint(adjoint_rhs);
 			if (param_name == "material")
 				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
 			else if (param_name == "shape")
@@ -595,12 +619,24 @@ namespace polyfem::solver
 		const SpatialIntegralType spatial_integral_type,
 		Eigen::VectorXd &one_form)
 	{
-		Eigen::VectorXd functional_term, elasticity_term, rhs_term, contact_term, friction_term;
+		dJ_shape_static_adjoint_term(state, sol, adjoint, one_form);
 
+		Eigen::VectorXd functional_term;
 		compute_shape_derivative_functional_term(state, sol, j, interested_ids, spatial_integral_type, functional_term, 0);
-		one_form = functional_term;
+		one_form += functional_term;
+	}
 
-		if (j.depend_on_u() || j.depend_on_gradu())
+	void AdjointForm::dJ_shape_static_adjoint_term(
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		Eigen::VectorXd elasticity_term, rhs_term, contact_term, friction_term;
+
+		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
+
+		// if (j.depend_on_u() || j.depend_on_gradu())
 		{
 			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, adjoint, elasticity_term);
 			state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, sol, adjoint, rhs_term);
@@ -628,13 +664,37 @@ namespace polyfem::solver
 	{
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
-		const int bdf_order = state.get_bdf_order();
 
-		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term, functional_term;
+		Eigen::VectorXd functional_term;
+
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
+		dJ_shape_transient_adjoint_term(state, adjoint_nu, adjoint_p, one_form);
 
 		std::vector<double> weights;
 		get_transient_quadrature_weights(transient_integral_type, time_steps, dt, weights);
+		for (int i = time_steps; i >= 0; --i)
+		{
+			if (weights[i] != 0)
+			{
+				compute_shape_derivative_functional_term(state, state.diff_cached[i].u, j, interested_ids, spatial_integral_type, functional_term, i);
+				one_form += weights[i] * functional_term;
+			}
+		}
+	}
+
+	void AdjointForm::dJ_shape_transient_adjoint_term(
+		const State &state,
+		const std::vector<Eigen::MatrixXd> &adjoint_nu,
+		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		Eigen::VectorXd &one_form)
+	{
+		const double dt = state.args["time"]["dt"];
+		const int time_steps = state.args["time"]["time_steps"];
+		const int bdf_order = state.get_bdf_order();
+
+		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term;
+		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
+
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
@@ -649,12 +709,6 @@ namespace polyfem::solver
 				velocity /= beta_dt;
 			}
 
-			if (weights[i] == 0)
-				functional_term.setZero(one_form.rows(), one_form.cols());
-			else
-				compute_shape_derivative_functional_term(state, state.diff_cached[i].u, j, interested_ids, spatial_integral_type, functional_term, i);
-
-			if (j.depend_on_u() || j.depend_on_gradu())
 			{
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, adjoint_nu[i], mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, state.diff_cached[i].u, -adjoint_p[i], elasticity_term);
@@ -683,32 +737,17 @@ namespace polyfem::solver
 				else
 					friction_term.setZero(mass_term.size());
 			}
-			else
-			{
-				mass_term.setZero(one_form.rows(), one_form.cols());
-				elasticity_term.setZero(one_form.rows(), one_form.cols());
-				rhs_term.setZero(one_form.rows(), one_form.cols());
-				damping_term.setZero(one_form.rows(), one_form.cols());
-				contact_term.setZero(one_form.rows(), one_form.cols());
-				friction_term.setZero(one_form.rows(), one_form.cols());
-			}
 
-			one_form += weights[i] * functional_term + beta_dt * (elasticity_term + rhs_term + damping_term + contact_term + friction_term + mass_term);
+			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term + friction_term + mass_term);
 		}
 
 		// time step 0
-		if (j.depend_on_u() || j.depend_on_gradu())
-		{
-			double beta;
-			Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
-			get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-			state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
-		}
-		else
-			mass_term.setZero(one_form.rows(), one_form.cols());
+		double beta;
+		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
+		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
+		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
 
-		compute_shape_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, spatial_integral_type, functional_term, 0);
-		one_form += weights[0] * functional_term + mass_term;
+		one_form += mass_term;
 	}
 
 	void AdjointForm::dJ_material_static(
@@ -1160,6 +1199,15 @@ namespace polyfem::solver
 		one_form = elasticity_term + functional_term;
 	}
 
+	void AdjointForm::dJ_topology_static_adjoint_term(
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		state.solve_data.elastic_form->foce_topology_derivative(state.diff_cached[0].u, adjoint, one_form);
+	}
+
 	double AdjointForm::value(
 		const State &state,
 		const std::vector<IntegrableFunctional> &j,
@@ -1172,24 +1220,6 @@ namespace polyfem::solver
 			return integrate_objective_transient(state, j, Ji, interested_ids, spatial_integral_type, transient_integral_type);
 		else
 			return integrate_objective(state, j, Ji, state.diff_cached[0].u, interested_ids, spatial_integral_type);
-	}
-
-	void AdjointForm::gradient(
-		State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-		const Parameter &param,
-		Eigen::VectorXd &grad,
-		const std::set<int> &interested_ids, // either body id or surface id
-		const SpatialIntegralType spatial_integral_type,
-		const std::string &transient_integral_type)
-	{
-		if (!param.contains_state(state))
-		{
-			grad.setZero();
-			return;
-		}
-		gradient(state, j, dJi_dintegrals, param.name(), grad, interested_ids, spatial_integral_type, transient_integral_type);
 	}
 
 	void AdjointForm::gradient(
@@ -1230,7 +1260,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd adjoint_rhs;
 			dJ_du_step(state, j, dJi_dintegrals, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
-			state.solve_adjoint(adjoint_rhs);
+			state.solve_static_adjoint(adjoint_rhs);
 			if (param_name == "material")
 				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
 			else
