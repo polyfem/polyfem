@@ -7,12 +7,13 @@ namespace polyfem
 		parameter_name_ = "damping";
 
 		optimization_dim_ = 2;
+		full_dim_ = 2;
 
 		for (auto state : states_ptr_)
 			if (!state->problem->is_time_dependent())
 				log_and_throw_error("Damping parameter optimization is only supported in transient simulations!");
 
-		json opt_params;
+		json opt_params = states_ptr_[0]->args["optimization"];
 		for (const auto &param : opt_params["parameters"])
 		{
 			if (param["type"] == "damping")

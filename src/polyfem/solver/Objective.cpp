@@ -371,6 +371,8 @@ namespace polyfem::solver
 
     VolumeObjective::VolumeObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args): shape_param_(shape_param)
     {
+        if (!shape_param)
+            log_and_throw_error("Volume Objective needs non-empty shape parameter!");
         auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
         interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
     }
@@ -726,4 +728,110 @@ namespace polyfem::solver
         return term;
     }
 
+    IntegrableFunctional TargetObjective::get_integral_functional() const
+    {
+        assert (target_state_);
+        assert (target_state_->diff_cached.size() > 0);
+
+        IntegrableFunctional j;
+
+        auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+            val.setZero(u.rows(), 1);
+            const int e = params["elem"];
+            int e_ref;
+            if (auto search = e_to_ref_e_.find(e); search != e_to_ref_e_.end())
+                e_ref = search->second;
+            else
+                e_ref = e;
+            const auto &gbase_ref = target_state_->geom_bases()[e_ref];
+
+            Eigen::MatrixXd pts_ref;
+            gbase_ref.eval_geom_mapping(local_pts, pts_ref);
+
+            Eigen::MatrixXd u_ref, grad_u_ref;
+            const Eigen::MatrixXd &sol_ref = target_state_->problem->is_time_dependent() ? target_state_->diff_cached[params["step"].get<int>()].u : target_state_->diff_cached[0].u;
+            io::Evaluator::interpolate_at_local_vals(*(target_state_->mesh), target_state_->problem->is_scalar(), target_state_->bases, target_state_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
+
+            for (int q = 0; q < u.rows(); q++)
+            {
+                val(q) = ((u_ref.row(q) + pts_ref.row(q)) - (u.row(q) + pts.row(q))).squaredNorm();
+            }
+        };
+
+        auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+            val.setZero(u.rows(), u.cols());
+            const int e = params["elem"];
+            int e_ref;
+            if (auto search = e_to_ref_e_.find(e); search != e_to_ref_e_.end())
+                e_ref = search->second;
+            else
+                e_ref = e;
+            const auto &gbase_ref = target_state_->geom_bases()[e_ref];
+
+            Eigen::MatrixXd pts_ref;
+            gbase_ref.eval_geom_mapping(local_pts, pts_ref);
+
+            Eigen::MatrixXd u_ref, grad_u_ref;
+            const Eigen::MatrixXd &sol_ref = target_state_->problem->is_time_dependent() ? target_state_->diff_cached[params["step"].get<int>()].u : target_state_->diff_cached[0].u;
+            io::Evaluator::interpolate_at_local_vals(*(target_state_->mesh), target_state_->problem->is_scalar(), target_state_->bases, target_state_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
+
+            for (int q = 0; q < u.rows(); q++)
+            {
+                auto x = (u.row(q) + pts.row(q)) - (u_ref.row(q) + pts_ref.row(q));
+                val.row(q) = 2 * x;
+            }
+        };
+
+        j.set_j(j_func);
+        j.set_dj_du(djdu_func);
+        j.set_dj_dx(djdu_func); // only used for shape derivative
+
+        return j;
+    }
+
+    void TargetObjective::set_reference(const std::shared_ptr<const State> &target_state, const std::set<int> &reference_cached_body_ids)
+	{
+		target_state_ = target_state;
+
+		std::map<int, std::vector<int>> ref_interested_body_id_to_e;
+		int ref_count = 0;
+		for (int e = 0; e < target_state_->bases.size(); ++e)
+		{
+			int body_id = target_state_->mesh->get_body_id(e);
+			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
+				continue;
+			if (ref_interested_body_id_to_e.find(body_id) != ref_interested_body_id_to_e.end())
+				ref_interested_body_id_to_e[body_id].push_back(e);
+			else
+				ref_interested_body_id_to_e[body_id] = {e};
+			ref_count++;
+		}
+
+		std::map<int, std::vector<int>> interested_body_id_to_e;
+		int count = 0;
+		for (int e = 0; e < state_.bases.size(); ++e)
+		{
+			int body_id = state_.mesh->get_body_id(e);
+			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
+				continue;
+			if (interested_body_id_to_e.find(body_id) != interested_body_id_to_e.end())
+				interested_body_id_to_e[body_id].push_back(e);
+			else
+				interested_body_id_to_e[body_id] = {e};
+			count++;
+		}
+
+		if (count != ref_count)
+			logger().error("Number of interested elements in the reference and optimization examples do not match!");
+		else
+			logger().trace("Found {} matching elements.", count);
+
+		for (const auto &kv : interested_body_id_to_e)
+		{
+			for (int i = 0; i < kv.second.size(); ++i)
+			{
+				e_to_ref_e_[kv.second[i]] = ref_interested_body_id_to_e[kv.first][i];
+			}
+		}
+	}
 }

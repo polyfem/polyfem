@@ -247,4 +247,21 @@ namespace polyfem::solver
 		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
 		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
 	};
+
+	class TargetObjective: public SpatialIntegralObjective
+	{
+	public:
+		TargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): SpatialIntegralObjective(state, shape_param, args) 
+		{
+			spatial_integral_type_ = AdjointForm::SpatialIntegralType::SURFACE;
+		}
+		~TargetObjective() = default;
+
+		IntegrableFunctional get_integral_functional() const override;
+		void set_reference(const std::shared_ptr<const State> &target_state, const std::set<int> &reference_cached_body_ids);
+
+	protected:
+		std::shared_ptr<const State> target_state_;
+		std::map<int, int> e_to_ref_e_;
+	};
 } // namespace polyfem::solver
