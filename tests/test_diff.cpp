@@ -48,7 +48,7 @@ void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixX
 
 std::shared_ptr<State> create_state_and_solve(const json &args)
 {
-	std::shared_ptr<State> state = std::make_shared<State>(1);
+	std::shared_ptr<State> state = std::make_shared<State>(32);
 	state->init_logger("", spdlog::level::level_enum::warn, false);
 	state->init(args, false);
 	state->load_mesh();
@@ -453,7 +453,15 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
-		"optimization": { "enabled": true },
+		"optimization": { 
+			"enabled": true,
+			"functionals": [
+				{
+					"type": "stress",
+					"volume_selection": []
+				}
+			]
+		},
 		"boundary_conditions": {
 			"rhs": [
 				10,
@@ -480,39 +488,43 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/bar/bar792.obj";
 
-	auto func = CompositeFunctional::create("Compliance");
-	// auto func = CompositeFunctional::create("Mass");
-	// auto &func_mass = *dynamic_cast<MassFunctional *>(func.get());
-	// func_mass.set_max_mass(100);
-	// func_mass.set_min_mass(20);
+	std::shared_ptr<State> state_ptr = std::make_shared<State>(1);
+	state_ptr->init_logger("", spdlog::level::level_enum::warn, false);
+	state_ptr->init(in_args, false);
+	state_ptr->load_mesh();
+	state_ptr->build_basis();
+	State &state = *state_ptr;
+	
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	// std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	// std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	std::shared_ptr<TopologyOptimizationParameter> topo_param = std::make_shared<TopologyOptimizationParameter>(states_ptr);
+	solver::ComplianceObjective func(state, NULL, NULL, topo_param, state.args["optimization"]["functionals"][0]);
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
-	state.build_basis();
 	Eigen::MatrixXd density_mat;
 	density_mat.setConstant(state.mesh->n_elements(), 1, 0.5);
 	state.assembler.update_lame_params_density(density_mat, 5);
 	solve_pde(state);
-	double functional_val = func->energy(state);
+
+	double functional_val = func.value();
 
 	Eigen::MatrixXd theta(state.bases.size(), 1);
 	for (int e = 0; e < state.bases.size(); e++)
 		theta(e) = (rand() % 1000) / 1000.0;
 
-	Eigen::VectorXd one_form = func->gradient(state, "topology");
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, *topo_param);
 	double derivative = (one_form.array() * theta.array()).sum();
 
 	const double t = 1e-6;
 
 	state.assembler.update_lame_params_density(density_mat + theta * t);
 	solve_pde(state);
-	double next_functional_val = func->energy(state);
+	double next_functional_val = func.value();
 
 	state.assembler.update_lame_params_density(density_mat - theta * t);
 	solve_pde(state);
-	double former_functional_val = func->energy(state);
+	double former_functional_val = func.value();
 
 	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
 

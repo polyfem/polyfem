@@ -353,7 +353,7 @@ namespace polyfem
 					solve_zero_dirichlet(args["solver"]["linear"], A_tmp, b_, boundary_nodes, adjoint_nu[i]);
 				}
 
-				if (false) // TODO
+				if (true) // TODO
 				{
 					Eigen::VectorXd tmp = rhs_ - A * adjoint_nu[i];
 					for (const auto &b : boundary_nodes)

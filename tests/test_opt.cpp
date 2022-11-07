@@ -29,7 +29,7 @@ bool load_json(const std::string &json_file, json &out)
 
 std::shared_ptr<State> create_state(const json &args)
 {
-	std::shared_ptr<State> state = std::make_shared<State>();
+	std::shared_ptr<State> state = std::make_shared<State>(32);
 	state->init_logger("", spdlog::level::level_enum::err, false);
 	state->init(args, false);
 	state->args["optimization"]["enabled"] = true;

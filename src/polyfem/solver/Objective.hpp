@@ -2,6 +2,7 @@
 
 #include "ElasticParameter.hpp"
 #include "ShapeParameter.hpp"
+#include "TopologyOptimizationParameter.hpp"
 #include "AdjointForm.hpp"
 
 namespace polyfem::solver
@@ -205,5 +206,28 @@ namespace polyfem::solver
 		int time_steps_;
 		double dt_;
 		std::string transient_integral_type_;
+	};
+
+	class ComplianceObjective: public StaticObjective
+	{
+	public:
+		ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args);
+		~ComplianceObjective() = default;
+
+		double value() const override;
+
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+
+	protected:
+		const State &state_;
+		IntegrableFunctional j_;
+		std::string formulation_;
+
+		std::shared_ptr<const ShapeParameter> shape_param_; // integral depends on shape param
+		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
+		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
+
+		std::set<int> interested_ids_;
 	};
 } // namespace polyfem::solver

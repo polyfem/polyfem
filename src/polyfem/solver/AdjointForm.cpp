@@ -695,6 +695,7 @@ namespace polyfem::solver
 		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term;
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
+		Eigen::MatrixXd cur_p, cur_nu;
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
@@ -709,19 +710,27 @@ namespace polyfem::solver
 				velocity /= beta_dt;
 			}
 
+			cur_p = adjoint_p[i];
+			cur_nu = adjoint_nu[i];
+			for (int b : state.boundary_nodes)
 			{
-				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, adjoint_nu[i], mass_term);
-				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, state.diff_cached[i].u, -adjoint_p[i], elasticity_term);
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, -adjoint_p[i], rhs_term);
+				cur_p(b) = 0;
+				cur_nu(b) = 0;
+			}
+
+			{
+				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
+				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, state.diff_cached[i].u, -cur_p, elasticity_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, -cur_p, rhs_term);
 
 				if (state.solve_data.damping_form)
-					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, state.diff_cached[i - 1].u, -adjoint_p[i], damping_term);
+					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached[i].u, state.diff_cached[i - 1].u, -cur_p, damping_term);
 				else
 					damping_term.setZero(mass_term.size());
 
 				if (state.is_contact_enabled())
 				{
-					state.solve_data.contact_form->force_shape_derivative(state.diff_cached[i].contact_set, state.diff_cached[i].u, -adjoint_p[i], contact_term);
+					state.solve_data.contact_form->force_shape_derivative(state.diff_cached[i].contact_set, state.diff_cached[i].u, -cur_p, contact_term);
 					contact_term = state.down_sampling_mat * contact_term;
 					contact_term /= beta_dt * beta_dt;
 				}
@@ -730,7 +739,7 @@ namespace polyfem::solver
 
 				if (state.solve_data.friction_form)
 				{
-					state.solve_data.friction_form->force_shape_derivative(state.diff_cached[i - 1].u, state.diff_cached[i].u, -adjoint_p[i], state.diff_cached[i].friction_constraint_set, friction_term);
+					state.solve_data.friction_form->force_shape_derivative(state.diff_cached[i - 1].u, state.diff_cached[i].u, -cur_p, state.diff_cached[i].friction_constraint_set, friction_term);
 					friction_term = state.down_sampling_mat * friction_term;
 					friction_term /= beta_dt * beta_dt;
 				}
@@ -745,6 +754,8 @@ namespace polyfem::solver
 		double beta;
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
+		for (int b : state.boundary_nodes)
+			sum_alpha_p(b) = 0;
 		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
 
 		one_form += mass_term;
@@ -866,12 +877,18 @@ namespace polyfem::solver
 		const std::vector<Eigen::MatrixXd> &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
-		const int ndof = state.n_bases * state.mesh->dimension();
+		const int ndof = state.ndof();
 		one_form.setZero(ndof * 2); // half for initial solution, half for initial velocity
 
 		// \partial_q \hat{J}^0 - p_0^T \partial_q g^v - \mu_0^T \partial_q g^u
 		one_form.segment(0, ndof) = -adjoint_nu[0]; // adjoint_nu[0] actually stores adjoint_mu[0]
 		one_form.segment(ndof, ndof) = -adjoint_p[0];
+
+		for (int b : state.boundary_nodes)
+		{
+			one_form(b) = 0;
+			one_form(ndof + b) = 0;
+		}
 	}
 
 	void AdjointForm::dJ_dirichlet_transient(
