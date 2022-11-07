@@ -68,7 +68,7 @@ namespace polyfem::solver
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type,
-			std::vector<Eigen::VectorXd> &terms);
+			Eigen::MatrixXd &terms);
 		static void compute_topology_derivative_functional_term(
 			const State &state,
 			const Eigen::MatrixXd &solution,

@@ -185,9 +185,9 @@ namespace polyfem::solver
 	{
 		if (state.problem->is_time_dependent())
 		{
-			std::vector<Eigen::VectorXd> adjoint_rhs;
+			Eigen::MatrixXd adjoint_rhs;
 			dJ_du_transient(state, j, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
-			state.solve_transient_adjoint(adjoint_rhs, param_name == "dirichlet");
+			state.solve_transient_adjoint(adjoint_rhs);
 
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
 			adjoint_nu.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
@@ -1117,19 +1117,20 @@ namespace polyfem::solver
 		const std::set<int> &interested_ids,
 		const SpatialIntegralType spatial_integral_type,
 		const std::string &transient_integral_type,
-		std::vector<Eigen::VectorXd> &terms)
+		Eigen::MatrixXd &terms)
 	{
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
 
-		terms.resize(time_steps + 1);
+		terms.setZero(state.diff_cached[0].u.size(), time_steps + 1);
 
 		std::vector<double> weights;
 		get_transient_quadrature_weights(transient_integral_type, time_steps, dt, weights);
+		Eigen::VectorXd tmp;
 		for (int i = time_steps; i >= 0; --i)
 		{
-			dJ_du_step(state, j, state.diff_cached[i].u, interested_ids, spatial_integral_type, i, terms[i]);
-			terms[i] *= weights[i];
+			dJ_du_step(state, j, state.diff_cached[i].u, interested_ids, spatial_integral_type, i, tmp);
+			terms.col(i) = weights[i] * tmp;
 		}
 	}
 

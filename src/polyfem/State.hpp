@@ -619,7 +619,6 @@ namespace polyfem
 		void solve_adjoint(const Eigen::MatrixXd &rhs);
 		void solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs);
 		void solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
-		void solve_transient_adjoint(const std::vector<Eigen::VectorXd> &adjoint_rhs, bool dirichlet_derivative = false); // to be deleted
 		// Change geometric node positions
 		void set_v(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
