@@ -2029,22 +2029,31 @@
         "type": "object",
         "optional": [
             "initial_weight",
-            "max_weight",
+            "scaling",
+            "max_steps",
             "force"
         ],
-        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again, in case of failure we double $w$ until `max_weight`."
+        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes a*E + (1-a)*AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a /= scaling` `max_steps` times."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
-        "default": 1000000.0,
+        "default": 0.5,
+        "min": 0,
+        "max": 1,
         "type": "float",
         "doc": "Initial weight for AL"
     },
     {
-        "pointer": "/solver/augmented_lagrangian/max_weight",
-        "default": 100000000000.0,
+        "pointer": "/solver/augmented_lagrangian/scaling",
+        "default": 10.0,
         "type": "float",
-        "doc": "Maximum AL weight"
+        "doc": "Division factor"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/max_steps",
+        "default": 20,
+        "type": "int",
+        "doc": "Maximum number of divisions"
     },
     {
         "pointer": "/solver/augmented_lagrangian/force",
@@ -2861,6 +2870,12 @@
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "type": "list",
+        "default": [],
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type"
@@ -2872,7 +2887,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type"
@@ -2881,7 +2896,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -2894,7 +2909,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -2908,7 +2923,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -2922,7 +2937,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/type",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
             "none",
@@ -2934,38 +2949,38 @@
         "doc": "type of interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/from",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/from",
         "type": "float",
         "default": 0,
         "doc": "interpolation starting time"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/to",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/to",
         "type": "float",
         "doc": "interpolation ending time"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/points",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/points",
         "type": "list",
         "doc": "interpolation time points"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/points/*",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/points/*",
         "type": "float",
         "doc": "interpolation time point"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/values",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/values",
         "type": "list",
         "doc": "interpolation values"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/values/*",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/values/*",
         "type": "float",
         "doc": "interpolation value"
     },
     {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/extend",
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/extend",
         "type": "string",
         "options": [
             "constant",
@@ -3017,6 +3032,12 @@
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "type": "list",
+        "default": [],
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type"
@@ -3028,7 +3049,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type"
@@ -3037,7 +3058,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -3050,7 +3071,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -3064,7 +3085,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -3078,7 +3099,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/type",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
             "none",
@@ -3090,38 +3111,38 @@
         "doc": "type of interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/from",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/from",
         "type": "float",
         "default": 0,
         "doc": "interpolation starting time"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/to",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/to",
         "type": "float",
         "doc": "interpolation ending time"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/points",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/points",
         "type": "list",
         "doc": "interpolation time points"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/points/*",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/points/*",
         "type": "float",
         "doc": "interpolation time point"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/values",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/values",
         "type": "list",
         "doc": "interpolation values"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/values/*",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/values/*",
         "type": "float",
         "doc": "interpolation value"
     },
     {
-        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/extend",
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/extend",
         "type": "string",
         "options": [
             "constant",
@@ -3346,6 +3367,12 @@
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "type": "list",
+        "default": [],
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
         "type": "object",
         "required": [
             "type"
@@ -3357,7 +3384,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
         "type": "object",
         "required": [
             "type"
@@ -3366,7 +3393,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -3379,7 +3406,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -3393,7 +3420,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
         "type": "object",
         "required": [
             "type",
@@ -3407,7 +3434,7 @@
         "doc": "interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/type",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/type",
         "type": "string",
         "options": [
             "none",
@@ -3419,38 +3446,38 @@
         "doc": "type of interpolation of boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/from",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/from",
         "type": "float",
         "default": 0,
         "doc": "interpolation starting time"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/to",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/to",
         "type": "float",
         "doc": "interpolation ending time"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/points",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/points",
         "type": "list",
         "doc": "interpolation time points"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/points/*",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/points/*",
         "type": "float",
         "doc": "interpolation time point"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/values",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/values",
         "type": "list",
         "doc": "interpolation values"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/values/*",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/values/*",
         "type": "float",
         "doc": "interpolation value"
     },
     {
-        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/extend",
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/extend",
         "type": "string",
         "options": [
             "constant",

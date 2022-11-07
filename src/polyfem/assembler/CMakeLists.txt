@@ -32,6 +32,8 @@ set(SOURCES
 	NeoHookeanElasticity.hpp
 	MultiscaleRB.cpp
 	MultiscaleRB.hpp
+	NeoHookeanElasticityAutodiff.cpp
+	NeoHookeanElasticityAutodiff.hpp
 	OgdenElasticity.cpp
 	OgdenElasticity.hpp
 	RhsAssembler.cpp

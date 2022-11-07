@@ -106,12 +106,10 @@ namespace polyfem
 				if (is_all_)
 				{
 					assert(displacements_.size() == 1);
-					double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 					for (int d = 0; d < val.cols(); ++d)
 					{
-						val(i, d) = displacements_[0].value[d](x, y, z, t);
+						val(i, d) = displacements_[0].eval(pts.row(i), d, t);
 					}
-					val.row(i) *= displacements_[0].interpolation->eval(t);
 				}
 				else
 				{
@@ -120,12 +118,11 @@ namespace polyfem
 					{
 						if (id == boundary_ids_[b])
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 							for (int d = 0; d < val.cols(); ++d)
 							{
-								val(i, d) = displacements_[b].value[d](x, y, z, t);
+								val(i, d) = displacements_[b].eval(pts.row(i), d, t);
 							}
-							val.row(i) *= displacements_[b].interpolation->eval(t);
+
 							break;
 						}
 					}
@@ -147,10 +144,9 @@ namespace polyfem
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-							val(i, d) = forces_[b].value[d](x, y, z, t);
+							val(i, d) = forces_[b].eval(pts.row(i), d, t);
 						}
-						val.row(i) *= forces_[b].interpolation->eval(t);
+
 						break;
 					}
 				}
@@ -161,10 +157,8 @@ namespace polyfem
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-							val(i, d) = pressures_[b].value(x, y, z, t) * normals(i, d);
+							val(i, d) = pressures_[b].eval(pts.row(i), t) * normals(i, d);
 						}
-						val.row(i) *= pressures_[b].interpolation->eval(t);
 						break;
 					}
 				}
@@ -214,7 +208,7 @@ namespace polyfem
 				displacements_.back().value[k].init(val[k]);
 
 			displacements_.back().dirichlet_dimension << isx, isy, isz;
-			displacements_.back().interpolation = interp;
+			displacements_.back().interpolation.push_back(interp);
 
 			if (!isx || !isy || !isz)
 				all_dimensions_dirichlet_ = false;
@@ -236,7 +230,9 @@ namespace polyfem
 				throw "Invalid boundary id";
 			}
 
-			displacements_[index].interpolation = interp;
+			displacements_[index].interpolation.clear();
+			displacements_[index].interpolation.push_back(interp);
+
 			for (size_t k = 0; k < val.size(); ++k)
 				displacements_[index].value[k].init(val[k]);
 
@@ -253,7 +249,7 @@ namespace polyfem
 			for (size_t k = 0; k < val.size(); ++k)
 				forces_.back().value[k].init(val[k]);
 
-			forces_.back().interpolation = interp;
+			forces_.back().interpolation.push_back(interp);
 		}
 
 		void GenericTensorProblem::update_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
@@ -272,7 +268,8 @@ namespace polyfem
 				throw "Invalid boundary id";
 			}
 
-			forces_[index].interpolation = interp;
+			forces_[index].interpolation.clear();
+			forces_[index].interpolation.push_back(interp);
 			for (size_t k = 0; k < val.size(); ++k)
 				forces_[index].value[k].init(val[k]);
 		}
@@ -308,7 +305,7 @@ namespace polyfem
 		{
 			boundary_ids_.push_back(id);
 			displacements_.emplace_back();
-			displacements_.back().interpolation = interp;
+			displacements_.back().interpolation.push_back(interp);
 			for (size_t k = 0; k < displacements_.back().value.size(); ++k)
 				displacements_.back().value[k].init(func, k);
 
@@ -333,7 +330,8 @@ namespace polyfem
 			{
 				throw "Invalid boundary id";
 			}
-			displacements_[index].interpolation = interp;
+			displacements_[index].interpolation.clear();
+			displacements_[index].interpolation.push_back(interp);
 			for (size_t k = 0; k < displacements_.back().value.size(); ++k)
 				displacements_[index].value[k].init(func, k);
 
@@ -347,7 +345,7 @@ namespace polyfem
 		{
 			neumann_boundary_ids_.push_back(id);
 			forces_.emplace_back();
-			forces_.back().interpolation = interp;
+			forces_.back().interpolation.push_back(interp);
 			for (size_t k = 0; k < forces_.back().value.size(); ++k)
 				forces_.back().value[k].init(func, k);
 		}
@@ -368,7 +366,8 @@ namespace polyfem
 				throw "Invalid boundary id";
 			}
 
-			forces_[index].interpolation = interp;
+			forces_[index].interpolation.clear();
+			forces_[index].interpolation.push_back(interp);
 			for (size_t k = 0; k < forces_.back().value.size(); ++k)
 				forces_[index].value[k].init(func, k);
 		}
@@ -408,10 +407,8 @@ namespace polyfem
 
 			boundary_ids_.push_back(id);
 			displacements_.emplace_back();
-			if (interpolation.empty())
-				displacements_.back().interpolation = std::make_shared<NoInterpolation>();
-			else
-				displacements_.back().interpolation = Interpolation::build(interpolation);
+			if (!interpolation.empty())
+				displacements_.back().interpolation.push_back(Interpolation::build(interpolation));
 
 			for (size_t k = 0; k < val.size(); ++k)
 				displacements_.back().value[k].init(val[k]);
@@ -430,10 +427,8 @@ namespace polyfem
 			neumann_boundary_ids_.push_back(id);
 
 			forces_.emplace_back();
-			if (interpolation.empty())
-				forces_.back().interpolation = std::make_shared<NoInterpolation>();
-			else
-				forces_.back().interpolation = Interpolation::build(interpolation);
+			if (!interpolation.empty())
+				forces_.back().interpolation.push_back(Interpolation::build(interpolation));
 
 			for (size_t k = 0; k < val.size(); ++k)
 				forces_.back().value[k].init(val[k]);
@@ -469,10 +464,9 @@ namespace polyfem
 				throw "Invalid boundary id";
 			}
 
-			if (interpolation.empty())
-				displacements_[index].interpolation = std::make_shared<NoInterpolation>();
-			else
-				displacements_[index].interpolation = Interpolation::build(interpolation);
+			displacements_[index].interpolation.clear();
+			if (!interpolation.empty())
+				displacements_[index].interpolation.push_back(Interpolation::build(interpolation));
 
 			for (size_t k = 0; k < val.size(); ++k)
 				displacements_[index].value[k].init(val[k]);
@@ -501,11 +495,9 @@ namespace polyfem
 			{
 				throw "Invalid boundary id";
 			}
-
-			if (interpolation.empty())
-				forces_[index].interpolation = std::make_shared<NoInterpolation>();
-			else
-				forces_[index].interpolation = Interpolation::build(interpolation);
+			forces_[index].interpolation.clear();
+			if (!interpolation.empty())
+				forces_[index].interpolation.push_back(Interpolation::build(interpolation));
 
 			for (size_t k = 0; k < val.size(); ++k)
 				forces_[index].value[k].init(val[k]);
@@ -548,16 +540,13 @@ namespace polyfem
 
 			if (is_all_)
 			{
-				double x = pt(0), y = pt(1), z = pt.size() == 2 ? 0 : pt(2);
-
 				assert(nodal_dirichlet_.size() == 1);
 				const auto &tmp = nodal_dirichlet_.begin()->second;
 
 				for (int d = 0; d < val.cols(); ++d)
 				{
-					val(d) = tmp.value[d](x, y, z, t);
+					val(d) = tmp.eval(pt, d, t);
 				}
-				val *= tmp.interpolation->eval(t);
 
 				return;
 			}
@@ -565,14 +554,10 @@ namespace polyfem
 			const auto it = nodal_dirichlet_.find(tag);
 			if (it != nodal_dirichlet_.end())
 			{
-				double x = pt(0), y = pt(1), z = pt.size() == 2 ? 0 : pt(2);
-
 				for (int d = 0; d < val.cols(); ++d)
 				{
-					val(d) = it->second.value[d](x, y, z, t);
+					val(d) = it->second.eval(pt, d, t);
 				}
-
-				val *= it->second.interpolation->eval(t);
 
 				return;
 			}
@@ -790,10 +775,13 @@ namespace polyfem
 						}
 					}
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						displacements_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					if (j_boundary[i - offset]["interpolation"].is_array())
+					{
+						for (int ii = 0; ii < j_boundary[i - offset]["interpolation"].size(); ++ii)
+							displacements_[i].interpolation.push_back(Interpolation::build(j_boundary[i - offset]["interpolation"][ii]));
+					}
 					else
-						displacements_[i].interpolation = std::make_shared<NoInterpolation>();
+						displacements_[i].interpolation.push_back(Interpolation::build(j_boundary[i - offset]["interpolation"]));
 
 					nodal_dirichlet_[current_id].interpolation = displacements_[i].interpolation;
 				}
@@ -827,11 +815,15 @@ namespace polyfem
 						forces_[i].value[1].init(0);
 						forces_[i].value[2].init(0);
 					}
-
-					if (j_boundary[i - offset].contains("interpolation"))
-						forces_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					if (j_boundary[i - offset]["interpolation"].is_array())
+					{
+						for (int ii = 0; ii < j_boundary[i - offset]["interpolation"].size(); ++ii)
+							forces_[i].interpolation.push_back(Interpolation::build(j_boundary[i - offset]["interpolation"][ii]));
+					}
 					else
-						forces_[i].interpolation = std::make_shared<NoInterpolation>();
+					{
+						forces_[i].interpolation.push_back(Interpolation::build(j_boundary[i - offset]["interpolation"]));
+					}
 				}
 			}
 
@@ -1064,9 +1056,7 @@ namespace polyfem
 				if (is_all_)
 				{
 					assert(dirichlet_.size() == 1);
-					double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-					val(i) = dirichlet_[0].value(x, y, z, t);
-					val(i) *= dirichlet_[0].interpolation->eval(t);
+					val(i) = dirichlet_[0].eval(pts.row(i), t);
 				}
 				else
 				{
@@ -1074,9 +1064,7 @@ namespace polyfem
 					{
 						if (id == boundary_ids_[b])
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-							val(i) = dirichlet_[b].value(x, y, z, t);
-							val(i) *= dirichlet_[b].interpolation->eval(t);
+							val(i) = dirichlet_[b].eval(pts.row(i), t);
 							break;
 						}
 					}
@@ -1097,8 +1085,7 @@ namespace polyfem
 					if (id == neumann_boundary_ids_[b])
 					{
 						double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
-						val(i) = neumann_[b].value(x, y, z, t);
-						val(i) *= neumann_[b].interpolation->eval(t);
+						val(i) = neumann_[b].eval(pts.row(i), t);
 						break;
 					}
 				}
@@ -1225,10 +1212,17 @@ namespace polyfem
 					auto ff = j_boundary[i - offset]["value"];
 					dirichlet_[i].value.init(ff);
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					if (j_boundary[i - offset]["interpolation"].is_array())
+					{
+						if (j_boundary[i - offset]["interpolation"].size() == 0)
+							dirichlet_[i].interpolation = std::make_shared<NoInterpolation>();
+						else if (j_boundary[i - offset]["interpolation"].size() == 1)
+							dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"][0]);
+						else
+							log_and_throw_error("Only one Dirichlet interpolation supported");
+					}
 					else
-						dirichlet_[i].interpolation = std::make_shared<NoInterpolation>();
+						dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				}
 			}
 
@@ -1249,10 +1243,17 @@ namespace polyfem
 					auto ff = j_boundary[i - offset]["value"];
 					neumann_[i].value.init(ff);
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					if (j_boundary[i - offset]["interpolation"].is_array())
+					{
+						if (j_boundary[i - offset]["interpolation"].size() == 0)
+							neumann_[i].interpolation = std::make_shared<NoInterpolation>();
+						else if (j_boundary[i - offset]["interpolation"].size() == 1)
+							neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"][0]);
+						else
+							log_and_throw_error("Only one Neumann interpolation supported");
+					}
 					else
-						neumann_[i].interpolation = std::make_shared<NoInterpolation>();
+						neumann_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				}
 			}
 

@@ -31,7 +31,6 @@ namespace polyfem
 			in_v_.resize(0);
 
 			displacements_.clear();
-			displacements_interpolation_.clear();
 
 			endings_.clear();
 
@@ -108,13 +107,19 @@ namespace polyfem
 			for (size_t d = 0; d < dim_; ++d)
 			{
 				assert(displacement["value"].is_array());
-				displacements_.back()[d].init(displacement["value"][d]);
+				displacements_.back().value[d].init(displacement["value"][d]);
 			}
 
 			if (displacement.contains("interpolation"))
-				displacements_interpolation_.emplace_back(Interpolation::build(displacement["interpolation"]));
-			else
-				displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+			{
+				if (displacement["interpolation"].is_array())
+				{
+					for (int ii = 0; ii < displacement["interpolation"].size(); ++ii)
+						displacements_.back().interpolation.emplace_back(Interpolation::build(displacement["interpolation"][ii]));
+				}
+				else
+					displacements_.back().interpolation.emplace_back(Interpolation::build(displacement["interpolation"]));
+			}
 		}
 
 		void Obstacle::append_mesh_sequence(
@@ -141,7 +146,7 @@ namespace polyfem
 			for (size_t d = 0; d < dim_; ++d)
 			{
 				const std::vector<Eigen::MatrixXd> displacements = displacements_xyz[d];
-				displacements_.back()[d].init(
+				displacements_.back().value[d].init(
 					[displacements, fps](double x, double y, double z, double t, int index) -> double {
 						const double frame = t * fps;
 						const double interp = frame - floor(frame);
@@ -154,8 +159,6 @@ namespace polyfem
 						return (u1 - u0) * interp + u0;
 					});
 			}
-
-			displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
 		}
 
 		void Obstacle::append_plane(const VectorNd &origin, const VectorNd &normal)
@@ -183,22 +186,28 @@ namespace polyfem
 		void Obstacle::change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
 		{
 			for (size_t k = 0; k < val.size(); ++k)
-				displacements_[oid][k].init(val[k]);
-			displacements_interpolation_[oid] = interp;
+				displacements_[oid].value[k].init(val[k]);
+
+			displacements_[oid].interpolation.clear();
+			displacements_[oid].interpolation.push_back(interp);
 		}
 
 		void Obstacle::change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 		{
-			for (size_t k = 0; k < displacements_.back().size(); ++k)
-				displacements_[oid][k].init(func, k);
-			displacements_interpolation_[oid] = interp;
+			for (size_t k = 0; k < displacements_.back().value.size(); ++k)
+				displacements_[oid].value[k].init(func, k);
+
+			displacements_[oid].interpolation.clear();
+			displacements_[oid].interpolation.push_back(interp);
 		}
 
 		void Obstacle::change_displacement(const int oid, const json &val, const std::shared_ptr<Interpolation> &interp)
 		{
 			for (size_t k = 0; k < val.size(); ++k)
-				displacements_[oid][k].init(val[k]);
-			displacements_interpolation_[oid] = interp;
+				displacements_[oid].value[k].init(val[k]);
+
+			displacements_[oid].interpolation.clear();
+			displacements_[oid].interpolation.push_back(interp);
 		}
 
 		void Obstacle::update_displacement(const double t, Eigen::MatrixXd &sol) const
@@ -212,18 +221,14 @@ namespace polyfem
 			{
 				const int to = endings_[k];
 				const auto &disp = displacements_[k];
-				const auto &interp = displacements_interpolation_[k];
 
 				for (int i = start; i < to; ++i)
 				{
-					double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
-					const double interp_val = interp->eval(t);
-
 					for (int d = 0; d < dim_; ++d)
 					{
 						const int sol_row = sol.cols() == 1 ? (offset + i * dim_ + d) : (offset + i);
 						const int sol_col = sol.cols() == 1 ? 0 : d;
-						sol(sol_row, sol_col) = disp[d](x, y, z, t, i - start) * interp_val;
+						sol(sol_row, sol_col) = disp.eval(v_.row(i), d, t, i - start);
 					}
 				}
 

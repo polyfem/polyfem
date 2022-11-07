@@ -533,11 +533,10 @@ namespace polyfem
 				mooney_rivlin_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
-			// else if(assembler == "Ogden")
-			//	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			else if (assembler == "Ogden")
+				ogden_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
-
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 				stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
 			else if (assembler == "NavierStokes")
@@ -596,11 +595,10 @@ namespace polyfem
 				mooney_rivlin_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiModels")
 				multi_models_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
-			// else if(assembler == "Ogden")
-			//	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			else if (assembler == "Ogden")
+				ogden_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
-			
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting") // WARNING stokes and NS dont have el_id
 				stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 			else if (assembler == "NavierStokes")
@@ -638,10 +636,8 @@ namespace polyfem
 				return mooney_rivlin_elasticity_.local_assembler().compute_rhs(pt);
 			else if (assembler == "MultiModels")
 				return multi_models_elasticity_.local_assembler().compute_rhs(pt);
-			// else if(assembler == "Ogden")
-			//	return ogden_elasticity_.local_assembler().compute_rhs(pt);
-			// else if (assembler == "MultiscaleRB")
-			// 	multiscale_reduced_basis_.local_assembler().compute_rhs(pt);
+			else if (assembler == "Ogden")
+				return ogden_elasticity_.local_assembler().compute_rhs(pt);
 
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 				return stokes_velocity_.local_assembler().compute_rhs(pt);

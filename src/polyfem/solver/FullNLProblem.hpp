@@ -58,6 +58,7 @@ namespace polyfem::solver
 		bool remesh(TVector &x) { return false; }
 		void smoothing(const TVector &x, TVector &new_x) {}
 		void save_to_file(const TVector &x0) {}
+		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
 
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
