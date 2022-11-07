@@ -4137,7 +4137,9 @@
         "type": "object",
         "type_name": "height",
         "required": [
-            "type",
+            "type"
+        ],
+        "optional": [
             "weight"
         ],
         "doc": "TODO"

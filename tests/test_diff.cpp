@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace solver;
 
 namespace {
 
@@ -48,7 +49,7 @@ void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixX
 std::shared_ptr<State> create_state_and_solve(const json &args)
 {
 	std::shared_ptr<State> state = std::make_shared<State>(1);
-	state->init_logger("", spdlog::level::level_enum::err, false);
+	state->init_logger("", spdlog::level::level_enum::warn, false);
 	state->init(args, false);
 	state->load_mesh();
 	Eigen::MatrixXd sol, pressure;
@@ -270,43 +271,26 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 				"lambda": 17284000.0,
 				"mu": 7407410.0
 			},
-			"optimization": { "enabled": true }
+			"optimization": { 
+				"enabled": true,
+				"functionals": [
+					{
+						"type": "height",
+						"volume_selection": []
+					}
+				]
+			}
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../cube.msh";
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	state.build_basis();
-
-	solve_pde(state);
-
-	IntegrableFunctional j;
-	{
-		const auto formulation = state.formulation();
-		auto j_func = [formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(u.rows(), 1);
-			for (int i = 0; i < val.rows(); i++)
-			{
-				val(i) = pts(i, 0) + u(i, 0);
-			}
-		};
-
-		auto dj_dx = [formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(u.rows(), u.cols());
-			for (int i = 0; i < val.rows(); i++)
-			{
-				val(i, 0) = 1;
-			}
-		};
-
-		j.set_j(j_func);
-		j.set_dj_dx(dj_dx);
-		j.set_dj_du(dj_dx);
-	}
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	solver::PositionObjective obj(state, shape_param, state.args["optimization"]["functionals"][0]);
+	obj.set_integral_type(solver::AdjointForm::SpatialIntegralType::SURFACE);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		Eigen::MatrixXd vel;
@@ -320,13 +304,13 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 		return vel;
 	};
 
-	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
+	double functional_val = obj.value();
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
 
-	Eigen::VectorXd one_form;
-	solver::AdjointForm::gradient(state, j, "shape", one_form, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
+	state.solve_adjoint(obj.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = obj.gradient(state, *shape_param);
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
@@ -336,7 +320,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 
 	solve_pde(state);
 
-	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
+	double new_functional_val = obj.value();
 
 	double finite_difference = (new_functional_val - functional_val) / t;
 
@@ -393,43 +377,26 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 				"lambda": 17284000.0,
 				"mu": 7407410.0
 			},
-			"optimization": { "enabled": true }
+			"optimization": { 
+				"enabled": true,
+				"functionals": [
+					{
+						"type": "height",
+						"volume_selection": []
+					}
+				]
+			}
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	state.build_basis();
-
-	solve_pde(state);
-
-	IntegrableFunctional j;
-	{
-		const auto formulation = state.formulation();
-		auto j_func = [formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(u.rows(), 1);
-			for (int i = 0; i < val.rows(); i++)
-			{
-				val(i) = pts(i, 0) + u(i, 0);
-			}
-		};
-
-		auto dj_dx = [formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(u.rows(), u.cols());
-			for (int i = 0; i < val.rows(); i++)
-			{
-				val(i, 0) = 1;
-			}
-		};
-
-		j.set_j(j_func);
-		j.set_dj_dx(dj_dx);
-		j.set_dj_du(dj_dx);
-	}
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	solver::PositionObjective obj(state, shape_param, state.args["optimization"]["functionals"][0]);
+	obj.set_integral_type(solver::AdjointForm::SpatialIntegralType::SURFACE);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		Eigen::MatrixXd vel;
@@ -442,29 +409,28 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 		return vel;
 	};
 
-	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
-
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
-
-	Eigen::VectorXd one_form;
-	solver::AdjointForm::gradient(state, j, "shape", one_form, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
-	perturb_mesh(state, velocity_discrete * t);
+	double derivative, functional_val, new_functional_val, old_functional_val;
+	{
+		functional_val = obj.value();
 
-	solve_pde(state);
+		Eigen::MatrixXd velocity_discrete;
+		sample_field(state, velocity, velocity_discrete);
 
-	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
+		state.solve_adjoint(obj.compute_adjoint_rhs(state));
+		Eigen::VectorXd one_form = obj.gradient(state, *shape_param);
+		derivative = (one_form.array() * velocity_discrete.array()).sum();
 
-	perturb_mesh(state, velocity_discrete * (-2 * t));
+		perturb_mesh(state, velocity_discrete * t);
+		solve_pde(state);
+		new_functional_val = obj.value();
 
-	solve_pde(state);
-
-	double old_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::SURFACE, "");
+		perturb_mesh(state, velocity_discrete * (-2 * t));
+		solve_pde(state);
+		old_functional_val = obj.value();
+	}
 
 	double finite_difference = (new_functional_val - old_functional_val) / t / 2;
 	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << old_functional_val << " f(x+dt) " << new_functional_val << "\n";
@@ -576,7 +542,15 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
-		"optimization": { "enabled": true },
+		"optimization": { 
+			"enabled": true,
+			"functionals": [
+				{
+					"type": "stress",
+					"volume_selection": []
+				}
+			]
+		},
 		"boundary_conditions": {
 			"rhs": [
 				10,
@@ -603,18 +577,15 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/creatures/bunny.msh";
 
-	StressFunctional func;
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	// std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	solver::StressObjective func(state, shape_param, NULL, state.args["optimization"]["functionals"][0]);
 
-	state.build_basis();
-
-	solve_pde(state);
-	// state.pre_sol = state.diff_cached[0].u;
-	double functional_val = func.energy(state);
+	double functional_val = func.value();
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -626,19 +597,20 @@ TEST_CASE("neohookean-j(grad u)-3d", "[adjoint_method]")
 	};
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
-	Eigen::VectorXd one_form = func.gradient(state, "shape");
+
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, *shape_param);
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	const double t = 1e-6;
-	perturb_mesh(state, velocity_discrete * t);
 
+	perturb_mesh(state, velocity_discrete * t);
 	solve_pde(state);
-	double next_functional_val = func.energy(state);
+	double next_functional_val = func.value();
 
 	perturb_mesh(state, velocity_discrete * (-2 * t));
-
 	solve_pde(state);
-	double former_functional_val = func.energy(state);
+	double former_functional_val = func.value();
 
 	double finite_difference = (next_functional_val - former_functional_val) / t / 2;
 
@@ -698,7 +670,15 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 				]
 			}
 		],
-		"optimization": { "enabled": true },
+		"optimization": { 
+			"enabled": true,
+			"functionals": [
+				{
+					"type": "stress",
+					"volume_selection": []
+				}
+			]
+		},
 		"contact": {
 			"enabled": true,
 			"dhat": 0.001
@@ -740,18 +720,16 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	in_args["geometry"][0]["mesh"] = path + "/../cube_dense.msh";
 	in_args["geometry"][1]["mesh"] = path + "/../cube_dense.msh";
 
-	StressFunctional func;
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	// std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	solver::StressObjective func(state, shape_param, NULL, state.args["optimization"]["functionals"][0]);
 
-	state.build_basis();
-
-	solve_pde(state);
 	state.pre_sol = state.diff_cached[0].u;
-	double functional_val = func.energy(state);
+	double functional_val = func.value();
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -765,7 +743,8 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
 
-	Eigen::VectorXd one_form = func.gradient(state, "shape");
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, *shape_param);
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
@@ -774,11 +753,11 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 
 	perturb_mesh(state, velocity_discrete * t);
 	solve_pde(state);
-	double next_functional_val = func.energy(state);
+	double next_functional_val = func.value();
 
 	perturb_mesh(state, velocity_discrete * (-2 * t));
 	solve_pde(state);
-	double prev_functional_val = func.energy(state);
+	double prev_functional_val = func.value();
 
 	double finite_difference = (next_functional_val - prev_functional_val) / 2. / t;
 
@@ -1287,7 +1266,16 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 					}
 				]
 			},
-			"optimization": { "enabled": true },
+		"optimization": { 
+			"enabled": true,
+			"functionals": [
+				{
+					"type": "stress",
+					"volume_selection": [],
+					"transient_integral_type": "uniform"
+				}
+			]
+		},
 			"materials": {
 				"type": "NeoHookean",
 				"E": 1000000.0,
@@ -1306,14 +1294,21 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	in_args["geometry"][0]["mesh"] = path + "/../square.obj";
 	in_args["geometry"][1]["mesh"] = path + "/../circle.msh";
 
-	StressFunctional func;
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	std::shared_ptr<State> state = create_state_and_solve(in_args);
-	double functional_val = func.energy(*state);
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	// std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	json functional_args = state.args["optimization"]["functionals"][0];
+	std::shared_ptr<solver::StaticObjective> func_aux = std::make_shared<solver::StressObjective>(state, shape_param, std::shared_ptr<ElasticParameter>(), functional_args, false);
+	solver::TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
+
+	double functional_val = func.value();
 
 	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state->n_geom_bases * 2, 1);
-	for (int i = 0; i < state->n_geom_bases; ++i)
+	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+	for (int i = 0; i < state.n_geom_bases; ++i)
 	{
 		velocity_discrete(i * 2 + 0) = rand() % 1000;
 		velocity_discrete(i * 2 + 1) = rand() % 1000;
@@ -1321,19 +1316,20 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 
 	velocity_discrete.normalize();
 
-	Eigen::VectorXd one_form = func.gradient(*state, "shape");
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, *shape_param);
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
 	const double t = 1e-6;
-	perturb_mesh(*state, velocity_discrete * t);
+	perturb_mesh(state, velocity_discrete * t);
 	solve_pde(state);
-	double next_functional_val = func.energy(*state);
+	double next_functional_val = func.value();
 
-	perturb_mesh(*state, velocity_discrete * (-2 * t));
+	perturb_mesh(state, velocity_discrete * (-2 * t));
 	solve_pde(state);
-	double prev_functional_val = func.energy(*state);
+	double prev_functional_val = func.value();
 
 	double finite_difference = (next_functional_val - prev_functional_val) / (2 * t);
 
@@ -1777,22 +1773,27 @@ TEST_CASE("barycenter", "[adjoint_method]")
 
 	Eigen::MatrixXd centers;
 	{
-		std::vector<Eigen::VectorXd> barycenters;
 		auto in_args_ref = in_args;
 		in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
 		in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 		std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 		std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 		std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
-		solver::CenterTrajectoryObjective func_aux(*state_reference, shape_param, state.args["optimization"]["functionals"][0], Eigen::MatrixXd::Zero(state_reference->diff_cached.size(), state_reference->mesh->dimension()));
-		centers = func_aux.get_barycenters();
+		solver::BarycenterTargetObjective func_aux(*state_reference, shape_param, state.args["optimization"]["functionals"][0], Eigen::MatrixXd::Zero(state_reference->diff_cached.size(), state_reference->mesh->dimension()));
+		centers.setZero(state_reference->diff_cached.size(), state_reference->mesh->dimension());
+		for (int t = 0; t < state_reference->diff_cached.size(); t++)
+		{
+			func_aux.set_time_step(t);
+			centers.row(t) = func_aux.get_barycenter();
+		}
 	}
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
 	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr);
 
-	solver::CenterTrajectoryObjective func(state, shape_param, state.args["optimization"]["functionals"][0], centers);
+	std::shared_ptr<solver::StaticObjective> func_aux = std::make_shared<solver::BarycenterTargetObjective>(state, shape_param, state.args["optimization"]["functionals"][0], centers);
+	solver::TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);
 
 	double functional_val = func.value();
 

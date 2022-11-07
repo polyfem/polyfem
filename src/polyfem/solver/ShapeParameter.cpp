@@ -190,6 +190,8 @@ namespace polyfem
 
 		dim = states_ptr_[0]->mesh->dimension();
 
+		full_dim_ = states_ptr_[0]->n_geom_bases * dim;
+
 		const auto &gbases = states_ptr_[0]->geom_bases();
 
 		// mesh topology

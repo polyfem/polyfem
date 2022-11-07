@@ -22,7 +22,7 @@ namespace polyfem
 
 		virtual void update() = 0;
 
-		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) { q = x; }
+		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) const { q = x; }
 		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &full_grad) const { return full_grad; }
 
 		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) { new_x = x; }
@@ -83,7 +83,7 @@ namespace polyfem
 	protected:
 		std::vector<std::shared_ptr<State>> states_ptr_;
 		int optimization_dim_;
-		int full_dim_;
+		int full_dim_ = 0;
 		std::string parameter_name_;
 		double max_change_;
 	};

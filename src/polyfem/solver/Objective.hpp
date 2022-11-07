@@ -2,6 +2,7 @@
 
 #include "ElasticParameter.hpp"
 #include "ShapeParameter.hpp"
+#include "AdjointForm.hpp"
 
 namespace polyfem::solver
 {
@@ -49,7 +50,7 @@ namespace polyfem::solver
 	class StressObjective: public StaticObjective
 	{
 	public:
-		StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args);
+		StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
 		~StressObjective() = default;
 
 		double value() const override;
@@ -60,7 +61,8 @@ namespace polyfem::solver
 	protected:
 		const State &state_;
 		IntegrableFunctional j_;
-		int power_;
+		int in_power_;
+		bool out_sqrt_;
 		std::string formulation_;
 
 		std::shared_ptr<const ShapeParameter> shape_param_; // integral depends on shape param
@@ -148,6 +150,7 @@ namespace polyfem::solver
 		double value() const override;
 
 		void set_dim(const int dim) { dim_ = dim; }
+		void set_integral_type(const AdjointForm::SpatialIntegralType type) { integral_type_ = type; }
 
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
@@ -156,13 +159,14 @@ namespace polyfem::solver
 		const State &state_;
 		std::shared_ptr<const ShapeParameter> shape_param_;
 		std::set<int> interested_ids_;
+		AdjointForm::SpatialIntegralType integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		int dim_ = 0;		// integrate the "dim" dimension
 	};
 
 	class BarycenterTargetObjective: public StaticObjective
 	{
 	public:
-		BarycenterTargetObjective(const State &state, const Eigen::MatrixXd &target, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &target);
 		~BarycenterTargetObjective() = default;
 
 		double value() const override;
@@ -182,11 +186,11 @@ namespace polyfem::solver
 		std::shared_ptr<VolumeObjective> objv;
 		Eigen::MatrixXd target_; // N/1 by 3/2
 	};
-
+	
 	class TransientObjective: public Objective
 	{
 	public:
-		TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type);
+		TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type, const std::shared_ptr<StaticObjective> &obj);
 		virtual ~TransientObjective() = default;
 
 		double value() const override;
@@ -201,14 +205,5 @@ namespace polyfem::solver
 		int time_steps_;
 		double dt_;
 		std::string transient_integral_type_;
-	};
-
-	class CenterTrajectoryObjective: public TransientObjective
-	{
-	public:
-		CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets);
-		~CenterTrajectoryObjective() = default;
-
-		Eigen::MatrixXd get_barycenters();
 	};
 } // namespace polyfem::solver

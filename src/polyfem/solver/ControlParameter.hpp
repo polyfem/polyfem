@@ -13,7 +13,7 @@ namespace polyfem
 		{
 		}
 
-		void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) override
+		void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) const override
 		{
 		}
 

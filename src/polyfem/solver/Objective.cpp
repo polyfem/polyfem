@@ -1,5 +1,4 @@
 #include "Objective.hpp"
-#include "AdjointForm.hpp"
 
 using namespace polyfem::utils;
 
@@ -19,49 +18,62 @@ namespace polyfem::solver
         return term;
     }
 
-    StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args): state_(state), shape_param_(shape_param), elastic_param_(elastic_param)
+    StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt): state_(state), shape_param_(shape_param), elastic_param_(elastic_param)
     {
         formulation_ = state.formulation();
-        power_ = args["power"];
+        in_power_ = args["power"];
+        out_sqrt_ = has_integral_sqrt;
         auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
         interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
         j_.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
             val.setZero(grad_u.rows(), 1);
+            Eigen::MatrixXd grad_u_q, stress;
             for (int q = 0; q < grad_u.rows(); q++)
             {
-                Eigen::MatrixXd grad_u_q, stress;
-                vector2matrix(grad_u.row(q), grad_u_q);
-                if (this->formulation_ == "LinearElasticity")
+                if (this->formulation_ == "Laplacian")
                 {
+                    stress = grad_u.row(q);
+                }
+                else if (this->formulation_ == "LinearElasticity")
+                {
+                    vector2matrix(grad_u.row(q), grad_u_q);
                     stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
                 }
                 else if (this->formulation_ == "NeoHookean")
                 {
+                    vector2matrix(grad_u.row(q), grad_u_q);
                     Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
                     Eigen::MatrixXd FmT = def_grad.inverse().transpose();
                     stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
                 }
                 else
-                    logger().error("Unknown formulation!");
-                val(q) = pow(stress.squaredNorm(), this->power_ / 2.);
+                    log_and_throw_error("Unknown formulation!");
+                val(q) = pow(stress.squaredNorm(), this->in_power_ / 2.);
             }
         });
 
         j_.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
             val.setZero(grad_u.rows(), grad_u.cols());
             const int dim = sqrt(grad_u.cols());
+            const int actual_dim = (this->formulation_ == "Laplacian") ? 1 : dim;
+            Eigen::MatrixXd grad_u_q, stress, stress_dstress;
             for (int q = 0; q < grad_u.rows(); q++)
             {
-                Eigen::MatrixXd grad_u_q, stress, stress_dstress;
-                vector2matrix(grad_u.row(q), grad_u_q);
-                if (this->formulation_ == "LinearElasticity")
+                if (this->formulation_ == "Laplacian")
                 {
+                    stress = grad_u.row(q);
+                    stress_dstress = 2 * stress;
+                }
+                else if (this->formulation_ == "LinearElasticity")
+                {
+                    vector2matrix(grad_u.row(q), grad_u_q);
                     stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
                     stress_dstress = mu(q) * (stress + stress.transpose()) + lambda(q) * stress.trace() * Eigen::MatrixXd::Identity(stress.rows(), stress.cols());
                 }
                 else if (this->formulation_ == "NeoHookean")
                 {
+                    vector2matrix(grad_u.row(q), grad_u_q);
                     Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
                     Eigen::MatrixXd FmT = def_grad.inverse().transpose();
                     stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
@@ -70,8 +82,8 @@ namespace polyfem::solver
                 else
                     logger().error("Unknown formulation!");
 
-                const double coef = this->power_ * pow(stress.squaredNorm(), this->power_ / 2. - 1.);
-                for (int i = 0; i < dim; i++)
+                const double coef = this->in_power_ * pow(stress.squaredNorm(), this->in_power_ / 2. - 1.);
+                for (int i = 0; i < actual_dim; i++)
                     for (int l = 0; l < dim; l++)
                         val(q, i * dim + l) = coef * stress_dstress(i, l);
             }
@@ -81,7 +93,11 @@ namespace polyfem::solver
     double StressObjective::value() const
     {
         assert(time_step_ < state_.diff_cached.size());
-        return AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+        double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+        if (out_sqrt_)
+            return pow(val, 1. / in_power_);
+        else
+            return val;
     }
 
     Eigen::VectorXd StressObjective::compute_adjoint_rhs_step(const State& state) const
@@ -94,7 +110,15 @@ namespace polyfem::solver
         Eigen::VectorXd rhs;
         AdjointForm::dJ_du_step(state, j_, state.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_, rhs);
 
-        return rhs;
+        if (out_sqrt_)
+        {
+            double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+            if (std::abs(val) < 1e-12)
+                logger().warn("stress integral too small, may result in NAN grad!");
+            return (pow(val, 1. / in_power_ - 1) / in_power_) * rhs;
+        }
+        else
+            return rhs;
     }
 
     Eigen::VectorXd StressObjective::compute_partial_gradient(const Parameter &param) const
@@ -111,8 +135,16 @@ namespace polyfem::solver
             assert(time_step_ < state_.diff_cached.size());
             AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, j_, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, term, time_step_);
         }
-
-        return term;
+        
+        if (out_sqrt_)
+        {
+            double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+            if (std::abs(val) < 1e-12)
+                logger().warn("stress integral too small, may result in NAN grad!");
+            return (pow(val, 1. / in_power_ - 1) / in_power_) * term;
+        }
+        else
+            return term;
     }
 
     SumObjective::SumObjective(const json &args)
@@ -354,7 +386,7 @@ namespace polyfem::solver
 		});
 
         assert(time_step_ < state_.diff_cached.size());
-        return AdjointForm::integrate_objective(state_, j, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+        return AdjointForm::integrate_objective(state_, j, state_.diff_cached[time_step_].u, interested_ids_, integral_type_, time_step_);
     }
 
     Eigen::VectorXd PositionObjective::compute_adjoint_rhs_step(const State& state) const
@@ -379,7 +411,7 @@ namespace polyfem::solver
 
         Eigen::VectorXd term;
         assert(time_step_ < state.diff_cached.size());
-        AdjointForm::dJ_du_step(state, j, state.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_, term);
+        AdjointForm::dJ_du_step(state, j, state.diff_cached[time_step_].u, interested_ids_, integral_type_, time_step_, term);
 
         return term;
     }
@@ -413,14 +445,14 @@ namespace polyfem::solver
 
             Eigen::VectorXd term;
             assert(time_step_ < state_.diff_cached.size());
-            AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, j, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, term, time_step_);
+            AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, j, interested_ids_, integral_type_, term, time_step_);
             return term;
         }
         else
             return Eigen::VectorXd::Zero(param.full_dim());
     }
 
-    BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const Eigen::MatrixXd &target, const std::shared_ptr<const ShapeParameter> shape_param, const json &args)
+    BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &target)
     {
         dim_ = state.mesh->dimension();
         target_ = target;
@@ -505,11 +537,12 @@ namespace polyfem::solver
         return center;
     }
 
-    TransientObjective::TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type)
+    TransientObjective::TransientObjective(const int time_steps, const double dt, const std::string &transient_integral_type, const std::shared_ptr<StaticObjective> &obj)
     {
         time_steps_ = time_steps;
         dt_ = dt;
         transient_integral_type_ = transient_integral_type;
+        obj_ = obj;
     }
 
     std::vector<double> TransientObjective::get_transient_quadrature_weights() const
@@ -597,23 +630,4 @@ namespace polyfem::solver
         return term;
     }
 
-    CenterTrajectoryObjective::CenterTrajectoryObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &targets): TransientObjective(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"])
-    {
-        obj_ = std::make_shared<BarycenterTargetObjective>(state, targets, shape_param, args);
-    }
-
-	Eigen::MatrixXd CenterTrajectoryObjective::get_barycenters()
-	{
-        BarycenterTargetObjective &obj = *dynamic_cast<BarycenterTargetObjective *>(obj_.get());
-
-        Eigen::MatrixXd barycenters;
-		barycenters.setZero(time_steps_ + 1, obj.dim());
-		for (int step = 0; step <= time_steps_; step++)
-        {
-            obj.set_time_step(step);
-            barycenters.row(step) = obj.get_barycenter();
-        }
-
-        return barycenters;
-    }
 }
