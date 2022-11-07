@@ -20,15 +20,57 @@ namespace polyfem::solver
         return term;
     }
 
-    StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt): state_(state), shape_param_(shape_param), elastic_param_(elastic_param)
+    SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): state_(state), shape_param_(shape_param)
+    {
+        spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+        auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+        interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+    }
+
+    double SpatialIntegralObjective::value() const
+    {
+        assert(time_step_ < state_.diff_cached.size());
+        return AdjointForm::integrate_objective(state_, get_integral_functional(), state_.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_);
+    }
+
+    Eigen::VectorXd SpatialIntegralObjective::compute_adjoint_rhs_step(const State& state) const
+    {
+        if (&state != &state_)
+            return Eigen::VectorXd::Zero(state.ndof());
+        
+        assert(time_step_ < state_.diff_cached.size());
+        
+        Eigen::VectorXd rhs;
+        AdjointForm::dJ_du_step(state, get_integral_functional(), state.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_, rhs);
+
+        return rhs;
+    }
+
+    Eigen::VectorXd SpatialIntegralObjective::compute_partial_gradient(const Parameter &param) const
+    {
+        Eigen::VectorXd term;
+        term.setZero(param.full_dim());
+        if (&param == shape_param_.get())
+        {
+            assert(time_step_ < state_.diff_cached.size());
+            AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
+        }
+        
+        return term;
+    }
+
+    StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt): SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
     {
         formulation_ = state.formulation();
         in_power_ = args["power"];
         out_sqrt_ = has_integral_sqrt;
-        auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-        interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+    }
 
-        j_.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+    IntegrableFunctional StressObjective::get_integral_functional() const
+    {
+        IntegrableFunctional j;
+
+        j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
             val.setZero(grad_u.rows(), 1);
             Eigen::MatrixXd grad_u_q, stress;
             for (int q = 0; q < grad_u.rows(); q++)
@@ -55,7 +97,7 @@ namespace polyfem::solver
             }
         });
 
-        j_.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+        j.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
             val.setZero(grad_u.rows(), grad_u.cols());
             const int dim = sqrt(grad_u.cols());
             const int actual_dim = (this->formulation_ == "Laplacian") ? 1 : dim;
@@ -90,12 +132,13 @@ namespace polyfem::solver
                         val(q, i * dim + l) = coef * stress_dstress(i, l);
             }
         });
+
+        return j;
     }
 
     double StressObjective::value() const
     {
-        assert(time_step_ < state_.diff_cached.size());
-        double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+        double val = SpatialIntegralObjective::value();
         if (out_sqrt_)
             return pow(val, 1. / in_power_);
         else
@@ -104,17 +147,11 @@ namespace polyfem::solver
 
     Eigen::VectorXd StressObjective::compute_adjoint_rhs_step(const State& state) const
     {
-        if (&state != &state_)
-            return Eigen::VectorXd::Zero(state.ndof());
-        
-        assert(time_step_ < state_.diff_cached.size());
-        
-        Eigen::VectorXd rhs;
-        AdjointForm::dJ_du_step(state, j_, state.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_, rhs);
+        Eigen::VectorXd rhs = SpatialIntegralObjective::compute_adjoint_rhs_step(state);
 
         if (out_sqrt_)
         {
-            double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+            double val = SpatialIntegralObjective::value();
             if (std::abs(val) < 1e-12)
                 logger().warn("stress integral too small, may result in NAN grad!");
             return (pow(val, 1. / in_power_ - 1) / in_power_) * rhs;
@@ -134,13 +171,12 @@ namespace polyfem::solver
         }
         else if (&param == shape_param_.get())
         {
-            assert(time_step_ < state_.diff_cached.size());
-            AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, j_, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, term, time_step_);
+            term = SpatialIntegralObjective::compute_partial_gradient(param);
         }
         
         if (out_sqrt_)
         {
-            double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
+            double val = SpatialIntegralObjective::value();
             if (std::abs(val) < 1e-12)
                 logger().warn("stress integral too small, may result in NAN grad!");
             return (pow(val, 1. / in_power_ - 1) / in_power_) * term;
@@ -374,29 +410,14 @@ namespace polyfem::solver
             return Eigen::VectorXd::Zero(param.full_dim());
     }
 
-    PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): state_(state), shape_param_(shape_param)
+    PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): SpatialIntegralObjective(state, shape_param, args)
     {
-        auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-        interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-    }
-    
-    double PositionObjective::value() const
-    {
-		IntegrableFunctional j;
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val = u.col(this->dim_) + pts.col(this->dim_);
-		});
-
-        assert(time_step_ < state_.diff_cached.size());
-        return AdjointForm::integrate_objective(state_, j, state_.diff_cached[time_step_].u, interested_ids_, integral_type_, time_step_);
     }
 
-    Eigen::VectorXd PositionObjective::compute_adjoint_rhs_step(const State& state) const
+    IntegrableFunctional PositionObjective::get_integral_functional() const
     {
-        if (&state != &state_)
-            return Eigen::VectorXd::Zero(state.ndof());
-
 		IntegrableFunctional j;
+
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val = u.col(this->dim_) + pts.col(this->dim_);
 		});
@@ -411,11 +432,7 @@ namespace polyfem::solver
 			val.col(this->dim_).setOnes();
 		});
 
-        Eigen::VectorXd term;
-        assert(time_step_ < state.diff_cached.size());
-        AdjointForm::dJ_du_step(state, j, state.diff_cached[time_step_].u, interested_ids_, integral_type_, time_step_, term);
-
-        return term;
+        return j;
     }
 
     Eigen::MatrixXd StaticObjective::compute_adjoint_rhs(const State& state) const
@@ -424,34 +441,6 @@ namespace polyfem::solver
         term.col(time_step_) = compute_adjoint_rhs_step(state);
 
         return term;
-    }
-
-    Eigen::VectorXd PositionObjective::compute_partial_gradient(const Parameter &param) const
-    {
-        if (&param == shape_param_.get())
-        {
-            IntegrableFunctional j;
-            j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-                val = u.col(this->dim_) + pts.col(this->dim_);
-            });
-
-            j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-                val.setZero(u.rows(), u.cols());
-                val.col(this->dim_).setOnes();
-            });
-
-            j.set_dj_dx([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-                val.setZero(pts.rows(), pts.cols());
-                val.col(this->dim_).setOnes();
-            });
-
-            Eigen::VectorXd term;
-            assert(time_step_ < state_.diff_cached.size());
-            AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, j, interested_ids_, integral_type_, term, time_step_);
-            return term;
-        }
-        else
-            return Eigen::VectorXd::Zero(param.full_dim());
     }
 
     BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &target)
@@ -632,13 +621,16 @@ namespace polyfem::solver
         return term;
     }
 
-    ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args): state_(state), shape_param_(shape_param), elastic_param_(elastic_param), topo_param_(topo_param)
+    ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args): SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
     {
         formulation_ = state.formulation();
-        auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-        interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+    }
 
-		j_.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+    IntegrableFunctional ComplianceObjective::get_integral_functional() const
+    {
+        IntegrableFunctional j;
+
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
@@ -654,7 +646,7 @@ namespace polyfem::solver
 			}
 		});
 
-		j_.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			const int dim = sqrt(grad_u.cols());
 			for (int q = 0; q < grad_u.rows(); q++)
@@ -673,27 +665,8 @@ namespace polyfem::solver
 						val(q, i * dim + l) = 2 * stress(i, l);
 			}
 		});
-    }
 
-    double ComplianceObjective::value() const
-    {
-        assert(time_step_ < state_.diff_cached.size());
-        double val = AdjointForm::integrate_objective(state_, j_, state_.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_);
-
-        return val;
-    }
-
-    Eigen::VectorXd ComplianceObjective::compute_adjoint_rhs_step(const State& state) const
-    {
-        if (&state != &state_)
-            return Eigen::VectorXd::Zero(state.ndof());
-        
-        assert(time_step_ < state_.diff_cached.size());
-        
-        Eigen::VectorXd rhs;
-        AdjointForm::dJ_du_step(state, j_, state.diff_cached[time_step_].u, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, time_step_, rhs);
-
-        return rhs;
+        return j;
     }
 
     Eigen::VectorXd ComplianceObjective::compute_partial_gradient(const Parameter &param) const
@@ -706,10 +679,7 @@ namespace polyfem::solver
             log_and_throw_error("Not implemented!");
         }
         else if (&param == shape_param_.get())
-        {
-            assert(time_step_ < state_.diff_cached.size());
-            AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, j_, interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, term, time_step_);
-        }
+            term = compute_partial_gradient(param);
         else if (&param == topo_param_.get())
         {
             const auto &bases = state_.bases;

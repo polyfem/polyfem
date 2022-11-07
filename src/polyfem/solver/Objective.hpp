@@ -48,7 +48,27 @@ namespace polyfem::solver
 		int time_step_ = 0; // time step to integrate
 	};
 
-	class StressObjective: public StaticObjective
+	class SpatialIntegralObjective: public StaticObjective
+	{
+	public:
+		SpatialIntegralObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		virtual ~SpatialIntegralObjective() = default;
+
+		double value() const override;
+
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+
+		virtual IntegrableFunctional get_integral_functional() const = 0;
+
+	protected:
+		const State &state_;
+		std::shared_ptr<const ShapeParameter> shape_param_;
+		AdjointForm::SpatialIntegralType spatial_integral_type_;
+		std::set<int> interested_ids_;
+	};
+
+	class StressObjective: public SpatialIntegralObjective
 	{
 	public:
 		StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
@@ -58,18 +78,14 @@ namespace polyfem::solver
 
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+		IntegrableFunctional get_integral_functional() const override;
 
 	protected:
-		const State &state_;
-		IntegrableFunctional j_;
 		int in_power_;
 		bool out_sqrt_;
 		std::string formulation_;
 
-		std::shared_ptr<const ShapeParameter> shape_param_; // integral depends on shape param
 		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
-
-		std::set<int> interested_ids_;
 	};
 
 	class SumObjective: public Objective
@@ -126,41 +142,49 @@ namespace polyfem::solver
 		std::set<int> interested_ids_;
 	};
 
-	// class VolumePaneltyObjective: public Objective
-	// {
-	// public:
-	// 	VolumePaneltyObjective(const State &state, const json &args);
-	// 	~VolumePaneltyObjective() = default;
+	class VolumePaneltyObjective: public Objective
+	{
+	public:
+		VolumePaneltyObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		~VolumePaneltyObjective() = default;
 
-	// 	double value() const override;
-	// 	Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
+		double value() const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 
-	// protected:
-	// 	Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+	protected:
+		std::shared_ptr<const ShapeParameter> shape_param_;
+		std::set<int> interested_ids_;
+	};
 
-	// 	const State &state_;
-	// 	std::set<int> interested_ids_;
-	// };
+	class MassObjective: public Objective
+	{
+	public:
+		MassObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		~MassObjective() = default;
 
-	class PositionObjective: public StaticObjective
+		double value() const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+
+	protected:
+		std::shared_ptr<const ShapeParameter> shape_param_;
+		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
+		std::set<int> interested_ids_;
+	};
+
+	class PositionObjective: public SpatialIntegralObjective
 	{
 	public:
 		PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
 		~PositionObjective() = default;
 
-		double value() const override;
-
 		void set_dim(const int dim) { dim_ = dim; }
-		void set_integral_type(const AdjointForm::SpatialIntegralType type) { integral_type_ = type; }
+		void set_integral_type(const AdjointForm::SpatialIntegralType type) { spatial_integral_type_ = type; }
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
-		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+		IntegrableFunctional get_integral_functional() const override;
 
 	protected:
-		const State &state_;
-		std::shared_ptr<const ShapeParameter> shape_param_;
-		std::set<int> interested_ids_;
-		AdjointForm::SpatialIntegralType integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		int dim_ = 0;		// integrate the "dim" dimension
 	};
 
@@ -208,26 +232,19 @@ namespace polyfem::solver
 		std::string transient_integral_type_;
 	};
 
-	class ComplianceObjective: public StaticObjective
+	class ComplianceObjective: public SpatialIntegralObjective
 	{
 	public:
 		ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args);
 		~ComplianceObjective() = default;
 
-		double value() const override;
-
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
-		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+		IntegrableFunctional get_integral_functional() const override;
 
 	protected:
-		const State &state_;
-		IntegrableFunctional j_;
 		std::string formulation_;
 
-		std::shared_ptr<const ShapeParameter> shape_param_; // integral depends on shape param
 		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
 		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
-
-		std::set<int> interested_ids_;
 	};
 } // namespace polyfem::solver

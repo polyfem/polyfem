@@ -27,21 +27,21 @@ namespace polyfem::solver
 		void get_bdf_parts(
 			const int bdf_order,
 			const int index,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			Eigen::MatrixXd &sum_adjoint_p,
-			Eigen::MatrixXd &sum_adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			Eigen::VectorXd &sum_adjoint_p,
+			Eigen::VectorXd &sum_adjoint_nu,
 			double &beta)
 		{
-			sum_adjoint_p.setZero(adjoint_p[0].size(), 1);
-			sum_adjoint_nu.setZero(adjoint_nu[0].size(), 1);
+			sum_adjoint_p.setZero(adjoint_p.rows());
+			sum_adjoint_nu.setZero(adjoint_nu.rows());
 
-			int num = std::min(bdf_order, int(adjoint_p.size()) - 2 - index);
+			int num = std::min(bdf_order, int(adjoint_p.cols()) - 2 - index);
 			for (int j = 1; j <= num; ++j)
 			{
 				int order = std::min(bdf_order, index + j);
-				sum_adjoint_p += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_p[index + j];
-				sum_adjoint_nu += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_nu[index + j];
+				sum_adjoint_p += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_p.col(index + j);
+				sum_adjoint_nu += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_nu.col(index + j);
 			}
 			int order = std::min(bdf_order, index);
 			if (order >= 1)
@@ -138,11 +138,13 @@ namespace polyfem::solver
 	{
 		if (state.problem->is_time_dependent())
 		{
-			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
+			adjoint_p.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
 			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
 			{
-				adjoint_nu.push_back(state.diff_cached[t].nu);
-				adjoint_p.push_back(state.diff_cached[t].p);
+				adjoint_nu.col(t) = state.diff_cached[t].nu;
+				adjoint_p.col(t) = state.diff_cached[t].p;
 			}
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, term);
@@ -183,15 +185,19 @@ namespace polyfem::solver
 	{
 		if (state.problem->is_time_dependent())
 		{
-			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
 			std::vector<Eigen::VectorXd> adjoint_rhs;
 			dJ_du_transient(state, j, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
 			state.solve_transient_adjoint(adjoint_rhs, param_name == "dirichlet");
+
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
+			adjoint_p.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
 			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
 			{
-				adjoint_nu.push_back(state.diff_cached[t].nu);
-				adjoint_p.push_back(state.diff_cached[t].p);
+				adjoint_nu.col(t) = state.diff_cached[t].nu;
+				adjoint_p.col(t) = state.diff_cached[t].p;
 			}
+			
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
 			else if (param_name == "shape")
@@ -654,8 +660,8 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_shape_transient(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,
 		const SpatialIntegralType spatial_integral_type,
@@ -684,8 +690,8 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_shape_transient_adjoint_term(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
 		const double dt = state.args["time"]["dt"];
@@ -695,7 +701,7 @@ namespace polyfem::solver
 		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term;
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
-		Eigen::MatrixXd cur_p, cur_nu;
+		Eigen::VectorXd cur_p, cur_nu;
 		for (int i = time_steps; i > 0; --i)
 		{
 			const int real_order = std::min(bdf_order, i);
@@ -710,10 +716,10 @@ namespace polyfem::solver
 				velocity /= beta_dt;
 			}
 
-			cur_p = adjoint_p[i];
-			cur_nu = adjoint_nu[i];
-			cur_p(state.boundary_nodes, Eigen::placeholders::all).setZero();
-			cur_nu(state.boundary_nodes, Eigen::placeholders::all).setZero();
+			cur_p = adjoint_p.col(i);
+			cur_nu = adjoint_nu.col(i);
+			cur_p(state.boundary_nodes).setZero();
+			cur_nu(state.boundary_nodes).setZero();
 
 			{
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
@@ -749,9 +755,9 @@ namespace polyfem::solver
 
 		// time step 0
 		double beta;
-		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
+		Eigen::VectorXd sum_alpha_p, sum_alpha_nu;
 		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-		sum_alpha_p(state.boundary_nodes, Eigen::placeholders::all).setZero();
+		sum_alpha_p(state.boundary_nodes).setZero();
 		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
 
 		one_form += mass_term;
@@ -768,8 +774,8 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_material_transient(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
 		const double dt = state.args["time"]["dt"];
@@ -789,7 +795,7 @@ namespace polyfem::solver
 				const int real_order = std::min(bdf_order, i);
 				double beta_dt = time_integrator::BDF::betas(real_order - 1) * dt;
 
-				state.solve_data.elastic_form->foce_material_derivative(state.diff_cached[i].u, state.diff_cached[i - 1].u, -adjoint_p[i], elasticity_term);
+				state.solve_data.elastic_form->foce_material_derivative(state.diff_cached[i].u, state.diff_cached[i - 1].u, -adjoint_p.col(i), elasticity_term);
 				local_storage.vec += beta_dt * elasticity_term;
 			}
 		});
@@ -800,8 +806,8 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_friction_transient(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
 		const double dt = state.args["time"]["dt"];
@@ -827,7 +833,7 @@ namespace polyfem::solver
 
 				auto force = -ipc::compute_friction_force(state.collision_mesh, state.collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, state.diff_cached[t].friction_constraint_set, state.solve_data.contact_form->dhat(), state.solve_data.contact_form->barrier_stiffness(), state.solve_data.friction_form->epsv_dt());
 
-				local_storage.val += dot(adjoint_p[t], state.collision_mesh.to_full_dof(force)) / (beta * mu * dt);
+				local_storage.val += dot(adjoint_p.col(t), state.collision_mesh.to_full_dof(force)) / (beta * mu * dt);
 			}
 		});
 
@@ -837,8 +843,8 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_damping_transient(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
 		const double dt = state.args["time"]["dt"];
@@ -858,7 +864,7 @@ namespace polyfem::solver
 				const int real_order = std::min(bdf_order, t);
 				const double beta = time_integrator::BDF::betas(real_order - 1);
 
-				state.solve_data.damping_form->foce_material_derivative(state.diff_cached[t].u, state.diff_cached[t - 1].u, -adjoint_p[t], damping_term);
+				state.solve_data.damping_form->foce_material_derivative(state.diff_cached[t].u, state.diff_cached[t - 1].u, -adjoint_p.col(t), damping_term);
 				local_storage.vec += (beta * dt) * damping_term;
 			}
 		});
@@ -869,16 +875,16 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_initial_condition(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
 		const int ndof = state.ndof();
 		one_form.setZero(ndof * 2); // half for initial solution, half for initial velocity
 
 		// \partial_q \hat{J}^0 - p_0^T \partial_q g^v - \mu_0^T \partial_q g^u
-		one_form.segment(0, ndof) = -adjoint_nu[0]; // adjoint_nu[0] actually stores adjoint_mu[0]
-		one_form.segment(ndof, ndof) = -adjoint_p[0];
+		one_form.segment(0, ndof) = -adjoint_nu.col(0); // adjoint_nu[0] actually stores adjoint_mu[0]
+		one_form.segment(ndof, ndof) = -adjoint_p.col(0);
 
 		for (int b : state.boundary_nodes)
 		{
@@ -889,8 +895,8 @@ namespace polyfem::solver
 
 	void AdjointForm::dJ_dirichlet_transient(
 		const State &state,
-		const std::vector<Eigen::MatrixXd> &adjoint_nu,
-		const std::vector<Eigen::MatrixXd> &adjoint_p,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
 		const double dt = state.args["time"]["dt"];
@@ -904,7 +910,7 @@ namespace polyfem::solver
 			const int real_order = std::min(bdf_order, i);
 			const double beta_dt = time_integrator::BDF::betas(real_order - 1) * dt;
 
-			one_form.segment((i - 1) * n_dirichlet_dof, n_dirichlet_dof) = -(1. / beta_dt) * adjoint_p[i](state.boundary_nodes, Eigen::placeholders::all);
+			one_form.segment((i - 1) * n_dirichlet_dof, n_dirichlet_dof) = -(1. / beta_dt) * adjoint_p(state.boundary_nodes, i);
 		}
 	}
 

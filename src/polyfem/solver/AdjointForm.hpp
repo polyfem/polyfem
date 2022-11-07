@@ -112,8 +112,8 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		static void dJ_shape_transient(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			const IntegrableFunctional &j,
 			const std::set<int> &interested_ids,
 			const SpatialIntegralType spatial_integral_type,
@@ -121,8 +121,8 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		static void dJ_shape_transient_adjoint_term(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		static void dJ_material_static(
 			const State &state,
@@ -131,28 +131,28 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		static void dJ_material_transient(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		static void dJ_friction_transient(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		static void dJ_damping_transient(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		static void dJ_initial_condition(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		static void dJ_dirichlet_transient(
 			const State &state,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 	};
 } // namespace polyfem::solver
