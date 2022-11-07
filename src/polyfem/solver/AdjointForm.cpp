@@ -712,11 +712,8 @@ namespace polyfem::solver
 
 			cur_p = adjoint_p[i];
 			cur_nu = adjoint_nu[i];
-			for (int b : state.boundary_nodes)
-			{
-				cur_p(b) = 0;
-				cur_nu(b) = 0;
-			}
+			cur_p(state.boundary_nodes, Eigen::placeholders::all).setZero();
+			cur_nu(state.boundary_nodes, Eigen::placeholders::all).setZero();
 
 			{
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
@@ -754,8 +751,7 @@ namespace polyfem::solver
 		double beta;
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-		for (int b : state.boundary_nodes)
-			sum_alpha_p(b) = 0;
+		sum_alpha_p(state.boundary_nodes, Eigen::placeholders::all).setZero();
 		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
 
 		one_form += mass_term;
@@ -900,15 +896,15 @@ namespace polyfem::solver
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = state.get_bdf_order();
+		const int n_dirichlet_dof = state.boundary_nodes.size();
 
-		one_form.setZero(time_steps * state.boundary_nodes.size());
+		one_form.setZero(time_steps * n_dirichlet_dof);
 		for (int i = 1; i <= time_steps; ++i)
 		{
 			const int real_order = std::min(bdf_order, i);
 			const double beta_dt = time_integrator::BDF::betas(real_order - 1) * dt;
 
-			for (int b = 0; b < state.boundary_nodes.size(); ++b)
-				one_form((i - 1) * state.boundary_nodes.size() + b) = -(1. / beta_dt) * adjoint_p[i](state.boundary_nodes[b]);
+			one_form.segment((i - 1) * n_dirichlet_dof, n_dirichlet_dof) = -(1. / beta_dt) * adjoint_p[i](state.boundary_nodes, Eigen::placeholders::all);
 		}
 	}
 
@@ -1223,166 +1219,5 @@ namespace polyfem::solver
 		Eigen::VectorXd &one_form)
 	{
 		state.solve_data.elastic_form->foce_topology_derivative(state.diff_cached[0].u, adjoint, one_form);
-	}
-
-	double AdjointForm::value(
-		const State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-		const std::set<int> &interested_ids, // either body id or surface id
-		const SpatialIntegralType spatial_integral_type,
-		const std::string &transient_integral_type)
-	{
-		if (state.problem->is_time_dependent())
-			return integrate_objective_transient(state, j, Ji, interested_ids, spatial_integral_type, transient_integral_type);
-		else
-			return integrate_objective(state, j, Ji, state.diff_cached[0].u, interested_ids, spatial_integral_type);
-	}
-
-	void AdjointForm::gradient(
-		State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-		const std::string &param_name,
-		Eigen::VectorXd &grad,
-		const std::set<int> &interested_ids, // either body id or surface id
-		const SpatialIntegralType spatial_integral_type,
-		const std::string &transient_integral_type)
-	{
-		if (state.problem->is_time_dependent())
-		{
-			std::vector<Eigen::MatrixXd> adjoint_nu, adjoint_p;
-			std::vector<Eigen::VectorXd> adjoint_rhs;
-			dJ_du_transient(state, j, dJi_dintegrals, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
-			state.solve_transient_adjoint(adjoint_rhs, param_name == "dirichlet");
-			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
-			{
-				adjoint_nu.push_back(state.diff_cached[t].nu);
-				adjoint_p.push_back(state.diff_cached[t].p);
-			}
-			if (param_name == "material")
-				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "friction")
-				dJ_friction_transient(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "damping")
-				dJ_damping_transient(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "initial")
-				dJ_initial_condition(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "dirichlet")
-				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, grad);
-			else
-				log_and_throw_error("Unknown design parameter!");
-		}
-		else
-		{
-			Eigen::VectorXd adjoint_rhs;
-			dJ_du_step(state, j, dJi_dintegrals, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
-			state.solve_static_adjoint(adjoint_rhs);
-			if (param_name == "material")
-				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
-			else
-				log_and_throw_error("Unknown design parameter!");
-		}
-	}
-
-	double AdjointForm::integrate_objective(
-		const State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-		const Eigen::MatrixXd &solution,
-		const std::set<int> &interested_ids, // either body id or surface id
-		const SpatialIntegralType spatial_integral_type,
-		const int cur_step)
-	{
-		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
-
-		json param;
-		param["t"] = cur_step * dt;
-		param["step"] = cur_step;
-
-		Eigen::VectorXd integrals(j.size());
-		for (int k = 0; k < j.size(); k++)
-			integrals(k) = integrate_objective(state, j[k], solution, interested_ids, spatial_integral_type, cur_step);
-
-		return Ji(integrals, param);
-	}
-
-	double AdjointForm::integrate_objective_transient(
-		const State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-		const std::set<int> &interested_ids,
-		const SpatialIntegralType spatial_integral_type,
-		const std::string &transient_integral_type)
-	{
-		const double dt = state.args["time"]["dt"];
-		const int n_steps = state.args["time"]["time_steps"];
-		double result = 0;
-
-		std::vector<double> weights;
-		get_transient_quadrature_weights(transient_integral_type, n_steps, dt, weights);
-		for (int i = 0; i <= n_steps; ++i)
-		{
-			if (weights[i] == 0)
-				continue;
-			result += weights[i] * integrate_objective(state, j, Ji, state.diff_cached[i].u, interested_ids, spatial_integral_type, i);
-		}
-
-		return result;
-	}
-
-	void AdjointForm::dJ_du_step(
-		const State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-		const Eigen::MatrixXd &solution,
-		const std::set<int> &interested_ids,
-		const SpatialIntegralType spatial_integral_type,
-		const int cur_step,
-		Eigen::VectorXd &term)
-	{
-		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
-		const int dim = state.mesh->dimension();
-		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
-
-		Eigen::VectorXd integrals(j.size());
-		for (int k = 0; k < j.size(); k++)
-			integrals(k) = integrate_objective(state, j[k], solution, interested_ids, spatial_integral_type, cur_step);
-
-		json param;
-		param["t"] = cur_step * dt;
-		param["step"] = cur_step;
-		Eigen::VectorXd outer_grad = dJi_dintegrals(integrals, param);
-
-		term = Eigen::MatrixXd::Zero(state.n_bases * actual_dim, 1);
-		Eigen::VectorXd tmp;
-		for (int k = 0; k < j.size(); k++)
-		{
-			dJ_du_step(state, j[k], solution, interested_ids, spatial_integral_type, cur_step, tmp);
-			term += outer_grad(k) * tmp;
-		}
-	}
-
-	void AdjointForm::dJ_du_transient(
-		const State &state,
-		const std::vector<IntegrableFunctional> &j,
-		const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-		const std::set<int> &interested_ids,
-		const SpatialIntegralType spatial_integral_type,
-		const std::string &transient_integral_type,
-		std::vector<Eigen::VectorXd> &terms)
-	{
-		const double dt = state.args["time"]["dt"];
-		const int time_steps = state.args["time"]["time_steps"];
-
-		terms.resize(time_steps + 1);
-
-		std::vector<double> weights;
-		get_transient_quadrature_weights(transient_integral_type, time_steps, dt, weights);
-		for (int i = time_steps; i >= 0; --i)
-		{
-			dJ_du_step(state, j, dJi_dintegrals, state.diff_cached[i].u, interested_ids, spatial_integral_type, i, terms[i]);
-			terms[i] *= weights[i];
-		}
 	}
 } // namespace polyfem::solver

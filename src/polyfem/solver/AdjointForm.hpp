@@ -41,24 +41,6 @@ namespace polyfem::solver
 			const std::string &param_name,
 			Eigen::VectorXd &term);
 
-		static double value(
-			const State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type = "");
-
-		static void gradient(
-			State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-			const std::string &param_name,
-			Eigen::VectorXd &grad,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type = "");
-
 		static double integrate_objective(
 			const State &state,
 			const IntegrableFunctional &j,
@@ -172,38 +154,5 @@ namespace polyfem::solver
 			const std::vector<Eigen::MatrixXd> &adjoint_nu,
 			const std::vector<Eigen::MatrixXd> &adjoint_p,
 			Eigen::VectorXd &one_form);
-
-		static double integrate_objective(
-			const State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-			const Eigen::MatrixXd &solution,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const int cur_step = 0);
-		static void dJ_du_step(
-			const State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-			const Eigen::MatrixXd &solution,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			const int cur_step,
-			Eigen::VectorXd &term);
-		static double integrate_objective_transient(
-			const State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<double(const Eigen::VectorXd &, const json &)> &Ji,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type);
-		static void dJ_du_transient(
-			const State &state,
-			const std::vector<IntegrableFunctional> &j,
-			const std::function<Eigen::VectorXd(const Eigen::VectorXd &, const json &)> &dJi_dintegrals,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type,
-			std::vector<Eigen::VectorXd> &terms);
 	};
 } // namespace polyfem::solver
