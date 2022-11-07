@@ -64,27 +64,27 @@ void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixX
 
 void perturb(State &state, const Eigen::MatrixXd &dx, const std::string &type)
 {
-	assert(dx.cols() == 1);
-	Eigen::VectorXd dx_ = dx;
 	if (type == "shape")
-		perturb_mesh(state, dx_);
+		perturb_mesh(state, dx);
 	else if (type == "initial")
 	{
+		assert(dx.cols() == 1);
+		Eigen::VectorXd dx_ = dx;
 		state.initial_sol_update += dx_.head(state.ndof());
 		state.initial_vel_update += dx_.tail(state.ndof());
 	}
 	else if (type == "material")
-		perturb_material(state.assembler, dx_);
+		perturb_material(state.assembler, dx);
 	else if (type == "damping")
 	{
-		state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() + dx_(0);
-		state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + dx_(1);
+		state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() + dx(0);
+		state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + dx(1);
 		state.set_materials();
 	}
 	else if (type == "topology")
 	{
 		auto density_mat = state.assembler.lame_params().density_mat_;
-		state.assembler.update_lame_params_density(density_mat + dx_);
+		state.assembler.update_lame_params_density(density_mat + dx);
 	}
 	else
 		log_and_throw_error("Unknown type of perturbation!");
@@ -462,37 +462,20 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	in_args_ref["materials"]["E"] = 1e5;
 	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-	std::shared_ptr<State> state = create_state_and_solve(in_args);
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	TrajectoryFunctional func;
-	func.set_interested_ids({1}, {});
-	func.set_reference(state_reference.get(), *state, {1, 3});
-	func.set_surface_integral();
-
-	double functional_val = func.energy(*state);
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), state.args["optimization"]["functionals"][0]);
+	func_aux->set_reference(state_reference, {1, 3});
+	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);
 
 	Eigen::VectorXd velocity_discrete;
-	velocity_discrete.setOnes(state->bases.size() * 2);
+	velocity_discrete.setOnes(state.bases.size() * 2);
 	velocity_discrete *= 1e3;
 
-	Eigen::VectorXd one_form = func.gradient(*state, "material");
-
-	const double step_size = 1e-5;
-	perturb_material(state->assembler, velocity_discrete * step_size);
-
-	solve_pde(state);
-	double next_functional_val = func.energy(*state);
-
-	perturb_material(state->assembler, velocity_discrete * (-2) * step_size);
-
-	solve_pde(state);
-	double former_functional_val = func.energy(*state);
-
-	double finite_difference = (next_functional_val - former_functional_val) / step_size / 2;
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
+	verify_adjoint(func, state, elastic_param, "material", velocity_discrete, 1e-5, 1e-4);
 }
 
 TEST_CASE("shape-transient-friction", "[adjoint_method]")
@@ -597,42 +580,21 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
 	State& state = *state_ptr;
 
-	TrajectoryFunctional func;
-	func.set_reference(state_reference.get(), state, {1, 3});
-	func.set_interested_ids({1}, {});
-	func.set_surface_integral();
-	func.set_transient_integral_type("uniform");
-
-	double functional_val = func.energy(state);
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr);
+	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), state.args["optimization"]["functionals"][0]);
+	func_aux->set_reference(state_reference, {1, 3});
+	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);
 
 	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_bases * 2, 1);
+	velocity_discrete.setZero(state.ndof() * 2, 1);
 	for (int i = 0; i < state.n_bases; i++)
 	{
-		velocity_discrete(i * 2 + 0) = -2.;
-		velocity_discrete(i * 2 + 1) = -1.;
+		velocity_discrete(state.ndof() + i * 2 + 0) = -2.;
+		velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
 	}
 
-	Eigen::VectorXd one_form = func.gradient(state, "initial");
-	one_form = one_form.tail(one_form.size() / 2).eval();
-
-	const double step_size = 1e-5;
-	state.initial_vel_update += velocity_discrete * step_size;
-
-	solve_pde(state);
-	double next_functional_val = func.energy(state);
-
-	state.initial_vel_update -= velocity_discrete * step_size * 2;
-
-	solve_pde(state);
-	double last_functional_val = func.energy(state);
-
-	double finite_difference = (next_functional_val - last_functional_val) / step_size / 2;
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << last_functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
+	verify_adjoint(func, state, initial_param, "initial", velocity_discrete, 1e-5, 1e-5);
 }
 
 TEST_CASE("barycenter", "[adjoint_method]")
@@ -672,8 +634,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	velocity_discrete.setZero(state.ndof() * 2, 1);
 	for (int i = 0; i < state.n_bases; i++)
 	{
-		velocity_discrete(i * 2 + 0) = -2.;
-		velocity_discrete(i * 2 + 1) = -1.;
+		velocity_discrete(state.ndof() + i * 2 + 0) = -2.;
+		velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
 	}
 
 	verify_adjoint(func, state, initial_param, "initial", velocity_discrete, 1e-6, 1e-5);

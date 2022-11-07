@@ -7,8 +7,9 @@ namespace polyfem
 	ElasticParameter::ElasticParameter(std::vector<std::shared_ptr<State>> states_ptr) : Parameter(states_ptr)
 	{
 		parameter_name_ = "material";
+		full_dim_ = states_ptr_[0]->bases.size() * 2;
 
-		json opt_params;
+		json opt_params = states_ptr_[0]->args["optimization"];
 		for (const auto &param : opt_params["parameters"])
 		{
 			if (param["type"] == "material")
