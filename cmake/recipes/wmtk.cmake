@@ -12,7 +12,7 @@ include(FetchContent)
 FetchContent_Declare(
     wildmeshing_toolkit
     GIT_REPOSITORY https://github.com/wildmeshing/wildmeshing-toolkit.git
-    GIT_TAG 3c2364a84613861d3314ae089abd40a54ef08929
+    GIT_TAG 6310dceefbc6e027977ee3b42d479b1a5689ec5c
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(wildmeshing_toolkit)
