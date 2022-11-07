@@ -145,7 +145,7 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 				"discr_order": 1
 			},
 			"boundary_conditions": {
-				"rhs": [-20],
+				"rhs": -20,
 				"dirichlet_boundary": [
 					{
 						"id": 1,
@@ -156,33 +156,26 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 			"materials": {
 				"type": "Laplacian"
 			},
-			"optimization": { "enabled": true }
+			"optimization": { 
+				"enabled": true,
+				"functionals": [
+					{
+						"type": "stress",
+						"volume_selection": []
+					}
+				]
+			}
 		}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../circle2.msh";
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	state.build_basis();
-
-	solve_pde(state);
-
-	IntegrableFunctional j;
-	{
-		auto j_func = [](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val = (grad_u.array() * grad_u.array()).rowwise().sum();
-		};
-
-		auto grad_j_func = [](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val = 2 * grad_u;
-		};
-
-		j.set_j(j_func);
-		j.set_dj_dgradu(grad_j_func);
-	}
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	// std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	solver::StressObjective func(state, shape_param, NULL, state.args["optimization"]["functionals"][0], false);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -192,27 +185,30 @@ TEST_CASE("laplacian-j(grad u)", "[adjoint_method]")
 		}
 		return vel;
 	};
-	double functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "");
+	double functional_val = func.value();
 
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
 
-	Eigen::VectorXd one_form;
-	solver::AdjointForm::gradient(state, j, "shape", one_form, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "");
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, *shape_param);
 	double derivative = (one_form.array() * velocity_discrete.array()).sum();
 
 	// Check that the answer given is correct via finite difference.
 	// First alter the mesh according to the velocity.
-	const double t = 1e-6;
+	const double t = 1e-7;
+
 	perturb_mesh(state, velocity_discrete * t);
-
 	solve_pde(state);
+	double next_functional_val = func.value();
 
-	double new_functional_val = polyfem::solver::AdjointForm::value(state, j, {}, polyfem::solver::AdjointForm::SpatialIntegralType::VOLUME, "");
+	perturb_mesh(state, velocity_discrete * (-2 * t));
+	solve_pde(state);
+	double prev_functional_val = func.value();
 
-	double finite_difference = (new_functional_val - functional_val) / t;
+	double finite_difference = (next_functional_val - prev_functional_val) / 2. / t;
 
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
+	REQUIRE(derivative == Approx(finite_difference).epsilon(3e-5));
 }
 
 TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
