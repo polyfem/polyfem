@@ -936,6 +936,8 @@
         "optional": [
             "discr_order",
             "pressure_discr_order",
+            "basis_type",
+            "poly_basis_type",
             "use_p_ref",
             "advanced"
         ],
@@ -997,6 +999,27 @@
         "doc": " Lagrange element order for the space for the pressure unknown, for all elements."
     },
     {
+        "pointer": "/space/basis_type",
+        "default": "Lagrange",
+        "options": [
+            "Lagrange",
+            "Spline",
+            "Serendipity"
+        ],
+        "type": "string",
+        "doc": "Type of basis to use for non polygonal element, one of Lagrange, Spline, or Serendipity. Spline or Serendipity work only for quad/hex meshes"
+    },
+    {
+        "pointer": "/space/poly_basis_type",
+        "default": "MFSHarmonic",
+        "options": [
+            "MFSHarmonic",
+            "MeanValue"
+        ],
+        "type": "string",
+        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
+    },
+    {
         "pointer": "/space/use_p_ref",
         "default": false,
         "type": "bool",
@@ -1008,14 +1031,11 @@
         "type": "object",
         "optional": [
             "discr_order_max",
-            "serendipity",
             "isoparametric",
-            "use_spline",
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
             "mass_quadrature_order",
-            "poly_bases",
             "integral_constraints",
             "n_harmonic_samples",
             "force_no_ref_for_harmonic",
@@ -1032,22 +1052,10 @@
         "doc": "Maximal discretization order in adaptive p-refinement and hp-refinement"
     },
     {
-        "pointer": "/space/advanced/serendipity",
-        "default": false,
-        "type": "bool",
-        "doc": "Use serendipity elements for quad/hex elements of degree 2."
-    },
-    {
         "pointer": "/space/advanced/isoparametric",
         "default": false,
         "type": "bool",
         "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
-    },
-    {
-        "pointer": "/space/advanced/use_spline",
-        "default": false,
-        "type": "bool",
-        "doc": "Use bi/triquadratic spline basis for quad/hex elements not adjacent to polyhedral elements, see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/bc_method",
@@ -1076,16 +1084,6 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
-    },
-    {
-        "pointer": "/space/advanced/poly_bases",
-        "default": "MFSHarmonic",
-        "options": [
-            "MFSHarmonic",
-            "MeanValue"
-        ],
-        "type": "string",
-        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/integral_constraints",

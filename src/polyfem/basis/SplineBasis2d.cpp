@@ -1,5 +1,6 @@
 #include "SplineBasis2d.hpp"
 
+#include "LagrangeBasis2d.hpp"
 #include "function/QuadraticBSpline2d.hpp"
 
 #include <polyfem/quadrature/QuadQuadrature.hpp>
@@ -8,7 +9,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polysolve/LinearSolver.hpp>
-#include <polyfem/basis/FEBasis2d.hpp>
+
 #include <polyfem/utils/Types.hpp>
 
 #include <polyfem/Common.hpp>
@@ -90,8 +91,8 @@ namespace polyfem
 
 				if (is_boundary)
 				{
-					lb.add_boundary_primitive(index.edge, FEBasis2d::quad_edge_local_nodes(2, mesh, index)[1] - 4);
-					// lb.add_boundary_primitive(index.edge, FEBasis2d::quadr_quad_edge_local_nodes(mesh, index)[1]-4);
+					lb.add_boundary_primitive(index.edge, LagrangeBasis2d::quad_edge_local_nodes(2, mesh, index)[1] - 4);
+					// lb.add_boundary_primitive(index.edge, LagrangeBasis2d::quadr_quad_edge_local_nodes(mesh, index)[1]-4);
 					// bounday_nodes.push_back(node_id);
 				}
 				else if (is_interface)
@@ -437,8 +438,8 @@ namespace polyfem
 					Eigen::Matrix<double, 1, 2> current_edge_node;
 					Eigen::MatrixXd current_vertex_node;
 
-					// auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
-					auto e2l = FEBasis2d::quad_edge_local_nodes(2, mesh, index);
+					// auto e2l = LagrangeBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+					auto e2l = LagrangeBasis2d::quad_edge_local_nodes(2, mesh, index);
 
 					int vertex_basis_id = e2l[0];
 					int edge_basis_id = e2l[1];
@@ -588,16 +589,16 @@ namespace polyfem
 						continue;
 					}
 
-					// const auto param_p = FEBasis2d::quadr_quad_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
-					// const auto indices = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+					// const auto param_p = LagrangeBasis2d::quadr_quad_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
+					// const auto indices = LagrangeBasis2d::quadr_quad_edge_local_nodes(mesh, index);
 
-					const auto indices = FEBasis2d::quad_edge_local_nodes(2, mesh, index);
+					const auto indices = LagrangeBasis2d::quad_edge_local_nodes(2, mesh, index);
 					Eigen::Matrix<double, 3, 2> param_p;
 
 					{
 						Eigen::MatrixXd quad_loc_nodes;
 						polyfem::autogen::q_nodes_2d(2, quad_loc_nodes);
-						const auto opposite_indices = FEBasis2d::quad_edge_local_nodes(2, mesh, mesh.switch_face(index));
+						const auto opposite_indices = LagrangeBasis2d::quad_edge_local_nodes(2, mesh, mesh.switch_face(index));
 						for (int k = 0; k < 3; ++k)
 							param_p.row(k) = quad_loc_nodes.row(opposite_indices[k]);
 					}
@@ -657,8 +658,8 @@ namespace polyfem
 
 					if (is_neigh_poly)
 					{
-						// auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
-						auto e2l = FEBasis2d::quad_edge_local_nodes(2, mesh, index);
+						// auto e2l = LagrangeBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+						auto e2l = LagrangeBasis2d::quad_edge_local_nodes(2, mesh, index);
 						const int vertex_basis_id = e2l[0];
 						const int edge_basis_id = e2l[1];
 						const int vertex_basis_id2 = e2l[2];
@@ -799,8 +800,8 @@ namespace polyfem
 					}
 					assert(index.edge == primitive_id);
 
-					// const auto indices = FEBasis2d::quadr_quad_edge_local_nodes(mesh2d, index);
-					const auto indices = FEBasis2d::quad_edge_local_nodes(2, mesh2d, index);
+					// const auto indices = LagrangeBasis2d::quadr_quad_edge_local_nodes(mesh2d, index);
+					const auto indices = LagrangeBasis2d::quad_edge_local_nodes(2, mesh2d, index);
 					Eigen::VectorXi res(indices.size());
 
 					for (size_t i = 0; i < indices.size(); ++i)
@@ -859,7 +860,7 @@ namespace polyfem
 			// Eigen::MatrixXd samples(n_constraints, dim);
 			// polyfem::autogen::q_nodes_2d(2, samples);
 			// // for(int i = 0; i < n_constraints; ++i)
-			// //     samples.row(i) = FEBasis2d::quadr_quad_local_node_coordinates(i);
+			// //     samples.row(i) = LagrangeBasis2d::quadr_quad_local_node_coordinates(i);
 
 			// for(int i = 0; i < n_elements; ++i)
 			// {
@@ -868,7 +869,7 @@ namespace polyfem
 			//     if(!mesh.is_cube(i))
 			//         continue;
 
-			//     auto global_ids = FEBasis2d::quadr_quad_local_to_global(mesh, i);
+			//     auto global_ids = LagrangeBasis2d::quadr_quad_local_to_global(mesh, i);
 			//     assert(global_ids.size() == n_constraints);
 
 			//     for(int j = 0; j < n_constraints; ++j)

@@ -63,10 +63,7 @@ namespace
 				"discr_order": 0,
 				"advanced": {
 					"quadrature_order": -1,
-					"mass_quadrature_order": -1,
-
-					"use_spline": false,
-					"serendipity": false
+					"mass_quadrature_order": -1
 				}
 			},
 
@@ -90,8 +87,10 @@ namespace
 			in_args["space"]["advanced"]["quadrature_order"] = quadrature;
 			in_args["space"]["advanced"]["mass_quadrature_order"] = mass_quadrature;
 
-			in_args["space"]["advanced"]["use_spline"] = spline;
-			in_args["space"]["advanced"]["serendipity"] = serendipity;
+			if (spline)
+				in_args["space"]["basis_type"] = "Spline";
+			else if (serendipity)
+				in_args["space"]["basis_type"] = "Serendipity";
 
 			auto state = std::make_shared<State>(1);
 			state->init_logger("", spdlog::level::warn, false);

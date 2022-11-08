@@ -1,12 +1,11 @@
 #pragma once
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh3D/CMesh3D.hpp>
+#include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
-#include <polyfem/mesh/mesh2D/Navigation.hpp>
-
+#include <polyfem/mesh/mesh3D/Navigation3D.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
 #include <Eigen/Dense>
@@ -16,20 +15,20 @@ namespace polyfem
 {
 	namespace basis
 	{
-		class FEBasis2d
+		class LagrangeBasis3d
 		{
 		public:
 			///
-			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1,
-			///             Q2 over quads). Polygonal facets with > 4 vertices are dealt later on by the
-			///             PolygonalBasis2d class.
+			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1,
+			///             Q2 over hes). Polygonal facets with > 4 vertices are dealt later on by the
+			///             PolygonalBasis3d class.
 			///
-			/// @param[in]  mesh               The input planar mesh
+			/// @param[in]  mesh               The input volumetric mesh
 			/// @param[in]  assembler          The pde to solve
 			/// @param[in]  quadrature_order   The quadrature order
-			/// @param[in]  mass_quadrature_order   The quadrature for mass matrix
+			/// @param[in]  mass_quadrature_order   The quadrature order for mass
 			/// @param[in]  discr_order        The order of the elements (1-4)
-			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
+			/// @param[in]  serendipity        Uses serendipity bases or not (only for hex)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
 			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
 			/// @param[out] bases              List of basis functions per element
@@ -41,7 +40,7 @@ namespace polyfem
 			/// @return     The number of basis functions created.
 			///
 			static int build_bases(
-				const mesh::Mesh2D &mesh,
+				const mesh::Mesh3D &mesh,
 				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
@@ -51,20 +50,20 @@ namespace polyfem
 				const bool is_geom_bases,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
-				std::map<int, InterfaceData> &poly_edge_to_data,
+				std::map<int, InterfaceData> &poly_face_to_data,
 				std::shared_ptr<mesh::MeshNodes> &mesh_nodes);
 
 			///
-			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1,
-			///             Q2 over quads). Polygonal facets with > 4 vertices are dealt later on by the
-			///             PolygonalBasis2d class.
+			/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1,
+			///             Q2 over hex). Polygonal facets with > 4 vertices are dealt later on by the
+			///             PolygonalBasis3d class.
 			///
-			/// @param[in]  mesh               The input planar mesh
+			/// @param[in]  mesh               The input volumetric mesh
 			/// @param[in]  assembler          The pde to solve
 			/// @param[in]  quadrature_order   The quadrature order
-			/// @param[in]  mass_quadrature_order   The quadrature for mass matrix
+			/// @param[in]  mass_quadrature_order   The quadrature order for mass
 			/// @param[in]  discr_order        The order for each element
-			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
+			/// @param[in]  serendipity        Uses serendipity bases or not (only for hex)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
 			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
 			/// @param[out] bases              List of basis functions per element
@@ -76,7 +75,7 @@ namespace polyfem
 			/// @return     The number of basis functions created.
 			///
 			static int build_bases(
-				const mesh::Mesh2D &mesh,
+				const mesh::Mesh3D &mesh,
 				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
@@ -86,12 +85,17 @@ namespace polyfem
 				const bool is_geom_bases,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
-				std::map<int, InterfaceData> &poly_edge_to_data,
+				std::map<int, InterfaceData> &poly_face_to_data,
 				std::shared_ptr<mesh::MeshNodes> &mesh_nodes);
 
-			// return the local edge nodes for a tri or a quad of order p, index points to the edge
-			static Eigen::VectorXi tri_edge_local_nodes(const int p, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
-			static Eigen::VectorXi quad_edge_local_nodes(const int q, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
+			// return the local faces nodes for a tet or a hex of order p, index points to a face
+			static Eigen::VectorXi tet_face_local_nodes(const int p, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
+			static Eigen::VectorXi hex_face_local_nodes(const bool serendipity, const int q, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
+
+		private:
+			static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
+
+			static Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index);
 		};
 	} // namespace basis
 } // namespace polyfem

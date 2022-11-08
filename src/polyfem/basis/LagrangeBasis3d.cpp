@@ -1,6 +1,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "FEBasis3d.hpp"
+#include "LagrangeBasis3d.hpp"
 
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
@@ -595,7 +595,7 @@ namespace
 			}
 			else if (mesh.is_simplex(c))
 			{
-				// element_nodes_id[c] = polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
+				// element_nodes_id[c] = polyfem::LagrangeBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
 				tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_orders, edge_orders, face_orders, element_nodes_id[c], nodes, edge_virtual_nodes, face_virtual_nodes);
 
 				auto v = tet_vertices_local_to_global(mesh, c);
@@ -644,11 +644,11 @@ namespace
 				const int discr_order = discr_orders(c2);
 				if (mesh.is_cube(c2))
 				{
-					indices = FEBasis3d::hex_face_local_nodes(serendipity, discr_order, mesh, index2);
+					indices = LagrangeBasis3d::hex_face_local_nodes(serendipity, discr_order, mesh, index2);
 				}
 				else if (mesh.is_simplex(c2))
 				{
-					indices = FEBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
+					indices = LagrangeBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
 				}
 				else
 					continue;
@@ -876,7 +876,7 @@ namespace
 	}
 } // anonymous namespace
 
-Eigen::VectorXi FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index)
+Eigen::VectorXi LagrangeBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index)
 {
 	const int nn = p > 2 ? (p - 2) : 0;
 	const int n_edge_nodes = (p - 1) * 6;
@@ -1109,7 +1109,7 @@ Eigen::VectorXi FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh,
 
 		Eigen::MatrixXd nodes;
 		autogen::p_nodes_3d(p, nodes);
-		// auto pos = FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+		// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 		// Local to global mapping of node indices
 
 		// Extract requested interface
@@ -1187,7 +1187,7 @@ Eigen::VectorXi FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh,
 	return result;
 }
 
-Eigen::VectorXi FEBasis3d::hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index)
+Eigen::VectorXi LagrangeBasis3d::hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index)
 {
 	const int nn = q - 1;
 	const int n_edge_nodes = nn * 12;
@@ -1299,7 +1299,7 @@ Eigen::VectorXi FEBasis3d::hex_face_local_nodes(const bool serendipity, const in
 	{
 		Eigen::MatrixXd nodes;
 		autogen::q_nodes_3d(q, nodes);
-		// auto pos = FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+		// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 		// Local to global mapping of node indices
 
 		// Extract requested interface
@@ -1369,7 +1369,7 @@ Eigen::VectorXi FEBasis3d::hex_face_local_nodes(const bool serendipity, const in
 	return result;
 }
 
-int FEBasis3d::build_bases(
+int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const std::string &assembler,
 	const int quadrature_order,
@@ -1389,7 +1389,7 @@ int FEBasis3d::build_bases(
 	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data, mesh_nodes);
 }
 
-int FEBasis3d::build_bases(
+int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const std::string &assembler,
 	const int quadrature_order,
