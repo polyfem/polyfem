@@ -5,6 +5,8 @@
 #include "TopologyOptimizationParameter.hpp"
 #include "AdjointForm.hpp"
 
+#include <array>
+
 namespace polyfem::solver
 {
 	class Objective
@@ -153,8 +155,8 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 
 	protected:
-		std::shared_ptr<const ShapeParameter> shape_param_;
-		std::set<int> interested_ids_;
+		std::shared_ptr<VolumeObjective> obj;
+		Eigen::Vector2d bound;
 	};
 
 	class MassObjective: public Objective

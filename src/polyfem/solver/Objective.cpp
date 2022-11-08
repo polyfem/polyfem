@@ -412,6 +412,44 @@ namespace polyfem::solver
             return Eigen::VectorXd::Zero(param.full_dim());
     }
 
+    VolumePaneltyObjective::VolumePaneltyObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args)
+    {
+        if (args["soft_bound"].get<std::vector<double>>().size() == 2)
+            bound = args["soft_bound"];
+        else
+            bound << 0, std::numeric_limits<double>::max();
+
+        obj = std::make_shared<VolumeObjective>(shape_param, args);
+    }
+
+    double VolumePaneltyObjective::value() const
+    {
+        double vol = obj->value();
+
+        if (vol < bound[0])
+            return pow(vol - bound[0], 2);
+        else if (vol > bound[1])
+            return pow(vol - bound[1], 2);
+        else
+            return 0;
+    }
+    Eigen::MatrixXd VolumePaneltyObjective::compute_adjoint_rhs(const State& state) const
+    {
+        return Eigen::MatrixXd::Zero(state.diff_cached[0].u.size(), 1);
+    }
+    Eigen::VectorXd VolumePaneltyObjective::compute_partial_gradient(const Parameter &param) const
+    {
+        double vol = obj->value();
+        Eigen::VectorXd grad = obj->compute_partial_gradient(param);
+
+        if (vol < bound[0])
+            return (2 * (vol - bound[0])) * grad;
+        else if (vol > bound[1])
+            return (2 * (vol - bound[1])) * grad;
+        else
+            return Eigen::VectorXd::Zero(grad.size(), 1);
+    }
+
     PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): SpatialIntegralObjective(state, shape_param, args)
     {
     }
