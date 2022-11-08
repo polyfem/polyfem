@@ -1576,7 +1576,7 @@ void State::build_collision_mesh(
 		if (assembler.is_linear(formulation()))
 			solve_linear_homogenization(sol);
 		else
-			solve_nonlinear_homogenization(sol);
+			logger().error("Doesn't support homogenization of {}", formulation());
 
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();

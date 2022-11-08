@@ -181,7 +181,7 @@ namespace polyfem
 
 	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol)
 	{
-		adjoint_solved = false;
+		adjoint_solved_ = false;
 
 		StiffnessMatrix gradu_h(sol.size(), sol.size()), gradu_h_prev(sol.size(), sol.size());
 		if (current_step == 0)
@@ -285,7 +285,7 @@ namespace polyfem
 		else
 			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes, diff_cached[0].p);
 
-		adjoint_solved = true;
+		adjoint_solved_ = true;
 	}
 
 	void State::solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs)
@@ -364,7 +364,7 @@ namespace polyfem
 			diff_cached[i].nu = adjoint_nu[i];
 		}
 
-		adjoint_solved = true;
+		adjoint_solved_ = true;
 	}
 
 } // namespace polyfem

@@ -571,87 +571,6 @@ namespace polyfem
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
 		}
 
-		// Differentiation functional, only used for transient problems
-		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol);
-		struct DiffCachedParts
-		{
-			StiffnessMatrix gradu_h;
-			StiffnessMatrix gradu_h_next;
-			Eigen::MatrixXd u;
-			ipc::Constraints contact_set;
-			ipc::FrictionConstraints friction_constraint_set;
-			Eigen::MatrixXd p;
-			Eigen::MatrixXd nu;
-		};
-		std::vector<DiffCachedParts> diff_cached;
-		bool adjoint_solved = false;
-
-		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached;
-		Eigen::MatrixXd initial_velocity_cache;
-
-		int n_linear_solves = 0;
-		int n_nonlinear_solves = 0;
-
-		int ndof() const
-		{
-			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-			if (!assembler.is_mixed(formulation()))
-				return actual_dim * n_bases;
-			else
-				return actual_dim * n_bases + n_pressure_bases;
-		}
-		
-		int get_bdf_order() const
-		{
-			if (args["time"]["integrator"]["type"] == "ImplicitEuler")
-				return 1;
-			else if (args["time"]["integrator"]["type"] == "BDF")
-				return args["time"]["integrator"]["steps"].get<int>();
-			else
-			{
-				log_and_throw_error("Integrator type not supported for differentiability.");
-				return -1;
-			}
-		}
-		// Aux functions for setting up adjoint equations
-		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
-		// Solves the adjoint PDE for derivatives
-		void solve_adjoint(const Eigen::MatrixXd &rhs);
-		void solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs);
-		void solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
-		// Change geometric node positions
-		void set_v(const Eigen::MatrixXd &vertices);
-		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
-
-		// to replace the initial condition
-		Eigen::MatrixXd initial_sol_update, initial_vel_update;
-		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
-		StiffnessMatrix down_sampling_mat;
-
-		// homogenization study of unit cell
-		void homogenization(Eigen::MatrixXd &C_H)
-		{
-			Eigen::MatrixXd sol;
-			assemble_stiffness_mat();
-			solve_homogenization(sol);
-			compute_homogenized_tensor(sol, C_H);
-		}
-		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
-		void solve_linear_homogenization(Eigen::MatrixXd &sol);
-		void solve_nonlinear_homogenization(Eigen::MatrixXd &sol);
-
-		void compute_homogenized_tensor(Eigen::MatrixXd &sol, Eigen::MatrixXd &C);
-
-		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
-		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
-
-		void homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
-		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
-		void solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution);
-		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
-
-		double nl_homogenization_scale = 1;
-
 		/// @brief does the simulation has contact
 		///
 		/// @return true/false
@@ -744,6 +663,95 @@ namespace polyfem
 		/// limits the number of used threads
 		std::shared_ptr<tbb::global_control> thread_limiter;
 #endif
+
+		//---------------------------------------------------
+		//-----------------differentiable--------------------
+		//---------------------------------------------------
+public:
+		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol);
+		struct DiffCachedParts
+		{
+			StiffnessMatrix gradu_h;
+			StiffnessMatrix gradu_h_next;
+			Eigen::MatrixXd u;
+			ipc::Constraints contact_set;
+			ipc::FrictionConstraints friction_constraint_set;
+			Eigen::MatrixXd p;
+			Eigen::MatrixXd nu;
+		};
+		std::vector<DiffCachedParts> diff_cached;
+		
+		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
+		Eigen::MatrixXd initial_velocity_cache; // initial velocity of last solve
+
+		int n_linear_solves = 0;
+		int n_nonlinear_solves = 0;
+
+		bool adjoint_solved() const
+		{
+			return adjoint_solved_;
+		}
+
+		int ndof() const
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			if (!assembler.is_mixed(formulation()))
+				return actual_dim * n_bases;
+			else
+				return actual_dim * n_bases + n_pressure_bases;
+		}
+		
+		int get_bdf_order() const
+		{
+			if (args["time"]["integrator"]["type"] == "ImplicitEuler")
+				return 1;
+			else if (args["time"]["integrator"]["type"] == "BDF")
+				return args["time"]["integrator"]["steps"].get<int>();
+			else
+			{
+				log_and_throw_error("Integrator type not supported for differentiability.");
+				return -1;
+			}
+		}
+		// Aux functions for setting up adjoint equations
+		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
+		// Solves the adjoint PDE for derivatives
+		void solve_adjoint(const Eigen::MatrixXd &rhs);
+		void solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs);
+		void solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
+		// Change geometric node positions
+		void set_v(const Eigen::MatrixXd &vertices);
+		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
+
+		// to replace the initial condition
+		Eigen::MatrixXd initial_sol_update, initial_vel_update;
+		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
+		StiffnessMatrix down_sampling_mat;
+private:
+		bool adjoint_solved_ = false;
+		//---------------------------------------------------
+		//-----------------homogenization--------------------
+		//---------------------------------------------------
+public:
+		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
+		
+		void solve_linear_homogenization(Eigen::MatrixXd &sol);
+		void compute_homogenized_tensor(Eigen::MatrixXd &sol, Eigen::MatrixXd &C);
+		void homogenization(Eigen::MatrixXd &C_H)
+		{
+			Eigen::MatrixXd sol;
+			assemble_stiffness_mat();
+			solve_homogenization(sol);
+			compute_homogenized_tensor(sol, C_H);
+		}
+
+		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
+		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
+
+		void homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
+		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
+		void solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution);
+		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 	};
 
 } // namespace polyfem

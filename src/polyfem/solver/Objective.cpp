@@ -13,7 +13,7 @@ namespace polyfem::solver
 
         if (param.contains_state(state))
         {
-            assert(state.adjoint_solved);
+            assert(state.adjoint_solved());
             AdjointForm::compute_adjoint_term(state, param.name(), term);
         }
         
