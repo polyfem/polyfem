@@ -23,7 +23,6 @@ namespace polyfem
 				{
 					min_density = param["bound"][0];
 					max_density = param["bound"][1];
-					state.min_solid_density = min_density;
 				}
 				break;
 			}
