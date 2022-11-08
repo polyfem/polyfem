@@ -448,6 +448,8 @@ namespace polyfem
 				{
 					global_primitive_ids(0) = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(global_primitive_ids(0), mesh_);
+					assert(global_primitive_ids.size() == 1);
+					const int tag = mesh_.get_boundary_id(global_primitive_ids(0));
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
@@ -463,8 +465,11 @@ namespace polyfem
 
 							for (int d = 0; d < size_; ++d)
 							{
-								if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end())
+								if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
+								{
+									assert(problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end());
 									rhs(glob[ii].index * size_ + d) = rhs_fun(0, d);
+								}
 							}
 						}
 					}
@@ -475,6 +480,7 @@ namespace polyfem
 		void RhsAssembler::integrate_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 										const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
 		{
+			assert(false);
 			Eigen::MatrixXd uv, samples, rhs_fun, normals, mapped;
 			Eigen::VectorXd weights;
 
@@ -709,7 +715,6 @@ namespace polyfem
 			{
 				assemble(density, rhs, t);
 				rhs *= -1;
-				// set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
 
 				if (rhs.size() != final_rhs.size())
 				{
