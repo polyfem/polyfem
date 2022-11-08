@@ -795,7 +795,10 @@ namespace polyfem::solver
 				const int real_order = std::min(bdf_order, i);
 				double beta_dt = time_integrator::BDF::betas(real_order - 1) * dt;
 
-				state.solve_data.elastic_form->foce_material_derivative(state.diff_cached[i].u, state.diff_cached[i - 1].u, -adjoint_p.col(i), elasticity_term);
+				Eigen::VectorXd cur_p = adjoint_p.col(i);
+				cur_p(state.boundary_nodes).setZero();
+
+				state.solve_data.elastic_form->foce_material_derivative(state.diff_cached[i].u, state.diff_cached[i - 1].u, -cur_p, elasticity_term);
 				local_storage.vec += beta_dt * elasticity_term;
 			}
 		});
@@ -831,9 +834,12 @@ namespace polyfem::solver
 				Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached[t - 1].u, dim));
 				Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached[t].u, dim));
 
-				auto force = -ipc::compute_friction_force(state.collision_mesh, state.collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, state.diff_cached[t].friction_constraint_set, state.solve_data.contact_form->dhat(), state.solve_data.contact_form->barrier_stiffness(), state.solve_data.friction_form->epsv_dt());
+				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(-ipc::compute_friction_force(state.collision_mesh, state.collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, state.diff_cached[t].friction_constraint_set, state.solve_data.contact_form->dhat(), state.solve_data.contact_form->barrier_stiffness(), state.solve_data.friction_form->epsv_dt()));
 
-				local_storage.val += dot(adjoint_p.col(t), state.collision_mesh.to_full_dof(force)) / (beta * mu * dt);
+				Eigen::VectorXd cur_p = adjoint_p.col(t);
+				cur_p(state.boundary_nodes).setZero();
+
+				local_storage.val += dot(cur_p, force) / (beta * mu * dt);
 			}
 		});
 
@@ -864,7 +870,10 @@ namespace polyfem::solver
 				const int real_order = std::min(bdf_order, t);
 				const double beta = time_integrator::BDF::betas(real_order - 1);
 
-				state.solve_data.damping_form->foce_material_derivative(state.diff_cached[t].u, state.diff_cached[t - 1].u, -adjoint_p.col(t), damping_term);
+				Eigen::VectorXd cur_p = adjoint_p.col(t);
+				cur_p(state.boundary_nodes).setZero();
+
+				state.solve_data.damping_form->foce_material_derivative(state.diff_cached[t].u, state.diff_cached[t - 1].u, -cur_p, damping_term);
 				local_storage.vec += (beta * dt) * damping_term;
 			}
 		});
