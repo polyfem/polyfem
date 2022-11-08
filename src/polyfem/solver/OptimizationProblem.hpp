@@ -67,7 +67,7 @@ namespace polyfem
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1);
 
-		virtual void line_search_end(bool failed) = 0;
+		virtual void line_search_end() = 0;
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) = 0;
 

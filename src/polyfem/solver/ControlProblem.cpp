@@ -241,7 +241,7 @@ namespace polyfem
 		return true;
 	}
 
-	void ControlProblem::line_search_end(bool failed)
+	void ControlProblem::line_search_end()
 	{
 		if (opt_params.contains("export_energies"))
 		{

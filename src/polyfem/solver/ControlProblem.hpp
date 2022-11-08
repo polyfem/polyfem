@@ -24,7 +24,7 @@ namespace polyfem
 		bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) override { return true; };
 
-		void line_search_end(bool failed) override;
+		void line_search_end() override;
 		bool remesh(TVector &x) override { return false; };
 		int optimization_dim() override { return time_steps * optimize_boundary_ids_to_position.size() * state.mesh->dimension(); }
 

@@ -48,7 +48,7 @@ namespace polyfem
 			return max;
 		}
 
-		void line_search_end(bool failed) override;
+		void line_search_end() override;
 
 		bool solution_changed_pre(const TVector &newX) override;
 

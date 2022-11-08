@@ -57,7 +57,7 @@ namespace polyfem
 		}
 	}
 
-	void DampingProblem::line_search_end(bool failed)
+	void DampingProblem::line_search_end()
 	{
 	}
 

@@ -143,7 +143,7 @@ namespace polyfem
 				if (max_step_size == 0)
 				{
 					logger().error("Line search failed because CCD produced a stepsize of zero!");
-					objFunc.line_search_end(true);
+					objFunc.line_search_end();
 					return std::nan("");
 				}
 

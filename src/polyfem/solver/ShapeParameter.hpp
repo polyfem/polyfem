@@ -24,7 +24,7 @@ namespace polyfem
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
-		void line_search_end(bool failed) override;
+		void line_search_end() override;
 		void post_step(const int iter_num, const Eigen::VectorXd &x0) override;
 
 		bool pre_solve(const Eigen::VectorXd &newX) override;

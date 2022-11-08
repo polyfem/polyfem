@@ -145,7 +145,7 @@ namespace polyfem
 		}
 	}
 
-	void ElasticProblem::line_search_end(bool failed)
+	void ElasticProblem::line_search_end()
 	{
 	}
 

@@ -188,13 +188,13 @@ namespace polyfem
 			}
 		}
 
-		void line_search_end(bool failed) 
+		void line_search_end() 
 		{
 
 			int cumulative = 0;
 			for (const auto &subproblem : subproblems)
 			{
-				subproblem->line_search_end(failed);
+				subproblem->line_search_end();
 				cumulative += subproblem->optimization_dim();
 			}
 		}

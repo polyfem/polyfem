@@ -20,7 +20,7 @@ namespace polyfem
 		bool is_step_valid(const TVector &x0, const TVector &x1) override { return (x1 - x0).cwiseAbs().maxCoeff() <= max_change; };
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) override { return true; }
 
-		void line_search_end(bool failed) override;
+		void line_search_end() override;
 		bool remesh(TVector &x) override { return false; }
 
 		int optimization_dim() override { return optimization_dim_; }

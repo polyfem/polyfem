@@ -31,7 +31,7 @@ namespace polyfem
 			return optimization_dim_; 
 		}
 
-		void line_search_end(bool failed) override;
+		void line_search_end() override;
 		bool remesh(TVector &x) override { return false; }
 
 		bool solution_changed_pre(const TVector &newX) override;

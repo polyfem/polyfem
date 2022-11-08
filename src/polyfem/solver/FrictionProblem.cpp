@@ -45,7 +45,7 @@ namespace polyfem
 		}
 	}
 
-	void FrictionProblem::line_search_end(bool failed)
+	void FrictionProblem::line_search_end()
 	{
 	}
 

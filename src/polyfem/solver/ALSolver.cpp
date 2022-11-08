@@ -49,7 +49,7 @@ namespace polyfem::solver
 			   || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			force_al = false;
-			nl_problem.line_search_end(false);
+			nl_problem.line_search_end();
 
 			set_al_weight(nl_problem, sol, al_weight, initial_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
@@ -75,7 +75,7 @@ namespace polyfem::solver
 			post_subsolve(al_weight);
 			++al_steps;
 		}
-		nl_problem.line_search_end(false);
+		nl_problem.line_search_end();
 
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out

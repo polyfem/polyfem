@@ -32,7 +32,7 @@ namespace polyfem::solver
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
 
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
-		void line_search_end(bool failed);
+		void line_search_end();
 		void post_step(const int iter_num, const Eigen::VectorXd &x);
 		void save_to_file(const Eigen::VectorXd &x0);
 

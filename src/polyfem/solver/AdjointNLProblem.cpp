@@ -16,7 +16,7 @@ namespace polyfem::solver
 			state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr));
 
 		Eigen::VectorXd gradv_param;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			gradv_param.setZero(p->full_dim());
 			for (auto &state_ptr : all_states_)
@@ -30,10 +30,9 @@ namespace polyfem::solver
 	void AdjointNLProblem::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
-			Eigen::VectorXd tmp;
-			tmp = new_x.segment(cumulative, p->optimization_dim());
+			Eigen::VectorXd tmp = new_x.segment(cumulative, p->optimization_dim());
 			p->smoothing(x.segment(cumulative, p->optimization_dim()), tmp);
 			assert(tmp.size() == p->optimization_dim());
 			new_x.segment(cumulative, p->optimization_dim()) = tmp;
@@ -44,21 +43,21 @@ namespace polyfem::solver
 	bool AdjointNLProblem::remesh(Eigen::VectorXd &x)
 	{
 		bool remesh = false;
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			Eigen::VectorXd tmp = x.segment(cumulative, p->optimization_dim());
-			remesh |= p->remesh(tmp);
-			assert(tmp.size() == p->optimization_dim());
-			x.segment(cumulative, p->optimization_dim()) = tmp;
-			cumulative += p->optimization_dim();
-		}
+		// TODO: remesh changes size of parameters, need to be careful
+		// int cumulative = 0;
+		// for (const auto &p : parameters_)
+		// {
+		// 	Eigen::VectorXd tmp = x.segment(cumulative, p->optimization_dim());
+		// 	remesh |= p->remesh(tmp);
+		// 	assert(tmp.size() == p->optimization_dim());
+		// 	x.segment(cumulative, p->optimization_dim()) = tmp;
+		// 	cumulative += p->optimization_dim();
+		// }
 		return remesh;
 	}
 
 	void AdjointNLProblem::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-
 		int cumulative = 0;
 		for (const auto p : parameters_)
 		{
@@ -67,13 +66,13 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointNLProblem::line_search_end(bool failed)
+	void AdjointNLProblem::line_search_end()
 	{
 
 		int cumulative = 0;
 		for (const auto p : parameters_)
 		{
-			p->line_search_end(failed);
+			p->line_search_end();
 			cumulative += p->optimization_dim();
 		}
 	}

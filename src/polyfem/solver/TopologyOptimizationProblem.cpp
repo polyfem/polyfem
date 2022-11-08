@@ -152,7 +152,7 @@ namespace polyfem
 		return true;
 	}
 
-	void TopologyOptimizationProblem::line_search_end(bool failed)
+	void TopologyOptimizationProblem::line_search_end()
 	{
 	}
 

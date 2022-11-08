@@ -32,7 +32,7 @@ namespace polyfem
 		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
 
 		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
-		virtual void line_search_end(bool failed) {}
+		virtual void line_search_end() {}
 		virtual void post_step(const int iter_num, const Eigen::VectorXd &x0) {}
 
 		inline virtual void set_optimization_dim(const int optimization_dim) final { optimization_dim_ = optimization_dim; }

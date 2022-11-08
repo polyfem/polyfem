@@ -607,7 +607,7 @@ namespace polyfem
 		_use_cached_candidates = true;
 	}
 
-	void ShapeProblem::line_search_end(bool failed)
+	void ShapeProblem::line_search_end()
 	{
 		_candidates.clear();
 		_use_cached_candidates = false;

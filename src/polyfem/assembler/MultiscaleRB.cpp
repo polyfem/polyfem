@@ -213,7 +213,7 @@ namespace polyfem::assembler
 				void save_to_file(const TVector &x0) {}
 				void solution_changed(const TVector &newX) {}
 				void line_search_begin(const TVector &x0, const TVector &x1) {}
-				void line_search_end(bool failed) {}
+				void line_search_end() {}
 				void post_step(const int iter_num, const TVector &x) {}
 				void smoothing(const TVector &x, TVector &new_x) {}
 				bool is_intersection_free(const TVector &x) { return true; }

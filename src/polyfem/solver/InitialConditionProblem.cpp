@@ -36,10 +36,8 @@ namespace polyfem
 		};
 	}
 
-	void InitialConditionProblem::line_search_end(bool failed)
+	void InitialConditionProblem::line_search_end()
 	{
-		if (!failed)
-			return;
 	}
 
 	double InitialConditionProblem::value(const TVector &x)

@@ -30,7 +30,7 @@ namespace polyfem::solver
 		virtual double max_step_size(const TVector &x0, const TVector &x1) const;
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1);
-		virtual void line_search_end(bool failed);
+		virtual void line_search_end();
 		virtual void post_step(const int iter_num, const TVector &x);
 
 		virtual void set_project_to_psd(bool val);

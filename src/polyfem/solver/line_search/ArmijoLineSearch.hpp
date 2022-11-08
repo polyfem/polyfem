@@ -133,7 +133,7 @@ namespace polyfem
 					{
 						{
 							POLYFEM_SCOPED_TIMER("LS end");
-							objFunc.line_search_end(true);
+							objFunc.line_search_end();
 						}
 
 						if (!this->disable_log)
@@ -158,7 +158,7 @@ namespace polyfem
 
 					{
 						POLYFEM_SCOPED_TIMER("LS end");
-						objFunc.line_search_end(false);
+						objFunc.line_search_end();
 					}
 
 					if (!this->disable_log)

@@ -53,7 +53,7 @@ namespace polyfem::solver
 			f->line_search_begin(x0, x1);
 	}
 
-	void FullNLProblem::line_search_end(bool failed)
+	void FullNLProblem::line_search_end()
 	{
 		for (auto &f : forms_)
 			f->line_search_end();
