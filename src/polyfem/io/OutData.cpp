@@ -1066,7 +1066,7 @@ namespace polyfem::io
 			build_high_oder_vis_mesh(mesh, disc_orders, bases,
 									 points, elements, el_id, discr);
 
-		Eigen::MatrixXd fun, exact_fun, err;
+		Eigen::MatrixXd fun, exact_fun, err, node_fun;
 
 		if (opts.sol_on_grid)
 		{
@@ -1134,9 +1134,19 @@ namespace polyfem::io
 			state.polys, state.polys_3d, ref_element_sampler,
 			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
 
+		{
+			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size());
+
+			Evaluator::interpolate_function(
+				mesh, problem.is_scalar(), bases, state.disc_orders,
+				state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), tmp, node_fun, opts.use_sampler, opts.boundary_only);
+		}
+
 		if (obstacle.n_vertices() > 0)
 		{
 			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
+			node_fun.conservativeResize(node_fun.rows() + obstacle.n_vertices(), node_fun.cols());
 			obstacle.update_displacement(t, fun);
 		}
 
@@ -1158,7 +1168,10 @@ namespace polyfem::io
 		io::VTUWriter writer;
 
 		if (opts.solve_export_to_file)
+		{
 			writer.add_field("solution", fun);
+			writer.add_field("nodes", node_fun);
+		}
 		else
 			solution_frames.back().solution = fun;
 
