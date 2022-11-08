@@ -100,32 +100,6 @@ namespace polyfem
 
 			return reduced_mat;
 		}
-
-		void get_bdf_parts(
-			const int bdf_order,
-			const int index,
-			const std::vector<Eigen::MatrixXd> &adjoint_p,
-			const std::vector<Eigen::MatrixXd> &adjoint_nu,
-			Eigen::MatrixXd &sum_adjoint_p,
-			Eigen::MatrixXd &sum_adjoint_nu,
-			double &beta)
-		{
-			sum_adjoint_p.setZero(adjoint_p[0].size(), 1);
-			sum_adjoint_nu.setZero(adjoint_nu[0].size(), 1);
-
-			int num = std::min(bdf_order, int(adjoint_p.size()) - 2 - index);
-			for (int j = 1; j <= num; ++j)
-			{
-				int order = std::min(bdf_order, index + j);
-				sum_adjoint_p += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_p[index + j];
-				sum_adjoint_nu += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_nu[index + j];
-			}
-			int order = std::min(bdf_order, index);
-			if (order >= 1)
-				beta = time_integrator::BDF::betas(order - 1);
-			else
-				beta = std::nan("");
-		}
 	} // namespace
 
 	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric) const
@@ -333,15 +307,36 @@ namespace polyfem
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		for (int i = time_steps; i >= 0; --i)
 		{
-			double beta;
-			get_bdf_parts(bdf_order, i, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
-			double beta_dt = beta * dt;
+			double beta, beta_dt;
+			{
+				int order = std::min(bdf_order, i);
+				if (order >= 1)
+					beta = time_integrator::BDF::betas(order - 1);
+				else
+					beta = std::nan("");
+				beta_dt = beta * dt;
+			}
+			
+			{
+				sum_alpha_p.setZero(adjoint_p[0].size(), 1);
+				sum_alpha_nu.setZero(adjoint_nu[0].size(), 1);
+
+				int num = std::min(bdf_order, time_steps - i);
+				for (int j = 0; j < num; ++j)
+				{
+					int order = std::min(bdf_order - 1, i + j);
+					sum_alpha_p -= time_integrator::BDF::alphas(order)[j] * adjoint_p[i + j + 1];
+					sum_alpha_nu -= time_integrator::BDF::alphas(order)[j] * adjoint_nu[i + j + 1];
+				}
+			}
 
 			StiffnessMatrix gradu_h_next = -beta_dt * diff_cached[i].gradu_h_next;
 
 			if (i > 0)
 			{
 				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu + (1. / beta_dt) * (diff_cached[i].gradu_h - reduced_mass).transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoint_p[i + 1] - adjoint_rhs.col(i);
+				
+				// TODO: generalize to BDFn
 				for (const auto &b : boundary_nodes)
 				{
 					rhs_(b) += (1. / beta_dt) * (-2 * adjoint_p[i + 1](b));

@@ -31,32 +31,6 @@ namespace polyfem::solver
 	{
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
-		void get_bdf_parts(
-			const int bdf_order,
-			const int index,
-			const Eigen::MatrixXd &adjoint_p,
-			const Eigen::MatrixXd &adjoint_nu,
-			Eigen::VectorXd &sum_adjoint_p,
-			Eigen::VectorXd &sum_adjoint_nu,
-			double &beta)
-		{
-			sum_adjoint_p.setZero(adjoint_p.rows());
-			sum_adjoint_nu.setZero(adjoint_nu.rows());
-
-			int num = std::min(bdf_order, int(adjoint_p.cols()) - 2 - index);
-			for (int j = 1; j <= num; ++j)
-			{
-				int order = std::min(bdf_order, index + j);
-				sum_adjoint_p += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_p.col(index + j);
-				sum_adjoint_nu += -time_integrator::BDF::alphas(order - 1)[j - 1] * adjoint_nu.col(index + j);
-			}
-			int order = std::min(bdf_order, index);
-			if (order >= 1)
-				beta = time_integrator::BDF::betas(order - 1);
-			else
-				beta = std::nan("");
-		}
-
 		void get_transient_quadrature_weights(const std::string &transient_integral_type, const int n, const double dt, std::vector<double> &weights)
 		{
 			weights.assign(n + 1, dt);
@@ -761,9 +735,16 @@ namespace polyfem::solver
 		}
 
 		// time step 0
-		double beta;
-		Eigen::VectorXd sum_alpha_p, sum_alpha_nu;
-		get_bdf_parts(bdf_order, 0, adjoint_p, adjoint_nu, sum_alpha_p, sum_alpha_nu, beta);
+		Eigen::VectorXd sum_alpha_p;
+		{
+			sum_alpha_p.setZero(adjoint_p.rows());
+			int num = std::min(bdf_order, time_steps);
+			for (int j = 0; j < num; ++j)
+			{
+				int order = std::min(bdf_order - 1, j);
+				sum_alpha_p -= time_integrator::BDF::alphas(order)[j] * adjoint_p.col(j + 1);
+			}
+		}
 		sum_alpha_p(state.boundary_nodes).setZero();
 		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
 

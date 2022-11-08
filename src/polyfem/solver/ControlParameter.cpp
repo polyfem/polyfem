@@ -15,6 +15,9 @@ namespace polyfem
 			return;
 		}
 
+		if (get_state().get_bdf_order() > 1)
+			logger().error("Dirichlet derivative only works for BDF1!");
+
 		full_dim_ = states_ptr_[0]->boundary_nodes.size() * states_ptr_[0]->args["time"]["time_steps"].get<int>();
 
 		json opt_params = states_ptr_[0]->args["optimization"];
