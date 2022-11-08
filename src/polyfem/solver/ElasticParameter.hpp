@@ -13,8 +13,9 @@ namespace polyfem
 		{
 		}
 
-		void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) const override
+		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override
 		{
+			return x;
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;

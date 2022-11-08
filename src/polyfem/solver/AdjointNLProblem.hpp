@@ -15,9 +15,9 @@ namespace polyfem::solver
 				optimization_dim_ += p->optimization_dim();
 		}
 
-		double target_value(const Eigen::VectorXd &x);
-		double value(const Eigen::VectorXd &x);
-		double value(const Eigen::VectorXd &x, const bool only_elastic);
+		double target_value(const Eigen::VectorXd &x) const;
+		double value(const Eigen::VectorXd &x) const;
+		double value(const Eigen::VectorXd &x, const bool only_elastic) const;
 
 		void target_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv);
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv);

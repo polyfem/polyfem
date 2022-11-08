@@ -63,6 +63,7 @@ set(SOURCES
 	ElasticParameter.cpp
 	InitialConditionParameter.hpp
 	TopologyOptimizationParameter.hpp
+	TopologyOptimizationParameter.cpp
 )
 
 prepend_current_path(SOURCES)

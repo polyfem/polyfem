@@ -650,7 +650,6 @@ namespace polyfem
 		void solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution);
 		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 
-		double min_solid_density = 0;
 		double nl_homogenization_scale = 1;
 
 		/// @brief does the simulation has contact

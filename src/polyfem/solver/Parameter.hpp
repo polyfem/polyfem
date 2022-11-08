@@ -7,7 +7,8 @@ namespace polyfem
 	class Parameter
 	{
 	public:
-		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr) {}
+		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr) 
+		{ assert(states_ptr_.size() > 0); }
 		virtual ~Parameter() = default;
 
 		inline const State& get_state() const { return *(states_ptr_[0]); }
@@ -22,8 +23,10 @@ namespace polyfem
 
 		virtual void update() = 0;
 
-		virtual void map(const Eigen::MatrixXd &x, Eigen::MatrixXd &q) const { q = x; }
-		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &full_grad) const { return full_grad; }
+		// from design dof to full dof mapping
+		virtual Eigen::MatrixXd map(const Eigen::VectorXd &x) const { return x; }
+		// from full grad to design dof grad
+		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const { return full_grad; }
 
 		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) { new_x = x; }
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }

@@ -16,6 +16,13 @@
 
 #include <polyfem/time_integrator/BDF.hpp>
 
+/*
+Reminders:
+
+	1. Due to Dirichlet boundary, any force vector at dirichlet indices should be zero, so \partial_q h and \partial_u h should be set zero at dirichlet rows.
+
+*/
+
 using namespace polyfem::utils;
 
 namespace polyfem::solver

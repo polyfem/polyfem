@@ -355,14 +355,9 @@ namespace polyfem
 					solve_zero_dirichlet(args["solver"]["linear"], A, b_, boundary_nodes, adjoint_nu[i]);
 				}
 
-				if (true) // TODO
-				{
-					Eigen::VectorXd tmp = rhs_ - diff_cached[i].gradu_h.transpose() * adjoint_nu[i];
-					for (const auto &b : boundary_nodes)
-					{
-						adjoint_nu[i](b) = tmp(b);
-					}
-				}
+				Eigen::VectorXd tmp = rhs_ - diff_cached[i].gradu_h.transpose() * adjoint_nu[i];
+				for (const auto &b : boundary_nodes)
+					adjoint_nu[i](b) = tmp(b);
 				adjoint_p[i] = beta_dt * adjoint_nu[i] - sum_alpha_p;
 			}
 			else

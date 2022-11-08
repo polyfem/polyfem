@@ -2,6 +2,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/utils/CompositeFunctional.hpp>
 #include <polyfem/solver/InitialConditionParameter.hpp>
+#include <polyfem/solver/TopologyOptimizationParameter.hpp>
 #include <polyfem/solver/Objective.hpp>
 #include <polyfem/solver/AdjointForm.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>

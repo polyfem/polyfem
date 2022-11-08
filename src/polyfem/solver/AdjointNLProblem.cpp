@@ -2,12 +2,33 @@
 
 namespace polyfem::solver
 {
-	double AdjointNLProblem::value(const Eigen::VectorXd &x)
+	double AdjointNLProblem::target_value(const Eigen::VectorXd &x) const
+	{
+		// TODO: user specify selection of functionals to be target
+		return obj_->value();
+	}
+
+	double AdjointNLProblem::value(const Eigen::VectorXd &x, const bool only_elastic) const
 	{
 		return obj_->value();
 	}
 
+	double AdjointNLProblem::value(const Eigen::VectorXd &x) const
+	{
+		return value(x, false);
+	}
+
+	void AdjointNLProblem::target_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	{
+		gradient(x, gradv, false);
+	}
+
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	{
+		gradient(x, gradv, false);
+	}
+
+	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv, const bool only_elastic)
 	{
 		int cumulative = 0;
 		gradv.setZero(optimization_dim_);
@@ -15,14 +36,14 @@ namespace polyfem::solver
 		for (auto &state_ptr : all_states_)
 			state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr));
 
-		Eigen::VectorXd gradv_param;
 		for (const auto &p : parameters_)
 		{
+			Eigen::VectorXd gradv_param;	
 			gradv_param.setZero(p->full_dim());
 			for (auto &state_ptr : all_states_)
 				gradv_param += obj_->gradient(*state_ptr, *p);
 			
-			gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(gradv_param);
+			gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
 			cumulative += p->optimization_dim();
 		}
 	}
@@ -56,10 +77,52 @@ namespace polyfem::solver
 		return remesh;
 	}
 
+	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		int cumulative = 0;
+		bool is_valid = true;
+		for (const auto &p : parameters_)
+		{
+			is_valid &= p->is_step_valid(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim()));
+			cumulative += p->optimization_dim();
+		}
+		return is_valid;
+	}
+
+	bool AdjointNLProblem::is_intersection_free(const Eigen::VectorXd &x) const
+	{
+		int cumulative = 0;
+		bool is_valid = true;
+		for (const auto &p : parameters_)
+		{
+			is_valid &= p->is_intersection_free(x.segment(cumulative, p->optimization_dim()));
+			cumulative += p->optimization_dim();
+		}
+		return is_valid;
+	}
+
+	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		int cumulative = 0;
+		bool is_valid = true;
+		for (const auto &p : parameters_)
+		{
+			is_valid &= p->is_step_collision_free(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim()));
+			cumulative += p->optimization_dim();
+		}
+		return is_valid;
+	}
+
+	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		// TODO: this was a number multiplied to the descent direction to take either a larger or smaller step, so now it's better to be a vector of numbers?
+		return 1;
+	}
+
 	void AdjointNLProblem::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			p->line_search_begin(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim()));
 			cumulative += p->optimization_dim();
@@ -70,29 +133,62 @@ namespace polyfem::solver
 	{
 
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			p->line_search_end();
 			cumulative += p->optimization_dim();
 		}
 	}
 
-	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x0)
+	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
-			p->post_step(iter_num, x0.segment(cumulative, p->optimization_dim()));
+			p->post_step(iter_num, x.segment(cumulative, p->optimization_dim()));
 			cumulative += p->optimization_dim();
 		}
 		iter++;
+	}
+
+	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
+	{
+		logger().info("Iter {}", iter);
+		int id = 0;
+		for (const auto &state : all_states_)
+		{
+			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_iter{:d}_state{:d}.vtu", iter, id));
+			logger().debug("Save to file {} ...", vis_mesh_path);
+			id++;
+
+			double tend = state->args.value("tend", 1.0);
+			double dt = 1;
+			if (!state->args["time"].is_null())
+				dt = state->args["time"]["dt"];
+
+			state->out_geom.export_data(
+				*state,
+				state->diff_cached[0].u,
+				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
+				!state->args["time"].is_null(),
+				tend, dt,
+				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+				vis_mesh_path,
+				"", // nodes_path,
+				"", // solution_path,
+				"", // stress_path,
+				"", // mises_path,
+				state->is_contact_enabled(), state->solution_frames);
+			
+			// TODO: if shape opt, save rest meshes as well
+		}
 	}
 
 	Eigen::VectorXd AdjointNLProblem::get_lower_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd min(optimization_dim_);
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			min.segment(cumulative, p->optimization_dim()) = p->get_lower_bound(x.segment(cumulative, p->optimization_dim()));
 			cumulative += p->optimization_dim();
@@ -103,7 +199,7 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd max(optimization_dim_);
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			max.segment(cumulative, p->optimization_dim()) = p->get_upper_bound(x.segment(cumulative, p->optimization_dim()));
 			cumulative += p->optimization_dim();
@@ -115,7 +211,7 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd newX(optimization_dim_);
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			newX.segment(cumulative, p->optimization_dim()) = p->force_inequality_constraint(x0.segment(cumulative, p->optimization_dim()), dx.segment(cumulative, p->optimization_dim()));
 			cumulative += p->optimization_dim();
@@ -126,7 +222,7 @@ namespace polyfem::solver
 	int AdjointNLProblem::n_inequality_constraints()
 	{
 		int num = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			num += p->n_inequality_constraints();
 		}
@@ -137,7 +233,7 @@ namespace polyfem::solver
 	{
 		int num = 0;
 		int cumulative = 0;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			num += p->n_inequality_constraints();
 			if (num > index)
@@ -157,43 +253,48 @@ namespace polyfem::solver
 		int cumulative = 0;
 		Eigen::VectorXd grad(optimization_dim_);
 		grad.setZero();
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			num += p->n_inequality_constraints();
 			if (num > index)
 			{
 				num -= p->n_inequality_constraints();
 				grad.segment(cumulative, p->optimization_dim()) = p->inequality_constraint_grad(x.segment(cumulative, p->optimization_dim()), index - num);
-				break;
+				return grad;
 			}
 			cumulative += p->optimization_dim();
 		}
+		log_and_throw_error("Exceeding number of inequality constraints!");
 		return grad;
 	}
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
+		// if solution was not changed, no action is needed
 		if (cur_x.size() == newX.size() && cur_x == newX)
 			return;
 
+		// update to new parameter and check if the new parameter is valid to solve
 		bool solve = true;
-		for (const auto p : parameters_)
+		for (const auto &p : parameters_)
 		{
 			solve &= p->pre_solve(newX);
 		}
 
+		// solve PDE
 		if (solve)
 		{
 			for (const auto state : all_states_)
 			{
 				state->assemble_rhs();
 				state->assemble_stiffness_mat();
-				Eigen::MatrixXd sol, pressure;
+				Eigen::MatrixXd sol, pressure; // solution is also cached in state
 				state->solve_problem(sol, pressure);
 			}
 		}
 
-		for (const auto p : parameters_)
+		// post actions after solving PDE
+		for (const auto &p : parameters_)
 		{
 			p->post_solve(newX);
 		}

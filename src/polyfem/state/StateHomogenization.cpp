@@ -1274,7 +1274,7 @@ void State::homogenize_weighted_stokes(Eigen::MatrixXd &K_H)
     // assemble stiffness
     {
         Density solid_density;
-        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_.array() - min_solid_density;
+        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_.array();
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
 
@@ -1442,7 +1442,7 @@ void State::homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixX
     // assemble stiffness
     {
         Density solid_density;
-        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_.array() - min_solid_density;
+        Eigen::MatrixXd solid_density_mat = assembler.lame_params().density_mat_.array();
         assert(solid_density_mat.minCoeff() >= 0);
         solid_density.init_multimaterial(solid_density_mat);
 
